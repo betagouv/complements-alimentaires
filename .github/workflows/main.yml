@@ -1,0 +1,50 @@
+name: Ma Cantine CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.11
+
+      - name: Setup PostgreSQL
+        uses: Harmon758/postgresql-action@v1.0.0
+        with:
+          postgresql db: postgres
+          postgresql user: postgres
+          postgresql password: postgres
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Test Django
+        env:
+          DEBUG: True
+          SECRET: test
+          ALLOWED_HOSTS: localhost
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: postgres
+          HOSTNAME: localhost
+          STATICFILES_STORAGE: django.contrib.staticfiles.storage.StaticFilesStorage
+          DEFAULT_FILE_STORAGE: django.core.files.storage.FileSystemStorage
+        run: |
+          python3 manage.py test
