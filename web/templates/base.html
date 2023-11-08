@@ -1,0 +1,19 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{% endblock %} - Compléments alimentaires</title>
+        <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
+        <link rel="icon" type="image/png" href="{% static 'images/favicon-marianne.png' %}">
+    </head>
+    <body>
+        <main>
+            <div id="wrapper">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </main>
+    </body>
+</html>

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}S'identifier{% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+            <p class="error-container">
+                {{ error }}
+            </p>
+        {% endfor %}
+    {% endif %}
+
+    <form role="form" method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        {% if next %}
+            <input type="hidden" name="next" value="{{ next }}" />
+        {% endif %}
+
+        <div class="control-group">
+            <label class="control-label" for="{{form.username.id_for_label}}">Votre nom d'utilisateur</label>
+            {{form.username}}
+            {% if form.username.errors %}
+                {% for error in form.username.errors %}
+                    <p class="inline-error-container">
+                        {{ error | safe }}
+                    </p>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="{{form.password.id_for_label}}">Votre mot de passe</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                {% for error in form.password.errors %}
+                    <p class="inline-error-container">
+                        {{ error | safe }}
+                    </p>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <button type="submit">S'identifier</button>
+            </div>
+        </div>
+    </form>
+    <a href="{% url 'register' %}">Créer mon compte</a>
+    <hr aria-hidden="true" style="margin-top: 22px;" />
+    <p style="font-size: 0.85em; margin-top: 20px;"><a href="{% url 'password_reset' %}">J'ai perdu mon mot de passe</a></p>
+{% endblock %}
