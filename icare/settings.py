@@ -173,6 +173,15 @@ LOGIN_URL = "/s-identifier"
 
 HOSTNAME = os.getenv("HOSTNAME")
 
+# Email
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+CONTACT_EMAIL = os.getenv("CONTACT_EMAIL")
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
+
+if DEBUG and EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend":
+    EMAIL_HOST = "localhost"
+    EMAIL_PORT = 1025
+
 # Rest framework
 
 REST_FRAMEWORK = {
