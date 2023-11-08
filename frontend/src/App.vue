@@ -3,7 +3,7 @@
     :logo-text="logoText"
     service-title="Compléments alimentaires"
   />
-  <div class="fr-container">
+  <div class="p-6">
     <h1>Compléments alimentaires</h1>
     <p>En construction</p>
   </div>
