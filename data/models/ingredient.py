@@ -2,8 +2,8 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 from .approvalstate import LegacyApprovalState
 
+
 class Ingredient(models.Model):
-    
     class Meta:
         verbose_name = "Autres ingrédients"
 
@@ -40,7 +40,9 @@ class Ingredient(models.Model):
         verbose_name="(Legacy) Synonym yype",
     )
     legacy_substance_name = models.TextField(null=True, blank=True, verbose_name="(Legacy) Nom de la substance")
-    legacy_substance_unit_name = models.TextField(null=True, blank=True, verbose_name="(Legacy) Nom de la substance avec unité")
+    legacy_substance_unit_name = models.TextField(
+        null=True, blank=True, verbose_name="(Legacy) Nom de la substance avec unité"
+    )
     legacy_approval_state = models.CharField(
         max_length=255,
         choices=LegacyApprovalState.choices,

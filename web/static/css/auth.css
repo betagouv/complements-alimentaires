@@ -162,43 +162,43 @@
     float: left;
     margin-right: 10px;
   }
-  
+
   #wrapper.columns {
     width: 805px;
   }
-  
+
   .column-wrapper {
     display: flex;
     justify-content: space-between;
   }
-  
+
   .left-column,
   .right-column {
     width: 48%;
   }
-  
+
   .left-column {
     padding-top: 0px;
   }
-  
+
   .sector,
   .management-type {
     overflow: auto;
   }
-  
+
   .sector > li,
   .management-type > li {
     width: 45%;
     float: left;
   }
-  
+
   .register-top-text {
     margin-bottom: 30px;
     margin-top: 0;
     text-align: left;
     line-height: 24px;
   }
-  
+
   .register-top-text > p {
     font-size: 15px;
   }
@@ -207,32 +207,31 @@
     font-size: 15px;
     margin-top: 15px;
   }
-  
+
   #id_is_dev {
     float: left;
     margin-right: 10px;
   }
-  
+
   .cgu-right-column > div {
     margin-top: 40px;
   }
-  
+
   @media (max-width: 1005px) {
     #wrapper.columns {
       width: 300px;
     }
-  
+
     .column-wrapper {
       display: block;
     }
-  
+
     .left-column,
     .right-column {
       width: auto;
     }
-  
+
     .left-column {
       padding-top: 0;
     }
   }
-  

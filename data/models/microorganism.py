@@ -2,8 +2,8 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 from .approvalstate import LegacyApprovalState
 
+
 class Microorganism(models.Model):
-    
     class Meta:
         verbose_name = "micro-organisme"
 
@@ -13,7 +13,6 @@ class Microorganism(models.Model):
 
     class LegacyMicroorganismFunction(models.TextChoices):
         ACTIVE = "active", "Actif"
-
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)

@@ -2,8 +2,8 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 from .approvalstate import LegacyApprovalState
 
-class Substance(models.Model):
 
+class Substance(models.Model):
     class Meta:
         verbose_name = "substance active"
 

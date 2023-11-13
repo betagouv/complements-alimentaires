@@ -96,7 +96,7 @@ WEBPACK_LOADER = {
         "CACHE": not DEBUG,
         "BUNDLE_DIR_NAME": "/bundles/",
         "STATS_FILE": os.path.join(FRONTEND_DIR, "webpack-stats.json"),
-        "IGNORE": [r'.+\.hot-update.js', r'.+\.map'],
+        "IGNORE": [r".+\.hot-update.js", r".+\.map"],
     }
 }
 

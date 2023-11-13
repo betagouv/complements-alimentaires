@@ -4,7 +4,6 @@ from web.views import VueAppDisplayView, RegisterUserView
 
 urlpatterns = [
     path("", VueAppDisplayView.as_view(), name="app"),
-
     # https://docs.djangoproject.com/en/4.2/topics/auth/default/#django.contrib.auth.views.LoginView
     path(
         "s-identifier",
