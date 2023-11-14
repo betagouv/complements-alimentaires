@@ -6,10 +6,15 @@ click==8.1.7
 dill==0.3.7
 distlib==0.3.7
 Django==4.2.7
+django-ckeditor==6.7.0
+django-filter==23.3
+django-js-asset==2.1.0
 django-simple-history==3.4.0
 django-webpack-loader==2.0.1
 djangorestframework==3.14.0
 djangorestframework-camel-case==1.4.2
+drf-base64==2.0
+factory-boy==3.3.0
 Faker==19.13.0
 filelock==3.13.1
 identify==2.5.31
