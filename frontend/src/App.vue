@@ -12,12 +12,7 @@
 </template>
 
 <script setup>
-const logoText = [
-  "Ministère",
-  "de l'Agriculture",
-  "et de la Souveraineté",
-  "Alimentaire",
-];
+const logoText = ["Ministère", "de l'Agriculture", "et de la Souveraineté", "Alimentaire"]
 </script>
 
 <style scoped>

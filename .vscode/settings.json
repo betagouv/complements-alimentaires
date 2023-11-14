@@ -18,7 +18,7 @@
         "editor.tabSize": 2,
     },
     "prettier.enable": true,
-    "prettier.prettierPath": "./frontend/node_modules/prettier",
+    "prettier.prettierPath": "",
     "prettier.configPath": "./frontend/.prettierrc",
     "files.eol": "\n",
     "[python]": {
@@ -30,5 +30,7 @@
         "${workspaceRoot}/.pylintrc"
     ],
     "black-formatter.args": ["--line-length=119"],
-    "black-formatter.path": ["${workspaceRoot}/venv/bin/black"],
+    "black-formatter.path": [
+        "${workspaceRoot}/venv/bin/black"
+    ],
 }
