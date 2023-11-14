@@ -1,6 +1,6 @@
 asgiref==3.7.2
 astroid==3.0.1
-black==23.10.1
+black==23.11.0
 cfgv==3.4.0
 click==8.1.7
 dill==0.3.7
