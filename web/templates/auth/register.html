@@ -9,7 +9,29 @@
 
         {% csrf_token %}
 
-        {{ form }}
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <p class="error-container">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        {% endif %}
+
+        {% for field in form.hidden_fields %}
+            {{ field }}
+        {% endfor %}
+
+        {% for field in form %}
+        <div class="control-group">
+            <label class="control-label" for="{{field.id_for_label}}">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                <p class="inline-error-container">
+                    {{ error | safe }}
+                </p>
+                {% endfor %}
+            </div>
+        {% endfor %}
 
         <hr aria-hidden="true" />
 
