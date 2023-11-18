@@ -2,11 +2,15 @@ asgiref==3.7.2
 astroid==3.0.1
 black==23.11.0
 certifi==2023.7.22
+cffi==1.16.0
 cfgv==3.4.0
+charset-normalizer==3.3.2
 click==8.1.7
+cryptography==41.0.5
 dill==0.3.7
 distlib==0.3.7
 Django==4.2.7
+django-anymail==10.2
 django-ckeditor==6.7.0
 django-filter==23.3
 django-js-asset==2.1.0
@@ -19,6 +23,7 @@ factory-boy==3.3.0
 Faker==20.0.0
 filelock==3.13.1
 identify==2.5.31
+idna==3.4
 isort==5.12.0
 mccabe==0.7.0
 mypy-extensions==1.0.0
@@ -29,6 +34,7 @@ pipdeptree==2.13.1
 platformdirs==3.11.0
 pre-commit==3.5.0
 psycopg2==2.9.9
+pycparser==2.21
 pylint==3.0.2
 pylint-django==2.5.5
 pylint-plugin-utils==0.8.2
@@ -36,6 +42,8 @@ python-dateutil==2.8.2
 python-dotenv==1.0.0
 pytz==2023.3.post1
 PyYAML==6.0.1
+requests==2.31.0
+requests-mock==1.11.0
 sib-api-v3-sdk==7.6.0
 six==1.16.0
 sqlparse==0.4.4

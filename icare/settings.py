@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "webpack_loader",
+    "anymail",
     "icare",
     "api",
     "data",
@@ -227,4 +228,9 @@ LOGGING = {
             "propagate": True,
         },
     },
+}
+
+NEWSLETTER_BREVO_LIST_ID = os.getenv("NEWSLETTER_BREVO_LIST_ID")
+ANYMAIL = {
+    "SENDINBLUE_API_KEY": os.getenv("BREVO_API_KEY", ""),
 }

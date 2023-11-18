@@ -6,5 +6,6 @@ import VueDsfr from "@gouvminint/vue-dsfr" // Import (par défaut) de la bibliot
 import "@gouvfr/dsfr/dist/utility/icons/icons.min.css"
 
 import App from "./App.vue"
+import router from "./router"
 
-createApp(App).use(VueDsfr).mount("#app")
+createApp(App).use(router).use(VueDsfr).mount("#app")
