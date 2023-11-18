@@ -68,6 +68,8 @@ DEFAULT_FILE_STORAGE= Le système de stockage de fichiers (par ex 'django.core.f
 FORCE_HTTPS= 'False' si on développe en local, 'True' autrement
 SECURE= 'False' si on développe en local, 'True' autrement
 ENVIRONMENT= Optionnel - si cette variable est remplie un badge sera visible dans l'application et l'admin changera. Les options sont : `dev` | `staging` | `demo` | `prod`
+NEWSLETTER_BREVO_LIST_ID= L'ID de la newsletter de Brevo (précedemment Send In Blue)
+BREVO_API_KEY= La clé API de Brevo
 
 ## Lancer l'application en mode développement
 
