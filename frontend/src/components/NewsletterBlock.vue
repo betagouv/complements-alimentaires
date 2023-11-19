@@ -6,9 +6,9 @@
     </div>
     <div class="col-span-12 md:col-span-5 my-6 md:my-0">
       <DsfrInputGroup :error-message="errorMessage" :valid-message="validMessage">
-        <div class="flex">
+        <div class="md:flex">
           <DsfrInput v-model="subscriptionEmail" :placeholder="placeholder" @keydown.enter="subscribe" />
-          <DsfrButton :disabled="requestInProgress" label="Valider" @click="subscribe" />
+          <DsfrButton class="mt-4 md:mt-0 md:ml-4" :disabled="requestInProgress" label="Valider" @click="subscribe" />
         </div>
       </DsfrInputGroup>
     </div>
