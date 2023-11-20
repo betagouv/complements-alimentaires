@@ -22,7 +22,7 @@ drf-base64==2.0
 factory-boy==3.3.0
 Faker==20.0.3
 filelock==3.13.1
-identify==2.5.31
+identify==2.5.32
 idna==3.4
 isort==5.12.0
 mccabe==0.7.0
