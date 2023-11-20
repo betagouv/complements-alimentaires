@@ -41,16 +41,23 @@ npm install
 
 ### Créer la base de données
 
-Par exemple, pour utiliser une base de données nommée _macantine_egalim_ :
+Par exemple, pour utiliser une base de données nommée _icare_ :
 
 ```
-createdb macantine-egalim
+createdb icare
+```
+Le user doit avoir les droits de creation
+
+```
+sudo su postgres
+postgres=# create user <DB_USER> createdb password <DB_PASSWORD>;
 ```
 
 ### Compléter les variables d'environnement
 
 L'application utilise [python-dotenv](https://pypi.org/project/python-dotenv/), vous pouvez donc créer un fichier `.env` à la racine du projet avec ces variables définies :
 
+```
 SECRET= Le secret pour Django (vous pouvez le [générer ici](https://djecrety.ir/))
 DEBUG= `True` pour le développement local ou `False` autrement
 DB_USER= L'utilisateur de la base de données. Doit avoir les droits de creation de db pour les tests.
@@ -70,6 +77,7 @@ SECURE= 'False' si on développe en local, 'True' autrement
 ENVIRONMENT= Optionnel - si cette variable est remplie un badge sera visible dans l'application et l'admin changera. Les options sont : `dev` | `staging` | `demo` | `prod`
 NEWSLETTER_BREVO_LIST_ID= L'ID de la newsletter de Brevo (précedemment Send In Blue)
 BREVO_API_KEY= La clé API de Brevo
+```
 
 ## Lancer l'application en mode développement
 
