@@ -13,8 +13,8 @@ const quickLinks = computed(function () {
     return [
       {
         label: "Se déconnecter",
-        to: "/se-deconnecter",
         icon: "ri-account-circle-line",
+        href: `${window.location.protocol}//${window.location.host}/se-deconnecter`,
       },
     ]
   else return []
