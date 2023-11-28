@@ -1,7 +1,8 @@
-# Database model
+# Modèle de base de données
 
-## TeleIcare Model
+## Modèle de TéléIcare
 
+### Les données transmises en première intention
 ```mermaid
 classDiagram
     PLANTE <|-- PLANTE_SYNONYME
@@ -140,6 +141,11 @@ classDiagram
         INGA_IDENT
         SBSACT_IDENT
     }
+
+```
+
+### Les autres tables
+```
 
     class FORME_GALENIQUE{ }
     class TYPE_SUBSTANCE{ }
