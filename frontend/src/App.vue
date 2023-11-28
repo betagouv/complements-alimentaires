@@ -1,5 +1,5 @@
 <template>
-  <DsfrHeader :logo-text="logoText" service-title="Compléments alimentaires" />
+  <AppHeader />
   <router-view></router-view>
   <DsfrFooter :logo-text="logoText">
     <template v-slot:description>
@@ -9,5 +9,5 @@
 </template>
 
 <script setup>
-const logoText = ["Ministère", "de l'Agriculture", "et de la Souveraineté", "Alimentaire"]
+import AppHeader from "@/components/AppHeader.vue"
 </script>
