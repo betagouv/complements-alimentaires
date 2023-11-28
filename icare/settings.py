@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "webpack_loader",
+    "ckeditor",
+    "ckeditor_uploader",
     "anymail",
     "icare",
     "api",
@@ -233,4 +235,42 @@ LOGGING = {
 NEWSLETTER_BREVO_LIST_ID = os.getenv("NEWSLETTER_BREVO_LIST_ID")
 ANYMAIL = {
     "SENDINBLUE_API_KEY": os.getenv("BREVO_API_KEY", ""),
+}
+
+# CK Editor
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_IMAGE_BACKEND = "pillow"
+CKEDITOR_BROWSE_SHOW_DIRS = True
+
+CKEDITOR_CONFIGS = {
+    "default": {
+        "toolbar": "Custom",
+        "toolbar_Custom": [
+            ["Format", "Blockquote"],
+            ["Bold", "Italic"],
+            [
+                "NumberedList",
+                "BulletedList",
+                "-",
+                "Outdent",
+                "Indent",
+            ],
+            ["Link", "Unlink"],
+            [
+                "Image",
+                "-",
+                "Table",
+                "SpecialChar",
+            ],
+            ["Source", "Maximize"],
+        ],
+        "extraPlugins": ",".join(
+            [
+                "image2",
+                "codesnippet",
+                "placeholder",
+            ]
+        ),
+        "removePlugins": ",".join(["image"]),
+    }
 }
