@@ -1,32 +1,63 @@
 from django.db import models
-from simple_history.models import HistoricalRecords
-from .approvalstate import LegacyApprovalState
+
+
+class Family(models.Model):
+    class Meta:
+        verbose_name = "Famille de plante"
+
+    creation_date = models.DateTimeField(auto_now_add=True)
+    modification_date = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=200)  # TODO : à vérifier une fois le CSV reçu
+    name_en = models.CharField(max_length=200, blank=True)
+
+    # ordre = models.IntegerField()
+    # obsolet = models.BooleanField()
 
 
 class Plant(models.Model):
     class Meta:
-        verbose_name = "plante"
+        verbose_name = "Plante"
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    history = HistoricalRecords()
 
-    # Legacy fields
-    legacy_latin_name = models.TextField(null=True, blank=True, verbose_name="(Legacy) Nom de la plante en latin")
-    legacy_synonym = models.TextField(null=True, blank=True, verbose_name="(Legacy) Nom synonyme")
-    legacy_useful_part = models.TextField(null=True, blank=True, verbose_name="(Legacy) Partie utile")
-    legacy_surveillance_part = models.TextField(null=True, blank=True, verbose_name="(Legacy) Partie à surveiller")
-    legacy_active_substances = models.TextField(null=True, blank=True, verbose_name="(Legacy) Substances actives")
-    legacy_approval_state = models.CharField(
-        max_length=255,
-        choices=LegacyApprovalState.choices,
-        null=True,
-        blank=True,
-        verbose_name="(Legacy) Status d'approbation",
-    )
-    legacy_family = models.TextField(null=True, blank=True, verbose_name="(Legacy) Famille de plante")
-    legacy_function = models.TextField(
-        null=True, blank=True, verbose_name="(Legacy) Fonction de la plante - ingrédient"
-    )
-    legacy_public_comments = models.TextField(null=True, blank=True, verbose_name="(Legacy) Commentaires publics")
-    legacy_private_comments = models.TextField(null=True, blank=True, verbose_name="(Legacy) Commentaires privés")
+    family = models.ForeignKey(Family, on_delete=models.SET_NULL, verbose_name="Famille de plante")
+    name = models.CharField(max_length=200)
+    name_en = models.CharField(max_length=200, blank=True)
+    public_comments = models.CharField(max_length=1000, null=True, blank=True, verbose_name="Commentaires publics")
+    private_comments = models.CharField(max_length=2000, blank=True, verbose_name="Commentaires privés")
+
+    # champs présents dans le CSV mais inutilisés
+    # fctingr = models.IntegerField()
+    # stingsbs = models.IntegerField()
+    # commentaire_public_en = models.CharField(max_length=1000, blank=True)
+    # commentaire_privé_en = models.CharField(max_length=2000, blank=True) # TODO : intégrer les quelques données ici
+    # ordre = models.IntegerField()
+    # obsolet = models.BooleanField()
+
+
+class PlantSynonym(models.Model):
+    class Meta:
+        verbose_name = "Synonymes de plante"
+
+    creation_date = models.DateTimeField(auto_now_add=True)
+    modification_date = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=200)
+
+    # champs présents dans le CSV mais inutilisés
+    # ordre = models.IntegerField()
+    # obsolet = models.BooleanField()
+
+
+class PlantPart(models.Model):
+    class Meta:
+        verbose_name = "Partie de plante"
+
+    creation_date = models.DateTimeField(auto_now_add=True)
+    modification_date = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=200)
+    name_en = models.CharField(max_length=200, blank=True)
+
+    # champs présents dans le CSV mais inutilisés
+    # ordre = models.IntegerField()
+    # obsolet = models.BooleanField()

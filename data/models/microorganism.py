@@ -1,40 +1,34 @@
 from django.db import models
-from simple_history.models import HistoricalRecords
-from .approvalstate import LegacyApprovalState
 
 
 class Microorganism(models.Model):
     class Meta:
-        verbose_name = "micro-organisme"
-
-    class LegacyMicroorganismStatus(models.TextChoices):
-        UNKNOWN = "unknown", "Sans objet"
-        AUTHORIZED = "authorized", "Autorisé"
-
-    class LegacyMicroorganismFunction(models.TextChoices):
-        ACTIVE = "active", "Actif"
+        verbose_name = "Micro-organisme"
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    history = HistoricalRecords()
+    name = models.CharField(max_length=200, verbose_name="Espèce de micro-organisme")
+    public_comments = models.CharField(max_length=1000, null=True, blank=True, verbose_name="Commentaires publics")
+    private_comments = models.CharField(max_length=2000, null=True, blank=True, verbose_name="Commentaires privés")
+    genre = models.CharField(max_length=200, verbose_name="Genre de micro-organisme")
 
-    # Legacy fields
-    legacy_species_name = models.TextField(null=True, blank=True, verbose_name="(Legacy) Nom de l'espèce")
-    legacy_genre_name = models.TextField(null=True, blank=True, verbose_name="(Legacy) Nom du genre")
-    legacy_full_name = models.TextField(null=True, blank=True, verbose_name="(Legacy) Nom complet")
-    legacy_approval_state = models.CharField(
-        max_length=255,
-        choices=LegacyApprovalState.choices,
-        null=True,
-        blank=True,
-        verbose_name="(Legacy) Status d'approbation",
-    )
-    legacy_function = models.CharField(
-        max_length=255,
-        choices=LegacyMicroorganismFunction.choices,
-        null=True,
-        blank=True,
-        verbose_name="(Legacy) Fonction",
-    )
-    legacy_public_comments = models.TextField(null=True, blank=True, verbose_name="(Legacy) Commentaires publics")
-    legacy_private_comments = models.TextField(null=True, blank=True, verbose_name="(Legacy) Commentaires privés")
+    # champs présents dans le CSV mais inutilisés
+    # fctingr = models.IntegerField()
+    # stingsbs = models.IntegerField()
+    # commentaire_public_en = models.CharField(max_length=1000, blank=True)
+    # commentaire_privé_en = models.CharField(max_length=2000, blank=True)
+    # ordre = models.IntegerField()
+    # obsolet = models.BooleanField()
+
+
+class MicroorganismSynonym(models.Model):
+    class Meta:
+        verbose_name = "Synonymes de micro-organisme"
+
+    creation_date = models.DateTimeField(auto_now_add=True)
+    modification_date = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=200)
+
+    # champs présents dans le CSV mais inutilisés
+    # ordre = models.IntegerField()
+    # obsolet = models.BooleanField()
