@@ -97,7 +97,6 @@ const blogDescription = (post) => post.body?.substring(0, 100).replace(/<\/?[^>]
 
 // Route management
 watch(route, () => {
-  visibleBlogPosts.value = null
   populateParametersFromRoute()
   fetchCurrentPage()
 })
