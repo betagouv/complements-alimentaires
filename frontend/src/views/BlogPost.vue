@@ -21,7 +21,6 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
 import { verifyResponse, NotFoundError } from "@/utils"
-import { DsfrBreadcrumb, DsfrErrorPage } from "@gouvminint/vue-dsfr"
 
 const props = defineProps({
   id: String,
