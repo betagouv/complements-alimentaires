@@ -1,5 +1,8 @@
 from django.db import models
 
+from .common_base_ingredient import CommonBaseIngredient
+from .substance import Substance
+
 
 class Family(models.Model):
     class Meta:
@@ -14,26 +17,32 @@ class Family(models.Model):
     # obsolet = models.BooleanField()
 
 
-class Plant(models.Model):
+class PlantPart(models.Model):
     class Meta:
-        verbose_name = "Plante"
+        verbose_name = "Partie de plante"
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-
-    family = models.ForeignKey(Family, on_delete=models.SET_NULL, verbose_name="Famille de plante")
     name = models.CharField(max_length=200)
     name_en = models.CharField(max_length=200, blank=True)
-    public_comments = models.CharField(max_length=1000, null=True, blank=True, verbose_name="Commentaires publics")
-    private_comments = models.CharField(max_length=2000, blank=True, verbose_name="Commentaires privés")
+
+    # champs présents dans le CSV mais inutilisés
+    # ordre = models.IntegerField()
+    # obsolet = models.BooleanField()
+
+
+class Plant(CommonBaseIngredient):
+    class Meta:
+        verbose_name = "Plante"
+
+    family = models.ForeignKey(Family, null=True, on_delete=models.SET_NULL, verbose_name="Famille de plante")
+    useful_parts = models.ManyToManyField(PlantPart)
+    substance = models.ManyToManyField(Substance)
 
     # champs présents dans le CSV mais inutilisés
     # fctingr = models.IntegerField()
     # stingsbs = models.IntegerField()
-    # commentaire_public_en = models.CharField(max_length=1000, blank=True)
-    # commentaire_privé_en = models.CharField(max_length=2000, blank=True) # TODO : intégrer les quelques données ici
-    # ordre = models.IntegerField()
-    # obsolet = models.BooleanField()
+    # to_watch_part = models.ManyToManyField(PlantPart)
 
 
 class PlantSynonym(models.Model):
@@ -43,20 +52,7 @@ class PlantSynonym(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
     name = models.CharField(max_length=200)
-
-    # champs présents dans le CSV mais inutilisés
-    # ordre = models.IntegerField()
-    # obsolet = models.BooleanField()
-
-
-class PlantPart(models.Model):
-    class Meta:
-        verbose_name = "Partie de plante"
-
-    creation_date = models.DateTimeField(auto_now_add=True)
-    modification_date = models.DateTimeField(auto_now=True)
-    name = models.CharField(max_length=200)
-    name_en = models.CharField(max_length=200, blank=True)
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
 
     # champs présents dans le CSV mais inutilisés
     # ordre = models.IntegerField()
