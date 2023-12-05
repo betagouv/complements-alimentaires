@@ -15,7 +15,7 @@
       </svg>
     </div>
   </div>
-  <div class="fr-container my-10">
+  <div class="fr-container my-6">
     <div class="flex justify-center" v-if="loading">
       <ProgressSpinner />
     </div>
@@ -29,6 +29,7 @@
           :title="post.title"
           :detail="blogDate(post)"
           :description="blogDescription(post)"
+          :link="{ name: 'BlogPost', params: { id: post.id } }"
         />
       </div>
       <DsfrPagination
