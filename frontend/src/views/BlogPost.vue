@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue"
+import { onMounted, ref, computed, watch } from "vue"
 import { verifyResponse, NotFoundError } from "@/utils"
 import { DsfrBreadcrumb, DsfrErrorPage } from "@gouvminint/vue-dsfr"
 
@@ -29,6 +29,7 @@ const props = defineProps({
 
 const blogPost = ref(null)
 const notFound = ref(false)
+
 const date = computed(() => {
   if (!blogPost.value) return null
   return new Date(blogPost.value.displayDate).toLocaleDateString("fr-FR", {
@@ -40,6 +41,10 @@ const date = computed(() => {
 const author = computed(() => {
   if (!blogPost.value?.author) return null
   return `${blogPost.value.author.firstName} ${blogPost.value.author.lastName}`
+})
+
+watch(blogPost, (post) => {
+  if (post) document.title = `${post.title} - Compléments alimentaires`
 })
 
 onMounted(() => {

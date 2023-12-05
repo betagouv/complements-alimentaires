@@ -13,6 +13,9 @@ const routes = [
     path: "/blog",
     name: "BlogsHome",
     component: BlogsHome,
+    meta: {
+      title: "Articles de blog",
+    },
   },
   {
     path: "/blog/:id",
