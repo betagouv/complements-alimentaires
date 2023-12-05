@@ -13,7 +13,7 @@ const quickLinks = computed(function () {
     return [
       {
         label: "Se déconnecter",
-        icon: "ri-account-circle-line",
+        icon: "ri-logout-box-r-line",
         href: `${window.location.protocol}//${window.location.host}/se-deconnecter`,
       },
     ]
