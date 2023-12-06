@@ -10,7 +10,7 @@
     />
   </div>
   <div v-if="blogPost" class="fr-container my-8">
-    <h1 class="fr-h4">Blog post {{ blogPost.title }}</h1>
+    <h1 class="fr-h4">{{ blogPost.title }}</h1>
     <p class="my-0">{{ author }}</p>
     <p class="fr-text--xs my-0">{{ date }}</p>
     <div id="content" v-html="blogPost.body" class="text-left"></div>
