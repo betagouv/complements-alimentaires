@@ -6,7 +6,8 @@ from .substance import Substance
 
 class Ingredient(CommonBaseIngredient):
     class Meta:
-        verbose_name = "Autre ingrédient"
+        verbose_name = "autre ingrédient"
+        verbose_name_plural = "autres ingrédients"
 
     observation = models.CharField(max_length=200, blank=True)
     description = models.CharField(max_length=1000, blank=True)
@@ -21,7 +22,7 @@ class Ingredient(CommonBaseIngredient):
 
 class IngredientSynonym(models.Model):
     class Meta:
-        verbose_name = "Synonymes d'ingrédient"
+        verbose_name = "synonyme d'ingrédient"
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)

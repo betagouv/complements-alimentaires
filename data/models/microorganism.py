@@ -6,9 +6,9 @@ from .substance import Substance
 
 class Microorganism(CommonBaseIngredient):
     class Meta:
-        verbose_name = "Micro-organisme"
+        verbose_name = "micro-organisme"
 
-    genre = models.CharField(max_length=200, verbose_name="Genre de micro-organisme")
+    genre = models.CharField(max_length=200, verbose_name="genre de micro-organisme")
     substance = models.ManyToManyField(Substance)
 
     # champs présents dans le CSV mais inutilisés
@@ -18,7 +18,7 @@ class Microorganism(CommonBaseIngredient):
 
 class MicroorganismSynonym(models.Model):
     class Meta:
-        verbose_name = "Synonymes de micro-organisme"
+        verbose_name = "synonyme de micro-organisme"
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
