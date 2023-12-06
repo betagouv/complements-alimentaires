@@ -11,11 +11,11 @@
         />
         <p class="mt-6">
           Examples :
-          <router-link :to="{ name: 'LandingPage' }">Eucalyptus</router-link>
+          <router-link :to="getRouteForTerm('Eucalyptus')">Eucalyptus</router-link>
           ,
-          <router-link :to="{ name: 'LandingPage' }">Carotte</router-link>
+          <router-link :to="getRouteForTerm('Carotte')">Carotte</router-link>
           ,
-          <router-link :to="{ name: 'LandingPage' }">Vitamine B12</router-link>
+          <router-link :to="getRouteForTerm('Vitamine B12')">Vitamine B12</router-link>
         </p>
       </div>
     </div>
@@ -24,10 +24,15 @@
 
 <script setup>
 import { ref } from "vue"
+import { useRouter } from "vue-router"
 
 const searchTerm = ref(null)
+const router = useRouter()
 
 const search = () => {
-  console.log(`Effectuer recherche avec ${searchTerm.value}`)
+  router.push(getRouteForTerm(searchTerm.value))
+}
+const getRouteForTerm = (term) => {
+  return { name: "SearchResults", query: { q: term } }
 }
 </script>
