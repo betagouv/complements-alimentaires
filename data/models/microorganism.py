@@ -1,40 +1,30 @@
 from django.db import models
-from simple_history.models import HistoricalRecords
-from .approvalstate import LegacyApprovalState
+
+from .common_base_ingredient import CommonBaseIngredient
+from .substance import Substance
 
 
-class Microorganism(models.Model):
+class Microorganism(CommonBaseIngredient):
     class Meta:
         verbose_name = "micro-organisme"
 
-    class LegacyMicroorganismStatus(models.TextChoices):
-        UNKNOWN = "unknown", "Sans objet"
-        AUTHORIZED = "authorized", "Autorisé"
+    genre = models.TextField(verbose_name="genre de micro-organisme")
+    substance = models.ManyToManyField(Substance)
 
-    class LegacyMicroorganismFunction(models.TextChoices):
-        ACTIVE = "active", "Actif"
+    # champs présents dans le CSV mais inutilisés
+    # fctingr = models.IntegerField()
+    # stingsbs = models.IntegerField()
+
+
+class MicroorganismSynonym(models.Model):
+    class Meta:
+        verbose_name = "synonyme de micro-organisme"
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    history = HistoricalRecords()
+    name = models.TextField(verbose_name="nom")
+    microorganism = models.ForeignKey(Microorganism, on_delete=models.CASCADE)
 
-    # Legacy fields
-    legacy_species_name = models.TextField(null=True, blank=True, verbose_name="(Legacy) Nom de l'espèce")
-    legacy_genre_name = models.TextField(null=True, blank=True, verbose_name="(Legacy) Nom du genre")
-    legacy_full_name = models.TextField(null=True, blank=True, verbose_name="(Legacy) Nom complet")
-    legacy_approval_state = models.CharField(
-        max_length=255,
-        choices=LegacyApprovalState.choices,
-        null=True,
-        blank=True,
-        verbose_name="(Legacy) Status d'approbation",
-    )
-    legacy_function = models.CharField(
-        max_length=255,
-        choices=LegacyMicroorganismFunction.choices,
-        null=True,
-        blank=True,
-        verbose_name="(Legacy) Fonction",
-    )
-    legacy_public_comments = models.TextField(null=True, blank=True, verbose_name="(Legacy) Commentaires publics")
-    legacy_private_comments = models.TextField(null=True, blank=True, verbose_name="(Legacy) Commentaires privés")
+    # champs présents dans le CSV mais inutilisés
+    # ordre = models.IntegerField()
+    # obsolet = models.BooleanField()
