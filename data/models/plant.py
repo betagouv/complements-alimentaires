@@ -10,8 +10,8 @@ class Family(models.Model):
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    name = models.TextField()
-    name_en = models.TextField(blank=True)
+    name = models.TextField(verbose_name="nom")
+    name_en = models.TextField(blank=True, verbose_name="nom en anglais")
 
     # ordre = models.IntegerField()
     # obsolet = models.BooleanField()
@@ -23,8 +23,8 @@ class PlantPart(models.Model):
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    name = models.TextField()
-    name_en = models.TextField(blank=True)
+    name = models.TextField(verbose_name="nom")
+    name_en = models.TextField(blank=True, verbose_name="nom en anglais")
 
     # champs présents dans le CSV mais inutilisés
     # ordre = models.IntegerField()
@@ -51,8 +51,8 @@ class PlantSynonym(models.Model):
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    name = models.TextField()
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
+    name = models.TextField(verbose_name="nom synonyme")
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, verbose_name="nom de référence")
 
     # champs présents dans le CSV mais inutilisés
     # ordre = models.IntegerField()

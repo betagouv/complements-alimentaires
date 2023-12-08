@@ -8,7 +8,7 @@ class Microorganism(CommonBaseIngredient):
     class Meta:
         verbose_name = "micro-organisme"
 
-    genre = models.CharField(max_length=200, verbose_name="genre de micro-organisme")
+    genre = models.TextField(verbose_name="genre de micro-organisme")
     substance = models.ManyToManyField(Substance)
 
     # champs présents dans le CSV mais inutilisés
@@ -22,7 +22,7 @@ class MicroorganismSynonym(models.Model):
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    name = models.CharField(max_length=200)
+    name = models.TextField(verbose_name="nom")
     microorganism = models.ForeignKey(Microorganism, on_delete=models.CASCADE)
 
     # champs présents dans le CSV mais inutilisés

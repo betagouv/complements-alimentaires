@@ -9,8 +9,8 @@ class Ingredient(CommonBaseIngredient):
         verbose_name = "autre ingrédient"
         verbose_name_plural = "autres ingrédients"
 
-    observation = models.CharField(max_length=200, blank=True)
-    description = models.CharField(max_length=1000, blank=True)
+    observation = models.TextField(blank=True)
+    description = models.TextField(blank=True)
     substance = models.ManyToManyField(Substance)
 
     # champs présents dans le CSV mais inutilisés
@@ -26,7 +26,7 @@ class IngredientSynonym(models.Model):
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    name = models.CharField(max_length=200)
+    name = models.TextField(blank=True, verbose_name="nom")
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
 
     # champs présents dans le CSV mais inutilisés
