@@ -11,7 +11,7 @@ class Ingredient(CommonBaseIngredient):
 
     observation = models.TextField(blank=True)
     description = models.TextField(blank=True)
-    substance = models.ManyToManyField(Substance)
+    substances = models.ManyToManyField(Substance)
 
     # champs présents dans le CSV mais inutilisés
     # stingsbs = models.IntegerField()

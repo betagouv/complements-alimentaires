@@ -37,7 +37,7 @@ class Plant(CommonBaseIngredient):
 
     family = models.ForeignKey(Family, on_delete=models.DO_NOTHING, verbose_name="famille de plante")
     useful_parts = models.ManyToManyField(PlantPart)
-    substance = models.ManyToManyField(Substance)
+    substances = models.ManyToManyField(Substance)
 
     # champs présents dans le CSV mais inutilisés
     # fctingr = models.IntegerField()
