@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-100">
+  <div class="bg-blue-france-975">
     <div class="fr-container p-6 py-6 sm:py-10 md:py-16 grid grid-cols-12">
       <div class="col-span-12 md:col-span-8 lg:col-span-5">
         <h1>Tester ma composition de compléments alimentaires</h1>
