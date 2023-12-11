@@ -1,6 +1,6 @@
 from django.db import models
 
-from .common_base_ingredient import CommonBaseIngredient
+from .abstract_models import CommonBaseIngredient, CommonBaseModel
 from .substance import Substance
 
 
@@ -20,15 +20,8 @@ class Ingredient(CommonBaseIngredient):
     # description_en = models.CharField(max_length=1000, blank=True)
 
 
-class IngredientSynonym(models.Model):
+class IngredientSynonym(CommonBaseModel):
     class Meta:
         verbose_name = "synonyme d'ingrédient"
 
-    creation_date = models.DateTimeField(auto_now_add=True)
-    modification_date = models.DateTimeField(auto_now=True)
-    name = models.TextField(verbose_name="nom")
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-
-    # champs présents dans le CSV mais inutilisés
-    # ordre = models.IntegerField()
-    # obsolet = models.BooleanField()

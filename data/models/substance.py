@@ -1,6 +1,6 @@
 from django.db import models
 
-from .common_base_ingredient import CommonBaseIngredient
+from .abstract_models import CommonBaseIngredient, CommonBaseModel
 
 
 class Substance(CommonBaseIngredient):
@@ -30,16 +30,12 @@ class Substance(CommonBaseIngredient):
     # source_en = models.TextField(blank=True)
 
 
-class SubstanceSynonym(models.Model):
+class SubstanceSynonym(CommonBaseModel):
     class Meta:
         verbose_name = "synonyme substance active"
 
-    creation_date = models.DateTimeField(auto_now_add=True)
-    modification_date = models.DateTimeField(auto_now=True)
-    name = models.TextField()
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
 
     # champs présents dans le CSV mais inutilisés
     # ordre = models.IntegerField()
-    # obsolet = models.BooleanField()
     # TSYN -> est-ce que ça donne l'ordre d'affichage des synonymes ?
