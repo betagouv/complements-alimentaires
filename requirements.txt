@@ -12,7 +12,7 @@ distlib==0.3.7
 Django==4.2.7
 django-anymail==10.2
 django-ckeditor==6.7.0
-django-filter==23.4
+django-filter==23.5
 django-js-asset==2.1.0
 django-simple-history==3.4.0
 django-webpack-loader==2.0.1
