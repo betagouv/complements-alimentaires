@@ -14,7 +14,7 @@
     "@vuelidate/validators": "^2.0.4",
     "core-js": "^3.34.0",
     "oh-vue-icons": "^1.0.0-rc3",
-    "vue": "^3.3.9",
+    "vue": "^3.3.11",
     "vue-router": "^4.2.5",
     "vuex": "^4.1.0",
     "webpack-bundle-tracker": "^2.0.1"
