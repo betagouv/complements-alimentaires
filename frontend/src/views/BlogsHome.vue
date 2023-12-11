@@ -116,6 +116,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Affichage des deux premières lignes du corps de l'article */
 div >>> .fr-card__desc {
   overflow: hidden;
   display: -webkit-box;
