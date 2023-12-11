@@ -1,27 +1,43 @@
 from django.db import models
-from simple_history.models import HistoricalRecords
-from .approvalstate import LegacyApprovalState
+
+from .common_base_ingredient import CommonBaseIngredient
 
 
-class Substance(models.Model):
+class Substance(CommonBaseIngredient):
     class Meta:
         verbose_name = "substance active"
+        verbose_name_plural = "substances actives"
+
+    cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS")
+    einec_number = models.CharField(
+        max_length=7,
+        blank=True,
+        verbose_name="numéro EINECS",
+    )
+    source = models.TextField(blank=True)
+    must_specify_quantity = models.BooleanField()
+    min_quantity = models.FloatField(blank=True, verbose_name="quantité minimale autorisée")  # jamais remplie
+    max_quantity = models.FloatField(blank=True, verbose_name="quantité maximale autorisée")
+    nutritional_reference = models.FloatField(
+        blank=True, verbose_name="apport nutritionnel conseillé"
+    )  # cette colonne devrat être associée à une unité
+
+    # champs présents dans le CSV mais inutilisés
+    # fctingr = models.IntegerField()
+    # stingsbs = models.IntegerField()
+    # source_en = models.TextField(blank=True)
+
+
+class SubstanceSynonym(models.Model):
+    class Meta:
+        verbose_name = "synonyme substance active"
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    history = HistoricalRecords()
+    name = models.TextField()
+    substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
 
-    # Legacy fields
-    legacy_sbsact_name = models.TextField(null=True, blank=True, verbose_name="(Legacy) Nom SBSACT")
-    legacy_synonym = models.TextField(null=True, blank=True, verbose_name="(Legacy) Nom synonyme")
-    legacy_type = models.TextField(null=True, blank=True, verbose_name="(Legacy) Type")
-    legacy_approval_state = models.CharField(
-        max_length=255,
-        choices=LegacyApprovalState.choices,
-        null=True,
-        blank=True,
-        verbose_name="(Legacy) Status d'approbation",
-    )
-    legacy_public_comments = models.TextField(null=True, blank=True, verbose_name="(Legacy) Commentaires publics")
-    legacy_private_comments = models.TextField(null=True, blank=True, verbose_name="(Legacy) Commentaires privés")
-    legacy_source = models.TextField(null=True, blank=True, verbose_name="(Legacy) Substance source")
+    # champs présents dans le CSV mais inutilisés
+    # ordre = models.IntegerField()
+    # obsolet = models.BooleanField()
+    # TSYN -> est-ce que ça donne l'ordre d'affichage des synonymes ?

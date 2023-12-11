@@ -5,7 +5,7 @@
     <DeclarationBlock />
   </div>
 
-  <div class="bg-slate-100">
+  <div class="bg-blue-france-975">
     <div class="fr-container p-6 md:p-10">
       <NewsletterBlock />
     </div>
