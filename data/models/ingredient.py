@@ -26,7 +26,7 @@ class IngredientSynonym(models.Model):
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    name = models.TextField(blank=True, verbose_name="nom")
+    name = models.TextField(verbose_name="nom")
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
 
     # champs présents dans le CSV mais inutilisés

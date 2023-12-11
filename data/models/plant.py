@@ -35,7 +35,7 @@ class Plant(CommonBaseIngredient):
     class Meta:
         verbose_name = "plante"
 
-    family = models.ForeignKey(Family, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante")
+    family = models.ForeignKey(Family, on_delete=models.DO_NOTHING, verbose_name="famille de plante")
     useful_parts = models.ManyToManyField(PlantPart)
     substance = models.ManyToManyField(Substance)
 
