@@ -13,13 +13,13 @@ class IngredientFactory(factory.django.DjangoModelFactory):
     description = factory.Faker("text", max_nb_chars=160)
 
     @factory.post_generation
-    def substance(self, created, extracted, **kwargs):
+    def substances(self, created, extracted, **kwargs):
         if created:
             for _ in range(random.randint(1, 4)):
-                self.substance.add(SubstanceFactory.create())
+                self.substances.add(SubstanceFactory.create())
         elif extracted:
             for substance in extracted:
-                self.substance.add(substance)
+                self.substances.add(substance)
 
 
 class IngredientSynonymFactory(factory.django.DjangoModelFactory):

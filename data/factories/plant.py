@@ -29,13 +29,13 @@ class PlantFactory(factory.django.DjangoModelFactory):
     family = factory.SubFactory(FamilyFactory)
 
     @factory.post_generation
-    def substance(self, created, extracted, **kwargs):
+    def substances(self, created, extracted, **kwargs):
         if created:
             for _ in range(random.randint(1, 4)):
-                self.substance.add(SubstanceFactory.create())
+                self.substances.add(SubstanceFactory.create())
         elif extracted:
             for substance in extracted:
-                self.substance.add(substance)
+                self.substances.add(substance)
 
     @factory.post_generation
     def useful_parts(self, created, extracted, **kwargs):
