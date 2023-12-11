@@ -9,7 +9,7 @@ class Microorganism(CommonBaseIngredient):
         verbose_name = "micro-organisme"
 
     genre = models.TextField(verbose_name="genre de micro-organisme")
-    substance = models.ManyToManyField(Substance)
+    substances = models.ManyToManyField(Substance)
 
     # champs présents dans le CSV mais inutilisés
     # fctingr = models.IntegerField()

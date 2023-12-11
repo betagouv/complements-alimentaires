@@ -15,11 +15,13 @@ class Substance(CommonBaseIngredient):
         verbose_name="numéro EINECS",
     )
     source = models.TextField(blank=True)
-    must_specify_quantity = models.BooleanField()
-    min_quantity = models.FloatField(blank=True, verbose_name="quantité minimale autorisée")  # jamais remplie
-    max_quantity = models.FloatField(blank=True, verbose_name="quantité maximale autorisée")
+    must_specify_quantity = models.BooleanField(default=False)
+    min_quantity = models.FloatField(
+        null=True, blank=True, verbose_name="quantité minimale autorisée"
+    )  # jamais remplie
+    max_quantity = models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée")
     nutritional_reference = models.FloatField(
-        blank=True, verbose_name="apport nutritionnel conseillé"
+        null=True, blank=True, verbose_name="apport nutritionnel conseillé"
     )  # cette colonne devrat être associée à une unité
 
     # champs présents dans le CSV mais inutilisés
