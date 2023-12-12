@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class SearchView(APIView):
     serializer_class = SearchResultSerializer
-    default_limit = 12
+    default_pagination_limit = 12
     search_rank_threshold = 0.1
 
     def post(self, request, *args, **kwargs):
@@ -61,6 +61,7 @@ class SearchView(APIView):
     def get_substances(self, query):
         vector = (
             SearchVector("cas_number", weight="A")
+            + SearchVector("einec_number", weight="A")
             + SearchVector("name", weight="A")
             + SearchVector("name_en", weight="B")
         )
@@ -73,7 +74,7 @@ class SearchView(APIView):
         return json.loads(camelized.decode("utf-8"))
 
     def paginate_results(self, results, view=None):
-        self.limit = self.request.data.get("limit") or self.default_limit
+        self.limit = self.request.data.get("limit") or self.default_pagination_limit
         self.count = len(results)
         self.offset = self.request.data.get("offset") or 0
 

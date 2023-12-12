@@ -91,3 +91,50 @@ class TestSearch(APITestCase):
         self.assertEqual(results[0]["id"], ingredient_name.id)
         self.assertEqual(results[1]["id"], ingredient_name_en.id)
         self.assertEqual(results[2]["id"], ingredient_description.id)
+
+    def test_plant_field_priorities(self):
+        """
+        The weighting of certain fields yields different scores. For example,
+        a plant `name` has a higher search priority than its `name_en`
+        """
+        plant_name_en = PlantFactory(name_en="matcha")
+        plant_name = PlantFactory(name="matcha")
+
+        search_term = "matcha"
+        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        results = response.json().get("results", [])
+
+        self.assertEqual(results[0]["id"], plant_name.id)
+        self.assertEqual(results[1]["id"], plant_name_en.id)
+
+    def test_microorganism_field_priorities(self):
+        """
+        The weighting of certain fields yields different scores. For example,
+        a microorganism `name` has a higher search priority than its `name_en`
+        """
+        microorganism_name_en = MicroorganismFactory(name_en="matcha")
+        microorganism_name = MicroorganismFactory(name="matcha")
+
+        search_term = "matcha"
+        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        results = response.json().get("results", [])
+
+        self.assertEqual(results[0]["id"], microorganism_name.id)
+        self.assertEqual(results[1]["id"], microorganism_name_en.id)
+
+    def test_substance_field_priorities(self):
+        """
+        The weighting of certain fields yields different scores. For example,
+        a substance `name`, `cas_number` and `einec_number` have a higher search
+        priority than its `name_en`
+        """
+        substance_name_en = SubstanceFactory(name_en="matcha")
+        SubstanceFactory(name="matcha")
+        SubstanceFactory(cas_number="matcha")
+        SubstanceFactory(einec_number="matcha")
+
+        search_term = "matcha"
+        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        results = response.json().get("results", [])
+
+        self.assertEqual(results[3]["id"], substance_name_en.id)
