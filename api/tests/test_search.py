@@ -16,7 +16,7 @@ class TestSearch(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json().get("results", [])
 
-        returned_ids = map(lambda x: x["id"], results)
+        returned_ids = [result.get("id") for result in results]
         self.assertNotIn(vanille.id, returned_ids)
         self.assertIn(eucalyptus_1.id, returned_ids)
         self.assertIn(eucalyptus_2.id, returned_ids)
