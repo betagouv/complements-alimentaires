@@ -19,6 +19,13 @@ class TestSearch(APITestCase):
         response = self.client.post(f"{reverse('search')}", {"search": "ab"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_max_limit(self):
+        """
+        The pagination limit must not be exceeded
+        """
+        response = self.client.post(f"{reverse('search')}", {"search": "abc", "limit": 49})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_search_name(self):
         """
         Simple single-class name test
@@ -138,3 +145,23 @@ class TestSearch(APITestCase):
         results = response.json().get("results", [])
 
         self.assertEqual(results[3]["id"], substance_name_en.id)
+
+    def test_pagination(self):
+        """
+        Pagination is controlled by parameters `limit` and `offset`
+        """
+        for i in range(9):
+            PlantFactory.create(name="matcha")
+
+        search_term = "matcha"
+
+        response_page_1 = self.client.post(f"{reverse('search')}", {"search": search_term, "limit": 5, "offset": 0})
+        page_1_ids = [result["id"] for result in response_page_1.json().get("results", [])]
+        self.assertEqual(len(page_1_ids), 5)
+
+        response_page_2 = self.client.post(f"{reverse('search')}", {"search": search_term, "limit": 5, "offset": 5})
+        page_2_ids = [result["id"] for result in response_page_2.json().get("results", [])]
+        self.assertEqual(len(page_2_ids), 4)
+
+        for id in page_1_ids:
+            self.assertNotIn(id, page_2_ids)

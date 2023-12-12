@@ -15,17 +15,21 @@ logger = logging.getLogger(__name__)
 class SearchView(APIView):
     serializer_class = SearchResultSerializer
     default_pagination_limit = 12
+    max_pagination_limit = 48
     search_rank_threshold = 0.1
+    min_query_length = 3
 
     def post(self, request, *args, **kwargs):
         search_term = request.data.get("search")
-        if not search_term or len(search_term) < 3:
-            raise BadRequest()
+        if not search_term or len(search_term) < self.min_query_length:
+            raise BadRequest(f"Le terme de recherche doit être supérieur à {self.min_query_length}")
+        if int(self.request.data.get("limit", 0)) > self.max_pagination_limit:
+            raise BadRequest(f"La limite de pagination excède {self.max_pagination_limit}")
 
         results = self.get_sorted_objects(search_term)
-        serialized_data = self.serialize_results(results)
-        paginated_results = self.paginate_results(serialized_data)
-        return self.get_paginated_response(paginated_results)
+        paginated_results = self.paginate_results(results)
+        serialized_data = self.serialize_results(paginated_results)
+        return self.get_paginated_response(serialized_data)
 
     def get_sorted_objects(self, search_term):
         query = SearchQuery(search_term)
@@ -74,9 +78,9 @@ class SearchView(APIView):
         return json.loads(camelized.decode("utf-8"))
 
     def paginate_results(self, results, view=None):
-        self.limit = self.request.data.get("limit") or self.default_pagination_limit
+        self.limit = int(self.request.data.get("limit", self.default_pagination_limit))
         self.count = len(results)
-        self.offset = self.request.data.get("offset") or 0
+        self.offset = int(self.request.data.get("offset", 0))
 
         if self.count == 0 or self.offset > self.count:
             return []
