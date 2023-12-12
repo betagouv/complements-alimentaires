@@ -15,10 +15,11 @@ logger = logging.getLogger(__name__)
 class SearchView(APIView):
     serializer_class = SearchResultSerializer
     default_limit = 12
+    search_rank_threshold = 0.1
 
     def post(self, request, *args, **kwargs):
         search_term = request.data.get("search")
-        if not search_term:
+        if not search_term or len(search_term) < 3:
             raise BadRequest()
 
         results = self.get_sorted_objects(search_term)
@@ -28,40 +29,43 @@ class SearchView(APIView):
 
     def get_sorted_objects(self, search_term):
         query = SearchQuery(search_term)
-        min_rank = 0.2
-        plant_vector = SearchVector("name", weight="A") + SearchVector("name_en", weight="B")
-        microorganism_vector = SearchVector("name", weight="A") + SearchVector("name_en", weight="B")
-        ingredient_vector = (
+
+        plants = self.get_plants(query)
+        microorganisms = self.get_microorganisms(query)
+        ingredients = self.get_ingredients(query)
+        substances = self.get_substances(query)
+
+        results = plants + microorganisms + ingredients + substances
+        results.sort(key=lambda x: x.rank, reverse=True)
+        return results
+
+    def get_plants(self, query):
+        vector = SearchVector("name", weight="A") + SearchVector("name_en", weight="B")
+        plants = Plant.objects.annotate(rank=SearchRank(vector, query))
+        return list(plants.filter(rank__gte=self.search_rank_threshold).all())
+
+    def get_microorganisms(self, query):
+        vector = SearchVector("name", weight="A") + SearchVector("name_en", weight="B")
+        microorganisms = Microorganism.objects.annotate(rank=SearchRank(vector, query))
+        return list(microorganisms.filter(rank__gte=self.search_rank_threshold).all())
+
+    def get_ingredients(self, query):
+        vector = (
             SearchVector("name", weight="A")
             + SearchVector("name_en", weight="B")
             + SearchVector("description", weight="C")
         )
-        substance_vector = (
+        ingredients = Ingredient.objects.annotate(rank=SearchRank(vector, query))
+        return list(ingredients.filter(rank__gte=self.search_rank_threshold).all())
+
+    def get_substances(self, query):
+        vector = (
             SearchVector("cas_number", weight="A")
             + SearchVector("name", weight="A")
             + SearchVector("name_en", weight="B")
         )
-
-        plants = Plant.objects.annotate(rank=SearchRank(plant_vector, query)).filter(rank__gte=min_rank).all()
-        microorganisms = (
-            Microorganism.objects.annotate(rank=SearchRank(microorganism_vector, query))
-            .filter(rank__gte=min_rank)
-            .all()
-        )
-        ingredients = (
-            Ingredient.objects.annotate(rank=SearchRank(ingredient_vector, query)).filter(rank__gte=min_rank).all()
-        )
-        substance = (
-            Substance.objects.annotate(rank=SearchRank(substance_vector, query)).filter(rank__gte=min_rank).all()
-        )
-
-        results = list(plants) + list(microorganisms) + list(ingredients) + list(substance)
-
-        def sortKey(val):
-            return val.rank
-
-        results.sort(key=sortKey)
-        return results
+        substance = Substance.objects.annotate(rank=SearchRank(vector, query))
+        return list(substance.filter(rank__gte=self.search_rank_threshold).all())
 
     def serialize_results(self, results):
         serialized_results = self.serializer_class(results, many=True).data
