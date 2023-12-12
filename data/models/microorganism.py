@@ -8,6 +8,7 @@ class Microorganism(CommonBaseIngredient):
     class Meta:
         verbose_name = "micro-organisme"
 
+    name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     genre = models.TextField(verbose_name="genre de micro-organisme")
     substances = models.ManyToManyField(Substance)
 
@@ -20,7 +21,4 @@ class MicroorganismSynonym(CommonBaseModel):
     class Meta:
         verbose_name = "synonyme de micro-organisme"
 
-    microorganism = models.ForeignKey(Microorganism, on_delete=models.CASCADE)
-
-    # champs présents dans le CSV mais inutilisés
-    # ordre = models.IntegerField()
+    standard_name = models.ForeignKey(Microorganism, on_delete=models.CASCADE)

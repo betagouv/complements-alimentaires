@@ -12,6 +12,8 @@ from .models.substance import Substance, SubstanceSynonym
 
 
 # TODO : mettre en place des tests avec des fichiers dummy
+# TODO : renseigner l'update dans l'historique de chaque objet
+# TODO : lors de l'import d'un fichier CSV correspondant à un modèle, il faudrait forcer le fait d'importer aussi ses relations
 
 logger = logging.getLogger(__name__)
 
@@ -27,10 +29,12 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_SUBSTANCE_ACTIVE_SYNONYME.csv": SubstanceSynonym,
     "POPULATION.CSV": Population,
     # 'OBJECTIF.CSV': 'objectif',
+    # Les csv avec les relations ManyToMany
     # 'REF_ICA_AUTREING_SUBSTACTIVE.csv': 'autreing_substactive',
     # 'REF_ICA_PLANTE_SUBSTANCE.csv': 'plante_substance',
     # 'REF_ICA_PARTIE_PL_A_SURVEILLER.csv': 'partie_pl_a_surveiller',
-    # 'REF_ICA_PARTIE_UTILE.csv': 'partie_utile',
+    # 'REF_ICA_PARTIE_UTILE.csv': 'partie_utile'
+    # TODO : récupérer le fichier pour PlantFamily
 }
 
 # Établi le préfix des champs du csv
@@ -47,6 +51,7 @@ CSV_TO_TABLE_PREFIX_MAPPING = {
 
 # Établi les suffix des champ des csv correspondant aux champs des modèles Django
 DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
+    # Les champs simples
     "name": "LIBELLE",
     "name_en": "LIBELLE_EN",
     "is_obsolete": "OBSOLET",
@@ -61,13 +66,13 @@ DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
     "min_quantity": "QTE_MIN",
     "max_quantity": "QTE_MAX",
     "nutritional_reference": "APPORT_REF",
+    "genre": "GENRE",
+    # Les champs ForeignKey (synonymes)
+    "standard_name": ["SBSACT_IDENT", "PLTE_IDENT", "INGA_IDENT"],
+    "family": "FAMPL_IDENT",
+    # Les champs ManyToMany
     # substances
-    # ingredient
-    # family
     # useful_parts
-    # plant
-    # genre
-    # microorganism
 }
 
 

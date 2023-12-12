@@ -14,7 +14,7 @@ class CommonBaseModel(models.Model):
     modification_date = models.DateTimeField(auto_now=True)
     name = models.TextField(verbose_name="nom")
     is_obsolete = models.BooleanField(verbose_name="objet obsolète", default=False)
-    history = HistoricalRecords()
+    history = HistoricalRecords(inherit=True)
     # ordre = models.IntegerField()
 
     def __str__(self):
@@ -25,7 +25,6 @@ class CommonBaseIngredient(CommonBaseModel):
     class Meta:
         abstract = True
 
-    name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     public_comments = models.TextField(blank=True, verbose_name="commentaires publics")
     private_comments = models.TextField(blank=True, verbose_name="commentaires privés")
 

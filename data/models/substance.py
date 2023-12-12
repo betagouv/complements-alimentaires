@@ -8,6 +8,7 @@ class Substance(CommonBaseIngredient):
         verbose_name = "substance active"
         verbose_name_plural = "substances actives"
 
+    name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS")
     einec_number = models.CharField(
         max_length=7,
@@ -35,7 +36,4 @@ class SubstanceSynonym(CommonBaseModel):
         verbose_name = "synonyme substance active"
 
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
-
-    # champs présents dans le CSV mais inutilisés
-    # ordre = models.IntegerField()
-    # TSYN -> est-ce que ça donne l'ordre d'affichage des synonymes ?
+    # TODO importer aussi les synonym_type = TSYNSBSTA_IDENT en ForeignKeys

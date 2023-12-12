@@ -4,9 +4,10 @@ from .abstract_models import CommonBaseIngredient, CommonBaseModel
 from .substance import Substance
 
 
-class Family(CommonBaseModel):
+class PlantFamily(CommonBaseModel):
     class Meta:
         verbose_name = "famille de plantes"
+        verbose_name_plural = "familles de plantes"
 
     name_en = models.TextField(blank=True, verbose_name="nom en anglais")
 
@@ -22,7 +23,7 @@ class Plant(CommonBaseIngredient):
     class Meta:
         verbose_name = "plante"
 
-    family = models.ForeignKey(Family, on_delete=models.DO_NOTHING, verbose_name="famille de plante")
+    family = models.ForeignKey(PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante")
     useful_parts = models.ManyToManyField(PlantPart)
     substances = models.ManyToManyField(Substance)
 
@@ -36,4 +37,5 @@ class PlantSynonym(CommonBaseModel):
     class Meta:
         verbose_name = "synonyme de plante"
 
-    plant = models.ForeignKey(Plant, on_delete=models.CASCADE, verbose_name="nom de référence")
+    standard_name = models.ForeignKey(Plant, on_delete=models.CASCADE, verbose_name="nom de référence")
+    # TODO importer aussi les synonym_type = TYSYN_IDENT en ForeignKeys

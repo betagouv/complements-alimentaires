@@ -1,6 +1,6 @@
 import random
 import factory
-from data.models import Plant, PlantSynonym, PlantPart, Family
+from data.models import Plant, PlantSynonym, PlantPart, PlantFamily
 from data.factories import SubstanceFactory
 
 
@@ -12,9 +12,9 @@ class PlantPartFactory(factory.django.DjangoModelFactory):
     name_en = factory.Faker("text", max_nb_chars=10)
 
 
-class FamilyFactory(factory.django.DjangoModelFactory):
+class PlantFamilyFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = Family
+        model = PlantFamily
 
     name = factory.Faker("text", max_nb_chars=25)
     name_en = factory.Faker("text", max_nb_chars=25)
@@ -26,7 +26,7 @@ class PlantFactory(factory.django.DjangoModelFactory):
 
     name = factory.Faker("text", max_nb_chars=20)
     name_en = factory.Faker("text", max_nb_chars=20)
-    family = factory.SubFactory(FamilyFactory)
+    family = factory.SubFactory(PlantFamilyFactory)
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):
