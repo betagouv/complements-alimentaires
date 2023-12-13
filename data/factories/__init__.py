@@ -4,3 +4,4 @@ from .substance import SubstanceFactory  # noqa
 from .ingredient import IngredientFactory, IngredientSynonymFactory  # noqa
 from .microorganism import MicroorganismFactory, MicroorganismSynonymFactory  # noqa
 from .plant import PlantFactory, PlantPartFactory, PlantSynonymFactory, FamilyFactory  # noqa
+from .webinaire import WebinaireFactory  # noqa
