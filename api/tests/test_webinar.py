@@ -3,18 +3,18 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APITestCase
 from rest_framework import status
-from data.factories import WebinaireFactory
+from data.factories import WebinarFactory
 
 
-class TestWebinaireAPI(APITestCase):
+class TestWebinarAPI(APITestCase):
     def test_webinaire_format(self):
         """
         Test correct data returned by API
         """
         today = timezone.now()
-        WebinaireFactory.create(end_date=today)
+        WebinarFactory.create(end_date=today)
 
-        response = self.client.get(reverse("webinaire_list"))
+        response = self.client.get(reverse("webinar_list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
 
@@ -32,15 +32,15 @@ class TestWebinaireAPI(APITestCase):
         """
         today = timezone.now()
         # past community event
-        WebinaireFactory.create(end_date=(today - timedelta(days=1)))
+        WebinarFactory.create(end_date=(today - timedelta(days=1)))
 
         upcoming_webinaires = [
-            WebinaireFactory.create(start_date=(today + timedelta(days=9)), end_date=(today + timedelta(days=10))),
-            WebinaireFactory.create(start_date=today, end_date=(today + timedelta(hours=1))),
-            WebinaireFactory.create(start_date=(today + timedelta(days=8)), end_date=(today + timedelta(days=20))),
+            WebinarFactory.create(start_date=(today + timedelta(days=9)), end_date=(today + timedelta(days=10))),
+            WebinarFactory.create(start_date=today, end_date=(today + timedelta(hours=1))),
+            WebinarFactory.create(start_date=(today + timedelta(days=8)), end_date=(today + timedelta(days=20))),
         ]
 
-        response = self.client.get(reverse("webinaire_list"))
+        response = self.client.get(reverse("webinar_list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
 

@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from data.models import Webinaire
+from data.models import Webinar
 
 
-class WebinaireSerializer(serializers.ModelSerializer):
+class WebinarSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Webinaire
+        model = Webinar
         fields = (
             "id",
             "title",

@@ -2,8 +2,9 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 
-class Webinaire(models.Model):
+class Webinar(models.Model):
     class Meta:
+        verbose_name = "webinaire"
         ordering = ["start_date"]
 
     creation_date = models.DateTimeField(auto_now_add=True)

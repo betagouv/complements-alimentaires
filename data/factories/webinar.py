@@ -1,11 +1,11 @@
 import factory
-from data.models import Webinaire
+from data.models import Webinar
 import pytz
 
 
-class WebinaireFactory(factory.django.DjangoModelFactory):
+class WebinarFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = Webinaire
+        model = Webinar
 
     title = factory.Faker("catch_phrase")
     tagline = factory.Faker("paragraph")

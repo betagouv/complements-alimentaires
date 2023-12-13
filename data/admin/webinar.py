@@ -1,10 +1,10 @@
 from django import forms
 from django.contrib import admin
 from django.utils import timezone
-from data.models import Webinaire
+from data.models import Webinar
 
 
-class WebinaireForm(forms.ModelForm):
+class WebinarForm(forms.ModelForm):
     class Meta:
         widgets = {
             "title": forms.Textarea(attrs={"cols": 35, "rows": 1}),
@@ -49,9 +49,9 @@ class UpcomingEventsFilter(admin.SimpleListFilter):
             return queryset.filter(end_date__lte=timezone.now())
 
 
-@admin.register(Webinaire)
-class WebinaireAdmin(admin.ModelAdmin):
-    form = WebinaireForm
+@admin.register(Webinar)
+class WebinarAdmin(admin.ModelAdmin):
+    form = WebinarForm
     fields = (
         "title",
         "tagline",
