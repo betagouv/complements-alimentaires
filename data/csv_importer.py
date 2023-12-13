@@ -2,7 +2,7 @@ import csv
 import logging
 import os
 
-from django.db.models import ForeignKey
+from django.db.models import ForeignKey, TextField, CharField, FloatField, IntegerField
 
 
 # Import the model
@@ -132,9 +132,29 @@ def _create_django_fields_to_column_names_mapping(model, csv_fieldnames, csv_fil
     for field in django_fields:
         # le nom des colonnes contenant les clés étrangères ne sont pas préfixées par le nom de la table
         prefixed = False if isinstance(field, ForeignKey) else True
-        column_name = _get_column_name(field.name, csv_fieldnames, csv_filename, prefixed=prefixed)
-        django_fields_to_column_names[field] = column_name
+        try:
+            column_name = _get_column_name(field.name, csv_fieldnames, csv_filename, prefixed=prefixed)
+            django_fields_to_column_names[field] = column_name
+        except IndexError as e:
+            logger.warning(f"Ce champ n'existe pas dans le csv' : {e}")
     return django_fields_to_column_names
+
+
+def _clean_value(value, field):
+    if value == "NULL":
+        if isinstance(field, TextField) or isinstance(field, CharField):
+            return ""
+        else:
+            return None
+
+    if isinstance(field, FloatField) and isinstance(field, IntegerField):
+        try:
+            # la virgule est considérée dans son usage français des nombres décimaux
+            float_value = float(value.replace(",", "."))
+            return float_value
+        except ValueError:
+            return value
+    return value
 
 
 def _import_csv_to_model(csv_filepath, model):
@@ -154,11 +174,8 @@ def _import_csv_to_model(csv_filepath, model):
             for field, column_name in django_fields_to_column_names.items():
                 if not isinstance(field, ForeignKey):
                     # cas d'un champ simple avec une valeur
-                    try:
-                        value = row.get(column_name)
-                        object_definition[field.name] = value
-                    except IndexError as e:
-                        logger.warning(f"Ce champ n'existe pas dans le csv' : {e}")
+                    value = row.get(column_name)
+                    object_definition[field.name] = _clean_value(value, field)
                 else:
                     # cas d'un champ clé étrangère vers un autre modèle
                     foreign_key_id = row.get(column_name)
@@ -169,8 +186,8 @@ def _import_csv_to_model(csv_filepath, model):
                         logger.warning(f"Il n'y a pas de modèle défini pour cette table : {e}")
                     except linked_model.DoesNotExist as e:
                         logger.warning(f"Il n'y a pas d'objet existant pour cet id' : {e}")
-                        linked_obj_id, _ = linked_model.objects.get_or_create(name=foreign_key_id).id
-                        object_definition[field.name] = linked_obj_id
+                        linked_obj, _ = linked_model.objects.update_or_create(id=foreign_key_id, name=foreign_key_id)
+                        object_definition[field.name] = linked_obj
 
             logger.info(f"Import de {object_definition}")
             _ = model.objects.update_or_create(**object_definition)
@@ -190,5 +207,5 @@ def import_csv(csv_filepath):
             logger.error(f"Ce nom de fichier ne ressemble pas à ceux attendus :\n{e}")
             return
         logger.info(f"Import de {csv_filename} dans {model} en cours.")
-        nb_row, _ = _import_csv_to_model(csv_filepath=csv_filepath, model=model)
+        nb_row = _import_csv_to_model(csv_filepath=csv_filepath, model=model)
         logger.info(f"Import de {csv_filename} dans {model} terminé : {nb_row} objets importés.")
