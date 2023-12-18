@@ -9,7 +9,7 @@ click==8.1.7
 cryptography==41.0.7
 dill==0.3.7
 distlib==0.3.8
-Django==4.2.7
+Django==5.0
 django-anymail==10.2
 django-ckeditor==6.7.0
 django-filter==23.5
