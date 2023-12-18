@@ -11,7 +11,7 @@ class CommonBaseIngredient(models.Model):
     name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     public_comments = models.TextField(blank=True, verbose_name="commentaires publics")
     private_comments = models.TextField(blank=True, verbose_name="commentaires privés")
-    is_obsolete = models.BooleanField(verbose_name="ingrédient obsolète")
+    is_obsolete = models.BooleanField(verbose_name="ingrédient obsolète", default=False)
 
     # commentaire_public_en = models.TextField(blank=True)
     # commentaire_privé_en = models.TextField(blank=True)  # TODO : intégrer les quelques données ici
