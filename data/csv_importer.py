@@ -2,7 +2,7 @@ import csv
 import logging
 import os
 
-from django.db.models import ForeignKey, TextField, CharField, FloatField, IntegerField
+from django.db.models import ForeignKey, TextField, CharField, FloatField
 
 
 # Import the model
@@ -92,6 +92,22 @@ DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
 }
 
 
+def import_csv(csv_filepath):
+    csv_filename = os.path.basename(csv_filepath)
+    if not csv_filename.endswith(".csv"):
+        logger.error(f"'{csv_filename}' n'est pas un fichier csv.")
+        return
+    else:
+        try:
+            model = _get_model_from_csv_name(csv_filename)
+        except KeyError as e:
+            logger.error(f"Ce nom de fichier ne ressemble pas à ceux attendus : {e}")
+            return
+        logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} en cours.")
+        nb_row = _import_csv_to_model(csv_filepath=csv_filepath, model=model)
+        logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} terminé : {nb_row} objets importés.")
+
+
 def _get_model_from_csv_name(csv_filename):
     return CSV_TO_MODEL_MAPPING[csv_filename]
 
@@ -145,7 +161,7 @@ def _clean_value(value, field):
             return ""
         else:
             return None
-    if isinstance(field, FloatField) or isinstance(field, IntegerField):
+    if isinstance(field, FloatField):
         try:
             # la virgule est considérée dans son usage français des nombres décimaux
             float_value = float(value.replace(",", "."))
@@ -190,19 +206,3 @@ def _import_csv_to_model(csv_filepath, model):
             _ = model.objects.update_or_create(**object_definition)
             nb_success += 1
     return nb_success
-
-
-def import_csv(csv_filepath):
-    csv_filename = os.path.basename(csv_filepath)
-    if not csv_filename.endswith(".csv"):
-        logger.error(f"{csv_filename} n'est pas un fichier csv.")
-        return
-    else:
-        try:
-            model = _get_model_from_csv_name(csv_filename)
-        except KeyError as e:
-            logger.error(f"Ce nom de fichier ne ressemble pas à ceux attendus : {e}")
-            return
-        logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} en cours.")
-        nb_row = _import_csv_to_model(csv_filepath=csv_filepath, model=model)
-        logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} terminé : {nb_row} objets importés.")
