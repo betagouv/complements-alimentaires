@@ -7,13 +7,12 @@ from django.db.models import ForeignKey, TextField, CharField, FloatField, Integ
 
 # Import the model
 from .models.ingredient import Ingredient, IngredientSynonym
-from .models.microorganism import Microorganism  # , MicroorganismSynonym
+from .models.microorganism import Microorganism
 from .models.plant import Plant, PlantPart, PlantSynonym, PlantFamily
 from .models.population import Population
 from .models.substance import Substance, SubstanceSynonym
 
 
-# TODO : mettre en place des tests avec des fichiers dummy
 # TODO : renseigner l'update dans l'historique de chaque objet
 # TODO : lors de l'import d'un fichier CSV correspondant à un modèle, il faudrait forcer le fait d'importer aussi ses relations
 # TODO : prévoir l'import de fichiers différents provenant de World Flora par exemple
@@ -146,8 +145,7 @@ def _clean_value(value, field):
             return ""
         else:
             return None
-
-    if isinstance(field, FloatField) and isinstance(field, IntegerField):
+    if isinstance(field, FloatField) or isinstance(field, IntegerField):
         try:
             # la virgule est considérée dans son usage français des nombres décimaux
             float_value = float(value.replace(",", "."))
@@ -189,7 +187,6 @@ def _import_csv_to_model(csv_filepath, model):
                         linked_obj, _ = linked_model.objects.update_or_create(id=foreign_key_id, name=foreign_key_id)
                         object_definition[field.name] = linked_obj
 
-            logger.info(f"Import de {object_definition}")
             _ = model.objects.update_or_create(**object_definition)
             nb_success += 1
     return nb_success
@@ -204,8 +201,8 @@ def import_csv(csv_filepath):
         try:
             model = _get_model_from_csv_name(csv_filename)
         except KeyError as e:
-            logger.error(f"Ce nom de fichier ne ressemble pas à ceux attendus :\n{e}")
+            logger.error(f"Ce nom de fichier ne ressemble pas à ceux attendus : {e}")
             return
-        logger.info(f"Import de {csv_filename} dans {model} en cours.")
+        logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} en cours.")
         nb_row = _import_csv_to_model(csv_filepath=csv_filepath, model=model)
-        logger.info(f"Import de {csv_filename} dans {model} terminé : {nb_row} objets importés.")
+        logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} terminé : {nb_row} objets importés.")

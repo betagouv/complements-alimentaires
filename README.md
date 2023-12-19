@@ -143,3 +143,10 @@ Afin de pouvoir s'identifier dans le backoffice (sous /admin), il est nécessair
 ```
 python manage.py createsuperuser
 ```
+
+## Import de données dans les tables ingrédient
+
+Pour pouvoir tester l'application et le backoffice avec des données réelles, il est nécessaire d'importer des données. Pour cela :
+```
+python manage.py load_ingredients
+```

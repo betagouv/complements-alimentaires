@@ -1,0 +1,12 @@
+SBSACT_IDENT,STINGSBS_IDENT,TYSUBST_IDENT,UNT_IDENT,SBSACT_LIBELLE,SBSACT_LIBELLE_EN,SBSACT_COMMENTAIRE_PUBLIC,SBSACT_COMMENTAIRE_PUBLIC_EN,SBSACT_COMMENTAIRE_PRIVE,SBSACT_COMMENTAIRE_PRIVE_EN,SBSACT_NUMERO_CAS,SBSACT_SOURCE,SBSACT_SOURCE_EN,SBSACT_QUANTITE_ARENSEIGNER,SBSACT_QTE_MIN,SBSACT_QTE_MAX,SBSACT_NUM_EINECS,SBSACT_APPORT_REF,SBSACT_OBSOLET,SBSACT_ORDRE
+1,1,1,1,vitamine A,vitamin A,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,NULL,NULL,NULL,NULL,NULL,1,NULL,1000,NULL,800,0,NULL
+2,1,1,1,vitamine B12,NULL,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,NULL,"2,5",0,NULL
+3,1,1,1,vitamine B8,NULL,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,NULL,50,0,NULL
+4,1,1,1,vitamine B9,vitamin B9,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,NULL,NULL,NULL,1,NULL,500,NULL,200,0,NULL
+5,1,1,1,vitamine D,vitamin D,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,"suscipit at, pharetra vitae, orci. ",NULL,NULL,NULL,NULL,1,NULL,50,NULL,5,0,NULL
+6,1,1,1,vitamine K,Vitamin K,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,"Duis sapien nunc, commodo et,",NULL,NULL,NULL,NULL,1,NULL,NULL,NULL,75,0,NULL
+7,1,1,3,vitamine B1,NULL,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL," interdum suscipit, sollicitudin et, dolor. ",NULL,NULL,NULL,NULL,1,NULL,NULL,NULL,"1,1",0,NULL
+8,1,1,3,vitamine B2,NULL,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,Pellentesque habitant morbi ,NULL,NULL,NULL,NULL,1,NULL,NULL,NULL,"1,4",0,NULL
+9,1,1,3,vitamine B3,vitamin B3,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,tristique senectus ,NULL,NULL,NULL,NULL,1,NULL,450,NULL,16,0,NULL
+10,1,1,3,vitamine B5,NULL,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,et netus et malesuada fames ac turpis,NULL,NULL,NULL,NULL,1,NULL,NULL,NULL,6,0,NULL
+11,1,1,3,vitamine B6,vitamin B6,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,NULL,NULL,NULL,1,NULL,"12,5",NULL,"1,4",0,NULL

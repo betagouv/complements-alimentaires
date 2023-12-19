@@ -1,0 +1,13 @@
+LIBELLE, AGE_MIN, AGE_MAX, CATEGORIE_ANSES,
+Population générale
+Nourrissons de moins de 6 mois,0,0.5,1
+Nourrissons de 6 mois et plus,0.5,1,1
+Enfants en bas âge de 1 à 3 ans,1,3,1
+Enfants de 4 à 10 ans,4,10,1
+Adolescents de 11 à 17 ans,11,17,1
+Hommes et femmes de 18 ans et plus,18,,1
+Femmes enceintes,18,,1
+Femmes allaitantes,18,,1
+Personnes âgées,,,0
+Homme,18,,0
+Femme,18,,0
