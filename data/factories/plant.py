@@ -25,7 +25,6 @@ class PlantFactory(factory.django.DjangoModelFactory):
         model = Plant
 
     name = factory.Faker("text", max_nb_chars=20)
-    name_en = factory.Faker("text", max_nb_chars=20)
     family = factory.SubFactory(PlantFamilyFactory)
 
     @factory.post_generation

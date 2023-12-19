@@ -99,21 +99,6 @@ class TestSearch(APITestCase):
         self.assertEqual(results[1]["id"], ingredient_name_en.id)
         self.assertEqual(results[2]["id"], ingredient_description.id)
 
-    def test_plant_field_priorities(self):
-        """
-        The weighting of certain fields yields different scores. For example,
-        a plant `name` has a higher search priority than its `name_en`
-        """
-        plant_name_en = PlantFactory(name_en="matcha")
-        plant_name = PlantFactory(name="matcha")
-
-        search_term = "matcha"
-        response = self.client.post(f"{reverse('search')}", {"search": search_term})
-        results = response.json().get("results", [])
-
-        self.assertEqual(results[0]["id"], plant_name.id)
-        self.assertEqual(results[1]["id"], plant_name_en.id)
-
     def test_microorganism_field_priorities(self):
         """
         The weighting of certain fields yields different scores. For example,
