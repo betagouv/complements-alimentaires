@@ -1,7 +1,7 @@
 {% extends 'email_base.html' %}
 
 {% block content %}
-    <p>Pour confirmer l'adresse email de votre compte ma cantine, il suffit de cliquer sur ce bouton :</p>
+    <p>Pour confirmer l'adresse email de votre compte Compléments Alimentaires, il suffit de cliquer sur ce bouton :</p>
 
     <div class="cta">
         <a href="{{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}">
