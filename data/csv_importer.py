@@ -2,7 +2,7 @@ import csv
 import logging
 import os
 
-from django.db.models import ForeignKey, TextField, CharField, FloatField
+from django.db.models import ForeignKey, TextField, CharField, FloatField, IntegerField
 
 
 # Import the model
@@ -24,7 +24,7 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": IngredientSynonym,
     "REF_ICA_PLANTE_SYNONYME.csv": PlantSynonym,
     "REF_ICA_SUBSTANCE_ACTIVE_SYNONYME.csv": SubstanceSynonym,
-    "POPULATION.CSV": Population,
+    "POPULATION.csv": Population,
     # 'OBJECTIF.CSV': Objectif,
     # 'FICHIERA_RECUPERER.CSV': PlantFamily,
     # Les csv avec les relations ManyToMany
@@ -44,6 +44,7 @@ CSV_TO_TABLE_PREFIX_MAPPING = {
     "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": "SYNAO",
     "REF_ICA_PLANTE_SYNONYME.csv": "SYNPLA",
     "REF_ICA_SUBSTANCE_ACTIVE_SYNONYME.csv": "SYNSBSTA",
+    "POPULATION.csv": "",
     # "FAMPL"
 }
 
@@ -77,6 +78,9 @@ DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
     "max_quantity": ["QTE_MAX"],
     "nutritional_reference": ["APPORT_REF"],
     "genre": ["GENRE"],
+    "min_age": ["AGE_MIN"],
+    "max_age": ["AGE_MAX"],
+    "is_defined_by_anses": ["CATEGORIE_ANSES"],
     # Les champs ForeignKey (synonymes)
     "standard_name": ["SBSACT_IDENT", "PLTE_IDENT", "INGA_IDENT"],
     "family": ["FAMPL_IDENT"],
@@ -153,8 +157,11 @@ def _get_column_name(field_name, csv_fields_in_header, csv_filename, prefixed=Tr
     if prefixed:
         prefix = CSV_TO_TABLE_PREFIX_MAPPING[csv_filename]
         csv_field_names = [f"{prefix}_{csv_field_name}" for csv_field_name in csv_field_names]
-
-    csv_field_name = list(set(csv_field_names) & set(csv_fields_in_header))[0]
+        csv_field_names = [name.removeprefix("_") for name in csv_field_names]
+    try:
+        csv_field_name = list(set(csv_field_names) & set(csv_fields_in_header))[0]
+    except IndexError:
+        raise NameError(f"{csv_field_names} n'est pas disponible.")
     return csv_field_name
 
 
@@ -183,7 +190,7 @@ def _create_django_fields_to_column_names_mapping(model, csv_fieldnames, csv_fil
         try:
             column_name = _get_column_name(field.name, csv_fieldnames, csv_filename, prefixed=prefixed)
             django_fields_to_column_names[field] = column_name
-        except IndexError as e:
+        except NameError as e:
             logger.warning(f"Ce champ n'existe pas dans le csv' : {e}")
     return django_fields_to_column_names
 
@@ -194,11 +201,17 @@ def _clean_value(value, field):
             return ""
         else:
             return None
-    if isinstance(field, FloatField):
+    elif isinstance(field, FloatField):
         try:
             # la virgule est considérée dans son usage français des nombres décimaux
             float_value = float(value.replace(",", "."))
             return float_value
         except ValueError:
+            if value == "":
+                return None
             return value
+    elif isinstance(field, IntegerField):
+        if value == "":
+            return None
+        return value
     return value
