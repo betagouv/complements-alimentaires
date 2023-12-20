@@ -1,1 +1,1 @@
-export { RiLogoutBoxRLine } from "oh-vue-icons/icons"
+export { RiLogoutBoxRLine, RiVideoChatLine } from "oh-vue-icons/icons"

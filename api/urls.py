@@ -7,7 +7,7 @@ urlpatterns = {
     path("blogPosts/<int:pk>", BlogPostView.as_view(), name="single_blog_post"),
     path("subscribeNewsletter/", SubscribeNewsletter.as_view(), name="subscribe_newsletter"),
     path("loggedUser/", LoggedUserView.as_view(), name="logged_user"),
-    path("webinaires/", WebinarView.as_view(), name="webinar_list"),
+    path("webinars/", WebinarView.as_view(), name="webinar_list"),
     path("search/", SearchView.as_view(), name="search"),
 }
 
