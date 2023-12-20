@@ -1,4 +1,4 @@
-name: Ma Cantine CI
+name: Compléments Alimentaires CI
 
 on: [push]
 
