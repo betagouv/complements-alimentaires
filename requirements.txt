@@ -1,6 +1,6 @@
 asgiref==3.7.2
-astroid==3.0.1
-black==23.11.0
+astroid==3.0.2
+black==23.12.0
 certifi==2023.11.17
 cffi==1.16.0
 cfgv==3.4.0
@@ -8,8 +8,8 @@ charset-normalizer==3.3.2
 click==8.1.7
 cryptography==41.0.7
 dill==0.3.7
-distlib==0.3.7
-Django==4.2.7
+distlib==0.3.8
+Django==5.0
 django-anymail==10.2
 django-ckeditor==6.7.0
 django-filter==23.5
@@ -36,7 +36,7 @@ platformdirs==3.11.0
 pre-commit==3.6.0
 psycopg2==2.9.9
 pycparser==2.21
-pylint==3.0.2
+pylint==3.0.3
 pylint-django==2.5.5
 pylint-plugin-utils==0.8.2
 python-dateutil==2.8.2
