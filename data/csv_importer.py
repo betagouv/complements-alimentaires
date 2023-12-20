@@ -102,8 +102,10 @@ def import_csv(csv_filepath):
             logger.error(f"Ce nom de fichier ne ressemble pas à ceux attendus : {e}")
             return
         logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} en cours.")
-        nb_row = _import_csv_to_model(csv_filepath=csv_filepath, model=model)
-        logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} terminé : {nb_row} objets importés.")
+        nb_row, nb_created = _import_csv_to_model(csv_filepath=csv_filepath, model=model)
+        logger.info(
+            f"Import de {csv_filename} dans le modèle {model.__name__} terminé : {nb_row} objets importés, {nb_created} objets créés."
+        )
 
 
 def _get_model_from_csv_name(csv_filename):
@@ -112,7 +114,8 @@ def _get_model_from_csv_name(csv_filename):
 
 def _import_csv_to_model(csv_filepath, model):
     csv_filename = os.path.basename(csv_filepath)
-    nb_success = 0
+    nb_line_in_success = 0
+    nb_line_created = 0
 
     with open(csv_filepath) as csv_file:
         csv_reader = csv.DictReader(csv_file, delimiter=",")
@@ -139,12 +142,19 @@ def _import_csv_to_model(csv_filepath, model):
                         logger.warning(f"Il n'y a pas de modèle défini pour cette table : {e}")
                     except linked_model.DoesNotExist as e:
                         logger.warning(f"Il n'y a pas d'objet existant pour cet id' : {e}")
-                        linked_obj, _ = linked_model.objects.update_or_create(id=foreign_key_id, name=foreign_key_id)
+                        linked_obj, _ = linked_model.objects.update_or_create(
+                            id=foreign_key_id, defaults={"name": foreign_key_id}
+                        )
                         object_definition[field.name] = linked_obj
 
-            _ = model.objects.update_or_create(**object_definition)
-            nb_success += 1
-    return nb_success
+            # all fields of the object are updated
+            primary_key = _get_primary_key_label(csv_filename)
+            object_with_history, created = model.objects.update_or_create(
+                id=row.get(primary_key), defaults=object_definition
+            )
+            nb_line_created += created
+            nb_line_in_success += 1
+    return nb_line_in_success, nb_line_created
 
 
 def _get_model_fields_to_complete(model):
@@ -176,6 +186,11 @@ def _get_linked_model(column_name):
         foreign_key_prefix = column_name.split("_")[0]
         model = PREFIX_TO_MODEL_MAPPINT[foreign_key_prefix]
         return model
+
+
+def _get_primary_key_label(csv_filename):
+    prefix = CSV_TO_TABLE_PREFIX_MAPPING[csv_filename]
+    return f"{prefix}_IDENT".removeprefix("_")
 
 
 def _create_django_fields_to_column_names_mapping(model, csv_fieldnames, csv_filename):
