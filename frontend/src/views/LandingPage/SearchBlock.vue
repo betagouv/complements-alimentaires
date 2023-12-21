@@ -30,6 +30,7 @@ const searchTerm = ref(null)
 const router = useRouter()
 
 const search = () => {
+  // TODO : Limit to more than 3 chars
   router.push(getRouteForTerm(searchTerm.value))
 }
 const getRouteForTerm = (term) => {

@@ -53,3 +53,8 @@ export const verifyResponse = (response) => {
 
   return hasJSON ? response.json() : response.text()
 }
+
+export const headers = {
+  "X-CSRFToken": window.CSRF_TOKEN || "",
+  "Content-Type": "application/json",
+}

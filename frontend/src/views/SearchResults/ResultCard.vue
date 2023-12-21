@@ -1,5 +1,42 @@
 <template>
-  <div class="fr-card"></div>
+  <div class="fr-card fr-enlarge-link">
+    <div class="fr-card__body">
+      <div class="fr-card__content">
+        <div class="fr-card__title" style="order: unset">
+          <a href="google.com" class="fr-card__link">{{ result.name }}</a>
+        </div>
+        <div class="mt-2">
+          <v-icon :name="icon" />
+          {{ type }}
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { computed } from "vue"
+
+const props = defineProps({
+  result: Object,
+})
+const icon = computed(() => {
+  // TODO: integrate webinar branch
+  const mapping = {
+    plant: "ri-plant-line",
+    microorganism: "ri-microscope-line",
+    ingredient: "ri-flask-line",
+    substance: "ri-test-tube-line",
+  }
+  return mapping[props.result.objectType] || null
+})
+const type = computed(() => {
+  const mapping = {
+    plant: "Plante",
+    microorganism: "Micro-organism",
+    ingredient: "Ingredient",
+    substance: "Substance",
+  }
+  return mapping[props.result.objectType] || null
+})
+</script>
