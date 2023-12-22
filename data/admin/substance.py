@@ -17,16 +17,32 @@ class SubstanceForm(forms.ModelForm):
 @admin.register(Substance)
 class SubstanceAdmin(admin.ModelAdmin):
     form = SubstanceForm
-    fields = (
-        "is_obsolete",
-        ("name", "name_en"),
-        "source",
-        ("public_comments", "private_comments"),
-        ("cas_number", "einec_number"),
-        "must_specify_quantity",
-        ("min_quantity", "max_quantity"),
-        "nutritional_reference",
-    )
+    fieldsets = [
+        (
+            None,  # Pas d'entête
+            {
+                "fields": ["name", "name_en", "is_obsolete", "source"],
+            },
+        ),
+        (
+            "Commentaires",
+            {
+                "fields": ["public_comments", "private_comments"],
+            },
+        ),
+        (
+            "Identifiants dans les répertoires de substances chimiques",
+            {
+                "fields": ["cas_number", "einec_number"],
+            },
+        ),
+        (
+            "Quantités",
+            {
+                "fields": ["must_specify_quantity", "min_quantity", "max_quantity", "nutritional_reference"],
+            },
+        ),
+    ]
 
     list_display = (
         "name",
