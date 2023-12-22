@@ -15,7 +15,7 @@ class Substance(CommonBaseIngredient):
         verbose_name="numéro EINECS",
     )
     source = models.TextField(blank=True)
-    must_specify_quantity = models.BooleanField(default=False)
+    must_specify_quantity = models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire")
     min_quantity = models.FloatField(
         null=True, blank=True, verbose_name="quantité minimale autorisée"
     )  # jamais remplie
