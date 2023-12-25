@@ -20,31 +20,15 @@ class UpcomingEventsFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
-            (None, "À venir"),
+            ("future", "À venir"),
             ("past", "Passé"),
-            ("all", "Tout"),
         )
-
-    # need to override choices otherwise django adds 'all' as the
-    # None value choice, whereas in this case None is 'À venir'
-    def choices(self, cl):
-        for lookup, title in self.lookup_choices:
-            yield {
-                "selected": self.value() == lookup,
-                "query_string": cl.get_query_string(
-                    {
-                        self.parameter_name: lookup,
-                    },
-                    [],
-                ),
-                "display": title,
-            }
 
     def queryset(self, request, queryset):
         if self.value() is None:
-            return queryset.filter(end_date__gt=timezone.now())
-        elif self.value() in ("all"):
             return queryset
+        elif self.value() in ("future"):
+            return queryset.filter(end_date__gt=timezone.now())
         elif self.value() in ("past"):
             return queryset.filter(end_date__lte=timezone.now())
 
