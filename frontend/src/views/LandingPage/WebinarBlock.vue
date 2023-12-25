@@ -1,5 +1,5 @@
 <template>
-  <div v-if="webinars">
+  <div v-if="webinars && webinars.length > 0">
     <h3>Webinaires à venir</h3>
     <p class="m-0">
       Expertes et experts du secteur partagent expériences et conseils pour développer vos produits et répondre à vos
