@@ -3,6 +3,7 @@ from django.contrib import admin
 from .user import UserAdmin  # noqa
 from .blogpost import BlogPostAdmin  # noqa
 from .substance import SubstanceAdmin  # noqa
+from .webinar import WebinarAdmin  # noqa
 
 from data.models import Ingredient, Plant, PlantPart, Family, Microorganism  # noqa
 
