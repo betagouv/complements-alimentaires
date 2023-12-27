@@ -1,32 +1,37 @@
 import random
 import factory
-from data.models import Plant, PlantSynonym, PlantPart, Family
+from data.models import Plant, PlantSynonym, PlantPart, PlantFamily
 from data.factories import SubstanceFactory
 
 
 class PlantPartFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = PlantPart
+        django_get_or_create = ("siccrf_id",)
 
     name = factory.Faker("text", max_nb_chars=10)
     name_en = factory.Faker("text", max_nb_chars=10)
+    siccrf_id = factory.Faker("random_int", min=1, max=20)
 
 
-class FamilyFactory(factory.django.DjangoModelFactory):
+class PlantFamilyFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = Family
+        model = PlantFamily
+        django_get_or_create = ("siccrf_id",)
 
     name = factory.Faker("text", max_nb_chars=25)
     name_en = factory.Faker("text", max_nb_chars=25)
+    siccrf_id = factory.Faker("random_int", min=1, max=20)
 
 
 class PlantFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Plant
+        django_get_or_create = ("siccrf_id",)
 
     name = factory.Faker("text", max_nb_chars=20)
-    name_en = factory.Faker("text", max_nb_chars=20)
-    family = factory.SubFactory(FamilyFactory)
+    siccrf_id = factory.Faker("random_int", min=1, max=2000)
+    family = factory.SubFactory(PlantFamilyFactory)
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):

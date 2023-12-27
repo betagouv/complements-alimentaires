@@ -1,0 +1,12 @@
+PLTE_IDENT,FAMPL_IDENT,FCTINGR_IDENT,STINGSBS_IDENT,PLTE_LIBELLE,PLTE_ORDRE,PLTE_OBSOLET,PLTE_COMMENTAIRE_PUBLIC,PLTE_COMMENTAIRE_PUBLIC_EN,PLTE_COMMENTAIRE_PRIVE,PLTE_COMMENTAIRE_PRIVE_EN,,
+1,1,1,1,Acanthus mollis L.,NULL,0,NULL,NULL,"In sem justo, commodo ut,",NULL,,
+2,1,1,1,Andrographis paniculata (Burm. f.) Nees,NULL,0,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,,
+3,1,1,1,Hygrophila auriculata (Schumach.) Heine,NULL,0,"suscipit at, pharetra vitae, orci. ",NULL,"suscipit at, pharetra vitae, orci. ",NULL,,
+4,1,1,1,Justicia adhatoda L.,NULL,0,"Duis sapien nunc, commodo et,",NULL,"Duis sapien nunc, commodo et,", plante entière à inscrire (Belfrit)  , liste B de la PF,NULL
+5,1,1,3,Justicia pectoralis Jacq.,NULL,0," interdum suscipit, sollicitudin et, dolor. ",NULL," interdum suscipit, sollicitudin et, dolor. ",NULL,,
+6,3,1,3,Acorus calamus L.,NULL,0,Pellentesque habitant morbi ,NULL,Pellentesque habitant morbi , liste B de la pharmacopée , Belgique : La portion journalière recommandée ne doit pas conduire à une ingestion de bêta-asarone supérieure à 115 µg et 2 µg/kg poids corporel. L'étiquetage doit comporter l’avertissement suivant : Ne pas utiliser en cas de grossesse.,NULL
+7,3,1,3,Acorus calamus L. var. americanus,NULL,0,tristique senectus ,NULL,tristique senectus ,NULL,,
+8,4,1,1,Actinidia chinensis Planch.,NULL,0,et netus et malesuada fames ac turpis,NULL,et netus et malesuada fames ac turpis, bourgeon à inscrire (Belfrit),NULL,
+9,4,1,1,Actinidia deliciosa (A.Chev.) C.F.Liang & A.R.Ferguson ,NULL,0,NULL,NULL,NULL, bourgeon à inscrire (Belfrit),NULL,
+10,6,1,1,Adoxa moschatellina L.,NULL,0,NULL,NULL,NULL,NULL,,
+11,6,1,1,Sambucus canadensis L.,NULL,0,NULL,NULL,NULL,NULL,,

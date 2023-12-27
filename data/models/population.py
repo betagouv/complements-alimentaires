@@ -1,25 +1,20 @@
 from django.db import models
 
+from .abstract_models import CommonBaseModel
 
-class Population(models.Model):
+
+class Population(CommonBaseModel):
     class Meta:
         verbose_name = "Population cible / à risque"
 
-    creation_date = models.DateTimeField(auto_now_add=True)
-    modification_date = models.DateTimeField(auto_now=True)
-    name = models.TextField()
-    name_en = models.TextField(blank=True)
-
-    # ces champs semblent inutilisés
-    # ordre = models.IntegerField()
-    # obsolet = models.BooleanField()
+    min_age = models.FloatField(blank=True, null=True, default=None)
+    max_age = models.FloatField(blank=True, null=True, default=None)
+    siccrf_id = models.IntegerField(blank=True, null=True, editable=False, db_index=True, unique=True)
+    is_defined_by_anses = models.BooleanField(default=False)
 
 
-class Condition(models.Model):
+class Condition(CommonBaseModel):
     class Meta:
         verbose_name = "condition de santé / facteurs de risque"
 
-    creation_date = models.DateTimeField(auto_now_add=True)
-    modification_date = models.DateTimeField(auto_now=True)
-    name = models.TextField()
     name_en = models.TextField(blank=True)

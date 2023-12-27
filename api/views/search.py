@@ -44,7 +44,7 @@ class SearchView(APIView):
         return results
 
     def get_plants(self, query):
-        vector = SearchVector("name", weight="A") + SearchVector("name_en", weight="B")
+        vector = SearchVector("name", weight="A")
         plants = Plant.objects.annotate(rank=SearchRank(vector, query))
         return list(plants.filter(rank__gte=self.search_rank_threshold).all())
 
