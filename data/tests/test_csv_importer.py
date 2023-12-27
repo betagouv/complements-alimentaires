@@ -1,9 +1,11 @@
 from django.test import TestCase
 from unittest.mock import patch
 
+from django.core.management import call_command
 from django.db.models import TextField, CharField, FloatField, IntegerField
 
 from data.csv_importer import import_csv, _clean_value
+from data.models import Plant, PlantFamily, PlantPart, Ingredient, Microorganism, Substance
 
 
 class CSVImporterTestCase(TestCase):
@@ -34,3 +36,32 @@ class CSVImporterTestCase(TestCase):
         self.assertEqual("", _clean_value("", TextField()))
         self.assertEqual("", _clean_value("NULL", TextField()))
         self.assertEqual("", _clean_value("NULL", CharField()))
+
+    def test_models_created(self):
+        path = "data/tests/files/test-model-creation-1/"
+        call_command("load_ingredients", directory=path)
+
+        self.assertTrue(Plant.objects.filter(siccrf_id=10).exists())
+        self.assertTrue(Plant.objects.filter(siccrf_id=11).exists())
+        self.assertEqual(len(Plant.objects.all()), 2)
+
+        self.assertTrue(PlantPart.objects.filter(siccrf_id=10).exists())
+        self.assertTrue(PlantPart.objects.filter(siccrf_id=20).exists())
+        self.assertTrue(PlantPart.objects.filter(siccrf_id=30).exists())
+        self.assertEqual(len(PlantPart.objects.all()), 3)
+
+        self.assertTrue(Ingredient.objects.filter(siccrf_id=10).exists())
+        self.assertTrue(Ingredient.objects.filter(siccrf_id=11).exists())
+        self.assertEqual(len(Ingredient.objects.all()), 2)
+
+        self.assertTrue(Microorganism.objects.filter(siccrf_id=10).exists())
+        self.assertEqual(len(Microorganism.objects.all()), 2)
+
+        self.assertTrue(Substance.objects.filter(siccrf_id=10).exists())
+        self.assertTrue(Substance.objects.filter(siccrf_id=11).exists())
+        self.assertEqual(len(Substance.objects.all()), 2)
+
+    def test_linked_models_created(self):
+        path = "data/tests/files/test-model-creation-1/"
+        call_command("load_ingredients", directory=path)
+        self.assertTrue(PlantFamily.objects.filter(siccrf_id=6).exists())
