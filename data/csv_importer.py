@@ -143,14 +143,14 @@ def _import_csv_to_model(csv_filepath, model):
                     except linked_model.DoesNotExist as e:
                         logger.warning(f"Il n'y a pas d'objet existant pour cet id' : {e}")
                         linked_obj, _ = linked_model.objects.update_or_create(
-                            id=foreign_key_id, defaults={"name": foreign_key_id}
+                            siccrf_id=foreign_key_id, defaults={"name": foreign_key_id}
                         )
                         object_definition[field.name] = linked_obj
 
             # all fields of the object are updated
             primary_key = _get_primary_key_label(csv_filename)
             object_with_history, created = model.objects.update_or_create(
-                id=row.get(primary_key), defaults=object_definition
+                siccrf_id=row.get(primary_key), defaults=object_definition
             )
             nb_line_created += created
             nb_line_in_success += 1
@@ -158,7 +158,7 @@ def _import_csv_to_model(csv_filepath, model):
 
 
 def _get_model_fields_to_complete(model):
-    automatically_filled = ["id", "creation_date", "modification_date"]
+    automatically_filled = ["id", "siccrf_id", "creation_date", "modification_date"]
     return [field for field in model._meta.fields if field.name not in automatically_filled]
 
 
