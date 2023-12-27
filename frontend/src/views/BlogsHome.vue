@@ -74,7 +74,7 @@ watch(page, updateRoute)
 // Blog posts
 const visibleBlogPosts = ref(null)
 const fetchCurrentPage = () => {
-  let url = `/api/v1/blogPosts/?limit=${limit}&offset=${offset.value}`
+  const url = `/api/v1/blogPosts/?limit=${limit}&offset=${offset.value}`
   return fetch(url)
     .then(verifyResponse)
     .then((response) => {

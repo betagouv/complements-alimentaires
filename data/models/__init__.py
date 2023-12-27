@@ -5,3 +5,4 @@ from .plant import Plant, PlantSynonym, PlantPart, PlantFamily  # noqa: F401
 from .substance import Substance  # noqa: F401
 from .population import Population  # noqa: F401
 from .blogpost import BlogPost  # noqa: F401
+from .webinar import Webinar  # noqa: F401
