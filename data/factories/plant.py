@@ -7,24 +7,30 @@ from data.factories import SubstanceFactory
 class PlantPartFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = PlantPart
+        django_get_or_create = ("siccrf_id",)
 
     name = factory.Faker("text", max_nb_chars=10)
     name_en = factory.Faker("text", max_nb_chars=10)
+    siccrf_id = factory.Faker("random_int", min=1, max=20)
 
 
 class PlantFamilyFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = PlantFamily
+        django_get_or_create = ("siccrf_id",)
 
     name = factory.Faker("text", max_nb_chars=25)
     name_en = factory.Faker("text", max_nb_chars=25)
+    siccrf_id = factory.Faker("random_int", min=1, max=20)
 
 
 class PlantFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Plant
+        django_get_or_create = ("siccrf_id",)
 
     name = factory.Faker("text", max_nb_chars=20)
+    siccrf_id = factory.Faker("random_int", min=1, max=2000)
     family = factory.SubFactory(PlantFamilyFactory)
 
     @factory.post_generation

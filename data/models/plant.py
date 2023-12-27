@@ -10,6 +10,7 @@ class PlantFamily(CommonBaseModel):
         verbose_name_plural = "familles de plantes"
 
     name_en = models.TextField(blank=True, verbose_name="nom en anglais")
+    siccrf_id = models.IntegerField(blank=True, null=True, editable=False, db_index=True, unique=True)
 
 
 class PlantPart(CommonBaseModel):
@@ -17,6 +18,7 @@ class PlantPart(CommonBaseModel):
         verbose_name = "partie de plante"
 
     name_en = models.TextField(blank=True, verbose_name="nom en anglais")
+    siccrf_id = models.IntegerField(blank=True, null=True, editable=False, db_index=True, unique=True)
 
 
 class Plant(CommonBaseIngredient):

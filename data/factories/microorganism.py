@@ -7,9 +7,11 @@ from data.factories import SubstanceFactory
 class MicroorganismFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Microorganism
+        django_get_or_create = ("siccrf_id",)
 
     name = factory.Faker("text", max_nb_chars=20)
     name_en = factory.Faker("text", max_nb_chars=20)
+    siccrf_id = factory.Faker("random_int", min=1, max=2000)
     genre = factory.Faker("text", max_nb_chars=20)
 
     @factory.post_generation

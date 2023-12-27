@@ -27,6 +27,7 @@ class CommonBaseIngredient(CommonBaseModel):
 
     public_comments = models.TextField(blank=True, verbose_name="commentaires publics")
     private_comments = models.TextField(blank=True, verbose_name="commentaires privés")
+    siccrf_id = models.IntegerField(blank=True, null=True, editable=False, db_index=True, unique=True)
 
     # commentaire_public_en = models.TextField(blank=True)
     # commentaire_privé_en = models.TextField(blank=True)  # TODO : intégrer les quelques données ici
