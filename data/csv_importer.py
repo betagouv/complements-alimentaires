@@ -2,7 +2,7 @@ import csv
 import logging
 import os
 
-from django.db.models import ForeignKey, TextField, CharField, FloatField, IntegerField
+from django.db.models import ForeignKey, ManyToManyField, TextField, CharField, FloatField, IntegerField
 
 
 # Import the model
@@ -29,11 +29,14 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_PLANTE_SYNONYME.csv": PlantSynonym,
     "REF_ICA_SUBSTANCE_ACTIVE_SYNONYME.csv": SubstanceSynonym,
     # Les csv avec les relations ManyToMany
-    # 'REF_ICA_AUTREING_SUBSTACTIVE.csv': 'autreing_substactive',
-    # 'REF_ICA_PLANTE_SUBSTANCE.csv': 'plante_substance',
+    "REF_ICA_AUTREING_SUBSTACTIVE.csv": Ingredient,
+    "REF_ICA_PLANTE_SUBSTANCE.csv": Plant,
+    # 'REF_ICA_MOORG_SUBSTANCE.csv': 'à récuperer',
     # 'REF_ICA_PARTIE_PL_A_SURVEILLER.csv': 'partie_pl_a_surveiller',
     # 'REF_ICA_PARTIE_UTILE.csv': 'partie_utile'
 }
+
+RELATION_CSV = ["REF_ICA_AUTREING_SUBSTACTIVE.csv", "REF_ICA_PLANTE_SUBSTANCE.csv"]
 
 # Établi le préfix des champs du csv
 CSV_TO_TABLE_PREFIX_MAPPING = {
@@ -45,6 +48,9 @@ CSV_TO_TABLE_PREFIX_MAPPING = {
     "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": "SYNAO",
     "REF_ICA_PLANTE_SYNONYME.csv": "SYNPLA",
     "REF_ICA_SUBSTANCE_ACTIVE_SYNONYME.csv": "SYNSBSTA",
+    # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
+    "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
+    "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
     "POPULATION.csv": "",
     # "FAMPL"
 }
@@ -83,11 +89,11 @@ DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
     "max_age": ["AGE_MAX"],
     "is_defined_by_anses": ["CATEGORIE_ANSES"],
     # Les champs ForeignKey (synonymes)
-    "standard_name": ["SBSACT_IDENT", "PLTE_IDENT", "INGA_IDENT"],
+    "standard_name": ["SBSACT_IDENT", "PLTE_IDENT", "INGA_IDENT", "MORG_IDENT"],
     "family": ["FAMPL_IDENT"],
     # Les champs ManyToMany
-    # substances
-    # useful_parts
+    "substances": ["SBSACT_IDENT"],
+    "useful_parts": ["PPLAN_IDENT"],
 }
 
 
@@ -103,7 +109,8 @@ def import_csv(csv_filepath):
             logger.error(f"Ce nom de fichier ne ressemble pas à ceux attendus : {e}")
             return
         logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} en cours.")
-        nb_row, nb_created = _import_csv_to_model(csv_filepath=csv_filepath, model=model)
+        is_relation = True if csv_filename in RELATION_CSV else False
+        nb_row, nb_created = _import_csv_to_model(csv_filepath=csv_filepath, model=model, is_relation=is_relation)
         logger.info(
             f"Import de {csv_filename} dans le modèle {model.__name__} terminé : {nb_row} objets importés, {nb_created} objets créés."
         )
@@ -113,7 +120,7 @@ def _get_model_from_csv_name(csv_filename):
     return CSV_TO_MODEL_MAPPING[csv_filename]
 
 
-def _import_csv_to_model(csv_filepath, model):
+def _import_csv_to_model(csv_filepath, model, is_relation=False):
     csv_filename = os.path.basename(csv_filepath)
     nb_line_in_success = 0
     nb_line_created = 0
@@ -129,7 +136,7 @@ def _import_csv_to_model(csv_filepath, model):
         for row in csv_reader:
             object_definition = {}
             for field, column_name in django_fields_to_column_names.items():
-                if not isinstance(field, ForeignKey):
+                if not isinstance(field, ForeignKey) and not isinstance(field, ManyToManyField):
                     # cas d'un champ simple avec une valeur
                     value = row.get(column_name)
                     object_definition[field.name] = _clean_value(value, field)
@@ -148,19 +155,33 @@ def _import_csv_to_model(csv_filepath, model):
                         )
                         object_definition[field.name] = linked_obj
 
-            # all fields of the object are updated
             primary_key = _get_primary_key_label(csv_filename)
-            object_with_history, created = model.objects.update_or_create(
-                siccrf_id=row.get(primary_key), defaults=object_definition
-            )
+            if not is_relation:
+                # tous les champs de l'objet sont mis à jour
+                object_with_history, created = model.objects.update_or_create(
+                    siccrf_id=row.get(primary_key), defaults=object_definition
+                )
+            else:
+                # seulement le champ correspondant à la relation est mis à jour
+                # il n'y a que ce champ dans object_definition
+                field_name = list(object_definition)[0]
+                instance = model.objects.get(siccrf_id=row.get(primary_key))
+                field_to_update = getattr(instance, field_name)
+                nb_elem_in_field = len(field_to_update.all())
+                field_to_update.add(object_definition[field_name])
+                created = len(field_to_update.all()) != nb_elem_in_field
+
             nb_line_created += created
             nb_line_in_success += 1
     return nb_line_in_success, nb_line_created
 
 
 def _get_model_fields_to_complete(model):
+    "Returns all fields(including many-to-many and foreign key) except non editable fields"
     automatically_filled = ["id", "siccrf_id", "creation_date", "modification_date"]
-    return [field for field in model._meta.fields if field.name not in automatically_filled]
+    model_fields = model._meta.get_fields()
+    # le flag concrete indique les champs qui ont une colonne associée
+    return [field for field in model_fields if field.concrete and field.name not in automatically_filled]
 
 
 def _get_column_name(field_name, csv_fields_in_header, csv_filename, prefixed=True):
@@ -200,14 +221,18 @@ def _create_django_fields_to_column_names_mapping(model, csv_fieldnames, csv_fil
     """
     django_fields = _get_model_fields_to_complete(model)
     django_fields_to_column_names = {}
+    missing_fields = []
+
     for field in django_fields:
         # le nom des colonnes contenant les clés étrangères ne sont pas préfixées par le nom de la table
-        prefixed = False if isinstance(field, ForeignKey) else True
+        prefixed = False if isinstance(field, ForeignKey) or isinstance(field, ManyToManyField) else True
         try:
             column_name = _get_column_name(field.name, csv_fieldnames, csv_filename, prefixed=prefixed)
             django_fields_to_column_names[field] = column_name
-        except NameError as e:
-            logger.warning(f"Ce champ n'existe pas dans le csv' : {e}")
+        except NameError:
+            missing_fields.append(field.name)
+    if len(missing_fields) > 0:
+        logger.warning(f"Ces champs n'existent pas dans le csv' : {[missing_fields]}")
     return django_fields_to_column_names
 
 
@@ -230,4 +255,6 @@ def _clean_value(value, field):
         if value == "":
             return None
         return value
+    elif isinstance(field, TextField) or isinstance(field, CharField):
+        return value.strip()
     return value
