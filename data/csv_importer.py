@@ -21,12 +21,13 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_PARTIE_PLANTE.csv": PlantPart,
     "REF_ICA_PLANTE.csv": Plant,
     "REF_ICA_SUBSTANCE_ACTIVE.csv": Substance,
-    "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": IngredientSynonym,
-    "REF_ICA_PLANTE_SYNONYME.csv": PlantSynonym,
-    "REF_ICA_SUBSTANCE_ACTIVE_SYNONYME.csv": SubstanceSynonym,
     "POPULATION.csv": Population,
     # 'OBJECTIF.CSV': Objectif,
     # 'FICHIERA_RECUPERER.CSV': PlantFamily,
+    # Les fichiers csv avec les Foreign Keys
+    "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": IngredientSynonym,
+    "REF_ICA_PLANTE_SYNONYME.csv": PlantSynonym,
+    "REF_ICA_SUBSTANCE_ACTIVE_SYNONYME.csv": SubstanceSynonym,
     # Les csv avec les relations ManyToMany
     # 'REF_ICA_AUTREING_SUBSTACTIVE.csv': 'autreing_substactive',
     # 'REF_ICA_PLANTE_SUBSTANCE.csv': 'plante_substance',
@@ -52,7 +53,7 @@ PREFIX_TO_MODEL_MAPPINT = {
     "INGA": Ingredient,
     "MORG": Microorganism,
     "PPLAN": PlantPart,
-    "PLTE": PlantPart,
+    "PLTE": Plant,
     "SBSACT": Substance,
     "SYNAO": IngredientSynonym,
     "SYNPLA": PlantSynonym,
@@ -137,11 +138,11 @@ def _import_csv_to_model(csv_filepath, model):
                     foreign_key_id = row.get(column_name)
                     try:
                         linked_model = _get_linked_model(column_name)
-                        object_definition[field.name] = linked_model.objects.get(pk=foreign_key_id)
+                        object_definition[field.name] = linked_model.objects.get(siccrf_id=foreign_key_id)
                     except KeyError as e:
                         logger.warning(f"Il n'y a pas de modèle défini pour cette table : {e}")
                     except linked_model.DoesNotExist as e:
-                        logger.warning(f"Il n'y a pas d'objet existant pour cet id' : {e}")
+                        logger.warning(f"Il n'existait pas d'object pour cet id {foreign_key_id} dans {e}. Création.")
                         linked_obj, _ = linked_model.objects.update_or_create(
                             siccrf_id=foreign_key_id, defaults={"name": foreign_key_id}
                         )
