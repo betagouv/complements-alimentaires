@@ -14,6 +14,7 @@ from .models.substance import Substance, SubstanceSynonym
 
 logger = logging.getLogger(__name__)
 
+
 # Modèles pour recevoir l'import des données des fichier csv
 CSV_TO_MODEL_MAPPING = {
     "REF_ICA_INGREDIENT_AUTRE.csv": Ingredient,
@@ -31,12 +32,12 @@ CSV_TO_MODEL_MAPPING = {
     # Les csv avec les relations ManyToMany
     "REF_ICA_AUTREING_SUBSTACTIVE.csv": Ingredient,
     "REF_ICA_PLANTE_SUBSTANCE.csv": Plant,
-    # 'REF_ICA_MOORG_SUBSTANCE.csv': 'à récuperer',
-    # 'REF_ICA_PARTIE_PL_A_SURVEILLER.csv': 'partie_pl_a_surveiller',
-    # 'REF_ICA_PARTIE_UTILE.csv': 'partie_utile'
+    # "REF_ICA_MOORG_SUBSTANCE.csv": "à récuperer",
+    # 'REF_ICA_PARTIE_PL_A_SURVEILLER.csv': UsefulPartRelation,
+    "REF_ICA_PARTIE_UTILE.csv": Plant,
 }
 
-RELATION_CSV = ["REF_ICA_AUTREING_SUBSTACTIVE.csv", "REF_ICA_PLANTE_SUBSTANCE.csv"]
+RELATION_CSV = ["REF_ICA_AUTREING_SUBSTACTIVE.csv", "REF_ICA_PLANTE_SUBSTANCE.csv", "REF_ICA_PARTIE_UTILE.csv"]
 
 # Établi le préfix des champs du csv
 CSV_TO_TABLE_PREFIX_MAPPING = {
@@ -51,6 +52,7 @@ CSV_TO_TABLE_PREFIX_MAPPING = {
     # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
     "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
     "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
+    "REF_ICA_PARTIE_UTILE.csv": "PLTE",
     "POPULATION.csv": "",
     # "FAMPL"
 }
@@ -232,7 +234,7 @@ def _create_django_fields_to_column_names_mapping(model, csv_fieldnames, csv_fil
         except NameError:
             missing_fields.append(field.name)
     if len(missing_fields) > 0:
-        logger.warning(f"Ces champs n'existent pas dans le csv' : {[missing_fields]}")
+        logger.warning(f"Ces champs n'existent pas dans le csv' : {missing_fields}")
     return django_fields_to_column_names
 
 

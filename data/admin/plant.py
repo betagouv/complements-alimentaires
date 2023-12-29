@@ -1,10 +1,20 @@
 from django import forms
 from django.contrib import admin
+from django.db import models
 from data.models import Plant, PlantSynonym
 
 
 class PlantSynonymInline(admin.TabularInline):
     model = PlantSynonym
+    extra = 1
+
+    formfield_overrides = {
+        models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
+    }
+
+
+class PartInlineAdmin(admin.TabularInline):
+    model = Plant.useful_parts.through
     extra = 1
 
 
@@ -37,12 +47,15 @@ class PlantAdmin(admin.ModelAdmin):
         (
             "Commentaires",
             {
-                "fields": ["family", "substances", "useful_parts"],
+                "fields": ["family", "substances"],
             },
         ),
     ]
 
-    inlines = (PlantSynonymInline,)
+    inlines = (
+        PartInlineAdmin,
+        PlantSynonymInline,
+    )
     list_display = (
         "name",
         "family",

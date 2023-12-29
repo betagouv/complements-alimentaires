@@ -1,4 +1,5 @@
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 from .abstract_models import CommonBaseIngredient, CommonBaseModel
 from .substance import Substance
@@ -24,13 +25,25 @@ class Plant(CommonBaseIngredient):
         verbose_name = "plante"
 
     family = models.ForeignKey(PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante")
-    useful_parts = models.ManyToManyField(PlantPart)
+    useful_parts = models.ManyToManyField(PlantPart, through="UsefulPartRelation", verbose_name="partie utile")
     substances = models.ManyToManyField(Substance)
 
     # champs présents dans le CSV mais inutilisés
     # fctingr = models.IntegerField()
     # stingsbs = models.IntegerField()
-    # to_watch_part = models.ManyToManyField(PlantPart)
+
+
+class UsefulPartRelation(models.Model):
+    """Ce modèle permet d'associer des données supplémentaires à la relation ManyToMany
+    useful_parts
+    """
+
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
+    plantpart = models.ForeignKey(PlantPart, on_delete=models.CASCADE)
+    must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
+    creation_date = models.DateTimeField(auto_now_add=True)
+    modification_date = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords(inherit=True)
 
 
 class PlantSynonym(CommonBaseModel):
