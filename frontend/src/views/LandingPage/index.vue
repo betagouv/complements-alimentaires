@@ -10,9 +10,14 @@
       <NewsletterBlock />
     </div>
   </div>
+
+  <div class="fr-container my-10">
+    <WebinarBlock />
+  </div>
 </template>
 <script setup>
 import NewsletterBlock from "@/views/LandingPage/NewsletterBlock.vue"
 import DeclarationBlock from "@/views/LandingPage/DeclarationBlock.vue"
+import WebinarBlock from "@/views/LandingPage/WebinarBlock.vue"
 import SearchBlock from "@/views/LandingPage/SearchBlock.vue"
 </script>

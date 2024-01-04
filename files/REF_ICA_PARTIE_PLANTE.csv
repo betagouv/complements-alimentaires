@@ -1,0 +1,12 @@
+PPLAN_IDENT,PPLAN_LIBELLE,PPLAN_LIBELLE_EN,PPLAN_ORDRE,PPLAN_OBSOLET
+1,Aiguille,Needle,NULL,0
+2,Amande du noyau,Kernel almond,NULL,0
+3,Arille,Aril,NULL,0
+4,Aubier,Sapwood,NULL,0
+5,Baie,Berry,NULL,0
+6,Barbe,Beard,NULL,0
+7,Baume,Balm,NULL,0
+8,Bois,Wood,NULL,0
+9,Bourgeon,Bud,NULL,0
+10,Bourgeon végétatif,Vegetative bud,NULL,0
+11,Bouton floral,Flower bud,NULL,0

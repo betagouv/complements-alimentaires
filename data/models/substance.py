@@ -1,6 +1,6 @@
 from django.db import models
 
-from .common_base_ingredient import CommonBaseIngredient
+from .abstract_models import CommonBaseIngredient, CommonBaseModel
 
 
 class Substance(CommonBaseIngredient):
@@ -8,6 +8,7 @@ class Substance(CommonBaseIngredient):
         verbose_name = "substance active"
         verbose_name_plural = "substances actives"
 
+    name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS")
     einec_number = models.CharField(
         max_length=7,
@@ -15,7 +16,7 @@ class Substance(CommonBaseIngredient):
         verbose_name="numéro EINECS",
     )
     source = models.TextField(blank=True)
-    must_specify_quantity = models.BooleanField(default=False)
+    must_specify_quantity = models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire")
     min_quantity = models.FloatField(
         null=True, blank=True, verbose_name="quantité minimale autorisée"
     )  # jamais remplie
@@ -30,16 +31,9 @@ class Substance(CommonBaseIngredient):
     # source_en = models.TextField(blank=True)
 
 
-class SubstanceSynonym(models.Model):
+class SubstanceSynonym(CommonBaseModel):
     class Meta:
         verbose_name = "synonyme substance active"
 
-    creation_date = models.DateTimeField(auto_now_add=True)
-    modification_date = models.DateTimeField(auto_now=True)
-    name = models.TextField()
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
-
-    # champs présents dans le CSV mais inutilisés
-    # ordre = models.IntegerField()
-    # obsolet = models.BooleanField()
-    # TSYN -> est-ce que ça donne l'ordre d'affichage des synonymes ?
+    # TODO importer aussi les synonym_type = TSYNSBSTA_IDENT en ForeignKeys
