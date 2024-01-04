@@ -21,7 +21,6 @@ const props = defineProps({
   result: Object,
 })
 const icon = computed(() => {
-  // TODO: integrate webinar branch
   const mapping = {
     plant: "ri-plant-line",
     microorganism: "ri-microscope-line",
