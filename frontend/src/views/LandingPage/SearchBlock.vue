@@ -30,8 +30,8 @@ const searchTerm = ref(null)
 const router = useRouter()
 
 const search = () => {
-  // TODO : Limit to more than 3 chars
-  router.push(getRouteForTerm(searchTerm.value))
+  if (searchTerm.value.length < 3) window.alert("Veuillez saisir au moins trois caractères")
+  else router.push(getRouteForTerm(searchTerm.value))
 }
 const getRouteForTerm = (term) => {
   return { name: "SearchResults", query: { q: term } }

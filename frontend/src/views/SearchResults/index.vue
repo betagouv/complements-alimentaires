@@ -68,8 +68,8 @@ const visibleResults = ref(null)
 const emptyView = computed(() => !loading.value && resultsCount.value === 0)
 
 const search = () => {
-  // TODO : Limit to more than 3 chars
-  router.push({ query: { q: searchTerm.value } })
+  if (searchTerm.value.length < 3) window.alert("Veuillez saisir au moins trois caractères")
+  else router.push({ query: { q: searchTerm.value } })
 }
 
 const fetchSearchResults = () => {
