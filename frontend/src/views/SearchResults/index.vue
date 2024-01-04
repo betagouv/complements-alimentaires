@@ -9,7 +9,7 @@
     <div v-if="emptyView">
       <h1 class="fr-h3">Nous n'avons pas trouvé des résultats pour « {{ searchTerm }} »</h1>
     </div>
-    <div v-else>
+    <div class="mb-4" v-else>
       <h1 class="fr-h3">Résultats de recherche</h1>
       <div v-if="visibleResults" class="grid grid-cols-12 gap-4">
         <ResultCard
@@ -19,6 +19,14 @@
           :result="result"
         />
       </div>
+      <DsfrPagination
+        class="mt-8"
+        @update:currentPage="updatePage"
+        :pages="pages"
+        :current-page="page - 1"
+        :truncLimit="5"
+        v-if="showPagination"
+      />
     </div>
   </div>
 </template>
@@ -29,16 +37,31 @@ import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router"
 import { headers, verifyResponse } from "@/utils"
 import ResultCard from "./ResultCard"
 
+let mounted = false
+
 const router = useRouter()
 const route = useRoute()
 const searchTerm = ref(null)
 const loading = ref(true)
 
 // Pagination
-const limit = 12
-const page = ref(1) // TODO : proper page management
+const limit = 6
+const page = ref(null)
 const resultsCount = ref(null)
 const offset = computed(() => (page.value - 1) * limit)
+const showPagination = computed(() => resultsCount.value > limit)
+const pages = computed(() => {
+  const totalPages = Math.ceil(resultsCount.value / limit)
+  const pages = []
+  for (let i = 0; i < totalPages; i++)
+    pages.push({
+      label: i + 1,
+      href: `${route.path}?page=${i + 1}`,
+      title: `Page ${i + 1}`,
+    })
+  return pages
+})
+const updatePage = (newPage) => (page.value = newPage + 1)
 
 // Results
 const visibleResults = ref(null)
@@ -52,6 +75,7 @@ const search = () => {
 const fetchSearchResults = () => {
   const url = "/api/v1/search/"
   const body = JSON.stringify({ search: searchTerm.value, limit, offset: offset.value })
+  loading.value = true
   return fetch(url, { method: "POST", headers, body })
     .then(verifyResponse)
     .then((response) => {
@@ -71,9 +95,19 @@ onBeforeRouteUpdate((to) => {
 
 onMounted(() => {
   searchTerm.value = route.query.q
-  loading.value = true
-  return fetchSearchResults()
+  page.value = route.query.page || 1
+  fetchSearchResults().then(() => (mounted = true))
 })
 
-watch(() => route.query.q, fetchSearchResults)
+watch(
+  () => route.query,
+  () => {
+    if (mounted) fetchSearchResults()
+  }
+)
+
+watch(page, () => {
+  const routerFunction = route.query.page ? router.push : router.replace
+  routerFunction({ query: { ...route.query, ...{ page: page.value } } })
+})
 </script>
