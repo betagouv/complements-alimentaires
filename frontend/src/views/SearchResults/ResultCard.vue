@@ -3,7 +3,7 @@
     <div class="fr-card__body">
       <div class="fr-card__content">
         <div class="fr-card__title" style="order: unset">
-          <a href="google.com" class="fr-card__link">{{ result.name }}</a>
+          <a href="#" class="fr-card__link">{{ result.name }}</a>
         </div>
         <div class="mt-2">
           <v-icon :name="icon" />
