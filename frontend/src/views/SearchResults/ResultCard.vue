@@ -5,9 +5,9 @@
         <div class="fr-card__title" style="order: unset">
           <a href="#" class="fr-card__link">{{ result.name }}</a>
         </div>
-        <div class="mt-2">
-          <v-icon :name="icon" />
-          {{ type }}
+        <div class="mt-2 flex">
+          <div><v-icon scale="0.85" class="mr-1" :name="icon" /></div>
+          <div style="margin-top: 1px">{{ type }}</div>
         </div>
       </div>
     </div>
