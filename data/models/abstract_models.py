@@ -15,6 +15,7 @@ class CommonBaseModel(models.Model):
     name = models.TextField(verbose_name="nom")
     is_obsolete = models.BooleanField(verbose_name="objet obsolète", default=False)
     history = HistoricalRecords(inherit=True)
+    siccrf_id = models.IntegerField(blank=True, null=True, editable=False, db_index=True, unique=True)
     # ordre = models.IntegerField()
 
     def __str__(self):
@@ -27,7 +28,6 @@ class CommonBaseIngredient(CommonBaseModel):
 
     public_comments = models.TextField(blank=True, verbose_name="commentaires publics")
     private_comments = models.TextField(blank=True, verbose_name="commentaires privés")
-    siccrf_id = models.IntegerField(blank=True, null=True, editable=False, db_index=True, unique=True)
 
     # commentaire_public_en = models.TextField(blank=True)
     # commentaire_privé_en = models.TextField(blank=True)  # TODO : intégrer les quelques données ici

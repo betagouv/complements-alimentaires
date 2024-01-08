@@ -9,7 +9,6 @@ class Population(CommonBaseModel):
 
     min_age = models.FloatField(blank=True, null=True, default=None)
     max_age = models.FloatField(blank=True, null=True, default=None)
-    siccrf_id = models.IntegerField(blank=True, null=True, editable=False, db_index=True, unique=True)
     is_defined_by_anses = models.BooleanField(default=False)
 
 

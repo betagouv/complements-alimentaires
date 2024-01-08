@@ -36,6 +36,7 @@ class CSVImporterTestCase(TestCase):
         self.assertEqual("", _clean_value("", TextField()))
         self.assertEqual("", _clean_value("NULL", TextField()))
         self.assertEqual("", _clean_value("NULL", CharField()))
+        self.assertEqual("Eloides rhamnosus trulul", _clean_value(" Eloides rhamnosus trulul ", CharField()))
 
     def test_models_created(self):
         path = "data/tests/files/test-model-creation-1/"
