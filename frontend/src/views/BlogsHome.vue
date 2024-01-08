@@ -126,7 +126,4 @@ div >>> .fr-card__desc {
 div >>> .fr-card__detail {
   margin-bottom: 6px;
 }
-div >>> .fr-pagination__list {
-  justify-content: center;
-}
 </style>

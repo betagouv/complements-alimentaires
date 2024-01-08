@@ -20,3 +20,9 @@ watch(route, (to) => {
   document.title = to.meta.title ? to.meta.title + " - " + suffix : suffix
 })
 </script>
+
+<style>
+.fr-pagination__list {
+  justify-content: center;
+}
+</style>

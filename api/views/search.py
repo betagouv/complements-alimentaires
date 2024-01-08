@@ -22,7 +22,7 @@ class SearchView(APIView):
     def post(self, request, *args, **kwargs):
         search_term = request.data.get("search")
         if not search_term or len(search_term) < self.min_query_length:
-            raise BadRequest(f"Le terme de recherche doit être supérieur à {self.min_query_length}")
+            raise BadRequest(f"Le terme de recherche doit être supérieur ou égal à {self.min_query_length} caractères")
         if int(self.request.data.get("limit", 0)) > self.max_pagination_limit:
             raise BadRequest(f"La limite de pagination excède {self.max_pagination_limit}")
 

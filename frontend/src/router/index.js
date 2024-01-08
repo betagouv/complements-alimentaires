@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router"
 import LandingPage from "@/views/LandingPage"
 import BlogsHome from "@/views/BlogsHome"
 import BlogPost from "@/views/BlogPost"
+import SearchResults from "@/views/SearchResults"
 
 const routes = [
   {
@@ -22,6 +23,15 @@ const routes = [
     name: "BlogPost",
     component: BlogPost,
     props: true,
+  },
+  {
+    path: "/resultats/",
+    name: "SearchResults",
+    component: SearchResults,
+    props: true,
+    beforeEnter(to) {
+      if (!to.query?.q) return { to: "LandingPage" }
+    },
   },
 ]
 
