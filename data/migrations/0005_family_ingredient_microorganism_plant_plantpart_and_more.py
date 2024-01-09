@@ -273,6 +273,7 @@ class Migration(migrations.Migration):
                 (
                     "substance",
                     models.ForeignKey(
+                        null=True,
                         on_delete=django.db.models.deletion.CASCADE, to="data.substance"
                     ),
                 ),
