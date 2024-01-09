@@ -32,7 +32,7 @@ const icon = computed(() => {
 const type = computed(() => {
   const mapping = {
     plant: "Plante",
-    microorganism: "Micro-organism",
+    microorganism: "Micro-organisme",
     ingredient: "Ingredient",
     substance: "Substance",
   }
