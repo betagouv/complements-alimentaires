@@ -9,7 +9,7 @@ click==8.1.7
 cryptography==41.0.7
 dill==0.3.7
 distlib==0.3.8
-Django==5.0
+Django==5.0.1
 django-anymail==10.2
 django-ckeditor==6.7.0
 django-filter==23.5
@@ -20,7 +20,7 @@ djangorestframework==3.14.0
 djangorestframework-camel-case==1.4.2
 drf-base64==2.0
 factory-boy==3.3.0
-Faker==21.0.0
+Faker==22.0.0
 filelock==3.13.1
 identify==2.5.33
 idna==3.6
@@ -30,9 +30,9 @@ mypy-extensions==1.0.0
 nodeenv==1.8.0
 packaging==23.2
 pathspec==0.12.1
-Pillow==10.1.0
+Pillow==10.2.0
 pipdeptree==2.13.1
-platformdirs==3.11.0
+platformdirs==4.1.0
 pre-commit==3.6.0
 psycopg2==2.9.9
 pycparser==2.21
