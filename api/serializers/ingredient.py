@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from data.models import Ingredient, IngredientSynonym
+from .substance import SubstanceShortSerializer
 
 
 class IngredientSynonymSerializer(serializers.ModelSerializer):
@@ -14,6 +15,7 @@ class IngredientSynonymSerializer(serializers.ModelSerializer):
 
 class IngredientSerializer(serializers.ModelSerializer):
     synonyms = IngredientSynonymSerializer(many=True, read_only=True, source="ingredientsynonym_set")
+    substances = SubstanceShortSerializer(many=True, read_only=True)
 
     class Meta:
         model = Ingredient
@@ -24,5 +26,6 @@ class IngredientSerializer(serializers.ModelSerializer):
             "observation",
             "description",
             "synonyms",
+            "substances",
         )
         read_only_fields = fields

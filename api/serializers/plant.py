@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from data.models import Plant, PlantFamily, PlantPart, PlantSynonym
+from .substance import SubstanceShortSerializer
 
 
 class PlantFamilySerializer(serializers.ModelSerializer):
@@ -41,6 +42,7 @@ class PlantSerializer(serializers.ModelSerializer):
     family = PlantFamilySerializer(read_only=True)
     useful_parts = PlantPartSerializer(many=True, read_only=True)
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
+    substances = SubstanceShortSerializer(many=True, read_only=True)
 
     class Meta:
         model = Plant
@@ -50,5 +52,6 @@ class PlantSerializer(serializers.ModelSerializer):
             "family",
             "useful_parts",
             "synonyms",
+            "substances",
         )
         read_only_fields = fields

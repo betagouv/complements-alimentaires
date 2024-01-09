@@ -6,3 +6,4 @@ from .search import SearchView  # noqa: F401
 from .plant import PlantRetrieveView  # noqa: F401
 from .ingredient import IngredientRetrieveView  # noqa: F401
 from .microorganism import MicroorganismRetrieveView  # noqa: F401
+from .substance import SubstanceRetrieveView  # noqa: F401

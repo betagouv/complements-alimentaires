@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from data.models import Microorganism, MicroorganismSynonym
+from .substance import SubstanceShortSerializer
 
 
 class MicroorganismSynonymSerializer(serializers.ModelSerializer):
@@ -14,6 +15,7 @@ class MicroorganismSynonymSerializer(serializers.ModelSerializer):
 
 class MicroorganismSerializer(serializers.ModelSerializer):
     synonyms = MicroorganismSynonymSerializer(many=True, read_only=True, source="microorganismsynonym_set")
+    substances = SubstanceShortSerializer(many=True, read_only=True)
 
     class Meta:
         model = Microorganism
@@ -23,5 +25,6 @@ class MicroorganismSerializer(serializers.ModelSerializer):
             "name_en",
             "genre",
             "synonyms",
+            "substances",
         )
         read_only_fields = fields
