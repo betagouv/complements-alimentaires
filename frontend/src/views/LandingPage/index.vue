@@ -1,5 +1,7 @@
 <template>
-  <div class="fr-container my-10">
+  <SearchBlock />
+
+  <div class="fr-container my-6 md:my-16">
     <DeclarationBlock />
   </div>
 
@@ -17,4 +19,5 @@
 import NewsletterBlock from "@/views/LandingPage/NewsletterBlock.vue"
 import DeclarationBlock from "@/views/LandingPage/DeclarationBlock.vue"
 import WebinarBlock from "@/views/LandingPage/WebinarBlock.vue"
+import SearchBlock from "@/views/LandingPage/SearchBlock.vue"
 </script>
