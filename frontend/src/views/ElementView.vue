@@ -10,12 +10,12 @@
   <div v-if="element" class="fr-container my-8">
     <h1 class="fr-h4 !mb-1">{{ element.name }}</h1>
 
-    <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-20 mb-8">
+    <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-1 sm:gap-20 mb-8">
       <div class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
         <div class="fr-text--sm !font-medium !mb-1">Type</div>
         <div class="flex">
           <div><v-icon scale="0.75" class="mr-1" :name="icon" /></div>
-          <div class="fr-text--sm !mb-0 capitalize">{{ type }}</div>
+          <div class="fr-text--sm !mb-0 capitalize">{{ type === "ingredient" ? "ingrédient" : type }}</div>
         </div>
       </div>
 
