@@ -62,7 +62,40 @@ class CSVImporterTestCase(TestCase):
         self.assertTrue(Substance.objects.filter(siccrf_id=11).exists())
         self.assertEqual(len(Substance.objects.all()), 2)
 
-    def test_linked_models_created(self):
+    def test_linked_models_created_even_if_no_corresponding_file(self):
         path = "data/tests/files/test-model-creation-1/"
         call_command("load_ingredients", directory=path)
         self.assertTrue(PlantFamily.objects.filter(siccrf_id=6).exists())
+
+    def test_import_twice_same_synonym_created_only_once(self):
+        path = "data/tests/files/test-model-creation-2/"
+        call_command("load_ingredients", directory=path)
+        # les lignes doublonnées ne sont pas ajoutées
+        self.assertEqual(len(Plant.objects.get(name="Pour les pieds").plantsynonym_set.all()), 4)
+        self.assertEqual(len(Plant.objects.get(name="Pour le cou").plantsynonym_set.all()), 3)
+        # mais les lignes dont l'id est différent sont ajoutées 2 fois
+        self.assertEqual(
+            len(Plant.objects.get(name="Pour les pieds").plantsynonym_set.filter(name="Chaussure à talons")), 2
+        )
+
+    def test_linked_models_created_with_file(self):
+        path = "data/tests/files/test-model-creation-3/"
+        call_command("load_ingredients", directory=path)
+
+        self.assertEqual(len(Plant.objects.get(name="Pour les pieds").useful_parts.all()), 1)
+        self.assertEqual(len(Plant.objects.get(name="Pour le cou").useful_parts.all()), 3)
+
+    def test_linked_models_with_file_between_unexisting_entities(self):
+        path = "data/tests/files/test-model-creation-4/"
+        call_command("load_ingredients", directory=path)
+
+        self.assertEqual(len(Plant.objects.get(name="Pour les pieds").useful_parts.all()), 1)
+        self.assertEqual(len(Plant.objects.get(name="Pour le cou").useful_parts.all()), 4)
+        self.assertEqual(len(Plant.objects.get(name="Pour le cou").useful_parts.all()), 4)
+        first_id = Plant.objects.get(siccrf_id=1)
+        self.assertEqual(len(first_id.useful_parts.all()), 1)
+        self.assertEqual(first_id.name, "1")
+        second_id = Plant.objects.get(siccrf_id=2)
+        # dans le fichier une ligne de relation est dupliquée
+        self.assertEqual(len(second_id.useful_parts.all()), 2)
+        self.assertEqual(second_id.name, "2")

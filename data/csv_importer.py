@@ -147,15 +147,11 @@ def _import_csv_to_model(csv_filepath, model, is_relation=False):
                     foreign_key_id = row.get(column_name)
                     try:
                         linked_model = _get_linked_model(column_name)
-                        object_definition[field.name] = linked_model.objects.get(siccrf_id=foreign_key_id)
+                        object_definition[field.name] = _get_update_or_create_related_object(
+                            linked_model, foreign_key_id
+                        )
                     except KeyError as e:
                         logger.warning(f"Il n'y a pas de modèle défini pour cette table : {e}")
-                    except linked_model.DoesNotExist as e:
-                        logger.warning(f"Il n'existait pas d'object pour cet id {foreign_key_id} dans {e}. Création.")
-                        linked_obj, _ = linked_model.objects.update_or_create(
-                            siccrf_id=foreign_key_id, defaults={"name": foreign_key_id}
-                        )
-                        object_definition[field.name] = linked_obj
 
             primary_key = _get_primary_key_label(csv_filename)
             if not is_relation:
@@ -164,10 +160,10 @@ def _import_csv_to_model(csv_filepath, model, is_relation=False):
                     siccrf_id=row.get(primary_key), defaults=object_definition
                 )
             else:
-                # seulement le champ correspondant à la relation est mis à jour
+                # seul le champ correspondant à la relation est mis à jour
                 # il n'y a que ce champ dans object_definition
                 field_name = list(object_definition)[0]
-                instance = model.objects.get(siccrf_id=row.get(primary_key))
+                instance = _get_update_or_create_related_object(model, row.get(primary_key))
                 field_to_update = getattr(instance, field_name)
                 nb_elem_in_field = len(field_to_update.all())
                 field_to_update.add(object_definition[field_name])
@@ -260,3 +256,17 @@ def _clean_value(value, field):
     elif isinstance(field, TextField) or isinstance(field, CharField):
         return value.strip()
     return value
+
+
+def _get_update_or_create_related_object(model, id):
+    """
+    Indépendamment de l'ordre dans lequel les fichiers sont importés,
+    les objets sont créés avec seulement leur id s'ils existent dans un fichier relation
+    mais n'existent pas encore.
+    """
+    try:
+        return model.objects.get(siccrf_id=id)
+    except model.DoesNotExist as e:
+        logger.warning(f"Création de l'id {id}, qui n'existait pas encore dans {e}.")
+        linked_obj, _ = model.objects.update_or_create(siccrf_id=id, defaults={"name": id})
+        return linked_obj
