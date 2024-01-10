@@ -104,15 +104,32 @@ def import_csv(csv_filepath):
     if not csv_filename.endswith(".csv"):
         logger.error(f"'{csv_filename}' n'est pas un fichier csv.")
         return
-    else:
+    try:
+        model = _get_model_from_csv_name(csv_filename)
+    except KeyError as e:
+        logger.error(f"Ce nom de fichier ne ressemble pas à ceux attendus : {e}")
+        return
+
+    with open(csv_filepath, mode="rb") as csv_file:
         try:
-            model = _get_model_from_csv_name(csv_filename)
-        except KeyError as e:
-            logger.error(f"Ce nom de fichier ne ressemble pas à ceux attendus : {e}")
+            csv_string = csv_file.read().decode("utf-8-sig")
+        except UnicodeDecodeError:
+            logger.error(f"'{csv_filename}' n'est pas un fichier unicode.")
             return
+        try:
+            csv_lines = csv_string.splitlines()
+            dialect = csv.Sniffer().sniff(csv_lines[0])
+        except csv.Error:
+            logger.error(f"'{csv_filename}' n'est pas un fichier csv.")
+            return
+
+        csvreader = csv.DictReader(csv_lines, dialect=dialect)
+
         logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} en cours.")
         is_relation = True if csv_filename in RELATION_CSV else False
-        nb_row, nb_created = _import_csv_to_model(csv_filepath=csv_filepath, model=model, is_relation=is_relation)
+        nb_row, nb_created = _import_csv_to_model(
+            csv_reader=csvreader, csv_filename=csv_filename, model=model, is_relation=is_relation
+        )
         logger.info(
             f"Import de {csv_filename} dans le modèle {model.__name__} terminé : {nb_row} objets importés, {nb_created} objets créés."
         )
@@ -122,55 +139,45 @@ def _get_model_from_csv_name(csv_filename):
     return CSV_TO_MODEL_MAPPING[csv_filename]
 
 
-def _import_csv_to_model(csv_filepath, model, is_relation=False):
-    csv_filename = os.path.basename(csv_filepath)
+def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
     nb_line_in_success = 0
     nb_line_created = 0
-
-    with open(csv_filepath) as csv_file:
-        csv_reader = csv.DictReader(csv_file, delimiter=",")
-        csv_fieldnames = csv_reader.fieldnames
-
-        django_fields_to_column_names = _create_django_fields_to_column_names_mapping(
-            model, csv_fieldnames, csv_filename
-        )
-
-        for row in csv_reader:
-            object_definition = {}
-            for field, column_name in django_fields_to_column_names.items():
-                if not isinstance(field, ForeignKey) and not isinstance(field, ManyToManyField):
-                    # cas d'un champ simple avec une valeur
-                    value = row.get(column_name)
-                    object_definition[field.name] = _clean_value(value, field)
-                else:
-                    # cas d'un champ clé étrangère vers un autre modèle
-                    foreign_key_id = row.get(column_name)
-                    try:
-                        linked_model = _get_linked_model(column_name)
-                        object_definition[field.name] = _get_update_or_create_related_object(
-                            linked_model, foreign_key_id
-                        )
-                    except KeyError as e:
-                        logger.warning(f"Il n'y a pas de modèle défini pour cette table : {e}")
-
-            primary_key = _get_primary_key_label(csv_filename)
-            if not is_relation:
-                # tous les champs de l'objet sont mis à jour
-                object_with_history, created = model.objects.update_or_create(
-                    siccrf_id=row.get(primary_key), defaults=object_definition
-                )
+    csv_fieldnames = csv_reader.fieldnames
+    django_fields_to_column_names = _create_django_fields_to_column_names_mapping(model, csv_fieldnames, csv_filename)
+    for row in csv_reader:
+        object_definition = {}
+        for field, column_name in django_fields_to_column_names.items():
+            if not isinstance(field, ForeignKey) and not isinstance(field, ManyToManyField):
+                # cas d'un champ simple avec une valeur
+                value = row.get(column_name)
+                object_definition[field.name] = _clean_value(value, field)
             else:
-                # seul le champ correspondant à la relation est mis à jour
-                # il n'y a que ce champ dans object_definition
-                field_name = list(object_definition)[0]
-                instance = _get_update_or_create_related_object(model, row.get(primary_key))
-                field_to_update = getattr(instance, field_name)
-                nb_elem_in_field = len(field_to_update.all())
-                field_to_update.add(object_definition[field_name])
-                created = len(field_to_update.all()) != nb_elem_in_field
+                # cas d'un champ clé étrangère vers un autre modèle
+                foreign_key_id = row.get(column_name)
+                try:
+                    linked_model = _get_linked_model(column_name)
+                    object_definition[field.name] = _get_update_or_create_related_object(linked_model, foreign_key_id)
+                except KeyError as e:
+                    logger.warning(f"Il n'y a pas de modèle défini pour cette table : {e}")
 
-            nb_line_created += created
-            nb_line_in_success += 1
+        primary_key = _get_primary_key_label(csv_filename)
+        if not is_relation:
+            # tous les champs de l'objet sont mis à jour
+            object_with_history, created = model.objects.update_or_create(
+                siccrf_id=row.get(primary_key), defaults=object_definition
+            )
+        else:
+            # seul le champ correspondant à la relation est mis à jour
+            # il n'y a que ce champ dans object_definition
+            field_name = list(object_definition)[0]
+            instance = _get_update_or_create_related_object(model, row.get(primary_key))
+            field_to_update = getattr(instance, field_name)
+            nb_elem_in_field = len(field_to_update.all())
+            field_to_update.add(object_definition[field_name])
+            created = len(field_to_update.all()) != nb_elem_in_field
+
+        nb_line_created += created
+        nb_line_in_success += 1
     return nb_line_in_success, nb_line_created
 
 
