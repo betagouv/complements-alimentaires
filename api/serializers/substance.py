@@ -29,6 +29,7 @@ class SubstanceSerializer(serializers.ModelSerializer):
             "max_quantity",
             "nutritional_reference",
             "synonyms",
+            "public_comments",
         )
         read_only_fields = fields
 

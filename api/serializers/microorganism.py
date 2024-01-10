@@ -26,5 +26,6 @@ class MicroorganismSerializer(serializers.ModelSerializer):
             "genre",
             "synonyms",
             "substances",
+            "public_comments",
         )
         read_only_fields = fields

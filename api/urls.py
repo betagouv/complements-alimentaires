@@ -11,8 +11,8 @@ urlpatterns = {
     path("search/", views.SearchView.as_view(), name="search"),
     path("plants/<int:pk>", views.PlantRetrieveView.as_view(), name="single_plant"),
     path("ingredients/<int:pk>", views.IngredientRetrieveView.as_view(), name="single_ingredient"),
-    path("microorganism/<int:pk>", views.MicroorganismRetrieveView.as_view(), name="single_microorganism"),
-    path("substance/<int:pk>", views.SubstanceRetrieveView.as_view(), name="single_substance"),
+    path("microorganisms/<int:pk>", views.MicroorganismRetrieveView.as_view(), name="single_microorganism"),
+    path("substances/<int:pk>", views.SubstanceRetrieveView.as_view(), name="single_substance"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

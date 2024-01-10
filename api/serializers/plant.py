@@ -53,5 +53,6 @@ class PlantSerializer(serializers.ModelSerializer):
             "useful_parts",
             "synonyms",
             "substances",
+            "public_comments",
         )
         read_only_fields = fields

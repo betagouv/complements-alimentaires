@@ -27,5 +27,6 @@ class IngredientSerializer(serializers.ModelSerializer):
             "description",
             "synonyms",
             "substances",
+            "public_comments",
         )
         read_only_fields = fields
