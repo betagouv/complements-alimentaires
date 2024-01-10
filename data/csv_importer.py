@@ -8,7 +8,7 @@ from django.db.models import ForeignKey, ManyToManyField, TextField, CharField, 
 # Import the model
 from .models.ingredient import Ingredient, IngredientSynonym
 from .models.microorganism import Microorganism
-from .models.plant import Plant, PlantPart, PlantSynonym, PlantFamily
+from .models.plant import Plant, PlantPart, PlantSynonym, PlantFamily, UsefulPart
 from .models.population import Population
 from .models.substance import Substance, SubstanceSynonym
 
@@ -32,11 +32,12 @@ CSV_TO_MODEL_MAPPING = {
     # Les csv avec les relations ManyToMany
     "REF_ICA_AUTREING_SUBSTACTIVE.csv": Ingredient,
     "REF_ICA_PLANTE_SUBSTANCE.csv": Plant,
-    # "REF_ICA_MOORG_SUBSTANCE.csv": "à récuperer",
-    # 'REF_ICA_PARTIE_PL_A_SURVEILLER.csv': UsefulPartRelation,
+    "REF_ICA_MOORG_SUBSTANCE.csv": "à récuperer",
+    "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": UsefulPart,
     "REF_ICA_PARTIE_UTILE.csv": Plant,
 }
 
+# Le fichier REF_ICA_PARTIE_PL_A_SURVEILLER n'est pas traité comme une relation car il correspond à un model à part entière
 RELATION_CSV = ["REF_ICA_AUTREING_SUBSTACTIVE.csv", "REF_ICA_PLANTE_SUBSTANCE.csv", "REF_ICA_PARTIE_UTILE.csv"]
 
 # Établi le préfix des champs du csv
@@ -52,6 +53,7 @@ CSV_TO_TABLE_PREFIX_MAPPING = {
     # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
     "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
     "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
+    "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": "",
     "REF_ICA_PARTIE_UTILE.csv": "PLTE",
     "POPULATION.csv": "",
     # "FAMPL"
@@ -93,6 +95,8 @@ DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
     # Les champs ForeignKey (synonymes)
     "standard_name": ["SBSACT_IDENT", "PLTE_IDENT", "INGA_IDENT", "MORG_IDENT"],
     "family": ["FAMPL_IDENT"],
+    "plant": ["PLTE_IDENT"],
+    "plantpart": ["PPLAN_IDENT"],
     # Les champs ManyToMany
     "substances": ["SBSACT_IDENT"],
     "useful_parts": ["PPLAN_IDENT"],
@@ -160,21 +164,27 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
                 except KeyError as e:
                     logger.warning(f"Il n'y a pas de modèle défini pour cette table : {e}")
 
-        primary_key = _get_primary_key_label(csv_filename)
-        if not is_relation:
-            # tous les champs de l'objet sont mis à jour
+        if model == UsefulPart:
+            default_extra_fields = {"must_be_monitored": True}
             object_with_history, created = model.objects.update_or_create(
-                siccrf_id=row.get(primary_key), defaults=object_definition
+                **object_definition, defaults=default_extra_fields
             )
         else:
-            # seul le champ correspondant à la relation est mis à jour
-            # il n'y a que ce champ dans object_definition
-            field_name = list(object_definition)[0]
-            instance = _get_update_or_create_related_object(model, row.get(primary_key))
-            field_to_update = getattr(instance, field_name)
-            nb_elem_in_field = len(field_to_update.all())
-            field_to_update.add(object_definition[field_name])
-            created = len(field_to_update.all()) != nb_elem_in_field
+            primary_key = _get_primary_key_label(csv_filename)
+            if not is_relation:
+                # tous les champs de l'objet sont mis à jour
+                object_with_history, created = model.objects.update_or_create(
+                    siccrf_id=row.get(primary_key), defaults=object_definition
+                )
+            else:
+                # seul le champ correspondant à la relation est mis à jour
+                # il n'y a que ce champ dans object_definition
+                field_name = list(object_definition)[0]
+                instance = _get_update_or_create_related_object(model, row.get(primary_key))
+                field_to_update = getattr(instance, field_name)
+                nb_elem_in_field = len(field_to_update.all())
+                field_to_update.add(object_definition[field_name])
+                created = len(field_to_update.all()) != nb_elem_in_field
 
         nb_line_created += created
         nb_line_in_success += 1
@@ -227,8 +237,11 @@ def _create_django_fields_to_column_names_mapping(model, csv_fieldnames, csv_fil
     django_fields = _get_model_fields_to_complete(model)
     django_fields_to_column_names = {}
     missing_fields = []
-
     for field in django_fields:
+        # cas particulier du champ `must_be_monitored`
+        # qui n'existe pas en tant que tel dans les csv SICCRF
+        if csv_filename == "REF_ICA_PARTIE_PL_A_SURVEILLER.csv" and field.name == "must_be_monitored":
+            continue
         # le nom des colonnes contenant les clés étrangères ne sont pas préfixées par le nom de la table
         prefixed = False if isinstance(field, ForeignKey) or isinstance(field, ManyToManyField) else True
         try:

@@ -25,7 +25,7 @@ class Plant(CommonBaseIngredient):
         verbose_name = "plante"
 
     family = models.ForeignKey(PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante")
-    useful_parts = models.ManyToManyField(PlantPart, through="UsefulPartRelation", verbose_name="partie utile")
+    useful_parts = models.ManyToManyField(PlantPart, through="UsefulPart", verbose_name="partie utile")
     substances = models.ManyToManyField(Substance)
 
     # champs présents dans le CSV mais inutilisés
@@ -33,7 +33,7 @@ class Plant(CommonBaseIngredient):
     # stingsbs = models.IntegerField()
 
 
-class UsefulPartRelation(models.Model):
+class UsefulPart(models.Model):
     """Ce modèle permet d'associer des données supplémentaires à la relation ManyToMany
     useful_parts
     """
