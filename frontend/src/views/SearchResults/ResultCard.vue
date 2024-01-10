@@ -3,7 +3,7 @@
     <div class="fr-card__body">
       <div class="fr-card__content">
         <div class="fr-card__title" style="order: unset">
-          <a :href="url" class="fr-card__link">{{ result.name }}</a>
+          <router-link :to="route" class="fr-card__link">{{ result.name }}</router-link>
         </div>
         <div class="mt-2 flex">
           <div><v-icon scale="0.85" class="mr-1" :name="icon" /></div>
@@ -16,10 +16,7 @@
 
 <script setup>
 import { computed } from "vue"
-import { useRouter } from "vue-router"
 import { getTypeIcon } from "@/utils"
-
-const router = useRouter()
 
 const props = defineProps({
   result: Object,
@@ -34,8 +31,8 @@ const type = computed(() => {
   }
   return mapping[props.result.objectType] || null
 })
-const url = computed(() => {
+const route = computed(() => {
   const urlComponent = `${props.result?.id}--${type.value?.toLowerCase()}--${props.result?.name}`
-  return router.resolve({ name: "ElementView", params: { urlComponent } }).path
+  return { name: "ElementView", params: { urlComponent } }
 })
 </script>

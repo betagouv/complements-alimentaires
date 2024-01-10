@@ -1,11 +1,16 @@
 <template>
+  <div class="bg-blue-france-925 py-8">
+    <div class="fr-container">
+      <DsfrSearchBar :placeholder="currentSearch" v-model="searchTerm" @search="search" />
+    </div>
+  </div>
   <div class="fr-container">
-    <DsfrBreadcrumb class="mb-8" :links="[{ to: '/', text: 'Accueil' }, { text: element?.name || '' }]" />
+    <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
   </div>
   <div v-if="element" class="fr-container my-8">
     <h1 class="fr-h4 !mb-1">{{ element.name }}</h1>
 
-    <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-20">
+    <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-20 mb-8">
       <div class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
         <div class="fr-text--sm !font-medium !mb-1">Type</div>
         <div class="flex">
@@ -69,9 +74,11 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
 import { verifyResponse, NotFoundError, getTypeIcon } from "@/utils"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 const route = useRoute()
+const router = useRouter()
+
 const notFound = ref(false)
 const typeMapping = {
   plante: "plant",
@@ -114,7 +121,20 @@ const getElementFromApi = () => {
     })
 }
 
-onMounted(getElementFromApi)
+const searchPageSource = ref(null)
+
+const breadcrumbLinks = computed(() => {
+  const links = [{ to: "/", text: "Accueil" }]
+  if (searchPageSource.value) links.push({ to: searchPageSource, text: "Résultats de recherche" })
+  links.push({ text: element.value?.name || "" })
+  return links
+})
+
+onMounted(() => {
+  if (router.options.history.state.back && router.options.history.state.back.indexOf("resultats") > -1)
+    searchPageSource.value = router.options.history.state.back
+  getElementFromApi()
+})
 
 watch(element, (newElement) => {
   if (newElement) document.title = `${newElement.name} - Compléments alimentaires`
