@@ -1,13 +1,16 @@
 <template>
   <div class="bg-blue-france-925 py-8">
     <div class="fr-container">
-      <DsfrSearchBar v-model="searchTerm" @search="search" />
+      <DsfrSearchBar :placeholder="currentSearch" v-model="searchTerm" @search="search" />
     </div>
   </div>
   <div class="fr-container pb-6">
-    <DsfrBreadcrumb class="mb-8" :links="[{ to: '/', text: 'Accueil' }, { text: `Recherche : « ${searchTerm} »` }]" />
+    <DsfrBreadcrumb
+      class="mb-8"
+      :links="[{ to: '/', text: 'Accueil' }, { text: `Recherche : « ${currentSearch} »` }]"
+    />
     <div v-if="emptyView">
-      <h1 class="fr-h3">Nous n'avons pas trouvé des résultats pour « {{ searchTerm }} »</h1>
+      <h1 class="fr-h3">Nous n'avons pas trouvé des résultats pour « {{ currentSearch }} »</h1>
     </div>
     <div class="mb-4" v-else>
       <h1 class="fr-h3">Résultats de recherche</h1>
@@ -38,6 +41,7 @@ import { headers, verifyResponse } from "@/utils"
 import ResultCard from "./ResultCard"
 
 let mounted = false
+let currentSearch = ""
 
 const router = useRouter()
 const route = useRoute()
@@ -74,7 +78,7 @@ const search = () => {
 
 const fetchSearchResults = () => {
   const url = "/api/v1/search/"
-  const body = JSON.stringify({ search: searchTerm.value, limit, offset: offset.value })
+  const body = JSON.stringify({ search: currentSearch, limit, offset: offset.value })
   loading.value = true
   return fetch(url, { method: "POST", headers, body })
     .then(verifyResponse)
@@ -94,7 +98,7 @@ onBeforeRouteUpdate((to) => {
 })
 
 onMounted(() => {
-  searchTerm.value = route.query.q
+  currentSearch = route.query.q
   page.value = route.query.page || 1
   fetchSearchResults().then(() => (mounted = true))
 })
@@ -102,7 +106,10 @@ onMounted(() => {
 watch(
   () => route.query,
   () => {
-    if (mounted) fetchSearchResults()
+    if (mounted) {
+      currentSearch = route.query.q
+      fetchSearchResults()
+    }
   }
 )
 
