@@ -20,7 +20,7 @@ djangorestframework==3.14.0
 djangorestframework-camel-case==1.4.2
 drf-base64==2.0
 factory-boy==3.3.0
-Faker==22.0.0
+Faker==22.2.0
 filelock==3.13.1
 identify==2.5.33
 idna==3.6
