@@ -31,7 +31,7 @@ nodeenv==1.8.0
 packaging==23.2
 pathspec==0.12.1
 Pillow==10.2.0
-pipdeptree==2.13.1
+pipdeptree==2.13.2
 platformdirs==4.1.0
 pre-commit==3.6.0
 psycopg2==2.9.9
