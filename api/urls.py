@@ -1,14 +1,18 @@
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
-from api.views import BlogPostsView, BlogPostView, SubscribeNewsletter, LoggedUserView, WebinarView, SearchView
+import api.views as views
 
 urlpatterns = {
-    path("blogPosts/", BlogPostsView.as_view(), name="blog_posts_list"),
-    path("blogPosts/<int:pk>", BlogPostView.as_view(), name="single_blog_post"),
-    path("subscribeNewsletter/", SubscribeNewsletter.as_view(), name="subscribe_newsletter"),
-    path("loggedUser/", LoggedUserView.as_view(), name="logged_user"),
-    path("webinars/", WebinarView.as_view(), name="webinar_list"),
-    path("search/", SearchView.as_view(), name="search"),
+    path("blogPosts/", views.BlogPostsView.as_view(), name="blog_posts_list"),
+    path("blogPosts/<int:pk>", views.BlogPostView.as_view(), name="single_blog_post"),
+    path("subscribeNewsletter/", views.SubscribeNewsletter.as_view(), name="subscribe_newsletter"),
+    path("loggedUser/", views.LoggedUserView.as_view(), name="logged_user"),
+    path("webinars/", views.WebinarView.as_view(), name="webinar_list"),
+    path("search/", views.SearchView.as_view(), name="search"),
+    path("plants/<int:pk>", views.PlantRetrieveView.as_view(), name="single_plant"),
+    path("ingredients/<int:pk>", views.IngredientRetrieveView.as_view(), name="single_ingredient"),
+    path("microorganisms/<int:pk>", views.MicroorganismRetrieveView.as_view(), name="single_microorganism"),
+    path("substances/<int:pk>", views.SubstanceRetrieveView.as_view(), name="single_substance"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

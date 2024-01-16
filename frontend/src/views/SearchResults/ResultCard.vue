@@ -3,7 +3,7 @@
     <div class="fr-card__body">
       <div class="fr-card__content">
         <div class="fr-card__title" style="order: unset">
-          <a href="#" class="fr-card__link">{{ result.name }}</a>
+          <router-link :to="route" class="fr-card__link">{{ result.name }}</router-link>
         </div>
         <div class="mt-2 flex">
           <div><v-icon scale="0.85" class="mr-1" :name="icon" /></div>
@@ -16,19 +16,12 @@
 
 <script setup>
 import { computed } from "vue"
+import { getTypeIcon } from "@/utils"
 
 const props = defineProps({
   result: Object,
 })
-const icon = computed(() => {
-  const mapping = {
-    plant: "ri-plant-line",
-    microorganism: "ri-microscope-line",
-    ingredient: "ri-flask-line",
-    substance: "ri-test-tube-line",
-  }
-  return mapping[props.result.objectType] || null
-})
+const icon = computed(() => getTypeIcon(props.result.objectType))
 const type = computed(() => {
   const mapping = {
     plant: "Plante",
@@ -37,5 +30,9 @@ const type = computed(() => {
     substance: "Substance",
   }
   return mapping[props.result.objectType] || null
+})
+const route = computed(() => {
+  const urlComponent = `${props.result?.id}--${type.value?.toLowerCase()}--${props.result?.name}`
+  return { name: "ElementView", params: { urlComponent } }
 })
 </script>

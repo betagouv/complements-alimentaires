@@ -3,6 +3,7 @@ import LandingPage from "@/views/LandingPage"
 import BlogsHome from "@/views/BlogsHome"
 import BlogPost from "@/views/BlogPost"
 import SearchResults from "@/views/SearchResults"
+import ElementView from "@/views/ElementView"
 
 const routes = [
   {
@@ -32,6 +33,12 @@ const routes = [
     beforeEnter(to) {
       if (!to.query?.q) return { to: "LandingPage" }
     },
+  },
+  {
+    path: "/element/:urlComponent",
+    name: "ElementView",
+    component: ElementView,
+    props: true,
   },
 ]
 
