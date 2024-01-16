@@ -8,7 +8,7 @@
     <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
   </div>
   <div v-if="element" class="fr-container my-8">
-    <h1 class="fr-h4 !mb-1">{{ element.name }}</h1>
+    <h1 class="fr-h4 !mb-1 capitalize">{{ element.name }}</h1>
 
     <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-1 sm:gap-20 mb-8">
       <div class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
@@ -21,7 +21,7 @@
 
       <div v-if="synonyms && synonyms.length" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
         <div class="fr-text--sm !font-medium !mb-1">Synonymes</div>
-        <DsfrTag small :label="synonym" v-for="synonym in synonyms" :key="synonym" class="mb-1"></DsfrTag>
+        <DsfrTag small :label="synonym" v-for="synonym in synonyms" :key="synonym" class="mb-1 capitalize"></DsfrTag>
       </div>
 
       <div v-if="family" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
@@ -46,7 +46,7 @@
 
       <div v-if="usefulParts && usefulParts.length" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
         <div class="fr-text--sm !font-medium !mb-1">Parties utiles</div>
-        <DsfrTag small :label="part" v-for="part in usefulParts" :key="part" class="mb-1"></DsfrTag>
+        <DsfrTag small :label="part" v-for="part in usefulParts" :key="part" class="mb-1 capitalize"></DsfrTag>
       </div>
 
       <div v-if="substances && substances.length" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
@@ -57,7 +57,7 @@
           :label="substance.name"
           v-for="substance in substances"
           :key="`substance-${substance.id}`"
-          class="mb-1"
+          class="mb-1 capitalize"
         ></DsfrTag>
       </div>
     </div>
