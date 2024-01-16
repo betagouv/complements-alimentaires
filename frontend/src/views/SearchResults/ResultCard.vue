@@ -3,7 +3,7 @@
     <div class="fr-card__body">
       <div class="fr-card__content">
         <div class="fr-card__title" style="order: unset">
-          <router-link :to="route" class="fr-card__link">{{ result.name }}</router-link>
+          <router-link :to="route" class="fr-card__link capitalize">{{ result.name }}</router-link>
         </div>
         <div class="mt-2 flex">
           <div><v-icon scale="0.85" class="mr-1" :name="icon" /></div>
