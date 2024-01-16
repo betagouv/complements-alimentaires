@@ -18,14 +18,12 @@
       </div>
       <div class="p-6 col-span-12 sm:col-span-4 md:col-span-3">
         <div class="font-bold capitalize">{{ formattedDate(webinar) }}</div>
-        <div class="mb-4">{{ formattedTime(webinar) }}</div>
+        <div class="mb-4">{{ formattedStartTime(webinar) }} à {{ formattedEndTime(webinar) }}</div>
         <div class="fr-text--xs text-slate-500">
           <v-icon scale="0.9" class="-mb-1 mr-1" name="ri-video-chat-line"></v-icon>
           Visio-conférence
         </div>
-        <a :href="webinar.link">
-          <DsfrButton label="Je m'inscris" />
-        </a>
+        <a :href="webinar.link" target="_blank" rel="noopener noreferrer" class="fr-btn fr-btn--md">Je m'inscris</a>
       </div>
     </div>
   </div>
@@ -48,12 +46,15 @@ const formattedDate = (webinar) => {
   const date = new Date(webinar.startDate)
   return date.toLocaleString("fr", options)
 }
-const formattedTime = (webinar) => {
-  const date = new Date(webinar.startDate)
+
+const formatTime = (date) => {
   const hour = date.toLocaleString("fr", { hour: "numeric" })
-  const minutes = date.toLocaleString("fr", { minute: "numeric" })
+  const minutes = date.toLocaleString("fr", { minute: "2-digit" })
   return `${hour}${minutes}`.replace(" ", "")
 }
+
+const formattedStartTime = (webinar) => formatTime(new Date(webinar.startDate))
+const formattedEndTime = (webinar) => formatTime(new Date(webinar.endDate))
 
 onMounted(() => {
   const url = "/api/v1/webinars/"

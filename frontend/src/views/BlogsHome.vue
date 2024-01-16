@@ -93,7 +93,7 @@ const blogDate = (post) => {
     day: "numeric",
   })
 }
-const blogDescription = (post) => post.body?.substring(0, 100).replace(/<\/?[^>]+(>|$)/g, "")
+const blogDescription = (post) => post.tagline?.substring(0, 100) || ""
 
 // Route management
 watch(route, () => {

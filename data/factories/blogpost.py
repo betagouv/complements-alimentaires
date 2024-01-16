@@ -8,6 +8,7 @@ class BlogPostFactory(factory.django.DjangoModelFactory):
         model = BlogPost
 
     title = factory.Faker("catch_phrase")
+    tagline = factory.Faker("catch_phrase")
     body = factory.Faker("paragraph")
     published = factory.Faker("boolean")
     author = factory.SubFactory(UserFactory)
