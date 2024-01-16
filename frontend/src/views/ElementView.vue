@@ -76,6 +76,15 @@ import { onMounted, ref, computed, watch } from "vue"
 import { verifyResponse, NotFoundError, getTypeIcon } from "@/utils"
 import { useRoute, useRouter } from "vue-router"
 
+const searchTerm = ref(null)
+const search = () => {
+  if (searchTerm.value.length < 3) {
+    window.alert("Veuillez saisir au moins trois caractères")
+    return
+  }
+  router.push({ name: "SearchResults", query: { q: searchTerm.value } })
+}
+
 const route = useRoute()
 const router = useRouter()
 
