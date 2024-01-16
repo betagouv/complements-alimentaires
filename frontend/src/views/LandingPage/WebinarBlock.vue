@@ -51,7 +51,7 @@ const formattedDate = (webinar) => {
 const formattedTime = (webinar) => {
   const date = new Date(webinar.startDate)
   const hour = date.toLocaleString("fr", { hour: "numeric" })
-  const minutes = date.toLocaleString("fr", { minute: "numeric" })
+  const minutes = date.toLocaleString("fr", { minute: "2-digit" })
   return `${hour}${minutes}`.replace(" ", "")
 }
 
