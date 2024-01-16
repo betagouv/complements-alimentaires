@@ -35,5 +35,5 @@ class SubstanceSynonym(CommonBaseModel):
     class Meta:
         verbose_name = "synonyme substance active"
 
-    substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
+    standard_name = models.ForeignKey(Substance, on_delete=models.CASCADE, verbose_name="nom de référence")
     # TODO importer aussi les synonym_type = TSYNSBSTA_IDENT en ForeignKeys

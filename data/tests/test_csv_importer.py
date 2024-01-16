@@ -36,9 +36,10 @@ class CSVImporterTestCase(TestCase):
         self.assertEqual("", _clean_value("", TextField()))
         self.assertEqual("", _clean_value("NULL", TextField()))
         self.assertEqual("", _clean_value("NULL", CharField()))
+        self.assertEqual("Eloides rhamnosus trulul", _clean_value(" Eloides rhamnosus trulul ", CharField()))
 
     def test_models_created(self):
-        path = "data/tests/files/test-model-creation-1/"
+        path = "data/tests/files/test-model-creation/"
         call_command("load_ingredients", directory=path)
 
         self.assertTrue(Plant.objects.filter(siccrf_id=10).exists())
@@ -61,7 +62,46 @@ class CSVImporterTestCase(TestCase):
         self.assertTrue(Substance.objects.filter(siccrf_id=11).exists())
         self.assertEqual(len(Substance.objects.all()), 2)
 
-    def test_linked_models_created(self):
-        path = "data/tests/files/test-model-creation-1/"
+    def test_linked_models_created_even_if_no_corresponding_file(self):
+        path = "data/tests/files/test-model-creation/"
         call_command("load_ingredients", directory=path)
         self.assertTrue(PlantFamily.objects.filter(siccrf_id=6).exists())
+
+    def test_import_twice_same_synonym_created_only_once(self):
+        path = "data/tests/files/import_twice_same_synonym_created_only_once/"
+        call_command("load_ingredients", directory=path)
+        # les lignes doublonnées ne sont pas ajoutées
+        self.assertEqual(len(Plant.objects.get(name="Pour les pieds").plantsynonym_set.all()), 4)
+        self.assertEqual(len(Plant.objects.get(name="Pour le cou").plantsynonym_set.all()), 3)
+        # mais les lignes dont l'id est différent sont ajoutées 2 fois
+        self.assertEqual(
+            len(Plant.objects.get(name="Pour les pieds").plantsynonym_set.filter(name="Chaussure à talons")), 2
+        )
+
+    def test_creates_models_with_their_relations(self):
+        path = "data/tests/files/creates_models_with_their_relations/"
+        call_command("load_ingredients", directory=path)
+
+        self.assertEqual(len(Plant.objects.get(name="Pour les pieds").useful_parts.all()), 1)
+        self.assertEqual(len(Plant.objects.get(name="Pour le cou").useful_parts.all()), 3)
+
+    def test_create_objects_in_relation_if_they_do_not_already_exist(self):
+        path = "data/tests/files/create_objects_in_relation_if_they_do_not_already_exist/"
+        call_command("load_ingredients", directory=path)
+
+        self.assertEqual(len(Plant.objects.get(name="Pour les pieds").useful_parts.all()), 1)
+        self.assertEqual(len(Plant.objects.get(name="Pour le cou").useful_parts.all()), 4)
+        self.assertEqual(len(Plant.objects.get(name="Pour le cou").useful_parts.all()), 4)
+        first_id = Plant.objects.get(siccrf_id=1)
+        self.assertEqual(len(first_id.useful_parts.all()), 1)
+        self.assertEqual(first_id.name, "1")
+        second_id = Plant.objects.get(siccrf_id=2)
+        # dans le fichier une ligne de relation est dupliquée
+        self.assertEqual(len(second_id.useful_parts.all()), 2)
+        self.assertEqual(second_id.name, "2")
+
+    @patch("data.csv_importer.logger")
+    def test_raises_if_not_utf_8_file(self, mocked_logger):
+        path = "data/tests/files/raises_if_not_utf_8_file/"
+        call_command("load_ingredients", directory=path)
+        mocked_logger.error.assert_called_with("'REF_ICA_PLANTE.csv' n'est pas un fichier unicode.")
