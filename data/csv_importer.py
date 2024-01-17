@@ -102,6 +102,9 @@ DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
     "useful_parts": ["PPLAN_IDENT"],
 }
 
+# Ces champs sont remplis automatiquement et ne sont pas recherchés dans les fichiers csv
+AUTOMATICALLY_FILLED = ["id", "siccrf_id", "creation_date", "modification_date", "missing_import_data"]
+
 
 def import_csv(csv_filepath):
     csv_filename = os.path.basename(csv_filepath)
@@ -164,6 +167,7 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
                 except KeyError as e:
                     logger.warning(f"Il n'y a pas de modèle défini pour cette table : {e}")
 
+        # ici, c'est un csv correspondant à une relation complexe (stockée dans un Model spécifique) qui est importée
         if model == UsefulPart:
             default_extra_fields = {"must_be_monitored": True}
             object_with_history, created = model.objects.update_or_create(
@@ -171,14 +175,7 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
             )
         else:
             primary_key = _get_primary_key_label(csv_filename)
-            if not is_relation:
-                # tous les champs de l'objet sont mis à jour
-                # le champ missing_import_data est set à False
-                object_definition["missing_import_data"] = False
-                object_with_history, created = model.objects.update_or_create(
-                    siccrf_id=row.get(primary_key), defaults=object_definition
-                )
-            else:
+            if is_relation:
                 # seul le champ correspondant à la relation est mis à jour
                 # il n'y a que ce champ dans object_definition
                 field_name = list(object_definition)[0]
@@ -187,6 +184,13 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
                 nb_elem_in_field = len(field_to_update.all())
                 field_to_update.add(object_definition[field_name])
                 created = len(field_to_update.all()) != nb_elem_in_field
+            else:
+                # c'est le csv d'un Model qui est importé
+                # le champ `missing_import_data` devient False
+                object_definition["missing_import_data"] = False
+                object_with_history, created = model.objects.update_or_create(
+                    siccrf_id=row.get(primary_key), defaults=object_definition
+                )
 
         nb_line_created += created
         nb_line_in_success += 1
@@ -195,10 +199,9 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
 
 def _get_model_fields_to_complete(model):
     "Returns all fields(including many-to-many and foreign key) except non editable fields"
-    automatically_filled = ["id", "siccrf_id", "creation_date", "modification_date", "missing_import_data"]
     model_fields = model._meta.get_fields()
     # le flag concrete indique les champs qui ont une colonne associée
-    return [field for field in model_fields if field.concrete and field.name not in automatically_filled]
+    return [field for field in model_fields if field.concrete and field.name not in AUTOMATICALLY_FILLED]
 
 
 def _get_column_name(field_name, csv_fields_in_header, csv_filename, prefixed=True):

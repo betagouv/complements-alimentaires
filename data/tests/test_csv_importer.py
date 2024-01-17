@@ -105,3 +105,27 @@ class CSVImporterTestCase(TestCase):
         path = "data/tests/files/raises_if_not_utf_8_file/"
         call_command("load_ingredients", directory=path)
         mocked_logger.error.assert_called_with("'REF_ICA_PLANTE.csv' n'est pas un fichier unicode.")
+
+    def test_missing_import_data_field_well_filled(self):
+        path = "data/tests/files/create_objects_in_relation_if_they_do_not_already_exist/"
+        call_command("load_ingredients", directory=path)
+
+        missing_plants = Plant.objects.filter(missing_import_data=True)
+        missing_plantparts = PlantPart.objects.filter(missing_import_data=True)
+        self.assertEqual(len(missing_plants), 2)
+        for plant in missing_plants:
+            self.assertIn(plant.name, ["2", "1"])
+            self.assertEqual(plant.public_comments, "")
+            self.assertEqual(plant.private_comments, "")
+            self.assertEqual(plant.is_obsolete, False)
+            self.assertEqual(plant.family, None)
+            self.assertFalse(plant.substances.all().exists())
+            self.assertTrue(plant.useful_parts.all().exists())
+
+        self.assertEqual(len(missing_plantparts), 1)
+        self.assertEqual(missing_plantparts[0].name, "40")
+        for plantparts in missing_plantparts:
+            self.assertEqual(plantparts.name_en, "")
+            self.assertEqual(plantparts.is_obsolete, False)
+            self.assertTrue(plantparts.usefulpart_set.all().exists())
+            self.assertTrue(plantparts.plant_set.all().exists())
