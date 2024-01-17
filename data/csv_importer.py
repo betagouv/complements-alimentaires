@@ -173,6 +173,8 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
             primary_key = _get_primary_key_label(csv_filename)
             if not is_relation:
                 # tous les champs de l'objet sont mis à jour
+                # le champ missing_import_data est set à False
+                object_definition["missing_import_data"] = False
                 object_with_history, created = model.objects.update_or_create(
                     siccrf_id=row.get(primary_key), defaults=object_definition
                 )
@@ -193,7 +195,7 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
 
 def _get_model_fields_to_complete(model):
     "Returns all fields(including many-to-many and foreign key) except non editable fields"
-    automatically_filled = ["id", "siccrf_id", "creation_date", "modification_date"]
+    automatically_filled = ["id", "siccrf_id", "creation_date", "modification_date", "missing_import_data"]
     model_fields = model._meta.get_fields()
     # le flag concrete indique les champs qui ont une colonne associée
     return [field for field in model_fields if field.concrete and field.name not in automatically_filled]

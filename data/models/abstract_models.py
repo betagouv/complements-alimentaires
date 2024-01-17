@@ -16,6 +16,8 @@ class CommonBaseModel(models.Model):
     is_obsolete = models.BooleanField(verbose_name="objet obsolète", default=False)
     history = HistoricalRecords(inherit=True)
     siccrf_id = models.IntegerField(blank=True, null=True, editable=False, db_index=True, unique=True)
+    # ce champ permet de garder une trace des objets créés parce qu'ils sont dans une relation mais pour lesquels il manque les données réelles
+    missing_import_data = models.BooleanField(blank=True, null=True, editable=False, default=True)
     # ordre = models.IntegerField()
 
     def __str__(self):
