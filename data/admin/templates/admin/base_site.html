@@ -9,6 +9,10 @@
       <span class="badge info">
         {{ current_environment }}
       </span>
+    {% elif current_environment == "demo" %}
+    <span class="badge new">
+      {{ current_environment }}
+    </span>
     {% else %}
       <span class="badge warning">
         {{ current_environment }}
@@ -32,6 +36,10 @@
   .info {
     background: #e8edff;
     color:  #0063cb;
+  }
+  .new {
+    background: #b8fec9;
+    color:  #18753c;
   }
   .warning {
     background: #ffe9e6;
