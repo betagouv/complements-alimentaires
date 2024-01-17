@@ -39,7 +39,7 @@ class CSVImporterTestCase(TestCase):
         self.assertEqual("Eloides rhamnosus trulul", _clean_value(" Eloides rhamnosus trulul ", CharField()))
 
     def test_models_created(self):
-        path = "data/tests/files/test-model-creation/"
+        path = "data/tests/files/test_model_creation/"
         call_command("load_ingredients", directory=path)
 
         self.assertTrue(Plant.objects.filter(siccrf_id=10).exists())
@@ -63,9 +63,10 @@ class CSVImporterTestCase(TestCase):
         self.assertEqual(len(Substance.objects.all()), 2)
 
     def test_linked_models_created_even_if_no_corresponding_file(self):
-        path = "data/tests/files/test-model-creation/"
+        path = "data/tests/files/test_model_creation/"
         call_command("load_ingredients", directory=path)
         self.assertTrue(PlantFamily.objects.filter(siccrf_id=6).exists())
+        self.assertEqual(PlantFamily.objects.get(siccrf_id=6).missing_import_data, True)
 
     def test_import_twice_same_synonym_created_only_once(self):
         path = "data/tests/files/import_twice_same_synonym_created_only_once/"
