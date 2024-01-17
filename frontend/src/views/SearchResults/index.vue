@@ -9,7 +9,10 @@
       class="mb-8"
       :links="[{ to: '/', text: 'Accueil' }, { text: `Recherche : « ${currentSearch} »` }]"
     />
-    <div v-if="emptyView">
+    <div class="flex justify-center my-24" v-if="loading">
+      <ProgressSpinner />
+    </div>
+    <div v-else-if="emptyView">
       <h1 class="fr-h3">Nous n'avons pas trouvé des résultats pour « {{ currentSearch }} »</h1>
     </div>
     <div class="mb-4" v-else>
@@ -39,9 +42,10 @@ import { onMounted, ref, computed, watch } from "vue"
 import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router"
 import { headers, verifyResponse } from "@/utils"
 import ResultCard from "./ResultCard"
+import ProgressSpinner from "@/components/ProgressSpinner"
 
 let mounted = false
-let currentSearch = ""
+let currentSearch = ref("")
 
 const router = useRouter()
 const route = useRoute()
@@ -78,7 +82,7 @@ const search = () => {
 
 const fetchSearchResults = () => {
   const url = "/api/v1/search/"
-  const body = JSON.stringify({ search: currentSearch, limit, offset: offset.value })
+  const body = JSON.stringify({ search: currentSearch.value, limit, offset: offset.value })
   loading.value = true
   return fetch(url, { method: "POST", headers, body })
     .then(verifyResponse)
@@ -98,7 +102,7 @@ onBeforeRouteUpdate((to) => {
 })
 
 onMounted(() => {
-  currentSearch = route.query.q
+  currentSearch.value = route.query.q
   page.value = route.query.page || 1
   fetchSearchResults().then(() => (mounted = true))
 })
@@ -107,7 +111,7 @@ watch(
   () => route.query,
   () => {
     if (mounted) {
-      currentSearch = route.query.q
+      currentSearch.value = route.query.q
       fetchSearchResults()
     }
   }
