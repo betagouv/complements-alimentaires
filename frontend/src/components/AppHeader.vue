@@ -18,6 +18,10 @@ const navItems = [
     text: "Accueil",
   },
   {
+    to: "/entreprises",
+    text: "Entreprises",
+  },
+  {
     to: "/blog",
     text: "Blog",
   },

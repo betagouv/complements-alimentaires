@@ -1,16 +1,13 @@
 <template>
-  <TaglineBlock />
+  <SearchBlock />
 
-  <div class="fr-container my-10">
-    <MissionBlock />
+  <div class="fr-container my-6 md:my-16">
+    <DeclarationBlock />
   </div>
-
-  <StatsBlock />
 
   <div class="fr-container my-10">
     <WebinarBlock />
   </div>
-
   <div class="bg-blue-france-975">
     <div class="fr-container p-6 md:p-10">
       <NewsletterBlock />
@@ -19,8 +16,7 @@
 </template>
 <script setup>
 import NewsletterBlock from "@/views/LandingPage/NewsletterBlock.vue"
-import TaglineBlock from "@/views/LandingPage/TaglineBlock.vue"
+import DeclarationBlock from "@/views/ProducersPage/DeclarationBlock.vue"
 import WebinarBlock from "@/views/LandingPage/WebinarBlock.vue"
-import StatsBlock from "@/views/LandingPage/StatsBlock.vue"
-import MissionBlock from "@/views/LandingPage/MissionBlock.vue"
+import SearchBlock from "@/views/ProducersPage/SearchBlock.vue"
 </script>
