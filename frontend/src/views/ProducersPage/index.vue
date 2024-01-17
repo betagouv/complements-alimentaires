@@ -15,8 +15,8 @@
   </div>
 </template>
 <script setup>
-import NewsletterBlock from "@/views/LandingPage/NewsletterBlock.vue"
-import DeclarationBlock from "@/views/ProducersPage/DeclarationBlock.vue"
-import WebinarBlock from "@/views/LandingPage/WebinarBlock.vue"
-import SearchBlock from "@/views/ProducersPage/SearchBlock.vue"
+import NewsletterBlock from "@/views/LandingPage/NewsletterBlock"
+import DeclarationBlock from "@/views/ProducersPage/DeclarationBlock"
+import WebinarBlock from "@/views/LandingPage/WebinarBlock"
+import SearchBlock from "@/views/ProducersPage/SearchBlock"
 </script>

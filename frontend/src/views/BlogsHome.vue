@@ -12,15 +12,12 @@
     </div>
     <p v-else-if="blogPostCount === 0">Nous n'avons pas encore d'articles de blog</p>
     <div v-else>
-      <div class="grid grid-cols-12">
-        <DsfrCard
-          class="col-span-12 sm:col-span-6 md:col-span-4 mb-4 mr-4"
+      <div class="grid grid-cols-12 gap-4">
+        <BlogCard
+          class="col-span-12 sm:col-span-6 md:col-span-4"
           v-for="post in visibleBlogPosts"
           :key="post.id"
-          :title="post.title"
-          :detail="blogDate(post)"
-          :description="blogDescription(post)"
-          :link="{ name: 'BlogPost', params: { id: post.id } }"
+          :post="post"
         />
       </div>
       <DsfrPagination
@@ -39,6 +36,7 @@ import { onMounted, computed, ref, watch } from "vue"
 import { verifyResponse } from "@/utils"
 import { useRoute, useRouter } from "vue-router"
 import ProgressSpinner from "@/components/ProgressSpinner"
+import BlogCard from "@/components/BlogCard"
 
 const route = useRoute()
 const router = useRouter()
@@ -77,14 +75,6 @@ const fetchCurrentPage = () => {
     })
 }
 const loading = computed(() => blogPostCount.value === null)
-const blogDate = (post) => {
-  return new Date(post.displayDate).toLocaleDateString("fr-FR", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  })
-}
-const blogDescription = (post) => post.tagline?.substring(0, 100) || ""
 
 // Route management
 watch(route, () => {
