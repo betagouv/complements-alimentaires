@@ -1,0 +1,49 @@
+{% extends "admin/base_site.html" %}
+{% load environment %}
+
+{% block branding %}
+<div id="site-name">
+  {% environment as current_environment %}
+  {% if current_environment != "prod" %}
+    {% if current_environment == "dev" %}
+      <span class="badge info">
+        {{ current_environment }}
+      </span>
+    {% elif current_environment == "demo" %}
+    <span class="badge new">
+      {{ current_environment }}
+    </span>
+    {% else %}
+      <span class="badge warning">
+        {{ current_environment }}
+      </span>
+    {% endif %}
+  {% endif %}
+  <a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+
+<style>
+  .badge {
+    padding: 0 .5rem;
+    margin: 0.2em;
+    border-radius: .25rem;
+    font-size: .875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .info {
+    background: #e8edff;
+    color:  #0063cb;
+  }
+  .new {
+    background: #b8fec9;
+    color:  #18753c;
+  }
+  .warning {
+    background: #ffe9e6;
+    color:  #b34000;
+  }
+</style>
+{% endblock %}
