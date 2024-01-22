@@ -54,3 +54,12 @@ export const RiTestTubeLine = {
   height: 24,
   raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M17 2v2h-1v14c0 2.21-1.79 4-4 4s-4-1.79-4-4V4H7V2h10zm-3 8h-4v8a2 2 0 104 0v-8zm-1 5a1 1 0 110 2 1 1 0 010-2zm-2-3a1 1 0 110 2 1 1 0 010-2zm3-8h-4v4h4V4z"/>',
 }
+
+export const RiArrowRightLine = {
+  name: "ri-arrow-right-line",
+  minX: 0,
+  minY: 0,
+  width: 24,
+  height: 24,
+  raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z"/>',
+}
