@@ -3,6 +3,7 @@ repos:
 # GENERAL
 - hooks:
   - id: check-added-large-files
+    args: ["--maxkb=1000"]
   - id: check-merge-conflict
   - id: forbid-new-submodules
   repo: https://github.com/pre-commit/pre-commit-hooks
