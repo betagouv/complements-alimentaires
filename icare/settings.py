@@ -191,6 +191,11 @@ if DEBUG and EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend":
     EMAIL_HOST = "localhost"
     EMAIL_PORT = 1025
 
+NEWSLETTER_BREVO_LIST_ID = os.getenv("NEWSLETTER_BREVO_LIST_ID")
+ANYMAIL = {
+    "SENDINBLUE_API_KEY": os.getenv("BREVO_API_KEY", ""),
+}
+
 # Rest framework
 
 REST_FRAMEWORK = {
@@ -237,11 +242,6 @@ LOGGING = {
             "propagate": True,
         },
     },
-}
-
-NEWSLETTER_BREVO_LIST_ID = os.getenv("NEWSLETTER_BREVO_LIST_ID")
-ANYMAIL = {
-    "SENDINBLUE_API_KEY": os.getenv("BREVO_API_KEY", ""),
 }
 
 # CK Editor
