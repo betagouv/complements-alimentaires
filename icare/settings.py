@@ -160,6 +160,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Media and file storage
+AWS_ACCESS_KEY_ID = os.getenv("CELLAR_KEY")
+AWS_SECRET_ACCESS_KEY = os.getenv("CELLAR_SECRET")
+AWS_S3_ENDPOINT_URL = os.getenv("CELLAR_HOST")
+AWS_STORAGE_BUCKET_NAME = os.getenv("CELLAR_BUCKET_NAME")
+AWS_LOCATION = "media"
+AWS_QUERYSTRING_AUTH = False
+
 DEFAULT_FILE_STORAGE = os.getenv("DEFAULT_FILE_STORAGE")
 MEDIA_ROOT = os.getenv("MEDIA_ROOT", os.path.join(BASE_DIR, "media"))
 MEDIA_URL = "/media/"
