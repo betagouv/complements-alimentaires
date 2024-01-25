@@ -44,14 +44,14 @@ class SearchView(APIView):
         return results
 
     def get_plants(self, query):
-        vector = SearchVector("name", weight="A") + SearchVector("plantsynonym__standard_name", weight="A")
+        vector = SearchVector("name", weight="A") + SearchVector("plantsynonym__name", weight="B")
         plants = Plant.objects.annotate(rank=SearchRank(vector, query))
         return list(plants.filter(rank__gte=self.search_rank_threshold).all())
 
     def get_microorganisms(self, query):
         vector = (
             SearchVector("name", weight="A")
-            + SearchVector("microorganismsynonym__standard_name", weight="A")
+            + SearchVector("microorganismsynonym__name", weight="B")
             + SearchVector("name_en", weight="B")
         )
         microorganisms = Microorganism.objects.annotate(rank=SearchRank(vector, query))
@@ -60,7 +60,7 @@ class SearchView(APIView):
     def get_ingredients(self, query):
         vector = (
             SearchVector("name", weight="A")
-            + SearchVector("ingredientsynonym__standard_name", weight="A")
+            + SearchVector("ingredientsynonym__name", weight="B")
             + SearchVector("name_en", weight="B")
             + SearchVector("description", weight="C")
         )
@@ -72,7 +72,7 @@ class SearchView(APIView):
             SearchVector("cas_number", weight="A")
             + SearchVector("einec_number", weight="A")
             + SearchVector("name", weight="A")
-            + SearchVector("substancesynonym__standard_name", weight="A")
+            + SearchVector("substancesynonym__name", weight="B")
             + SearchVector("name_en", weight="B")
         )
         substance = Substance.objects.annotate(rank=SearchRank(vector, query))
