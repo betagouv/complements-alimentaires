@@ -28,5 +28,5 @@ class MicroorganismSynonymFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = MicroorganismSynonym
 
-    microorganism = factory.SubFactory(MicroorganismFactory)
+    standard_name = factory.SubFactory(MicroorganismFactory)
     name = factory.Faker("text", max_nb_chars=20)
