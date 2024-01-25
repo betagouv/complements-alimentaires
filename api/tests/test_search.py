@@ -155,6 +155,34 @@ class TestSearch(APITestCase):
         self.assertIn(substance_name_en.id, two_last_results)
         self.assertIn(substance_synonym.id, two_last_results)
 
+    def test_multiple_microorganism_synonym_match_return_only_once(self):
+        """The search_term might be found in several fields,
+        in this case, the object should appear only once in search results
+        """
+        moorg = MicroorganismFactory(name="matcha")
+        MicroorganismSynonymFactory(name="matcha latte", standard_name=moorg)
+        MicroorganismSynonymFactory(name="boisson matcha", standard_name=moorg)
+
+        search_term = "matcha"
+        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        results = response.json().get("results", [])
+
+        self.assertEqual(len(results), 1)
+
+    def test_multiple_substance_synonym_match_return_only_once(self):
+        """The search_term might be found in several fields,
+        in this case, the object should appear only once in search results
+        """
+        substance = SubstanceFactory(name="matcha")
+        SubstanceSynonymFactory(name="matcha latte", standard_name=substance)
+        SubstanceSynonymFactory(name="boisson matcha", standard_name=substance)
+
+        search_term = "matcha"
+        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        results = response.json().get("results", [])
+
+        self.assertEqual(len(results), 1)
+
     def test_pagination(self):
         """
         Pagination is controlled by parameters `limit` and `offset`

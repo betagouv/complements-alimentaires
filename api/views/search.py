@@ -7,6 +7,7 @@ from django.core.exceptions import BadRequest
 from api.serializers import SearchResultSerializer
 from data.models import Plant, Microorganism, Ingredient, Substance
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.contrib.postgres.aggregates import StringAgg
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 
 logger = logging.getLogger(__name__)
@@ -44,14 +45,16 @@ class SearchView(APIView):
         return results
 
     def get_plants(self, query):
-        vector = SearchVector("name", weight="A") + SearchVector("plantsynonym__name", weight="B")
+        vector = SearchVector("name", weight="A") + SearchVector(
+            StringAgg("plantsynonym__name", delimiter=" "), weight="B"
+        )
         plants = Plant.objects.annotate(rank=SearchRank(vector, query))
         return list(plants.filter(rank__gte=self.search_rank_threshold).all())
 
     def get_microorganisms(self, query):
         vector = (
             SearchVector("name", weight="A")
-            + SearchVector("microorganismsynonym__name", weight="B")
+            + SearchVector(StringAgg("microorganismsynonym__name", delimiter=" "), weight="B")
             + SearchVector("name_en", weight="B")
         )
         microorganisms = Microorganism.objects.annotate(rank=SearchRank(vector, query))
@@ -60,7 +63,7 @@ class SearchView(APIView):
     def get_ingredients(self, query):
         vector = (
             SearchVector("name", weight="A")
-            + SearchVector("ingredientsynonym__name", weight="B")
+            + SearchVector(StringAgg("ingredientsynonym__name", delimiter=" "), weight="B")
             + SearchVector("name_en", weight="B")
             + SearchVector("description", weight="C")
         )
@@ -72,7 +75,7 @@ class SearchView(APIView):
             SearchVector("cas_number", weight="A")
             + SearchVector("einec_number", weight="A")
             + SearchVector("name", weight="A")
-            + SearchVector("substancesynonym__name", weight="B")
+            + SearchVector(StringAgg("substancesynonym__name", delimiter=" "), weight="B")
             + SearchVector("name_en", weight="B")
         )
         substance = Substance.objects.annotate(rank=SearchRank(vector, query))
