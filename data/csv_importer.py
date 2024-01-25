@@ -4,6 +4,7 @@ import os
 
 from django.db.models import ForeignKey, ManyToManyField, TextField, CharField, FloatField, IntegerField
 
+from .exceptions import CSVFileError
 
 # Import the model
 from .models.ingredient import Ingredient, IngredientSynonym
@@ -109,37 +110,37 @@ AUTOMATICALLY_FILLED = ["id", "siccrf_id", "creation_date", "modification_date",
 def import_csv(csv_filepath):
     csv_filename = os.path.basename(csv_filepath)
     if not csv_filename.endswith(".csv"):
-        logger.error(f"'{csv_filename}' n'est pas un fichier csv.")
-        return
+        msg = f"'{csv_filename}' n'est pas un fichier csv."
+        raise CSVFileError(msg)
     try:
         model = _get_model_from_csv_name(csv_filename)
     except KeyError as e:
-        logger.error(f"Ce nom de fichier ne ressemble pas à ceux attendus : {e}")
-        return
+        raise CSVFileError(f"Ce nom de fichier ne ressemble pas à ceux attendus : {e}")
 
     with open(csv_filepath, mode="rb") as csv_file:
         try:
             csv_string = csv_file.read().decode("utf-8-sig")
-        except UnicodeDecodeError:
-            logger.error(f"'{csv_filename}' n'est pas un fichier unicode.")
-            return
+        except UnicodeDecodeError as e:
+            raise CSVFileError(f"'{csv_filename}' n'est pas un fichier unicode.", e)
         try:
             csv_lines = csv_string.splitlines()
             dialect = csv.Sniffer().sniff(csv_lines[0])
-        except csv.Error:
-            logger.error(f"'{csv_filename}' n'est pas un fichier csv.")
-            return
+        except csv.Error as e:
+            raise CSVFileError(f"'{csv_filename}' n'est pas un fichier csv.", e)
 
         csvreader = csv.DictReader(csv_lines, dialect=dialect)
 
         logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} en cours.")
         is_relation = True if csv_filename in RELATION_CSV else False
-        nb_row, nb_created = _import_csv_to_model(
+        nb_row, nb_created, updated_models = _import_csv_to_model(
             csv_reader=csvreader, csv_filename=csv_filename, model=model, is_relation=is_relation
         )
         logger.info(
             f"Import de {csv_filename} dans le modèle {model.__name__} terminé : {nb_row} objets importés, {nb_created} objets créés."
         )
+    updated_models.add(model)
+
+    return updated_models
 
 
 def _get_model_from_csv_name(csv_filename):
@@ -148,7 +149,8 @@ def _get_model_from_csv_name(csv_filename):
 
 def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
     nb_line_in_success = 0
-    nb_line_created = 0
+    nb_objects_created = 0
+    linked_models = set()
     csv_fieldnames = csv_reader.fieldnames
     django_fields_to_column_names = _create_django_fields_to_column_names_mapping(model, csv_fieldnames, csv_filename)
     for row in csv_reader:
@@ -163,6 +165,7 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
                 foreign_key_id = row.get(column_name)
                 try:
                     linked_model = _get_linked_model(column_name)
+                    linked_models.add(linked_model)
                     object_definition[field.name] = _get_update_or_create_related_object(linked_model, foreign_key_id)
                 except KeyError as e:
                     logger.warning(f"Il n'y a pas de modèle défini pour cette table : {e}")
@@ -192,9 +195,9 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
                     siccrf_id=row.get(primary_key), defaults=object_definition
                 )
 
-        nb_line_created += created
+        nb_objects_created += created
         nb_line_in_success += 1
-    return nb_line_in_success, nb_line_created
+    return nb_line_in_success, nb_objects_created, linked_models
 
 
 def _get_model_fields_to_complete(model):
@@ -293,5 +296,5 @@ def _get_update_or_create_related_object(model, id):
         return model.objects.get(siccrf_id=id)
     except model.DoesNotExist as e:
         logger.warning(f"Création de l'id {id}, qui n'existait pas encore dans {e}.")
-        linked_obj, _ = model.objects.update_or_create(siccrf_id=id, defaults={"name": id})
+        linked_obj, _ = model.objects.update_or_create(siccrf_id=id, defaults={"name": ""})
         return linked_obj
