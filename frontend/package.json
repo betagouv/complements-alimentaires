@@ -34,7 +34,7 @@
     "postcss": "^8.4.33",
     "prettier": "3.2.4",
     "tailwindcss": "^3.4.1",
-    "vue-eslint-parser": "^9.3.2"
+    "vue-eslint-parser": "^9.4.2"
   },
   "eslintConfig": {
     "root": true,
