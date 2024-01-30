@@ -30,3 +30,13 @@ class SearchResultSerializer(serializers.Serializer):
             return "ingredient"
         if isinstance(instance, Substance):
             return "substance"
+
+    def get_synonyms(self, instance):
+        if isinstance(instance, Plant):
+            return instance.plantsynonym_set.values_list("name", flat=True).distinct()
+        if isinstance(instance, Microorganism):
+            return instance.microorganismsynonym_set.values_list("name", flat=True).distinct()
+        if isinstance(instance, Ingredient):
+            return instance.ingredientsynonym_set.values_list("name", flat=True).distinct()
+        if isinstance(instance, Substance):
+            return instance.substancesynonym_set.values_list("name", flat=True).distinct()

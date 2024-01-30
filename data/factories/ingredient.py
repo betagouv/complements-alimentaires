@@ -28,5 +28,5 @@ class IngredientSynonymFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = IngredientSynonym
 
-    ingredient = factory.SubFactory(IngredientFactory)
+    standard_name = factory.SubFactory(IngredientFactory)
     name = factory.Faker("text", max_nb_chars=20)

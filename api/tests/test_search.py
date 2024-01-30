@@ -1,7 +1,15 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from data.factories import PlantFactory, IngredientFactory, SubstanceFactory, MicroorganismFactory
+from data.factories import (
+    PlantFactory,
+    IngredientFactory,
+    IngredientSynonymFactory,
+    SubstanceFactory,
+    SubstanceSynonymFactory,
+    MicroorganismFactory,
+    MicroorganismSynonymFactory,
+)
 
 
 class TestSearch(APITestCase):
@@ -45,6 +53,14 @@ class TestSearch(APITestCase):
         self.assertIn(eucalyptus_1.id, returned_ids)
         self.assertIn(eucalyptus_2.id, returned_ids)
 
+    def test_search_synonym(self):
+        """Simple synonym test"""
+        IngredientSynonymFactory(name="matcha", standard_name=IngredientFactory(name="other"))
+        search_term = "matcha"
+        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        results = response.json().get("results", [])
+        self.assertTrue("other" in [result["name"] for result in results])
+
     def test_search_multiple_tables(self):
         """
         Multiple-class name test
@@ -84,52 +100,88 @@ class TestSearch(APITestCase):
     def test_ingredient_field_priorities(self):
         """
         The weighting of certain fields yields different scores. For example,
-        an ingredients `name` has a higher search priority than its `name_en`
+        an ingredients `name` has a higher search priority than its `name_en` and `ingredientsynonym`
         which has a higher priority than its `description`
         """
-        ingredient_description = IngredientFactory(description="matcha")
         ingredient_name = IngredientFactory(name="matcha")
-        ingredient_name_en = IngredientFactory(name_en="matcha")
+        IngredientSynonymFactory(name="matcha", standard_name=IngredientFactory(name="other"))
+        IngredientFactory(name_en="matcha")
+        ingredient_description = IngredientFactory(description="matcha")
 
         search_term = "matcha"
         response = self.client.post(f"{reverse('search')}", {"search": search_term})
         results = response.json().get("results", [])
-
         self.assertEqual(results[0]["id"], ingredient_name.id)
-        self.assertEqual(results[1]["id"], ingredient_name_en.id)
-        self.assertEqual(results[2]["id"], ingredient_description.id)
+        self.assertEqual(results[3]["id"], ingredient_description.id)
 
     def test_microorganism_field_priorities(self):
         """
         The weighting of certain fields yields different scores. For example,
-        a microorganism `name` has a higher search priority than its `name_en`
+        a microorganism `name` has a higher search priority than its `name_en` and `microorganismsynonym`
         """
-        microorganism_name_en = MicroorganismFactory(name_en="matcha")
         microorganism_name = MicroorganismFactory(name="matcha")
+        microorganism_name_en = MicroorganismFactory(name_en="matcha")
+        microorganism_synonym = MicroorganismFactory(name="other")
+        MicroorganismSynonymFactory(name="matcha", standard_name=microorganism_synonym)
 
         search_term = "matcha"
         response = self.client.post(f"{reverse('search')}", {"search": search_term})
         results = response.json().get("results", [])
 
         self.assertEqual(results[0]["id"], microorganism_name.id)
-        self.assertEqual(results[1]["id"], microorganism_name_en.id)
+
+        two_last_results = [result["id"] for result in results[-2:]]
+        self.assertIn(microorganism_name_en.id, two_last_results)
+        self.assertIn(microorganism_synonym.id, two_last_results)
 
     def test_substance_field_priorities(self):
         """
         The weighting of certain fields yields different scores. For example,
         a substance `name`, `cas_number` and `einec_number` have a higher search
-        priority than its `name_en`
+        priority than its `name_en` and `substancesynonym`
         """
         substance_name_en = SubstanceFactory(name_en="matcha")
-        SubstanceFactory(name="matcha")
+        substance_synonym = SubstanceFactory(name="other")
+        SubstanceSynonymFactory(name="matcha", standard_name=substance_synonym)
         SubstanceFactory(cas_number="matcha")
         SubstanceFactory(einec_number="matcha")
+        SubstanceFactory(name="matcha")
 
         search_term = "matcha"
         response = self.client.post(f"{reverse('search')}", {"search": search_term})
         results = response.json().get("results", [])
 
-        self.assertEqual(results[3]["id"], substance_name_en.id)
+        two_last_results = [result["id"] for result in results[-2:]]
+        self.assertIn(substance_name_en.id, two_last_results)
+        self.assertIn(substance_synonym.id, two_last_results)
+
+    def test_multiple_microorganism_synonym_match_return_only_once(self):
+        """The search_term might be found in several fields,
+        in this case, the object should appear only once in search results
+        """
+        moorg = MicroorganismFactory(name="matcha")
+        MicroorganismSynonymFactory(name="matcha latte", standard_name=moorg)
+        MicroorganismSynonymFactory(name="boisson matcha", standard_name=moorg)
+
+        search_term = "matcha"
+        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        results = response.json().get("results", [])
+
+        self.assertEqual(len(results), 1)
+
+    def test_multiple_substance_synonym_match_return_only_once(self):
+        """The search_term might be found in several fields,
+        in this case, the object should appear only once in search results
+        """
+        substance = SubstanceFactory(name="matcha")
+        SubstanceSynonymFactory(name="matcha latte", standard_name=substance)
+        SubstanceSynonymFactory(name="boisson matcha", standard_name=substance)
+
+        search_term = "matcha"
+        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        results = response.json().get("results", [])
+
+        self.assertEqual(len(results), 1)
 
     def test_pagination(self):
         """

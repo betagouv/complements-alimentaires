@@ -1,5 +1,5 @@
 import factory
-from data.models import Substance
+from data.models import Substance, SubstanceSynonym
 
 
 class SubstanceFactory(factory.django.DjangoModelFactory):
@@ -14,3 +14,11 @@ class SubstanceFactory(factory.django.DjangoModelFactory):
     min_quantity = factory.Faker("random_int", min=0, max=20)
     max_quantity = factory.Faker("random_int", min=0, max=20)
     nutritional_reference = factory.Faker("random_int", min=0, max=20)
+
+
+class SubstanceSynonymFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = SubstanceSynonym
+
+    standard_name = factory.SubFactory(SubstanceFactory)
+    name = factory.Faker("text", max_nb_chars=20)

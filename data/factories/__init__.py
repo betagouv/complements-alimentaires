@@ -1,6 +1,6 @@
 from .user import UserFactory  # noqa
 from .blogpost import BlogPostFactory  # noqa
-from .substance import SubstanceFactory  # noqa
+from .substance import SubstanceFactory, SubstanceSynonymFactory  # noqa
 from .ingredient import IngredientFactory, IngredientSynonymFactory  # noqa
 from .microorganism import MicroorganismFactory, MicroorganismSynonymFactory  # noqa
 from .plant import PlantFactory, PlantPartFactory, PlantSynonymFactory, PlantFamilyFactory  # noqa
