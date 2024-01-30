@@ -9,11 +9,26 @@
       <DsfrNavigation :nav-items="navItems" />
     </template>
   </DsfrHeader>
+  <DsfrModal title="Voulez-vous fermer votre session ?" :opened="logoutModalOpened" @close="closeModal">
+    <form action="/se-deconnecter" method="post" class="inline">
+      <input type="hidden" name="csrfmiddlewaretoken" :value="csrfToken" />
+      <DsfrButton class="mr-2">Me déconnecter</DsfrButton>
+    </form>
+    <DsfrButton tertiary @click="closeModal">Revenir en arrière</DsfrButton>
+  </DsfrModal>
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue"
+import { computed, onMounted, watch, ref } from "vue"
 import { useStore } from "vuex"
+import { useRoute, useRouter } from "vue-router"
+
+const logoutModalOpened = ref(false)
+
+const route = useRoute()
+const router = useRouter()
+
+const csrfToken = window.CSRF_TOKEN
 
 const logoText = ["Ministère", "de l'Agriculture", "et de la Souveraineté", "Alimentaire"]
 const environment = window.ENVIRONMENT
@@ -38,7 +53,7 @@ const quickLinks = computed(function () {
       {
         label: "Se déconnecter",
         icon: "ri-logout-box-r-line",
-        href: `${window.location.protocol}//${window.location.host}/se-deconnecter`,
+        to: { query: { "confirmation-deconnexion": true }, replace: true },
       },
     ]
   else return []
@@ -46,4 +61,13 @@ const quickLinks = computed(function () {
 onMounted(() => {
   store.dispatch("fetchLoggedUser")
 })
+const closeModal = () => {
+  router.replace({ query: {} })
+}
+watch(
+  () => route.query["confirmation-deconnexion"],
+  (newValue) => {
+    logoutModalOpened.value = newValue
+  }
+)
 </script>
