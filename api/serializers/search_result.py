@@ -9,23 +9,17 @@ class SearchResultSerializer(serializers.Serializer):
     name = serializers.CharField(read_only=True)
     name_en = serializers.CharField(read_only=True)
 
-    # Plant
-    plantsynonym_set = serializers.SlugRelatedField(read_only=True, many=True, slug_field="name")
-
     # Ingredient
     description = serializers.CharField(read_only=True)
     observation = serializers.CharField(read_only=True)
-    ingredientsynonym_set = serializers.SlugRelatedField(read_only=True, many=True, slug_field="name")
 
     # Substance
     cas_number = serializers.CharField(read_only=True)
     einec_number = serializers.CharField(read_only=True)
     source = serializers.CharField(read_only=True)
-    substancesynonym_set = serializers.SlugRelatedField(read_only=True, many=True, slug_field="name")
 
     # Microorganism
     genre = serializers.CharField(read_only=True)
-    microorganismsynonym = serializers.SlugRelatedField(read_only=True, many=True, slug_field="name")
 
     def get_object_type(self, instance):
         if isinstance(instance, Plant):
@@ -36,3 +30,13 @@ class SearchResultSerializer(serializers.Serializer):
             return "ingredient"
         if isinstance(instance, Substance):
             return "substance"
+
+    def get_synonyms(self, instance):
+        if isinstance(instance, Plant):
+            return instance.plantsynonym_set.values_list("name", flat=True).distinct()
+        if isinstance(instance, Microorganism):
+            return instance.microorganismsynonym_set.values_list("name", flat=True).distinct()
+        if isinstance(instance, Ingredient):
+            return instance.ingredientsynonym_set.values_list("name", flat=True).distinct()
+        if isinstance(instance, Substance):
+            return instance.substancesynonym_set.values_list("name", flat=True).distinct()
