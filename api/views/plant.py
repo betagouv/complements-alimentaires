@@ -5,5 +5,5 @@ from api.serializers import PlantSerializer
 
 class PlantRetrieveView(RetrieveAPIView):
     model = Plant
-    queryset = Plant.objects.all()
+    queryset = Plant.objects.filter(missing_import_data=False)
     serializer_class = PlantSerializer

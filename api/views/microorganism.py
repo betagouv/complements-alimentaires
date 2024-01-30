@@ -5,5 +5,5 @@ from api.serializers import MicroorganismSerializer
 
 class MicroorganismRetrieveView(RetrieveAPIView):
     model = Microorganism
-    queryset = Microorganism.objects.all()
+    queryset = Microorganism.objects.filter(missing_import_data=False)
     serializer_class = MicroorganismSerializer
