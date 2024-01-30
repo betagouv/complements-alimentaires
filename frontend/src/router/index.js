@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import LandingPage from "@/views/LandingPage"
+import ProducersPage from "@/views/ProducersPage"
 import BlogsHome from "@/views/BlogsHome"
 import BlogPost from "@/views/BlogPost"
 import SearchResults from "@/views/SearchResults"
@@ -10,6 +11,11 @@ const routes = [
     path: "/",
     name: "LandingPage",
     component: LandingPage,
+  },
+  {
+    path: "/entreprises",
+    name: "ProducersPage",
+    component: ProducersPage,
   },
   {
     path: "/blog",

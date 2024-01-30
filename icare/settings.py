@@ -73,7 +73,7 @@ ROOT_URLCONF = "icare.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, "data/admin/templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -160,6 +160,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Media and file storage
+AWS_ACCESS_KEY_ID = os.getenv("CELLAR_KEY")
+AWS_SECRET_ACCESS_KEY = os.getenv("CELLAR_SECRET")
+AWS_S3_ENDPOINT_URL = os.getenv("CELLAR_HOST")
+AWS_STORAGE_BUCKET_NAME = os.getenv("CELLAR_BUCKET_NAME")
+AWS_LOCATION = "media"
+AWS_QUERYSTRING_AUTH = False
+
 DEFAULT_FILE_STORAGE = os.getenv("DEFAULT_FILE_STORAGE")
 MEDIA_ROOT = os.getenv("MEDIA_ROOT", os.path.join(BASE_DIR, "media"))
 MEDIA_URL = "/media/"
@@ -183,6 +190,11 @@ EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
 if DEBUG and EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend":
     EMAIL_HOST = "localhost"
     EMAIL_PORT = 1025
+
+NEWSLETTER_BREVO_LIST_ID = os.getenv("NEWSLETTER_BREVO_LIST_ID")
+ANYMAIL = {
+    "SENDINBLUE_API_KEY": os.getenv("BREVO_API_KEY", ""),
+}
 
 # Rest framework
 
@@ -230,11 +242,6 @@ LOGGING = {
             "propagate": True,
         },
     },
-}
-
-NEWSLETTER_BREVO_LIST_ID = os.getenv("NEWSLETTER_BREVO_LIST_ID")
-ANYMAIL = {
-    "SENDINBLUE_API_KEY": os.getenv("BREVO_API_KEY", ""),
 }
 
 # CK Editor

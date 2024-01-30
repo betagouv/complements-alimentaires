@@ -56,5 +56,5 @@ class PlantSynonymFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = PlantSynonym
 
-    plant = factory.SubFactory(PlantFactory)
+    standard_name = factory.SubFactory(PlantFactory)
     name = factory.Faker("text", max_nb_chars=20)
