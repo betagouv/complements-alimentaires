@@ -13,8 +13,8 @@ import store from "./store"
 addIcons(...Object.values({ icons }))
 
 const app = createApp(App)
-  .use(router)
   .use(store)
+  .use(router)
   .use(VueDsfr, { icons: Object.values(icons) })
 app.component("v-icon", OhVueIcon)
 app.mount("#app")
