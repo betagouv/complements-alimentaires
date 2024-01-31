@@ -9,26 +9,14 @@
       <DsfrNavigation :nav-items="navItems" />
     </template>
   </DsfrHeader>
-  <DsfrModal title="Voulez-vous fermer votre session ?" :opened="logoutModalOpened" @close="closeModal">
-    <form action="/se-deconnecter" method="post" class="inline">
-      <input type="hidden" name="csrfmiddlewaretoken" :value="csrfToken" />
-      <DsfrButton class="mr-2">Me déconnecter</DsfrButton>
-    </form>
-    <DsfrButton tertiary @click="closeModal">Revenir en arrière</DsfrButton>
-  </DsfrModal>
 </template>
 
 <script setup>
-import { computed, onMounted, watch, ref } from "vue"
+import { computed, onMounted, watch } from "vue"
 import { useStore } from "vuex"
-import { useRoute, useRouter } from "vue-router"
-
-const logoutModalOpened = ref(false)
+import { useRoute } from "vue-router"
 
 const route = useRoute()
-const router = useRouter()
-
-const csrfToken = window.CSRF_TOKEN
 
 const logoText = ["Ministère", "de l'Agriculture", "et de la Souveraineté", "Alimentaire"]
 const environment = window.ENVIRONMENT
@@ -61,13 +49,17 @@ const quickLinks = computed(function () {
 onMounted(() => {
   store.dispatch("fetchLoggedUser")
 })
-const closeModal = () => {
-  router.replace({ query: {} })
-}
 watch(
   () => route.query["confirmation-deconnexion"],
   (newValue) => {
-    logoutModalOpened.value = newValue
+    const headers = {
+      "X-CSRFToken": window.CSRF_TOKEN || "",
+      "Content-Type": "application/json",
+    }
+    if (newValue)
+      return fetch(`/se-deconnecter`, { method: "POST", headers, redirect: "follow" }).then((response) => {
+        if (response.redirected) window.location.href = response.url
+      })
   }
 )
 </script>
