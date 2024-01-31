@@ -12,8 +12,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue"
+import { computed, onMounted, watch } from "vue"
 import { useStore } from "vuex"
+import { useRoute } from "vue-router"
+
+const route = useRoute()
 
 const logoText = ["Ministère", "de l'Agriculture", "et de la Souveraineté", "Alimentaire"]
 const environment = window.ENVIRONMENT
@@ -38,7 +41,7 @@ const quickLinks = computed(function () {
       {
         label: "Se déconnecter",
         icon: "ri-logout-box-r-line",
-        href: `${window.location.protocol}//${window.location.host}/se-deconnecter`,
+        to: { query: { "confirmation-deconnexion": true }, replace: true },
       },
     ]
   else return []
@@ -46,4 +49,17 @@ const quickLinks = computed(function () {
 onMounted(() => {
   store.dispatch("fetchLoggedUser")
 })
+watch(
+  () => route.query["confirmation-deconnexion"],
+  (newValue) => {
+    const headers = {
+      "X-CSRFToken": window.CSRF_TOKEN || "",
+      "Content-Type": "application/json",
+    }
+    if (newValue)
+      return fetch(`/se-deconnecter`, { method: "POST", headers, redirect: "follow" }).then((response) => {
+        if (response.redirected) window.location.href = response.url
+      })
+  }
+)
 </script>
