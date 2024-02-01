@@ -5,8 +5,9 @@ from .blogpost import BlogPostAdmin  # noqa
 from .webinar import WebinarAdmin  # noqa
 from .substance import SubstanceAdmin  # noqa
 from .plant import PlantAdmin  # noqa
+from .population import Population  # noqa
 
-from data.models import Ingredient, Plant, PlantPart, PlantFamily, Microorganism  # noqa
+from data.models import Ingredient, PlantPart, PlantFamily, Microorganism
 
 
 def get_admin_header():
