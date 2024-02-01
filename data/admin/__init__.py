@@ -6,6 +6,7 @@ from .webinar import WebinarAdmin  # noqa
 from .substance import SubstanceAdmin  # noqa
 from .plant import PlantAdmin  # noqa
 from .population import Population  # noqa
+from .condition import Condition  # noqa
 
 from data.models import Ingredient, PlantPart, PlantFamily, Microorganism
 
