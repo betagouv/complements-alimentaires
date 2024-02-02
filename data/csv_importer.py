@@ -9,7 +9,7 @@ from .exceptions import CSVFileError
 # Import the model
 from .models.ingredient import Ingredient, IngredientSynonym
 from .models.microorganism import Microorganism
-from .models.plant import Plant, PlantPart, PlantSynonym, PlantFamily, UsefulPart
+from .models.plant import Plant, PlantPart, PlantSynonym, PlantFamily, Part
 from .models.population import Population
 from .models.substance import Substance, SubstanceSynonym
 
@@ -34,7 +34,7 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_AUTREING_SUBSTACTIVE.csv": Ingredient,
     "REF_ICA_PLANTE_SUBSTANCE.csv": Plant,
     "REF_ICA_MOORG_SUBSTANCE.csv": "à récuperer",
-    "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": UsefulPart,
+    "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": Part,
     "REF_ICA_PARTIE_UTILE.csv": Plant,
 }
 
@@ -100,7 +100,7 @@ DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
     "plantpart": ["PPLAN_IDENT"],
     # Les champs ManyToMany
     "substances": ["SBSACT_IDENT"],
-    "useful_parts": ["PPLAN_IDENT"],
+    "plant_parts": ["PPLAN_IDENT"],
 }
 
 # Ces champs sont remplis automatiquement et ne sont pas recherchés dans les fichiers csv
@@ -171,7 +171,7 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
                     logger.warning(f"Il n'y a pas de modèle défini pour cette table : {e}")
 
         # ici, c'est un csv correspondant à une relation complexe (stockée dans un Model spécifique) qui est importée
-        if model == UsefulPart:
+        if model == Part:
             default_extra_fields = {"must_be_monitored": True}
             object_with_history, created = model.objects.update_or_create(
                 **object_definition, defaults=default_extra_fields

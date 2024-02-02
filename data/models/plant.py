@@ -25,7 +25,7 @@ class Plant(CommonBaseIngredient):
         verbose_name = "plante"
 
     family = models.ForeignKey(PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante")
-    useful_parts = models.ManyToManyField(PlantPart, through="UsefulPart", verbose_name="partie utile")
+    plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
     substances = models.ManyToManyField(Substance)
 
     # champs présents dans le CSV mais inutilisés

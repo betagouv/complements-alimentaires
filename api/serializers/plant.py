@@ -40,7 +40,7 @@ class PlantSynonymSerializer(serializers.ModelSerializer):
 
 class PlantSerializer(serializers.ModelSerializer):
     family = PlantFamilySerializer(read_only=True)
-    useful_parts = PlantPartSerializer(many=True, read_only=True)
+    plant_parts = PlantPartSerializer(many=True, read_only=True)
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
 
@@ -50,7 +50,7 @@ class PlantSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "family",
-            "useful_parts",
+            "plant_parts",
             "synonyms",
             "substances",
             "public_comments",

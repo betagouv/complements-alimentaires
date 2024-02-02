@@ -43,13 +43,13 @@ class PlantFactory(factory.django.DjangoModelFactory):
                 self.substances.add(substance)
 
     @factory.post_generation
-    def useful_parts(self, created, extracted, **kwargs):
+    def plant_parts(self, created, extracted, **kwargs):
         if created:
             for _ in range(random.randint(1, 4)):
-                self.useful_parts.add(PlantPartFactory.create())
+                self.plant_parts.add(PlantPartFactory.create())
         elif extracted:
             for useful_part in extracted:
-                self.useful_parts.add(useful_part)
+                self.plant_parts.add(useful_part)
 
 
 class PlantSynonymFactory(factory.django.DjangoModelFactory):
