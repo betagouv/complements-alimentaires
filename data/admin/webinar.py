@@ -2,6 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.utils import timezone
 from data.models import Webinar
+from simple_history.admin import SimpleHistoryAdmin
 
 
 class WebinarForm(forms.ModelForm):
@@ -34,7 +35,7 @@ class UpcomingEventsFilter(admin.SimpleListFilter):
 
 
 @admin.register(Webinar)
-class WebinarAdmin(admin.ModelAdmin):
+class WebinarAdmin(SimpleHistoryAdmin):
     form = WebinarForm
     fields = (
         "title",

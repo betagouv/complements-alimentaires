@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib import admin
 from django.db import models
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Plant, PlantSynonym
 
 
@@ -29,7 +31,7 @@ class PlantForm(forms.ModelForm):
 
 
 @admin.register(Plant)
-class PlantAdmin(admin.ModelAdmin):
+class PlantAdmin(SimpleHistoryAdmin):
     form = PlantForm
     fieldsets = [
         (
