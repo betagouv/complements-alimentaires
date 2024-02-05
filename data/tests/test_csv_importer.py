@@ -135,3 +135,23 @@ class CSVImporterTestCase(TestCase):
             self.assertEqual(plantparts.is_obsolete, False)
             self.assertTrue(plantparts.part_set.all().exists())
             self.assertTrue(plantparts.plant_set.all().exists())
+
+    def test_plantparts_status_is_not_always_useful(self):
+        path = "data/tests/files/create_plants_with_distinct_useful_and_to_be_monitored_parts/"
+        call_command("load_ingredients", directory=path)
+
+        plants_with_parts = Plant.objects.exclude(plant_parts=None)
+        for plant in plants_with_parts:
+            all_parts = {part_relation.plantpart.name for part_relation in plant.part_set.all()}
+            useful_parts = {
+                part_relation.plantpart.name for part_relation in plant.part_set.all() if part_relation.is_useful
+            }
+            must_be_monitored_parts = {
+                part_relation.plantpart.name
+                for part_relation in plant.part_set.all()
+                if part_relation.must_be_monitored
+            }
+            self.assertTrue(useful_parts.issubset(all_parts))
+            self.assertTrue(must_be_monitored_parts.issubset(all_parts))
+            self.assertFalse(useful_parts.issubset(must_be_monitored_parts))
+            self.assertFalse(useful_parts.issuperset(must_be_monitored_parts))
