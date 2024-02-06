@@ -63,3 +63,44 @@ export const RiArrowRightLine = {
   height: 24,
   raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z"/>',
 }
+
+export const RiPriceTag2Fill = {
+  name: "ri-price-tag-2-fill",
+  minX: 0,
+  minY: 0,
+  width: 24,
+  height: 24,
+  raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M3 7l8.445-5.63a1 1 0 011.11 0L21 7v14a1 1 0 01-1 1H4a1 1 0 01-1-1V7zm9 4a2 2 0 100-4 2 2 0 000 4zm-4 5v2h8v-2H8zm0-3v2h8v-2H8z"/>',
+}
+export const RiCapsuleFill = {
+  name: "ri-capsule-fill",
+  minX: 0,
+  minY: 0,
+  width: 24,
+  height: 24,
+  raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M19.778 4.222a6 6 0 010 8.485l-2.122 2.12-4.949 4.951a6 6 0 01-8.485-8.485l7.07-7.071a6.001 6.001 0 018.486 0zm-4.95 10.606L9.172 9.172l-3.536 3.535a4 4 0 005.657 5.657l3.535-3.536z"/>',
+}
+export const RiFileUserFill = {
+  name: "ri-file-user-fill",
+  minX: 0,
+  minY: 0,
+  width: 24,
+  height: 24,
+  raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M16 2l5 5v14.008a.993.993 0 01-.993.992H3.993A1 1 0 013 21.008V2.992C3 2.444 3.445 2 3.993 2H16zm-4 9.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM7.527 17h8.946a4.5 4.5 0 00-8.946 0z"/>',
+}
+export const RiFocus2Fill = {
+  name: "ri-focus-2-fill",
+  minX: 0,
+  minY: 0,
+  width: 24,
+  height: 24,
+  raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zm0 18c4.427 0 8-3.573 8-8s-3.573-8-8-8a7.99 7.99 0 00-8 8c0 4.427 3.573 8 8 8zm0-2c-3.32 0-6-2.68-6-6s2.68-6 6-6 6 2.68 6 6-2.68 6-6 6zm0-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>',
+}
+export const RiHome2Fill = {
+  name: "ri-home-2-fill",
+  minX: 0,
+  minY: 0,
+  width: 24,
+  height: 24,
+  raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M20 20a1 1 0 01-1 1H5a1 1 0 01-1-1v-9H1l10.327-9.388a1 1 0 011.346 0L23 11h-3v9z"/>',
+}
