@@ -22,7 +22,11 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         # argument optionnel
         parser.add_argument(
-            "-d", "--directory", type=str, help="Indicates where the files are located.", default="files"
+            "-d",
+            "--directory",
+            type=str,
+            help="Indicates where the files are located.",
+            default="files",
         )
 
     def handle(self, *args, **options):
