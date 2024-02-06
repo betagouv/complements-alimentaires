@@ -94,22 +94,22 @@ class CSVImporterTestCase(TestCase):
         path = "data/tests/files/creates_models_with_their_relations/"
         call_command("load_ingredients", directory=path)
 
-        self.assertEqual(len(Plant.objects.get(name="Pour les pieds").useful_parts.all()), 1)
-        self.assertEqual(len(Plant.objects.get(name="Pour le cou").useful_parts.all()), 3)
+        self.assertEqual(len(Plant.objects.get(name="Pour les pieds").plant_parts.all()), 1)
+        self.assertEqual(len(Plant.objects.get(name="Pour le cou").plant_parts.all()), 3)
 
     def test_create_objects_in_relation_if_they_do_not_already_exist(self):
         path = "data/tests/files/create_objects_in_relation_if_they_do_not_already_exist/"
         call_command("load_ingredients", directory=path)
 
-        self.assertEqual(len(Plant.objects.get(name="Pour les pieds").useful_parts.all()), 1)
-        self.assertEqual(len(Plant.objects.get(name="Pour le cou").useful_parts.all()), 4)
-        self.assertEqual(len(Plant.objects.get(name="Pour le cou").useful_parts.all()), 4)
+        self.assertEqual(len(Plant.objects.get(name="Pour les pieds").plant_parts.all()), 1)
+        self.assertEqual(len(Plant.objects.get(name="Pour le cou").plant_parts.all()), 4)
+        self.assertEqual(len(Plant.objects.get(name="Pour le cou").plant_parts.all()), 4)
         first_id = Plant.objects.get(siccrf_id=1)
-        self.assertEqual(len(first_id.useful_parts.all()), 1)
+        self.assertEqual(len(first_id.plant_parts.all()), 1)
         self.assertEqual(first_id.name, "")
         second_id = Plant.objects.get(siccrf_id=2)
         # dans le fichier une ligne de relation est dupliquée
-        self.assertEqual(len(second_id.useful_parts.all()), 2)
+        self.assertEqual(len(second_id.plant_parts.all()), 2)
         self.assertEqual(second_id.name, "")
 
     def test_missing_import_data_field_well_filled(self):
@@ -126,12 +126,32 @@ class CSVImporterTestCase(TestCase):
             self.assertEqual(plant.is_obsolete, False)
             self.assertEqual(plant.family, None)
             self.assertFalse(plant.substances.all().exists())
-            self.assertTrue(plant.useful_parts.all().exists())
+            self.assertTrue(plant.plant_parts.all().exists())
 
         self.assertEqual(len(missing_plantparts), 1)
         self.assertEqual(missing_plantparts[0].name, "")
         for plantparts in missing_plantparts:
             self.assertEqual(plantparts.name_en, "")
             self.assertEqual(plantparts.is_obsolete, False)
-            self.assertTrue(plantparts.usefulpart_set.all().exists())
+            self.assertTrue(plantparts.part_set.all().exists())
             self.assertTrue(plantparts.plant_set.all().exists())
+
+    def test_plantparts_status_is_not_always_useful(self):
+        path = "data/tests/files/create_plants_with_distinct_useful_and_to_be_monitored_parts/"
+        call_command("load_ingredients", directory=path)
+
+        plants_with_parts = Plant.objects.exclude(plant_parts=None)
+        for plant in plants_with_parts:
+            all_parts = {part_relation.plantpart.name for part_relation in plant.part_set.all()}
+            useful_parts = {
+                part_relation.plantpart.name for part_relation in plant.part_set.all() if part_relation.is_useful
+            }
+            must_be_monitored_parts = {
+                part_relation.plantpart.name
+                for part_relation in plant.part_set.all()
+                if part_relation.must_be_monitored
+            }
+            self.assertTrue(useful_parts.issubset(all_parts))
+            self.assertTrue(must_be_monitored_parts.issubset(all_parts))
+            self.assertFalse(useful_parts.issubset(must_be_monitored_parts))
+            self.assertFalse(useful_parts.issuperset(must_be_monitored_parts))

@@ -16,7 +16,7 @@ class PlantSynonymInline(admin.TabularInline):
 
 
 class PartInlineAdmin(admin.TabularInline):
-    model = Plant.useful_parts.through
+    model = Plant.plant_parts.through
     extra = 1
 
 
