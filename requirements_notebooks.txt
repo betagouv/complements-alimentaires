@@ -26,7 +26,7 @@ pure-eval==0.2.2
 Pygments==2.17.2
 pyparsing==3.1.1
 pyzmq==25.1.2
-seaborn==0.13.1
+seaborn==0.13.2
 stack-data==0.6.3
 tornado==6.4
 traitlets==5.14.1

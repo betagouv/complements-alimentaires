@@ -1,4 +1,4 @@
-aiohttp==3.9.2
+aiohttp==3.9.3
 aiosignal==1.3.1
 asgiref==3.7.2
 astroid==3.0.2
@@ -7,13 +7,13 @@ attrs==23.2.0
 black==24.1.1
 boto3==1.34.29
 botocore==1.34.29
-certifi==2023.11.17
+certifi==2024.2.2
 cffi==1.16.0
 cfgv==3.4.0
 charset-normalizer==3.3.2
 click==8.1.7
-cryptography==41.0.7
-dill==0.3.7
+cryptography==42.0.0
+dill==0.3.8
 distlib==0.3.8
 Django==5.0.1
 django-anymail==10.2
@@ -35,7 +35,7 @@ idna==3.6
 isort==5.13.2
 jmespath==1.0.1
 mccabe==0.7.0
-multidict==6.0.4
+multidict==6.0.5
 mypy-extensions==1.0.0
 nodeenv==1.8.0
 packaging==23.2
