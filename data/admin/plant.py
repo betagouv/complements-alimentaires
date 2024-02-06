@@ -1,9 +1,9 @@
 from django import forms
 from django.contrib import admin
 from django.db import models
-from simple_history.admin import SimpleHistoryAdmin
 
 from data.models import Plant, PlantSynonym
+from data.admin.abstract_admin import IngredientAdminWithHistoryChangedFields
 
 
 class PlantSynonymInline(admin.TabularInline):
@@ -31,7 +31,7 @@ class PlantForm(forms.ModelForm):
 
 
 @admin.register(Plant)
-class PlantAdmin(SimpleHistoryAdmin):
+class PlantAdmin(IngredientAdminWithHistoryChangedFields):
     form = PlantForm
     fieldsets = [
         (
@@ -63,3 +63,10 @@ class PlantAdmin(SimpleHistoryAdmin):
         "family",
     )
     list_filter = ("is_obsolete", "family")
+    history_list_display = ['changed_fields']
+
+    def changed_fields(self, obj):
+        if obj.prev_record:
+            delta = obj.diff_against(obj.prev_record)
+            return delta.changed_fields
+        return None
