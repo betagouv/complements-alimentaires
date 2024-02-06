@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from data.models import Plant, PlantFamily, PlantPart, PlantSynonym
+from data.models import Plant, PlantFamily, PlantSynonym, Part
 from .substance import SubstanceShortSerializer
 
 
@@ -15,15 +15,15 @@ class PlantFamilySerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class PlantPartSerializer(serializers.ModelSerializer):
+class PartRelationSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source="plantpart.name")
+    name_en = serializers.CharField(source="plantpart.name_en")
+    is_obsolete = serializers.BooleanField(source="plantpart.is_obsolete")
+    siccrf_id = serializers.IntegerField(source="plantpart.siccrf_id")
+
     class Meta:
-        model = PlantPart
-        fields = (
-            "name",
-            "is_obsolete",
-            "name_en",
-            "siccrf_id",
-        )
+        model = Part
+        fields = ("name", "name_en", "is_obsolete", "siccrf_id", "must_be_monitored", "is_useful")
         read_only_fields = fields
 
 
@@ -40,7 +40,7 @@ class PlantSynonymSerializer(serializers.ModelSerializer):
 
 class PlantSerializer(serializers.ModelSerializer):
     family = PlantFamilySerializer(read_only=True)
-    useful_parts = PlantPartSerializer(many=True, read_only=True)
+    plant_parts = PartRelationSerializer(source="part_set", many=True, read_only=True)
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
 
@@ -50,7 +50,7 @@ class PlantSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "family",
-            "useful_parts",
+            "plant_parts",
             "synonyms",
             "substances",
             "public_comments",

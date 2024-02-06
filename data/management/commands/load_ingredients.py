@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 
 from data.csv_importer import import_csv
 from data.exceptions import CSVFileError
+from data.models.plant import Part
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 def check_for_incomplete_data(model):
     incomplete_objects = model.objects.filter(name="")
     incomplete_objects.update(missing_import_data=True)
-    logger.info(f"{len(incomplete_objects)} {model} sont incomplets")
+    logger.info(f"{len(incomplete_objects)} instance(s) de {model.__name__} incomplete(s).")
 
 
 class Command(BaseCommand):
@@ -36,4 +37,5 @@ class Command(BaseCommand):
                 logger.error(e.message)
 
         for model in models_to_check:
-            check_for_incomplete_data(model)
+            if model != Part:
+                check_for_incomplete_data(model)

@@ -25,7 +25,7 @@ class Plant(CommonBaseIngredient):
         verbose_name = "plante"
 
     family = models.ForeignKey(PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante")
-    useful_parts = models.ManyToManyField(PlantPart, through="UsefulPart", verbose_name="partie utile")
+    plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
     substances = models.ManyToManyField(Substance)
 
     # champs présents dans le CSV mais inutilisés
@@ -33,14 +33,15 @@ class Plant(CommonBaseIngredient):
     # stingsbs = models.IntegerField()
 
 
-class UsefulPart(models.Model):
+class Part(models.Model):
     """Ce modèle permet d'associer des données supplémentaires à la relation ManyToMany
-    useful_parts
+    plant_parts
     """
 
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
     plantpart = models.ForeignKey(PlantPart, on_delete=models.CASCADE)
     must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
+    is_useful = models.BooleanField(default=False, verbose_name="🍵 utile (selon la base SICCRF) ?")
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
     history = HistoricalRecords(inherit=True)

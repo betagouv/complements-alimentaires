@@ -37,6 +37,12 @@ module.exports = {
         "success-125": "#1e2e22",
         "success-100": "#19271d",
         "success-75": "#142117",
+        "warning-main-525": "#d64d00",
+        "warning-425": "#b34000",
+        "warning-975": "#fff4f3",
+        "warning-950": "#ffe9e6",
+        "warning-925": "#ffded9",
+        "warning-850": "warning-850",
       },
     },
     // DSFR breakpoints taken from here:

@@ -44,9 +44,23 @@
         <div class="fr-text--sm !mb-0 capitalize">{{ einecNumber }}</div>
       </div>
 
-      <div v-if="usefulParts && usefulParts.length" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
+      <div v-if="plantParts && plantParts.length" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
         <div class="fr-text--sm !font-medium !mb-1">Parties utiles</div>
-        <DsfrTag small :label="part" v-for="part in usefulParts" :key="part" class="mb-1 capitalize"></DsfrTag>
+        <DsfrTag small :label="part" v-for="part in plantParts" :key="part" class="mb-1 capitalize"></DsfrTag>
+      </div>
+
+      <div
+        v-if="toWatchParts && toWatchParts.length"
+        class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4"
+      >
+        <div class="fr-text--sm !font-medium !mb-1">Parties à surveiller</div>
+        <DsfrTag
+          small
+          :label="part"
+          v-for="part in toWatchParts"
+          :key="part"
+          class="mb-1 capitalize !bg-warning-925 !text-warning-425"
+        ></DsfrTag>
       </div>
 
       <div v-if="substances && substances.length" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
@@ -108,7 +122,10 @@ const element = ref(null)
 
 const family = computed(() => element.value?.family?.name)
 const genre = computed(() => element.value?.genre)
-const usefulParts = computed(() => element.value?.usefulParts?.map((x) => x.name).filter((x) => !!x))
+const plantParts = computed(() => element.value?.plantParts?.map((x) => x.name).filter((x) => !!x))
+const toWatchParts = computed(() =>
+  element.value?.plantParts?.filter((x) => x.mustBeMonitored === true && !!x.name).map((x) => x.name)
+)
 const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))
 const casNumber = computed(() => element.value?.casNumber)
