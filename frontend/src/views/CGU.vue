@@ -35,6 +35,10 @@
       <li>Directeur de la publication : Ministère de l’Agriculture et de la Souveraineté Alimentaire.</li>
       <li>Prestataire d'hébergement : Clevercloud, 3 rue de l'Allier, 44000 Nantes, France.</li>
     </ul>
+    <p>
+      Plus d'informations sur nos
+      <router-link :to="{ name: 'LegalNotices' }">page dédiée aux mentions légales.</router-link>
+    </p>
     <h2>Modalités d’utilisation du Service</h2>
     <p>L'utilisation du Service est facultative et gratuite.</p>
     <p>
