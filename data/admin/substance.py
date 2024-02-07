@@ -4,6 +4,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 
 from data.models import Substance
+from data.admin.abstract_admin import IngredientAdminWithHistoryChangedFields
 
 
 class SubstanceForm(forms.ModelForm):
@@ -18,7 +19,7 @@ class SubstanceForm(forms.ModelForm):
 
 
 @admin.register(Substance)
-class SubstanceAdmin(admin.ModelAdmin):
+class SubstanceAdmin(IngredientAdminWithHistoryChangedFields):
     @classmethod
     def links_to_objects(cls, object_name, objects):
         rel_list = "<ul>"
