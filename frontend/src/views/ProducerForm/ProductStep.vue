@@ -23,6 +23,9 @@
         <DsfrInput :model="payload.flavor" label-visible label="Arôme" />
       </DsfrInputGroup>
     </div>
+    <DsfrInputGroup class="max-w-2xl mt-6">
+      <DsfrInput is-textarea :model="payload.description" label-visible label="Description" :required="true" />
+    </DsfrInputGroup>
   </div>
   <h2 class="fr-h6 !mt-8">
     <v-icon class="mr-1" name="ri-capsule-fill" />
@@ -31,16 +34,25 @@
   <DsfrInputGroup class="mt-6 max-w-md">
     <DsfrSelect label="Forme galénique" :model="payload.dosageForms" :options="dosageForms" :required="true" />
   </DsfrInputGroup>
-  <DsfrFieldset legend="Poids ou volume d'une unité de consommation" legendClass="fr-label !font-normal !pb-0">
-    <div class="flex">
-      <div class="max-w-64">
-        <DsfrInput :model="payload.unitQuantity" class="max-w-64" :required="true" />
-      </div>
-      <div class="max-w-32 ml-4">
-        <DsfrSelect :options="units" :model="payload.unitMeasurement" defaultUnselectedText="Unité" />
-      </div>
+  <div class="grid grid-cols-2 gap-4">
+    <div class="col-span-2 md:col-span-1 max-w-md">
+      <DsfrFieldset legend="Poids ou volume d'une unité de consommation" legendClass="fr-label !font-normal !pb-0">
+        <div class="flex">
+          <div class="max-w-64">
+            <DsfrInput :model="payload.unitQuantity" class="max-w-64" :required="true" />
+          </div>
+          <div class="max-w-32 ml-4">
+            <DsfrSelect :options="units" :model="payload.unitMeasurement" defaultUnselectedText="Unité" />
+          </div>
+        </div>
+      </DsfrFieldset>
     </div>
-  </DsfrFieldset>
+    <div class="col-span-2 md:col-span-1 max-w-md">
+      <DsfrInputGroup>
+        <DsfrInput :model="payload.conditions" label-visible label="Conditionnements" />
+      </DsfrInputGroup>
+    </div>
+  </div>
   <div class="grid grid-cols-2 gap-4">
     <div class="col-span-2 md:col-span-1 max-w-md">
       <DsfrInputGroup>
@@ -54,15 +66,16 @@
     </div>
     <div class="col-span-2 md:col-span-1 max-w-md">
       <DsfrInputGroup>
-        <DsfrInput
-          :model="payload.minimumDuration"
-          label-visible
-          label="Durabilité minimale / DLUO (en mois)"
-          :required="true"
-        />
+        <DsfrInput :model="payload.minimumDuration" label-visible label="Durabilité minimale / DLUO (en mois)" />
       </DsfrInputGroup>
     </div>
   </div>
+  <DsfrInputGroup class="max-w-2xl mt-6">
+    <DsfrInput :model="payload.instructions" label-visible label="Mode d'emploi" />
+  </DsfrInputGroup>
+  <DsfrInputGroup class="max-w-2xl mt-6">
+    <DsfrInput is-textarea :model="payload.warnings" label-visible label="Mise en garde et avertissement" />
+  </DsfrInputGroup>
   <h2 class="fr-h6 !mt-8">
     <v-icon class="mr-1" name="ri-file-user-fill" />
     Populations cible
@@ -94,6 +107,17 @@
     <v-icon class="mr-1" name="ri-focus-2-fill" />
     Objectifs / effets
   </h2>
+  <DsfrFieldset>
+    <div class="grid grid-cols-6 gap-2">
+      <DsfrCheckbox
+        v-for="effect in effects"
+        :model="payload.effects"
+        :key="`effect-${effect}`"
+        :label="effect"
+        class="col-span-6 sm:col-span-3 lg:col-span-2"
+      />
+    </div>
+  </DsfrFieldset>
   <h2 class="fr-h6 !mt-8">
     <v-icon class="mr-1" name="ri-home-2-fill" />
     Adresse sur l'étiquetage
@@ -131,6 +155,44 @@ const units = [
 ]
 const populations = ref(null)
 const conditions = ref(null)
+
+const effects = [
+  "Non défini",
+  "Antioxydant",
+  "Artères et cholestérol",
+  "Articulations",
+  "Cheveux et ongles",
+  "Circulation sanguine et lymphatique",
+  "Concentration",
+  "Croissance et developpement",
+  "Cycles féminins",
+  "Détoxifiant / Draineur",
+  "Digestion",
+  "Gestion du poids / minceur",
+  "Grossesse et allaitement",
+  "Humeur",
+  "Immunité",
+  "Mémoire",
+  "Ménopause",
+  "Minceur / Brûleur",
+  "Minceur / Capteur",
+  "Minceur / Glycémie",
+  "Minceur / Modérateur d'appétit",
+  "Minceur / Ventre plat",
+  "Œil / Vision",
+  "Os",
+  "Peau",
+  "Santé bucco-dentaire",
+  "Solaire",
+  "Sommeil",
+  "Sport",
+  "Système nerveux",
+  "Système urinaire",
+  "Tonus sexuel",
+  "Transit",
+  "Voies respiratoires",
+  "Autre (à préciser)", // TODO le rendre spécifiable avec un textfield
+]
 
 onMounted(() => {
   return fetch("/api/v1/populations/")
