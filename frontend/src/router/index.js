@@ -56,12 +56,6 @@ const routes = [
     props: true,
   },
   {
-    path: "/element/:urlComponent",
-    name: "ElementView",
-    component: ElementView,
-    props: true,
-  },
-  {
     path: "/nouvelle-demarche",
     name: "ProducerForm",
     component: ProducerForm,
