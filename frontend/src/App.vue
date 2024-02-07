@@ -1,7 +1,13 @@
 <template>
   <AppHeader />
   <router-view></router-view>
-  <DsfrFooter :logo-text="logoText" :mandatory-links="footerLinks">
+  <DsfrFooter
+    :logo-text="logoText"
+    :cookiesLink="{ name: 'CookiesInfo' }"
+    :legalLink="{ name: 'LegalNotices' }"
+    :personalDataLink="{ name: 'PrivacyPolicy' }"
+    :afterMandatoryLinks="[{ label: 'Conditions générales d\'utilisation', to: { name: 'CGU' } }]"
+  >
     <template v-slot:description>
       <p>Compléments alimentaires</p>
     </template>
@@ -14,21 +20,6 @@ import { useRoute } from "vue-router"
 import AppHeader from "@/components/AppHeader.vue"
 
 const route = useRoute()
-
-const footerLinks = [
-  {
-    label: "Mentions légales",
-    to: { name: "LegalNotices" },
-  },
-  {
-    label: "Politique de confidentialité",
-    to: { name: "PrivacyPolicy" },
-  },
-  {
-    label: "Conditions générales d'utilisation",
-    to: { name: "CGU" },
-  },
-]
 
 watch(route, (to) => {
   const suffix = "Compléments alimentaires"

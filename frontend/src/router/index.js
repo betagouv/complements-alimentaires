@@ -8,6 +8,7 @@ import ElementView from "@/views/ElementView"
 import CGU from "@/views/CGU.vue"
 import PrivacyPolicy from "@/views/PrivacyPolicy.vue"
 import LegalNotices from "@/views/LegalNotices"
+import CookiesInfo from "@/views/CookiesInfo"
 
 const routes = [
   {
@@ -71,6 +72,14 @@ const routes = [
     component: PrivacyPolicy,
     meta: {
       title: "Politique de confidentialité",
+    },
+  },
+  {
+    path: "/cookies",
+    name: "CookiesInfo",
+    component: CookiesInfo,
+    meta: {
+      title: "Cookies",
     },
   },
 ]
