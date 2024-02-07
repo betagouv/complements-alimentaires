@@ -32,7 +32,12 @@
     Format
   </h2>
   <DsfrInputGroup class="mt-6 max-w-md">
-    <DsfrSelect label="Forme galénique" :model="payload.dosageForms" :options="dosageForms" :required="true" />
+    <DsfrSelect
+      label="Forme galénique"
+      :model="payload.galenicFormulation"
+      :options="galenicFormulation"
+      :required="true"
+    />
   </DsfrInputGroup>
   <div class="grid grid-cols-2 gap-4">
     <div class="col-span-2 md:col-span-1 max-w-md">
@@ -129,7 +134,7 @@ import { ref, onMounted } from "vue"
 import { verifyResponse } from "@/utils"
 
 const payload = ref({})
-const dosageForms = [
+const galenicFormulation = [
   {
     text: "Ampoule",
     value: "ampoule",
