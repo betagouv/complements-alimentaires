@@ -286,7 +286,7 @@ CKEDITOR_CONFIGS = {
 
 # Sentry
 SENTRY_DSN = os.getenv("SENTRY_DSN")
-if not SENTRY_DSN:
+if SENTRY_DSN:
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         integrations=[
