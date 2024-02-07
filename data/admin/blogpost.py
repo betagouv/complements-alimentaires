@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib import admin
 from data.models import BlogPost
-from simple_history.admin import SimpleHistoryAdmin
 
 
 class BlogPostForm(forms.ModelForm):
@@ -13,7 +12,7 @@ class BlogPostForm(forms.ModelForm):
 
 
 @admin.register(BlogPost)
-class BlogPostAdmin(SimpleHistoryAdmin):
+class BlogPostAdmin(admin.ModelAdmin):
     form = BlogPostForm
     fields = (
         "title",
