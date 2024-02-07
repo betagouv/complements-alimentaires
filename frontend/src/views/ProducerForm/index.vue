@@ -5,51 +5,51 @@
     </div>
   </div>
   <div class="fr-container">
-    <div class="flex mb-6 mt-3 p-3 justify-end border rounded-md">
-      <DsfrButton
-        icon="ri-arrow-left-line"
-        class="mr-3"
-        label="Précedent"
-        @click="() => (currentStep -= 1)"
-        size="small"
-        :disabled="currentStep === 1"
-      />
-      <DsfrButton
-        icon="ri-arrow-right-line"
-        label="Suivant"
-        @click="() => (currentStep += 1)"
-        size="small"
-        :disabled="currentStep === steps.length"
-      />
-    </div>
+    <StepButtons
+      class="mb-6 mt-3"
+      @next="goForward"
+      @previous="goBackward"
+      :disablePrevious="disablePrevious"
+      :disableNext="disableNext"
+    />
     <component :is="components[currentStep - 1]"></component>
-    <div class="flex mb-3 mt-6 p-3 justify-end border rounded-md">
-      <DsfrButton
-        icon="ri-arrow-left-line"
-        class="mr-3"
-        label="Précedent"
-        @click="() => (currentStep -= 1)"
-        size="small"
-        :disabled="currentStep === 1"
-      />
-      <DsfrButton
-        icon="ri-arrow-right-line"
-        label="Suivant"
-        @click="() => (currentStep += 1)"
-        size="small"
-        :disabled="currentStep === steps.length"
-      />
-    </div>
+    <StepButtons
+      class="mb-3 mt-6"
+      @next="goForward"
+      @previous="goBackward"
+      :disablePrevious="disablePrevious"
+      :disableNext="disableNext"
+    />
   </div>
 </template>
 <script setup>
-import { ref } from "vue"
+import { onMounted, ref, computed, watch } from "vue"
 import ProductStep from "./ProductStep"
 import CompositionStep from "./CompositionStep"
 import SummaryStep from "./SummaryStep"
 import AttachmentStep from "./AttachmentStep"
+import StepButtons from "./StepButtons"
+import { useRoute, useRouter } from "vue-router"
 
-const currentStep = ref(1)
+const currentStep = ref(null)
 const steps = ["Le produit", "La composition", "Pièces jointes", "Résumé"]
 const components = [ProductStep, CompositionStep, AttachmentStep, SummaryStep]
+
+const goForward = () => router.push({ query: { step: currentStep.value + 1 } })
+const goBackward = () => router.push({ query: { step: currentStep.value - 1 } })
+
+const disablePrevious = computed(() => currentStep.value === 1)
+const disableNext = computed(() => currentStep.value === steps.length)
+
+const route = useRoute()
+const router = useRouter()
+
+const ensureStepInUrl = () => {
+  if (route.query.step && parseInt(route.query.step) >= 1 && parseInt(route.query.step) <= steps.length)
+    currentStep.value = parseInt(route.query.step)
+  else router.replace({ query: { step: 1 } })
+}
+
+onMounted(ensureStepInUrl)
+watch(() => route.query.step, ensureStepInUrl)
 </script>
