@@ -5,3 +5,5 @@ from .ingredient import IngredientFactory, IngredientSynonymFactory  # noqa
 from .microorganism import MicroorganismFactory, MicroorganismSynonymFactory  # noqa
 from .plant import PlantFactory, PlantPartFactory, PlantSynonymFactory, PlantFamilyFactory  # noqa
 from .webinar import WebinarFactory  # noqa
+from .population import PopulationFactory  # noqa
+from .condition import ConditionFactory  # noqa

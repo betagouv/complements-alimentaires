@@ -1,14 +1,23 @@
 import { createRouter, createWebHistory } from "vue-router"
+import { useStore } from "vuex"
 import LandingPage from "@/views/LandingPage"
 import ProducersPage from "@/views/ProducersPage"
 import BlogsHome from "@/views/BlogsHome"
 import BlogPost from "@/views/BlogPost"
 import SearchResults from "@/views/SearchResults"
 import ElementView from "@/views/ElementView"
+import ProducerForm from "@/views/ProducerForm"
 
 const routes = [
   {
     path: "/",
+    name: "Root",
+    meta: {
+      home: true,
+    },
+  },
+  {
+    path: "/accueil",
     name: "LandingPage",
     component: LandingPage,
   },
@@ -46,11 +55,40 @@ const routes = [
     component: ElementView,
     props: true,
   },
+  {
+    path: "/nouvelle-demarche",
+    name: "ProducerForm",
+    component: ProducerForm,
+    meta: {
+      authenticationRequired: true,
+    },
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+function chooseAuthorisedRoute(to, from, next, store) {
+  if (!store.state.initialDataLoaded) {
+    store
+      .dispatch("fetchInitialData")
+      .then(() => chooseAuthorisedRoute(to, from, next, store))
+      .catch((e) => {
+        console.error(`An error occurred: ${e}`)
+        next({ name: "LandingPage" })
+      })
+  } else {
+    if (to.meta.home) next({ name: "LandingPage" })
+    else if (!to.meta.authenticationRequired || store.state.loggedUser) next()
+    else window.location.href = `/s-identifier?next=${to.path}`
+  }
+}
+
+router.beforeEach((to, from, next) => {
+  const store = useStore()
+  chooseAuthorisedRoute(to, from, next, store)
 })
 
 export default router

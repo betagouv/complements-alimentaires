@@ -5,8 +5,10 @@ from .blogpost import BlogPostAdmin  # noqa
 from .webinar import WebinarAdmin  # noqa
 from .substance import SubstanceAdmin  # noqa
 from .plant import PlantAdmin  # noqa
+from .population import Population  # noqa
+from .condition import Condition  # noqa
 
-from data.models import Ingredient, Plant, PlantPart, PlantFamily, Microorganism  # noqa
+from data.models import Ingredient, PlantPart, PlantFamily, Microorganism
 from data.admin.abstract_admin import IngredientAdminWithHistoryChangedFields
 
 
@@ -36,4 +38,3 @@ def get_admin_header():
 
 admin.site.site_header = get_admin_header()
 admin.site.site_title = get_admin_header()
-
