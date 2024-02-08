@@ -7,6 +7,7 @@ import BlogPost from "@/views/BlogPost"
 import SearchResults from "@/views/SearchResults"
 import ElementView from "@/views/ElementView"
 import ProducerForm from "@/views/ProducerForm"
+import NotFound from "@/views/NotFound"
 
 const routes = [
   {
@@ -62,6 +63,11 @@ const routes = [
     meta: {
       authenticationRequired: true,
     },
+  },
+  {
+    path: "/:catchAll(.*)",
+    component: NotFound,
+    name: "NotFound",
   },
 ]
 
