@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+
+  srv_django:
+    container_name: "complalim_ctn_django"
+    # vars are injected at runtime, so no need to specify env_var value here.
+    image: 'python:3.11.0-bookworm'
+    volumes:
+      - ..:/workspaces:delegated
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+    expose:
+      - 8000
+
+  srv_postgres:
+    container_name: "complalim_ctn_postgres"
+    environment:
+      - POSTGRES_DB=icare
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+    image: 'postgres:15-bookworm'
+    restart: unless-stopped
+    volumes:
+      - postgres-data-complalim:/var/lib/postgresql/data
+    expose:
+      - 5432
+
+volumes:
+  postgres-data-complalim:

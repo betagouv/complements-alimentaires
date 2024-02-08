@@ -1,0 +1,40 @@
+{
+    "name": "💊 compl'alim",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "srv_django",
+    "workspaceFolder": "/workspace",
+    "containerEnv": {
+        "PYTHONUNBUFFERED": "1",
+        "PYTHONBREAKPOINT": "ipdb.set_trace"
+    },
+    "forwardPorts": [
+        8000, // django server
+        5432 // postgres
+    ],
+    "portsAttributes": {
+        "8000": {
+            "label": "Django",
+            "onAutoForward": "notify"
+        },
+        "5432": {
+            "label": "PostgreSQL",
+            "onAutoForward": "silent"
+        }
+    },
+    "onCreateCommand": "pip install -r requirements.txt",
+    "features": {
+        // TODO: feature node 20 + npm (or new image)
+        "ghcr.io/ddahan/feature-starter/custom_bashrc": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.black-formatter",
+                "tamasfe.even-better-toml"
+            ],
+            "settings": {} // defined at workspace level
+        }
+    }
+}
