@@ -1,6 +1,7 @@
 {% load render_bundle from webpack_loader %}
 {% load environment %}
 {% load static %}
+{% load analytics %}
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -15,7 +16,8 @@
     <meta name="description" content="Compléments alimentaires">
     <script type="text/javascript">
         window.CSRF_TOKEN = "{{ csrf_token }}";
-        window.ENVIRONMENT = "{% environment %}"
+        window.ENVIRONMENT = "{% environment %}";
+        window.MATOMO_ID = "{% matomo_id %}";
     </script>
 </head>
 
