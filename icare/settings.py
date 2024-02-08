@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import sys
 import os
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 import dotenv  # noqa
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -284,3 +286,16 @@ CKEDITOR_CONFIGS = {
 
 # Analytics
 MATOMO_ID = os.getenv("MATOMO_ID", "")
+
+# Sentry
+SENTRY_DSN = os.getenv("SENTRY_DSN")
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[
+            DjangoIntegration(),
+        ],
+        traces_sample_rate=1.0,
+        send_default_pii=False,
+        send_client_reports=False,
+    )
