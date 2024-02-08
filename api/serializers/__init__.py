@@ -6,3 +6,5 @@ from .plant import PlantSerializer  # noqa: F401
 from .ingredient import IngredientSerializer  # noqa: F401
 from .microorganism import MicroorganismSerializer  # noqa: F401
 from .substance import SubstanceSerializer, SubstanceShortSerializer  # noqa: F401
+from .population import PopulationSerializer  # noqa: F401
+from .condition import ConditionSerializer  # noqa: F401

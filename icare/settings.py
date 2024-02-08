@@ -284,6 +284,9 @@ CKEDITOR_CONFIGS = {
     }
 }
 
+# Analytics
+MATOMO_ID = os.getenv("MATOMO_ID", "")
+
 # Sentry
 SENTRY_DSN = os.getenv("SENTRY_DSN")
 if SENTRY_DSN:
