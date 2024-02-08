@@ -53,6 +53,12 @@ sudo su postgres
 postgres=# create user <DB_USER> createdb password <DB_PASSWORD>;
 ```
 
+Ensuite, pour créer les différents modèles Django dans la base de données :
+
+```
+python manage.py migrate
+```
+
 ### Compléter les variables d'environnement
 
 L'application utilise [python-dotenv](https://pypi.org/project/python-dotenv/), vous pouvez donc créer un fichier `.env` à la racine du projet avec ces variables définies :

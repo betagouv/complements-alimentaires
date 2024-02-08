@@ -1,40 +1,45 @@
 {
-    "name": "💊 compl'alim",
-    "dockerComposeFile": "docker-compose.yml",
-    "service": "srv_django",
-    "workspaceFolder": "/workspace",
-    "containerEnv": {
-        "PYTHONUNBUFFERED": "1",
-        "PYTHONBREAKPOINT": "ipdb.set_trace"
-    },
-    "forwardPorts": [
-        8000, // django server
-        5432 // postgres
-    ],
-    "portsAttributes": {
-        "8000": {
-            "label": "Django",
-            "onAutoForward": "notify"
-        },
-        "5432": {
-            "label": "PostgreSQL",
-            "onAutoForward": "silent"
+  "containerEnv": {
+    "PYTHONBREAKPOINT": "ipdb.set_trace",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "tamasfe.even-better-toml"
+      ],
+      "settings": {
+        "workbench.colorCustomizations": {
+          "titleBar.activeBackground": "#000091",
+          "titleBar.activeForeground": "#ffffff"
         }
-    },
-    "onCreateCommand": "pip install -r requirements.txt",
-    "features": {
-        // TODO: feature node 20 + npm (or new image)
-        "ghcr.io/ddahan/feature-starter/custom_bashrc": {}
-    },
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "ms-python.python",
-                "ms-python.vscode-pylance",
-                "ms-python.black-formatter",
-                "tamasfe.even-better-toml"
-            ],
-            "settings": {} // defined at workspace level
-        }
+      }
     }
+  },
+  "dockerComposeFile": "docker-compose.yml",
+  "features": {
+    "ghcr.io/ddahan/feature-starter/custom_bashrc": {}
+  },
+  "forwardPorts": [
+    8000,
+    5432
+  ],
+  "name": "💊 compl'alim",
+  "onCreateCommand": "pip install -r requirements.txt && pip install pre-commit",
+  "portsAttributes": {
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "8000": {
+      "label": "Django",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "pre-commit install",
+  "service": "srv_django",
+  "workspaceFolder": "/workspace"
 }
