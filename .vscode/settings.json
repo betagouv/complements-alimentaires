@@ -1,9 +1,17 @@
 {
   "files.exclude": {
-    "**/__pycache__": true
-},
-  "spellright.language": ["fr_FR (modern)"],
-  "spellright.documentTypes": ["latex", "plaintext", "markdown"],
+    "**/__pycache__": true,
+    "**/node_modules": true
+  },
+  "editor.formatOnSave": true,
+  "spellright.language": [
+    "fr_FR (modern)"
+  ],
+  "spellright.documentTypes": [
+    "latex",
+    "plaintext",
+    "markdown"
+  ],
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.wrappingIndent": "indent",
@@ -20,6 +28,7 @@
   "[markdown]": {
     "editor.formatOnSave": false
   },
+  "css.lint.unknownAtRules": "ignore",
   "prettier.enable": true,
   "prettier.prettierPath": "",
   "prettier.configPath": "./frontend/.prettierrc",
@@ -27,7 +36,12 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  "pylint.args": ["--load-plugins=pylint_django", "--rcfile", "${workspaceRoot}/.pylintrc"],
-  "black-formatter.args": ["--line-length=119"],
-  "black-formatter.path": ["${workspaceRoot}/venv/bin/black"]
+  "pylint.args": [
+    "--load-plugins=pylint_django",
+    "--rcfile",
+    "${workspaceFolder}/.pylintrc"
+  ],
+  "black-formatter.args": [
+    "--line-length=119"
+  ],
 }
