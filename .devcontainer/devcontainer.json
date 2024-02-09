@@ -9,7 +9,11 @@
         "ms-python.python",
         "ms-python.vscode-pylance",
         "ms-python.black-formatter",
-        "tamasfe.even-better-toml"
+        "ms-python.pylint",
+        "esbenp.prettier-vscode",
+        "tamasfe.even-better-toml",
+        "vue.volar",
+        "ban.spellright"
       ],
       "settings": {
         "workbench.colorCustomizations": {
@@ -21,14 +25,17 @@
   },
   "dockerComposeFile": "docker-compose.yml",
   "features": {
-    "ghcr.io/ddahan/feature-starter/custom_bashrc": {}
+    "ghcr.io/ddahan/feature-starter/custom_bashrc": {},
+    "ghcr.io/devcontainers/features/node": {
+      "version": "lts"
+    }
   },
   "forwardPorts": [
     8000,
     5432
   ],
   "name": "💊 compl'alim",
-  "onCreateCommand": "pip install -r requirements.txt && pip install pre-commit",
+  "onCreateCommand": "pip install -r requirements.txt && pip install pre-commit && cd frontend && npm install",
   "portsAttributes": {
     "5432": {
       "label": "PostgreSQL",
