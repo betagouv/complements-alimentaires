@@ -11,6 +11,7 @@ import PrivacyPolicy from "@/views/PrivacyPolicy.vue"
 import LegalNotices from "@/views/LegalNotices"
 import CookiesInfo from "@/views/CookiesInfo"
 import ProducerForm from "@/views/ProducerForm"
+import NotFound from "@/views/NotFound"
 
 const routes = [
   {
@@ -98,6 +99,11 @@ const routes = [
     meta: {
       authenticationRequired: true,
     },
+  },
+  {
+    path: "/:catchAll(.*)",
+    component: NotFound,
+    name: "NotFound",
   },
 ]
 
