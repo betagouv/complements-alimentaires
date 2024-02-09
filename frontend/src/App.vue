@@ -1,7 +1,13 @@
 <template>
   <AppHeader />
   <router-view></router-view>
-  <DsfrFooter :logo-text="logoText">
+  <DsfrFooter
+    :logo-text="logoText"
+    :cookiesLink="{ name: 'CookiesInfo' }"
+    :legalLink="{ name: 'LegalNotices' }"
+    :personalDataLink="{ name: 'PrivacyPolicy' }"
+    :afterMandatoryLinks="[{ label: 'Conditions générales d\'utilisation', to: { name: 'CGU' } }]"
+  >
     <template v-slot:description>
       <p>Compléments alimentaires</p>
     </template>

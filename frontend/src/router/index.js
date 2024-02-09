@@ -6,6 +6,10 @@ import BlogsHome from "@/views/BlogsHome"
 import BlogPost from "@/views/BlogPost"
 import SearchResults from "@/views/SearchResults"
 import ElementView from "@/views/ElementView"
+import CGU from "@/views/CGU.vue"
+import PrivacyPolicy from "@/views/PrivacyPolicy.vue"
+import LegalNotices from "@/views/LegalNotices"
+import CookiesInfo from "@/views/CookiesInfo"
 import ProducerForm from "@/views/ProducerForm"
 
 const routes = [
@@ -54,6 +58,38 @@ const routes = [
     name: "ElementView",
     component: ElementView,
     props: true,
+  },
+  {
+    path: "/mentions-legales",
+    name: "LegalNotices",
+    component: LegalNotices,
+    meta: {
+      title: "Mentions légales",
+    },
+  },
+  {
+    path: "/cgu",
+    name: "CGU",
+    component: CGU,
+    meta: {
+      title: "Conditions générales d'utilisation",
+    },
+  },
+  {
+    path: "/politique-de-confidentialite",
+    name: "PrivacyPolicy",
+    component: PrivacyPolicy,
+    meta: {
+      title: "Politique de confidentialité",
+    },
+  },
+  {
+    path: "/cookies",
+    name: "CookiesInfo",
+    component: CookiesInfo,
+    meta: {
+      title: "Cookies",
+    },
   },
   {
     path: "/nouvelle-demarche",
