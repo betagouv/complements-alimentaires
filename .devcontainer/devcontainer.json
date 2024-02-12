@@ -1,6 +1,6 @@
 {
   "containerEnv": {
-    "PYTHONBREAKPOINT": "ipdb.set_trace",
+    "PYTHONBREAKPOINT": "pdb.set_trace",
     "PYTHONUNBUFFERED": "1"
   },
   "customizations": {

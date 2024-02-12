@@ -14,11 +14,11 @@ Il existe 2 méthodes distinctes d'installation pour ce projet :
 
 #### À installer localement
 
-- [Python3](https://www.python.org/downloads/) (de préference 3.8)
+- [Python3](https://www.python.org/downloads/) (version 3.11)
 - [pip](https://pip.pypa.io/en/stable/installing/) (souvent installé avec Python)
 - [vitrualenv](https://virtualenv.pypa.io/en/stable/installation.html)
-- [Node et npm](https://nodejs.org/en/download/)
-- [Postgres](https://www.postgresql.org/download/)
+- [Node et npm](https://nodejs.org/en/download/) (version 20 LTS)
+- [Postgres](https://www.postgresql.org/download/) (version 15)
 - [pre-commit](https://pypi.org/project/pre-commit/)
 
 #### Création d'un environnement Python3 virtualenv
@@ -39,8 +39,6 @@ pip install -r requirements.txt
 ```
 
 #### Installer les dépendances du frontend
-
-On utilise les dernires versions LTS de `node` et `npm`.
 
 L'application frontend se trouve sous `/frontend`. Pour installer les dépendances :
 
