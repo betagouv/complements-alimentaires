@@ -15,7 +15,7 @@ kiwisolver==1.4.5
 matplotlib==3.8.2
 matplotlib-inline==0.1.6
 nest-asyncio==1.6.0
-numpy==1.26.3
+numpy==1.26.4
 pandas==2.2.0
 parso==0.8.3
 pexpect==4.9.0
