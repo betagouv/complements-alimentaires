@@ -39,7 +39,7 @@ PROTOCOL = "https" if SECURE else "http"
 DEBUG = env("DEBUG", cast=bool)
 AUTH_USER_MODEL = "data.User"
 
-ALLOWED_HOSTS = env("ALLOWED_HOSTS", cast=list)
+ALLOWED_HOSTS = [x.strip() for x in env("ALLOWED_HOSTS", cast=list)]
 
 ENVIRONMENT = env("ENVIRONMENT")
 
