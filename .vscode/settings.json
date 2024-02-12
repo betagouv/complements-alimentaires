@@ -1,9 +1,15 @@
 {
+  "files.insertFinalNewline": true,
+  "files.eol": "\n",
   "files.exclude": {
     "**/__pycache__": true,
     "**/node_modules": true
   },
   "editor.formatOnSave": true,
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#000091",
+    "titleBar.activeForeground": "#ffffff"
+  },
   "spellright.language": [
     "fr_FR (modern)"
   ],
@@ -32,7 +38,6 @@
   "prettier.enable": true,
   "prettier.prettierPath": "",
   "prettier.configPath": "./frontend/.prettierrc",
-  "files.eol": "\n",
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },

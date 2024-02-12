@@ -15,12 +15,7 @@
         "vue.volar",
         "ban.spellright"
       ],
-      "settings": {
-        "workbench.colorCustomizations": {
-          "titleBar.activeBackground": "#000091",
-          "titleBar.activeForeground": "#ffffff"
-        }
-      }
+      "settings": {}
     }
   },
   "dockerComposeFile": "docker-compose.yml",
