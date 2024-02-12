@@ -37,7 +37,10 @@ jobs:
         env:
           DEBUG: True
           SECRET: test
+          FORCE_HTTPS: False
+          SECURE: False
           ALLOWED_HOSTS: localhost
+          ENVIRONMENT: ci
           DB_USER: postgres
           DB_PASSWORD: postgres
           DB_HOST: localhost
@@ -46,5 +49,8 @@ jobs:
           HOSTNAME: localhost
           STATICFILES_STORAGE: django.contrib.staticfiles.storage.StaticFilesStorage
           DEFAULT_FILE_STORAGE: django.core.files.storage.FileSystemStorage
+          DEFAULT_FROM_EMAIL: test@test.com
+          CONTACT_EMAIL: test@test.com
+          EMAIL_BACKEND: django.core.mail.backends.dummy.EmailBackend
         run: |
           python3 manage.py test

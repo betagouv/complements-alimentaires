@@ -169,7 +169,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Media and file storage
 DEFAULT_FILE_STORAGE = env("DEFAULT_FILE_STORAGE")
 
-if DEFAULT_FILE_STORAGE == "FIXME":
+if DEFAULT_FILE_STORAGE == "storages.backends.s3.S3Storage":
     AWS_ACCESS_KEY_ID = env("CELLAR_KEY")
     AWS_SECRET_ACCESS_KEY = env("CELLAR_SECRET")
     AWS_S3_ENDPOINT_URL = env("CELLAR_HOST")
@@ -200,9 +200,9 @@ if DEBUG and EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend":
     EMAIL_HOST = "localhost"
     EMAIL_PORT = 1025
 
-NEWSLETTER_BREVO_LIST_ID = env("NEWSLETTER_BREVO_LIST_ID")
+NEWSLETTER_BREVO_LIST_ID = env("NEWSLETTER_BREVO_LIST_ID", default=None)
 ANYMAIL = {
-    "SENDINBLUE_API_KEY": env("BREVO_API_KEY", default=""),
+    "SENDINBLUE_API_KEY": env("BREVO_API_KEY", default=None),
 }
 
 # Rest framework
@@ -292,7 +292,7 @@ CKEDITOR_CONFIGS = {
 }
 
 # Analytics
-MATOMO_ID = env("MATOMO_ID", default="")
+MATOMO_ID = env("MATOMO_ID", default=None)
 
 # Sentry
 SENTRY_DSN = env("SENTRY_DSN", default=None)
