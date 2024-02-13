@@ -1,10 +1,11 @@
 from django.db import models
 
-from .abstract_models import CommonBaseIngredient, CommonBaseModel
+from .mixins import WithComments
+from .abstract_models import CommonBaseModel
 from .substance import Substance
 
 
-class Microorganism(CommonBaseIngredient):
+class Microorganism(CommonBaseModel, WithComments):
     class Meta:
         verbose_name = "micro-organisme"
 

@@ -1,9 +1,10 @@
 from django.db import models
 
-from .abstract_models import CommonBaseIngredient, CommonBaseModel
+from .mixins import WithComments
+from .abstract_models import CommonBaseModel
 
 
-class Substance(CommonBaseIngredient):
+class Substance(CommonBaseModel, WithComments):
     class Meta:
         verbose_name = "substance active"
         verbose_name_plural = "substances actives"

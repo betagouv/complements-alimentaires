@@ -1,7 +1,8 @@
 from django.db import models
 from simple_history.models import HistoricalRecords
 
-from .abstract_models import CommonBaseIngredient, CommonBaseModel
+from .mixins import WithComments
+from .abstract_models import CommonBaseModel
 from .substance import Substance
 
 
@@ -20,7 +21,7 @@ class PlantPart(CommonBaseModel):
     name_en = models.TextField(blank=True, verbose_name="nom en anglais")
 
 
-class Plant(CommonBaseIngredient):
+class Plant(CommonBaseModel, WithComments):
     class Meta:
         verbose_name = "plante"
 

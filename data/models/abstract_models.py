@@ -22,14 +22,3 @@ class CommonBaseModel(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class CommonBaseIngredient(CommonBaseModel):
-    class Meta:
-        abstract = True
-
-    public_comments = models.TextField(blank=True, verbose_name="commentaires publics")
-    private_comments = models.TextField(blank=True, verbose_name="commentaires privés")
-
-    # commentaire_public_en = models.TextField(blank=True)
-    # commentaire_privé_en = models.TextField(blank=True)  # TODO : intégrer les quelques données ici
