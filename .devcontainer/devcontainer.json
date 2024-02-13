@@ -13,7 +13,8 @@
         "esbenp.prettier-vscode",
         "tamasfe.even-better-toml",
         "vue.volar",
-        "ban.spellright"
+        "ban.spellright",
+        "bradlc.vscode-tailwindcss"
       ],
       "settings": {}
     }
