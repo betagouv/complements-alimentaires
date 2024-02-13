@@ -1,10 +1,11 @@
 from django.db import models
 
-from .abstract_models import CommonBaseIngredient, CommonBaseModel
+from .mixins import WithComments
+from .abstract_models import CommonBaseModel
 from .substance import Substance
 
 
-class Ingredient(CommonBaseIngredient):
+class Ingredient(CommonBaseModel, WithComments):
     class Meta:
         verbose_name = "autre ingrédient"
         verbose_name_plural = "autres ingrédients"
