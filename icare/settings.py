@@ -15,28 +15,33 @@ import sys
 import os
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
-import dotenv  # noqa
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+CONFIG_DIR = Path(__file__).resolve().parent
+BASE_DIR = CONFIG_DIR.parent
+
+# Environment
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET")
-SECURE_SSL_REDIRECT = os.getenv("FORCE_HTTPS") == "True"
+SECRET_KEY = env("SECRET")
+SECURE_SSL_REDIRECT = env("FORCE_HTTPS", cast=bool)
 
-SECURE = os.getenv("SECURE") == "True"
+SECURE = env("SECURE", cast=bool)
 PROTOCOL = "https" if SECURE else "http"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG") == "True"
+DEBUG = env("DEBUG", cast=bool)
 AUTH_USER_MODEL = "data.User"
 
-ALLOWED_HOSTS = [x.strip() for x in os.getenv("ALLOWED_HOSTS").split(",")]
+ALLOWED_HOSTS = [x.strip() for x in env("ALLOWED_HOSTS", cast=list)]
 
-ENVIRONMENT = os.getenv("ENVIRONMENT")
+ENVIRONMENT = env("ENVIRONMENT")
 
 # Application definition
 
@@ -108,11 +113,11 @@ WEBPACK_LOADER = {
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "USER": os.getenv("DB_USER"),
-        "NAME": os.getenv("DB_NAME"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
+        "USER": env("DB_USER"),
+        "NAME": env("DB_NAME"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT"),
         "CONN_MAX_AGE": 60,
     }
 }
@@ -162,40 +167,42 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Media and file storage
-AWS_ACCESS_KEY_ID = os.getenv("CELLAR_KEY")
-AWS_SECRET_ACCESS_KEY = os.getenv("CELLAR_SECRET")
-AWS_S3_ENDPOINT_URL = os.getenv("CELLAR_HOST")
-AWS_STORAGE_BUCKET_NAME = os.getenv("CELLAR_BUCKET_NAME")
-AWS_LOCATION = "media"
-AWS_QUERYSTRING_AUTH = False
+DEFAULT_FILE_STORAGE = env("DEFAULT_FILE_STORAGE")
 
-DEFAULT_FILE_STORAGE = os.getenv("DEFAULT_FILE_STORAGE")
-MEDIA_ROOT = os.getenv("MEDIA_ROOT", os.path.join(BASE_DIR, "media"))
+if DEFAULT_FILE_STORAGE == "storages.backends.s3.S3Storage":
+    AWS_ACCESS_KEY_ID = env("CELLAR_KEY")
+    AWS_SECRET_ACCESS_KEY = env("CELLAR_SECRET")
+    AWS_S3_ENDPOINT_URL = env("CELLAR_HOST")
+    AWS_STORAGE_BUCKET_NAME = env("CELLAR_BUCKET_NAME")
+    AWS_LOCATION = "media"
+    AWS_QUERYSTRING_AUTH = False
+
+MEDIA_ROOT = env("MEDIA_ROOT", default=os.path.join(BASE_DIR, "media"))
 MEDIA_URL = "/media/"
 
-STATICFILES_STORAGE = os.getenv("STATICFILES_STORAGE")
+STATICFILES_STORAGE = env("STATICFILES_STORAGE")
 SESSION_COOKIE_AGE = 31536000
-SESSION_COOKIE_SECURE = os.getenv("SECURE") == "True"
+SESSION_COOKIE_SECURE = env("SECURE", cast=bool)
 SESSION_COOKIE_HTTPONLY = True
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_URL = "/s-identifier"
 
-HOSTNAME = os.getenv("HOSTNAME")
+HOSTNAME = env("HOSTNAME")
 
 # Email
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
-CONTACT_EMAIL = os.getenv("CONTACT_EMAIL")
-EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+CONTACT_EMAIL = env("CONTACT_EMAIL")
+EMAIL_BACKEND = env("EMAIL_BACKEND")
 
 if DEBUG and EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend":
     EMAIL_HOST = "localhost"
     EMAIL_PORT = 1025
 
-NEWSLETTER_BREVO_LIST_ID = os.getenv("NEWSLETTER_BREVO_LIST_ID")
+NEWSLETTER_BREVO_LIST_ID = env("NEWSLETTER_BREVO_LIST_ID", default=None)
 ANYMAIL = {
-    "SENDINBLUE_API_KEY": os.getenv("BREVO_API_KEY", ""),
+    "SENDINBLUE_API_KEY": env("BREVO_API_KEY", default=None),
 }
 
 # Rest framework
@@ -285,10 +292,10 @@ CKEDITOR_CONFIGS = {
 }
 
 # Analytics
-MATOMO_ID = os.getenv("MATOMO_ID", "")
+MATOMO_ID = env("MATOMO_ID", default=None)
 
 # Sentry
-SENTRY_DSN = os.getenv("SENTRY_DSN")
+SENTRY_DSN = env("SENTRY_DSN", default=None)
 if SENTRY_DSN:
     sentry_sdk.init(
         dsn=SENTRY_DSN,

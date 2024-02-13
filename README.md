@@ -90,7 +90,7 @@ _À suivre peu importe la méthode d'installation choisie_
 
 #### Compléter les variables d'environnement
 
-L'application utilise [python-dotenv](https://pypi.org/project/python-dotenv/), vous pouvez donc créer un fichier `.env` à la racine du projet avec ces variables définies :
+L'application utilise [django-environ](https://django-environ.readthedocs.io/en/latest/), vous pouvez donc créer un fichier `.env` à la racine du projet avec ces variables définies :
 
 ```
 SECRET= Le secret pour Django (vous pouvez le [générer ici](https://djecrety.ir/))
