@@ -8,10 +8,10 @@
       </p>
     </div>
     <div class="col-span-12 md:col-span-5 my-6 md:my-0">
-      <DsfrInputGroup :error-message="v$.email.$error ? v$.email.$errors[0].$message : ''">
+      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
         <DsfrInput v-model="state.email" placeholder="Votre email (optionnel)" />
       </DsfrInputGroup>
-      <DsfrInputGroup :error-message="v$.reportMessage.$error ? v$.reportMessage.$errors[0].$message : ''">
+      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reportMessage')">
         <DsfrInput
           v-model="state.reportMessage"
           placeholder="Quel(s) problème(s) constatez-vous ?"
@@ -31,7 +31,7 @@
 import { reactive } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { required, email, helpers } from "@vuelidate/validators"
-import { headers } from "@/consts/headers"
+import { headers, firstErrorMsg } from "@/utils"
 import { useFetch } from "@vueuse/core"
 
 // Form state & rules
@@ -55,8 +55,8 @@ const { data, error, execute, isFetching } = useFetch("/api/v1/reportIssue/", {
 })
 
 // Form validation
-const submit = async () => {
-  await v$.value.$validate()
+const submit = () => {
+  v$.value.$validate()
   if (v$.value.$error) {
     return // avoid API call if there is a front-end error
   }
