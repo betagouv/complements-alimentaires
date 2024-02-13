@@ -15,13 +15,14 @@ logger = logging.getLogger(__name__)
 class AutocompleteView(APIView):
     serializer_class = AutocompleteItemSerializer
     min_query_length = 3
+    max_autocomplete_items = 20
 
     def post(self, request, *args, **kwargs):
         query = request.data.get("term")
         if not query or len(query) < self.min_query_length:
             raise BadRequest(f"Le terme de recherche doit être supérieur ou égal à {self.min_query_length} caractères")
 
-        results = self.get_sorted_objects(query)
+        results = self.get_sorted_objects(query)[: self.max_autocomplete_items]
         return JsonResponse(self.serialize_results(results), safe=False)
 
     def get_sorted_objects(self, query):
@@ -39,7 +40,6 @@ class AutocompleteView(APIView):
         return results
 
     def get_plants(self, query):
-        # TODO : add unaccent add-on : https://stackoverflow.com/questions/54071944/fielderror-unsupported-lookup-unaccent-for-charfield-or-join-on-the-field-not
         plant_qs = Plant.objects.filter(name__unaccent__icontains=query).annotate(autocomplete_match=F("name"))
         plant_synonym_qs = Plant.objects.filter(plantsynonym__name__unaccent__icontains=query).annotate(
             autocomplete_match=F("plantsynonym__name")
