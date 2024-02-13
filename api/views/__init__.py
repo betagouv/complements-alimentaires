@@ -9,3 +9,4 @@ from .microorganism import MicroorganismRetrieveView  # noqa: F401
 from .substance import SubstanceRetrieveView  # noqa: F401
 from .population import PopulationListView  # noqa: F401
 from .condition import ConditionListView  # noqa: F401
+from .autocomplete import AutocompleteView  # noqa: F401
