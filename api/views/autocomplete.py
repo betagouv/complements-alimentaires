@@ -4,7 +4,7 @@ from difflib import SequenceMatcher
 from rest_framework.views import APIView
 from django.http import JsonResponse
 from django.core.exceptions import BadRequest
-from django.db.models import Q, F
+from django.db.models import F
 from api.serializers import AutocompleteItemSerializer
 from data.models import Plant, Microorganism, Ingredient, Substance
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
@@ -40,34 +40,36 @@ class AutocompleteView(APIView):
 
     def get_plants(self, query):
         # TODO : add unaccent add-on : https://stackoverflow.com/questions/54071944/fielderror-unsupported-lookup-unaccent-for-charfield-or-join-on-the-field-not
-        plant_qs = Plant.objects.filter(Q(name__icontains=query)).annotate(autocomplete_match=F("name"))
-        plant_synonym_qs = Plant.objects.filter(plantsynonym__name__icontains=query).annotate(
+        plant_qs = Plant.objects.filter(name__unaccent__icontains=query).annotate(autocomplete_match=F("name"))
+        plant_synonym_qs = Plant.objects.filter(plantsynonym__name__unaccent__icontains=query).annotate(
             autocomplete_match=F("plantsynonym__name")
         )
 
         return list(plant_qs.union(plant_synonym_qs))
 
     def get_microorganisms(self, query):
-        microorganism_qs = Microorganism.objects.filter(Q(name__icontains=query)).annotate(
+        microorganism_qs = Microorganism.objects.filter(name__unaccent__icontains=query).annotate(
             autocomplete_match=F("name")
         )
-        microorganism_synonym_qs = Microorganism.objects.filter(microorganismsynonym__name__icontains=query).annotate(
-            autocomplete_match=F("microorganismsynonym__name")
-        )
+        microorganism_synonym_qs = Microorganism.objects.filter(
+            microorganismsynonym__name__unaccent__icontains=query
+        ).annotate(autocomplete_match=F("microorganismsynonym__name"))
 
         return list(microorganism_qs.union(microorganism_synonym_qs))
 
     def get_ingredients(self, query):
-        ingredient_qs = Ingredient.objects.filter(Q(name__icontains=query)).annotate(autocomplete_match=F("name"))
-        ingredient_synonym_qs = Ingredient.objects.filter(ingredientsynonym__name__icontains=query).annotate(
+        ingredient_qs = Ingredient.objects.filter(name__unaccent__icontains=query).annotate(
+            autocomplete_match=F("name")
+        )
+        ingredient_synonym_qs = Ingredient.objects.filter(ingredientsynonym__name__unaccent__icontains=query).annotate(
             autocomplete_match=F("ingredientsynonym__name")
         )
 
         return list(ingredient_qs.union(ingredient_synonym_qs))
 
     def get_substances(self, query):
-        substance_qs = Substance.objects.filter(Q(name__icontains=query)).annotate(autocomplete_match=F("name"))
-        substance_synonym_qs = Substance.objects.filter(substancesynonym__name__icontains=query).annotate(
+        substance_qs = Substance.objects.filter(name__unaccent__icontains=query).annotate(autocomplete_match=F("name"))
+        substance_synonym_qs = Substance.objects.filter(substancesynonym__name__unaccent__icontains=query).annotate(
             autocomplete_match=F("substancesynonym__name")
         )
 
