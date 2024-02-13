@@ -1,17 +1,27 @@
 # Compléments Alimentaires
 
-Projet en construction
+_Projet en construction_
 
-### À installer localement
+## Installation du projet
 
-- [Python3](https://www.python.org/downloads/) (de préference 3.8)
+Il existe 2 méthodes distinctes d'installation pour ce projet :
+1) l'installation manuelle classique
+2) l'installation automatique via un [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers) (nécessite Docker et VS Code)
+
+
+### Installation manuelle classique (_méthode 1_)
+
+
+#### À installer localement
+
+- [Python3](https://www.python.org/downloads/) (version 3.11)
 - [pip](https://pip.pypa.io/en/stable/installing/) (souvent installé avec Python)
 - [vitrualenv](https://virtualenv.pypa.io/en/stable/installation.html)
-- [Node et npm](https://nodejs.org/en/download/)
-- [Postgres](https://www.postgresql.org/download/)
+- [Node et npm](https://nodejs.org/en/download/) (version 20 LTS)
+- [Postgres](https://www.postgresql.org/download/) (version 15)
 - [pre-commit](https://pypi.org/project/pre-commit/)
 
-### Création d'un environnement Python3 virtualenv
+#### Création d'un environnement Python3 virtualenv
 
 Pour commencer, c'est recommandé de créer un environnement virtuel avec Python3.
 
@@ -20,7 +30,7 @@ virtualenv -p python3 venv
 source ./venv/bin/activate
 ```
 
-### Installer les dépendances du backend
+#### Installer les dépendances du backend
 
 Les dépendances du backend se trouvent dans `requirements.txt`. Pour les installer :
 
@@ -28,9 +38,7 @@ Les dépendances du backend se trouvent dans `requirements.txt`. Pour les instal
 pip install -r requirements.txt
 ```
 
-### Installer les dépendances du frontend
-
-On utilise les dernires versions LTS de `node` et `npm`.
+#### Installer les dépendances du frontend
 
 L'application frontend se trouve sous `/frontend`. Pour installer les dépendances :
 
@@ -39,7 +47,7 @@ cd frontend
 npm install
 ```
 
-### Créer la base de données
+#### Créer la base de données
 
 Par exemple, pour utiliser une base de données nommée _icare_ :
 
@@ -53,7 +61,34 @@ sudo su postgres
 postgres=# create user <DB_USER> createdb password <DB_PASSWORD>;
 ```
 
-### Compléter les variables d'environnement
+#### Pre-commit
+
+On utilise l'outil [`pre-commit`](https://pre-commit.com/) pour effectuer des vérifications automatiques
+avant chaque commit. Cela permet par exemple de linter les code Python, Javascript et HTML.
+
+Pour pouvoir l'utiliser, il faut installer `pre-commit` (en général plutôt de manière globable que dans
+l'environnement virtuel) : `pip install pre-commit`.
+
+Puis l'activer : `pre-commit install`.
+
+Les vérifications seront ensuite effectuées avant chaque commit. Attention, lorsqu'une vérification `fail`,
+le commit est annulé. Il faut donc que toutes les vérifications passent pour que le commit soit pris en
+compte. Si exceptionnellement vous voulez commiter malgré qu'une vérification ne passe pas, c'est possible
+avec `git commit -m 'my message' --no-verify`.
+
+
+### Installation automatique via un devcontainer (_méthode 2_)
+
+- Installer [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Installer l'extension [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) dans VS Code
+- Dans VS Code, lancer la commande `Clone Repository in Container Volume` et suivre les instructions. Le container va alors être créé.
+- Une fois le container créé, si une icône de chargement reste présente sur l'icône des extensions dans le menu gauche (bug VS Code), lancer la commande `Reload Window` pour régler le soucis.
+
+## Configuration du projet
+
+_À suivre peu importe la méthode d'installation choisie_
+
+#### Compléter les variables d'environnement
 
 L'application utilise [python-dotenv](https://pypi.org/project/python-dotenv/), vous pouvez donc créer un fichier `.env` à la racine du projet avec ces variables définies :
 
@@ -81,7 +116,13 @@ SENTRY_DSN (optionnel)= Le Data Source Name pour Sentry. Peut être vide.
 MATOMO_ID (optionnel)= L'ID pour le suivi avec Matomo. Compl-alim utilise l'ID 95 pour la prod, en local c'est mieux de le laisser vide
 ```
 
-## Lancer l'application en mode développement
+#### Créer les différents modèles Django dans la base de données
+
+```
+python manage.py migrate
+```
+
+## Lancement de l'application en mode développement
 
 Pour le développement il faudra avoir deux terminales ouvertes : une pour l'application Django, et une autre pour l'application VueJS.
 
@@ -104,22 +145,9 @@ npm run serve
 
 Une fois la compilation finie des deux côtés, l'application se trouvera sous [127.0.0.1:8000](127.0.0.1:8000) (le port Django, non pas celui de npm).
 
-### Pre-commit
+## Lancement des tests
 
-On utilise l'outil [`pre-commit`](https://pre-commit.com/) pour effectuer des vérifications automatiques
-avant chaque commit. Cela permet par exemple de linter les code Python, Javascript et HTML.
-
-Pour pouvoir l'utiliser, il faut installer `pre-commit` (en général plutôt de manière globable que dans
-l'environnement virtuel) : `pip install pre-commit`.
-
-Puis l'activer : `pre-commit install`.
-
-Les vérifications seront ensuite effectuées avant chaque commit. Attention, lorsqu'une vérification `fail`,
-le commit est annulé. Il faut donc que toutes les vérifications passent pour que le commit soit pris en
-compte. Si exceptionnellement vous voulez commiter malgré qu'une vérification ne passe pas, c'est possible
-avec `git commit -m 'my message' --no-verify`.
-
-## Lancer les tests pour l'application Django
+### Lancer les tests Django
 
 La commande pour lancer les tests Django est :
 
@@ -129,7 +157,7 @@ python manage.py test
 
 Sur VSCode, ces tests peuvent être debuggés avec la configuration "Python: Tests", présente sur le menu "Run".
 
-## Lancer les tests pour l'application VueJS
+### Lancer les tests VueJS
 
 Il faut d'abord se placer sur "/frontend", ensuite la commande pour lancer les tests VueJS est :
 
@@ -138,7 +166,9 @@ cd frontend
 npm run test
 ```
 
-## Creation d'un superuser
+## Création / import de données initiales
+
+#### Creation d'un superuser
 
 Afin de pouvoir s'identifier dans le backoffice (sous /admin), il est nécessaire de créer un utilisateur admin avec tous les droits. Pour ce faire, vous pouvez en console lancer :
 
@@ -146,7 +176,7 @@ Afin de pouvoir s'identifier dans le backoffice (sous /admin), il est nécessair
 python manage.py createsuperuser
 ```
 
-## Import de données dans les tables ingrédient
+#### Import de données dans les tables ingrédient
 
 Pour pouvoir tester l'application et le backoffice avec des données réelles, il est nécessaire d'importer des données. Pour cela :
 ```
