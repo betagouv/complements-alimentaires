@@ -49,7 +49,7 @@ jobs:
           HOSTNAME: localhost
           STATICFILES_STORAGE: django.contrib.staticfiles.storage.StaticFilesStorage
           DEFAULT_FILE_STORAGE: django.core.files.storage.FileSystemStorage
-          DEFAULT_FROM_EMAIL: test@test.com
+          DEFAULT_FROM_EMAIL: test@example.com
           CONTACT_EMAIL: test@test.com
           EMAIL_BACKEND: django.core.mail.backends.dummy.EmailBackend
         run: |
