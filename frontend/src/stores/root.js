@@ -6,10 +6,10 @@ export const useRootStore = defineStore("root", () => {
   const loggedUser = ref(null)
   const initialDataLoaded = ref(false)
 
-  function fetchInitialData() {
+  const fetchInitialData = () => {
     return fetchLoggedUser().then(() => (initialDataLoaded.value = true))
   }
-  function fetchLoggedUser() {
+  const fetchLoggedUser = () => {
     return fetch("/api/v1/loggedUser/")
       .then(verifyResponse)
       .then((response) => {
