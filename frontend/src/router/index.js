@@ -128,7 +128,7 @@ function chooseAuthorisedRoute(to, from, next, store) {
       })
   } else {
     if (to.meta.home) next({ name: "LandingPage" })
-    else if (!to.meta.authenticationRequired || store.state.loggedUser) next()
+    else if (!to.meta.authenticationRequired || store.loggedUser) next()
     else window.location.href = `/s-identifier?next=${to.path}`
   }
 }
