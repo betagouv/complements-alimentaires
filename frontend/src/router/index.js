@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router"
-import { useStore } from "vuex"
+import { useRootStore } from "@/stores/root"
 import LandingPage from "@/views/LandingPage"
 import ProducersPage from "@/views/ProducersPage"
 import BlogsHome from "@/views/BlogsHome"
@@ -118,9 +118,9 @@ const router = createRouter({
 })
 
 function chooseAuthorisedRoute(to, from, next, store) {
-  if (!store.state.initialDataLoaded) {
+  if (!store.initialDataLoaded) {
     store
-      .dispatch("fetchInitialData")
+      .fetchInitialData()
       .then(() => chooseAuthorisedRoute(to, from, next, store))
       .catch((e) => {
         console.error(`An error occurred: ${e}`)
@@ -134,7 +134,7 @@ function chooseAuthorisedRoute(to, from, next, store) {
 }
 
 router.beforeEach((to, from, next) => {
-  const store = useStore()
+  const store = useRootStore()
   chooseAuthorisedRoute(to, from, next, store)
 })
 
