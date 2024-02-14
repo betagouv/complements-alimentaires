@@ -33,3 +33,7 @@ class CommonBaseIngredient(CommonBaseModel):
 
     # commentaire_public_en = models.TextField(blank=True)
     # commentaire_privé_en = models.TextField(blank=True)  # TODO : intégrer les quelques données ici
+
+    @property
+    def object_type(self):
+        return self.__class__.__name__.lower()

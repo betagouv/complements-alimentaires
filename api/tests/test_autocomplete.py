@@ -55,6 +55,10 @@ class TestAutocomplete(APITestCase):
         self.assertEqual(returned_ids[1], eucalyptus_2.id)
         self.assertEqual(returned_ids[2], myrtaceae.id)
 
+        self.assertEqual(results[0]["objectType"], "substance")
+        self.assertEqual(results[1]["objectType"], "ingredient")
+        self.assertEqual(results[2]["objectType"], "plant")
+
     def test_autocomplete_accented(self):
         """
         Accents should not impact query
@@ -83,3 +87,7 @@ class TestAutocomplete(APITestCase):
         self.assertEqual(returned_ids[0], buplevre_1.id)
         self.assertEqual(returned_ids[1], buplevre_2.id)
         self.assertEqual(returned_ids[2], pancic.id)
+
+        self.assertEqual(results[0]["objectType"], "substance")
+        self.assertEqual(results[1]["objectType"], "plant")
+        self.assertEqual(results[2]["objectType"], "microorganism")
