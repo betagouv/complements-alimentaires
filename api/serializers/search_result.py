@@ -4,7 +4,7 @@ from data.models import Plant, Microorganism, Ingredient, Substance
 
 class SearchResultSerializer(serializers.Serializer):
     # Common
-    object_type = serializers.SerializerMethodField(read_only=True)
+    object_type = serializers.CharField(read_only=True)
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(read_only=True)
     name_en = serializers.CharField(read_only=True)
@@ -20,16 +20,6 @@ class SearchResultSerializer(serializers.Serializer):
 
     # Microorganism
     genre = serializers.CharField(read_only=True)
-
-    def get_object_type(self, instance):
-        if isinstance(instance, Plant):
-            return "plant"
-        if isinstance(instance, Microorganism):
-            return "microorganism"
-        if isinstance(instance, Ingredient):
-            return "ingredient"
-        if isinstance(instance, Substance):
-            return "substance"
 
     def get_synonyms(self, instance):
         if isinstance(instance, Plant):

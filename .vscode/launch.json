@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Python: Django",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "python": "${workspaceFolder}/venv/bin/python",
             "program": "${workspaceFolder}/manage.py",
@@ -18,7 +18,7 @@
         },
         {
             "name": "Python: Tests",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "stopOnEntry": false,
             "python": "${workspaceFolder}/venv/bin/python",
@@ -32,7 +32,7 @@
         },
         {
             "name":"Python: Current File",
-            "type":"python",
+            "type":"debugpy",
             "request":"launch",
             "program":"${file}",
             "console":"integratedTerminal",
