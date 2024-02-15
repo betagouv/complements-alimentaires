@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from "vue"
+import { computed, watch } from "vue"
 import { useRootStore } from "@/stores/root"
 import { useRoute } from "vue-router"
 
@@ -45,9 +45,6 @@ const quickLinks = computed(function () {
       },
     ]
   else return []
-})
-onMounted(() => {
-  store.fetchLoggedUser()
 })
 watch(
   () => route.query["confirmation-deconnexion"],
