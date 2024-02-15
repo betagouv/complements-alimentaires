@@ -101,15 +101,6 @@
         <label :for="`population-${population.id}`" class="fr-label ml-2">{{ population.name }}</label>
       </div>
     </div>
-    <!-- <div class="grid grid-cols-6 gap-2">
-      <DsfrCheckbox
-        v-for="population in populations"
-        v-model="payload.targetPopulations"
-        :key="`population-${population.id}`"
-        :label="population.name"
-        class="col-span-6 sm:col-span-3 lg:col-span-2"
-      />
-    </div> -->
   </DsfrFieldset>
 
   <DsfrFieldset legend="Consommation déconseillée" legendClass="fr-label">
@@ -226,7 +217,7 @@ const effects = [
   "Tonus sexuel",
   "Transit",
   "Voies respiratoires",
-  "Autre (à préciser)", // TODO le rendre spécifiable avec un textfield
+  "Autre (à préciser)",
 ]
 
 onMounted(() => {
