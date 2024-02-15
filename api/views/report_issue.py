@@ -21,12 +21,13 @@ class ReportIssue(APIView):
             return InvalidEmailResponse
         now = timezone.now()
         user_str = email or "Un utilisateur anonyme"
-        message_str = request.data.get("report_message")
+        element_str = request.data["element_name"]
+        message_str = request.data["report_message"]
         time_str = f"le {date(now)} à {time(now)}"
 
         send_mail(
             subject="Nouvelle incohérence remontée dans la base ingrédients",
-            message=f"{user_str} a envoyé un message {time_str} pour signaler cette erreur dans la base ingrédients : {message_str}",
+            message=f"{user_str} a envoyé un message {time_str} pour signaler l'erreur suivante concernant l'ingrédient {element_str} : {message_str}",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[settings.CONTACT_EMAIL],
         )

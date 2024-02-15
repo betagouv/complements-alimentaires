@@ -35,11 +35,6 @@
       />
     </div>
   </div>
-  <div class="bg-blue-france-975 py-8">
-    <div class="fr-container">
-      <ReportIssue />
-    </div>
-  </div>
 </template>
 
 <script setup>
@@ -48,7 +43,6 @@ import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router"
 import { headers, verifyResponse } from "@/utils"
 import ResultCard from "./ResultCard"
 import ProgressSpinner from "@/components/ProgressSpinner"
-import ReportIssue from "@/views/SearchResults/ReportIssue"
 
 let mounted = false
 let currentSearch = ref("")
