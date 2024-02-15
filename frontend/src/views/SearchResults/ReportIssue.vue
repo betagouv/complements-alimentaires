@@ -48,17 +48,15 @@ const v$ = useVuelidate(rules, state)
 
 // Request definition
 const { data, error, execute, isFetching } = useFetch("/api/v1/reportIssue/", {
-  method: "POST",
   headers: headers,
-  body: state,
   immediate: false,
-})
+}).post(state)
 
 // Form validation
 const submit = () => {
   v$.value.$validate()
   if (v$.value.$error) {
-    return // avoid API call if there is a front-end error
+    return // prevent API call if there is a front-end error
   }
   execute()
 
