@@ -157,6 +157,9 @@ django-ckeditor==6.7.0 ; python_version >= "3.11.dev0" and python_version < "3.1
 django-environ==0.11.2 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:0ff95ab4344bfeff693836aa978e6840abef2e2f1145adff7735892711590c05 \
     --hash=sha256:f32a87aa0899894c27d4e1776fa6b477e8164ed7f6b3e410a62a6d72caaf64be
+django-extensions==3.2.3 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
+    --hash=sha256:44d27919d04e23b3f40231c4ab7af4e61ce832ef46d610cc650d53e68328410a \
+    --hash=sha256:9600b7562f79a92cbf1fde6403c04fee314608fefbb595502e34383ae8203401
 django-filter==23.5 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:67583aa43b91fe8c49f74a832d95f4d8442be628fd4c6d65e9f811f5153a4e5c \
     --hash=sha256:99122a201d83860aef4fe77758b69dda913e874cc5e0eaa50a86b0b18d708400
