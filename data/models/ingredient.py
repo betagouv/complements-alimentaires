@@ -1,28 +1,25 @@
 from django.db import models
 
-from .mixins import WithComments
-from .abstract_models import CommonBaseModel
+from .mixins import WithSICCRFComments
+from .abstract_models import SICCRFCommonModel
 from .substance import Substance
 
 
-class Ingredient(CommonBaseModel, WithComments):
+class Ingredient(SICCRFCommonModel, WithSICCRFComments):
+    """
+    """
     class Meta:
         verbose_name = "autre ingrédient"
         verbose_name_plural = "autres ingrédients"
 
-    name_en = models.TextField(blank=True, verbose_name="nom en anglais")
-    observation = models.TextField(blank=True)
-    description = models.TextField(blank=True)
-    substances = models.ManyToManyField(Substance)
-
-    # champs présents dans le CSV mais inutilisés
-    # stingsbs = models.IntegerField()
-    # taing = models.IntegerField()
-    # fctingr = models.IntegerField()
-    # description_en = models.CharField(max_length=1000, blank=True)
+    siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
+    siccrf_observation = models.TextField(blank=True)
+    siccrf_description = models.TextField(blank=True)
+    siccrf_description_en = models.TextField(blank=True)
+    siccrf_substances = models.ManyToManyField(Substance)
 
 
-class IngredientSynonym(CommonBaseModel):
+class IngredientSynonym(SICCRFCommonModel):
     class Meta:
         verbose_name = "synonyme d'ingrédient"
 

@@ -1,24 +1,20 @@
 from django.db import models
 
-from .mixins import WithComments
-from .abstract_models import CommonBaseModel
+from .mixins import WithSICCRFComments
+from .abstract_models import SICCRFCommonModel
 from .substance import Substance
 
 
-class Microorganism(CommonBaseModel, WithComments):
+class Microorganism(SICCRFCommonModel, WithSICCRFComments):
     class Meta:
         verbose_name = "micro-organisme"
 
-    name_en = models.TextField(blank=True, verbose_name="nom en anglais")
-    genre = models.TextField(verbose_name="genre de micro-organisme")
-    substances = models.ManyToManyField(Substance)
-
-    # champs présents dans le CSV mais inutilisés
-    # fctingr = models.IntegerField()
-    # stingsbs = models.IntegerField()
+    siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
+    siccrf_genre = models.TextField(verbose_name="genre de micro-organisme")
+    siccrf_substances = models.ManyToManyField(Substance)
 
 
-class MicroorganismSynonym(CommonBaseModel):
+class MicroorganismSynonym(SICCRFCommonModel):
     class Meta:
         verbose_name = "synonyme de micro-organisme"
 

@@ -2,7 +2,6 @@ import csv
 import logging
 import os
 
-from datetime import datetime
 from django.db.models import (
     ForeignKey,
     ManyToManyField,
