@@ -27,7 +27,13 @@ Pour installer les dépendances du backend :
 poetry install --no-root
 ```
 
-Cette action créera aussi un environnement virtuel automatiquement. Il n'est donc pas nécessaire d'utiliser un autre outil tel que virtualenv.
+Cette action créera aussi un environnement virtuel automatiquement. Il n'est donc pas nécessaire d'utiliser un autre outil.
+
+Pour activer l'environnement virtuel, s'assurer d'être à la racine du projet et lancer :
+
+```
+poetry shell
+```
 
 #### Installer les dépendances du frontend
 
