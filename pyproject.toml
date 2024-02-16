@@ -84,6 +84,7 @@ seaborn = "*"      # https://github.com/mwaskom/seaborn
 networkx = "*"     # https://github.com/networkx/networkx
 ipykernel = "*"    # https://github.com/ipython/ipykernel
 scikit-learn = "*" # https://github.com/scikit-learn/scikit-learn
+matplotlib = "*"   # https://github.com/matplotlib/matplotlib
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
