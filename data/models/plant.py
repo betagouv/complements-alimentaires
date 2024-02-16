@@ -1,37 +1,33 @@
 from django.db import models
 from simple_history.models import HistoricalRecords
 
-from .mixins import WithComments
-from .abstract_models import CommonBaseModel
+from .mixins import WithSICCRFComments
+from .abstract_models import SICCRFCommonModel
 from .substance import Substance
 
 
-class PlantFamily(CommonBaseModel):
+class PlantFamily(SICCRFCommonModel):
     class Meta:
         verbose_name = "famille de plantes"
         verbose_name_plural = "familles de plantes"
 
-    name_en = models.TextField(blank=True, verbose_name="nom en anglais")
+    siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
 
 
-class PlantPart(CommonBaseModel):
+class PlantPart(SICCRFCommonModel):
     class Meta:
         verbose_name = "partie de plante"
 
-    name_en = models.TextField(blank=True, verbose_name="nom en anglais")
+    siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
 
 
-class Plant(CommonBaseModel, WithComments):
+class Plant(SICCRFCommonModel, WithSICCRFComments):
     class Meta:
         verbose_name = "plante"
 
-    family = models.ForeignKey(PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante")
-    plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
-    substances = models.ManyToManyField(Substance)
-
-    # champs présents dans le CSV mais inutilisés
-    # fctingr = models.IntegerField()
-    # stingsbs = models.IntegerField()
+    siccrf_family = models.ForeignKey(PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante")
+    siccrf_plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
+    siccrf_substances = models.ManyToManyField(Substance)
 
 
 class Part(models.Model):
@@ -48,7 +44,7 @@ class Part(models.Model):
     history = HistoricalRecords(inherit=True)
 
 
-class PlantSynonym(CommonBaseModel):
+class PlantSynonym(SICCRFCommonModel):
     class Meta:
         verbose_name = "synonyme de plante"
 
