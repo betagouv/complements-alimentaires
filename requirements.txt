@@ -191,9 +191,9 @@ executing==2.0.1 ; python_version >= "3.11" and python_version < "3.12.dev0" \
 factory-boy==3.3.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:a2cdbdb63228177aa4f1c52f4b6d83fab2b8623bf602c7dedd7eb83c0f69c04c \
     --hash=sha256:bc76d97d1a65bbd9842a6d722882098eb549ec8ee1081f9fb2e8ff29f0c300f1
-faker==23.2.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
-    --hash=sha256:2db4b60ef93d247a8fe5518d01ebafa8df3a5dffd40cbb9577b25c45b04a9952 \
-    --hash=sha256:8631f712e85ae9208352442f74537927a92c439b83125f83e4798e5716764cc9
+faker==23.2.1 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
+    --hash=sha256:0520a6b97e07c658b2798d7140971c1d5bc4bcd5013e7937fe075fd054aa320c \
+    --hash=sha256:f07b64d27f67b62c7f0536a72f47813015b3b51cd4664918454011094321e464
 filelock==3.13.1 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:521f5f56c50f8426f5e03ad3b281b490a87ef15bc6c526f168290f0c7148d44e \
     --hash=sha256:57dbda9b35157b05fb3e58ee91448612eb674172fab98ee235ccb0b5bee19a1c

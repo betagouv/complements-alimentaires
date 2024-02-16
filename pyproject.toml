@@ -1,7 +1,7 @@
 [tool]
 
 [tool.poetry]
-name = "compl'alim"
+name = "complalim"
 version = "0.0.1"
 description = ""
 authors = []
