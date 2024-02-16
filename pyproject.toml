@@ -39,7 +39,6 @@ django-storages = "*" # https://github.com/jschneier/django-storages
 ######################################################################################################################
 django-filter = "*"         # https://github.com/carltongibson/django-filter
 django-simple-history = "*" # https://github.com/jazzband/django-simple-history
-django-extensions = "*"     # https://github.com/django-extensions/django-extensions
 
 ######################################################################################################################
 # Linting & Formatting
