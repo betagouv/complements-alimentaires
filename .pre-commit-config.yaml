@@ -1,144 +1,144 @@
 exclude: ^(.*\/migrations|.*package.json|.*package-lock.json|Pipfile*|.vscode|.*.spec.js)
 repos:
-  # GENERAL
-  - hooks:
-      - id: check-added-large-files
-      - id: check-merge-conflict
-      - id: forbid-new-submodules
-    repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-  - hooks:
-      - id: check-byte-order-marker
-      - id: check-case-conflict
-      - id: check-executables-have-shebangs
-      - id: check-symlinks
-      - id: check-vcs-permalinks
-      - id: detect-private-key
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
-    repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-  - hooks:
-      - id: forbid-crlf
-      - id: remove-crlf
-      - id: forbid-tabs
-      - id: remove-tabs
-    repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.4
-  - hooks:
-      - id: check-json
-      - args:
-          - --autofix
-          - --no-ensure-ascii
-        id: pretty-format-json
-    repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+# GENERAL
+- hooks:
+  - id: check-added-large-files
+  - id: check-merge-conflict
+  - id: forbid-new-submodules
+  repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+- hooks:
+  - id: check-byte-order-marker
+  - id: check-case-conflict
+  - id: check-executables-have-shebangs
+  - id: check-symlinks
+  - id: check-vcs-permalinks
+  - id: detect-private-key
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+  repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+- hooks:
+  - id: forbid-crlf
+  - id: remove-crlf
+  - id: forbid-tabs
+  - id: remove-tabs
+  repo: https://github.com/Lucas-C/pre-commit-hooks
+  rev: v1.5.4
+- hooks:
+  - id: check-json
+  - args:
+    - --autofix
+    - --no-ensure-ascii
+    id: pretty-format-json
+  repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
 
-  # PYTHON
-  - hooks:
-      - id: check-ast
-      - id: check-builtin-literals
-      - id: check-docstring-first
-      - id: debug-statements
-      - args:
-          - --remove
-        id: fix-encoding-pragma
-    repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-  - hooks:
-      - id: pyupgrade
-    repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.0
-  - hooks:
-      - id: black
-        args: [--line-length=119]
-    repo: https://github.com/ambv/black
-    rev: 23.12.1
-  - hooks:
-      - args:
-          - --config=.flake8
-        id: flake8
-    repo: https://github.com/pycqa/flake8
-    rev: 6.1.0
-  - hooks:
-      - id: python-safety-dependencies-check
-        files: pyproject.toml
-    repo: https://github.com/Lucas-C/pre-commit-hooks-safety
-    rev: v1.3.2
-  - hooks:
-      - id: poetry-export
-        args: ["-o", "requirements.txt"]
-    repo: https://github.com/python-poetry/poetry
-    rev: 1.7.1
+# PYTHON
+- hooks:
+  - id: check-ast
+  - id: check-builtin-literals
+  - id: check-docstring-first
+  - id: debug-statements
+  - args:
+    - --remove
+    id: fix-encoding-pragma
+  repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+- hooks:
+  - id: pyupgrade
+  repo: https://github.com/asottile/pyupgrade
+  rev: v3.15.0
+- hooks:
+  - id: black
+    args: [--line-length=119]
+  repo: https://github.com/ambv/black
+  rev: 23.12.1
+- hooks:
+  - args:
+    - --config=.flake8
+    id: flake8
+  repo: https://github.com/pycqa/flake8
+  rev: 6.1.0
+- hooks:
+  - id: python-safety-dependencies-check
+    files: pyproject.toml
+  repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+  rev: v1.3.2
+- hooks:
+  - id: poetry-export
+    args: ["-o", "requirements.txt"]
+  repo: https://github.com/python-poetry/poetry
+  rev: 1.7.1
 
-  # BASH
-  - hooks:
-      - id: beautysh
-    repo: https://github.com/bemeurer/beautysh.git
-    rev: v6.2.1
-  - hooks:
-      - id: script-must-have-extension
-    repo: https://github.com/jumanjihouse/pre-commit-hooks
-    rev: 3.0.0
+# BASH
+- hooks:
+  - id: beautysh
+  repo: https://github.com/bemeurer/beautysh.git
+  rev: v6.2.1
+- hooks:
+  - id: script-must-have-extension
+  repo: https://github.com/jumanjihouse/pre-commit-hooks
+  rev: 3.0.0
 
-  # XML / YAML
-  - hooks:
-      - id: check-xml
-    repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-  - hooks:
-      - args:
-          - "-d {rules: {line-length: {max: 999}}}"
-        id: yamllint
-    repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.33.0
-  - hooks:
-      - id: check-yaml
-      - id: sort-simple-yaml
-    repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-  - hooks:
-      - id: gitlab-ci-linter
-    repo: https://gitlab.com/devopshq/gitlab-ci-linter
-    rev: v1.0.6
+# XML / YAML
+- hooks:
+  - id: check-xml
+  repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+- hooks:
+  - args:
+    - '-d {rules: {line-length: {max: 999}}}'
+    id: yamllint
+  repo: https://github.com/adrienverge/yamllint.git
+  rev: v1.33.0
+- hooks:
+  - id: check-yaml
+  - id: sort-simple-yaml
+  repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+- hooks:
+  - id: gitlab-ci-linter
+  repo: https://gitlab.com/devopshq/gitlab-ci-linter
+  rev: v1.0.6
 
-  # JS
-  - hooks:
-      - id: eslint
-        name: vue-eslint
-        additional_dependencies:
-          - eslint@latest
-          - vue-eslint-parser@latest
-          - eslint-plugin-vue@latest
-          - eslint-plugin-jquery@latest
-          - eslint-plugin-eslint-plugin@latest
-          - prettier@latest
-          - eslint-config-prettier@latest
-          - eslint-plugin-prettier@latest
-          - babel-eslint
-        args:
-          - -c=frontend/.eslintrc.js
-          - --fix
-        types:
-          - vue
-    repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.55.0
-  - hooks:
-      - additional_dependencies:
-          - eslint@latest
-          - vue-eslint-parser@latest
-          - eslint-plugin-vue@latest
-          - eslint-plugin-jquery@latest
-          - eslint-plugin-eslint-plugin@latest
-          - prettier@latest
-          - eslint-config-prettier@latest
-          - eslint-plugin-prettier@latest
-          - babel-eslint
-        args:
-          - -c=frontend/.eslintrc.js
-          - --fix
-        files: ^
-        id: eslint
-        name: js-eslint
-    repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.55.0
+# JS
+- hooks:
+    - id: eslint
+      name: vue-eslint
+      additional_dependencies:
+        - eslint@latest
+        - vue-eslint-parser@latest
+        - eslint-plugin-vue@latest
+        - eslint-plugin-jquery@latest
+        - eslint-plugin-eslint-plugin@latest
+        - prettier@latest
+        - eslint-config-prettier@latest
+        - eslint-plugin-prettier@latest
+        - babel-eslint
+      args:
+        - -c=frontend/.eslintrc.js
+        - --fix
+      types:
+        - vue
+  repo: https://github.com/pre-commit/mirrors-eslint
+  rev: v8.55.0
+- hooks:
+    - additional_dependencies:
+        - eslint@latest
+        - vue-eslint-parser@latest
+        - eslint-plugin-vue@latest
+        - eslint-plugin-jquery@latest
+        - eslint-plugin-eslint-plugin@latest
+        - prettier@latest
+        - eslint-config-prettier@latest
+        - eslint-plugin-prettier@latest
+        - babel-eslint
+      args:
+        - -c=frontend/.eslintrc.js
+        - --fix
+      files: ^
+      id: eslint
+      name: js-eslint
+  repo: https://github.com/pre-commit/mirrors-eslint
+  rev: v8.55.0
