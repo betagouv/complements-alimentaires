@@ -10,6 +10,8 @@
         "ms-python.vscode-pylance",
         "ms-python.black-formatter",
         "ms-python.pylint",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.jupyter-keymap",
         "esbenp.prettier-vscode",
         "tamasfe.even-better-toml",
         "vue.volar",
@@ -21,6 +23,9 @@
   "dockerComposeFile": "docker-compose.yml",
   "features": {
     "ghcr.io/ddahan/feature-starter/custom_bashrc": {},
+    "ghcr.io/ddahan/feature-starter/poetry:latest": {
+      "version": "1.7.1"
+    },
     "ghcr.io/devcontainers/features/node": {
       "version": "lts"
     }
@@ -30,7 +35,7 @@
     5432
   ],
   "name": "💊 compl'alim",
-  "onCreateCommand": "pip install -r requirements.txt && pip install pre-commit && cd frontend && npm install",
+  "onCreateCommand": "poetry config virtualenvs.create false && poetry install --no-root && cd frontend && npm install",
   "portsAttributes": {
     "5432": {
       "label": "PostgreSQL",
