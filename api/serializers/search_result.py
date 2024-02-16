@@ -11,7 +11,6 @@ class SearchResultSerializer(serializers.Serializer):
 
     # Ingredient
     description = serializers.CharField(read_only=True)
-    observation = serializers.CharField(read_only=True)
 
     # Substance
     cas_number = serializers.CharField(read_only=True)
