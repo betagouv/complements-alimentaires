@@ -148,15 +148,12 @@ dill==0.3.8 ; python_version >= "3.11" and python_version < "3.12.dev0" \
 distlib==0.3.8 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:034db59a0b96f8ca18035f36290806a9a6e6bd9d1ff91e45a7f172eb17e51784 \
     --hash=sha256:1530ea13e350031b6312d8580ddb6b27a104275a31106523b8f123787f494f64
-django==5.0.2 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
-    --hash=sha256:56ab63a105e8bb06ee67381d7b65fe6774f057e41a8bab06c8020c8882d8ecd4 \
-    --hash=sha256:b5bb1d11b2518a5f91372a282f24662f58f66749666b0a286ab057029f728080
 django-anymail==10.2 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:1f3006d3b16874aaa32976078da6cdc9baa7f5274cf80e3fc51a288887617aaf \
     --hash=sha256:ca273abbc04b5ce06d1f3b3e5f28e2d79331519198fa6d6b5ba1b5aa5eea02f7
-django-ckeditor==6.7.1 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
-    --hash=sha256:55b5f9ce3af47e3c8a8ed37d42be8439da2a664d6e571c2247c1db5c96459dd7 \
-    --hash=sha256:7144f9ead662306266c728912487313b3b87ba2abf9dbb82c447f662ce25d1f7
+django-ckeditor==6.7.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
+    --hash=sha256:0489f7a6ae93360d328f77cea17c04891103cbdfa6c962af386bbe47e811671b \
+    --hash=sha256:73399fb8f56f565e7519b57adbd7c585623db2cdc8c75666f56918d3eecf7906
 django-environ==0.11.2 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:0ff95ab4344bfeff693836aa978e6840abef2e2f1145adff7735892711590c05 \
     --hash=sha256:f32a87aa0899894c27d4e1776fa6b477e8164ed7f6b3e410a62a6d72caaf64be
@@ -175,11 +172,14 @@ django-storages==1.14.2 ; python_version >= "3.11.dev0" and python_version < "3.
 django-webpack-loader==3.0.1 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:51331b33da76688eb4d3bf3ea3bb56434b0c1dfb2dcd88cbfb0a39618f68dd7a \
     --hash=sha256:d65b48c46e9e02b66255b1459c1e7a6664b4d3a6874b0b1e9d1d92518e6e999c
+django==5.0.2 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
+    --hash=sha256:56ab63a105e8bb06ee67381d7b65fe6774f057e41a8bab06c8020c8882d8ecd4 \
+    --hash=sha256:b5bb1d11b2518a5f91372a282f24662f58f66749666b0a286ab057029f728080
+djangorestframework-camel-case==1.4.2 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
+    --hash=sha256:cdae75846648abb6585c7470639a1d2fb064dc45f8e8b62aaa50be7f1a7a61f4
 djangorestframework==3.14.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:579a333e6256b09489cbe0a067e66abe55c6595d8926be6b99423786334350c8 \
     --hash=sha256:eb63f58c9f218e1a7d064d17a70751f528ed4e1d35547fdade9aaf4cd103fd08
-djangorestframework-camel-case==1.4.2 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
-    --hash=sha256:cdae75846648abb6585c7470639a1d2fb064dc45f8e8b62aaa50be7f1a7a61f4
 drf-base64==2.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:dee42f27e6ea5fb91ff85916ad1aaba222275552815430ff6a55a547e0246234
 executing==2.0.1 ; python_version >= "3.11" and python_version < "3.12.dev0" \
@@ -340,15 +340,15 @@ pure-eval==0.2.2 ; python_version >= "3.11" and python_version < "3.12.dev0" \
 pygments==2.17.2 ; python_version >= "3.11" and python_version < "3.12.dev0" \
     --hash=sha256:b27c2826c47d0f3219f29554824c30c5e8945175d888647acd804ddd04af846c \
     --hash=sha256:da46cec9fd2de5be3a8a784f434e4c4ab670b4ff54d605c4c2717e9d49c4c367
-pylint==3.0.3 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
-    --hash=sha256:58c2398b0301e049609a8429789ec6edf3aabe9b6c5fec916acd18639c16de8b \
-    --hash=sha256:7a1585285aefc5165db81083c3e06363a27448f6b467b3b0f30dbd0ac1f73810
 pylint-django==2.5.5 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:2f339e4bf55776958283395c5139c37700c91bd5ef1d8251ef6ac88b5abbba9b \
     --hash=sha256:5abd5c2228e0e5e2a4cb6d0b4fc1d1cef1e773d0be911412f4dd4fc1a1a440b7
 pylint-plugin-utils==0.8.2 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:ae11664737aa2effbf26f973a9e0b6779ab7106ec0adc5fe104b0907ca04e507 \
     --hash=sha256:d3cebf68a38ba3fba23a873809155562571386d4c1b03e5b4c4cc26c3eee93e4
+pylint==3.0.3 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
+    --hash=sha256:58c2398b0301e049609a8429789ec6edf3aabe9b6c5fec916acd18639c16de8b \
+    --hash=sha256:7a1585285aefc5165db81083c3e06363a27448f6b467b3b0f30dbd0ac1f73810
 python-dateutil==2.8.2 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86 \
     --hash=sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9
@@ -407,12 +407,12 @@ pyyaml==6.0.1 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:fca0e3a251908a499833aa292323f32437106001d436eca0e6e7833256674585 \
     --hash=sha256:fd1592b3fdf65fff2ad0004b5e363300ef59ced41c2e6b3a99d4089fa8c5435d \
     --hash=sha256:fd66fc5d0da6d9815ba2cebeb4205f95818ff4b79c3ebe268e75d961704af52f
-requests==2.31.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
-    --hash=sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f \
-    --hash=sha256:942c5a758f98d790eaed1a29cb6eefc7ffb0d1cf7af05c3d2791656dbd6ad1e1
 requests-mock==1.11.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:ef10b572b489a5f28e09b708697208c4a3b2b89ef80a9f01584340ea357ec3c4 \
     --hash=sha256:f7fae383f228633f6bececebdab236c478ace2284d6292c6e7e2867b9ab74d15
+requests==2.31.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
+    --hash=sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f \
+    --hash=sha256:942c5a758f98d790eaed1a29cb6eefc7ffb0d1cf7af05c3d2791656dbd6ad1e1
 s3transfer==0.10.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0" \
     --hash=sha256:3cdb40f5cfa6966e812209d0994f2a4709b561c88e90cf00c2696d2df4e56b2e \
     --hash=sha256:d0c8bbf672d5eebbe4e57945e23b972d963f07d82f661cabf678a5c88831595b
