@@ -13,9 +13,7 @@ class Ingredient(SICCRFCommonModel, WithSICCRFComments):
         verbose_name_plural = "autres ingrédients"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
-    siccrf_observation = models.TextField(blank=True)
     siccrf_description = models.TextField(blank=True)
-    siccrf_description_en = models.TextField(blank=True)
     siccrf_substances = models.ManyToManyField(Substance)
 
 

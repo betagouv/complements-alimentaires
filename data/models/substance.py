@@ -5,6 +5,10 @@ from .abstract_models import SICCRFCommonModel
 
 
 class Substance(SICCRFCommonModel, WithSICCRFComments):
+    """
+    siccrf_min_quantity présente dans les tables SICCRF n'est strictement jamais remplie, donc pas transformée en champ du modèle
+    siccrf_source_en présente dans les tables SICCRF est très peu remplie, donc pas transformée en champ du modèle
+    """
     class Meta:
         verbose_name = "substance active"
         verbose_name_plural = "substances actives"
@@ -17,11 +21,7 @@ class Substance(SICCRFCommonModel, WithSICCRFComments):
         verbose_name="numéro EINECS",
     )
     siccrf_source = models.TextField(blank=True)
-    siccrf_source_en = models.TextField(blank=True)
     siccrf_must_specify_quantity = models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire")
-    siccrf_min_quantity = models.FloatField(
-        null=True, blank=True, verbose_name="quantité minimale autorisée"
-    )  # jamais remplie
     siccrf_max_quantity = models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée")
     siccrf_nutritional_reference = models.FloatField(
         null=True, blank=True, verbose_name="apport nutritionnel conseillé"
