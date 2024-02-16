@@ -15,28 +15,20 @@ Il existe 2 méthodes distinctes d'installation pour ce projet :
 #### À installer localement
 
 - [Python3](https://www.python.org/downloads/) (version 3.11)
-- [pip](https://pip.pypa.io/en/stable/installing/) (souvent installé avec Python)
-- [vitrualenv](https://virtualenv.pypa.io/en/stable/installation.html)
+- [poetry](https://pip.pypa.io/en/stable/installing/) (`pip install poetry==1.7.1`)
 - [Node et npm](https://nodejs.org/en/download/) (version 20 LTS)
 - [Postgres](https://www.postgresql.org/download/) (version 15)
 - [pre-commit](https://pypi.org/project/pre-commit/)
 
-#### Création d'un environnement Python3 virtualenv
-
-Pour commencer, c'est recommandé de créer un environnement virtuel avec Python3.
-
-```
-virtualenv -p python3 venv
-source ./venv/bin/activate
-```
-
 #### Installer les dépendances du backend
 
-Les dépendances du backend se trouvent dans `requirements.txt`. Pour les installer :
+Pour installer les dépendances du backend :
 
 ```
-pip install -r requirements.txt
+poetry install --no-root
 ```
+
+Cette action créera aussi un environnement virtuel automatiquement. Il n'est donc pas nécessaire d'utiliser un autre outil tel que virtualenv.
 
 #### Installer les dépendances du frontend
 

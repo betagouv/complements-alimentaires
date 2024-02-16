@@ -1,0 +1,91 @@
+[tool]
+
+[tool.poetry]
+name = "compl'alim"
+version = "0.0.1"
+description = ""
+authors = []
+
+[tool.poetry.dependencies]
+
+######################################################################################################################
+# Main
+######################################################################################################################
+python = "3.11.*"
+Django = "5.*"       # https://github.com/django/django
+django-environ = "*" # https://github.com/joke2k/django-environ
+
+######################################################################################################################
+# API
+######################################################################################################################
+djangorestframework = "*"            # https://github.com/encode/django-rest-framework
+djangorestframework-camel-case = "*" # https://github.com/vbabiy/djangorestframework-camel-case
+drf-base64 = "*"                     # https://bitbucket.org/levit_scs/drf_base64/src/master
+
+######################################################################################################################
+# Security & Monitoring
+######################################################################################################################
+sentry-sdk = "*" # https://github.com/getsentry/sentry-python
+
+######################################################################################################################
+# Database & Storage
+######################################################################################################################
+psycopg2 = "*"        # https://github.com/psycopg/psycopg2
+boto3 = "*"           # https://github.com/boto/boto3
+django-storages = "*" # https://github.com/jschneier/django-storages
+
+######################################################################################################################
+# Additional fields, tags, or Django features etc.
+######################################################################################################################
+django-filter = "*"         # https://github.com/carltongibson/django-filter
+django-simple-history = "*" # https://github.com/jazzband/django-simple-history
+# django-extensions = "*"     # https://github.com/django-extensions/django-extensions
+
+######################################################################################################################
+# Linting & Formatting
+######################################################################################################################
+pylint-django = "*" # https://github.com/pylint-dev/pylint-django
+black = "*"         # https://github.com/psf/black
+pre-commit = "*"    # https://github.com/pre-commit/pre-commit
+
+######################################################################################################################
+# Testing & Debugging
+######################################################################################################################
+ipdb = "*"          # https://github.com/gotcha/ipdb
+factory-boy = "*"   # https://github.com/FactoryBoy/factory_boy
+requests-mock = "*" # https://github.com/jamielennox/requests-mock
+
+######################################################################################################################
+# Front-end related
+######################################################################################################################
+django-webpack-loader = "*" # https://github.com/django-webpack/django-webpack-loader
+
+######################################################################################################################
+# Mailing
+######################################################################################################################
+django-anymail = "*" # https://github.com/anymail/django-anymail
+sib-api-v3-sdk = "*" # https://github.com/sendinblue/APIv3-python-library
+
+######################################################################################################################
+# Misc
+######################################################################################################################
+pillow = "*"          # https://github.com/python-pillow/Pillow
+django-ckeditor = "*" # https://github.com/django-ckeditor/django-ckeditor
+
+
+# Dev dependencies (not installed on remote environments)
+[tool.poetry.group.dev.dependencies]
+
+######################################################################################################################
+# Data tools
+######################################################################################################################
+pandas = "*"       # https://github.com/pandas-dev/pandas
+numpy = "*"        # https://github.com/numpy/numpy
+seaborn = "*"      # https://github.com/mwaskom/seaborn
+networkx = "*"     # https://github.com/networkx/networkx
+ipykernel = "*"    # https://github.com/ipython/ipykernel
+scikit-learn = "*" # https://github.com/scikit-learn/scikit-learn
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
