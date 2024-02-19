@@ -9,10 +9,11 @@ class IngredientFactory(factory.django.DjangoModelFactory):
         model = Ingredient
         django_get_or_create = ("siccrf_id",)
 
-    name = factory.Faker("text", max_nb_chars=15)
-    name_en = factory.Faker("text", max_nb_chars=15)
+    siccrf_name = factory.Faker("text", max_nb_chars=15)
+    CA_name = factory.Faker("text", max_nb_chars=15)
+    siccrf_name_en = factory.Faker("text", max_nb_chars=15)
     siccrf_id = factory.Faker("random_int", min=1, max=2000)
-    description = factory.Faker("text", max_nb_chars=160)
+    siccrf_description = factory.Faker("text", max_nb_chars=160)
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):
