@@ -73,6 +73,7 @@ django-ckeditor = "6.7.0" # https://github.com/django-ckeditor/django-ckeditor #
 
 
 # Dev dependencies (not installed on remote environments)
+django-extensions = "^3.2.3"
 [tool.poetry.group.dev.dependencies]
 
 ######################################################################################################################
