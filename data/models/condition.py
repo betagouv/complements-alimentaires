@@ -8,3 +8,7 @@ class Condition(CommonModel):
         verbose_name = "condition de santé / facteurs de risque"
 
     siccrf_name_en = models.TextField(blank=True)
+
+    @property
+    def name_en(self):
+        return self.siccrf_name_en

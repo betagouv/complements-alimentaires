@@ -39,6 +39,33 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
         null=True, blank=True, verbose_name="apport nutritionnel conseillé"
     )  # cette colonne devrat être associée à une unité
 
+    @property
+    def name_en(self):
+        return self.siccrf_name_en
+
+    @property
+    def cas_number(self):
+        return self.CA_cas_number if self.CA_cas_number else self.siccrf_cas_number
+    
+    @property
+    def einec_number(self):
+        return self.CA_einec_number if self.CA_einec_number else self.siccrf_einec_number
+
+    @property
+    def source(self):
+        return self.CA_source if self.CA_source else self.siccrf_source
+
+    @property
+    def must_specify_quantity(self):
+        return self.CA_must_specify_quantity if self.CA_must_specify_quantity else self.siccrf_must_specify_quantity
+
+    @property
+    def max_quantity(self):
+        return self.CA_max_quantity if self.CA_max_quantity else self.siccrf_max_quantity
+
+    @property
+    def nutritional_reference(self):
+        return self.CA_nutritional_reference if self.CA_nutritional_reference else self.siccrf_nutritional_reference
 
     
 class SubstanceSynonym(CommonModel):

@@ -14,6 +14,18 @@ class Microorganism(CommonModel, WithSICCRFComments, WithCAComments):
     CA_genre = models.TextField(verbose_name="genre de micro-organisme")
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
 
+    @property
+    def name_en(self):
+        return self.siccrf_name_en
+        
+    @property
+    def genre(self):
+        return self.CA_genre if self.CA_genre else self.siccrf_genre
+
+    @genre.setter
+    def genre(self, value):
+        self.CA_genre = value
+        
 
 class MicroorganismSubstanceRelation(WithCreationAndModificationDate, WithHistory):
     microorganism = models.ForeignKey(Microorganism, on_delete=models.CASCADE)

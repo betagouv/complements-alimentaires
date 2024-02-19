@@ -16,6 +16,14 @@ class Ingredient(CommonModel, WithSICCRFComments, WithCAComments):
     siccrf_description = models.TextField(blank=True)
     substances = models.ManyToManyField(Substance, through="IngredientSubstanceRelation")
 
+    @property
+    def name_en(self):
+        return self.siccrf_name_en
+
+    @property
+    def description(self):
+        return self.siccrf_description
+
 
 class IngredientSubstanceRelation(WithCreationAndModificationDate, WithHistory):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
