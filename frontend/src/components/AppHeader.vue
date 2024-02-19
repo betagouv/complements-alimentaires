@@ -12,15 +12,15 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from "vue"
-import { useStore } from "vuex"
+import { computed, watch } from "vue"
+import { useRootStore } from "@/stores/root"
 import { useRoute } from "vue-router"
 
 const route = useRoute()
 
 const logoText = ["Ministère", "de l'Agriculture", "et de la Souveraineté", "Alimentaire"]
 const environment = window.ENVIRONMENT
-const store = useStore()
+const store = useRootStore()
 const navItems = [
   {
     to: "/",
@@ -36,7 +36,7 @@ const navItems = [
   },
 ]
 const quickLinks = computed(function () {
-  if (store.state.loggedUser)
+  if (store.loggedUser)
     return [
       {
         label: "Se déconnecter",
@@ -45,9 +45,6 @@ const quickLinks = computed(function () {
       },
     ]
   else return []
-})
-onMounted(() => {
-  store.dispatch("fetchLoggedUser")
 })
 watch(
   () => route.query["confirmation-deconnexion"],

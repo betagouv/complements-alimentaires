@@ -9,13 +9,14 @@ import VueDsfr from "@gouvminint/vue-dsfr" // Import (par défaut) de la bibliot
 
 import App from "./App.vue"
 import router from "./router"
-import store from "./store"
+import { createPinia } from "pinia"
 
 addIcons(...Object.values({ icons }))
+const pinia = createPinia()
 
 const app = createApp(App)
   .use(router)
-  .use(store)
+  .use(pinia)
   .use(VueDsfr, { icons: Object.values(icons) })
 
 if (window.MATOMO_ID)
