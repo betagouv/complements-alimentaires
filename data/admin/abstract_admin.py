@@ -2,7 +2,7 @@ from simple_history.admin import SimpleHistoryAdmin
 
 
 class IngredientAdminWithHistoryChangedFields(SimpleHistoryAdmin):
-    history_list_display = ['changed_fields']
+    history_list_display = ["changed_fields"]
 
     def changed_fields(self, obj):
         if obj.prev_record:

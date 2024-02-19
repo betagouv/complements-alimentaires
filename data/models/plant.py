@@ -1,6 +1,12 @@
 from django.db import models
+from django.db.models.functions import Coalesce
 
-from .mixins import WithCreationAndModificationDate, WithHistory, WithCAComments, WithSICCRFComments
+from .mixins import (
+    WithCreationAndModificationDate,
+    WithHistory,
+    WithCAComments,
+    WithSICCRFComments,
+)
 from .abstract_models import CommonModel
 from .substance import Substance
 
@@ -32,18 +38,29 @@ class Plant(CommonModel, WithSICCRFComments, WithCAComments):
     class Meta:
         verbose_name = "plante"
 
-    siccrf_family = models.ForeignKey(PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante (selon la base SICCRF)", related_name="siccrf_plant_set")
-    CA_family = models.ForeignKey(PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante", related_name="plant_set")
+    siccrf_family = models.ForeignKey(
+        PlantFamily,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name="famille de plante (selon la base SICCRF)",
+        related_name="siccrf_plant_set",
+    )
+    CA_family = models.ForeignKey(
+        PlantFamily,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name="famille de plante",
+        related_name="plant_set",
+    )
+
+    family = models.GeneratedField(
+        expression=Coalesce("CA_family", "siccrf_family"),
+        output_field=models.TextField(verbose_name="famille de plante"),
+        db_persist=True,
+    )
+
     plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
     substances = models.ManyToManyField(Substance, through="PlantSubstanceRelation")
-
-    @property
-    def family(self):
-        return self.CA_family if self.CA_family else self.siccrf_family
-
-    @family.setter
-    def family(self, value):
-        self.CA_family = value
 
 
 class Part(WithCreationAndModificationDate, WithHistory):
@@ -54,32 +71,33 @@ class Part(WithCreationAndModificationDate, WithHistory):
 
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
     plantpart = models.ForeignKey(PlantPart, on_delete=models.CASCADE)
-    siccrf_must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller (selon la base SICCRF) ?")
+    siccrf_must_be_monitored = models.BooleanField(
+        default=False, verbose_name="⚠️ à surveiller (selon la base SICCRF) ?"
+    )
     CA_must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
+    must_be_monitored = models.GeneratedField(
+        expression=Coalesce("CA_must_be_monitored", "siccrf_must_be_monitored"),
+        output_field=models.TextField(verbose_name="⚠️ à surveiller ?"),
+        db_persist=True,
+    )
+
     siccrf_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile (selon la base SICCRF) ?")
     CA_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile ?")
 
-    @property
-    def must_be_monitored(self):
-        return self.CA_must_be_monitored if self.CA_must_be_monitored else self.siccrf_must_be_monitored
-
-    @must_be_monitored.setter
-    def must_be_monitored(self, value):
-        self.CA_must_be_monitored = value
-
-    @property
-    def is_useful(self):
-        return self.CA_is_useful if self.CA_is_useful else self.siccrf_is_useful
-
-    @is_useful.setter
-    def is_useful(self, value):
-        self.CA_is_useful = value
+    is_useful = models.GeneratedField(
+        expression=Coalesce("CA_is_useful", "siccrf_is_useful"),
+        output_field=models.TextField(verbose_name="🍵 utile ?"),
+        db_persist=True,
+    )
 
 
 class PlantSubstanceRelation(WithCreationAndModificationDate, WithHistory):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
-    siccrf_is_related = models.BooleanField(default=False, verbose_name="substance associée à la plante (selon la base SICCRF)")
+    siccrf_is_related = models.BooleanField(
+        default=False,
+        verbose_name="substance associée à la plante (selon la base SICCRF)",
+    )
     CA_is_related = models.BooleanField(default=False, verbose_name="substance associée à la plante")
 
 

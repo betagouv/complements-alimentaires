@@ -45,18 +45,15 @@ class SearchView(APIView):
         return results
 
     def get_plants(self, query):
-        vector = (
-            SearchVector("siccrf_name", weight="A")
-            + SearchVector("CA_name", weight="A")
-            + SearchVector(StringAgg("plantsynonym__name", delimiter=" "), weight="B")
+        vector = SearchVector("name", weight="A") + SearchVector(
+            StringAgg("plantsynonym__name", delimiter=" "), weight="B"
         )
         plants = Plant.objects.annotate(rank=SearchRank(vector, query))
         return list(plants.filter(rank__gte=self.search_rank_threshold).all())
 
     def get_microorganisms(self, query):
         vector = (
-            SearchVector("siccrf_name", weight="A")
-            + SearchVector("CA_name", weight="A")
+            SearchVector("name", weight="A")
             + SearchVector(StringAgg("microorganismsynonym__name", delimiter=" "), weight="B")
             + SearchVector("siccrf_name_en", weight="B")
         )
@@ -65,8 +62,7 @@ class SearchView(APIView):
 
     def get_ingredients(self, query):
         vector = (
-            SearchVector("siccrf_name", weight="A")
-            + SearchVector("CA_name", weight="A")
+            SearchVector("name", weight="A")
             + SearchVector(StringAgg("ingredientsynonym__name", delimiter=" "), weight="B")
             + SearchVector("siccrf_name_en", weight="B")
             + SearchVector("siccrf_description", weight="C")
@@ -76,12 +72,9 @@ class SearchView(APIView):
 
     def get_substances(self, query):
         vector = (
-            SearchVector("siccrf_cas_number", weight="A")
-            + SearchVector("CA_cas_number", weight="A")
-            + SearchVector("siccrf_einec_number", weight="A")
-            + SearchVector("CA_einec_number", weight="A")
-            + SearchVector("siccrf_name", weight="A")
-            + SearchVector("CA_name", weight="A")
+            SearchVector("cas_number", weight="A")
+            + SearchVector("einec_number", weight="A")
+            + SearchVector("name", weight="A")
             + SearchVector(StringAgg("substancesynonym__name", delimiter=" "), weight="B")
             + SearchVector("siccrf_name_en", weight="B")
         )

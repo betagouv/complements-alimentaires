@@ -6,8 +6,6 @@ from .substance import Substance
 
 
 class Ingredient(CommonModel, WithSICCRFComments, WithCAComments):
-    """
-    """
     class Meta:
         verbose_name = "autre ingrédient"
         verbose_name_plural = "autres ingrédients"
@@ -15,10 +13,6 @@ class Ingredient(CommonModel, WithSICCRFComments, WithCAComments):
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     siccrf_description = models.TextField(blank=True)
     substances = models.ManyToManyField(Substance, through="IngredientSubstanceRelation")
-
-    @property
-    def name_en(self):
-        return self.siccrf_name_en
 
     @property
     def description(self):

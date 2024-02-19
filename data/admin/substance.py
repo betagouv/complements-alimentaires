@@ -45,25 +45,50 @@ class SubstanceAdmin(IngredientAdminWithHistoryChangedFields):
         (
             None,  # Pas d'entête
             {
-                "fields": ["siccrf_name", "CA_name", "siccrf_name_en", "siccrf_is_obsolete", "CA_is_obsolete", "siccrf_source", "CA_source"],
+                "fields": [
+                    "siccrf_name",
+                    "CA_name",
+                    "siccrf_name_en",
+                    "siccrf_is_obsolete",
+                    "CA_is_obsolete",
+                    "siccrf_source",
+                    "CA_source",
+                ],
             },
         ),
         (
             "Commentaires",
             {
-                "fields": ["siccrf_public_comments", "siccrf_private_comments", "CA_public_comments", "CA_private_comments"],
+                "fields": [
+                    "siccrf_public_comments",
+                    "siccrf_private_comments",
+                    "CA_public_comments",
+                    "CA_private_comments",
+                ],
             },
         ),
         (
             "Identifiants dans les répertoires de substances chimiques",
             {
-                "fields": ["siccrf_cas_number", "siccrf_einec_number", "CA_cas_number", "CA_einec_number"],
+                "fields": [
+                    "siccrf_cas_number",
+                    "siccrf_einec_number",
+                    "CA_cas_number",
+                    "CA_einec_number",
+                ],
             },
         ),
         (
             "Quantités",
             {
-                "fields": ["siccrf_must_specify_quantity", "siccrf_max_quantity", "siccrf_nutritional_reference", "CA_must_specify_quantity", "CA_max_quantity", "CA_nutritional_reference"],
+                "fields": [
+                    "siccrf_must_specify_quantity",
+                    "siccrf_max_quantity",
+                    "siccrf_nutritional_reference",
+                    "CA_must_specify_quantity",
+                    "CA_max_quantity",
+                    "CA_nutritional_reference",
+                ],
             },
         ),
         (
@@ -73,7 +98,22 @@ class SubstanceAdmin(IngredientAdminWithHistoryChangedFields):
             },
         ),
     ]
-    readonly_fields = ["siccrf_name", "siccrf_name_en", "siccrf_is_obsolete", "siccrf_source", "siccrf_public_comments", "siccrf_private_comments", "siccrf_cas_number", "siccrf_einec_number", "siccrf_must_specify_quantity", "siccrf_max_quantity", "siccrf_nutritional_reference", "get_plants", "get_microorganisms", "get_ingredients"]
+    readonly_fields = [
+        "siccrf_name",
+        "siccrf_name_en",
+        "siccrf_is_obsolete",
+        "siccrf_source",
+        "siccrf_public_comments",
+        "siccrf_private_comments",
+        "siccrf_cas_number",
+        "siccrf_einec_number",
+        "siccrf_must_specify_quantity",
+        "siccrf_max_quantity",
+        "siccrf_nutritional_reference",
+        "get_plants",
+        "get_microorganisms",
+        "get_ingredients",
+    ]
 
     list_display = (
         "name",
