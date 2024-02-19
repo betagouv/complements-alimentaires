@@ -6,8 +6,7 @@ from data.models import Condition
 class ConditionForm(forms.ModelForm):
     class Meta:
         widgets = {
-            "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "CA_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
         }
 
 
@@ -15,13 +14,18 @@ class ConditionForm(forms.ModelForm):
 class ConditionAdmin(admin.ModelAdmin):
     form = ConditionForm
     fields = [
-        "name",
-        "name_en",
-        "is_obsolete",
+        "CA_name",
+        "siccrf_name",
+        "siccrf_name_en",
+        "siccrf_is_obsolete",
+        "CA_is_obsolete",
         "creation_date",
         "modification_date",
     ]
     readonly_fields = [
+        "siccrf_name",
+        "siccrf_name_en",
+        "siccrf_is_obsolete",
         "creation_date",
         "modification_date",
     ]
@@ -29,4 +33,7 @@ class ConditionAdmin(admin.ModelAdmin):
         "name",
         "modification_date",
     ]
-    list_filter = ("is_obsolete",)
+    list_filter = (
+        "siccrf_is_obsolete",
+        "CA_is_obsolete",
+    )

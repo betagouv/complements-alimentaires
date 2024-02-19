@@ -62,17 +62,25 @@ class WithCADefaultFields(models.Model):
     def name(self):
         return self.CA_name if self.CA_name else self.siccrf_name
 
+    @name.setter
+    def name(self, value):
+        self.CA_name = value
+
     @property
     def is_obsolete(self):
         return self.CA_is_obsolete if self.CA_is_obsolete else self.siccrf_is_obsolete
+
+    @is_obsolete.setter
+    def is_obsolete(self, value):
+        self.CA_is_obsolete = value
 
 
 class WithCAComments(models.Model):
     class Meta:
         abstract = True
 
-    CA_public_comments = models.TextField(blank=True, editable=False, verbose_name="commentaires publics SICCRF")
-    CA_private_comments = models.TextField(blank=True, editable=False, verbose_name="commentaires privés SICCRF")
+    CA_public_comments = models.TextField(blank=True, verbose_name="commentaires publics SICCRF")
+    CA_private_comments = models.TextField(blank=True, verbose_name="commentaires privés SICCRF")
 
     @property
     def public_comments(self):

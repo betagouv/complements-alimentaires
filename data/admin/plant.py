@@ -28,10 +28,9 @@ class SubstanceInlineAdmin(admin.TabularInline):
 class PlantForm(forms.ModelForm):
     class Meta:
         widgets = {
-            "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
-            "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
+            "CA_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "CA_public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
+            "CA_private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
         }
 
 
@@ -42,19 +41,19 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
         (
             None,  # Pas d'entête
             {
-                "fields": ["name", "is_obsolete"],
+                "fields": ["siccrf_name", "CA_name", "siccrf_is_obsolete", "CA_is_obsolete"],
             },
         ),
         (
             "Commentaires",
             {
-                "fields": ["public_comments", "private_comments"],
+                "fields": ["siccrf_public_comments", "siccrf_private_comments", "CA_public_comments", "CA_private_comments"],
             },
         ),
         (
             "Famille",
             {
-                "fields": ["family"],
+                "fields": ["siccrf_family", "CA_family"],
             },
         ),
     ]
@@ -65,11 +64,12 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
         PlantSynonymInline,
     )
     list_display = (
-        "name",
-        "family",
+        "siccrf_name",
+        "siccrf_family",
     )
-    list_filter = ("is_obsolete", "family")
+    list_filter = ("siccrf_is_obsolete", "CA_is_obsolete")
     history_list_display = ['changed_fields']
+    readonly_fields = ("siccrf_name", "siccrf_is_obsolete", "siccrf_public_comments", "siccrf_private_comments", "siccrf_family")
 
     def changed_fields(self, obj):
         if obj.prev_record:
