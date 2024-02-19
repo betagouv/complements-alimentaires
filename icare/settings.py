@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "data",
     "web",
     "simple_history",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
