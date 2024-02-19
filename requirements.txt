@@ -12,7 +12,7 @@ cffi==1.16.0
 cfgv==3.4.0
 charset-normalizer==3.3.2
 click==8.1.7
-cryptography==42.0.2
+cryptography==42.0.3
 dill==0.3.8
 distlib==0.3.8
 Django==5.0.2
