@@ -38,9 +38,9 @@ class TestSearch(APITestCase):
         """
         Simple single-class name test
         """
-        eucalyptus_1 = PlantFactory.create(name="eucalyptus")
-        eucalyptus_2 = PlantFactory.create(name="eucalyptus")
-        vanille = PlantFactory.create(name="vanille")
+        eucalyptus_1 = PlantFactory.create(siccrf_name="eucalyptus")
+        eucalyptus_2 = PlantFactory.create(siccrf_name="eucalyptus")
+        vanille = PlantFactory.create(siccrf_name="vanille")
 
         search_term = "eucalyptus"
         response = self.client.post(f"{reverse('search')}", {"search": search_term})
@@ -55,7 +55,7 @@ class TestSearch(APITestCase):
 
     def test_search_synonym(self):
         """Simple synonym test"""
-        IngredientSynonymFactory(name="matcha", standard_name=IngredientFactory(name="other"))
+        IngredientSynonymFactory(name="matcha", standard_name=IngredientFactory(siccrf_name="other"))
         search_term = "matcha"
         response = self.client.post(f"{reverse('search')}", {"search": search_term})
         results = response.json().get("results", [])
@@ -65,10 +65,10 @@ class TestSearch(APITestCase):
         """
         Multiple-class name test
         """
-        plant = PlantFactory.create(name="matcha latte")
-        ingredient = IngredientFactory.create(name="matcha powder")
-        substance = SubstanceFactory.create(name="cafe latte")
-        microorganism = MicroorganismFactory.create(name="cafe powder")
+        plant = PlantFactory.create(siccrf_name="matcha latte")
+        ingredient = IngredientFactory.create(siccrf_name="matcha powder")
+        substance = SubstanceFactory.create(siccrf_name="cafe latte")
+        microorganism = MicroorganismFactory.create(siccrf_name="cafe powder")
 
         search_term = "matcha"
         response = self.client.post(f"{reverse('search')}", {"search": search_term})
@@ -103,10 +103,10 @@ class TestSearch(APITestCase):
         an ingredients `name` has a higher search priority than its `name_en` and `ingredientsynonym`
         which has a higher priority than its `description`
         """
-        ingredient_name = IngredientFactory(name="matcha")
-        IngredientSynonymFactory(name="matcha", standard_name=IngredientFactory(name="other"))
-        IngredientFactory(name_en="matcha")
-        ingredient_description = IngredientFactory(description="matcha")
+        ingredient_name = IngredientFactory(siccrf_name="matcha")
+        IngredientSynonymFactory(name="matcha", standard_name=IngredientFactory(siccrf_name="other"))
+        IngredientFactory(siccrf_name_en="matcha")
+        ingredient_description = IngredientFactory(siccrf_description="matcha")
 
         search_term = "matcha"
         response = self.client.post(f"{reverse('search')}", {"search": search_term})
@@ -119,9 +119,9 @@ class TestSearch(APITestCase):
         The weighting of certain fields yields different scores. For example,
         a microorganism `name` has a higher search priority than its `name_en` and `microorganismsynonym`
         """
-        microorganism_name = MicroorganismFactory(name="matcha")
-        microorganism_name_en = MicroorganismFactory(name_en="matcha")
-        microorganism_synonym = MicroorganismFactory(name="other")
+        microorganism_name = MicroorganismFactory(siccrf_name="matcha")
+        microorganism_name_en = MicroorganismFactory(siccrf_name_en="matcha")
+        microorganism_synonym = MicroorganismFactory(siccrf_name="other")
         MicroorganismSynonymFactory(name="matcha", standard_name=microorganism_synonym)
 
         search_term = "matcha"
@@ -140,12 +140,12 @@ class TestSearch(APITestCase):
         a substance `name`, `cas_number` and `einec_number` have a higher search
         priority than its `name_en` and `substancesynonym`
         """
-        substance_name_en = SubstanceFactory(name_en="matcha")
-        substance_synonym = SubstanceFactory(name="other")
+        substance_name_en = SubstanceFactory(siccrf_name_en="matcha")
+        substance_synonym = SubstanceFactory(siccrf_name="other")
         SubstanceSynonymFactory(name="matcha", standard_name=substance_synonym)
-        SubstanceFactory(cas_number="matcha")
-        SubstanceFactory(einec_number="matcha")
-        SubstanceFactory(name="matcha")
+        SubstanceFactory(siccrf_cas_number="matcha")
+        SubstanceFactory(siccrf_einec_number="matcha")
+        SubstanceFactory(siccrf_name="matcha")
 
         search_term = "matcha"
         response = self.client.post(f"{reverse('search')}", {"search": search_term})
@@ -159,7 +159,7 @@ class TestSearch(APITestCase):
         """The search_term might be found in several fields,
         in this case, the object should appear only once in search results
         """
-        moorg = MicroorganismFactory(name="matcha")
+        moorg = MicroorganismFactory(siccrf_name="matcha")
         MicroorganismSynonymFactory(name="matcha latte", standard_name=moorg)
         MicroorganismSynonymFactory(name="boisson matcha", standard_name=moorg)
 
@@ -173,7 +173,7 @@ class TestSearch(APITestCase):
         """The search_term might be found in several fields,
         in this case, the object should appear only once in search results
         """
-        substance = SubstanceFactory(name="matcha")
+        substance = SubstanceFactory(siccrf_name="matcha")
         SubstanceSynonymFactory(name="matcha latte", standard_name=substance)
         SubstanceSynonymFactory(name="boisson matcha", standard_name=substance)
 
