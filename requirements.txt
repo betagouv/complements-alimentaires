@@ -31,7 +31,7 @@ factory-boy==3.3.0
 Faker==22.2.0
 filelock==3.13.1
 frozenlist==1.4.1
-identify==2.5.33
+identify==2.5.35
 idna==3.6
 isort==5.13.2
 jmespath==1.0.1
