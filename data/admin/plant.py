@@ -54,7 +54,7 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
         (
             "Famille",
             {
-                "fields": ["siccrf_family"],
+                "fields": ["family"],
             },
         ),
     ]
@@ -66,9 +66,9 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
     )
     list_display = (
         "name",
-        "siccrf_family",
+        "family",
     )
-    list_filter = ("is_obsolete", "siccrf_family")
+    list_filter = ("is_obsolete", "family")
     history_list_display = ['changed_fields']
 
     def changed_fields(self, obj):

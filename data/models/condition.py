@@ -1,9 +1,9 @@
 from django.db import models
 
-from .abstract_models import SICCRFCommonModel
+from .abstract_models import CommonModel
 
 
-class Condition(SICCRFCommonModel):
+class Condition(CommonModel):
     class Meta:
         verbose_name = "condition de santé / facteurs de risque"
 

@@ -1,7 +1,10 @@
-from .mixins import WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithSICCRFDefaultFields
+from django.db import models 
+from django.db.models.functions import Coalesce
+
+from .mixins import WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithSICCRFDefaultFields, WithCADefaultFields
 
 
-class SICCRFCommonModel(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithSICCRFDefaultFields):
+class CommonModel(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithSICCRFDefaultFields, WithCADefaultFields):
     """
     Les modèles ingrédients et les synonymes héritent de ce modèle
     """

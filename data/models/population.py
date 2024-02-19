@@ -1,9 +1,9 @@
 from django.db import models
 
-from .abstract_models import SICCRFCommonModel
+from .abstract_models import CommonModel
 
 
-class Population(SICCRFCommonModel):
+class Population(CommonModel):
     class Meta:
         verbose_name = "Population cible / à risque"
 

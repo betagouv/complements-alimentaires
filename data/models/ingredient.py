@@ -1,11 +1,11 @@
 from django.db import models
 
-from .mixins import WithCreationAndModificationDate, WithHistory, WithSICCRFComments
-from .abstract_models import SICCRFCommonModel
+from .mixins import WithCreationAndModificationDate, WithHistory, WithSICCRFComments, WithCAComments
+from .abstract_models import CommonModel
 from .substance import Substance
 
 
-class Ingredient(SICCRFCommonModel, WithSICCRFComments):
+class Ingredient(CommonModel, WithSICCRFComments, WithCAComments):
     """
     """
     class Meta:
@@ -24,7 +24,7 @@ class IngredientSubstanceRelation(WithCreationAndModificationDate, WithHistory):
     CA_is_related = models.BooleanField(default=False, verbose_name="substance associée à l'ingrédient")
 
 
-class IngredientSynonym(SICCRFCommonModel):
+class IngredientSynonym(CommonModel):
     class Meta:
         verbose_name = "synonyme d'ingrédient"
 

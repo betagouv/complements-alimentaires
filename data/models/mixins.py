@@ -50,3 +50,34 @@ class WithSICCRFComments(models.Model):
     siccrf_public_comments_en = models.TextField(blank=True, editable=False, verbose_name="commentaires publics en anglais SICCRF")
     siccrf_private_comments_en = models.TextField(blank=True, editable=False, verbose_name="commentaires privés en anglais SICCRF")
 
+
+class WithCADefaultFields(models.Model):
+    class Meta:
+        abstract = True
+
+    CA_name = models.TextField(verbose_name="nom CA")
+    CA_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon CA", default=False)
+
+    @property
+    def name(self):
+        return self.CA_name if self.CA_name else self.siccrf_name
+
+    @property
+    def is_obsolete(self):
+        return self.CA_is_obsolete if self.CA_is_obsolete else self.siccrf_is_obsolete
+
+
+class WithCAComments(models.Model):
+    class Meta:
+        abstract = True
+
+    CA_public_comments = models.TextField(blank=True, editable=False, verbose_name="commentaires publics SICCRF")
+    CA_private_comments = models.TextField(blank=True, editable=False, verbose_name="commentaires privés SICCRF")
+
+    @property
+    def public_comments(self):
+        return self.CA_public_comments if self.CA_public_comments else self.siccrf_public_comments
+
+    @property
+    def private_comments(self):
+        return self.CA_private_comments if self.CA_private_comments else self.siccrf_private_comments
