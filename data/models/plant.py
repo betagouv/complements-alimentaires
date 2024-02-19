@@ -1,7 +1,6 @@
 from django.db import models
-from simple_history.models import HistoricalRecords
 
-from .mixins import WithSICCRFComments
+from .mixins import WithSICCRFComments, WithCreationAndModificationDate, WithHistory
 from .abstract_models import SICCRFCommonModel
 from .substance import Substance
 
@@ -26,22 +25,21 @@ class Plant(SICCRFCommonModel, WithSICCRFComments):
         verbose_name = "plante"
 
     siccrf_family = models.ForeignKey(PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante")
-    siccrf_plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
+    plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
     siccrf_substances = models.ManyToManyField(Substance)
 
 
-class Part(models.Model):
+class Part(WithCreationAndModificationDate, WithHistory):
     """Ce modèle permet d'associer des données supplémentaires à la relation ManyToMany
     plant_parts
     """
 
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
     plantpart = models.ForeignKey(PlantPart, on_delete=models.CASCADE)
-    must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
-    is_useful = models.BooleanField(default=False, verbose_name="🍵 utile (selon la base SICCRF) ?")
-    creation_date = models.DateTimeField(auto_now_add=True)
-    modification_date = models.DateTimeField(auto_now=True)
-    history = HistoricalRecords(inherit=True)
+    siccrf_must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller (selon la base SICCRF) ?")
+    CA_must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
+    siccrf_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile (selon la base SICCRF) ?")
+    CA_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile ?")
 
 
 class PlantSynonym(SICCRFCommonModel):
