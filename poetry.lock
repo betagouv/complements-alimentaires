@@ -100,17 +100,17 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "boto3"
-version = "1.34.43"
+version = "1.34.44"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">= 3.8"
 files = [
-    {file = "boto3-1.34.43-py3-none-any.whl", hash = "sha256:179cdcff2dee116ff0bbe10c21a374fff8ae0d9ea3842bd8dd2c9f69e8185d91"},
-    {file = "boto3-1.34.43.tar.gz", hash = "sha256:ed646f600b76939d54fa1ff868415793551a5a08b9de0a09696b46d116da7da5"},
+    {file = "boto3-1.34.44-py3-none-any.whl", hash = "sha256:40f89fb2acee0a0879effe81badffcd801a348e715483227223241ae311c48fc"},
+    {file = "boto3-1.34.44.tar.gz", hash = "sha256:86bcf79a56631609a9f8023fe8f53e2869702bdd4c9047c6d9f091eb39c9b0fa"},
 ]
 
 [package.dependencies]
-botocore = ">=1.34.43,<1.35.0"
+botocore = ">=1.34.44,<1.35.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.10.0,<0.11.0"
 
@@ -119,13 +119,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.34.43"
+version = "1.34.44"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">= 3.8"
 files = [
-    {file = "botocore-1.34.43-py3-none-any.whl", hash = "sha256:ab7d8046a8c3326ecf3d9f9884e79aa77fed864416ed8af52b9e22ab055acf4e"},
-    {file = "botocore-1.34.43.tar.gz", hash = "sha256:00dea9fd602dc97420318d373079bdfcc8da34501aaa908ab98b477526bdefec"},
+    {file = "botocore-1.34.44-py3-none-any.whl", hash = "sha256:8d9837fb33256e70b9c8955a32d3e60fa70a0b72849a909737cf105fcc3b5deb"},
+    {file = "botocore-1.34.44.tar.gz", hash = "sha256:b0f40c54477e8e0a5c43377a927b8959a86bb8824aaef2d28db7c9c367cdefaa"},
 ]
 
 [package.dependencies]
@@ -825,13 +825,13 @@ woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
 
 [[package]]
 name = "identify"
-version = "2.5.34"
+version = "2.5.35"
 description = "File identification library for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "identify-2.5.34-py2.py3-none-any.whl", hash = "sha256:a4316013779e433d08b96e5eabb7f641e6c7942e4ab5d4c509ebd2e7a8994aed"},
-    {file = "identify-2.5.34.tar.gz", hash = "sha256:ee17bc9d499899bc9eaec1ac7bf2dc9eedd480db9d88b96d123d3b64a9d34f5d"},
+    {file = "identify-2.5.35-py2.py3-none-any.whl", hash = "sha256:c4de0081837b211594f8e877a6b4fad7ca32bbfc1a9307fdd61c28bfe923f13e"},
+    {file = "identify-2.5.35.tar.gz", hash = "sha256:10a7ca245cfcd756a554a7288159f72ff105ad233c7c4b9c6f0f4d108f5f6791"},
 ]
 
 [package.extras]
@@ -1534,13 +1534,13 @@ test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.4.3)", "pytest-
 
 [[package]]
 name = "pre-commit"
-version = "3.6.1"
+version = "3.6.2"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "pre_commit-3.6.1-py2.py3-none-any.whl", hash = "sha256:9fe989afcf095d2c4796ce7c553cf28d4d4a9b9346de3cda079bcf40748454a4"},
-    {file = "pre_commit-3.6.1.tar.gz", hash = "sha256:c90961d8aa706f75d60935aba09469a6b0bcb8345f127c3fbee4bdc5f114cf4b"},
+    {file = "pre_commit-3.6.2-py2.py3-none-any.whl", hash = "sha256:ba637c2d7a670c10daedc059f5c49b5bd0aadbccfcd7ec15592cf9665117532c"},
+    {file = "pre_commit-3.6.2.tar.gz", hash = "sha256:c3ef34f463045c88658c5b99f38c1e297abdcc0ff13f98d3370055fbbfabc67e"},
 ]
 
 [package.dependencies]
