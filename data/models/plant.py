@@ -1,38 +1,54 @@
 from django.db import models
 
-from .mixins import WithSICCRFComments, WithCreationAndModificationDate, WithHistory
-from .abstract_models import SICCRFCommonModel
+from .mixins import WithCreationAndModificationDate, WithHistory, WithCAComments, WithSICCRFComments
+from .abstract_models import CommonModel
 from .substance import Substance
 
 
-class PlantFamily(SICCRFCommonModel):
+class PlantFamily(CommonModel):
     class Meta:
         verbose_name = "famille de plantes"
         verbose_name_plural = "familles de plantes"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
 
+    @property
+    def name_en(self):
+        return self.siccrf_name_en
 
-class PlantPart(SICCRFCommonModel):
+
+class PlantPart(CommonModel):
     class Meta:
         verbose_name = "partie de plante"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
 
+    @property
+    def name_en(self):
+        return self.siccrf_name_en
 
-class Plant(SICCRFCommonModel, WithSICCRFComments):
+
+class Plant(CommonModel, WithSICCRFComments, WithCAComments):
     class Meta:
         verbose_name = "plante"
 
     siccrf_family = models.ForeignKey(
-        PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante"
+        PlantFamily,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name="famille de plante (selon la base SICCRF)",
+        related_name="siccrf_plant_set",
+    )
+    CA_family = models.ForeignKey(
+        PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante", related_name="plant_set"
     )
     plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
     substances = models.ManyToManyField(Substance, through="PlantSubstanceRelation")
 
 
 class Part(WithCreationAndModificationDate, WithHistory):
-    """Ce modèle permet d'associer des données supplémentaires à la relation ManyToMany
+    """
+    Ce modèle permet d'associer des données supplémentaires à la relation ManyToMany
     plant_parts
     """
 
@@ -55,7 +71,7 @@ class PlantSubstanceRelation(WithCreationAndModificationDate, WithHistory):
     CA_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à la plante")
 
 
-class PlantSynonym(SICCRFCommonModel):
+class PlantSynonym(CommonModel):
     class Meta:
         verbose_name = "synonyme de plante"
 

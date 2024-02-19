@@ -1,13 +1,13 @@
 from django.db import models
 
-from .mixins import WithCreationAndModificationDate, WithHistory, WithSICCRFComments
-from .abstract_models import SICCRFCommonModel
+from .mixins import WithCreationAndModificationDate, WithHistory, WithSICCRFComments, WithCAComments
+from .abstract_models import CommonModel
 from .substance import Substance
 
 
-class Ingredient(SICCRFCommonModel, WithSICCRFComments):
-    """
-    """
+class Ingredient(CommonModel, WithSICCRFComments, WithCAComments):
+    """ """
+
     class Meta:
         verbose_name = "autre ingrédient"
         verbose_name_plural = "autres ingrédients"
@@ -15,6 +15,14 @@ class Ingredient(SICCRFCommonModel, WithSICCRFComments):
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     siccrf_description = models.TextField(blank=True)
     substances = models.ManyToManyField(Substance, through="IngredientSubstanceRelation")
+
+    @property
+    def name_en(self):
+        return self.siccrf_name_en
+
+    @property
+    def description(self):
+        return self.siccrf_description
 
 
 class IngredientSubstanceRelation(WithCreationAndModificationDate, WithHistory):
@@ -26,7 +34,7 @@ class IngredientSubstanceRelation(WithCreationAndModificationDate, WithHistory):
     CA_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à l'ingrédient")
 
 
-class IngredientSynonym(SICCRFCommonModel):
+class IngredientSynonym(CommonModel):
     class Meta:
         verbose_name = "synonyme d'ingrédient"
 
