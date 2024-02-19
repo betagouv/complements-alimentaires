@@ -1,6 +1,6 @@
 from django.db import models
 
-from .mixins import WithSICCRFComments
+from .mixins import WithCreationAndModificationDate, WithHistory, WithSICCRFComments
 from .abstract_models import SICCRFCommonModel
 from .substance import Substance
 
@@ -14,7 +14,16 @@ class Ingredient(SICCRFCommonModel, WithSICCRFComments):
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     siccrf_description = models.TextField(blank=True)
-    siccrf_substances = models.ManyToManyField(Substance)
+    substances = models.ManyToManyField(Substance, through="IngredientSubstanceRelation")
+
+
+class IngredientSubstanceRelation(WithCreationAndModificationDate, WithHistory):
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
+    siccrf_is_related = models.BooleanField(
+        default=False, verbose_name="substance associée à l'ingrédient (selon la base SICCRF)"
+    )
+    CA_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à l'ingrédient")
 
 
 class IngredientSynonym(SICCRFCommonModel):

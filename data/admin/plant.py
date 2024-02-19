@@ -20,6 +20,11 @@ class PartInlineAdmin(admin.TabularInline):
     extra = 1
 
 
+class SubstanceInlineAdmin(admin.TabularInline):
+    model = Plant.substances.through
+    extra = 1
+
+
 class PlantForm(forms.ModelForm):
     class Meta:
         widgets = {
@@ -47,22 +52,23 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
             },
         ),
         (
-            "Commentaires",
+            "Famille",
             {
-                "fields": ["family", "substances"],
+                "fields": ["siccrf_family"],
             },
         ),
     ]
 
     inlines = (
         PartInlineAdmin,
+        SubstanceInlineAdmin,
         PlantSynonymInline,
     )
     list_display = (
         "name",
-        "family",
+        "siccrf_family",
     )
-    list_filter = ("is_obsolete", "family")
+    list_filter = ("is_obsolete", "siccrf_family")
     history_list_display = ['changed_fields']
 
     def changed_fields(self, obj):

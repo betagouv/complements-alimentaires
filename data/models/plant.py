@@ -28,7 +28,7 @@ class Plant(SICCRFCommonModel, WithSICCRFComments):
         PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante"
     )
     plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
-    siccrf_substances = models.ManyToManyField(Substance)
+    substances = models.ManyToManyField(Substance, through="PlantSubstanceRelation")
 
 
 class Part(WithCreationAndModificationDate, WithHistory):
@@ -44,6 +44,15 @@ class Part(WithCreationAndModificationDate, WithHistory):
     CA_must_be_monitored = models.BooleanField(null=True, default=None, verbose_name="⚠️ à surveiller ?")
     siccrf_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile (selon la base SICCRF) ?")
     CA_is_useful = models.BooleanField(null=True, default=None, verbose_name="🍵 utile ?")
+
+
+class PlantSubstanceRelation(WithCreationAndModificationDate, WithHistory):
+    plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
+    substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
+    siccrf_is_related = models.BooleanField(
+        default=False, verbose_name="substance associée à la plante (selon la base SICCRF)"
+    )
+    CA_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à la plante")
 
 
 class PlantSynonym(SICCRFCommonModel):
