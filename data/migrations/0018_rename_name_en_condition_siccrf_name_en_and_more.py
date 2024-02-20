@@ -11,7 +11,123 @@ class Migration(migrations.Migration):
     dependencies = [
         ("data", "0017_auto_20240213_1739"),
     ]
-
+    ingredient_substance_state_operations = [
+        migrations.CreateModel(
+            name="IngredientSubstanceRelation",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "ingredient",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="data.ingredient",
+                    ),
+                ),
+                (
+                    "substance",
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="data.substance"),
+                ),
+            ],
+            options={
+                "abstract": False,
+            },
+        ),
+        migrations.AlterField(
+            model_name="ingredient",
+            name="substances",
+            field=models.ManyToManyField(through="data.IngredientSubstanceRelation", to="data.substance"),
+        ),
+        migrations.AlterModelTable(
+            name="IngredientSubstanceRelation",
+            table="data_ingredient_substances",
+        ),
+    ]
+    microorganism_substance_state_operations = [
+        migrations.CreateModel(
+            name="MicroorganismSubstanceRelation",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "microorganism",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="data.microorganism",
+                    ),
+                ),
+                (
+                    "substance",
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="data.substance"),
+                ),
+            ],
+            options={
+                "abstract": False,
+            },
+        ),
+        migrations.AlterField(
+            model_name="microorganism",
+            name="substances",
+            field=models.ManyToManyField(through="data.MicroorganismSubstanceRelation", to="data.substance"),
+        ),
+        migrations.AlterModelTable(
+            name="MicroorganismSubstanceRelation",
+            table="data_microorganism_substances",
+        ),
+    ]
+    plant_substance_state_operations = [
+        migrations.CreateModel(
+            name="PlantSubstanceRelation",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "plant",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="data.plant",
+                    ),
+                ),
+                (
+                    "substance",
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="data.substance"),
+                ),
+            ],
+            options={
+                "abstract": False,
+            },
+        ),
+        migrations.AlterField(
+            model_name="plant",
+            name="substances",
+            field=models.ManyToManyField(through="data.PlantSubstanceRelation", to="data.substance"),
+        ),
+        migrations.AlterModelTable(
+            name="PlantSubstanceRelation",
+            table="data_plant_substances",
+        ),
+    ]
     operations = [
         # historicalmicroorganism
         migrations.RenameField(
@@ -53,7 +169,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalmicroorganism",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="historicalmicroorganism",
@@ -103,12 +219,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalpart",
             name="CA_is_useful",
-            field=models.BooleanField(default=False, verbose_name="🍵 utile ?"),
+            field=models.BooleanField(default=None, null=True, verbose_name="🍵 utile ?"),
         ),
         migrations.AddField(
             model_name="historicalpart",
             name="CA_must_be_monitored",
-            field=models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?"),
+            field=models.BooleanField(default=None, null=True, verbose_name="⚠️ à surveiller ?"),
         ),
         # historicalplantfamily
         migrations.RenameField(
@@ -129,7 +245,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalplantfamily",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="historicalplantfamily",
@@ -167,7 +283,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalplantpart",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="historicalplantpart",
@@ -259,7 +375,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalsubstance",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="historicalsubstance",
@@ -269,7 +385,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalsubstance",
             name="CA_must_specify_quantity",
-            field=models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire"),
+            field=models.BooleanField(default=None, null=True, verbose_name="spécification de quantité obligatoire"),
         ),
         migrations.AddField(
             model_name="historicalsubstance",
@@ -334,7 +450,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="condition",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="condition",
@@ -380,7 +496,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="ingredient",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="ingredient",
@@ -456,7 +572,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="microorganism",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="microorganism",
@@ -506,12 +622,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="part",
             name="CA_is_useful",
-            field=models.BooleanField(default=False, verbose_name="🍵 utile ?"),
+            field=models.BooleanField(default=None, null=True, verbose_name="🍵 utile ?"),
         ),
         migrations.AddField(
             model_name="part",
             name="CA_must_be_monitored",
-            field=models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?"),
+            field=models.BooleanField(default=None, null=True, verbose_name="⚠️ à surveiller ?"),
         ),
         # plantfamily
         migrations.RenameField(
@@ -532,7 +648,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="plantfamily",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="plantfamily",
@@ -559,7 +675,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="plantpart",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="plantpart",
@@ -640,7 +756,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="substance",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="substance",
@@ -650,7 +766,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="substance",
             name="CA_must_specify_quantity",
-            field=models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire"),
+            field=models.BooleanField(default=None, null=True, verbose_name="spécification de quantité obligatoire"),
         ),
         migrations.AddField(
             model_name="substance",
@@ -715,7 +831,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalcondition",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="historicalcondition",
@@ -761,7 +877,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalingredient",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="historicalingredient",
@@ -811,7 +927,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalingredientsynonym",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="historicalingredientsynonym",
@@ -833,7 +949,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalmicroorganismsynonym",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="historicalmicroorganismsynonym",
@@ -870,7 +986,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalplant",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="historicalplant",
@@ -947,7 +1063,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalplantsynonym",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="historicalplantsynonym",
@@ -969,7 +1085,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalpopulation",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="historicalpopulation",
@@ -985,7 +1101,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="historicalsubstancesynonym",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="historicalsubstancesynonym",
@@ -999,7 +1115,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="ingredientsynonym",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="ingredientsynonym",
@@ -1015,7 +1131,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="microorganismsynonym",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="microorganismsynonym",
@@ -1032,7 +1148,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="plant",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="plant",
@@ -1103,7 +1219,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="plantsynonym",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         # population
         migrations.RenameField(model_name="population", old_name="is_obsolete", new_name="siccrf_is_obsolete"),
@@ -1111,7 +1227,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="population",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="population",
@@ -1125,7 +1241,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="substancesynonym",
             name="CA_is_obsolete",
-            field=models.BooleanField(default=False, verbose_name="objet obsolète selon CA"),
+            field=models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
         ),
         migrations.AddField(
             model_name="substancesynonym",
@@ -1387,355 +1503,89 @@ class Migration(migrations.Migration):
                 verbose_name="id dans les tables et tables relationnelles SICCRF",
             ),
         ),
-        migrations.CreateModel(
-            name="HistoricalIngredientSubstanceRelation",
-            fields=[
-                (
-                    "id",
-                    models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID"),
-                ),
-                ("creation_date", models.DateTimeField(blank=True, editable=False)),
-                ("modification_date", models.DateTimeField(blank=True, editable=False)),
-                (
-                    "siccrf_is_related",
-                    models.BooleanField(
-                        default=False,
-                        verbose_name="substance associée à l'ingrédient (selon la base SICCRF)",
-                    ),
-                ),
-                (
-                    "CA_is_related",
-                    models.BooleanField(default=False, verbose_name="substance associée à l'ingrédient"),
-                ),
-                ("history_id", models.AutoField(primary_key=True, serialize=False)),
-                ("history_date", models.DateTimeField(db_index=True)),
-                ("history_change_reason", models.CharField(max_length=100, null=True)),
-                (
-                    "history_type",
-                    models.CharField(
-                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
-                        max_length=1,
-                    ),
-                ),
-                (
-                    "history_user",
-                    models.ForeignKey(
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        related_name="+",
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
-                (
-                    "ingredient",
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name="+",
-                        to="data.ingredient",
-                    ),
-                ),
-                (
-                    "substance",
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name="+",
-                        to="data.substance",
-                    ),
-                ),
-            ],
-            options={
-                "verbose_name": "historical ingredient substance relation",
-                "verbose_name_plural": "historical ingredient substance relations",
-                "ordering": ("-history_date", "-history_id"),
-                "get_latest_by": ("history_date", "history_id"),
-            },
-            bases=(simple_history.models.HistoricalChanges, models.Model),
+        # transform already existing <ingr>_substances relation tables to add columns
+        migrations.SeparateDatabaseAndState(state_operations=ingredient_substance_state_operations),
+        migrations.AddField(
+            model_name="IngredientSubstanceRelation",
+            name="siccrf_is_related",
+            field=models.BooleanField(
+                default=False,
+                verbose_name="substance associée à l'ingrédient (selon la base SICCRF)",
+            ),
         ),
-        migrations.CreateModel(
-            name="HistoricalMicroorganismSubstanceRelation",
-            fields=[
-                (
-                    "id",
-                    models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID"),
-                ),
-                ("creation_date", models.DateTimeField(blank=True, editable=False)),
-                ("modification_date", models.DateTimeField(blank=True, editable=False)),
-                (
-                    "siccrf_is_related",
-                    models.BooleanField(
-                        default=False,
-                        verbose_name="substance associée au micro-organisme (selon la base SICCRF)",
-                    ),
-                ),
-                (
-                    "CA_is_related",
-                    models.BooleanField(
-                        default=False,
-                        verbose_name="substance associée au micro-organisme",
-                    ),
-                ),
-                ("history_id", models.AutoField(primary_key=True, serialize=False)),
-                ("history_date", models.DateTimeField(db_index=True)),
-                ("history_change_reason", models.CharField(max_length=100, null=True)),
-                (
-                    "history_type",
-                    models.CharField(
-                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
-                        max_length=1,
-                    ),
-                ),
-                (
-                    "history_user",
-                    models.ForeignKey(
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        related_name="+",
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
-                (
-                    "microorganism",
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name="+",
-                        to="data.microorganism",
-                    ),
-                ),
-                (
-                    "substance",
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name="+",
-                        to="data.substance",
-                    ),
-                ),
-            ],
-            options={
-                "verbose_name": "historical microorganism substance relation",
-                "verbose_name_plural": "historical microorganism substance relations",
-                "ordering": ("-history_date", "-history_id"),
-                "get_latest_by": ("history_date", "history_id"),
-            },
-            bases=(simple_history.models.HistoricalChanges, models.Model),
+        migrations.AddField(
+            model_name="IngredientSubstanceRelation",
+            name="CA_is_related",
+            field=models.BooleanField(default=None, null=True, verbose_name="substance associée à l'ingrédient"),
         ),
-        migrations.CreateModel(
-            name="HistoricalPlantSubstanceRelation",
-            fields=[
-                (
-                    "id",
-                    models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID"),
-                ),
-                ("creation_date", models.DateTimeField(blank=True, editable=False)),
-                ("modification_date", models.DateTimeField(blank=True, editable=False)),
-                (
-                    "siccrf_is_related",
-                    models.BooleanField(
-                        default=False,
-                        verbose_name="substance associée à la plante (selon la base SICCRF)",
-                    ),
-                ),
-                (
-                    "CA_is_related",
-                    models.BooleanField(default=False, verbose_name="substance associée à la plante"),
-                ),
-                ("history_id", models.AutoField(primary_key=True, serialize=False)),
-                ("history_date", models.DateTimeField(db_index=True)),
-                ("history_change_reason", models.CharField(max_length=100, null=True)),
-                (
-                    "history_type",
-                    models.CharField(
-                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
-                        max_length=1,
-                    ),
-                ),
-                (
-                    "history_user",
-                    models.ForeignKey(
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        related_name="+",
-                        to=settings.AUTH_USER_MODEL,
-                    ),
-                ),
-                (
-                    "plant",
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name="+",
-                        to="data.plant",
-                    ),
-                ),
-                (
-                    "substance",
-                    models.ForeignKey(
-                        blank=True,
-                        db_constraint=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name="+",
-                        to="data.substance",
-                    ),
-                ),
-            ],
-            options={
-                "verbose_name": "historical plant substance relation",
-                "verbose_name_plural": "historical plant substance relations",
-                "ordering": ("-history_date", "-history_id"),
-                "get_latest_by": ("history_date", "history_id"),
-            },
-            bases=(simple_history.models.HistoricalChanges, models.Model),
+        migrations.AddField(
+            model_name="IngredientSubstanceRelation",
+            name="creation_date",
+            field=models.DateTimeField(auto_now_add=True),
         ),
-        migrations.CreateModel(
-            name="IngredientSubstanceRelation",
-            fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("creation_date", models.DateTimeField(auto_now_add=True)),
-                ("modification_date", models.DateTimeField(auto_now=True)),
-                (
-                    "siccrf_is_related",
-                    models.BooleanField(
-                        default=False,
-                        verbose_name="substance associée à l'ingrédient (selon la base SICCRF)",
-                    ),
-                ),
-                (
-                    "CA_is_related",
-                    models.BooleanField(default=False, verbose_name="substance associée à l'ingrédient"),
-                ),
-                (
-                    "ingredient",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="data.ingredient",
-                    ),
-                ),
-                (
-                    "substance",
-                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="data.substance"),
-                ),
-            ],
-            options={
-                "abstract": False,
-            },
+        migrations.AddField(
+            model_name="IngredientSubstanceRelation",
+            name="modification_date",
+            field=models.DateTimeField(auto_now=True),
         ),
-        migrations.AlterField(
-            model_name="ingredient",
-            name="substances",
-            field=models.ManyToManyField(through="data.IngredientSubstanceRelation", to="data.substance"),
+        migrations.AlterModelTable(
+            name="ingredientSubstanceRelation",
+            table=None,
         ),
-        migrations.CreateModel(
-            name="MicroorganismSubstanceRelation",
-            fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("creation_date", models.DateTimeField(auto_now_add=True)),
-                ("modification_date", models.DateTimeField(auto_now=True)),
-                (
-                    "siccrf_is_related",
-                    models.BooleanField(
-                        default=False,
-                        verbose_name="substance associée au micro-organisme (selon la base SICCRF)",
-                    ),
-                ),
-                (
-                    "CA_is_related",
-                    models.BooleanField(
-                        default=False,
-                        verbose_name="substance associée au micro-organisme",
-                    ),
-                ),
-                (
-                    "microorganism",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="data.microorganism",
-                    ),
-                ),
-                (
-                    "substance",
-                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="data.substance"),
-                ),
-            ],
-            options={
-                "abstract": False,
-            },
+        migrations.SeparateDatabaseAndState(state_operations=microorganism_substance_state_operations),
+        migrations.AddField(
+            model_name="MicroorganismSubstanceRelation",
+            name="siccrf_is_related",
+            field=models.BooleanField(
+                default=False,
+                verbose_name="substance associée à l'ingrédient (selon la base SICCRF)",
+            ),
         ),
-        migrations.AlterField(
-            model_name="microorganism",
-            name="substances",
-            field=models.ManyToManyField(through="data.MicroorganismSubstanceRelation", to="data.substance"),
+        migrations.AddField(
+            model_name="MicroorganismSubstanceRelation",
+            name="CA_is_related",
+            field=models.BooleanField(default=None, null=True, verbose_name="substance associée à l'ingrédient"),
         ),
-        migrations.CreateModel(
+        migrations.AddField(
+            model_name="MicroorganismSubstanceRelation",
+            name="creation_date",
+            field=models.DateTimeField(auto_now_add=True),
+        ),
+        migrations.AddField(
+            model_name="MicroorganismSubstanceRelation",
+            name="modification_date",
+            field=models.DateTimeField(auto_now=True),
+        ),
+        migrations.AlterModelTable(
+            name="microorganismSubstanceRelation",
+            table=None,
+        ),
+        migrations.SeparateDatabaseAndState(state_operations=plant_substance_state_operations),
+        migrations.AddField(
+            model_name="PlantSubstanceRelation",
+            name="siccrf_is_related",
+            field=models.BooleanField(
+                default=False,
+                verbose_name="substance associée à l'ingrédient (selon la base SICCRF)",
+            ),
+        ),
+        migrations.AddField(
+            model_name="PlantSubstanceRelation",
+            name="CA_is_related",
+            field=models.BooleanField(default=None, null=True, verbose_name="substance associée à l'ingrédient"),
+        ),
+        migrations.AddField(
+            model_name="PlantSubstanceRelation",
+            name="creation_date",
+            field=models.DateTimeField(auto_now_add=True),
+        ),
+        migrations.AddField(
+            model_name="PlantSubstanceRelation",
+            name="modification_date",
+            field=models.DateTimeField(auto_now=True),
+        ),
+        migrations.AlterModelTable(
             name="PlantSubstanceRelation",
-            fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("creation_date", models.DateTimeField(auto_now_add=True)),
-                ("modification_date", models.DateTimeField(auto_now=True)),
-                (
-                    "siccrf_is_related",
-                    models.BooleanField(
-                        default=False,
-                        verbose_name="substance associée à la plante (selon la base SICCRF)",
-                    ),
-                ),
-                (
-                    "CA_is_related",
-                    models.BooleanField(default=False, verbose_name="substance associée à la plante"),
-                ),
-                (
-                    "plant",
-                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="data.plant"),
-                ),
-                (
-                    "substance",
-                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="data.substance"),
-                ),
-            ],
-            options={
-                "abstract": False,
-            },
-        ),
-        migrations.AlterField(
-            model_name="plant",
-            name="substances",
-            field=models.ManyToManyField(through="data.PlantSubstanceRelation", to="data.substance"),
+            table=None,
         ),
     ]
