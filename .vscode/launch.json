@@ -8,20 +8,23 @@
             "name": "Python: Django",
             "type": "debugpy",
             "request": "launch",
-            "python": "${workspaceFolder}/venv/bin/python",
+            "cwd": "${workspaceFolder}",
+            "python": "${command:python.interpreterPath}",
             "program": "${workspaceFolder}/manage.py",
             "args": [
                 "runserver"
             ],
+            "redirectOutput": true,
             "django": true,
-            "justMyCode": false
+            "justMyCode": false,
+            "stopOnEntry": false
         },
         {
             "name": "Python: Tests",
             "type": "debugpy",
             "request": "launch",
             "stopOnEntry": false,
-            "python": "${workspaceFolder}/venv/bin/python",
+            "python": "${command:python.interpreterPath}",
             "program": "${workspaceFolder}/manage.py",
             "args": [
                 "test",
