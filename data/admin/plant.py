@@ -82,10 +82,13 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
     history_list_display = ["changed_fields"]
     readonly_fields = (
         "siccrf_name",
+        "name",
         "siccrf_is_obsolete",
+        "is_obsolete",
         "siccrf_public_comments",
         "siccrf_private_comments",
         "siccrf_family",
+        "family",
     )
 
     def changed_fields(self, obj):

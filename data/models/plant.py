@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models.functions import Coalesce
+from django.db.models import F
 
 from .mixins import (
     WithCreationAndModificationDate,
@@ -50,12 +51,14 @@ class Plant(CommonModel, WithSICCRFComments, WithCAComments):
         null=True,
         on_delete=models.SET_NULL,
         verbose_name="famille de plante",
-        related_name="plant_set",
+        related_name="CA_plant_set",
     )
 
     family = models.GeneratedField(
-        expression=Coalesce("CA_family", "siccrf_family"),
-        output_field=models.TextField(verbose_name="famille de plante"),
+        expression=Coalesce(F("CA_family"), F("siccrf_family")),
+        output_field=models.BigIntegerField(
+            verbose_name="famille de plante",
+        ),
         db_persist=True,
     )
 
@@ -76,8 +79,8 @@ class Part(WithCreationAndModificationDate, WithHistory):
     )
     CA_must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
     must_be_monitored = models.GeneratedField(
-        expression=Coalesce("CA_must_be_monitored", "siccrf_must_be_monitored"),
-        output_field=models.TextField(verbose_name="⚠️ à surveiller ?"),
+        expression=Coalesce(F("CA_must_be_monitored"), F("siccrf_must_be_monitored")),
+        output_field=models.BooleanField(verbose_name="⚠️ à surveiller ?"),
         db_persist=True,
     )
 
@@ -85,8 +88,8 @@ class Part(WithCreationAndModificationDate, WithHistory):
     CA_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile ?")
 
     is_useful = models.GeneratedField(
-        expression=Coalesce("CA_is_useful", "siccrf_is_useful"),
-        output_field=models.TextField(verbose_name="🍵 utile ?"),
+        expression=Coalesce(F("CA_is_useful"), F("siccrf_is_useful")),
+        output_field=models.BooleanField(verbose_name="🍵 utile ?"),
         db_persist=True,
     )
 

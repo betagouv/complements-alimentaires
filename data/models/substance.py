@@ -1,5 +1,6 @@
 from django.db import models
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce, NullIf
+from django.db.models import F, Value
 
 from .mixins import WithSICCRFComments, WithCAComments
 from .abstract_models import CommonModel
@@ -21,7 +22,7 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
     siccrf_cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS (selon la base SICCRF)")
     CA_cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS")
     cas_number = models.GeneratedField(
-        expression=Coalesce("CA_cas_number", "siccrf_cas_number"),
+        expression=Coalesce(NullIf(F("CA_cas_number"), Value("")), F("siccrf_cas_number")),
         output_field=models.CharField(max_length=10, blank=True, verbose_name="numéro CAS"),
         db_persist=True,
     )
@@ -38,7 +39,7 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
         verbose_name="numéro EINECS",
     )
     einec_number = models.GeneratedField(
-        expression=Coalesce("CA_einec_number", "siccrf_einec_number"),
+        expression=Coalesce(NullIf(F("CA_einec_number"), Value("")), F("siccrf_einec_number")),
         output_field=models.CharField(max_length=7, blank=True, verbose_name="numéro EINECS"),
         db_persist=True,
     )
@@ -47,7 +48,7 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
     siccrf_source = models.TextField(blank=True)
     CA_source = models.TextField(blank=True)
     source = models.GeneratedField(
-        expression=Coalesce("CA_source", "siccrf_source"),
+        expression=Coalesce(NullIf(F("CA_source"), Value("")), F("siccrf_source")),
         output_field=models.TextField(),
         db_persist=True,
     )
@@ -59,7 +60,7 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
     )
     CA_must_specify_quantity = models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire")
     must_specify_quantity = models.GeneratedField(
-        expression=Coalesce("CA_must_specify_quantity", "siccrf_must_specify_quantity"),
+        expression=Coalesce(F("CA_must_specify_quantity"), F("siccrf_must_specify_quantity")),
         output_field=models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire"),
         db_persist=True,
     )
@@ -72,7 +73,7 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
     )
     CA_max_quantity = models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée")
     max_quantity = models.GeneratedField(
-        expression=Coalesce("CA_max_quantity", "siccrf_max_quantity"),
+        expression=Coalesce(F("CA_max_quantity"), F("siccrf_max_quantity")),
         output_field=models.FloatField(null=True, blank=True, verbose_name="spécification de quantité obligatoire"),
         db_persist=True,
     )
@@ -86,7 +87,7 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
     )
     CA_nutritional_reference = models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé")
     nutritional_reference = models.GeneratedField(
-        expression=Coalesce("CA_nutritional_reference", "siccrf_nutritional_reference"),
+        expression=Coalesce(F("CA_nutritional_reference"), F("siccrf_nutritional_reference")),
         output_field=models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé"),
         db_persist=True,
     )

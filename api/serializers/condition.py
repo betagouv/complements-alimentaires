@@ -8,6 +8,6 @@ class ConditionSerializer(serializers.ModelSerializer):
         fields = [
             "name",
             "id",
-            "name_en",
+            "siccrf_name_en",
         ]
         read_only_fields = fields

@@ -22,7 +22,7 @@ class MicroorganismSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
-            "name_en",
+            "siccrf_name_en",
             "genre",
             "synonyms",
             "substances",

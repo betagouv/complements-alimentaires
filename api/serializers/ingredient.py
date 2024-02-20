@@ -22,8 +22,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
-            "name_en",
-            "observation",
+            "siccrf_name_en",
             "description",
             "synonyms",
             "substances",

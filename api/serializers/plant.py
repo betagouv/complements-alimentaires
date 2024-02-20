@@ -9,7 +9,7 @@ class PlantFamilySerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "is_obsolete",
-            "name_en",
+            "siccrf_name_en",
             "siccrf_id",
         )
         read_only_fields = fields
@@ -23,7 +23,7 @@ class PartRelationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Part
-        fields = ("name", "name_en", "is_obsolete", "siccrf_id", "must_be_monitored", "is_useful")
+        fields = ("name", "siccrf_name_en", "is_obsolete", "siccrf_id", "must_be_monitored", "is_useful")
         read_only_fields = fields
 
 

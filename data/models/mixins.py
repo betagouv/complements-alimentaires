@@ -1,5 +1,6 @@
 from django.db import models
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce, NullIf
+from django.db.models import F, Value
 
 from simple_history.models import HistoricalRecords
 
@@ -28,9 +29,7 @@ class WithMissingImportBoolean(models.Model):
     class Meta:
         abstract = True
 
-    missing_import_data = models.BooleanField(
-        blank=True, null=True, editable=False, default=False
-    )
+    missing_import_data = models.BooleanField(blank=True, null=True, editable=False, default=False)
 
 
 class WithSICCRFDefaultFields(models.Model):
@@ -46,9 +45,7 @@ class WithSICCRFDefaultFields(models.Model):
         verbose_name="id dans les tables et tables relationnelles SICCRF",
     )
     siccrf_name = models.TextField(verbose_name="nom SICCRF")
-    siccrf_is_obsolete = models.BooleanField(
-        verbose_name="objet obsolète selon SICCRF", default=False
-    )
+    siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
 
 
 class WithSICCRFComments(models.Model):
@@ -61,12 +58,8 @@ class WithSICCRFComments(models.Model):
     class Meta:
         abstract = True
 
-    siccrf_public_comments = models.TextField(
-        blank=True, editable=False, verbose_name="commentaires publics SICCRF"
-    )
-    siccrf_private_comments = models.TextField(
-        blank=True, editable=False, verbose_name="commentaires privés SICCRF"
-    )
+    siccrf_public_comments = models.TextField(blank=True, editable=False, verbose_name="commentaires publics SICCRF")
+    siccrf_private_comments = models.TextField(blank=True, editable=False, verbose_name="commentaires privés SICCRF")
     siccrf_public_comments_en = models.TextField(
         blank=True,
         editable=False,
@@ -82,19 +75,17 @@ class WithCADefaultFields(models.Model):
         abstract = True
 
     CA_name = models.TextField(verbose_name="nom CA")
-    CA_is_obsolete = models.BooleanField(
-        verbose_name="objet obsolète selon CA", default=False
-    )
+    CA_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon CA", default=False)
 
     name = models.GeneratedField(
-        expression=Coalesce("CA_name", "siccrf_name"),
+        expression=Coalesce(NullIf(F("CA_name"), Value("")), F("siccrf_name")),
         output_field=models.TextField(verbose_name="nom"),
         db_persist=True,
     )
 
     is_obsolete = models.GeneratedField(
-        expression=Coalesce("CA_is_obsolete", "siccrf_is_obsolete"),
-        output_field=models.TextField(verbose_name="objet obsolète"),
+        expression=Coalesce(F("CA_is_obsolete"), F("siccrf_is_obsolete")),
+        output_field=models.BooleanField(verbose_name="objet obsolète"),
         db_persist=True,
     )
 
@@ -103,25 +94,13 @@ class WithCAComments(models.Model):
     class Meta:
         abstract = True
 
-    CA_public_comments = models.TextField(
-        blank=True, verbose_name="commentaires publics SICCRF"
-    )
-    CA_private_comments = models.TextField(
-        blank=True, verbose_name="commentaires privés SICCRF"
-    )
+    CA_public_comments = models.TextField(blank=True, verbose_name="commentaires publics SICCRF")
+    CA_private_comments = models.TextField(blank=True, verbose_name="commentaires privés SICCRF")
 
     @property
     def public_comments(self):
-        return (
-            self.CA_public_comments
-            if self.CA_public_comments
-            else self.siccrf_public_comments
-        )
+        return self.CA_public_comments if self.CA_public_comments else self.siccrf_public_comments
 
     @property
     def private_comments(self):
-        return (
-            self.CA_private_comments
-            if self.CA_private_comments
-            else self.siccrf_private_comments
-        )
+        return self.CA_private_comments if self.CA_private_comments else self.siccrf_private_comments

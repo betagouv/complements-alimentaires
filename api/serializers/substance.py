@@ -20,12 +20,11 @@ class SubstanceSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
-            "name_en",
+            "siccrf_name_en",
             "cas_number",
             "einec_number",
             "source",
             "must_specify_quantity",
-            "min_quantity",
             "max_quantity",
             "nutritional_reference",
             "synonyms",
@@ -40,7 +39,7 @@ class SubstanceShortSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
-            "name_en",
+            "siccrf_name_en",
             "cas_number",
             "einec_number",
         )
