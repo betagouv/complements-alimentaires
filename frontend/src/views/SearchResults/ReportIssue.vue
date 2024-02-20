@@ -3,8 +3,8 @@
     <div class="col-span-12 md:col-span-7 md:pr-10">
       <h4>Une erreur ? Signalez-là ici</h4>
       <p class="m-0">
-        Aidez-nous à améliorer la qualité de nos données, en remontant toute erreur ou incohérence que vous pourriez
-        constater. Nous vous remercions d'avance. 🙏🏼
+        Aidez-nous à améliorer la qualité de nos données en remontant toute erreur ou incohérence que vous pourriez
+        constater. Nous vous remercions d'avance 🙏🏼
       </p>
     </div>
     <div class="col-span-12 md:col-span-5 my-6 md:my-0">
@@ -63,10 +63,13 @@ const rules = {
 const v$ = useVuelidate(rules, state)
 
 // Request definition
-const { error, execute, isFetching, isFinished } = useFetch("/api/v1/reportIssue/", {
-  headers: headers,
-  immediate: false,
-}).post(state)
+const { error, execute, isFetching, isFinished } = useFetch(
+  "/api/v1/reportIssue/",
+  {
+    headers: headers,
+  },
+  { immediate: false }
+).post(state)
 
 // Form validation
 const submit = () => {
