@@ -9,22 +9,18 @@
             "type": "debugpy",
             "request": "launch",
             "cwd": "${workspaceFolder}",
-            "python": "${command:python.interpreterPath}",
             "program": "${workspaceFolder}/manage.py",
             "args": [
                 "runserver"
             ],
-            "redirectOutput": true,
             "django": true,
-            "justMyCode": false,
-            "stopOnEntry": false
+            "justMyCode": false
         },
         {
             "name": "Python: Tests",
             "type": "debugpy",
             "request": "launch",
             "stopOnEntry": false,
-            "python": "${command:python.interpreterPath}",
             "program": "${workspaceFolder}/manage.py",
             "args": [
                 "test",
