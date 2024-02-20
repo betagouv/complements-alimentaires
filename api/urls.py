@@ -6,6 +6,7 @@ urlpatterns = {
     path("blogPosts/", views.BlogPostsView.as_view(), name="blog_posts_list"),
     path("blogPosts/<int:pk>", views.BlogPostView.as_view(), name="single_blog_post"),
     path("subscribeNewsletter/", views.SubscribeNewsletter.as_view(), name="subscribe_newsletter"),
+    path("reportIssue/", views.ReportIssue.as_view(), name="report_issue"),
     path("loggedUser/", views.LoggedUserView.as_view(), name="logged_user"),
     path("webinars/", views.WebinarView.as_view(), name="webinar_list"),
     path("search/", views.SearchView.as_view(), name="search"),
