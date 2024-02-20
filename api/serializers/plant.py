@@ -9,7 +9,7 @@ class PlantFamilySerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "is_obsolete",
-            "siccrf_name_en",
+            "name_en",
             "siccrf_id",
         )
         read_only_fields = fields
@@ -23,7 +23,7 @@ class PartRelationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Part
-        fields = ("name", "siccrf_name_en", "is_obsolete", "siccrf_id", "must_be_monitored", "is_useful")
+        fields = ("name", "name_en", "is_obsolete", "siccrf_id", "must_be_monitored", "is_useful")
         read_only_fields = fields
 
 
@@ -39,7 +39,8 @@ class PlantSynonymSerializer(serializers.ModelSerializer):
 
 
 class PlantSerializer(serializers.ModelSerializer):
-    family = PlantFamilySerializer(read_only=True)
+    # TODO serialize GeneratedField Family instead of CA_family
+    CA_family = PlantFamilySerializer(read_only=True)
     plant_parts = PartRelationSerializer(source="part_set", many=True, read_only=True)
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
@@ -49,7 +50,7 @@ class PlantSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
-            "family",
+            "CA_family",
             "plant_parts",
             "synonyms",
             "substances",

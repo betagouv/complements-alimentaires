@@ -9,7 +9,10 @@ from django.db.models import (
     CharField,
     FloatField,
     IntegerField,
+    GeneratedField,
 )
+from simple_history.utils import update_change_reason
+
 from .exceptions import CSVFileError
 
 # Import the model
@@ -20,7 +23,6 @@ from .models.population import Population
 from .models.substance import Substance, SubstanceSynonym
 
 logger = logging.getLogger(__name__)
-from simple_history.utils import update_change_reason
 
 # Modèles pour recevoir l'import des données des fichier csv
 CSV_TO_MODEL_MAPPING = {
@@ -84,27 +86,28 @@ PREFIX_TO_MODEL_MAPPINT = {
 # Établi les suffix des champ des csv correspondant aux champs des modèles Django
 DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
     # Les champs simples
-    "name": ["LIBELLE", "ESPECE"],
-    "name_en": ["LIBELLE_EN"],
-    "is_obsolete": ["OBSOLET"],
-    "public_comments": ["COMMENTAIRE_PUBLIC"],
-    "private_comments": ["COMMENTAIRE_PRIVE"],
-    "observation": ["OBSERVATION"],
-    "description": ["DESCRIPTION"],
-    "cas_number": ["NUMERO_CAS"],
-    "einec_number": ["NUM_EINECS"],
-    "source": ["SOURCE"],
-    "must_specify_quantity": ["QUANTITE_ARENSEIGNER"],
-    "min_quantity": ["QTE_MIN"],
-    "max_quantity": ["QTE_MAX"],
-    "nutritional_reference": ["APPORT_REF"],
-    "genre": ["GENRE"],
+    "siccrf_name": ["LIBELLE", "ESPECE"],
+    "siccrf_name_en": ["LIBELLE_EN"],
+    "siccrf_is_obsolete": ["OBSOLET"],
+    "siccrf_public_comments": ["COMMENTAIRE_PUBLIC"],
+    "siccrf_public_comments_en": ["COMMENTAIRE_PUBLIC_EN"],
+    "siccrf_private_comments": ["COMMENTAIRE_PRIVE"],
+    "siccrf_private_comments_en": ["COMMENTAIRE_PRIVE_EN"],
+    "siccrf_observation": ["OBSERVATION"],
+    "siccrf_description": ["DESCRIPTION"],
+    "siccrf_cas_number": ["NUMERO_CAS"],
+    "siccrf_einec_number": ["NUM_EINECS"],
+    "siccrf_source": ["SOURCE"],
+    "siccrf_must_specify_quantity": ["QUANTITE_ARENSEIGNER"],
+    "siccrf_max_quantity": ["QTE_MAX"],
+    "siccrf_nutritional_reference": ["APPORT_REF"],
+    "siccrf_genre": ["GENRE"],
     "min_age": ["AGE_MIN"],
     "max_age": ["AGE_MAX"],
     "is_defined_by_anses": ["CATEGORIE_ANSES"],
     # Les champs ForeignKey (synonymes)
     "standard_name": ["SBSACT_IDENT", "PLTE_IDENT", "INGA_IDENT", "MORG_IDENT"],
-    "family": ["FAMPL_IDENT"],
+    "siccrf_family": ["FAMPL_IDENT"],
     "plant": ["PLTE_IDENT"],
     "plantpart": ["PPLAN_IDENT"],
     # Les champs ManyToMany
@@ -112,14 +115,8 @@ DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
     "plant_parts": ["PPLAN_IDENT"],
 }
 
-# Ces champs sont remplis automatiquement et ne sont pas recherchés dans les fichiers csv
-AUTOMATICALLY_FILLED = [
-    "id",
-    "siccrf_id",
-    "creation_date",
-    "modification_date",
-    "missing_import_data",
-]
+# Ces champs sont remplis automatiquement (GeneratedFields et autre) et ne sont pas recherchés dans les fichiers csv
+AUTOMATICALLY_FILLED = ["id", "siccrf_id", "creation_date", "modification_date", "missing_import_data"]
 
 
 def import_csv(csv_filepath):
@@ -203,9 +200,9 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
         # ici, c'est un csv correspondant à une relation complexe (stockée dans un Model spécifique) qui est importée
         if model == Part:
             default_extra_fields = (
-                {"must_be_monitored": True}
+                {"siccrf_must_be_monitored": True}
                 if csv_filename == "REF_ICA_PARTIE_PL_A_SURVEILLER.csv"
-                else {"is_useful": True}
+                else {"siccrf_is_useful": True}
             )
             object_with_history, created = model.objects.update_or_create(
                 **object_definition, defaults=default_extra_fields
@@ -246,7 +243,10 @@ def _get_model_fields_to_complete(model):
     return [
         field
         for field in model_fields
-        if field.concrete and field.name not in AUTOMATICALLY_FILLED
+        if field.concrete
+        and field.name not in AUTOMATICALLY_FILLED
+        and not field.__class__ == GeneratedField
+        and not field.name.startswith("CA_")
     ]
 
 
@@ -293,9 +293,9 @@ def _create_django_fields_to_column_names_mapping(model, csv_fieldnames, csv_fil
     django_fields_to_column_names = {}
     missing_fields = []
     for field in django_fields:
-        # cas particulier des champs `must_be_monitored` et `is_useful`
+        # cas particulier des champs `siccrf_must_be_monitored` et `siccrf_is_useful`
         # qui n'existent pas en tant que tel dans les csv SICCRF
-        if model == Part and field.name in ["must_be_monitored", "is_useful"]:
+        if model == Part and field.name in ["siccrf_must_be_monitored", "siccrf_is_useful"]:
             continue
         # le nom des colonnes contenant les clés étrangères ne sont pas préfixées par le nom de la table
         prefixed = (

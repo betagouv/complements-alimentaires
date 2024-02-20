@@ -5,6 +5,7 @@ from django.db.models import F
 from .mixins import (
     WithCreationAndModificationDate,
     WithHistory,
+    WithMissingImportBoolean,
     WithCAComments,
     WithSICCRFComments,
 )
@@ -104,9 +105,19 @@ class PlantSubstanceRelation(WithCreationAndModificationDate, WithHistory):
     CA_is_related = models.BooleanField(default=False, verbose_name="substance associée à la plante")
 
 
-class PlantSynonym(CommonModel):
+class PlantSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):
     class Meta:
         verbose_name = "synonyme de plante"
 
     standard_name = models.ForeignKey(Plant, on_delete=models.CASCADE, verbose_name="nom de référence")
+    siccrf_id = models.IntegerField(
+        blank=True,
+        null=True,
+        editable=False,
+        db_index=True,
+        unique=True,
+        verbose_name="id dans les tables et tables relationnelles SICCRF",
+    )
+    name = models.TextField(verbose_name="nom")
+    siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
     # TODO importer aussi les synonym_type = TYSYN_IDENT en ForeignKeys

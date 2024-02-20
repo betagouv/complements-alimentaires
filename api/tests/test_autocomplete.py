@@ -33,17 +33,17 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "eucal"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        eucalyptus_1 = SubstanceFactory.create(name="eucalyptus")
+        eucalyptus_1 = SubstanceFactory.create(CA_name="eucalyptus")
 
         # Deuxième position car la chaîne de caractères est plus éloignée
-        eucalyptus_2 = IngredientFactory.create(name="eucalyptus tree")
+        eucalyptus_2 = IngredientFactory.create(CA_name="eucalyptus tree")
 
         # Troisième position grâce à son synonyme de nom « "Eucalyptus Plant" »
-        myrtaceae = PlantFactory.create(name="Myrtaceae")
+        myrtaceae = PlantFactory.create(CA_name="Myrtaceae")
         PlantSynonymFactory.create(name="Eucalyptus Plant", standard_name=myrtaceae)
 
         # Ne devrait pas apparaître
-        PlantFactory.create(name="vanille")
+        PlantFactory.create(CA_name="vanille")
 
         response = self.client.post(f"{reverse('substance_autocomplete')}", {"term": autocomplete_term})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -66,17 +66,17 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "buplevre"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        buplevre_1 = SubstanceFactory.create(name="Buplèvre")
+        buplevre_1 = SubstanceFactory.create(CA_name="Buplèvre")
 
         # Deuxième position car la chaîne de caractères est plus éloignée
-        buplevre_2 = PlantFactory.create(name="Buplèvre en faux")
+        buplevre_2 = PlantFactory.create(CA_name="Buplèvre en faux")
 
         # Troisième position grâce à son synonyme de nom « "Buplèvre à feuilles rondes" »
-        pancic = MicroorganismFactory.create(name="Pančić")
+        pancic = MicroorganismFactory.create(CA_name="Pančić")
         MicroorganismSynonymFactory.create(name="Buplèvre à feuilles rondes", standard_name=pancic)
 
         # Ne devrait pas apparaître
-        PlantFactory.create(name="vanille")
+        PlantFactory.create(CA_name="vanille")
 
         response = self.client.post(f"{reverse('substance_autocomplete')}", {"term": autocomplete_term})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
