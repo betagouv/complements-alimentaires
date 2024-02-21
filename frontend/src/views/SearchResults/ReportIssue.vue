@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { reactive } from "vue"
+import { ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { required, email, helpers } from "@vuelidate/validators"
 import { useFetch } from "@vueuse/core"
@@ -37,11 +37,15 @@ import useToaster from "@/composables/use-toaster"
 const props = defineProps({ elementName: String })
 
 // Form state & rules
-const state = reactive({
+
+const getInitialFormState = () => ({
+  name: "",
   email: "",
-  reportMessage: "",
   elementName: props.elementName, // not used by the form validation itself, but make the payload building easier
 })
+
+const state = ref(getInitialFormState())
+
 const rules = {
   email: { email: helpers.withMessage("Ce champ doit contenir un email valide s'il est spécifié", email) },
   reportMessage: { required: helpers.withMessage("Ce champ doit contenir vos constatations", required) },
@@ -66,7 +70,6 @@ const submit = async () => {
   }
   await execute()
 
-  console.log(v$)
   if (isFinished) {
     useToaster().addMessage({
       type: error.value ? "error" : "success",
@@ -75,9 +78,8 @@ const submit = async () => {
         ? "Une erreur est survenue, veuillez réessayer plus tard."
         : "Votre message a bien été envoyé. Merci pour votre contribution.",
     })
-    state.email = ""
-    state.reportMessage = ""
-    v$.value.$reset() // Reset validation state
+    state.value = getInitialFormState()
+    v$.value.$reset() // Reset Vuelidate validation state
   }
 }
 </script>
