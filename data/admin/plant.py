@@ -42,13 +42,24 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
         (
             None,  # Pas d'entête
             {
-                "fields": ["name", "siccrf_is_obsolete"],
+                "fields": [
+                    "siccrf_name",
+                    "CA_name",
+                    "name",
+                    "is_obsolete",
+                    "CA_is_obsolete",
+                ],
             },
         ),
         (
             "Commentaires",
             {
-                "fields": ["public_comments", "private_comments"],
+                "fields": [
+                    "siccrf_public_comments",
+                    "siccrf_private_comments",
+                    "CA_public_comments",
+                    "CA_private_comments",
+                ],
             },
         ),
         (
@@ -68,8 +79,17 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
         "name",
         "siccrf_family",
     )
-    list_filter = ("siccrf_is_obsolete", "siccrf_family")
+    list_filter = ("is_obsolete", "siccrf_family")
     history_list_display = ["changed_fields"]
+    readonly_fields = (
+        "siccrf_name",
+        "name",
+        "is_obsolete",
+        "siccrf_public_comments",
+        "siccrf_private_comments",
+        "siccrf_family",
+        "family",
+    )
 
     def changed_fields(self, obj):
         if obj.prev_record:
