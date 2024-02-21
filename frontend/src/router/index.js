@@ -12,7 +12,6 @@ import LegalNotices from "@/views/LegalNotices"
 import CookiesInfo from "@/views/CookiesInfo"
 import ProducerForm from "@/views/ProducerForm"
 import NotFound from "@/views/NotFound"
-import Test from "@/views/Test"
 
 const routes = [
   {
@@ -100,11 +99,6 @@ const routes = [
     meta: {
       authenticationRequired: true,
     },
-  },
-  {
-    path: "/test",
-    name: "Test",
-    component: Test,
   },
   {
     path: "/:catchAll(.*)",

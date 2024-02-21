@@ -37,7 +37,6 @@ import useToaster from "@/composables/use-toaster"
 const props = defineProps({ elementName: String })
 
 // Form state & rules
-
 const getInitialFormState = () => ({
   name: "",
   email: "",
@@ -78,8 +77,9 @@ const submit = async () => {
         ? "Une erreur est survenue, veuillez réessayer plus tard."
         : "Votre message a bien été envoyé. Merci pour votre contribution.",
     })
+    // Reset both form state & Vuelidate validation state
     state.value = getInitialFormState()
-    v$.value.$reset() // Reset Vuelidate validation state
+    v$.value.$reset()
   }
 }
 </script>
