@@ -1,20 +1,16 @@
 <template>
   <div class="toaster-container">
-    <transition-group mode="out-in" name="list" tag="div" class="toasters">
-      <DsfrAlert
-        v-for="message in messages"
-        :key="message.id"
-        class="app-alert"
-        v-bind="message"
-        @close="close(message.id)"
-      />
-    </transition-group>
+    <TransitionGroup mode="out-in" name="list" tag="div" class="toasters">
+      <div v-for="message in messages" :key="message.id">
+        <DsfrAlert class="app-alert !w-auto" v-bind="message" @close="close(message.id)" />
+      </div>
+    </TransitionGroup>
   </div>
 </template>
 
 <script setup>
 // https://projets-ts-fabnum.netlify.app/client/toaster.html#le-composant-apptoaster
-defineProps({ messages: Object }) // Object?
+defineProps({ messages: { type: Array, default: () => [] } })
 const emit = defineEmits(["close-message"])
 const close = (id) => emit("close-message", id)
 </script>
@@ -25,7 +21,7 @@ const close = (id) => emit("close-message", id)
   position: fixed;
   bottom: 1rem;
   width: 100%;
-  z-index: 1;
+  z-index: 1750; /* To be on top of .fr-modal which has z-index: 1750 */
 }
 .toasters {
   display: flex;
