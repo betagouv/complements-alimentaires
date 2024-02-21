@@ -1,5 +1,5 @@
 <template>
-  <AppHeader />
+  <AppHeader :logo-text="logoText" />
   <router-view></router-view>
   <DsfrFooter
     :logo-text="logoText"
@@ -23,6 +23,7 @@ import AppHeader from "@/components/AppHeader.vue"
 import AppToaster from "@/components/AppToaster.vue"
 import useToaster from "@/composables/use-toaster"
 
+const logoText = ["Ministère", "de l'Agriculture", "et de la Souveraineté", "Alimentaire"]
 const route = useRoute()
 const { messages, removeMessage } = useToaster()
 

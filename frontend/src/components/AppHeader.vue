@@ -16,9 +16,9 @@ import { computed, watch } from "vue"
 import { useRootStore } from "@/stores/root"
 import { useRoute } from "vue-router"
 
-const route = useRoute()
+defineProps({ logoText: Array })
 
-const logoText = ["Ministère", "de l'Agriculture", "et de la Souveraineté", "Alimentaire"]
+const route = useRoute()
 const environment = window.ENVIRONMENT
 const store = useRootStore()
 const navItems = [
