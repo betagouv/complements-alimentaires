@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.functions import Coalesce, NullIf
+from django.db.models import F, Value
 from simple_history.models import HistoricalRecords
 
 
@@ -13,7 +15,7 @@ class WithCreationAndModificationDate(models.Model):
 class WithHistory(models.Model):
     class Meta:
         abstract = True
-    
+
     history = HistoricalRecords(inherit=True)
 
 
@@ -22,8 +24,10 @@ class WithMissingImportBoolean(models.Model):
     Lors de l'import CSV certains objets peuvent être créés parce qu'ils sont dans une relation
     mais ils manquent dans ce cas de données informatives
     """
+
     class Meta:
         abstract = True
+
     missing_import_data = models.BooleanField(blank=True, null=True, editable=False, default=False)
 
 
@@ -70,13 +74,17 @@ class WithCADefaultFields(models.Model):
     CA_name = models.TextField(verbose_name="nom CA")
     CA_is_obsolete = models.BooleanField(null=True, default=None, verbose_name="objet obsolète selon CA")
 
-    @property
-    def name(self):
-        return self.CA_name if self.CA_name else self.siccrf_name
+    name = models.GeneratedField(
+        expression=Coalesce(NullIf(F("CA_name"), Value("")), F("siccrf_name")),
+        output_field=models.TextField(verbose_name="nom"),
+        db_persist=True,
+    )
 
-    @property
-    def is_obsolete(self):
-        return self.CA_is_obsolete if self.CA_is_obsolete else self.siccrf_is_obsolete
+    is_obsolete = models.GeneratedField(
+        expression=Coalesce(F("CA_is_obsolete"), F("siccrf_is_obsolete")),
+        output_field=models.BooleanField(verbose_name="objet obsolète"),
+        db_persist=True,
+    )
 
 
 class WithCAComments(models.Model):

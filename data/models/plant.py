@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.functions import Coalesce
+from django.db.models import F
 
 from .mixins import WithCreationAndModificationDate, WithHistory, WithCAComments, WithSICCRFComments
 from .abstract_models import CommonModel
@@ -40,7 +42,17 @@ class Plant(CommonModel, WithSICCRFComments, WithCAComments):
         related_name="siccrf_plant_set",
     )
     CA_family = models.ForeignKey(
-        PlantFamily, null=True, on_delete=models.SET_NULL, verbose_name="famille de plante", related_name="plant_set"
+        PlantFamily,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name="famille de plante",
+        related_name="CA_plant_set",
+    )
+    # TODO: output_field should be a ForeignKey
+    family = models.GeneratedField(
+        expression=Coalesce(F("CA_family"), F("siccrf_family")),
+        output_field=models.BigIntegerField(verbose_name="famille de plante"),
+        db_persist=True,
     )
     plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
     substances = models.ManyToManyField(Substance, through="PlantSubstanceRelation")
@@ -58,8 +70,18 @@ class Part(WithCreationAndModificationDate, WithHistory):
         default=False, verbose_name="⚠️ à surveiller (selon la base SICCRF) ?"
     )
     CA_must_be_monitored = models.BooleanField(null=True, default=None, verbose_name="⚠️ à surveiller ?")
+    must_be_monitored = models.GeneratedField(
+        expression=Coalesce(F("CA_must_be_monitored"), F("siccrf_must_be_monitored")),
+        output_field=models.BooleanField(verbose_name="⚠️ à surveiller ?"),
+        db_persist=True,
+    )
     siccrf_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile (selon la base SICCRF) ?")
     CA_is_useful = models.BooleanField(null=True, default=None, verbose_name="🍵 utile ?")
+    is_useful = models.GeneratedField(
+        expression=Coalesce(F("CA_is_useful"), F("siccrf_is_useful")),
+        output_field=models.BooleanField(verbose_name="🍵 utile ?"),
+        db_persist=True,
+    )
 
 
 class PlantSubstanceRelation(WithCreationAndModificationDate, WithHistory):
