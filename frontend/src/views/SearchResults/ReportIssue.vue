@@ -37,13 +37,13 @@ import useToaster from "@/composables/use-toaster"
 const props = defineProps({ elementName: String })
 
 // Form state & rules
-const getInitialFormState = () => ({
+const getInitialState = () => ({
   name: "",
   email: "",
   elementName: props.elementName, // not used by the form validation itself, but make the payload building easier
 })
 
-const state = ref(getInitialFormState())
+const state = ref(getInitialState())
 
 const rules = {
   email: { email: helpers.withMessage("Ce champ doit contenir un email valide s'il est spécifié", email) },
@@ -78,7 +78,7 @@ const submit = async () => {
         : "Votre message a bien été envoyé. Merci pour votre contribution.",
     })
     // Reset both form state & Vuelidate validation state
-    state.value = getInitialFormState()
+    state.value = getInitialState()
     v$.value.$reset()
   }
 }

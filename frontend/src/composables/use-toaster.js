@@ -19,8 +19,7 @@ const getRandomString = (length) => {
   return Array.from({ length }).map(getRandomAlphaNum).join("")
 }
 
-/* Message object attributes and description
-
+/* -- Message object type --
   id?: string;
   title?: string;
   description: string;
@@ -35,9 +34,8 @@ const getRandomString = (length) => {
 const timeouts = {} // Record<string, number>
 const messages = reactive([]) //  Message[]
 
-// TODOS: go parameters.js
 const useToaster = () => {
-  function removeMessage(id) {
+  const removeMessage = (id) => {
     const index = messages.findIndex((message) => message.id === id)
     clearTimeout(timeouts[id])
     if (index === -1) {
@@ -46,7 +44,7 @@ const useToaster = () => {
     messages.splice(index, 1)
   }
 
-  function addMessage(message) {
+  const addMessage = (message) => {
     if (message.id && timeouts[message.id]) {
       removeMessage(message.id)
     }
