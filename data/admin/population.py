@@ -15,7 +15,7 @@ class PopulationAdmin(admin.ModelAdmin):
     form = PopulationForm
     fields = [
         "name",
-        "is_obsolete",
+        "siccrf_is_obsolete",
         "min_age",
         "max_age",
         "creation_date",
@@ -29,4 +29,4 @@ class PopulationAdmin(admin.ModelAdmin):
         "name",
         "modification_date",
     ]
-    list_filter = ("is_obsolete",)
+    list_filter = ("siccrf_is_obsolete",)

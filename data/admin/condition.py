@@ -17,7 +17,7 @@ class ConditionAdmin(admin.ModelAdmin):
     fields = [
         "name",
         "name_en",
-        "is_obsolete",
+        "siccrf_is_obsolete",
         "creation_date",
         "modification_date",
     ]
@@ -29,4 +29,4 @@ class ConditionAdmin(admin.ModelAdmin):
         "name",
         "modification_date",
     ]
-    list_filter = ("is_obsolete",)
+    list_filter = ("siccrf_is_obsolete",)

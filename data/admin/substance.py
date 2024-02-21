@@ -11,7 +11,7 @@ class SubstanceForm(forms.ModelForm):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "source": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
@@ -46,7 +46,7 @@ class SubstanceAdmin(IngredientAdminWithHistoryChangedFields):
         (
             None,  # Pas d'entête
             {
-                "fields": ["name", "name_en", "is_obsolete", "source"],
+                "fields": ["name", "siccrf_name_en", "siccrf_is_obsolete", "source"],
             },
         ),
         (
@@ -82,4 +82,4 @@ class SubstanceAdmin(IngredientAdminWithHistoryChangedFields):
         "get_microorganisms",
         "get_ingredients",
     )
-    list_filter = ("is_obsolete",)
+    list_filter = ("siccrf_is_obsolete",)

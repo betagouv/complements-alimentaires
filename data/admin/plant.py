@@ -29,7 +29,7 @@ class PlantForm(forms.ModelForm):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
         }
@@ -42,7 +42,7 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
         (
             None,  # Pas d'entête
             {
-                "fields": ["name", "is_obsolete"],
+                "fields": ["name", "siccrf_is_obsolete"],
             },
         ),
         (
@@ -54,7 +54,7 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
         (
             "Famille",
             {
-                "fields": ["family"],
+                "fields": ["siccrf_family"],
             },
         ),
     ]
@@ -66,10 +66,10 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
     )
     list_display = (
         "name",
-        "family",
+        "siccrf_family",
     )
-    list_filter = ("is_obsolete", "family")
-    history_list_display = ['changed_fields']
+    list_filter = ("siccrf_is_obsolete", "siccrf_family")
+    history_list_display = ["changed_fields"]
 
     def changed_fields(self, obj):
         if obj.prev_record:
