@@ -43,8 +43,8 @@ class WithSICCRFDefaultFields(models.Model):
         unique=True,
         verbose_name="id dans les tables et tables relationnelles SICCRF",
     )
-    siccrf_name = models.TextField(verbose_name="nom SICCRF")
-    siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
+    siccrf_name = models.TextField(editable=False, verbose_name="nom SICCRF")
+    siccrf_is_obsolete = models.BooleanField(editable=False, verbose_name="objet obsolète selon SICCRF", default=False)
 
 
 class WithSICCRFComments(models.Model):

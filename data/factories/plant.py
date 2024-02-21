@@ -22,7 +22,7 @@ class PlantFamilyFactory(factory.django.DjangoModelFactory):
 
     siccrf_name = factory.Faker("text", max_nb_chars=25)
     CA_name = factory.Faker("text", max_nb_chars=25)
-    siccrf_ame_en = factory.Faker("text", max_nb_chars=25)
+    siccrf_name_en = factory.Faker("text", max_nb_chars=25)
     siccrf_id = factory.Faker("random_int", min=1, max=20)
 
 

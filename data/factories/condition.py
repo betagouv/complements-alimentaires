@@ -6,5 +6,6 @@ class ConditionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Condition
 
-    name = factory.Faker("text", max_nb_chars=20)
-    name_en = factory.Faker("text", max_nb_chars=20)
+    siccrf_name = factory.Faker("text", max_nb_chars=20)
+    CA_name = factory.Faker("text", max_nb_chars=20)
+    siccrf_name_en = factory.Faker("text", max_nb_chars=20)
