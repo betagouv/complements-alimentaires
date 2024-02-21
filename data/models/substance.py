@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.functions import Coalesce, NullIf
 from django.db.models import F, Value
+from simple_history.models import HistoricalRecords
 
 from .mixins import (
     WithCreationAndModificationDate,
@@ -93,6 +94,19 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
         expression=Coalesce("CA_nutritional_reference", "siccrf_nutritional_reference"),
         output_field=models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé"),
         db_persist=True,
+    )
+    history = HistoricalRecords(
+        inherit=True,
+        excluded_fields=[
+            "name",
+            "is_obsolete",
+            "cas_number",
+            "einec_number",
+            "source",
+            "must_specify_quantity",
+            "max_quantity",
+            "nutritional_reference",
+        ],
     )
 
     @property

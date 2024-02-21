@@ -2,6 +2,8 @@ from django.db import models
 from django.db.models.functions import Coalesce
 from django.db.models import F
 
+from simple_history.models import HistoricalRecords
+
 from .mixins import (
     WithCreationAndModificationDate,
     WithHistory,
@@ -26,6 +28,7 @@ class Microorganism(CommonModel, WithSICCRFComments, WithCAComments):
         db_persist=True,
     )
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
+    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete", "genre"])
 
     @property
     def name_en(self):

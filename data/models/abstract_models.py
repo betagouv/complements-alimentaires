@@ -1,9 +1,5 @@
-from django.db import models
-from django.db.models.functions import Coalesce
-
 from .mixins import (
     WithCreationAndModificationDate,
-    WithHistory,
     WithMissingImportBoolean,
     WithSICCRFDefaultFields,
     WithCADefaultFields,
@@ -12,7 +8,6 @@ from .mixins import (
 
 class CommonModel(
     WithCreationAndModificationDate,
-    WithHistory,
     WithMissingImportBoolean,
     WithSICCRFDefaultFields,
     WithCADefaultFields,
