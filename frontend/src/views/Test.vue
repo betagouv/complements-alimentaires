@@ -1,6 +1,7 @@
 <template>
-  <div class="p-10">
-    <button @click="toto">CLICK</button>
+  <div class="p-10 space-x-10">
+    <button @click="toto1">Toast 1</button>
+    <button @click="toto2">Toast 2</button>
   </div>
 </template>
 
@@ -8,17 +9,17 @@
 import useToaster from "@/composables/use-toaster"
 
 const toaster = useToaster()
-const toto = () => {
+const toto1 = () => {
   toaster.addMessage({
-    title: "Message 1",
-    description: "Description 1",
-    type: "info",
-    closeable: true,
-    titleTag: "h3",
-    timeout: 6000, // ...qui disparaîtra après 6 secondes...
+    title: "C'est nuuul",
+    description: "Rien ne marche",
+    type: "error",
   })
+}
+const toto2 = () => {
   toaster.addMessage({
-    description: "Description plus longue",
+    title: "Encore un titre au pif",
+    description: "Description vraiment beaucoup plus longue pour voir si ça devrait couper ou pas vraiment !",
     type: "success",
   })
 }

@@ -1,9 +1,13 @@
 <template>
-  <div class="toaster-container">
-    <TransitionGroup mode="out-in" name="list" tag="div" class="toasters">
-      <div v-for="message in messages" :key="message.id">
-        <DsfrAlert class="app-alert !w-auto" v-bind="message" @close="close(message.id)" />
-      </div>
+  <div class="w-full pointer-events-none fixed bottom-4 z-[1751]">
+    <TransitionGroup mode="out-in" name="list" tag="div" class="flex flex-col items-center space-y-3">
+      <DsfrAlert
+        v-for="message in messages"
+        :key="message.id"
+        class="pointer-events-auto mx-3 bg-[var(--grey-1000-50)]"
+        v-bind="message"
+        @close="close(message.id)"
+      />
     </TransitionGroup>
   </div>
 </template>
@@ -16,40 +20,20 @@ const close = (id) => emit("close-message", id)
 </script>
 
 <style scoped>
-.toaster-container {
-  pointer-events: none;
-  position: fixed;
-  bottom: 1rem;
-  width: 100%;
-  z-index: 1750; /* To be on top of .fr-modal which has z-index: 1750 */
-}
-.toasters {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.app-alert {
-  background-color: var(--grey-1000-50);
-  width: 90%;
-  pointer-events: all;
-}
-
 .list-move, /* apply transition to moving elements */
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.5s ease;
+  @apply transition-all ease-out duration-500;
 }
 
 .list-enter-from,
 .list-leave-to {
-  opacity: 0;
-  transform: translateY(30px);
+  @apply opacity-0 translate-y-8;
 }
 
 /* ensure leaving items are taken out of layout flow so that moving
    animations can be calculated correctly. */
 .list-leave-active {
-  position: fixed;
+  @apply fixed;
 }
 </style>

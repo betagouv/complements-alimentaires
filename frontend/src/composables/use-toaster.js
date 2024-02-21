@@ -19,22 +19,24 @@ const getRandomString = (length) => {
   return Array.from({ length }).map(getRandomAlphaNum).join("")
 }
 
-// export type Message = {
-//   id?: string;
-//   title?: string;
-//   description: string;
-//   type?: 'info' | 'success' | 'warning' | 'error';
-//   closeable?: boolean;
-//   titleTag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-//   timeout?: number;
-//   style?: Record<string, string>;
-//   class?: string | Record<string, string> | Array<string | Record<string, string>>;
-// }
+/* Message object attributes and description
+
+  id?: string;
+  title?: string;
+  description: string;
+  type?: 'info' | 'success' | 'warning' | 'error';
+  closeable?: boolean;
+  titleTag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  timeout?: number;
+  style?: Record<string, string>;
+  class?: string | Record<string, string> | Array<string | Record<string, string>>;
+*/
 
 const timeouts = {} // Record<string, number>
 const messages = reactive([]) //  Message[]
 
-const useToaster = (defaultTimeout = 10000) => {
+// TODOS: go parameters.js
+const useToaster = () => {
   function removeMessage(id) {
     const index = messages.findIndex((message) => message.id === id)
     clearTimeout(timeouts[id])
@@ -48,11 +50,12 @@ const useToaster = (defaultTimeout = 10000) => {
     if (message.id && timeouts[message.id]) {
       removeMessage(message.id)
     }
+    // These are default values for the toast
     message.id ??= getRandomHtmlId("toaster")
     message.titleTag ??= "h3"
     message.closeable ??= true
     message.type ??= "info"
-    message.timeout ??= defaultTimeout
+    message.timeout ??= 5000
     messages.push({ ...message, description: `${message.description}` })
     timeouts[message.id] = window.setTimeout(() => removeMessage(message.id), message.timeout)
   }
