@@ -32,6 +32,7 @@ import { ref, watch } from "vue"
 import { useFetch } from "@vueuse/core"
 import { headers, getTypeIcon } from "@/utils"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
+import useToaster from "@/composables/use-toaster"
 
 const autocompleteResults = ref([])
 const searchTerm = ref("")
@@ -56,8 +57,12 @@ const fetchSearchResults = async () => {
   const { error, data } = await useFetch("/api/v1/substances/autocomplete/", { headers }).post(body).json()
 
   if (error.value) {
-    window.alert("Une erreur est survenue veuillez réessayer plus tard")
-    console.error(error.value)
+    useToaster().addMessage({
+      type: "error",
+      title: "Error",
+      description: "Une erreur avec la recherche est survenue, veuillez réessayer plus tard.",
+      id: "autocomplete-error",
+    })
     return
   }
   autocompleteResults.value = data.value
