@@ -33,7 +33,7 @@ class IngredientSubstanceRelation(WithCreationAndModificationDate, WithHistory):
     siccrf_is_related = models.BooleanField(
         default=False, verbose_name="substance associée à l'ingrédient (selon la base SICCRF)"
     )
-    CA_is_related = models.BooleanField(default=False, verbose_name="substance associée à l'ingrédient")
+    CA_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à l'ingrédient")
 
 
 class IngredientSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):
@@ -51,4 +51,8 @@ class IngredientSynonym(WithCreationAndModificationDate, WithHistory, WithMissin
     )
     name = models.TextField(verbose_name="nom")
     siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
+
     # TODO importer aussi les synonym_type = TSYNSBSTA_IDENT en ForeignKeys
+    @property
+    def is_obsolete(self):
+        return self.is_obsolete

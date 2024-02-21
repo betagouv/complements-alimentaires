@@ -75,7 +75,7 @@ class WithCADefaultFields(models.Model):
         abstract = True
 
     CA_name = models.TextField(verbose_name="nom CA")
-    CA_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon CA", default=False)
+    CA_is_obsolete = models.BooleanField(null=True, default=None, verbose_name="objet obsolète selon CA")
 
     name = models.GeneratedField(
         expression=Coalesce(NullIf(F("CA_name"), Value("")), F("siccrf_name")),

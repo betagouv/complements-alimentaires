@@ -41,7 +41,7 @@ class MicroorganismSubstanceRelation(WithCreationAndModificationDate, WithHistor
     siccrf_is_related = models.BooleanField(
         default=False, verbose_name="substance associée au micro-organisme (selon la base SICCRF)"
     )
-    CA_is_related = models.BooleanField(default=False, verbose_name="substance associée au micro-organisme")
+    CA_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée au micro-organisme")
 
 
 class MicroorganismSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):

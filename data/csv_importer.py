@@ -86,6 +86,7 @@ PREFIX_TO_MODEL_MAPPINT = {
 # Établi les suffix des champ des csv correspondant aux champs des modèles Django
 DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
     # Les champs simples
+    "name": ["LIBELLE", "ESPECE"],  # Pour les Model *Synonym, le champ `name` n'est pas préfixé par `siccrf_`
     "siccrf_name": ["LIBELLE", "ESPECE"],
     "siccrf_name_en": ["LIBELLE_EN"],
     "siccrf_is_obsolete": ["OBSOLET"],

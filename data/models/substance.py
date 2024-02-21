@@ -65,7 +65,9 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
         default=False,
         verbose_name="spécification de quantité obligatoire (selon la base SICCRF)",
     )
-    CA_must_specify_quantity = models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire")
+    CA_must_specify_quantity = models.BooleanField(
+        null=True, default=None, verbose_name="spécification de quantité obligatoire"
+    )
     must_specify_quantity = models.GeneratedField(
         expression=Coalesce(F("CA_must_specify_quantity"), F("siccrf_must_specify_quantity")),
         output_field=models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire"),
@@ -117,6 +119,7 @@ class SubstanceSynonym(WithCreationAndModificationDate, WithHistory, WithMissing
     class Meta:
         verbose_name = "synonyme substance active"
 
+    # TODO importer aussi les synonym_type = TSYNSBSTA_IDENT en ForeignKeys
     standard_name = models.ForeignKey(Substance, on_delete=models.CASCADE, verbose_name="nom de référence")
     siccrf_id = models.IntegerField(
         blank=True,
@@ -129,4 +132,6 @@ class SubstanceSynonym(WithCreationAndModificationDate, WithHistory, WithMissing
     name = models.TextField(verbose_name="nom")
     siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
 
-    # TODO importer aussi les synonym_type = TSYNSBSTA_IDENT en ForeignKeys
+    @property
+    def is_obsolete(self):
+        return self.siccrf_is_obsolete

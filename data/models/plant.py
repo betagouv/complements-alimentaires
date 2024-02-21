@@ -83,7 +83,7 @@ class Part(WithCreationAndModificationDate):
     siccrf_must_be_monitored = models.BooleanField(
         default=False, verbose_name="⚠️ à surveiller (selon la base SICCRF) ?"
     )
-    CA_must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
+    CA_must_be_monitored = models.BooleanField(null=True, default=None, verbose_name="⚠️ à surveiller ?")
     must_be_monitored = models.GeneratedField(
         expression=Coalesce(F("CA_must_be_monitored"), F("siccrf_must_be_monitored")),
         output_field=models.BooleanField(verbose_name="⚠️ à surveiller ?"),
@@ -91,7 +91,7 @@ class Part(WithCreationAndModificationDate):
     )
 
     siccrf_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile (selon la base SICCRF) ?")
-    CA_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile ?")
+    CA_is_useful = models.BooleanField(null=True, default=None, verbose_name="🍵 utile ?")
 
     is_useful = models.GeneratedField(
         expression=Coalesce(F("CA_is_useful"), F("siccrf_is_useful")),
@@ -110,7 +110,7 @@ class PlantSubstanceRelation(WithCreationAndModificationDate, WithHistory):
         default=False,
         verbose_name="substance associée à la plante (selon la base SICCRF)",
     )
-    CA_is_related = models.BooleanField(default=False, verbose_name="substance associée à la plante")
+    CA_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à la plante")
 
 
 class PlantSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):
@@ -129,3 +129,7 @@ class PlantSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImpo
     name = models.TextField(verbose_name="nom")
     siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
     # TODO importer aussi les synonym_type = TYSYN_IDENT en ForeignKeys
+
+    @property
+    def is_obsolete(self):
+        return self.siccrf_is_obsolete
