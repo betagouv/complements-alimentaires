@@ -1,13 +1,17 @@
 from django.db import models
 
-from .mixins import WithCreationAndModificationDate, WithHistory, WithSICCRFComments, WithCAComments
+from .mixins import (
+    WithCreationAndModificationDate,
+    WithHistory,
+    WithMissingImportBoolean,
+    WithSICCRFComments,
+    WithCAComments,
+)
 from .abstract_models import CommonModel
 from .substance import Substance
 
 
 class Ingredient(CommonModel, WithSICCRFComments, WithCAComments):
-    """ """
-
     class Meta:
         verbose_name = "autre ingrédient"
         verbose_name_plural = "autres ingrédients"
@@ -34,9 +38,23 @@ class IngredientSubstanceRelation(WithCreationAndModificationDate, WithHistory):
     CA_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à l'ingrédient")
 
 
-class IngredientSynonym(CommonModel):
+class IngredientSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):
     class Meta:
         verbose_name = "synonyme d'ingrédient"
 
+    siccrf_id = models.IntegerField(
+        blank=True,
+        null=True,
+        editable=False,
+        db_index=True,
+        unique=True,
+        verbose_name="id dans les tables et tables relationnelles SICCRF",
+    )
     standard_name = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    name = models.TextField(verbose_name="nom")
+    siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
     # TODO importer aussi les synonym_type = TSYNSBSTA_IDENT en ForeignKeys
+
+    @property
+    def is_obsolete(self):
+        return self.siccrf_is_obsolete

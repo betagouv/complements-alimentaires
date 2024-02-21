@@ -2,7 +2,13 @@ from django.db import models
 from django.db.models.functions import Coalesce, NullIf
 from django.db.models import F, Value
 
-from .mixins import WithSICCRFComments, WithCAComments
+from .mixins import (
+    WithCreationAndModificationDate,
+    WithHistory,
+    WithMissingImportBoolean,
+    WithSICCRFComments,
+    WithCAComments,
+)
 from .abstract_models import CommonModel
 
 
@@ -94,9 +100,23 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
         return self.siccrf_name_en
 
 
-class SubstanceSynonym(CommonModel):
+class SubstanceSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):
     class Meta:
         verbose_name = "synonyme substance active"
 
+    siccrf_id = models.IntegerField(
+        blank=True,
+        null=True,
+        editable=False,
+        db_index=True,
+        unique=True,
+        verbose_name="id dans les tables et tables relationnelles SICCRF",
+    )
     standard_name = models.ForeignKey(Substance, on_delete=models.CASCADE, verbose_name="nom de référence")
+    name = models.TextField(verbose_name="nom")
+    siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
     # TODO importer aussi les synonym_type = TSYNSBSTA_IDENT en ForeignKeys
+
+    @property
+    def is_obsolete(self):
+        return self.siccrf_is_obsolete

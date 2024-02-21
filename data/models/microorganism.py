@@ -2,7 +2,13 @@ from django.db import models
 from django.db.models.functions import Coalesce
 from django.db.models import F
 
-from .mixins import WithCreationAndModificationDate, WithHistory, WithSICCRFComments, WithCAComments
+from .mixins import (
+    WithCreationAndModificationDate,
+    WithHistory,
+    WithMissingImportBoolean,
+    WithSICCRFComments,
+    WithCAComments,
+)
 from .abstract_models import CommonModel
 from .substance import Substance
 
@@ -35,8 +41,22 @@ class MicroorganismSubstanceRelation(WithCreationAndModificationDate, WithHistor
     CA_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée au micro-organisme")
 
 
-class MicroorganismSynonym(CommonModel):
+class MicroorganismSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):
     class Meta:
         verbose_name = "synonyme de micro-organisme"
 
+    siccrf_id = models.IntegerField(
+        blank=True,
+        null=True,
+        editable=False,
+        db_index=True,
+        unique=True,
+        verbose_name="id dans les tables et tables relationnelles SICCRF",
+    )
     standard_name = models.ForeignKey(Microorganism, on_delete=models.CASCADE)
+    name = models.TextField(verbose_name="nom")
+    siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
+
+    @property
+    def is_obsolete(self):
+        return self.siccrf_is_obsolete
