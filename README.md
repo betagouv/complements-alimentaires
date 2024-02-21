@@ -63,7 +63,7 @@ postgres=# create user <DB_USER> createdb password <DB_PASSWORD>;
 On utilise l'outil [`pre-commit`](https://pre-commit.com/) pour effectuer des vérifications automatiques
 avant chaque commit. Cela permet par exemple de linter les code Python, Javascript et HTML.
 
-Pour pouvoir l'utiliser, il faut l'activer : `pre-commit install`.
+Pour pouvoir l'utiliser, assurez-vous d'être dans votre environnement virtuel, et activez-le avec `pre-commit install`.
 
 Les vérifications seront ensuite effectuées avant chaque commit. Attention, lorsqu'une vérification `fail`,
 le commit est annulé. Il faut donc que toutes les vérifications passent pour que le commit soit pris en
