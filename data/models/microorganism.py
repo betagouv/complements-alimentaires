@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.functions import Coalesce
+from django.db.models import F
 
 from .mixins import (
     WithCreationAndModificationDate,
@@ -16,21 +18,18 @@ class Microorganism(CommonModel, WithSICCRFComments, WithCAComments):
         verbose_name = "micro-organisme"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
-    siccrf_genre = models.TextField(verbose_name="genre de micro-organisme")
+    siccrf_genre = models.TextField(verbose_name="genre de micro-organisme (selon la base SICCRF)")
     CA_genre = models.TextField(verbose_name="genre de micro-organisme")
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
+    genre = models.GeneratedField(
+        expression=Coalesce(F("CA_genre"), F("siccrf_genre")),
+        output_field=models.TextField(verbose_name="genre de micro-organisme"),
+        db_persist=True,
+    )
 
     @property
     def name_en(self):
         return self.siccrf_name_en
-
-    @property
-    def genre(self):
-        return self.CA_genre if self.CA_genre else self.siccrf_genre
-
-    @genre.setter
-    def genre(self, value):
-        self.CA_genre = value
 
 
 class MicroorganismSubstanceRelation(WithCreationAndModificationDate, WithHistory):
