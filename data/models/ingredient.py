@@ -1,4 +1,5 @@
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 from .mixins import (
     WithCreationAndModificationDate,
@@ -19,6 +20,7 @@ class Ingredient(CommonModel, WithSICCRFComments, WithCAComments):
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     siccrf_description = models.TextField(blank=True)
     substances = models.ManyToManyField(Substance, through="IngredientSubstanceRelation")
+    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete"])
 
     @property
     def description(self):

@@ -1,10 +1,21 @@
-from .mixins import WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithSICCRFDefaultFields, WithCADefaultFields
+from .mixins import (
+    WithCreationAndModificationDate,
+    WithMissingImportBoolean,
+    WithSICCRFDefaultFields,
+    WithCADefaultFields,
+)
 
 
-class CommonModel(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithSICCRFDefaultFields, WithCADefaultFields):
+class CommonModel(
+    WithCreationAndModificationDate,
+    WithMissingImportBoolean,
+    WithSICCRFDefaultFields,
+    WithCADefaultFields,
+):
     """
     Les modèles ingrédients et les synonymes héritent de ce modèle
     """
+
     class Meta:
         abstract = True
 

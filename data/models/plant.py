@@ -2,6 +2,8 @@ from django.db import models
 from django.db.models.functions import Coalesce
 from django.db.models import F
 
+from simple_history.models import HistoricalRecords
+
 from .mixins import (
     WithCreationAndModificationDate,
     WithHistory,
@@ -19,6 +21,7 @@ class PlantFamily(CommonModel):
         verbose_name_plural = "familles de plantes"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
+    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete"])
 
     @property
     def name_en(self):
@@ -30,6 +33,7 @@ class PlantPart(CommonModel):
         verbose_name = "partie de plante"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
+    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete"])
 
     @property
     def name_en(self):
@@ -65,9 +69,10 @@ class Plant(CommonModel, WithSICCRFComments, WithCAComments):
 
     plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
     substances = models.ManyToManyField(Substance, through="PlantSubstanceRelation")
+    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete", "family"])
 
 
-class Part(WithCreationAndModificationDate, WithHistory):
+class Part(WithCreationAndModificationDate):
     """
     Ce modèle permet d'associer des données supplémentaires à la relation ManyToMany
     plant_parts
@@ -92,6 +97,9 @@ class Part(WithCreationAndModificationDate, WithHistory):
         expression=Coalesce(F("CA_is_useful"), F("siccrf_is_useful")),
         output_field=models.BooleanField(verbose_name="🍵 utile ?"),
         db_persist=True,
+    )
+    history = HistoricalRecords(
+        inherit=True, excluded_fields=["name", "is_obsolete", "must_be_monitored", "is_useful"]
     )
 
 

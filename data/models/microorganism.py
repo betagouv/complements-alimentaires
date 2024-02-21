@@ -2,6 +2,8 @@ from django.db import models
 from django.db.models.functions import Coalesce
 from django.db.models import F
 
+from simple_history.models import HistoricalRecords
+
 from .mixins import (
     WithCreationAndModificationDate,
     WithHistory,
@@ -21,6 +23,7 @@ class Microorganism(CommonModel, WithSICCRFComments, WithCAComments):
     siccrf_genre = models.TextField(verbose_name="genre de micro-organisme (selon la base SICCRF)")
     CA_genre = models.TextField(verbose_name="genre de micro-organisme")
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
+    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete", "genre"])
     genre = models.GeneratedField(
         expression=Coalesce(F("CA_genre"), F("siccrf_genre")),
         output_field=models.TextField(verbose_name="genre de micro-organisme"),
