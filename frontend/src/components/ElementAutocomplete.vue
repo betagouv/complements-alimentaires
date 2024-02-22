@@ -42,7 +42,7 @@
 
 <script setup>
 import { computed, nextTick, ref, watch } from "vue"
-import { getTypeIcon } from "@/utils"
+import { getTypeIcon, getType } from "@/utils"
 
 const container = ref(undefined)
 const optionsList = ref(undefined)
@@ -127,16 +127,6 @@ function checkKeyboardNav($event) {
   } else if ($event.key === "ArrowDown") {
     moveToNextOption()
   }
-}
-
-const getType = (objectType) => {
-  const mapping = {
-    plant: "Plante",
-    microorganism: "Micro-organisme",
-    ingredient: "Ingredient",
-    substance: "Substance",
-  }
-  return mapping[objectType] || null
 }
 </script>
 
