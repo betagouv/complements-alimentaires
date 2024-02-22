@@ -38,6 +38,10 @@ _Note : les arrow functions ne sont pas iso-fonctionnelles avec `function`_
     - collision entre une apostrophe d'un texte en français et des simple quotes
     - nombreuses variables à injecter (plus lisible qu'une concaténation avec `+`)
 
+#### Spécifique à Vue JS
+
+- [Vue JS conventions officielles](https://vuejs.org/style-guide/)
+
 #### Validation de données avec Vuelidate
 
 _To be defined_

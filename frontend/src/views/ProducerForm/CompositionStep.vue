@@ -38,7 +38,9 @@
 
 <script setup>
 import { ref } from "vue"
-import { headers, verifyResponse, getTypeIcon } from "@/utils"
+import { headers } from "@/utils/data-fetching"
+import { verifyResponse } from "@/utils/custom-errors"
+import { getTypeIcon } from "@/utils/icons"
 
 const autocompleteResults = ref([])
 const loading = ref(false)
