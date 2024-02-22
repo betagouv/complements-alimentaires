@@ -2,6 +2,7 @@
   <div ref="container" class="relative">
     <DsfrInput
       :model-value="modelValue"
+      @update:model-value="$emit('update:modelValue', $event)"
       v-bind="$attrs"
       :required="true"
       @focus="hasFocus = true"
@@ -47,14 +48,15 @@ const container = ref(undefined)
 const optionsList = ref(undefined)
 
 const props = defineProps({
-  modelValue: {
-    type: String,
-    default: "",
-  },
   options: {
     type: Array,
     default: () => [],
   },
+})
+
+defineModel({
+  type: String,
+  default: "",
 })
 
 const emit = defineEmits(["selected"])
