@@ -14,6 +14,7 @@
 <script setup>
 import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
+import { headers } from "@/utils"
 
 const logoText = ["Ministère", "de l'Agriculture", "et de la Souveraineté", "Alimentaire"]
 const environment = window.ENVIRONMENT
@@ -45,10 +46,6 @@ const quickLinks = computed(function () {
   else return []
 })
 const logout = () => {
-  const headers = {
-    "X-CSRFToken": window.CSRF_TOKEN || "",
-    "Content-Type": "application/json",
-  }
   return fetch(`/se-deconnecter`, { method: "POST", headers, redirect: "follow" }).then((response) => {
     if (response.redirected) window.location.href = response.url
   })
