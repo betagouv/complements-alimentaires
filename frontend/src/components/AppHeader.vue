@@ -12,13 +12,13 @@
 </template>
 
 <script setup>
-import { computed, watch } from "vue"
+import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
-import { useRoute } from "vue-router"
+import { headers } from "@/utils"
+import { useFetch } from "@vueuse/core"
 
 defineProps({ logoText: Array })
 
-const route = useRoute()
 const environment = window.ENVIRONMENT
 const store = useRootStore()
 const navItems = [
@@ -35,28 +35,26 @@ const navItems = [
     text: "Blog",
   },
 ]
-const quickLinks = computed(function () {
+
+const quickLinks = computed(() => {
   if (store.loggedUser)
     return [
       {
         label: "Se déconnecter",
         icon: "ri-logout-box-r-line",
-        to: { query: { "confirmation-deconnexion": true }, replace: true },
+        button: true,
+        onClick: logout,
       },
     ]
   else return []
 })
-watch(
-  () => route.query["confirmation-deconnexion"],
-  (newValue) => {
-    const headers = {
-      "X-CSRFToken": window.CSRF_TOKEN || "",
-      "Content-Type": "application/json",
-    }
-    if (newValue)
-      return fetch(`/se-deconnecter`, { method: "POST", headers, redirect: "follow" }).then((response) => {
-        if (response.redirected) window.location.href = response.url
-      })
-  }
-)
+
+const logout = async () => {
+  const { response } = await useFetch("/se-deconnecter", {
+    headers: headers,
+    redirect: "follow",
+  }).post()
+
+  if (response.value.redirected) window.location.href = response.value.url
+}
 </script>
