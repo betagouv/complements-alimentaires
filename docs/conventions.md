@@ -11,9 +11,6 @@ Pour garder une certaine uniformité de la codebase, nous avons défini des pré
 
 Ce ne sont que des préférences, et il est bien-sûr possible d'aller contre quand le contexte le justifie.
 
-
-
-
 #### Asynchronisme
 
 - Syntaxe préférée : `await`/`async`
@@ -30,7 +27,7 @@ Les arrow functions n'étant pas iso-fonctionnelles avec `function`, on s'autori
     - collision entre une apostrophe d'un texte en français et des simple quotes
     - nombreuses variables à injecter (plus lisible qu'une concaténation avec `+`)
 
-## Préférences Vue JS
+## Préférences Vue.js
 
 #### Conventions officielles
 

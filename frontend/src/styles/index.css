@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* The base layer is for things like reset rules or default styles applied to plain HTML elements. */
+@layer base {
+}
+
+/* The components layer is for class-based styles that you want to be able to override with utilities. */
+@layer components {
+}
+
+/* The utilities layer is for small, single-purpose classes that should always take precedence over any other styles. */
+@layer utilities {
+    .gradient-dsfr {
+        @apply bg-gradient-to-r from-blue-france-925 via-blue-france-850 via-30% to-transparent
+    }
+}
