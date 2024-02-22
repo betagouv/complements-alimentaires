@@ -29,7 +29,7 @@
 
 <script setup>
 import { ref, watch } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch, useDebounceFn } from "@vueuse/core"
 import { headers, getTypeIcon } from "@/utils"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import useToaster from "@/composables/use-toaster"
@@ -37,14 +37,7 @@ import useToaster from "@/composables/use-toaster"
 const autocompleteResults = ref([])
 const searchTerm = ref("")
 const chosenIngredients = ref([])
-
-const onAutocompleteChange = () => {
-  if (searchTerm.value.length < 3) {
-    autocompleteResults.value = []
-    return
-  }
-  return fetchSearchResults()
-}
+const debounceDelay = 350
 
 const selectOption = (result) => {
   chosenIngredients.value.push(result)
@@ -52,7 +45,12 @@ const selectOption = (result) => {
   autocompleteResults.value = []
 }
 
-const fetchSearchResults = async () => {
+const fetchAutocompleteResults = useDebounceFn(async () => {
+  if (searchTerm.value.length < 3) {
+    autocompleteResults.value = []
+    return
+  }
+
   const body = { term: searchTerm.value }
   const { error, data } = await useFetch("/api/v1/substances/autocomplete/", { headers }).post(body).json()
 
@@ -66,7 +64,7 @@ const fetchSearchResults = async () => {
     return
   }
   autocompleteResults.value = data.value
-}
+}, debounceDelay)
 
-watch(searchTerm, onAutocompleteChange)
+watch(searchTerm, fetchAutocompleteResults)
 </script>
