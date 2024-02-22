@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { verifyResponse } from "../utils"
+import { verifyResponse } from "../utils/custom-errors"
 import { ref } from "vue"
 
 export const useRootStore = defineStore("root", () => {

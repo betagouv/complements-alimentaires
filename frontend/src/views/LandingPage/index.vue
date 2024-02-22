@@ -8,7 +8,7 @@
   <StatsBlock />
 
   <div class="fr-container my-10">
-    <BlogBlock />
+    <Suspense><BlogBlock /></Suspense>
   </div>
 
   <div class="fr-container my-10">

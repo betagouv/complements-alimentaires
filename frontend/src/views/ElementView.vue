@@ -93,7 +93,8 @@
 
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
-import { verifyResponse, NotFoundError, getTypeIcon } from "@/utils"
+import { verifyResponse, NotFoundError } from "@/utils/custom-errors"
+import { getTypeIcon } from "@/utils/icons"
 import { useRoute, useRouter } from "vue-router"
 import ReportIssue from "@/views/SearchResults/ReportIssue"
 

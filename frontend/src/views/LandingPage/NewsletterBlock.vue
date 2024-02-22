@@ -21,7 +21,8 @@
 import { ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { required, email, helpers } from "@vuelidate/validators"
-import { headers, firstErrorMsg } from "@/utils"
+import { headers } from "@/utils/data-fetching"
+import { firstErrorMsg } from "@/utils/forms"
 import { useFetch } from "@vueuse/core"
 import useToaster from "@/composables/use-toaster"
 

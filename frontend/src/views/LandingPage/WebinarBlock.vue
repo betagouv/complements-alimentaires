@@ -31,7 +31,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue"
-import { verifyResponse } from "@/utils"
+import { verifyResponse } from "@/utils/custom-errors"
 
 const webinars = ref(null)
 

@@ -20,7 +20,7 @@
 
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
-import { verifyResponse, NotFoundError } from "@/utils"
+import { verifyResponse, NotFoundError } from "@/utils/custom-errors"
 
 const props = defineProps({
   id: String,

@@ -33,7 +33,7 @@
 
 <script setup>
 import { onMounted, computed, ref, watch } from "vue"
-import { verifyResponse } from "@/utils"
+import { verifyResponse } from "@/utils/custom-errors"
 import { useRoute, useRouter } from "vue-router"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import BlogCard from "@/components/BlogCard"

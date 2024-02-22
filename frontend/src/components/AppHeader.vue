@@ -14,7 +14,7 @@
 <script setup>
 import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
-import { headers } from "@/utils"
+import { headers } from "@/utils/data-fetching"
 import { useFetch } from "@vueuse/core"
 
 defineProps({ logoText: Array })

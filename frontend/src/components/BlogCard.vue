@@ -2,7 +2,7 @@
   <DsfrCard
     :key="props.post.id"
     :title="props.post.title"
-    :detail="blogDate(props.post)"
+    :detail="isoToPrettyDate(props.post.displayDate)"
     :description="blogDescription(props.post)"
     :link="{ name: 'BlogPost', params: { id: props.post.id } }"
   />
@@ -10,13 +10,7 @@
 
 <script setup>
 const props = defineProps({ post: { type: Object, required: true } })
+import { isoToPrettyDate } from "@/utils/date"
 
-const blogDate = (post) => {
-  return new Date(post.displayDate).toLocaleDateString("fr-FR", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  })
-}
 const blogDescription = (post) => post.tagline?.substring(0, 100) || ""
 </script>
