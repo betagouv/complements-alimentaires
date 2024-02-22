@@ -22,8 +22,8 @@
 <script setup>
 import { useFetch } from "@vueuse/core"
 import BlogCard from "@/components/BlogCard"
-import { addUnknownErrorMessage } from "@/utils/toasts"
+import useToaster from "@/composables/use-toaster"
 
 const { data: blogPosts, error } = await useFetch("/api/v1/blogPosts/?limit=3&offset=0").json()
-if (error.value) addUnknownErrorMessage
+if (error.value) useToaster().addUnknownErrorMessage()
 </script>

@@ -39,7 +39,7 @@ const rules = {
 const v$ = useVuelidate(rules, state)
 
 // Request definition
-const { error, execute, isFetching, isFinished } = useFetch(
+const { error, execute, isFetching } = useFetch(
   "/api/v1/subscribeNewsletter/",
   {
     headers: headers,
@@ -55,17 +55,18 @@ const submit = async () => {
   }
   await execute()
 
-  if (isFinished) {
-    useToaster().addMessage({
-      type: error.value ? "error" : "success",
-      title: error.value ? "Erreur" : "C'est tout bon !",
-      description: error.value
-        ? "Une erreur est survenue, veuillez réessayer plus tard."
-        : "Votre inscription a bien été prise en compte.",
+  const { addMessage, addUnknownErrorMessage } = useToaster()
+  if (error.value) {
+    addUnknownErrorMessage()
+  } else {
+    addMessage({
+      type: "success",
+      title: "C'est tout bon !",
+      description: "Votre inscription a bien été prise en compte.",
     })
-    // Reset both form state & Vuelidate validation state
-    state.value.email = ""
-    v$.value.$reset()
   }
+  // Reset both form state & Vuelidate validation state
+  state.value.email = ""
+  v$.value.$reset()
 }
 </script>

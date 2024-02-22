@@ -54,7 +54,7 @@ const rules = {
 const v$ = useVuelidate(rules, state)
 
 // Request definition
-const { error, execute, isFetching, isFinished } = useFetch(
+const { error, execute, isFetching } = useFetch(
   "/api/v1/reportIssue/",
   {
     headers: headers,
@@ -70,17 +70,18 @@ const submit = async () => {
   }
   await execute()
 
-  if (isFinished) {
-    useToaster().addMessage({
-      type: error.value ? "error" : "success",
-      title: error.value ? "Erreur" : "C'est envoyé !",
-      description: error.value
-        ? "Une erreur est survenue, veuillez réessayer plus tard."
-        : "Votre message a bien été envoyé. Merci pour votre contribution.",
+  const { addMessage, addUnknownErrorMessage } = useToaster()
+  if (error.value) {
+    addUnknownErrorMessage()
+  } else {
+    addMessage({
+      type: "success",
+      title: "C'est envoyé !",
+      description: "Votre message a bien été envoyé. Merci pour votre contribution.",
     })
-    // Reset both form state & Vuelidate validation state
-    state.value = getInitialState()
-    v$.value.$reset()
   }
+  // Reset both form state & Vuelidate validation state
+  state.value = getInitialState()
+  v$.value.$reset()
 }
 </script>
