@@ -6,7 +6,7 @@
     :cookiesLink="{ name: 'CookiesInfo' }"
     :legalLink="{ name: 'LegalNotices' }"
     :personalDataLink="{ name: 'PrivacyPolicy' }"
-    :afterMandatoryLinks="[{ label: 'Conditions générales d\'utilisation', to: { name: 'CGU' } }]"
+    :afterMandatoryLinks="[{ label: `Conditions générales d'utilisation`, to: { name: 'CGU' } }]"
   >
     <template v-slot:description>
       <p>Compléments alimentaires</p>
@@ -35,6 +35,6 @@ watch(route, (to) => {
 
 <style>
 .fr-pagination__list {
-  justify-content: center;
+  @apply justify-center;
 }
 </style>
