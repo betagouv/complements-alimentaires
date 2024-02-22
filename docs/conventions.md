@@ -5,19 +5,14 @@
 Par simplicité, le projet a été démarré en ES6, et ne permet pour le moment pas d'utiliser la syntaxe TS.
 A terme, nous envisageons une migration progressive.
 
-## Préférences de syntaxe
+## Préférences ES6
 
 Pour garder une certaine uniformité de la codebase, nous avons défini des préférences par défaut sur la syntaxe à utiliser, en particulier sur le langage ES6 qui est relativement permissif.
 
 Ce ne sont que des préférences, et il est bien-sûr possible d'aller contre quand le contexte le justifie.
 
 
-#### Data fetching
 
-- Utilisation du composable [`useFetch`](https://vueuse.org/core/useFetch/)
-- Raisons :
-    - syntaxe déclarative plus simple
-    - permet de récupérer depuis le composable des informations nécessaires sur la requête (ex: est-elle en cours ?)
 
 #### Asynchronisme
 
@@ -26,10 +21,7 @@ Ce ne sont que des préférences, et il est bien-sûr possible d'aller contre qu
 
 #### Fonctions
 
-- Syntaxe préférée : [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)
-- Raisons : garder une uniformité avec le code Vue3 existant (composables, etc.)
-
-_Note : les arrow functions ne sont pas iso-fonctionnelles avec `function`_
+Les arrow functions n'étant pas iso-fonctionnelles avec `function`, on s'autorise à faire cohabiter les deux.
 
 #### Strings
 
@@ -38,13 +30,26 @@ _Note : les arrow functions ne sont pas iso-fonctionnelles avec `function`_
     - collision entre une apostrophe d'un texte en français et des simple quotes
     - nombreuses variables à injecter (plus lisible qu'une concaténation avec `+`)
 
-#### Spécifique à Vue JS
+## Préférences Vue JS
+
+#### Conventions officielles
 
 - [Vue JS conventions officielles](https://vuejs.org/style-guide/)
 
-#### Validation de données avec Vuelidate
+#### Data fetching
 
-_To be defined_
+- Utilisation du composable [`useFetch`](https://vueuse.org/core/useFetch/)
+- Raisons :
+    - syntaxe déclarative plus simple
+    - permet de récupérer depuis le composable des informations nécessaires sur la requête (ex: est-elle en cours ?)
+
+#### Gestion du top-level await
+
+- Utilisation du composant [`<Suspense>`](https://vuejs.org/guide/built-ins/suspense.html)
+- Raisons :
+    - permet l'utilisation du [top-level `await`](https://vuejs.org/api/sfc-script-setup.html#top-level-await) d'un composant
+    - réduit le risque d'erreurs d'accès aux données avant qu'elles soient fetched.
+
 
 ## Composants d'UI
 
