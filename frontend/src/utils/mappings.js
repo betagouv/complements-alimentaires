@@ -7,3 +7,13 @@ export const getTypeIcon = (type) => {
   }
   return mapping[type] || null
 }
+
+export const getType = (type) => {
+  const mapping = {
+    plant: "Plante",
+    microorganism: "Micro-organisme",
+    ingredient: "Ingredient",
+    substance: "Substance",
+  }
+  return mapping[type] || null
+}

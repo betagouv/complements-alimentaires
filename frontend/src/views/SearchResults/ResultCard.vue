@@ -16,21 +16,13 @@
 
 <script setup>
 import { computed } from "vue"
-import { getTypeIcon } from "@/utils/icons"
+import { getTypeIcon, getType } from "@/utils/mappings"
 
 const props = defineProps({
   result: Object,
 })
 const icon = computed(() => getTypeIcon(props.result.objectType))
-const type = computed(() => {
-  const mapping = {
-    plant: "Plante",
-    microorganism: "Micro-organisme",
-    ingredient: "Ingredient",
-    substance: "Substance",
-  }
-  return mapping[props.result.objectType] || null
-})
+const type = computed(() => getType(props.result.objectType))
 const route = computed(() => {
   const urlComponent = `${props.result?.id}--${type.value?.toLowerCase()}--${props.result?.name}`
   return { name: "ElementView", params: { urlComponent } }
