@@ -12,14 +12,19 @@
       <p>Compléments alimentaires</p>
     </template>
   </DsfrFooter>
+
+  <AppToaster :messages="messages" @close-message="removeMessage($event)" />
 </template>
 
 <script setup>
 import { watch } from "vue"
 import { useRoute } from "vue-router"
 import AppHeader from "@/components/AppHeader.vue"
+import AppToaster from "@/components/AppToaster.vue"
+import useToaster from "@/composables/use-toaster"
 
 const route = useRoute()
+const { messages, removeMessage } = useToaster()
 
 watch(route, (to) => {
   const suffix = "Compléments alimentaires"

@@ -171,3 +171,6 @@ stats/bilan/data
 stats/bilan/france-geojson
 
 notes/
+
+# Poetry
+poetry.toml
