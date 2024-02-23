@@ -53,31 +53,3 @@ export const verifyResponse = (response) => {
 
   return hasJSON ? response.json() : response.text()
 }
-
-export const getTypeIcon = (type) => {
-  const mapping = {
-    plant: "ri-plant-line",
-    microorganism: "ri-microscope-line",
-    ingredient: "ri-flask-line",
-    substance: "ri-test-tube-line",
-  }
-  return mapping[type] || null
-}
-
-export const getType = (type) => {
-  const mapping = {
-    plant: "Plante",
-    microorganism: "Micro-organisme",
-    ingredient: "Ingredient",
-    substance: "Substance",
-  }
-  return mapping[type] || null
-}
-
-export const headers = {
-  "X-CSRFToken": window.CSRF_TOKEN || "",
-  "Content-Type": "application/json",
-}
-
-// Using vuelidate validation, return the first error message, or "" if no error found.
-export const firstErrorMsg = (v, fieldName) => (v[fieldName].$error ? v[fieldName].$errors[0].$message : null)

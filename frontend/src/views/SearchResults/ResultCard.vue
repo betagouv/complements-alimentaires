@@ -16,7 +16,7 @@
 
 <script setup>
 import { computed } from "vue"
-import { getTypeIcon, getType } from "@/utils"
+import { getTypeIcon, getType } from "@/utils/mappings"
 
 const props = defineProps({
   result: Object,

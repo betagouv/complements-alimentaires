@@ -9,7 +9,7 @@ import sib_api_v3_sdk
 
 @requests_mock.Mocker()
 class TestSubscription(APITestCase):
-    @override_settings(NEWSLETTER_BREVO_LIST_ID="1")
+    @override_settings(NEWSLETTER_BREVO_LIST_ID=1)
     @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
     def test_newsletter_subscription(self, _):
         """
@@ -57,7 +57,7 @@ class TestSubscription(APITestCase):
         sib_api_v3_sdk.ContactsApi.assert_called_once()
         fake_sib_api_instance.create_contact.assert_called_with(fake_contact_create)
 
-    @override_settings(NEWSLETTER_BREVO_LIST_ID="1")
+    @override_settings(NEWSLETTER_BREVO_LIST_ID=1)
     @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
     def test_email_whitespace(self, _):
         """

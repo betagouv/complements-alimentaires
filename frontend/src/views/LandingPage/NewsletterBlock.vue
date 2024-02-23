@@ -7,10 +7,10 @@
       </p>
     </div>
     <div class="col-span-12 md:col-span-5 my-6 md:my-0">
-      <DsfrInputGroup :error-message="errorMessage" :valid-message="validMessage">
+      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
         <div class="md:flex">
-          <DsfrInput v-model="subscriptionEmail" :placeholder="placeholder" @keydown.enter="subscribe" />
-          <DsfrButton class="mt-4 md:mt-0 md:ml-4" :disabled="requestInProgress" label="Valider" @click="subscribe" />
+          <DsfrInput v-model="state.email" placeholder="Votre e-mail" @keydown.enter="submit" />
+          <DsfrButton class="mt-4 md:mt-0 md:ml-4" :disabled="isFetching" label="Valider" @click="submit" />
         </div>
       </DsfrInputGroup>
     </div>
@@ -18,51 +18,55 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+import { ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
-import { required, email } from "@vuelidate/validators"
+import { required, email, helpers } from "@vuelidate/validators"
+import { headers } from "@/utils/data-fetching"
+import { firstErrorMsg } from "@/utils/forms"
+import { useFetch } from "@vueuse/core"
+import useToaster from "@/composables/use-toaster"
 
-const placeholder = "Votre email"
-const validMessage = ref()
-const errorMessage = ref()
-const requestInProgress = ref(false)
-const subscriptionEmail = ref("")
-const rules = computed(() => ({
-  subscriptionEmail: { required, email },
-}))
-const v$ = useVuelidate(rules, { subscriptionEmail })
+// Form state & rules
+const state = ref({ email: "" })
 
-function subscribe() {
+const rules = {
+  email: {
+    required: helpers.withMessage("Ce champ doit être rempli", required),
+    email: helpers.withMessage("Ce champ doit contenir un e-mail valide", email),
+  },
+}
+
+const v$ = useVuelidate(rules, state)
+
+// Request definition
+const { error, execute, isFetching } = useFetch(
+  "/api/v1/subscribeNewsletter/",
+  {
+    headers: headers,
+  },
+  { immediate: false }
+).post(state)
+
+// Form validation
+const submit = async () => {
   v$.value.$validate()
-
   if (v$.value.$error) {
-    errorMessage.value = "Ce champ doit contenir un email valide"
-    validMessage.value = null
-    return
+    return // prevent API call if there is a front-end error
   }
+  await execute()
 
-  const headers = {
-    "X-CSRFToken": window.CSRF_TOKEN || "",
-    "Content-Type": "application/json",
+  const { addMessage, addUnknownErrorMessage } = useToaster()
+  if (error.value) {
+    addUnknownErrorMessage()
+  } else {
+    addMessage({
+      type: "success",
+      title: "C'est tout bon !",
+      description: "Votre inscription a bien été prise en compte.",
+    })
   }
-  requestInProgress.value = true
-
-  return fetch("/api/v1/subscribeNewsletter/", {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ email: subscriptionEmail.value }),
-  })
-    .then((response) => {
-      if (response.ok) {
-        errorMessage.value = null
-        validMessage.value = "Votre subscription a bien été prise en compte"
-      } else {
-        errorMessage.value = "Une erreur est survenue, veuillez réessayer plus tard."
-        validMessage.value = null
-      }
-    })
-    .finally(() => {
-      requestInProgress.value = false
-    })
+  // Reset both form state & Vuelidate validation state
+  state.value.email = ""
+  v$.value.$reset()
 }
 </script>

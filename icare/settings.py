@@ -202,7 +202,7 @@ if DEBUG and EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend":
     EMAIL_HOST = "localhost"
     EMAIL_PORT = 1025
 
-NEWSLETTER_BREVO_LIST_ID = env("NEWSLETTER_BREVO_LIST_ID", default=None)
+NEWSLETTER_BREVO_LIST_ID = env("NEWSLETTER_BREVO_LIST_ID", cast=int, default=None)
 ANYMAIL = {
     "SENDINBLUE_API_KEY": env("BREVO_API_KEY", default=None),
 }

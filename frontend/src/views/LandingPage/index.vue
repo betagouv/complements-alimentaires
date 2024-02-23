@@ -8,11 +8,11 @@
   <StatsBlock />
 
   <div class="fr-container my-10">
-    <BlogBlock />
+    <Suspense><BlogBlock /></Suspense>
   </div>
 
   <div class="fr-container my-10">
-    <WebinarBlock />
+    <Suspense><WebinarBlock /></Suspense>
   </div>
 
   <div class="bg-blue-france-975">
@@ -21,6 +21,7 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import NewsletterBlock from "@/views/LandingPage/NewsletterBlock"
 import TaglineBlock from "@/views/LandingPage/TaglineBlock"

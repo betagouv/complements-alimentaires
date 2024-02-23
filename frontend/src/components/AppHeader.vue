@@ -14,9 +14,11 @@
 <script setup>
 import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
-import { headers } from "@/utils"
+import { headers } from "@/utils/data-fetching"
+import { useFetch } from "@vueuse/core"
 
-const logoText = ["Ministère", "de l'Agriculture", "et de la Souveraineté", "Alimentaire"]
+defineProps({ logoText: Array })
+
 const environment = window.ENVIRONMENT
 const store = useRootStore()
 const navItems = [
@@ -33,7 +35,8 @@ const navItems = [
     text: "Blog",
   },
 ]
-const quickLinks = computed(function () {
+
+const quickLinks = computed(() => {
   if (store.loggedUser)
     return [
       {
@@ -45,9 +48,13 @@ const quickLinks = computed(function () {
     ]
   else return []
 })
-const logout = () => {
-  return fetch(`/se-deconnecter`, { method: "POST", headers, redirect: "follow" }).then((response) => {
-    if (response.redirected) window.location.href = response.url
-  })
+
+const logout = async () => {
+  const { response } = await useFetch("/se-deconnecter", {
+    headers: headers,
+    redirect: "follow",
+  }).post()
+
+  if (response.value.redirected) window.location.href = response.value.url
 }
 </script>

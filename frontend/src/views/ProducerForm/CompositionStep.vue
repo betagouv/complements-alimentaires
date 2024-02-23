@@ -30,7 +30,8 @@
 <script setup>
 import { ref, watch } from "vue"
 import { useFetch, useDebounceFn } from "@vueuse/core"
-import { headers, getTypeIcon } from "@/utils"
+import { headers } from "@/utils/data-fetching"
+import { getTypeIcon } from "@/utils/mappings"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import useToaster from "@/composables/use-toaster"
 

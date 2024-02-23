@@ -42,7 +42,7 @@
 
 <script setup>
 import { computed, nextTick, ref, watch } from "vue"
-import { getTypeIcon, getType } from "@/utils"
+import { getTypeIcon, getType } from "@/utils/mappings"
 
 const container = ref(undefined)
 const optionsList = ref(undefined)

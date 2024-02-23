@@ -9,7 +9,7 @@
     </div>
     <div class="col-span-12 md:col-span-5 my-6 md:my-0">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
-        <DsfrInput v-model="state.email" placeholder="Votre email (optionnel)" />
+        <DsfrInput v-model="state.email" placeholder="Votre e-mail (optionnel)" />
       </DsfrInputGroup>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reportMessage')">
         <DsfrInput
@@ -30,7 +30,8 @@ import { ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { required, email, helpers } from "@vuelidate/validators"
 import { useFetch } from "@vueuse/core"
-import { headers, firstErrorMsg } from "@/utils"
+import { headers } from "@/utils/data-fetching"
+import { firstErrorMsg } from "@/utils/forms"
 import useToaster from "@/composables/use-toaster"
 
 // Props
@@ -46,14 +47,14 @@ const getInitialState = () => ({
 const state = ref(getInitialState())
 
 const rules = {
-  email: { email: helpers.withMessage("Ce champ doit contenir un email valide s'il est spécifié", email) },
+  email: { email: helpers.withMessage("Ce champ doit contenir un e-mail valide s'il est spécifié", email) },
   reportMessage: { required: helpers.withMessage("Ce champ doit contenir vos constatations", required) },
 }
 
 const v$ = useVuelidate(rules, state)
 
 // Request definition
-const { error, execute, isFetching, isFinished } = useFetch(
+const { error, execute, isFetching } = useFetch(
   "/api/v1/reportIssue/",
   {
     headers: headers,
@@ -69,17 +70,18 @@ const submit = async () => {
   }
   await execute()
 
-  if (isFinished) {
-    useToaster().addMessage({
-      type: error.value ? "error" : "success",
-      title: error.value ? "Erreur" : "C'est envoyé !",
-      description: error.value
-        ? "Une erreur est survenue, veuillez réessayer plus tard."
-        : "Votre message a bien été envoyé. Merci pour votre contribution.",
+  const { addMessage, addUnknownErrorMessage } = useToaster()
+  if (error.value) {
+    addUnknownErrorMessage()
+  } else {
+    addMessage({
+      type: "success",
+      title: "C'est envoyé !",
+      description: "Votre message a bien été envoyé. Merci pour votre contribution.",
     })
-    // Reset both form state & Vuelidate validation state
-    state.value = getInitialState()
-    v$.value.$reset()
   }
+  // Reset both form state & Vuelidate validation state
+  state.value = getInitialState()
+  v$.value.$reset()
 }
 </script>
