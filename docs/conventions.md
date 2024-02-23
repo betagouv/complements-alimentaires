@@ -52,6 +52,7 @@ Les arrow functions n'étant pas iso-fonctionnelles avec `function`, on s'autori
 
 - Suivi des règles du DSFR
 - Utilisation au maximum des composants disponibles dans la UI lib [vue-dsfr](https://vue-dsfr.netlify.app/)
+- Lorsque les components Vue ne sont pas adaptés au besoin, nous pouvons aussi utiliser les classes CSS fournies par le DSFR.
 - Si un comportement n'est pas disponible (ex : toaster, autocomplete, etc.) :
     1. Essayer de voir les différentes [recettes de la communauté](https://www.vue-ds.fr/recettes/) pour gagner du temps
     2. Arbitrer entre le fait de faire soi-même (chronophage ?) VS intégrer une autre librairie (lourd ?)
