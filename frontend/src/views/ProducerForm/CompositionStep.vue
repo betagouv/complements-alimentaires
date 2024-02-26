@@ -16,7 +16,12 @@
   />
 
   <div v-if="chosenElements && chosenElements.length" class="mt-4">
-    <ElementCard :element="element" v-for="element in chosenElements" :key="`element-${element.id}`" />
+    <ElementCard
+      @remove="removeElement"
+      :element="element"
+      v-for="element in chosenElements"
+      :key="`element-${element.id}`"
+    />
   </div>
   <div v-else class="my-12">
     <v-icon name="ri-information-line" class="mr-1"></v-icon>
@@ -46,22 +51,26 @@ const debounceDelay = 350
 
 const substances = computed(() => {
   const substances = chosenElements.value
-    .map((x) => x.substances)
-    .filter((x) => !!x)
+    .map((x) => (x.objectType === "substance" ? [x] : x.substances))
     .flat()
+    .filter((x) => !!x)
   // Remove duplicates
   return substances.filter((x, idx) => substances.findIndex((y) => y.id === x.id) === idx)
 })
 
+const elementIndex = (element) =>
+  chosenElements.value.findIndex((x) => x.id === element.id && x.objectType === element.objectType)
+
 const selectOption = async (result) => {
-  const isDuplicate =
-    chosenElements.value.findIndex((x) => x.id === result.id && x.objectType === result.objectType) > -1
+  const isDuplicate = elementIndex(result) > -1
   autocompleteResults.value = []
   searchTerm.value = ""
   if (isDuplicate) return
   const element = await fetchElement(result.objectType, result.id)
   chosenElements.value.push(element)
 }
+
+const removeElement = (element) => chosenElements.value.splice(elementIndex(element), 1)
 
 const fetchAutocompleteResults = useDebounceFn(async () => {
   if (searchTerm.value.length < 3) {
