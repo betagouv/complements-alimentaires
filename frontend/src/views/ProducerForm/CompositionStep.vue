@@ -15,35 +15,52 @@
     @selected="selectOption"
   />
 
-  <div v-if="chosenIngredients && chosenIngredients.length" class="mt-4">
-    <div v-for="ingredient in chosenIngredients" :key="ingredient.id" class="p-4 border">
-      <v-icon scale="0.85" class="mr-2" :name="getTypeIcon(ingredient.objectType)" />
-      {{ ingredient.name }}
-    </div>
+  <div v-if="chosenElements && chosenElements.length" class="mt-4">
+    <ElementCard :element="element" v-for="element in chosenElements" :key="`element-${element.id}`" />
   </div>
   <div v-else class="my-12">
     <v-icon name="ri-information-line" class="mr-1"></v-icon>
     Vous n'avez pas encore saisi d'ingrédients pour votre complément alimentaire
   </div>
+
+  <div v-if="substances?.length">
+    <h3 class="fr-h6 !mb-4 !mt-6">Substances</h3>
+    <div v-for="substance in substances" :key="`substance-${substance.id}`" class="p-4 border">
+      {{ substance.name }}
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, watch } from "vue"
+import { ref, watch, computed } from "vue"
 import { useFetch, useDebounceFn } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
-import { getTypeIcon } from "@/utils/mappings"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
+import ElementCard from "./ElementCard.vue"
 import useToaster from "@/composables/use-toaster"
 
 const autocompleteResults = ref([])
 const searchTerm = ref("")
-const chosenIngredients = ref([])
+const chosenElements = ref([])
 const debounceDelay = 350
 
-const selectOption = (result) => {
-  chosenIngredients.value.push(result)
-  searchTerm.value = ""
+const substances = computed(() => {
+  const substances = chosenElements.value
+    .map((x) => x.substances)
+    .filter((x) => !!x)
+    .flat()
+  // Remove duplicates
+  return substances.filter((x, idx) => substances.findIndex((y) => y.id === x.id) === idx)
+})
+
+const selectOption = async (result) => {
+  const isDuplicate =
+    chosenElements.value.findIndex((x) => x.id === result.id && x.objectType === result.objectType) > -1
   autocompleteResults.value = []
+  searchTerm.value = ""
+  if (isDuplicate) return
+  const element = await fetchElement(result.objectType, result.id)
+  chosenElements.value.push(element)
 }
 
 const fetchAutocompleteResults = useDebounceFn(async () => {
@@ -66,6 +83,20 @@ const fetchAutocompleteResults = useDebounceFn(async () => {
   }
   autocompleteResults.value = data.value
 }, debounceDelay)
+
+const fetchElement = async (type, id) => {
+  const { error, data } = await useFetch(`/api/v1/${type}s/${id}`).get().json()
+  if (error.value) {
+    useToaster().addMessage({
+      type: "error",
+      title: "Error",
+      description: "Une erreur est survenue en ajoutant cet élément, veuillez réessayer plus tard.",
+      id: "element-error",
+    })
+    return null
+  }
+  return { ...data.value, ...{ objectType: type } }
+}
 
 watch(searchTerm, fetchAutocompleteResults)
 </script>
