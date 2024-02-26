@@ -67,7 +67,10 @@
         <div v-if="substances && substances.length" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
           <div class="fr-text--sm !font-medium !mb-1">Substances</div>
           <DsfrTag
-            :link="{ name: 'ElementView', params: { urlComponent: `${substance.id}--substance--${substance.name}` } }"
+            :link="{
+              name: 'ElementPage',
+              params: { urlComponent: `${substance.id}--substance--${substance.name}` },
+            }"
             small
             :label="substance.name"
             v-for="substance in substances"
@@ -96,7 +99,7 @@ import { onMounted, ref, computed, watch } from "vue"
 import { verifyResponse, NotFoundError } from "@/utils/custom-errors"
 import { getTypeIcon } from "@/utils/mappings"
 import { useRoute, useRouter } from "vue-router"
-import ReportIssue from "@/views/SearchResults/ReportIssue"
+import ReportIssue from "@/views/SearchResultsPage/ReportIssue"
 
 const searchTerm = ref(null)
 const search = () => {
@@ -104,7 +107,7 @@ const search = () => {
     window.alert("Veuillez saisir au moins trois caractères")
     return
   }
-  router.push({ name: "SearchResults", query: { q: searchTerm.value } })
+  router.push({ name: "SearchResultsPage", query: { q: searchTerm.value } })
 }
 
 const route = useRoute()
