@@ -15,15 +15,15 @@
     @selected="selectOption"
   />
 
-  <div v-if="chosenElements && chosenElements.length" class="mt-4">
+  <TransitionGroup mode="out-in" name="list" tag="div" class="mt-4 relative">
     <ElementCard
       @remove="removeElement"
       :element="element"
       v-for="element in chosenElements"
       :key="`element-${element.id}`"
     />
-  </div>
-  <div v-else class="my-12">
+  </TransitionGroup>
+  <div v-if="chosenElements.length === 0" class="my-12">
     <v-icon name="ri-information-line" class="mr-1"></v-icon>
     Vous n'avez pas encore saisi d'ingrédients pour votre complément alimentaire
   </div>
@@ -108,3 +108,26 @@ const fetchElement = async (type, id) => {
 
 watch(searchTerm, fetchAutocompleteResults)
 </script>
+
+<style scoped>
+.list-move,
+.list-enter-active {
+  @apply transition-all ease-out duration-200;
+}
+
+/* do not animate the exiting element */
+.list-leave-active {
+  @apply duration-0;
+}
+
+.list-enter-from {
+  @apply opacity-0 -translate-y-4;
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. Needed even if exiting item
+   is not animated in order for the remaining items to move */
+.list-leave-active {
+  @apply fixed;
+}
+</style>
