@@ -30,9 +30,7 @@
 
   <div v-if="substances?.length">
     <h3 class="fr-h6 !mb-4 !mt-6">Substances</h3>
-    <div v-for="substance in substances" :key="`substance-${substance.id}`" class="p-4 border">
-      {{ substance.name }}
-    </div>
+    <SubstancesTable :substances="substances" />
   </div>
 </template>
 
@@ -42,6 +40,7 @@ import { useFetch, useDebounceFn } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import ElementCard from "./ElementCard.vue"
+import SubstancesTable from "./SubstancesTable.vue"
 import useToaster from "@/composables/use-toaster"
 
 const autocompleteResults = ref([])
