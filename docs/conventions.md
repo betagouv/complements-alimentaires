@@ -42,6 +42,7 @@ Les arrow functions n'étant pas iso-fonctionnelles avec `function`, on s'autori
 - Un composant local (lié à 1 page spécifique) se situe dans le dossier contenant cette page
 - Un composant utilisé par plusieurs pages se situe dans le dossier `src/components/`
 
+
 #### Data fetching
 
 - Utilisation du composable [`useFetch`](https://vueuse.org/core/useFetch/)
