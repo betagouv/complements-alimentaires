@@ -4,7 +4,7 @@
       <DsfrSearchBar
         placeholder="Rechercher par ingrédient, plante, substance..."
         v-model="searchTerm"
-        @search="search($router.push, { query: { q: searchTerm } })"
+        @search="search"
       />
     </div>
   </div>
@@ -16,12 +16,12 @@
     <div v-if="isFetching" class="flex justify-center my-24">
       <ProgressSpinner />
     </div>
-    <div v-else-if="isFinished && data.count === 0">
+    <div v-else-if="data.count === 0">
       <h1 class="fr-h3">Nous n'avons pas trouvé de résultats pour « {{ currentSearch }} »</h1>
     </div>
     <div v-else class="mb-4">
       <h1 class="fr-h3">Résultats de recherche</h1>
-      <div v-if="isFinished && data.results" class="grid grid-cols-12 gap-4">
+      <div v-if="data.results" class="grid grid-cols-12 gap-4">
         <ResultCard
           v-for="result in data.results"
           :key="result.id"
@@ -35,16 +35,17 @@
         :pages="pages"
         :current-page="page - 1"
         :truncLimit="5"
-        v-if="isFinished && showPagination"
+        v-if="showPagination"
       />
     </div>
   </div>
 </template>
 
 <script setup>
+// TODO: pagination encore un bug (mais aussi en prod !)
 // TODO: validation avec Vuelidate ?
 // TODO: suspense à wrapper ailleurs ? warning single root
-// TODO: le search component doit être le même sur ElementPage
+// TODO: le search component doit aussi être le même sur ElementPage
 
 import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
@@ -56,14 +57,10 @@ import useToaster from "@/composables/use-toaster"
 
 const router = useRouter()
 const route = useRoute()
-
-// Search
 const searchTerm = ref(route.query.q)
-let currentSearch = ref(route.query.q)
+const currentSearch = ref(route.query.q)
 
-const search = (routerFn, routerObj) => {
-  routerFn(routerObj) // updates query parameters accordingly
-  currentSearch.value = searchTerm.value
+const search = () => {
   if (searchTerm.value.length < 3) {
     useToaster().addMessage({
       id: "search-result-missing-chars",
@@ -71,9 +68,13 @@ const search = (routerFn, routerObj) => {
       description: "Veuillez saisir au moins trois caractères",
     })
   } else {
-    execute()
-    if (error.value) useToaster().addUnknownErrorMessage()
+    router.push({ query: { q: searchTerm.value } })
   }
+}
+
+const searchExec = async () => {
+  await execute()
+  if (error.value) useToaster().addUnknownErrorMessage()
 }
 
 // Pagination
@@ -95,21 +96,26 @@ const pages = computed(() => {
 const updatePage = (newPage) => (page.value = newPage + 1)
 
 // Search Request
-const body = computed(() => ({ search: searchTerm.value, limit: limit, offset: offset.value }))
-const { error, data, isFetching, isFinished, execute } = useFetch(
-  "/api/v1/search/",
-  { headers: headers },
-  { immediate: false }
-)
+const body = computed(() => ({ search: currentSearch.value, limit: limit, offset: offset.value }))
+const { error, data, isFetching, execute } = useFetch("/api/v1/search/", { headers: headers }, { immediate: false })
   .post(body)
   .json()
 
 // Initial automatic search
-await search(router.push, { query: { q: searchTerm.value } })
+searchExec()
 
-// Watcher for pagination
-watch(page, async () => {
-  const routerFn = route.query.page ? router.push : router.replace
-  await search(routerFn, { query: { ...route.query, ...{ page: page.value } } })
+watch(
+  () => route.query,
+  () => {
+    console.log("watch 1")
+    currentSearch.value = route.query.q
+    searchExec()
+  }
+)
+
+watch(page, () => {
+  console.log("watch 2")
+  const routerFunction = route.query.page ? router.push : router.replace
+  routerFunction({ query: { ...route.query, ...{ page: page.value } } })
 })
 </script>
