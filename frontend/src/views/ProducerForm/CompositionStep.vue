@@ -83,7 +83,7 @@ const fetchAutocompleteResults = useDebounceFn(async () => {
   if (error.value) {
     useToaster().addMessage({
       type: "error",
-      title: "Error",
+      title: "Erreur",
       description: "Une erreur avec la recherche est survenue, veuillez réessayer plus tard.",
       id: "autocomplete-error",
     })
@@ -95,12 +95,7 @@ const fetchAutocompleteResults = useDebounceFn(async () => {
 const fetchElement = async (type, id) => {
   const { error, data } = await useFetch(`/api/v1/${type}s/${id}`).get().json()
   if (error.value) {
-    useToaster().addMessage({
-      type: "error",
-      title: "Error",
-      description: "Une erreur est survenue en ajoutant cet élément, veuillez réessayer plus tard.",
-      id: "element-error",
-    })
+    useToaster().addErrorMessage("Une erreur est survenue en ajoutant cet élément, veuillez réessayer plus tard.")
     return null
   }
   return { ...data.value, ...{ objectType: type } }
