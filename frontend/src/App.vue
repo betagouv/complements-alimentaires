@@ -1,6 +1,12 @@
 <template>
   <AppHeader :logo-text="logoText" />
-  <router-view></router-view>
+  <router-view v-slot="{ Component }">
+    <Suspense>
+      <template #default>
+        <component :is="Component" />
+      </template>
+    </Suspense>
+  </router-view>
   <DsfrFooter
     :logo-text="logoText"
     :cookiesLink="{ name: 'CookiesInfoPage' }"
