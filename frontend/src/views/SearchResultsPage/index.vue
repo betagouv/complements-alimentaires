@@ -42,11 +42,6 @@
 </template>
 
 <script setup>
-// TODO: pagination encore un bug (mais aussi en prod !)
-// TODO: validation avec Vuelidate ?
-// TODO: suspense à wrapper ailleurs ? warning single root
-// TODO: le search component doit aussi être le même sur ElementPage
-
 import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
@@ -57,29 +52,18 @@ import useToaster from "@/composables/use-toaster"
 
 const router = useRouter()
 const route = useRoute()
-const searchTerm = ref(route.query.q)
-const currentSearch = ref(route.query.q)
+const searchTerm = ref(route.query.q || "")
+const currentSearch = ref(route.query.q || "")
 
+// Search
 const search = () => {
-  if (searchTerm.value.length < 3) {
-    useToaster().addMessage({
-      id: "search-result-missing-chars",
-      type: "error",
-      description: "Veuillez saisir au moins trois caractères",
-    })
-  } else {
-    router.push({ query: { q: searchTerm.value } })
-  }
-}
-
-const searchExec = async () => {
-  await execute()
-  if (error.value) useToaster().addUnknownErrorMessage()
+  if (searchTerm.value.length < 3) window.alert("Veuillez saisir au moins trois caractères")
+  else router.push({ query: { q: searchTerm.value } })
 }
 
 // Pagination
 const limit = 6
-const page = ref(route.query.page || 1)
+const page = ref(parseInt(route.query.page) || 1)
 const offset = computed(() => (page.value - 1) * limit)
 const showPagination = computed(() => data.value.count > limit)
 const pages = computed(() => {
@@ -95,20 +79,26 @@ const pages = computed(() => {
 })
 const updatePage = (newPage) => (page.value = newPage + 1)
 
-// Search Request
+// Search request
 const body = computed(() => ({ search: currentSearch.value, limit: limit, offset: offset.value }))
 const { error, data, isFetching, execute } = useFetch("/api/v1/search/", { headers: headers }, { immediate: false })
   .post(body)
   .json()
 
-// Initial automatic search
-searchExec()
+const fetchSearchResults = async () => {
+  await execute()
+  if (error.value) useToaster().addUnknownErrorMessage()
+}
 
+// Initial search
+fetchSearchResults() // onMounted seems unnecessary
+
+// Watchers
 watch(
   () => route.query,
   () => {
     currentSearch.value = route.query.q
-    searchExec()
+    fetchSearchResults()
   }
 )
 
