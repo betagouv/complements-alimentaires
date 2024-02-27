@@ -37,7 +37,7 @@
     </ul>
     <p>
       Plus d'informations sur nos
-      <router-link :to="{ name: 'LegalNotices' }">page dédiée aux mentions légales.</router-link>
+      <router-link :to="{ name: 'LegalNoticesPage' }">page dédiée aux mentions légales.</router-link>
     </p>
     <h2>Modalités d’utilisation du Service</h2>
     <p>L'utilisation du Service est facultative et gratuite.</p>
@@ -84,7 +84,7 @@
     <p>
       Pour plus d’informations sur le traitement des données à caractère personnel l’utilisateur est invité à se référer
       à la
-      <router-link :to="{ name: 'PrivacyPolicy' }">politique de confidentialité.</router-link>
+      <router-link :to="{ name: 'PrivacyPolicyPage' }">politique de confidentialité.</router-link>
     </p>
     <p>
       La validation des CGU implique l’inscription automatique à l’infolettre Compl'Alim. Conforment à la

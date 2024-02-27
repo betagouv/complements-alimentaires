@@ -16,7 +16,7 @@
 </template>
 <script setup>
 import NewsletterBlock from "@/views/LandingPage/NewsletterBlock"
-import DeclarationBlock from "@/views/ProducersPage/DeclarationBlock"
+import DeclarationBlock from "@/views/ProducerHomePage/DeclarationBlock"
 import WebinarBlock from "@/views/LandingPage/WebinarBlock"
-import SearchBlock from "@/views/ProducersPage/SearchBlock"
+import SearchBlock from "@/views/ProducerHomePage/SearchBlock"
 </script>
