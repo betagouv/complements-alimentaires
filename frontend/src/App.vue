@@ -3,7 +3,9 @@
   <router-view v-slot="{ Component }">
     <Suspense>
       <template #default>
-        <component :is="Component" />
+        <div>
+          <component :is="Component" />
+        </div>
       </template>
     </Suspense>
   </router-view>

@@ -107,14 +107,12 @@ searchExec()
 watch(
   () => route.query,
   () => {
-    console.log("watch 1")
     currentSearch.value = route.query.q
     searchExec()
   }
 )
 
 watch(page, () => {
-  console.log("watch 2")
   const routerFunction = route.query.page ? router.push : router.replace
   routerFunction({ query: { ...route.query, ...{ page: page.value } } })
 })
