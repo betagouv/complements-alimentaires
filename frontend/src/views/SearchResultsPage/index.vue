@@ -4,7 +4,7 @@
       <DsfrSearchBar
         placeholder="Rechercher par ingrédient, plante, substance..."
         v-model="searchTerm"
-        @search="search"
+        @search="search($router.push, { query: { q: searchTerm } })"
       />
     </div>
   </div>
@@ -61,7 +61,8 @@ const route = useRoute()
 const searchTerm = ref(route.query.q)
 let currentSearch = ref(route.query.q)
 
-const search = () => {
+const search = (routerFn, routerObj) => {
+  routerFn(routerObj) // updates query parameters accordingly
   currentSearch.value = searchTerm.value
   if (searchTerm.value.length < 3) {
     useToaster().addMessage({
@@ -103,15 +104,12 @@ const { error, data, isFetching, isFinished, execute } = useFetch(
   .post(body)
   .json()
 
-// Init
-router.push({ query: { q: searchTerm.value } })
-await search()
+// Initial automatic search
+await search(router.push, { query: { q: searchTerm.value } })
 
 // Watcher for pagination
-
 watch(page, async () => {
-  const routerFunction = route.query.page ? router.push : router.replace
-  routerFunction({ query: { ...route.query, ...{ page: page.value } } })
-  await search()
+  const routerFn = route.query.page ? router.push : router.replace
+  await search(routerFn, { query: { ...route.query, ...{ page: page.value } } })
 })
 </script>
