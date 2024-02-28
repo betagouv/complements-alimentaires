@@ -1,5 +1,6 @@
 <template>
   <div class="bg-blue-france-925 py-8">
+    <!-- Search -->
     <div class="fr-container">
       <DsfrSearchBar
         placeholder="Rechercher par ingrédient, plante, substance..."
@@ -8,6 +9,8 @@
       />
     </div>
   </div>
+
+  <!-- Element -->
   <div class="fr-container">
     <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
   </div>
@@ -16,72 +19,57 @@
       <h1 class="fr-h4 !mb-1 capitalize">{{ element.name }}</h1>
 
       <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-1 sm:gap-20 mb-8">
-        <div class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
-          <div class="fr-text--sm !font-medium !mb-1">Type</div>
-          <div class="flex">
-            <div><v-icon scale="0.75" class="mr-1" :name="icon" /></div>
-            <div class="fr-text--sm !mb-0 capitalize">{{ type === "ingredient" ? "ingrédient" : type }}</div>
+        <ElementColumn title="Type">
+          <div class="flex gap-x-1">
+            <div><v-icon scale="0.75" :name="icon" /></div>
+            <ElementText :text="type === 'ingredient' ? 'ingrédient' : type" />
           </div>
-        </div>
+        </ElementColumn>
 
-        <div v-if="synonyms && synonyms.length" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
-          <div class="fr-text--sm !font-medium !mb-1">Synonymes</div>
-          <DsfrTag small :label="synonym" v-for="synonym in synonyms" :key="synonym" class="mb-1 capitalize"></DsfrTag>
-        </div>
+        <ElementColumn title="Synonymes" v-if="synonyms?.length">
+          <ElementTag :label="synonym" v-for="synonym in synonyms" :key="synonym" />
+        </ElementColumn>
 
-        <div v-if="family" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
-          <div class="fr-text--sm !font-medium !mb-1">Famille</div>
-          <div class="fr-text--sm !mb-0 capitalize">{{ family }}</div>
-        </div>
+        <ElementColumn title="Famille" v-if="family">
+          <ElementText :text="family" />
+        </ElementColumn>
 
-        <div v-if="genre" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
-          <div class="fr-text--sm !font-medium !mb-1">Genre</div>
-          <div class="fr-text--sm !mb-0 capitalize">{{ genre }}</div>
-        </div>
+        <ElementColumn title="Genre" v-if="genre">
+          <ElementText :text="genre" />
+        </ElementColumn>
 
-        <div v-if="casNumber" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
-          <div class="fr-text--sm !font-medium !mb-1">Numéro CAS</div>
-          <div class="fr-text--sm !mb-0 capitalize">{{ casNumber }}</div>
-        </div>
+        <ElementColumn title="Numéro CAS" v-if="casNumber">
+          <ElementText :text="casNumber" />
+        </ElementColumn>
 
-        <div v-if="einecNumber" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
-          <div class="fr-text--sm !font-medium !mb-1">Numéro EINEC</div>
-          <div class="fr-text--sm !mb-0 capitalize">{{ einecNumber }}</div>
-        </div>
+        <ElementColumn title="Numéro EINEC" v-if="einecNumber">
+          <ElementText :text="einecNumber" />
+        </ElementColumn>
 
-        <div v-if="plantParts && plantParts.length" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
-          <div class="fr-text--sm !font-medium !mb-1">Parties utiles</div>
-          <DsfrTag small :label="part" v-for="part in plantParts" :key="part" class="mb-1 capitalize"></DsfrTag>
-        </div>
+        <ElementColumn title="Parties utiles" v-if="plantParts?.length">
+          <ElementTag :label="part" v-for="part in plantParts" :key="part" />
+        </ElementColumn>
 
-        <div
-          v-if="toWatchParts && toWatchParts.length"
-          class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4"
-        >
-          <div class="fr-text--sm !font-medium !mb-1">Parties à surveiller</div>
-          <DsfrTag
-            small
+        <ElementColumn title="Parties à surveiller" v-if="toWatchParts?.length">
+          <ElementTag
             :label="part"
             v-for="part in toWatchParts"
             :key="part"
-            class="mb-1 capitalize !bg-warning-925 !text-warning-425"
-          ></DsfrTag>
-        </div>
+            class="!bg-warning-925 !text-warning-425"
+          />
+        </ElementColumn>
 
-        <div v-if="substances && substances.length" class="col-span-12 sm:col-span-4 md:col-span-3 flex flex-col mt-4">
-          <div class="fr-text--sm !font-medium !mb-1">Substances</div>
-          <DsfrTag
+        <ElementColumn title="Substances" v-if="substances?.length">
+          <ElementTag
             :link="{
               name: 'ElementPage',
               params: { urlComponent: `${substance.id}--substance--${substance.name}` },
             }"
-            small
             :label="substance.name"
             v-for="substance in substances"
             :key="`substance-${substance.id}`"
-            class="mb-1 capitalize"
-          ></DsfrTag>
-        </div>
+          />
+        </ElementColumn>
       </div>
 
       <h2 class="fr-h6 !mb-1" v-if="description">Description</h2>
@@ -90,9 +78,11 @@
       <h2 class="fr-h6 !mb-1" v-if="publicComments">Commentaires</h2>
       <p>{{ publicComments }}</p>
     </div>
+
+    <!-- Report Issue -->
     <div class="bg-blue-france-975 py-8">
       <div class="fr-container">
-        <ReportIssue :elementName="element.name" />
+        <ReportIssueBlock :elementName="element.name" />
       </div>
     </div>
   </template>
@@ -102,9 +92,12 @@
 import { ref, computed, watch } from "vue"
 import { getTypeIcon } from "@/utils/mappings"
 import { useRoute, useRouter } from "vue-router"
-import ReportIssue from "@/views/SearchResultsPage/ReportIssue"
 import { useFetch } from "@vueuse/core"
 import useToaster from "@/composables/use-toaster"
+import ElementColumn from "./ElementColumn.vue"
+import ElementTag from "./ElementTag.vue"
+import ElementText from "./ElementText.vue"
+import ReportIssueBlock from "./ReportIssueBlock.vue"
 
 const route = useRoute()
 const router = useRouter()
