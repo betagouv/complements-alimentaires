@@ -29,14 +29,18 @@
     Vous n'avez pas encore saisi d'ingrédients pour votre complément alimentaire
   </div>
 
-  <div v-if="substances?.length">
+  <div v-if="chosenElements?.length">
     <h3 class="fr-h6 !mb-4 !mt-6">Substances</h3>
-    <SubstancesTable :substances="substances" />
+    <p>
+      Les substances contenues dans les ingrédients renseignés sont affichées ci-dessous. Veuillez compléter leur
+      dossage.
+    </p>
+    <SubstancesTable :elements="chosenElements" />
   </div>
 </template>
 
 <script setup>
-import { ref, watch, computed } from "vue"
+import { ref, watch } from "vue"
 import { useFetch, useDebounceFn } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
@@ -48,15 +52,6 @@ const autocompleteResults = ref([])
 const searchTerm = ref("")
 const chosenElements = ref([])
 const debounceDelay = 350
-
-const substances = computed(() => {
-  const substances = chosenElements.value
-    .map((x) => (x.objectType === "substance" ? [x] : x.substances))
-    .flat()
-    .filter((x) => !!x)
-  // Remove duplicates
-  return substances.filter((x, idx) => substances.findIndex((y) => y.id === x.id) === idx)
-})
 
 const elementIndex = (element) =>
   chosenElements.value.findIndex((x) => x.id === element.id && x.objectType === element.objectType)

@@ -18,7 +18,7 @@
       </div>
     </div>
     <hr class="mt-2" v-if="props.element.objectType !== 'substance' && props.element.objectType !== 'ingredient'" />
-    <div v-if="props.element.objectType === 'plant'" class="ml-12 flex gap-4">
+    <div v-if="props.element.objectType === 'plant'" class="ml0 md:ml-12 block sm:flex gap-4">
       <DsfrInputGroup class="max-w-sm" v-if="plantParts.length > 0">
         <DsfrSelect label="Partie utilisée" :options="plantParts" :required="true" />
       </DsfrInputGroup>
