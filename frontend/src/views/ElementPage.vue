@@ -1,7 +1,11 @@
 <template>
   <div class="bg-blue-france-925 py-8">
     <div class="fr-container">
-      <DsfrSearchBar :placeholder="currentSearch" v-model="searchTerm" @search="search" />
+      <DsfrSearchBar
+        placeholder="Rechercher par ingrédient, plante, substance..."
+        v-model="searchTerm"
+        @search="search"
+      />
     </div>
   </div>
   <div class="fr-container">
@@ -95,25 +99,23 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, watch } from "vue"
-import { verifyResponse, NotFoundError } from "@/utils/custom-errors"
+import { ref, computed, watch } from "vue"
 import { getTypeIcon } from "@/utils/mappings"
 import { useRoute, useRouter } from "vue-router"
 import ReportIssue from "@/views/SearchResultsPage/ReportIssue"
-
-const searchTerm = ref(null)
-const search = () => {
-  if (searchTerm.value.length < 3) {
-    window.alert("Veuillez saisir au moins trois caractères")
-    return
-  }
-  router.push({ name: "SearchResultsPage", query: { q: searchTerm.value } })
-}
+import { useFetch } from "@vueuse/core"
+import useToaster from "@/composables/use-toaster"
 
 const route = useRoute()
 const router = useRouter()
-
 const notFound = ref(false)
+
+const searchTerm = ref(null)
+const search = () => {
+  if (searchTerm.value.length < 3) window.alert("Veuillez saisir au moins trois caractères")
+  else router.push({ name: "SearchResultsPage", query: { q: searchTerm.value } })
+}
+
 const typeMapping = {
   plante: "plant",
   "micro-organisme": "microorganism",
@@ -127,10 +129,8 @@ const elementId = computed(() => props.urlComponent.split("--")[0])
 const type = computed(() => props.urlComponent.split("--")[1])
 
 const icon = computed(() => getTypeIcon(typeMapping[type.value]))
-const element = ref(null)
 
 // Information affichée
-
 const family = computed(() => element.value?.family?.name)
 const genre = computed(() => element.value?.genre)
 const plantParts = computed(() => element.value?.plantParts?.map((x) => x.name).filter((x) => !!x))
@@ -144,18 +144,19 @@ const einecNumber = computed(() => element.value?.einecNumber)
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
 
-const getElementFromApi = () => {
+const {
+  data: element,
+  error,
+  execute,
+} = useFetch(`/api/v1/${typeMapping[type.value]}s/${elementId.value}`, {}, { immediate: false }).get().json()
+
+const getElementFromApi = async () => {
   if (!type.value || !elementId.value) {
     notFound.value = true
     return
   }
-  return fetch(`/api/v1/${typeMapping[type.value]}s/${elementId.value}`)
-    .then(verifyResponse)
-    .then((response) => (element.value = response))
-    .catch((error) => {
-      if (error instanceof NotFoundError) notFound.value = true
-      else window.alert("Une erreur est survenue veuillez réessayer plus tard")
-    })
+  await execute()
+  if (error.value) useToaster().addUnknownErrorMessage()
 }
 
 const searchPageSource = ref(null)
@@ -167,11 +168,10 @@ const breadcrumbLinks = computed(() => {
   return links
 })
 
-onMounted(() => {
-  if (router.options.history.state.back && router.options.history.state.back.indexOf("resultats") > -1)
-    searchPageSource.value = router.options.history.state.back
-  getElementFromApi()
-})
+// Init
+if (router.options.history.state.back && router.options.history.state.back.indexOf("resultats") > -1)
+  searchPageSource.value = router.options.history.state.back
+getElementFromApi()
 
 watch(element, (newElement) => {
   if (newElement) document.title = `${newElement.name} - Compléments alimentaires`
