@@ -33,6 +33,16 @@ Les arrow functions n'étant pas iso-fonctionnelles avec `function`, on s'autori
 
 - [Vue JS conventions officielles](https://vuejs.org/style-guide/)
 
+
+#### Arborescence
+
+- On nomme `<Feature>Page` tout composant défini comme route dans le router. Il peut s'agir :
+    - du composant lui-même (ex: `BlogHomePage.vue`)
+    - du dossier quand la page s'appelle `index.vue` (ex: `LandingPage`)
+- Un composant local (lié à 1 page spécifique) se situe dans le dossier contenant cette page
+- Un composant utilisé par plusieurs pages se situe dans le dossier `src/components/`
+
+
 #### Data fetching
 
 - Utilisation du composable [`useFetch`](https://vueuse.org/core/useFetch/)

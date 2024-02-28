@@ -4,7 +4,7 @@
     :title="props.post.title"
     :detail="isoToPrettyDate(props.post.displayDate)"
     :description="blogDescription(props.post)"
-    :link="{ name: 'BlogPost', params: { id: props.post.id } }"
+    :link="{ name: 'BlogPostPage', params: { id: props.post.id } }"
   />
 </template>
 

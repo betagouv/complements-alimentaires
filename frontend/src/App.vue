@@ -3,10 +3,10 @@
   <router-view></router-view>
   <DsfrFooter
     :logo-text="logoText"
-    :cookiesLink="{ name: 'CookiesInfo' }"
-    :legalLink="{ name: 'LegalNotices' }"
-    :personalDataLink="{ name: 'PrivacyPolicy' }"
-    :afterMandatoryLinks="[{ label: 'Conditions générales d’utilisation', to: { name: 'CGU' } }]"
+    :cookiesLink="{ name: 'CookiesInfoPage' }"
+    :legalLink="{ name: 'LegalNoticesPage' }"
+    :personalDataLink="{ name: 'PrivacyPolicyPage' }"
+    :afterMandatoryLinks="[{ label: 'Conditions générales d’utilisation', to: { name: 'CGUPage' } }]"
   >
     <template v-slot:description>
       <p>Compléments alimentaires</p>

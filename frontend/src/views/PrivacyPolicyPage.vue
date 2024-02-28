@@ -103,7 +103,7 @@
       Les cookies de mesure d’audience, lorsque les données sont anonymisées, ne nécessitent pas de consentement. En
       l’occurrence, la plateforme utilise Matomo dans sa version anonymisée, vous pouvez néanmoins vous opposer au suivi
       de votre navigation sur ce site web. Pour plus d’informations, visitez
-      <router-link :to="{ name: 'CookiesInfo' }">notre page dédiée.</router-link>
+      <router-link :to="{ name: 'CookiesInfoPage' }">notre page dédiée.</router-link>
     </p>
     <h2>Durée de conservation</h2>
     <DsfrTable

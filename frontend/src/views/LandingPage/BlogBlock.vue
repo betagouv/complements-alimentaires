@@ -2,7 +2,7 @@
   <div v-if="blogPosts.results.length > 0">
     <h3>Les ressources nouvellement ajoutées</h3>
     <div class="mb-4 text-right">
-      <router-link :to="{ name: 'BlogsHome' }">
+      <router-link :to="{ name: 'BlogHomePage' }">
         Voir toutes les ressources
         <v-icon scale="0.75" class="ml-1" name="ri-arrow-right-line" />
       </router-link>
