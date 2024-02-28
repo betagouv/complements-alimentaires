@@ -91,7 +91,7 @@ const fetchSearchResults = async () => {
 }
 
 // Initial search
-fetchSearchResults() // onMounted seems unnecessary
+fetchSearchResults() // No need for Suspense
 
 // Watchers
 watch(
