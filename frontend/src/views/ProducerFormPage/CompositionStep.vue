@@ -21,6 +21,7 @@
       :element="element"
       v-for="element in chosenElements"
       :key="`element-${element.id}`"
+      class="mb-2"
     />
   </TransitionGroup>
   <div v-if="chosenElements.length === 0" class="my-12">
@@ -66,7 +67,7 @@ const selectOption = async (result) => {
   searchTerm.value = ""
   if (isDuplicate) return
   const element = await fetchElement(result.objectType, result.id)
-  chosenElements.value.push(element)
+  chosenElements.value.unshift(element)
 }
 
 const removeElement = (element) => chosenElements.value.splice(elementIndex(element), 1)
