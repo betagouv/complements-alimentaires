@@ -72,11 +72,8 @@
         </ElementColumn>
       </div>
 
-      <h2 class="fr-h6 !mb-1" v-if="description">Description</h2>
-      <p>{{ description }}</p>
-
-      <h2 class="fr-h6 !mb-1" v-if="publicComments">Commentaires</h2>
-      <p>{{ publicComments }}</p>
+      <ElementTextSection title="Description" :text="description" />
+      <ElementTextSection title="Commentaires" :text="publicComments" />
     </div>
 
     <!-- Report Issue -->
@@ -97,6 +94,7 @@ import useToaster from "@/composables/use-toaster"
 import ElementColumn from "./ElementColumn.vue"
 import ElementTag from "./ElementTag.vue"
 import ElementText from "./ElementText.vue"
+import ElementTextSection from "./ElementTextSection.vue"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
 
 const route = useRoute()
