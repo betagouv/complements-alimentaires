@@ -147,14 +147,11 @@
   TODO car on aura déjà l'adresse à partir du SIRET
 </template>
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, onMounted, defineModel } from "vue"
 import { verifyResponse } from "@/utils/custom-errors"
 
-const payload = ref({
-  effects: [],
-  targetConditions: [],
-  targetPopulations: [],
-})
+const payload = defineModel()
+
 const galenicFormulation = [
   {
     text: "Ampoule",

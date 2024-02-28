@@ -33,7 +33,7 @@
         <div class="block sm:table-cell ca-cell">
           <div class="block sm:hidden ca-xs-title">Quantité par DJR (en mg)</div>
           <DsfrInputGroup class="max-w-28">
-            <DsfrInput label="Quantité par DJR" :required="true" />
+            <DsfrInput v-model="payload.substances[rowIndex].quantity" label="Quantité par DJR" :required="true" />
           </DsfrInputGroup>
         </div>
         <div class="hidden sm:table-cell fr-text-alt ca-cell font-italic">mg</div>
@@ -43,28 +43,51 @@
 </template>
 
 <script setup>
-import { computed } from "vue"
-const props = defineProps({
-  elements: Array,
-})
+import { computed, defineModel, watch } from "vue"
+
+const payload = defineModel()
 const headers = ["Nom", "Num CAS", "Num EINEC", "Ingrédient(s) source", "Qté / DJR", "Unité"]
 const rows = computed(() =>
-  substances.value.map((x) => [x.name.toLowerCase(), x.casNumber || "-", x.einecNumber || "-", sourceElements(x)])
+  payload.value.substances.map((x) => [
+    x.substance.name.toLowerCase(),
+    x.substance.casNumber || "-",
+    x.substance.einecNumber || "-",
+    sourceElements(x.substance),
+  ])
 )
 
-const substances = computed(() => {
-  const allSubstances = props.elements
-    .map((x) => (x.objectType === "substance" ? [x] : x.substances))
-    .flat()
-    .filter((x) => !!x)
-  // Remove duplicates
-  return allSubstances.filter((x, idx) => allSubstances.findIndex((y) => y.id === x.id) === idx)
-})
+const elements = computed(() => payload.value.elements)
 
 const sourceElements = (substance) => {
-  const sources = props.elements.filter((x) => x.objectType === "substance" || x.substances.indexOf(substance) > -1)
-  return sources.map((x) => x.name).join(", ")
+  const sources = elements.value.filter(
+    (x) => x.element.objectType === "substance" || x.element.substances.indexOf(substance) > -1
+  )
+  return sources.map((x) => x.element.name).join(", ")
 }
+
+watch(
+  elements,
+  () => {
+    const newSubstances = elements.value
+      .map((x) => (x.element.objectType === "substance" ? [x.element] : x.element.substances))
+      .flat()
+      .filter((x) => !!x)
+
+    // Ajouter les nouvelles substances
+    newSubstances.forEach((newSubstance) => {
+      if (!payload.value.substances.find((x) => x.substance.id === newSubstance.id))
+        payload.value.substances.push({ substance: newSubstance })
+    })
+
+    // Enlever les substances disparues
+    const outdatedElementIndexes = []
+    payload.value.substances.forEach((item, index) => {
+      if (!newSubstances.find((x) => (x.id = item.substance.id))) outdatedElementIndexes.push(index)
+    })
+    outdatedElementIndexes.forEach((index) => payload.value.substances.splice(index, 1))
+  },
+  { deep: true, immediate: true }
+)
 </script>
 
 <style scoped>

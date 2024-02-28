@@ -1,58 +1,76 @@
 <template>
   <div class="p-4 border shadow-md">
     <div class="flex">
-      <div :class="`mr-4 self-center justify-center rounded-full icon-${props.element.objectType} h-8 w-8 flex`">
-        <v-icon class="self-center" fill="white" :name="getTypeIcon(props.element.objectType)" />
+      <div :class="`mr-4 self-center justify-center rounded-full icon-${modelValue.element.objectType} h-8 w-8 flex`">
+        <v-icon class="self-center" fill="white" :name="getTypeIcon(modelValue.element.objectType)" />
       </div>
       <div class="grow self-center">
         <div class="font-bold capitalize">
-          {{ props.element.name.toLowerCase() }}
-          <span class="uppercase text-gray-400 text-sm ml-2">{{ getType(props.element.objectType) }}</span>
+          {{ modelValue.element.name.toLowerCase() }}
+          <span class="uppercase text-gray-400 text-sm ml-2">{{ getType(modelValue.element.objectType) }}</span>
         </div>
-        <div v-if="props.element.synonyms?.length">
-          {{ props.element.synonyms.map((x) => x.name).join(", ") }}
+        <div v-if="modelValue.element.synonyms?.length">
+          {{ modelValue.element.synonyms.map((x) => x.name).join(", ") }}
         </div>
       </div>
       <div>
         <DsfrButton secondary @click="$emit('remove', element)">Enlever</DsfrButton>
       </div>
     </div>
-    <hr class="mt-2" v-if="props.element.objectType !== 'substance' && props.element.objectType !== 'ingredient'" />
-    <div v-if="props.element.objectType === 'plant'" class="ml0 md:ml-12 block sm:flex gap-4">
+    <hr
+      class="mt-2"
+      v-if="modelValue.element.objectType !== 'substance' && modelValue.element.objectType !== 'ingredient'"
+    />
+    <div v-if="modelValue.element.objectType === 'plant'" class="ml0 md:ml-12 block sm:flex gap-2 md:gap-4">
       <DsfrInputGroup class="max-w-sm" v-if="plantParts.length > 0">
-        <DsfrSelect label="Partie utilisée" :options="plantParts" :required="true" />
+        <DsfrSelect
+          label="Partie utilisée"
+          defaultUnselectedText=""
+          v-model="modelValue.plantPart"
+          :options="plantParts"
+          :required="true"
+        />
       </DsfrInputGroup>
       <DsfrInputGroup class="max-w-28">
-        <DsfrInput label="Qté par DJR" label-visible :required="true" />
+        <DsfrInput label="Qté par DJR" v-model="modelValue.quantity" label-visible :required="true" />
       </DsfrInputGroup>
-      <DsfrInputGroup class="max-w-24">
-        <DsfrSelect label="Unité" :options="units" defaultUnselectedText="" :required="true" />
+      <DsfrInputGroup class="min-w-20 max-w-24">
+        <DsfrSelect
+          label="Unité"
+          :options="units"
+          v-model="modelValue.unit"
+          defaultUnselectedText=""
+          :required="true"
+        />
       </DsfrInputGroup>
       <DsfrInputGroup class="max-w-sm">
-        <DsfrSelect label="Préparation" :options="preparations" defaultUnselectedText="" :required="true" />
+        <DsfrSelect
+          label="Préparation"
+          :options="preparations"
+          v-model="modelValue.preparation"
+          defaultUnselectedText=""
+          :required="true"
+        />
       </DsfrInputGroup>
     </div>
-    <div v-else-if="props.element.objectType === 'microorganism'" class="ml-12 flex gap-4">
+    <div v-else-if="modelValue.element.objectType === 'microorganism'" class="ml-12 flex gap-4">
       <DsfrInputGroup class="max-w-sm">
-        <DsfrInput label-visible label="Souche" :required="true" />
+        <DsfrInput label-visible label="Souche" v-model="modelValue.strain" :required="true" />
       </DsfrInputGroup>
       <DsfrInputGroup>
-        <DsfrInput label-visible label="Qté par DJR (en CFU)" :required="true" />
+        <DsfrInput label-visible v-model="modelValue.cfu_quantity" label="Qté par DJR (en CFU)" :required="true" />
       </DsfrInputGroup>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed, defineModel } from "vue"
 import { getTypeIcon, getType } from "@/utils/mappings"
 
-const props = defineProps({
-  element: Object,
-})
+const modelValue = defineModel()
 
-const plantParts = computed(() => props.element.plantParts.map((x) => ({ text: x.name, value: x.id })))
-// const iconBackgroundClass = computed(() => `bg-ca-${props.element.objectType}`)
+const plantParts = computed(() => modelValue.value.element.plantParts.map((x) => ({ text: x.name, value: x.id })))
 
 // TODO: complete it and pass it to utils
 const units = [

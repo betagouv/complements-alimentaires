@@ -17,30 +17,30 @@
 
   <TransitionGroup mode="out-in" name="list" tag="div" class="mt-4 relative">
     <ElementCard
-      @remove="removeElement"
-      :element="element"
-      v-for="element in chosenElements"
+      v-for="(element, index) in payload.elements"
       :key="`element-${element.id}`"
+      @remove="removeElement(index)"
+      v-model="payload.elements[index]"
       class="mb-2"
     />
   </TransitionGroup>
-  <div v-if="chosenElements.length === 0" class="my-12">
+  <div v-if="payload.elements.length === 0" class="my-12">
     <v-icon name="ri-information-line" class="mr-1"></v-icon>
     Vous n'avez pas encore saisi d'ingrédients pour votre complément alimentaire
   </div>
 
-  <div v-if="chosenElements?.length">
+  <div v-if="payload.elements.length">
     <h3 class="fr-h6 !mb-4 !mt-6">Substances</h3>
     <p>
       Les substances contenues dans les ingrédients renseignés sont affichées ci-dessous. Veuillez compléter leur
       dossage.
     </p>
-    <SubstancesTable :elements="chosenElements" />
+    <SubstancesTable v-model="payload" />
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from "vue"
+import { ref, watch, defineModel } from "vue"
 import { useFetch, useDebounceFn } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
@@ -48,24 +48,20 @@ import ElementCard from "./ElementCard.vue"
 import SubstancesTable from "./SubstancesTable.vue"
 import useToaster from "@/composables/use-toaster"
 
+const payload = defineModel()
+
 const autocompleteResults = ref([])
 const searchTerm = ref("")
-const chosenElements = ref([])
 const debounceDelay = 350
 
-const elementIndex = (element) =>
-  chosenElements.value.findIndex((x) => x.id === element.id && x.objectType === element.objectType)
-
 const selectOption = async (result) => {
-  const isDuplicate = elementIndex(result) > -1
-  autocompleteResults.value = []
   searchTerm.value = ""
-  if (isDuplicate) return
-  const element = await fetchElement(result.objectType, result.id)
-  chosenElements.value.unshift(element)
+  autocompleteResults.value = []
+  const item = { element: await fetchElement(result.objectType, result.id) }
+  payload.value.elements.unshift(item)
 }
 
-const removeElement = (element) => chosenElements.value.splice(elementIndex(element), 1)
+const removeElement = (index) => payload.value.elements.splice(index, 1)
 
 const fetchAutocompleteResults = useDebounceFn(async () => {
   if (searchTerm.value.length < 3) {
