@@ -80,11 +80,9 @@ watch(
     })
 
     // Enlever les substances disparues
-    const outdatedElementIndexes = []
-    payload.value.substances.forEach((item, index) => {
-      if (!newSubstances.find((x) => (x.id = item.substance.id))) outdatedElementIndexes.push(index)
-    })
-    outdatedElementIndexes.forEach((index) => payload.value.substances.splice(index, 1))
+    payload.value.substances = payload.value.substances.filter((item) =>
+      newSubstances.find((x) => x.id === item.substance.id)
+    )
   },
   { deep: true, immediate: true }
 )
