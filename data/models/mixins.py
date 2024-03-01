@@ -94,10 +94,14 @@ class WithCAComments(models.Model):
     ca_public_comments = models.TextField(blank=True, verbose_name="commentaires publics SICCRF")
     ca_private_comments = models.TextField(blank=True, verbose_name="commentaires privés SICCRF")
 
-    @property
-    def public_comments(self):
-        return self.ca_public_comments if self.ca_public_comments else self.siccrf_public_comments
+    public_comments = models.GeneratedField(
+        expression=Coalesce(NullIf(F("ca_public_comments"), Value("")), F("siccrf_public_comments")),
+        output_field=models.TextField(verbose_name="commentaires publics"),
+        db_persist=True,
+    )
 
-    @property
-    def private_comments(self):
-        return self.ca_private_comments if self.ca_private_comments else self.siccrf_private_comments
+    private_comments = models.GeneratedField(
+        expression=Coalesce(NullIf(F("ca_private_comments"), Value("")), F("siccrf_private_comments")),
+        output_field=models.BooleanField(verbose_name="commentaires privés"),
+        db_persist=True,
+    )
