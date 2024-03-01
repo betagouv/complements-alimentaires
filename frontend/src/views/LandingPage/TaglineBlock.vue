@@ -6,7 +6,7 @@
     <div class="relative fr-container p-6 py-6 sm:py-10 md:py-16 grid grid-cols-12">
       <div class="col-span-12 md:col-span-8 lg:col-span-6">
         <h1>Vers une circulation de compléments alimentaires sûrs et conformes</h1>
-        <router-link :to="{ name: 'BlogsHome' }" class="fr-btn fr-btn--md mt-4">
+        <router-link :to="{ name: 'BlogHomePage' }" class="fr-btn fr-btn--md mt-4">
           En savoir plus sur la réglementation
         </router-link>
       </div>

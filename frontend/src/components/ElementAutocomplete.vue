@@ -29,8 +29,10 @@
           <div class="self-center"><v-icon scale="0.85" class="mr-2" :name="getTypeIcon(option.objectType)" /></div>
           <div>
             <div>
-              <span class="font-bold">{{ option.autocompleteMatch }}</span>
-              <span v-if="option.autocompleteMatch !== option.name" class="ml-2">({{ option.name }})</span>
+              <span class="font-bold capitalize">{{ option.autocompleteMatch.toLowerCase() }}</span>
+              <span v-if="option.autocompleteMatch !== option.name" class="ml-2 capitalize">
+                ({{ option.name.toLowerCase() }})
+              </span>
             </div>
             <div>{{ getType(option.objectType) }}</div>
           </div>
@@ -42,7 +44,7 @@
 
 <script setup>
 import { computed, nextTick, ref, watch } from "vue"
-import { getTypeIcon, getType } from "@/utils"
+import { getTypeIcon, getType } from "@/utils/mappings"
 
 const container = ref(undefined)
 const optionsList = ref(undefined)

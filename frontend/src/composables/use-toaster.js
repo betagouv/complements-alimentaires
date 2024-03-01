@@ -58,9 +58,18 @@ const useToaster = () => {
     timeouts[message.id] = window.setTimeout(() => removeMessage(message.id), message.timeout)
   }
 
+  const addSuccessMessage = (description) => addMessage({ type: "success", description })
+
+  const addErrorMessage = (description) => addMessage({ type: "error", title: "Erreur", description })
+
+  const addUnknownErrorMessage = () => addErrorMessage("Une erreur est survenue, veuillez réessayer plus tard.")
+
   return {
     messages,
     addMessage,
+    addSuccessMessage,
+    addErrorMessage,
+    addUnknownErrorMessage,
     removeMessage,
   }
 }

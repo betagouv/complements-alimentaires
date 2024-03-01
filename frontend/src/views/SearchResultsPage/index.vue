@@ -40,7 +40,8 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
 import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router"
-import { headers, verifyResponse } from "@/utils"
+import { headers } from "@/utils/data-fetching"
+import { verifyResponse } from "@/utils/custom-errors"
 import ResultCard from "./ResultCard"
 import ProgressSpinner from "@/components/ProgressSpinner"
 

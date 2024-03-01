@@ -1,16 +1,16 @@
 import { createRouter, createWebHistory } from "vue-router"
 import { useRootStore } from "@/stores/root"
 import LandingPage from "@/views/LandingPage"
-import ProducersPage from "@/views/ProducersPage"
-import BlogsHome from "@/views/BlogsHome"
-import BlogPost from "@/views/BlogPost"
-import SearchResults from "@/views/SearchResults"
-import ElementView from "@/views/ElementView"
-import CGU from "@/views/CGU.vue"
-import PrivacyPolicy from "@/views/PrivacyPolicy.vue"
-import LegalNotices from "@/views/LegalNotices"
-import CookiesInfo from "@/views/CookiesInfo"
-import ProducerForm from "@/views/ProducerForm"
+import ProducerHomePage from "@/views/ProducerHomePage"
+import BlogHomePage from "@/views/BlogHomePage"
+import BlogPostPage from "@/views/BlogPostPage"
+import SearchResultsPage from "@/views/SearchResultsPage"
+import ElementPage from "@/views/ElementPage"
+import CGUPage from "@/views/CGUPage.vue"
+import PrivacyPolicyPage from "@/views/PrivacyPolicyPage.vue"
+import LegalNoticesPage from "@/views/LegalNoticesPage"
+import CookiesInfoPage from "@/views/CookiesInfoPage"
+import ProducerFormPage from "@/views/ProducerFormPage"
 import NotFound from "@/views/NotFound"
 
 const routes = [
@@ -28,27 +28,27 @@ const routes = [
   },
   {
     path: "/entreprises",
-    name: "ProducersPage",
-    component: ProducersPage,
+    name: "ProducerHomePage",
+    component: ProducerHomePage,
   },
   {
     path: "/blog",
-    name: "BlogsHome",
-    component: BlogsHome,
+    name: "BlogHomePage",
+    component: BlogHomePage,
     meta: {
       title: "Articles de blog",
     },
   },
   {
     path: "/blog/:id",
-    name: "BlogPost",
-    component: BlogPost,
+    name: "BlogPostPage",
+    component: BlogPostPage,
     props: true,
   },
   {
     path: "/resultats/",
-    name: "SearchResults",
-    component: SearchResults,
+    name: "SearchResultsPage",
+    component: SearchResultsPage,
     props: true,
     beforeEnter(to) {
       if (!to.query?.q) return { to: "LandingPage" }
@@ -56,46 +56,46 @@ const routes = [
   },
   {
     path: "/element/:urlComponent",
-    name: "ElementView",
-    component: ElementView,
+    name: "ElementPage",
+    component: ElementPage,
     props: true,
   },
   {
     path: "/mentions-legales",
-    name: "LegalNotices",
-    component: LegalNotices,
+    name: "LegalNoticesPage",
+    component: LegalNoticesPage,
     meta: {
       title: "Mentions légales",
     },
   },
   {
     path: "/cgu",
-    name: "CGU",
-    component: CGU,
+    name: "CGUPage",
+    component: CGUPage,
     meta: {
       title: "Conditions générales d'utilisation",
     },
   },
   {
     path: "/politique-de-confidentialite",
-    name: "PrivacyPolicy",
-    component: PrivacyPolicy,
+    name: "PrivacyPolicyPage",
+    component: PrivacyPolicyPage,
     meta: {
       title: "Politique de confidentialité",
     },
   },
   {
     path: "/cookies",
-    name: "CookiesInfo",
-    component: CookiesInfo,
+    name: "CookiesInfoPage",
+    component: CookiesInfoPage,
     meta: {
       title: "Cookies",
     },
   },
   {
     path: "/nouvelle-demarche",
-    name: "ProducerForm",
-    component: ProducerForm,
+    name: "ProducerFormPage",
+    component: ProducerFormPage,
     meta: {
       authenticationRequired: true,
     },

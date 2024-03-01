@@ -6,6 +6,9 @@
     "**/node_modules": true
   },
   "editor.formatOnSave": true,
+  "editor.unicodeHighlight.allowedLocales": {
+    "fr": true
+  },
   "workbench.colorCustomizations": {
     "titleBar.activeBackground": "#000091",
     "titleBar.activeForeground": "#ffffff"
