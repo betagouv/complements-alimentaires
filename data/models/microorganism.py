@@ -4,18 +4,12 @@ from django.db.models import F, Value
 
 from simple_history.models import HistoricalRecords
 
-from .mixins import (
-    WithCreationAndModificationDate,
-    WithHistory,
-    WithMissingImportBoolean,
-    WithSICCRFComments,
-    WithCAComments,
-)
+from .mixins import WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithComments
 from .abstract_models import CommonModel
 from .substance import Substance
 
 
-class Microorganism(CommonModel, WithSICCRFComments, WithCAComments):
+class Microorganism(CommonModel, WithComments):
     class Meta:
         verbose_name = "micro-organisme"
 

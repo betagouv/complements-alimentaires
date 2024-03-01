@@ -1,17 +1,7 @@
-from .mixins import (
-    WithCreationAndModificationDate,
-    WithMissingImportBoolean,
-    WithSICCRFDefaultFields,
-    WithCADefaultFields,
-)
+from .mixins import WithCreationAndModificationDate, WithMissingImportBoolean, WithDefaultFields
 
 
-class CommonModel(
-    WithCreationAndModificationDate,
-    WithMissingImportBoolean,
-    WithSICCRFDefaultFields,
-    WithCADefaultFields,
-):
+class CommonModel(WithCreationAndModificationDate, WithMissingImportBoolean, WithDefaultFields):
     """
     Les modèles ingrédients et les synonymes héritent de ce modèle
     """

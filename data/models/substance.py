@@ -3,17 +3,11 @@ from django.db.models.functions import Coalesce, NullIf
 from django.db.models import F, Value
 from simple_history.models import HistoricalRecords
 
-from .mixins import (
-    WithCreationAndModificationDate,
-    WithHistory,
-    WithMissingImportBoolean,
-    WithSICCRFComments,
-    WithCAComments,
-)
+from .mixins import WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithComments
 from .abstract_models import CommonModel
 
 
-class Substance(CommonModel, WithSICCRFComments, WithCAComments):
+class Substance(CommonModel, WithComments):
     """
     siccrf_min_quantity présente dans les tables SICCRF n'est strictement jamais remplie, donc pas transformée en champ du modèle
     siccrf_source_en présente dans les tables SICCRF est très peu remplie, donc pas transformée en champ du modèle

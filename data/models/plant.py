@@ -4,13 +4,7 @@ from django.db.models import F
 
 from simple_history.models import HistoricalRecords
 
-from .mixins import (
-    WithCreationAndModificationDate,
-    WithHistory,
-    WithMissingImportBoolean,
-    WithSICCRFComments,
-    WithCAComments,
-)
+from .mixins import WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithComments
 from .abstract_models import CommonModel
 from .substance import Substance
 
@@ -40,7 +34,7 @@ class PlantPart(CommonModel):
         return self.siccrf_name_en
 
 
-class Plant(CommonModel, WithSICCRFComments, WithCAComments):
+class Plant(CommonModel, WithComments):
     class Meta:
         verbose_name = "plante"
 
