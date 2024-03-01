@@ -26,9 +26,9 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     # cas_number
     siccrf_cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS (selon la base SICCRF)")
-    CA_cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS")
+    ca_cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS")
     cas_number = models.GeneratedField(
-        expression=Coalesce(NullIf(F("CA_cas_number"), Value("")), F("siccrf_cas_number")),
+        expression=Coalesce(NullIf(F("ca_cas_number"), Value("")), F("siccrf_cas_number")),
         output_field=models.CharField(max_length=10, blank=True, verbose_name="numéro CAS"),
         db_persist=True,
     )
@@ -39,22 +39,22 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
         blank=True,
         verbose_name="numéro EINECS (selon la base SICCRF)",
     )
-    CA_einec_number = models.CharField(
+    ca_einec_number = models.CharField(
         max_length=7,
         blank=True,
         verbose_name="numéro EINECS",
     )
     einec_number = models.GeneratedField(
-        expression=Coalesce(NullIf(F("CA_einec_number"), Value("")), F("siccrf_einec_number")),
+        expression=Coalesce(NullIf(F("ca_einec_number"), Value("")), F("siccrf_einec_number")),
         output_field=models.CharField(max_length=7, blank=True, verbose_name="numéro EINECS"),
         db_persist=True,
     )
 
     # source
     siccrf_source = models.TextField(blank=True)
-    CA_source = models.TextField(blank=True)
+    ca_source = models.TextField(blank=True)
     source = models.GeneratedField(
-        expression=Coalesce(NullIf(F("CA_source"), Value("")), F("siccrf_source")),
+        expression=Coalesce(NullIf(F("ca_source"), Value("")), F("siccrf_source")),
         output_field=models.TextField(),
         db_persist=True,
     )
@@ -63,11 +63,11 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
     siccrf_must_specify_quantity = models.BooleanField(
         default=False, verbose_name="spécification de quantité obligatoire (selon la base SICCRF)"
     )
-    CA_must_specify_quantity = models.BooleanField(
+    ca_must_specify_quantity = models.BooleanField(
         null=True, default=None, verbose_name="spécification de quantité obligatoire"
     )
     must_specify_quantity = models.GeneratedField(
-        expression=Coalesce(F("CA_must_specify_quantity"), F("siccrf_must_specify_quantity")),
+        expression=Coalesce(F("ca_must_specify_quantity"), F("siccrf_must_specify_quantity")),
         output_field=models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire"),
         db_persist=True,
     )
@@ -76,9 +76,9 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
     siccrf_max_quantity = models.FloatField(
         null=True, blank=True, verbose_name="quantité maximale autorisée (selon la base SICCRF)"
     )
-    CA_max_quantity = models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée")
+    ca_max_quantity = models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée")
     max_quantity = models.GeneratedField(
-        expression=Coalesce(F("CA_nutritional_reference"), F("siccrf_nutritional_reference")),
+        expression=Coalesce(F("ca_nutritional_reference"), F("siccrf_nutritional_reference")),
         output_field=models.FloatField(null=True, blank=True, verbose_name="spécification de quantité obligatoire"),
         db_persist=True,
     )
@@ -87,11 +87,11 @@ class Substance(CommonModel, WithSICCRFComments, WithCAComments):
     siccrf_nutritional_reference = models.FloatField(
         null=True, blank=True, verbose_name="apport nutritionnel conseillé"
     )
-    CA_nutritional_reference = models.FloatField(
+    ca_nutritional_reference = models.FloatField(
         null=True, blank=True, verbose_name="apport nutritionnel conseillé"
     )  # cette colonne devrat être associée à une unité
     nutritional_reference = models.GeneratedField(
-        expression=Coalesce("CA_nutritional_reference", "siccrf_nutritional_reference"),
+        expression=Coalesce("ca_nutritional_reference", "siccrf_nutritional_reference"),
         output_field=models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé"),
         db_persist=True,
     )

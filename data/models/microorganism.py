@@ -21,9 +21,9 @@ class Microorganism(CommonModel, WithSICCRFComments, WithCAComments):
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     siccrf_genre = models.TextField(verbose_name="genre de micro-organisme (selon la base SICCRF)")
-    CA_genre = models.TextField(verbose_name="genre de micro-organisme")
+    ca_genre = models.TextField(verbose_name="genre de micro-organisme")
     genre = models.GeneratedField(
-        expression=Coalesce(F("CA_genre"), F("siccrf_genre")),
+        expression=Coalesce(F("ca_genre"), F("siccrf_genre")),
         output_field=models.TextField(verbose_name="genre de micro-organisme"),
         db_persist=True,
     )
@@ -41,7 +41,7 @@ class MicroorganismSubstanceRelation(WithCreationAndModificationDate, WithHistor
     siccrf_is_related = models.BooleanField(
         default=False, verbose_name="substance associée au micro-organisme (selon la base SICCRF)"
     )
-    CA_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée au micro-organisme")
+    ca_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée au micro-organisme")
 
 
 class MicroorganismSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):

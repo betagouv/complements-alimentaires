@@ -44,10 +44,10 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
             {
                 "fields": [
                     "siccrf_name",
-                    "CA_name",
+                    "ca_name",
                     "name",
                     "is_obsolete",
-                    "CA_is_obsolete",
+                    "ca_is_obsolete",
                 ],
             },
         ),
@@ -57,8 +57,8 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
                 "fields": [
                     "siccrf_public_comments",
                     "siccrf_private_comments",
-                    "CA_public_comments",
-                    "CA_private_comments",
+                    "ca_public_comments",
+                    "ca_private_comments",
                 ],
             },
         ),

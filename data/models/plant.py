@@ -51,16 +51,16 @@ class Plant(CommonModel, WithSICCRFComments, WithCAComments):
         verbose_name="famille de plante (selon la base SICCRF)",
         related_name="siccrf_plant_set",
     )
-    CA_family = models.ForeignKey(
+    ca_family = models.ForeignKey(
         PlantFamily,
         null=True,
         on_delete=models.SET_NULL,
         verbose_name="famille de plante",
-        related_name="CA_plant_set",
+        related_name="ca_plant_set",
     )
     # TODO: output_field should be a ForeignKey
     family = models.GeneratedField(
-        expression=Coalesce(F("CA_family"), F("siccrf_family")),
+        expression=Coalesce(F("ca_family"), F("siccrf_family")),
         output_field=models.BigIntegerField(verbose_name="famille de plante"),
         db_persist=True,
     )
@@ -80,16 +80,16 @@ class Part(WithCreationAndModificationDate):
     siccrf_must_be_monitored = models.BooleanField(
         default=False, verbose_name="⚠️ à surveiller (selon la base SICCRF) ?"
     )
-    CA_must_be_monitored = models.BooleanField(null=True, default=None, verbose_name="⚠️ à surveiller ?")
+    ca_must_be_monitored = models.BooleanField(null=True, default=None, verbose_name="⚠️ à surveiller ?")
     must_be_monitored = models.GeneratedField(
-        expression=Coalesce(F("CA_must_be_monitored"), F("siccrf_must_be_monitored")),
+        expression=Coalesce(F("ca_must_be_monitored"), F("siccrf_must_be_monitored")),
         output_field=models.BooleanField(verbose_name="⚠️ à surveiller ?"),
         db_persist=True,
     )
     siccrf_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile (selon la base SICCRF) ?")
-    CA_is_useful = models.BooleanField(null=True, default=None, verbose_name="🍵 utile ?")
+    ca_is_useful = models.BooleanField(null=True, default=None, verbose_name="🍵 utile ?")
     is_useful = models.GeneratedField(
-        expression=Coalesce(F("CA_is_useful"), F("siccrf_is_useful")),
+        expression=Coalesce(F("ca_is_useful"), F("siccrf_is_useful")),
         output_field=models.BooleanField(verbose_name="🍵 utile ?"),
         db_persist=True,
     )
@@ -104,7 +104,7 @@ class PlantSubstanceRelation(WithCreationAndModificationDate, WithHistory):
     siccrf_is_related = models.BooleanField(
         default=False, verbose_name="substance associée à la plante (selon la base SICCRF)"
     )
-    CA_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à la plante")
+    ca_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à la plante")
 
 
 class PlantSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):

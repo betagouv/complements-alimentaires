@@ -37,7 +37,7 @@ class IngredientSubstanceRelation(WithCreationAndModificationDate, WithHistory):
     siccrf_is_related = models.BooleanField(
         default=False, verbose_name="substance associée à l'ingrédient (selon la base SICCRF)"
     )
-    CA_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à l'ingrédient")
+    ca_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à l'ingrédient")
 
 
 class IngredientSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):

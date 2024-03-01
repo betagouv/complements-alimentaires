@@ -71,17 +71,17 @@ class WithCADefaultFields(models.Model):
     class Meta:
         abstract = True
 
-    CA_name = models.TextField(verbose_name="nom CA")
-    CA_is_obsolete = models.BooleanField(null=True, default=None, verbose_name="objet obsolète selon CA")
+    ca_name = models.TextField(verbose_name="nom CA")
+    ca_is_obsolete = models.BooleanField(null=True, default=None, verbose_name="objet obsolète selon CA")
 
     name = models.GeneratedField(
-        expression=Coalesce(NullIf(F("CA_name"), Value("")), F("siccrf_name")),
+        expression=Coalesce(NullIf(F("ca_name"), Value("")), F("siccrf_name")),
         output_field=models.TextField(verbose_name="nom"),
         db_persist=True,
     )
 
     is_obsolete = models.GeneratedField(
-        expression=Coalesce(F("CA_is_obsolete"), F("siccrf_is_obsolete")),
+        expression=Coalesce(F("ca_is_obsolete"), F("siccrf_is_obsolete")),
         output_field=models.BooleanField(verbose_name="objet obsolète"),
         db_persist=True,
     )
@@ -91,13 +91,13 @@ class WithCAComments(models.Model):
     class Meta:
         abstract = True
 
-    CA_public_comments = models.TextField(blank=True, verbose_name="commentaires publics SICCRF")
-    CA_private_comments = models.TextField(blank=True, verbose_name="commentaires privés SICCRF")
+    ca_public_comments = models.TextField(blank=True, verbose_name="commentaires publics SICCRF")
+    ca_private_comments = models.TextField(blank=True, verbose_name="commentaires privés SICCRF")
 
     @property
     def public_comments(self):
-        return self.CA_public_comments if self.CA_public_comments else self.siccrf_public_comments
+        return self.ca_public_comments if self.ca_public_comments else self.siccrf_public_comments
 
     @property
     def private_comments(self):
-        return self.CA_private_comments if self.CA_private_comments else self.siccrf_private_comments
+        return self.ca_private_comments if self.ca_private_comments else self.siccrf_private_comments
