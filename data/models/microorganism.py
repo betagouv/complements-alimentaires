@@ -1,6 +1,6 @@
 from django.db import models
-from django.db.models.functions import Coalesce
-from django.db.models import F
+from django.db.models.functions import Coalesce, NullIf
+from django.db.models import F, Value
 
 from simple_history.models import HistoricalRecords
 
@@ -23,7 +23,7 @@ class Microorganism(CommonModel, WithSICCRFComments, WithCAComments):
     siccrf_genre = models.TextField(verbose_name="genre de micro-organisme (selon la base SICCRF)")
     ca_genre = models.TextField(verbose_name="genre de micro-organisme")
     genre = models.GeneratedField(
-        expression=Coalesce(F("ca_genre"), F("siccrf_genre")),
+        expression=Coalesce(NullIf(F("ca_genre"), Value("")), F("siccrf_genre")),
         output_field=models.TextField(verbose_name="genre de micro-organisme"),
         db_persist=True,
     )
