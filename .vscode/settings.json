@@ -9,6 +9,7 @@
   "editor.unicodeHighlight.allowedLocales": {
     "fr": true
   },
+  "workbench.editor.labelFormat": "short",
   "workbench.colorCustomizations": {
     "titleBar.activeBackground": "#000091",
     "titleBar.activeForeground": "#ffffff"
