@@ -7,36 +7,39 @@
     <img class="hidden md:block absolute bottom-0 right-20" src="/static/images/plants.png" />
   </div>
   <div class="fr-container my-6">
-    <div class="flex justify-center" v-if="loading">
+    <div v-if="isFetching" class="flex justify-center">
       <ProgressSpinner />
     </div>
-    <p v-else-if="blogPostCount === 0">Nous n'avons pas encore d'articles de blog</p>
-    <div v-else>
-      <div class="grid grid-cols-12 gap-4">
-        <BlogCard
-          class="col-span-12 sm:col-span-6 md:col-span-4"
-          v-for="post in visibleBlogPosts"
-          :key="post.id"
-          :post="post"
+    <template v-if="blogPosts">
+      <div v-if="blogPosts.results.length > 0">
+        <div class="grid grid-cols-12 gap-4">
+          <BlogCard
+            class="col-span-12 sm:col-span-6 md:col-span-4"
+            v-for="post in blogPosts?.results"
+            :key="post.id"
+            :post="post"
+          />
+        </div>
+        <DsfrPagination
+          class="mt-4"
+          @update:currentPage="updatePage"
+          :pages="pages"
+          :current-page="page - 1"
+          :truncLimit="5"
         />
       </div>
-      <DsfrPagination
-        class="mt-4"
-        @update:currentPage="updatePage"
-        :pages="pages"
-        :current-page="page - 1"
-        :truncLimit="5"
-      />
-    </div>
+      <p v-else>Nous n'avons pas encore d'articles de blog</p>
+    </template>
   </div>
 </template>
 
 <script setup>
-import { onMounted, computed, ref, watch } from "vue"
-import { verifyResponse } from "@/utils/custom-errors"
+import { computed, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import BlogCard from "@/components/BlogCard"
+import { useFetch } from "@vueuse/core"
+import useToaster from "@/composables/use-toaster"
 
 const route = useRoute()
 const router = useRouter()
@@ -44,10 +47,9 @@ const router = useRouter()
 // Pagination
 const limit = 6
 const page = ref(null)
-const blogPostCount = ref(null)
 const offset = computed(() => (page.value - 1) * limit)
 const pages = computed(() => {
-  const totalPages = Math.ceil(blogPostCount.value / limit)
+  const totalPages = Math.ceil(blogPosts?.value.count / limit)
   const pages = []
   for (let i = 0; i < totalPages; i++)
     pages.push({
@@ -58,23 +60,21 @@ const pages = computed(() => {
   return pages
 })
 const updatePage = (newPage) => (page.value = newPage + 1)
+const updateRoute = () => {
+  const query = { page: page.value }
+  if (route.query.page) router.push({ query }).catch(() => {})
+  else router.replace({ query }).catch(() => {})
+}
 watch(page, updateRoute)
 
 // Blog posts
-const visibleBlogPosts = ref(null)
-const fetchCurrentPage = () => {
-  const url = `/api/v1/blogPosts/?limit=${limit}&offset=${offset.value}`
-  return fetch(url)
-    .then(verifyResponse)
-    .then((response) => {
-      visibleBlogPosts.value = response.results
-      blogPostCount.value = response.count
-    })
-    .catch(() => {
-      window.alert("Une erreur est survenue veuillez réessayer plus tard")
-    })
+const url = computed(() => `/api/v1/blogPosts/?limit=${limit}&offset=${offset.value}`)
+const { data: blogPosts, error, execute, isFetching } = useFetch(url, { immediate: false }).json()
+
+const fetchCurrentPage = async () => {
+  await execute()
+  if (error.value) useToaster().addUnknownErrorMessage()
 }
-const loading = computed(() => blogPostCount.value === null)
 
 // Route management
 watch(route, () => {
@@ -84,16 +84,10 @@ watch(route, () => {
 const populateParametersFromRoute = () => {
   page.value = route.query.page ? parseInt(route.query.page) : 1
 }
-function updateRoute() {
-  const query = { page: page.value }
-  if (route.query.page) router.push({ query }).catch(() => {})
-  else router.replace({ query }).catch(() => {})
-}
 
-onMounted(() => {
-  populateParametersFromRoute()
-  if (Object.keys(route.query).length > 0) fetchCurrentPage()
-})
+// Init
+populateParametersFromRoute()
+if (Object.keys(route.query).length > 0) fetchCurrentPage()
 </script>
 
 <style scoped>
