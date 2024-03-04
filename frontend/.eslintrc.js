@@ -18,6 +18,8 @@ module.exports = {
     "vue/multi-word-component-names": "off",
     "vue/no-v-text-v-html-on-component": "off",
     "vue/no-multiple-template-root": "off",
+    // Change some errors to warning only, to not prevent development
+    "no-unused-vars": 1,
   },
   plugins: ["prettier"],
 
