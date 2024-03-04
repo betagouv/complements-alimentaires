@@ -104,7 +104,7 @@ const notFound = ref(false)
 const searchTerm = ref(null)
 const search = () => {
   if (searchTerm.value.length < 3) window.alert("Veuillez saisir au moins trois caractères")
-  else router.push({ name: "SearchResultsPage", query: { q: searchTerm.value } })
+  else router.push({ name: "ElementSearchResultsPage", query: { q: searchTerm.value } })
 }
 
 const typeMapping = {
