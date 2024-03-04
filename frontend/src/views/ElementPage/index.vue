@@ -135,11 +135,8 @@ const einecNumber = computed(() => element.value?.einecNumber)
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
 
-const {
-  data: element,
-  error,
-  execute,
-} = useFetch(`/api/v1/${typeMapping[type.value]}s/${elementId.value}`, {}, { immediate: false }).get().json()
+const url = computed(() => `/api/v1/${typeMapping[type.value]}s/${elementId.value}`)
+const { data: element, error, execute } = useFetch(url, {}, { immediate: false }).get().json()
 
 const getElementFromApi = async () => {
   if (!type.value || !elementId.value) {
