@@ -21,7 +21,7 @@
       class="mt-2"
       v-if="modelValue.element.objectType !== 'substance' && modelValue.element.objectType !== 'ingredient'"
     />
-    <div v-if="modelValue.element.objectType === 'plant'" class="ml0 md:ml-12 block sm:flex gap-2 md:gap-4">
+    <div v-if="modelValue.element.objectType === 'plant'" class="md:ml-12 block sm:flex gap-2 md:gap-4">
       <DsfrInputGroup class="max-w-sm" v-if="plantParts.length > 0">
         <DsfrSelect
           label="Partie utilisée"

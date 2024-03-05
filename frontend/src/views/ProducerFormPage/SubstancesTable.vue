@@ -1,5 +1,5 @@
 <template>
-  <div class="block text-sm sm:table w-full">
+  <div class="text-sm sm:table w-full">
     <div class="hidden sm:table-header-group bg-gray-100">
       <div class="table-row">
         <div
@@ -11,27 +11,27 @@
         </div>
       </div>
     </div>
-    <div class="block sm:table-row-group">
+    <div class="sm:table-row-group">
       <div
-        class="block sm:table-row border sm:border-0 p-2 sm:p-0 mb-2 sm:mb-0"
+        class="sm:table-row border sm:border-0 p-2 sm:p-0 mb-2 sm:mb-0"
         v-for="(row, rowIndex) in rows"
         :key="`row-${rowIndex}`"
       >
         <!-- Cells contenant l'information de la substance -->
         <div
-          class="block sm:table-cell ca-cell capitalize"
+          class="sm:table-cell ca-cell capitalize"
           v-for="(item, cellIndex) in row"
           :key="`cell-${rowIndex}-${cellIndex}`"
         >
-          <div class="block sm:hidden ca-xs-title">
+          <div class="sm:hidden ca-xs-title">
             {{ headers[cellIndex] }}
           </div>
           <div>{{ item }}</div>
         </div>
 
         <!-- Cells des inputs (communes à toutes les substances) -->
-        <div class="block sm:table-cell ca-cell">
-          <div class="block sm:hidden ca-xs-title">Quantité par DJR (en mg)</div>
+        <div class="sm:table-cell ca-cell">
+          <div class="sm:hidden ca-xs-title">Quantité par DJR (en mg)</div>
           <DsfrInputGroup class="max-w-28">
             <DsfrInput v-model="payload.substances[rowIndex].quantity" label="Quantité par DJR" :required="true" />
           </DsfrInputGroup>
