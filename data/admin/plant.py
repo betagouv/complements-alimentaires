@@ -20,11 +20,16 @@ class PartInlineAdmin(admin.TabularInline):
     extra = 1
 
 
+class SubstanceInlineAdmin(admin.TabularInline):
+    model = Plant.substances.through
+    extra = 1
+
+
 class PlantForm(forms.ModelForm):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
         }
@@ -37,33 +42,54 @@ class PlantAdmin(IngredientAdminWithHistoryChangedFields):
         (
             None,  # Pas d'entête
             {
-                "fields": ["name", "is_obsolete"],
+                "fields": [
+                    "siccrf_name",
+                    "ca_name",
+                    "name",
+                    "is_obsolete",
+                    "ca_is_obsolete",
+                ],
             },
         ),
         (
             "Commentaires",
             {
-                "fields": ["public_comments", "private_comments"],
+                "fields": [
+                    "siccrf_public_comments",
+                    "siccrf_private_comments",
+                    "ca_public_comments",
+                    "ca_private_comments",
+                ],
             },
         ),
         (
-            "Commentaires",
+            "Famille",
             {
-                "fields": ["family", "substances"],
+                "fields": ["siccrf_family"],
             },
         ),
     ]
 
     inlines = (
         PartInlineAdmin,
+        SubstanceInlineAdmin,
         PlantSynonymInline,
     )
     list_display = (
         "name",
+        "siccrf_family",
+    )
+    list_filter = ("is_obsolete", "siccrf_family")
+    history_list_display = ["changed_fields"]
+    readonly_fields = (
+        "siccrf_name",
+        "name",
+        "is_obsolete",
+        "siccrf_public_comments",
+        "siccrf_private_comments",
+        "siccrf_family",
         "family",
     )
-    list_filter = ("is_obsolete", "family")
-    history_list_display = ['changed_fields']
 
     def changed_fields(self, obj):
         if obj.prev_record:

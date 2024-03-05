@@ -39,7 +39,8 @@ class PlantSynonymSerializer(serializers.ModelSerializer):
 
 
 class PlantSerializer(serializers.ModelSerializer):
-    family = PlantFamilySerializer(read_only=True)
+    # TODO utiliser le Generated Field family lorsqu'il sera une ForeignKey et non plus un BigInteger
+    family = PlantFamilySerializer(read_only=True, source="CA_family")
     plant_parts = PartRelationSerializer(source="part_set", many=True, read_only=True)
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)

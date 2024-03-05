@@ -55,7 +55,7 @@ class SearchView(APIView):
         vector = (
             SearchVector("name", weight="A")
             + SearchVector(StringAgg("microorganismsynonym__name", delimiter=" "), weight="B")
-            + SearchVector("name_en", weight="B")
+            + SearchVector("siccrf_name_en", weight="B")
         )
         microorganisms = Microorganism.objects.annotate(rank=SearchRank(vector, query))
         return list(microorganisms.filter(rank__gte=self.search_rank_threshold).all())
@@ -64,8 +64,8 @@ class SearchView(APIView):
         vector = (
             SearchVector("name", weight="A")
             + SearchVector(StringAgg("ingredientsynonym__name", delimiter=" "), weight="B")
-            + SearchVector("name_en", weight="B")
-            + SearchVector("description", weight="C")
+            + SearchVector("siccrf_name_en", weight="B")
+            + SearchVector("siccrf_description", weight="C")
         )
         ingredients = Ingredient.objects.annotate(rank=SearchRank(vector, query))
         return list(ingredients.filter(rank__gte=self.search_rank_threshold).all())
@@ -76,7 +76,7 @@ class SearchView(APIView):
             + SearchVector("einec_number", weight="A")
             + SearchVector("name", weight="A")
             + SearchVector(StringAgg("substancesynonym__name", delimiter=" "), weight="B")
-            + SearchVector("name_en", weight="B")
+            + SearchVector("siccrf_name_en", weight="B")
         )
         substance = Substance.objects.annotate(rank=SearchRank(vector, query))
         return list(substance.filter(rank__gte=self.search_rank_threshold).all())

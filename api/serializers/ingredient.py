@@ -23,7 +23,6 @@ class IngredientSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "name_en",
-            "observation",
             "description",
             "synonyms",
             "substances",
