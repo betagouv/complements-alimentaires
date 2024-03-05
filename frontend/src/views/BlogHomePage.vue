@@ -10,12 +10,12 @@
     <div v-if="isFetching" class="flex justify-center">
       <ProgressSpinner />
     </div>
-    <template v-if="blogPosts">
-      <div v-if="blogPosts.results.length > 0">
+    <template v-if="data">
+      <div v-if="data.results.length > 0">
         <div class="grid grid-cols-12 gap-4">
           <BlogCard
             class="col-span-12 sm:col-span-6 md:col-span-4"
-            v-for="post in blogPosts.results"
+            v-for="post in data.results"
             :key="post.id"
             :post="post"
           />
@@ -49,7 +49,7 @@ const limit = 6
 const page = ref(null)
 const offset = computed(() => (page.value - 1) * limit)
 const pages = computed(() => {
-  const totalPages = Math.ceil(blogPosts?.value.count / limit)
+  const totalPages = Math.ceil(data?.value.count / limit)
   const pages = []
   for (let i = 0; i < totalPages; i++)
     pages.push({
@@ -69,7 +69,7 @@ watch(page, updateRoute)
 
 // Blog posts
 const url = computed(() => `/api/v1/blogPosts/?limit=${limit}&offset=${offset.value}`)
-const { data: blogPosts, error, execute, isFetching } = useFetch(url, { immediate: false }).json()
+const { data, error, execute, isFetching } = useFetch(url, { immediate: false }).json()
 
 const fetchCurrentPage = async () => {
   await execute()
