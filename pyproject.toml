@@ -69,7 +69,8 @@ sib-api-v3-sdk = "*" # https://github.com/sendinblue/APIv3-python-library
 # Misc
 ######################################################################################################################
 pillow = "*"              # https://github.com/python-pillow/Pillow
-django-ckeditor = "6.7.0" # https://github.com/django-ckeditor/django-ckeditor # FIXED because of a warning in 6.7.1
+django-ckeditor = "6.7.0" # https://github.com/django-ckeditor/django-ckeditor # we keep it temporarily for migrations
+django-ckeditor-5 = "*"   # https://github.com/hvlads/django-ckeditor-5
 
 
 # Dev dependencies (not installed on remote environments)
