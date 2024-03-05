@@ -63,7 +63,7 @@ const element = defineModel()
 
 const plantParts = computed(() => element.value.element.plantParts.map((x) => ({ text: x.name, value: x.id })))
 
-// TODO: complete it and pass it to utils
+// TODO: s'assurer que les unités utilisées sont les mêmes partout, et possiblement les mettre dans la base de données
 const units = [
   {
     text: "g",
