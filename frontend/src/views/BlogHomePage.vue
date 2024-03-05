@@ -15,7 +15,7 @@
         <div class="grid grid-cols-12 gap-4">
           <BlogCard
             class="col-span-12 sm:col-span-6 md:col-span-4"
-            v-for="post in blogPosts?.results"
+            v-for="post in blogPosts.results"
             :key="post.id"
             :post="post"
           />
