@@ -1,19 +1,28 @@
 <template>
   <div class="p-4 border shadow-md">
-    <div class="flex">
-      <div :class="`mr-4 self-center justify-center rounded-full icon-${element.element.objectType} h-8 w-8 flex`">
-        <v-icon class="self-center" fill="white" :name="getTypeIcon(element.element.objectType)" />
-      </div>
-      <div class="grow self-center">
-        <div class="font-bold capitalize">
-          {{ element.element.name.toLowerCase() }}
-          <span class="uppercase text-gray-400 text-sm ml-2">{{ getType(element.element.objectType) }}</span>
+    <div class="sm:flex">
+      <div class="flex">
+        <div :class="`mr-4 self-center justify-center rounded-full icon-${element.element.objectType} h-8 w-8 flex`">
+          <v-icon class="self-center" fill="white" :name="getTypeIcon(element.element.objectType)" />
         </div>
-        <div v-if="element.element.synonyms?.length">
-          {{ element.element.synonyms.map((x) => x.name).join(", ") }}
+        <div class="self-center">
+          <div class="font-bold capitalize">
+            {{ element.element.name.toLowerCase() }}
+            <span class="uppercase text-gray-400 text-sm ml-2">{{ getType(element.element.objectType) }}</span>
+          </div>
+          <div v-if="element.element.synonyms?.length">
+            {{ element.element.synonyms.map((x) => x.name).join(", ") }}
+          </div>
         </div>
       </div>
-      <div>
+      <div class="flex grow">
+        <div class="grow pl-4 ml-6 sm:border-l self-center">
+          <DsfrCheckbox
+            class="!my-2"
+            v-model="element.element.active"
+            :label="element.element.active ? 'Actif' : 'Non actif'"
+          />
+        </div>
         <DsfrButton secondary @click="$emit('remove', element)">Enlever</DsfrButton>
       </div>
     </div>

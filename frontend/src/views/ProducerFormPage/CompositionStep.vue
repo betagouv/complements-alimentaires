@@ -90,7 +90,7 @@ const fetchElement = async (type, id) => {
     useToaster().addErrorMessage("Une erreur est survenue en ajoutant cet élément, veuillez réessayer plus tard.")
     return null
   }
-  return { ...data.value, ...{ objectType: type } }
+  return { ...data.value, ...{ objectType: type, active: true } }
 }
 
 watch(searchTerm, fetchAutocompleteResults)
