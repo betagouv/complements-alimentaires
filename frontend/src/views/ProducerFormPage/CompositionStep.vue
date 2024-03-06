@@ -33,7 +33,7 @@
     <h3 class="fr-h6 !mb-4 !mt-6">Substances</h3>
     <p>
       Les substances contenues dans les ingrédients renseignés sont affichées ci-dessous. Veuillez compléter leur
-      dossage.
+      dosage.
     </p>
     <SubstancesTable v-model="payload" />
   </div>
