@@ -26,40 +26,42 @@
         <DsfrButton secondary @click="$emit('remove', element)">Enlever</DsfrButton>
       </div>
     </div>
-    <hr class="mt-2" v-if="element.element.objectType !== 'substance' && element.element.objectType !== 'ingredient'" />
-    <div v-if="element.element.objectType === 'plant'" class="md:ml-12 block sm:flex gap-2 md:gap-4">
-      <DsfrInputGroup class="max-w-sm" v-if="plantParts.length > 0">
-        <DsfrSelect
-          label="Partie utilisée"
-          defaultUnselectedText=""
-          v-model="element.plantPart"
-          :options="plantParts"
-          :required="true"
-        />
-      </DsfrInputGroup>
-      <DsfrInputGroup class="max-w-28">
-        <DsfrInput label="Qté par DJR" v-model="element.quantity" label-visible :required="true" />
-      </DsfrInputGroup>
-      <DsfrInputGroup class="min-w-20 max-w-24">
-        <DsfrSelect label="Unité" :options="units" v-model="element.unit" defaultUnselectedText="" :required="true" />
-      </DsfrInputGroup>
-      <DsfrInputGroup class="max-w-sm">
-        <DsfrSelect
-          label="Préparation"
-          :options="preparations"
-          v-model="element.preparation"
-          defaultUnselectedText=""
-          :required="true"
-        />
-      </DsfrInputGroup>
-    </div>
-    <div v-else-if="element.element.objectType === 'microorganism'" class="ml-12 flex gap-4">
-      <DsfrInputGroup class="max-w-sm">
-        <DsfrInput label-visible label="Souche" v-model="element.strain" :required="true" />
-      </DsfrInputGroup>
-      <DsfrInputGroup>
-        <DsfrInput label-visible v-model="element.cfu_quantity" label="Qté par DJR (en CFU)" :required="true" />
-      </DsfrInputGroup>
+    <div v-if="showFields">
+      <hr class="mt-2" />
+      <div v-if="element.element.objectType === 'plant'" class="md:ml-12 block sm:flex gap-2 md:gap-4">
+        <DsfrInputGroup class="max-w-sm" v-if="plantParts.length > 0">
+          <DsfrSelect
+            label="Partie utilisée"
+            defaultUnselectedText=""
+            v-model="element.plantPart"
+            :options="plantParts"
+            :required="true"
+          />
+        </DsfrInputGroup>
+        <DsfrInputGroup class="max-w-28">
+          <DsfrInput label="Qté par DJR" v-model="element.quantity" label-visible :required="true" />
+        </DsfrInputGroup>
+        <DsfrInputGroup class="min-w-20 max-w-24">
+          <DsfrSelect label="Unité" :options="units" v-model="element.unit" defaultUnselectedText="" :required="true" />
+        </DsfrInputGroup>
+        <DsfrInputGroup class="max-w-sm">
+          <DsfrSelect
+            label="Préparation"
+            :options="preparations"
+            v-model="element.preparation"
+            defaultUnselectedText=""
+            :required="true"
+          />
+        </DsfrInputGroup>
+      </div>
+      <div v-else-if="element.element.objectType === 'microorganism'" class="ml-12 flex gap-4">
+        <DsfrInputGroup class="max-w-sm">
+          <DsfrInput label-visible label="Souche" v-model="element.strain" :required="true" />
+        </DsfrInputGroup>
+        <DsfrInputGroup>
+          <DsfrInput label-visible v-model="element.cfu_quantity" label="Qté par DJR (en CFU)" :required="true" />
+        </DsfrInputGroup>
+      </div>
     </div>
   </div>
 </template>
@@ -71,6 +73,12 @@ import { getTypeIcon, getType } from "@/utils/mappings"
 const element = defineModel()
 
 const plantParts = computed(() => element.value.element.plantParts.map((x) => ({ text: x.name, value: x.id })))
+const showFields = computed(
+  () =>
+    element.value.element.active &&
+    element.value.element.objectType !== "substance" &&
+    element.value.element.objectType !== "ingredient"
+)
 
 // TODO: s'assurer que les unités utilisées sont les mêmes partout, et possiblement les mettre dans la base de données
 const units = [
