@@ -46,7 +46,7 @@
 import { computed, defineModel, watch } from "vue"
 
 const payload = defineModel()
-const headers = ["Nom", "Num CAS", "Num EINEC", "Ingrédient(s) source", "Qté / DJR", "Unité"]
+const headers = ["Nom", "Num CAS", "Num EINEC", "Ingrédient(s) source", "Qté par DJR", "Unité"]
 const rows = computed(() =>
   payload.value.substances.map((x) => [
     x.substance.name.toLowerCase(),
