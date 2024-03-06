@@ -33,8 +33,8 @@ import { useRoute, useRouter } from "vue-router"
 
 const payload = ref({
   effects: [],
-  targetConditions: [],
-  targetPopulations: [],
+  conditions: [],
+  populations: [],
   elements: [],
   substances: [],
 })
