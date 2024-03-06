@@ -18,3 +18,4 @@ if settings.DEBUG:
 # In order for vue-history to work in HTML5 mode, we need to add a catch-all
 # route returning the app (https://router.vuejs.org/guide/essentials/history-mode.html#html5-history-mode)
 urlpatterns.append(re_path(r"^.*/$", VueAppDisplayView.as_view()))
+

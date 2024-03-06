@@ -7,7 +7,7 @@ class ConditionForm(forms.ModelForm):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
         }
 
 
@@ -16,7 +16,7 @@ class ConditionAdmin(admin.ModelAdmin):
     form = ConditionForm
     fields = [
         "name",
-        "name_en",
+        "siccrf_name_en",
         "is_obsolete",
         "creation_date",
         "modification_date",

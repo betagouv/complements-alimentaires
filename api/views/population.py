@@ -6,4 +6,4 @@ from api.serializers import PopulationSerializer
 class PopulationListView(ListAPIView):
     model = Population
     serializer_class = PopulationSerializer
-    queryset = Population.objects.filter(missing_import_data=False, is_obsolete=False)
+    queryset = Population.objects.filter(missing_import_data=False, siccrf_is_obsolete=False)
