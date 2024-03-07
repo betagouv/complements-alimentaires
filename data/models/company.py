@@ -9,7 +9,7 @@ class Company(models.Model):
     social_name = models.CharField("dénomination sociale")
     commercial_name = models.CharField("enseigne", help_text="nom commercial")
     siret = models.CharField(
-        "n° SIRET", help_text="14 chiffres", validators=[MinLengthValidator(14), MaxLengthValidator(14)]
+        "n° SIRET", help_text="14 chiffres", unique=True, validators=[MinLengthValidator(14), MaxLengthValidator(14)]
     )
 
     def __str__(self):
