@@ -8,7 +8,7 @@ from .company import CompanyFactory
 class BaseRoleFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = BaseRole
-        abstract = False
+        abstract = True
 
     user = factory.SubFactory(UserFactory)
 
