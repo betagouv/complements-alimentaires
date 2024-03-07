@@ -137,6 +137,9 @@ class CSVImporterTestCase(TestCase):
             self.assertTrue(plantparts.plant_set.all().exists())
 
     def test_plantparts_status_is_not_always_useful(self):
+        """
+        Il existe des plantparts avec siccrf_is_useful = False et siccrf_must_be_monitored = True
+        """
         path = "data/tests/files/create_plants_with_distinct_useful_and_to_be_monitored_parts/"
         call_command("load_ingredients", directory=path)
 

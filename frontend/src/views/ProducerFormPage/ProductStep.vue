@@ -95,7 +95,7 @@
         <input
           :id="`population-${population.id}`"
           type="checkbox"
-          v-model="payload.targetPopulations"
+          v-model="payload.populations"
           :value="population.id"
         />
         <label :for="`population-${population.id}`" class="fr-label ml-2">{{ population.name }}</label>
@@ -110,12 +110,7 @@
         :key="`effect-${condition.id}`"
         class="flex col-span-6 sm:col-span-3 lg:col-span-2"
       >
-        <input
-          :id="`condition-${condition.id}`"
-          type="checkbox"
-          v-model="payload.targetConditions"
-          :value="condition.id"
-        />
+        <input :id="`condition-${condition.id}`" type="checkbox" v-model="payload.conditions" :value="condition.id" />
         <label :for="`condition-${condition.id}`" class="fr-label ml-2">{{ condition.name }}</label>
       </div>
     </div>
@@ -147,14 +142,11 @@
   TODO car on aura déjà l'adresse à partir du SIRET
 </template>
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, onMounted, defineModel } from "vue"
 import { verifyResponse } from "@/utils/custom-errors"
 
-const payload = ref({
-  effects: [],
-  targetConditions: [],
-  targetPopulations: [],
-})
+const payload = defineModel()
+
 const galenicFormulation = [
   {
     text: "Ampoule",

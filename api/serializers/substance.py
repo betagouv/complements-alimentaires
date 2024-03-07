@@ -25,7 +25,6 @@ class SubstanceSerializer(serializers.ModelSerializer):
             "einec_number",
             "source",
             "must_specify_quantity",
-            "min_quantity",
             "max_quantity",
             "nutritional_reference",
             "synonyms",

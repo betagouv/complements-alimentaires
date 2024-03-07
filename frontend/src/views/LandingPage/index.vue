@@ -7,13 +7,17 @@
 
   <StatsBlock />
 
-  <div class="fr-container my-10">
-    <Suspense><BlogBlock /></Suspense>
-  </div>
+  <Suspense>
+    <div>
+      <div class="fr-container my-10">
+        <BlogBlock />
+      </div>
 
-  <div class="fr-container my-10">
-    <Suspense><WebinarBlock /></Suspense>
-  </div>
+      <div class="fr-container my-10">
+        <WebinarBlock />
+      </div>
+    </div>
+  </Suspense>
 
   <div class="bg-blue-france-975">
     <div class="fr-container p-6 md:p-10">

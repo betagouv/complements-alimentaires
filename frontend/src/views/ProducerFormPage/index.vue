@@ -12,7 +12,7 @@
       :disablePrevious="disablePrevious"
       :disableNext="disableNext"
     />
-    <component :is="components[currentStep - 1]"></component>
+    <component :is="components[currentStep - 1]" v-model="payload"></component>
     <StepButtons
       class="mb-3 mt-6"
       @next="goForward"
@@ -30,6 +30,14 @@ import SummaryStep from "./SummaryStep"
 import AttachmentStep from "./AttachmentStep"
 import StepButtons from "./StepButtons"
 import { useRoute, useRouter } from "vue-router"
+
+const payload = ref({
+  effects: [],
+  conditions: [],
+  populations: [],
+  elements: [],
+  substances: [],
+})
 
 const currentStep = ref(null)
 const steps = ["Le produit", "La composition", "Pièces jointes", "Résumé"]

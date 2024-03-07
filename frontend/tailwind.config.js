@@ -42,7 +42,11 @@ module.exports = {
         "warning-975": "#fff4f3",
         "warning-950": "#ffe9e6",
         "warning-925": "#ffded9",
-        "warning-850": "warning-850",
+        "warning-850": "#ffbeb4",
+        "ca-plant": "#18753c",
+        "ca-microorganism": "#6E445A",
+        "ca-substance": "#465F9D",
+        "ca-ingredient": "#8D533E",
       },
     },
     // DSFR breakpoints taken from here:

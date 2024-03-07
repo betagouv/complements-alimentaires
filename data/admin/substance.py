@@ -11,7 +11,7 @@ class SubstanceForm(forms.ModelForm):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "source": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
@@ -46,25 +46,50 @@ class SubstanceAdmin(IngredientAdminWithHistoryChangedFields):
         (
             None,  # Pas d'entête
             {
-                "fields": ["name", "name_en", "is_obsolete", "source"],
+                "fields": [
+                    "siccrf_name",
+                    "ca_name",
+                    "siccrf_name_en",
+                    "is_obsolete",
+                    "ca_is_obsolete",
+                    "siccrf_source",
+                    "ca_source",
+                ],
             },
         ),
         (
             "Commentaires",
             {
-                "fields": ["public_comments", "private_comments"],
+                "fields": [
+                    "siccrf_public_comments",
+                    "siccrf_private_comments",
+                    "ca_public_comments",
+                    "ca_private_comments",
+                ],
             },
         ),
         (
             "Identifiants dans les répertoires de substances chimiques",
             {
-                "fields": ["cas_number", "einec_number"],
+                "fields": [
+                    "siccrf_cas_number",
+                    "siccrf_einec_number",
+                    "ca_cas_number",
+                    "ca_einec_number",
+                ],
             },
         ),
         (
             "Quantités",
             {
-                "fields": ["must_specify_quantity", "min_quantity", "max_quantity", "nutritional_reference"],
+                "fields": [
+                    "siccrf_must_specify_quantity",
+                    "siccrf_max_quantity",
+                    "siccrf_nutritional_reference",
+                    "ca_must_specify_quantity",
+                    "ca_max_quantity",
+                    "ca_nutritional_reference",
+                ],
             },
         ),
         (
@@ -74,8 +99,22 @@ class SubstanceAdmin(IngredientAdminWithHistoryChangedFields):
             },
         ),
     ]
-    readonly_fields = ["get_plants", "get_microorganisms", "get_ingredients"]
-
+    readonly_fields = [
+        "siccrf_name",
+        "siccrf_name_en",
+        "is_obsolete",
+        "siccrf_source",
+        "siccrf_public_comments",
+        "siccrf_private_comments",
+        "siccrf_cas_number",
+        "siccrf_einec_number",
+        "siccrf_must_specify_quantity",
+        "siccrf_max_quantity",
+        "siccrf_nutritional_reference",
+        "get_plants",
+        "get_microorganisms",
+        "get_ingredients",
+    ]
     list_display = (
         "name",
         "get_plants",

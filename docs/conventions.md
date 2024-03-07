@@ -50,13 +50,6 @@ Les arrow functions n'étant pas iso-fonctionnelles avec `function`, on s'autori
     - syntaxe déclarative plus simple
     - permet de récupérer depuis le composable des informations nécessaires sur la requête (ex: est-elle en cours ?)
 
-#### Gestion du top-level await
-
-- Utilisation du composant [`<Suspense>`](https://vuejs.org/guide/built-ins/suspense.html)
-- Raisons :
-    - permet l'utilisation du [top-level `await`](https://vuejs.org/api/sfc-script-setup.html#top-level-await) d'un composant
-    - réduit le risque d'erreurs d'accès aux données avant qu'elles soient fetched.
-
 
 ## Composants d'UI
 
