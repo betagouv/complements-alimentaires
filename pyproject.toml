@@ -50,9 +50,10 @@ pre-commit = "*"    # https://github.com/pre-commit/pre-commit
 ######################################################################################################################
 # Testing & Debugging
 ######################################################################################################################
-ipdb = "*"          # https://github.com/gotcha/ipdb
-factory-boy = "*"   # https://github.com/FactoryBoy/factory_boy
-requests-mock = "*" # https://github.com/jamielennox/requests-mock
+ipdb = "*"              # https://github.com/gotcha/ipdb
+factory-boy = "*"       # https://github.com/FactoryBoy/factory_boy
+requests-mock = "*"     # https://github.com/jamielennox/requests-mock
+django-extensions = "*" # https://github.com/django-extensions/django-extensions
 
 ######################################################################################################################
 # Front-end related
@@ -73,7 +74,6 @@ django-ckeditor = "6.7.0" # https://github.com/django-ckeditor/django-ckeditor #
 
 
 # Dev dependencies (not installed on remote environments)
-django-extensions = "^3.2.3"
 [tool.poetry.group.dev.dependencies]
 
 ######################################################################################################################

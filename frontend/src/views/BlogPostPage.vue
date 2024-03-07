@@ -15,19 +15,32 @@
     <p class="fr-text--xs my-0">{{ date }}</p>
     <div id="content" v-html="blogPost.body" class="text-left"></div>
   </div>
-  <DsfrErrorPage v-else-if="notFound" class="my-8" title="Article non trouvé" />
 </template>
 
 <script setup>
-import { onMounted, ref, computed, watch } from "vue"
-import { verifyResponse, NotFoundError } from "@/utils/custom-errors"
+import { computed, watch } from "vue"
+import { useRouter } from "vue-router"
+import { useFetch } from "@vueuse/core"
+import useToaster from "@/composables/use-toaster"
 
 const props = defineProps({
   id: String,
 })
 
-const blogPost = ref(null)
-const notFound = ref(false)
+const router = useRouter()
+
+const {
+  data: blogPost,
+  execute,
+  error,
+  statusCode,
+} = useFetch(`/api/v1/blogPosts/${props.id}`, { immediate: false }).json()
+const fetchBlogPost = async () => {
+  await execute()
+  if (statusCode.value === 404) {
+    router.replace({ name: "NotFound" })
+  } else if (error.value) useToaster().addUnknownErrorMessage()
+}
 
 const date = computed(() => {
   if (!blogPost.value) return null
@@ -42,18 +55,11 @@ const author = computed(() => {
   return `${blogPost.value.author.firstName} ${blogPost.value.author.lastName}`
 })
 
+// init
+fetchBlogPost()
+
 watch(blogPost, (post) => {
   if (post) document.title = `${post.title} - Compléments alimentaires`
-})
-
-onMounted(() => {
-  return fetch(`/api/v1/blogPosts/${props.id}`)
-    .then(verifyResponse)
-    .then((response) => (blogPost.value = response))
-    .catch((error) => {
-      if (error instanceof NotFoundError) notFound.value = true
-      else window.alert("Une erreur est survenue veuillez réessayer plus tard")
-    })
 })
 </script>
 
