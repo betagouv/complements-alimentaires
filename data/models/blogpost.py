@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth import get_user_model
-from ckeditor_uploader.fields import RichTextUploadingField
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 class BlogPost(models.Model):
@@ -16,7 +16,7 @@ class BlogPost(models.Model):
     title = models.TextField(verbose_name="titre")
     tagline = models.TextField(null=True, blank=True, verbose_name="description courte")
     display_date = models.DateField(default=timezone.now, verbose_name="date affichée")
-    body = RichTextUploadingField(null=True, blank=True, verbose_name="contenu")
+    body = CKEditor5Field(null=True, blank=True, verbose_name="contenu")
     published = models.BooleanField(default=False, verbose_name="publié")
     author = models.ForeignKey(
         get_user_model(),

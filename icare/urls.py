@@ -7,7 +7,7 @@ from web.views import VueAppDisplayView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("ckeditor/", include("ckeditor_uploader.urls")),
+    path("ckeditor5/", include("django_ckeditor_5.urls"), name="ck_editor_5_upload_file"),
 ]
 urlpatterns.append(re_path(r"", include("web.urls")))
 urlpatterns.append(re_path(r"^api/v1/", include("api.urls")))
@@ -18,4 +18,3 @@ if settings.DEBUG:
 # In order for vue-history to work in HTML5 mode, we need to add a catch-all
 # route returning the app (https://router.vuejs.org/guide/essentials/history-mode.html#html5-history-mode)
 urlpatterns.append(re_path(r"^.*/$", VueAppDisplayView.as_view()))
-

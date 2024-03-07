@@ -54,8 +54,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.postgres",
     "webpack_loader",
-    "ckeditor",
-    "ckeditor_uploader",
+    "django_ckeditor_5",
     "anymail",
     "icare",
     "api",
@@ -255,42 +254,92 @@ LOGGING = {
     },
 }
 
-# CK Editor
-CKEDITOR_UPLOAD_PATH = "uploads/"
-CKEDITOR_IMAGE_BACKEND = "pillow"
-CKEDITOR_BROWSE_SHOW_DIRS = True
+# CK Editor 5
 
-CKEDITOR_CONFIGS = {
+customColorPalette = [
+    {"color": "hsl(4, 90%, 58%)", "label": "Red"},
+    {"color": "hsl(340, 82%, 52%)", "label": "Pink"},
+    {"color": "hsl(291, 64%, 42%)", "label": "Purple"},
+    {"color": "hsl(262, 52%, 47%)", "label": "Deep Purple"},
+    {"color": "hsl(231, 48%, 48%)", "label": "Indigo"},
+    {"color": "hsl(207, 90%, 54%)", "label": "Blue"},
+]
+
+if DEFAULT_FILE_STORAGE == "storages.backends.s3.S3Storage":
+    CKEDITOR_5_FILE_STORAGE = "data.storage.FileUploadS3Storage"
+else:
+    CKEDITOR_5_FILE_STORAGE = "data.storage.FileUploadFileSystemStorage"
+
+
+CKEDITOR_5_CONFIGS = {
     "default": {
-        "toolbar": "Custom",
-        "toolbar_Custom": [
-            ["Format", "Blockquote"],
-            ["Bold", "Italic"],
-            [
-                "NumberedList",
-                "BulletedList",
-                "-",
-                "Outdent",
-                "Indent",
-            ],
-            ["Link", "Unlink"],
-            [
-                "Image",
-                "-",
-                "Table",
-                "SpecialChar",
-            ],
-            ["Source", "Maximize"],
+        "language": "fr",
+        "toolbar": [
+            "heading",
+            "blockQuote",
+            "|",
+            "bold",
+            "italic",
+            "fontColor",
+            "fontBackgroundColor",
+            "removeFormat",
+            "|",
+            "bulletedList",
+            "numberedList",
+            "todoList",
+            "|",
+            "outdent",
+            "indent",
+            "|",
+            "link",
+            "|",
+            "imageUpload",
+            "mediaEmbed",
+            "|",
+            "insertTable",
+            "|",
+            "sourceEditing",
+            "maximize",
         ],
-        "extraPlugins": ",".join(
-            [
-                "image2",
-                "codesnippet",
-                "placeholder",
+        "image": {
+            "toolbar": [
+                "imageTextAlternative",
+                "|",
+                "imageStyle:alignLeft",
+                "imageStyle:alignRight",
+                "imageStyle:alignCenter",
+                "imageStyle:side",
+                "|",
+            ],
+            "styles": [
+                "full",
+                "side",
+                "alignLeft",
+                "alignRight",
+                "alignCenter",
+            ],
+        },
+        "table": {
+            "contentToolbar": ["tableColumn", "tableRow", "mergeTableCells", "tableProperties", "tableCellProperties"],
+            "tableProperties": {"borderColors": customColorPalette, "backgroundColors": customColorPalette},
+            "tableCellProperties": {"borderColors": customColorPalette, "backgroundColors": customColorPalette},
+        },
+        "heading": {
+            "options": [
+                {"model": "paragraph", "title": "Paragraph", "class": "ck-heading_paragraph"},
+                {"model": "heading1", "view": "h1", "title": "Heading 1", "class": "ck-heading_heading1"},
+                {"model": "heading2", "view": "h2", "title": "Heading 2", "class": "ck-heading_heading2"},
+                {"model": "heading3", "view": "h3", "title": "Heading 3", "class": "ck-heading_heading3"},
             ]
-        ),
-        "removePlugins": ",".join(["image"]),
-    }
+        },
+    },
+    "list": {
+        "properties": {
+            "styles": "true",
+            "startIndex": "true",
+            "reversed": "true",
+        }
+    },
 }
 
 # Analytics
