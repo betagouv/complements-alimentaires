@@ -15,12 +15,11 @@
     <p class="fr-text--xs my-0">{{ date }}</p>
     <div id="content" v-html="blogPost.body" class="text-left"></div>
   </div>
-  <!-- TODO: replace with error management feature from backend -->
-  <!-- <DsfrErrorPage v-else-if="notFound" class="my-8" title="Article non trouvé" /> -->
 </template>
 
 <script setup>
 import { computed, watch } from "vue"
+import { useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import useToaster from "@/composables/use-toaster"
 
@@ -28,10 +27,19 @@ const props = defineProps({
   id: String,
 })
 
-const { data: blogPost, execute, error } = useFetch(`/api/v1/blogPosts/${props.id}`, { immediate: false }).json()
+const router = useRouter()
+
+const {
+  data: blogPost,
+  execute,
+  error,
+  statusCode,
+} = useFetch(`/api/v1/blogPosts/${props.id}`, { immediate: false }).json()
 const fetchBlogPost = async () => {
   await execute()
-  if (error.value) useToaster().addUnknownErrorMessage()
+  if (statusCode.value === 404) {
+    router.replace({ name: "NotFound" })
+  } else if (error.value) useToaster().addUnknownErrorMessage()
 }
 
 const date = computed(() => {

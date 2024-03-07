@@ -101,7 +101,7 @@ const routes = [
     },
   },
   {
-    path: "/:catchAll(.*)",
+    path: "/:catchAll(.*)*", // https://stackoverflow.com/a/70343919/2255491
     component: NotFound,
     name: "NotFound",
   },
