@@ -16,11 +16,7 @@ class User(AutoValidable, Deactivable, AbstractUser):
         ordering = ["-date_joined"]
         get_latest_by = "date_joined"
 
-    REQUIRED_FIELDS = [
-        "email",
-        "first_name",
-        "last_name",
-    ]
+    REQUIRED_FIELDS = ["email"]
 
     def clean(self) -> None:
         # NOTE: full_clean() is called in save() with the Autovalidable mixin
