@@ -20,6 +20,7 @@
       v-for="file in payload.files.labels"
       :key="file.file"
       @remove="removeLabelFile"
+      hideTypeSelection
     />
   </div>
 
@@ -37,14 +38,13 @@
     />
   </DsfrInputGroup>
 
-  <div class="grid grid-cols-12">
+  <div class="grid grid-cols-12 gap-3">
     <FilePreview
       class="col-span-12 sm:col-span-6 md:col-span-4"
       :file="file"
       v-for="file in payload.files.others"
       :key="file.file"
       @remove="removeOtherFile"
-      showTypeSelection
     />
   </div>
 </template>
@@ -57,18 +57,22 @@ const payload = defineModel()
 const selectedLabelFile = ref(null)
 const selectedOtherFile = ref(null)
 
-const addLabelFiles = async (files) => addFiles(files, payload.value.files.labels, selectedLabelFile)
+const addLabelFiles = async (files) =>
+  addFiles(files, payload.value.files.labels, selectedLabelFile, { type: "Étiquetage" })
 const addOtherFiles = async (files) => addFiles(files, payload.value.files.others, selectedOtherFile)
 
 const removeLabelFile = (file) => removeFile(file, payload.value.files.labels)
 const removeOtherFile = (file) => removeFile(file, payload.value.files.others)
 
-const addFiles = async (files, container, resetModel) => {
+const addFiles = async (files, container, resetModel, defaultData) => {
   for (let i = 0; i < files.length; i++) {
     const base64 = await toBase64(files[i])
     container.push({
-      file: base64,
-      name: files[i].name,
+      ...{
+        file: base64,
+        name: files[i].name,
+      },
+      ...defaultData,
     })
   }
   resetModel.value = null
