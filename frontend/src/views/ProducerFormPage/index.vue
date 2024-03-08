@@ -37,6 +37,10 @@ const payload = ref({
   populations: [],
   elements: [],
   substances: [],
+  files: {
+    labels: [],
+    others: [],
+  },
 })
 
 const currentStep = ref(null)
