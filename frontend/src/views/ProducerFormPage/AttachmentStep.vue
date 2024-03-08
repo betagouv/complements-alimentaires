@@ -7,7 +7,7 @@
   <DsfrInputGroup>
     <DsfrFileUpload
       label="Merci d'ajouter au moins un fichier image ou PDF correspondant à l'étiquetage."
-      :acceptTypes="['image/jpeg, image/gif, image/png, application/pdf']"
+      :accept="['image/jpeg, image/gif, image/png, application/pdf']"
       @change="addLabelFiles"
       v-model="selectedLabelFile"
     />
