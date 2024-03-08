@@ -4,7 +4,7 @@ import LandingPage from "@/views/LandingPage"
 import ProducerHomePage from "@/views/ProducerHomePage"
 import BlogHomePage from "@/views/BlogHomePage"
 import BlogPostPage from "@/views/BlogPostPage"
-import SearchResultsPage from "@/views/SearchResultsPage"
+import ElementSearchResultsPage from "@/views/ElementSearchResultsPage"
 import ElementPage from "@/views/ElementPage"
 import CGUPage from "@/views/CGUPage.vue"
 import PrivacyPolicyPage from "@/views/PrivacyPolicyPage.vue"
@@ -47,8 +47,8 @@ const routes = [
   },
   {
     path: "/resultats/",
-    name: "SearchResultsPage",
-    component: SearchResultsPage,
+    name: "ElementSearchResultsPage",
+    component: ElementSearchResultsPage,
     props: true,
     beforeEnter(to) {
       if (!to.query?.q) return { to: "LandingPage" }
@@ -101,7 +101,7 @@ const routes = [
     },
   },
   {
-    path: "/:catchAll(.*)",
+    path: "/:catchAll(.*)*", // https://stackoverflow.com/a/70343919/2255491
     component: NotFound,
     name: "NotFound",
   },

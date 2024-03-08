@@ -50,9 +50,10 @@ pre-commit = "*"    # https://github.com/pre-commit/pre-commit
 ######################################################################################################################
 # Testing & Debugging
 ######################################################################################################################
-ipdb = "*"          # https://github.com/gotcha/ipdb
-factory-boy = "*"   # https://github.com/FactoryBoy/factory_boy
-requests-mock = "*" # https://github.com/jamielennox/requests-mock
+ipdb = "*"              # https://github.com/gotcha/ipdb
+factory-boy = "*"       # https://github.com/FactoryBoy/factory_boy
+requests-mock = "*"     # https://github.com/jamielennox/requests-mock
+django-extensions = "*" # https://github.com/django-extensions/django-extensions
 
 ######################################################################################################################
 # Front-end related
@@ -69,11 +70,11 @@ sib-api-v3-sdk = "*" # https://github.com/sendinblue/APIv3-python-library
 # Misc
 ######################################################################################################################
 pillow = "*"              # https://github.com/python-pillow/Pillow
-django-ckeditor = "6.7.0" # https://github.com/django-ckeditor/django-ckeditor # FIXED because of a warning in 6.7.1
+django-ckeditor = "6.7.0" # https://github.com/django-ckeditor/django-ckeditor # we keep it temporarily for migrations
+django-ckeditor-5 = "*"   # https://github.com/hvlads/django-ckeditor-5
 
 
 # Dev dependencies (not installed on remote environments)
-django-extensions = "^3.2.3"
 [tool.poetry.group.dev.dependencies]
 
 ######################################################################################################################

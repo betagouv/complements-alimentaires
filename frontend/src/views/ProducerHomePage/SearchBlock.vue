@@ -37,6 +37,6 @@ const search = () => {
   else router.push(getRouteForTerm(searchTerm.value))
 }
 const getRouteForTerm = (term) => {
-  return { name: "SearchResultsPage", query: { q: term } }
+  return { name: "ElementSearchResultsPage", query: { q: term } }
 }
 </script>
