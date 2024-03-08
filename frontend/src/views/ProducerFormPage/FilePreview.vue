@@ -6,7 +6,7 @@
     </div>
     <div class="fr-text--sm grow !mb-0">{{ props.file.name }}</div>
     <div>
-      <DsfrButton label="Supprimer" secondary size="sm" />
+      <DsfrButton @click="$emit('remove', file)" label="Supprimer" secondary size="sm" />
     </div>
   </div>
 </template>
@@ -14,6 +14,6 @@
 <script setup>
 import { computed } from "vue"
 
-const props = defineProps({ file: Object })
+const props = defineProps({ file: Object, showTypeSelection: Boolean })
 const isPDF = computed(() => props.file.name.endsWith("pdf"))
 </script>
