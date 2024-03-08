@@ -24,7 +24,7 @@
     />
   </div>
 
-  <h3 class="fr-h6 !mt-6">
+  <h3 class="fr-h6 !mt-8">
     <v-icon class="mr-1" name="ri-attachment-2" />
     Autres
   </h3>
