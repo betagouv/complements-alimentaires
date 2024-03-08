@@ -91,6 +91,9 @@ const fetchElement = async (type, id) => {
     useToaster().addErrorMessage("Une erreur est survenue en ajoutant cet élément, veuillez réessayer plus tard.")
     return null
   }
+  // Pour l'instant on met `active: true` mais une fois qu'on intègrera les additifs, il faudra
+  // ajouter un peu de logique car les additifs sont par défaut "non actifs". Potentiellement
+  // ils ne pourront jamais devenir "actifs" d'un point de vue métier.
   return { ...data.value, ...{ objectType: type, active: true } }
 }
 
