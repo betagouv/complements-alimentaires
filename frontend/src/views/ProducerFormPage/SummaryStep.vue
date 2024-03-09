@@ -30,17 +30,19 @@
     Composition
     <router-link class="fr-btn fr-btn--secondary fr-btn--sm ml-4" :to="editLink(2)">Modifier</router-link>
   </h3>
-  <ul>
-    <SummaryElementItem
-      class="mb-2 last:mb-0"
-      v-for="(element, index) in payload.elements"
-      :key="`element-${index}`"
-      :element="element"
-    />
-  </ul>
+  <template v-if="payload.elements.length">
+    <ul>
+      <SummaryElementItem
+        class="mb-2 last:mb-0"
+        v-for="(element, index) in payload.elements"
+        :key="`element-${index}`"
+        :element="element"
+      />
+    </ul>
 
-  <h4 class="fr-text--md !mt-6">Détail sur les substances actives :</h4>
-  <SubstancesTable v-model="payload" readonly />
+    <h4 class="fr-text--md !mt-6">Détail sur les substances actives :</h4>
+    <SubstancesTable v-model="payload" readonly />
+  </template>
 
   <h3 class="fr-h6 !mt-8">
     Pièces jointes
