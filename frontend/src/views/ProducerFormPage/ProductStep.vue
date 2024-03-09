@@ -142,11 +142,14 @@
   TODO car on aura déjà l'adresse à partir du SIRET
 </template>
 <script setup>
-import { ref, onMounted, defineModel } from "vue"
-import { verifyResponse } from "@/utils/custom-errors"
+import { defineModel } from "vue"
+import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
 
 const payload = defineModel()
 
+const store = useRootStore()
+const { populations, conditions } = storeToRefs(store)
 const galenicFormulation = [
   {
     text: "Ampoule",
@@ -171,8 +174,6 @@ const units = [
     value: "l",
   },
 ]
-const populations = ref(null)
-const conditions = ref(null)
 
 const effects = [
   "Non défini",
@@ -211,16 +212,4 @@ const effects = [
   "Voies respiratoires",
   "Autre (à préciser)",
 ]
-
-onMounted(() => {
-  return fetch("/api/v1/populations/")
-    .then(verifyResponse)
-    .then((response) => (populations.value = response))
-    .then(() => {
-      return fetch("/api/v1/conditions/")
-        .then(verifyResponse)
-        .then((response) => (conditions.value = response))
-    })
-    .catch(() => window.alert("Une erreur est survenue veuillez réessayer plus tard"))
-})
 </script>

@@ -21,8 +21,8 @@
     <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
     <SummaryInfoSegment label="Mode d'emploi" :value="payload.instructions" />
     <SummaryInfoSegment label="Mise en garde et avertissement" :value="payload.warnings" />
-    <SummaryInfoSegment label="Populations cible" :value="payload.populations.join(', ')" />
-    <SummaryInfoSegment label="Consommation déconseillée" :value="payload.conditions.join(', ')" />
+    <SummaryInfoSegment label="Populations cible" :value="populationNames" />
+    <SummaryInfoSegment label="Consommation déconseillée" :value="conditionNames" />
     <SummaryInfoSegment label="Objectifs / effets" :value="effects" />
   </div>
 
@@ -65,6 +65,10 @@ import SummaryInfoSegment from "./SummaryInfoSegment"
 import SummaryElementItem from "./SummaryElementItem"
 import SubstancesTable from "./SubstancesTable"
 import FilePreview from "./FilePreview"
+import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
+
+const { populations, conditions } = storeToRefs(useRootStore())
 
 const payload = defineModel()
 const unitInfo = computed(() => {
@@ -81,6 +85,15 @@ const files = computed(() => {
   const otherFiles = payload.value.files.others
   return labelFiles.concat(otherFiles)
 })
+const populationNames = computed(() => {
+  const findName = (id) => populations.value.find((y) => y.id === id)?.name
+  return payload.value.populations.map(findName).join(", ")
+})
+const conditionNames = computed(() => {
+  const findName = (id) => conditions.value.find((y) => y.id === id)?.name
+  return payload.value.conditions.map(findName).join(", ")
+})
+
 const editLink = (step) => ({ name: "ProducerFormPage", query: { step } })
 </script>
 
