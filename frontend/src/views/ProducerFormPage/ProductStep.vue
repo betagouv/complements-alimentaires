@@ -54,7 +54,7 @@
     </div>
     <div class="col-span-2 md:col-span-1 max-w-md">
       <DsfrInputGroup>
-        <DsfrInput v-model="payload.conditions" label-visible label="Conditionnements" />
+        <DsfrInput v-model="payload.conditioning" label-visible label="Conditionnements" />
       </DsfrInputGroup>
     </div>
   </div>
@@ -107,7 +107,7 @@
     <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
       <div
         v-for="condition in conditions"
-        :key="`effect-${condition.id}`"
+        :key="`condition-${condition.id}`"
         class="flex col-span-6 sm:col-span-3 lg:col-span-2"
       >
         <input :id="`condition-${condition.id}`" type="checkbox" v-model="payload.conditions" :value="condition.id" />
