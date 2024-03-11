@@ -13,16 +13,7 @@
     />
   </DsfrInputGroup>
 
-  <div class="grid grid-cols-12 gap-3">
-    <FilePreview
-      class="col-span-12 sm:col-span-6 md:col-span-4"
-      :file="file"
-      v-for="file in payload.files.labels"
-      :key="file.file"
-      @remove="removeLabelFile"
-      hideTypeSelection
-    />
-  </div>
+  <FileGrid :files="payload.files.labels" @remove="removeLabelFile" hideTypeSelection />
 
   <h3 class="fr-h6 !mt-8">
     <v-icon class="mr-1" name="ri-attachment-2" />
@@ -38,20 +29,12 @@
     />
   </DsfrInputGroup>
 
-  <div class="grid grid-cols-12 gap-3">
-    <FilePreview
-      class="col-span-12 sm:col-span-6 md:col-span-4"
-      :file="file"
-      v-for="file in payload.files.others"
-      :key="file.file"
-      @remove="removeOtherFile"
-    />
-  </div>
+  <FileGrid :files="payload.files.others" @remove="removeOtherFile" />
 </template>
 
 <script setup>
 import { ref } from "vue"
-import FilePreview from "./FilePreview"
+import FileGrid from "./FileGrid"
 
 const payload = defineModel()
 const selectedLabelFile = ref(null)
