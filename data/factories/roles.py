@@ -2,7 +2,6 @@ import factory
 from data.models.roles import BaseRole, Declarant, CompanySupervisor
 
 from .user import UserFactory
-from .company import CompanyFactory
 
 
 class BaseRoleFactory(factory.django.DjangoModelFactory):
@@ -22,4 +21,11 @@ class CompanySupervisorFactory(BaseRoleFactory):
     class Meta:
         model = CompanySupervisor
 
-    company = factory.SubFactory(CompanyFactory)
+    @factory.post_generation
+    def companies(self, create, extracted, **kwargs):
+        if not create or not extracted:
+            # Simple build, or nothing to add, do nothing.
+            return
+
+        # Add the iterable of groups using bulk addition
+        self.companies.add(*extracted)

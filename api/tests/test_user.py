@@ -3,6 +3,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from .utils import authenticate
+from data.factories import DeclarantFactory, CompanySupervisorFactory, UserFactory
 
 
 class TestLoggedUserApi(APITestCase):
@@ -16,7 +17,7 @@ class TestLoggedUserApi(APITestCase):
     @authenticate
     def test_authenticated_logged_user_call(self):
         """
-        When calling this API athenticated we expect to get a
+        When calling this API authenticated we expect to get a
         JSON representation of the authenticated user
         """
         response = self.client.get(reverse("logged_user"))
@@ -27,4 +28,24 @@ class TestLoggedUserApi(APITestCase):
         self.assertEqual(body.get("email"), authenticate.user.email)
         self.assertEqual(body.get("firstName"), authenticate.user.first_name)
         self.assertEqual(body.get("lastName"), authenticate.user.last_name)
+        self.assertEqual(body.get("roles"), [])
         self.assertIn("id", body)
+
+    def test_authenticated_logged_user_call_with_roles(self):
+        """Ensure that roles are added to the JSON representation of the user"""
+        user = UserFactory()
+        self.client.force_login(user=user)
+
+        def _get_role_names(resp):
+            return {role["name"] for role in resp.data["roles"]}
+
+        # Without role
+        response = self.client.get(reverse("logged_user"))
+        self.assertEqual(_get_role_names(response), set())
+
+        # With two roles
+        DeclarantFactory(user=user)
+        CompanySupervisorFactory(user=user)
+
+        response = self.client.get(reverse("logged_user"))
+        self.assertEqual(_get_role_names(response), {"Declarant", "CompanySupervisor"})
