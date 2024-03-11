@@ -12,6 +12,7 @@ import LegalNoticesPage from "@/views/LegalNoticesPage"
 import CookiesInfoPage from "@/views/CookiesInfoPage"
 import ProducerFormPage from "@/views/ProducerFormPage"
 import NotFound from "@/views/NotFound"
+import LoginPage from "@/views/LoginPage.vue"
 
 const routes = [
   {
@@ -99,6 +100,11 @@ const routes = [
     meta: {
       authenticationRequired: true,
     },
+  },
+  {
+    path: "/login",
+    name: "LoginPage",
+    component: LoginPage,
   },
   {
     path: "/:catchAll(.*)*", // https://stackoverflow.com/a/70343919/2255491
