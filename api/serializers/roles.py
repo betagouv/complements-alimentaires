@@ -18,11 +18,11 @@ class BaseRoleSerializer(serializers.ModelSerializer):
 
 
 class CompanySupervisorSerializer(BaseRoleSerializer):
-    company = CompanySerializer()
+    companies = CompanySerializer(many=True, read_only=True)
 
     class Meta:
         model = CompanySupervisor
-        fields = BaseRoleSerializer.Meta.fields + ("company",)
+        fields = BaseRoleSerializer.Meta.fields + ("companies",)
 
 
 class DeclarantSerializer(BaseRoleSerializer):

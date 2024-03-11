@@ -41,14 +41,10 @@ class BaseRole(Deactivable, models.Model):
 
 class CompanySupervisor(BaseRole):
     class Meta:
-        verbose_name = "gestionnaire d'entreprise"
-        verbose_name_plural = "gestionnaires d'entreprise"
+        verbose_name = "gestionnaire d'entreprises"
+        verbose_name_plural = "gestionnaires d'entreprises"
 
-    company = models.OneToOneField(
-        Company,
-        verbose_name=Company._meta.verbose_name,
-        on_delete=models.CASCADE,
-    )
+    companies = models.ManyToManyField(Company, verbose_name=Company._meta.verbose_name_plural)
 
 
 class Declarant(BaseRole):
