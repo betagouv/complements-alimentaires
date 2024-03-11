@@ -1,11 +1,15 @@
 from functools import cached_property
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils.translation import gettext_lazy as _
 from django.db import models
-from data.mixins import AutoValidable, Deactivable
+from data.mixins import AutoValidable, Deactivable, DeactivableQuerySet
 from django.db.models import OneToOneRel
 from django.core.exceptions import ObjectDoesNotExist
 from .roles import BaseRole
+
+
+class UserQuerySet(DeactivableQuerySet, models.QuerySet):
+    pass
 
 
 class User(AutoValidable, Deactivable, AbstractUser):
@@ -17,6 +21,8 @@ class User(AutoValidable, Deactivable, AbstractUser):
         get_latest_by = "date_joined"
 
     REQUIRED_FIELDS = ["email"]
+
+    objects = UserManager.from_queryset(UserQuerySet)()
 
     def clean(self) -> None:
         # NOTE: full_clean() is called in save() with the Autovalidable mixin

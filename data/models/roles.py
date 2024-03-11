@@ -2,7 +2,7 @@ from django.db import models, transaction
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from data.mixins import Deactivable
+from data.mixins import Deactivable, DeactivableQuerySet
 from .company import Company
 
 
@@ -15,11 +15,15 @@ class RoleManager(models.Manager):
         return self.create(user=new_user, **role_dict_kwargs)
 
 
+class BaseRoleQuerySet(DeactivableQuerySet):
+    pass
+
+
 class BaseRole(Deactivable, models.Model):
     class Meta:
         abstract = True
 
-    objects = RoleManager()
+    objects = RoleManager().from_queryset(BaseRoleQuerySet)()
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
