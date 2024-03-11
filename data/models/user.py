@@ -1,25 +1,82 @@
 from functools import cached_property
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
-from django.db import models
+from django.db import models, transaction
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from data.mixins import AutoValidable, Deactivable, DeactivableQuerySet
 from django.db.models import OneToOneRel
+from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from .roles import BaseRole
 
 
-class UserQuerySet(DeactivableQuerySet, models.QuerySet):
+class UserQuerySet(DeactivableQuerySet):
     pass
 
 
-class User(AutoValidable, Deactivable, AbstractUser):
-    email = models.EmailField(_("email address"), unique=True)
+class UserManager(BaseUserManager):
+    @transaction.atomic()
+    def create_user(self, email, password=None, **extra_fields):
+        """Custom User Manager is required when defining a custom User class"""
 
+        user = self.model(
+            email=email,
+            is_superuser=False,
+            **extra_fields,
+        )
+        user.set_password(password)
+        user.save(using=self._db)
+
+        return user
+
+    def create_superuser(self, email, password, **extra_fields):
+        user = self.create_user(email, password, **extra_fields)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
+
+    def create_staffuser(self, email, password, **extra_fields):
+        user = self.create_user(email, password, **extra_fields)
+        user.is_staff = True
+        user.save(using=self._db)
+        return user
+
+
+class User(PermissionsMixin, AutoValidable, Deactivable, AbstractBaseUser):
     class Meta:
         verbose_name = "utilisateur"
         ordering = ["-date_joined"]
         get_latest_by = "date_joined"
 
+    username_validator = UnicodeUsernameValidator()
+
+    username = models.CharField(
+        _("username"),
+        max_length=150,
+        unique=True,
+        help_text=_("Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."),
+        validators=[username_validator],
+        error_messages={
+            "unique": _("A user with that username already exists."),
+        },
+    )
+    first_name = models.CharField(_("first name"), max_length=150, blank=True)
+    last_name = models.CharField(_("last name"), max_length=150, blank=True)
+    email = models.EmailField(_("email address"), unique=True)
+    is_staff = models.BooleanField(
+        _("staff status"),
+        default=False,
+        help_text=_("Designates whether the user can log into this admin site."),
+    )
+    date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
+
+    EMAIL_FIELD = "email"
+    USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
 
     objects = UserManager.from_queryset(UserQuerySet)()
@@ -49,6 +106,13 @@ class User(AutoValidable, Deactivable, AbstractUser):
             return getattr(self, name)
         except ObjectDoesNotExist:
             return None
+
+    def get_full_name(self) -> str:
+        """
+        Return the first_name plus the last_name, with a space in between.
+        """
+        full_name = "{} {}".format(self.first_name, self.last_name)
+        return full_name.strip()
 
     @property
     def name(self) -> str:
