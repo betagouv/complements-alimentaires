@@ -13,6 +13,9 @@ import CookiesInfoPage from "@/views/CookiesInfoPage"
 import ProducerFormPage from "@/views/ProducerFormPage"
 import NotFound from "@/views/NotFound"
 import LoginPage from "@/views/LoginPage.vue"
+import LogoutPage from "@/views/LogoutPage.vue"
+import SignupPage from "@/views/SignupPage.vue"
+import DashboardPage from "@/views/DashboardPage.vue"
 
 const routes = [
   {
@@ -94,17 +97,43 @@ const routes = [
     },
   },
   {
-    path: "/nouvelle-demarche",
-    name: "ProducerFormPage",
-    component: ProducerFormPage,
+    path: "/tableau-de-bord",
+    name: "DashboardPage",
+    component: DashboardPage,
     meta: {
+      title: "Tableau de bord",
       authenticationRequired: true,
     },
   },
   {
-    path: "/login",
+    path: "/nouvelle-demarche",
+    name: "ProducerFormPage",
+    component: ProducerFormPage,
+    meta: {
+      title: "Nouvelle démarche",
+      authenticationRequired: true,
+    },
+  },
+  {
+    path: "/connexion",
     name: "LoginPage",
     component: LoginPage,
+    meta: {
+      title: "Se connecter",
+    },
+  },
+  {
+    path: "/deconnexion",
+    name: "LogoutPage",
+    component: LogoutPage,
+  },
+  {
+    path: "/inscription",
+    name: "SignupPage",
+    component: SignupPage,
+    meta: {
+      title: "S'enregistrer",
+    },
   },
   {
     path: "/:catchAll(.*)*", // https://stackoverflow.com/a/70343919/2255491
@@ -135,7 +164,7 @@ function chooseAuthorisedRoute(to, from, next, store) {
   } else {
     if (to.meta.home) next({ name: "LandingPage" })
     else if (!to.meta.authenticationRequired || store.loggedUser) next()
-    else window.location.href = `/s-identifier?next=${to.path}`
+    else next({ name: "LoginPage" })
   }
 }
 

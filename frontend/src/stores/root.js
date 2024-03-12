@@ -19,6 +19,10 @@ export const useRootStore = defineStore("root", () => {
         console.error("fetchLoggedUser", e)
       })
   }
+  const resetInitialData = () => {
+    loggedUser.value = null
+    initialDataLoaded.value = null
+  }
 
-  return { loggedUser, initialDataLoaded, fetchInitialData, fetchLoggedUser }
+  return { loggedUser, initialDataLoaded, fetchInitialData, fetchLoggedUser, resetInitialData }
 })

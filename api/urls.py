@@ -7,7 +7,6 @@ urlpatterns = {
     path("blogPosts/<int:pk>", views.BlogPostView.as_view(), name="single_blog_post"),
     path("subscribeNewsletter/", views.SubscribeNewsletter.as_view(), name="subscribe_newsletter"),
     path("reportIssue/", views.ReportIssue.as_view(), name="report_issue"),
-    path("loggedUser/", views.LoggedUserView.as_view(), name="logged_user"),
     path("webinars/", views.WebinarView.as_view(), name="webinar_list"),
     path("search/", views.SearchView.as_view(), name="search"),
     path("plants/<int:pk>", views.PlantRetrieveView.as_view(), name="single_plant"),
@@ -17,6 +16,10 @@ urlpatterns = {
     path("elements/autocomplete/", views.AutocompleteView.as_view(), name="substance_autocomplete"),
     path("populations/", views.PopulationListView.as_view(), name="population_list"),
     path("conditions/", views.ConditionListView.as_view(), name="condition_list"),
+    # Authentication
+    path("loggedUser/", views.LoggedUserView.as_view(), name="logged_user"),
+    path("login/", views.LoginView.as_view(), name="login"),
+    path("logout/", views.LogoutView.as_view(), name="logout"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
