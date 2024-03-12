@@ -11,6 +11,7 @@
     <DsfrButton
       icon="ri-arrow-right-line"
       label="Suivant"
+      icon-right
       @click="$emit('next')"
       size="small"
       :disabled="disableNext"
