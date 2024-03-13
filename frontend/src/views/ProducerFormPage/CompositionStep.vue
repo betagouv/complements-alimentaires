@@ -3,19 +3,25 @@
     <v-icon class="mr-1" name="ri-flask-line" />
     Ingrédients
   </h2>
-
-  <ElementAutocomplete
-    v-model="searchTerm"
-    :options="autocompleteResults"
-    autocomplete="nothing"
-    label="Cherchez un ingrédient"
-    label-visible
-    class="max-w-md"
-    hint="Tapez au moins trois caractères pour démarrer la recherche"
-    @selected="selectOption"
-  />
-
-  <TransitionGroup mode="out-in" name="list" tag="div" class="mt-4 relative">
+  <div class="sm:flex gap-10 items-center">
+    <ElementAutocomplete
+      v-model="searchTerm"
+      :options="autocompleteResults"
+      autocomplete="nothing"
+      label="Cherchez un ingrédient"
+      label-visible
+      class="max-w-md grow"
+      hint="Tapez au moins trois caractères pour démarrer la recherche"
+      @selected="selectOption"
+    />
+    <div class="hidden sm:flex flex-col items-center">
+      <div class="border-l h-6"></div>
+      <div class="my-2">Ou</div>
+      <div class="border-l h-6"></div>
+    </div>
+    <div class="mt-4 sm:mt-0"><NewElementModal v-model="payload" /></div>
+  </div>
+  <TransitionGroup mode="out-in" name="list" tag="div" class="mt-8 relative">
     <ElementCard
       v-for="(element, index) in payload.elements"
       :key="`element-${element.id}`"
@@ -46,6 +52,7 @@ import { headers } from "@/utils/data-fetching"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import ElementCard from "./ElementCard.vue"
 import SubstancesTable from "./SubstancesTable.vue"
+import NewElementModal from "./NewElementModal.vue"
 import useToaster from "@/composables/use-toaster"
 
 const payload = defineModel()
