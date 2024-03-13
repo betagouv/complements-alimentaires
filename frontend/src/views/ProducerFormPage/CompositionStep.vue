@@ -29,10 +29,10 @@
     Vous n'avez pas encore saisi d'ingrédients pour votre complément alimentaire
   </div>
 
-  <div v-if="payload.elements.length">
+  <div v-if="hasActiveElements">
     <h3 class="fr-h6 !mb-4 !mt-6">Substances</h3>
     <p>
-      Les substances contenues dans les ingrédients renseignés sont affichées ci-dessous. Veuillez compléter leur
+      Les substances contenues dans les ingrédients actifs renseignés sont affichées ci-dessous. Veuillez compléter leur
       dosage.
     </p>
     <SubstancesTable v-model="payload" />
@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, watch, defineModel } from "vue"
+import { ref, watch, computed, defineModel } from "vue"
 import { useFetch, useDebounceFn } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
@@ -62,6 +62,7 @@ const selectOption = async (result) => {
 }
 
 const removeElement = (index) => payload.value.elements.splice(index, 1)
+const hasActiveElements = computed(() => payload.value.elements.some((x) => x.element.active))
 
 const fetchAutocompleteResults = useDebounceFn(async () => {
   if (searchTerm.value.length < 3) {
@@ -90,7 +91,10 @@ const fetchElement = async (type, id) => {
     useToaster().addErrorMessage("Une erreur est survenue en ajoutant cet élément, veuillez réessayer plus tard.")
     return null
   }
-  return { ...data.value, ...{ objectType: type } }
+  // Pour l'instant on met `active: true` mais une fois qu'on intègrera les additifs, il faudra
+  // ajouter un peu de logique car les additifs sont par défaut "non actifs". Potentiellement
+  // ils ne pourront jamais devenir "actifs" d'un point de vue métier.
+  return { ...data.value, ...{ objectType: type, active: true } }
 }
 
 watch(searchTerm, fetchAutocompleteResults)

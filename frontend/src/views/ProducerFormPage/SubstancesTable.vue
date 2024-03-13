@@ -60,9 +60,10 @@ const rows = computed(() =>
 )
 
 const elements = computed(() => payload.value.elements)
+const activeElements = computed(() => payload.value.elements.filter((x) => x.element.active))
 
 const sourceElements = (substance) => {
-  const sources = elements.value.filter(
+  const sources = activeElements.value.filter(
     (x) => x.element.objectType === "substance" || x.element.substances.indexOf(substance) > -1
   )
   return sources.map((x) => x.element.name).join(", ")
@@ -71,7 +72,7 @@ const sourceElements = (substance) => {
 watch(
   elements,
   () => {
-    const newSubstances = elements.value
+    const newSubstances = activeElements.value
       .map((x) => (x.element.objectType === "substance" ? [x.element] : x.element.substances))
       .flat()
       .filter((x) => !!x)
