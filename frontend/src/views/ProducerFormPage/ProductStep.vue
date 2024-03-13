@@ -54,7 +54,7 @@
     </div>
     <div class="col-span-2 md:col-span-1 max-w-md">
       <DsfrInputGroup>
-        <DsfrInput v-model="payload.conditions" label-visible label="Conditionnements" />
+        <DsfrInput v-model="payload.conditioning" label-visible label="Conditionnements" />
       </DsfrInputGroup>
     </div>
   </div>
@@ -107,7 +107,7 @@
     <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
       <div
         v-for="condition in conditions"
-        :key="`effect-${condition.id}`"
+        :key="`condition-${condition.id}`"
         class="flex col-span-6 sm:col-span-3 lg:col-span-2"
       >
         <input :id="`condition-${condition.id}`" type="checkbox" v-model="payload.conditions" :value="condition.id" />
@@ -142,11 +142,14 @@
   TODO car on aura déjà l'adresse à partir du SIRET
 </template>
 <script setup>
-import { ref, onMounted, defineModel } from "vue"
-import { verifyResponse } from "@/utils/custom-errors"
+import { defineModel } from "vue"
+import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
 
 const payload = defineModel()
 
+const store = useRootStore()
+const { populations, conditions } = storeToRefs(store)
 const galenicFormulation = [
   {
     text: "Ampoule",
@@ -171,8 +174,6 @@ const units = [
     value: "l",
   },
 ]
-const populations = ref(null)
-const conditions = ref(null)
 
 const effects = [
   "Non défini",
@@ -211,16 +212,4 @@ const effects = [
   "Voies respiratoires",
   "Autre (à préciser)",
 ]
-
-onMounted(() => {
-  return fetch("/api/v1/populations/")
-    .then(verifyResponse)
-    .then((response) => (populations.value = response))
-    .then(() => {
-      return fetch("/api/v1/conditions/")
-        .then(verifyResponse)
-        .then((response) => (conditions.value = response))
-    })
-    .catch(() => window.alert("Une erreur est survenue veuillez réessayer plus tard"))
-})
 </script>

@@ -23,6 +23,7 @@
   </div>
 </template>
 <script setup>
+import { useRootStore } from "@/stores/root"
 import { onMounted, ref, computed, watch } from "vue"
 import ProductStep from "./ProductStep"
 import CompositionStep from "./CompositionStep"
@@ -30,6 +31,10 @@ import SummaryStep from "./SummaryStep"
 import AttachmentStep from "./AttachmentStep"
 import StepButtons from "./StepButtons"
 import { useRoute, useRouter } from "vue-router"
+
+const store = useRootStore()
+store.fetchConditions()
+store.fetchPopulations()
 
 const payload = ref({
   effects: [],

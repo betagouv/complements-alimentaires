@@ -5,7 +5,7 @@
       <img v-else :src="file.file" class="object-contain h-32" :alt="`Image téléchargée ${props.file.name}`" />
     </div>
     <div class="fr-text--sm grow !mb-0">{{ props.file.name }}</div>
-    <DsfrInputGroup class="max-w-sm" v-if="!hideTypeSelection">
+    <DsfrInputGroup class="max-w-sm" v-if="!hideTypeSelection && !props.readonly">
       <DsfrSelect
         label="Type de document"
         defaultUnselectedText=""
@@ -14,7 +14,8 @@
         :required="true"
       />
     </DsfrInputGroup>
-    <div>
+    <div v-else>{{ file.type }}</div>
+    <div v-if="!props.readonly">
       <DsfrButton @click="$emit('remove', file)" label="Supprimer" secondary size="sm" />
     </div>
   </div>
@@ -23,7 +24,7 @@
 <script setup>
 import { computed } from "vue"
 
-const props = defineProps({ file: Object, hideTypeSelection: Boolean })
+const props = defineProps({ file: Object, hideTypeSelection: Boolean, readonly: Boolean })
 const isPDF = computed(() => props.file.name.endsWith("pdf"))
 
 // TODO: À voir si on peut le mettre dans la base de données aussi
