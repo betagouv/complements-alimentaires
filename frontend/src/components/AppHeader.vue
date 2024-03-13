@@ -17,9 +17,15 @@
 <script setup>
 import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
+import { useFetch } from "@vueuse/core"
+import useToaster from "@/composables/use-toaster"
+import { useRouter } from "vue-router"
+
 defineProps({ logoText: Array })
 
 const environment = window.ENVIRONMENT
+const { addMessage, addUnknownErrorMessage } = useToaster()
+const router = useRouter()
 const store = useRootStore()
 const navItems = [
   {
@@ -42,13 +48,29 @@ const loggedOnlyNavItems = [
   },
 ]
 
+const logOut = async () => {
+  const { error } = await useFetch("/api/v1/logout/").post()
+  if (error.value) {
+    addUnknownErrorMessage()
+  } else {
+    await store.resetInitialData()
+    router.replace({ name: "LandingPage" })
+    addMessage({
+      type: "success",
+      title: "Vous êtes déconnecté",
+      description: "Vous avez été déconnecté de la plateforme.",
+    })
+  }
+}
+
 const quickLinks = computed(() => {
   if (store.loggedUser)
     return [
       {
         label: "Se déconnecter",
         icon: "ri-logout-circle-line",
-        to: "/deconnexion",
+        button: true,
+        onClick: logOut,
       },
     ]
   else

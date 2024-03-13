@@ -13,7 +13,6 @@ import CookiesInfoPage from "@/views/CookiesInfoPage"
 import ProducerFormPage from "@/views/ProducerFormPage"
 import NotFound from "@/views/NotFound"
 import LoginPage from "@/views/LoginPage.vue"
-import LogoutPage from "@/views/LogoutPage.vue"
 import SignupPage from "@/views/SignupPage.vue"
 import DashboardPage from "@/views/DashboardPage.vue"
 
@@ -121,11 +120,6 @@ const routes = [
     meta: {
       title: "Se connecter",
     },
-  },
-  {
-    path: "/deconnexion",
-    name: "LogoutPage",
-    component: LogoutPage,
   },
   {
     path: "/inscription",
