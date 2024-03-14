@@ -26,7 +26,7 @@
             :label="model.element.active ? 'Actif' : 'Non actif'"
           />
         </div>
-        <DsfrButton secondary @click="$emit('remove', element)">Enlever</DsfrButton>
+        <div><DsfrButton secondary @click="$emit('remove', element)">Enlever</DsfrButton></div>
       </div>
     </div>
     <div v-if="showFields">
