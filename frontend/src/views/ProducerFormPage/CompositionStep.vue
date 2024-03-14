@@ -19,7 +19,7 @@
       <div class="my-2">Ou</div>
       <div class="border-l h-6"></div>
     </div>
-    <div class="mt-4 sm:mt-0"><NewElementModal v-model="payload" /></div>
+    <div class="mt-4 sm:mt-0"><NewElementModal @add="addNewElement" /></div>
   </div>
   <TransitionGroup mode="out-in" name="list" tag="div" class="mt-8 relative">
     <ElementCard
@@ -70,6 +70,8 @@ const selectOption = async (result) => {
 
 const removeElement = (index) => payload.value.elements.splice(index, 1)
 const hasActiveElements = computed(() => payload.value.elements.some((x) => x.element.active))
+
+const addNewElement = (element) => console.log(element)
 
 const fetchAutocompleteResults = useDebounceFn(async () => {
   if (searchTerm.value.length < 3) {
