@@ -2,7 +2,7 @@
   <div class="p-4 border shadow-md">
     <div class="sm:flex">
       <div class="flex">
-        <div :class="`mr-4 self-center justify-center rounded-full icon-${model.element.objectType} h-8 w-8 flex`">
+        <div :class="`mr-4 self-center justify-center rounded-full icon icon-${model.element.objectType} h-8 w-8 flex`">
           <v-icon class="self-center" fill="white" :name="getTypeIcon(model.element.objectType)" />
         </div>
         <div class="self-center">
@@ -85,8 +85,7 @@ const plantParts = computed(() => {
 const showFields = computed(
   () =>
     model.value.element.active &&
-    model.value.element.objectType !== "substance" &&
-    model.value.element.objectType !== "ingredient"
+    (model.value.element.objectType === "plant" || model.value.element.objectType === "microorganism")
 )
 
 // TODO: s'assurer que les unités utilisées sont les mêmes partout, et possiblement les mettre dans la base de données
@@ -136,16 +135,19 @@ const preparations = [
 </script>
 
 <style scoped>
-.icon-plant {
+.icon {
+  @apply bg-slate-600;
+}
+.icon.icon-plant {
   @apply bg-ca-plant;
 }
-.icon-microorganism {
+.icon.icon-microorganism {
   @apply bg-ca-microorganism;
 }
-.icon-substance {
+.icon.icon-substance {
   @apply bg-ca-substance;
 }
-.icon-ingredient {
+.icon.icon-ingredient {
   @apply bg-ca-ingredient;
 }
 </style>

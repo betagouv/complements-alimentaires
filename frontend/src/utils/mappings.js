@@ -5,7 +5,7 @@ export const getTypeIcon = (type) => {
     ingredient: "ri-flask-line",
     substance: "ri-test-tube-line",
   }
-  return mapping[type] || null
+  return mapping[type] || "ri-drop-line"
 }
 
 export const getType = (type) => {
@@ -14,6 +14,9 @@ export const getType = (type) => {
     microorganism: "Micro-organisme",
     ingredient: "Ingredient",
     substance: "Substance",
+    nutrient: "Nutriment",
+    additive: "Additif",
+    aroma: "Arôme",
   }
   return mapping[type] || null
 }
