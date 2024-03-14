@@ -7,12 +7,14 @@
       </p>
     </div>
     <div class="col-span-12 md:col-span-5 my-6 md:my-0">
-      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
-        <div class="md:flex">
-          <DsfrInput v-model="state.email" placeholder="Votre e-mail" @keydown.enter="submit" />
-          <DsfrButton class="mt-4 md:mt-0 md:ml-4" :disabled="isFetching" label="Valider" @click="submit" />
-        </div>
-      </DsfrInputGroup>
+      <FormWrapper :externalResults="$externalResults">
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
+          <div class="md:flex">
+            <DsfrInput v-model="state.email" placeholder="Votre e-mail" @keydown.enter="submit" />
+            <DsfrButton class="mt-4 md:mt-0 md:ml-4" :disabled="isFetching" label="Valider" @click="submit" />
+          </div>
+        </DsfrInputGroup>
+      </FormWrapper>
     </div>
   </div>
 </template>
@@ -25,6 +27,8 @@ import { headers } from "@/utils/data-fetching"
 import { firstErrorMsg } from "@/utils/forms"
 import { useFetch } from "@vueuse/core"
 import useToaster from "@/composables/use-toaster"
+import { handleError } from "@/utils/error-handling"
+import FormWrapper from "@/components/FormWrapper"
 
 // Form state & rules
 const state = ref({ email: "" })
@@ -36,10 +40,11 @@ const rules = {
   },
 }
 
-const v$ = useVuelidate(rules, state)
+const $externalResults = ref({})
+const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Request definition
-const { error, execute, isFetching } = useFetch(
+const { error, response, execute, isFetching } = useFetch(
   "/api/v1/subscribeNewsletter/",
   {
     headers: headers,
@@ -54,19 +59,18 @@ const submit = async () => {
     return // prevent API call if there is a front-end error
   }
   await execute()
+  $externalResults.value = await handleError(response, error)
 
-  const { addMessage, addUnknownErrorMessage } = useToaster()
-  if (error.value) {
-    addUnknownErrorMessage()
-  } else {
+  const { addMessage } = useToaster()
+  if (!error.value) {
     addMessage({
       type: "success",
       title: "C'est tout bon !",
       description: "Votre inscription a bien été prise en compte.",
     })
+    // Reset both form state & Vuelidate validation state
+    state.value.email = ""
+    v$.value.$reset()
   }
-  // Reset both form state & Vuelidate validation state
-  state.value.email = ""
-  v$.value.$reset()
 }
 </script>
