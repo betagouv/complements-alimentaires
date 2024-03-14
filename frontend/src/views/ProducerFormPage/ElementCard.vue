@@ -13,6 +13,9 @@
           <div v-if="model.element.synonyms?.length">
             {{ model.element.synonyms.map((x) => x.name).join(", ") }}
           </div>
+          <div v-if="model.element.new" class="self-center mt-1">
+            <DsfrBadge label="Nouvel ingrédient" type="info" />
+          </div>
         </div>
       </div>
       <div class="flex grow">
@@ -67,12 +70,18 @@
 </template>
 
 <script setup>
+import { useRootStore } from "@/stores/root"
 import { computed, defineModel } from "vue"
 import { getTypeIcon, getType } from "@/utils/mappings"
 
 const model = defineModel()
+const store = useRootStore()
+defineEmits(["remove"])
 
-const plantParts = computed(() => model.value.element.plantParts.map((x) => ({ text: x.name, value: x.id })))
+const plantParts = computed(() => {
+  const parts = model.value.element.plantParts || store.plantParts
+  return parts.map((x) => ({ text: x.name, value: x.id }))
+})
 const showFields = computed(
   () =>
     model.value.element.active &&

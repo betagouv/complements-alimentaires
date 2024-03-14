@@ -71,7 +71,10 @@ const selectOption = async (result) => {
 const removeElement = (index) => payload.value.elements.splice(index, 1)
 const hasActiveElements = computed(() => payload.value.elements.some((x) => x.element.active))
 
-const addNewElement = (element) => console.log(element)
+const addNewElement = (element) => {
+  const item = { element: { ...element.value, ...{ active: true, new: true } } }
+  payload.value.elements.unshift(item)
+}
 
 const fetchAutocompleteResults = useDebounceFn(async () => {
   if (searchTerm.value.length < 3) {
