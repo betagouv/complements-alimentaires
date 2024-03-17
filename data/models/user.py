@@ -1,5 +1,5 @@
 from functools import cached_property
-from django.contrib.auth.validators import ASCIIUsernameValidator
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
 from django.db import models, transaction
 from django.contrib.auth.models import (
@@ -53,7 +53,7 @@ class User(PermissionsMixin, AutoValidable, Deactivable, AbstractBaseUser):
         ordering = ["-date_joined"]
         get_latest_by = "date_joined"
 
-    username_validator = ASCIIUsernameValidator()
+    username_validator = UnicodeUsernameValidator()
 
     username = models.CharField(
         _("username"),
