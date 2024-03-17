@@ -57,7 +57,7 @@ const v$ = useVuelidate(rules, state)
 const { error, execute, isFetching } = useFetch(
   "/api/v1/reportIssue/",
   {
-    headers: headers,
+    headers: headers(),
   },
   { immediate: false }
 ).post(state)

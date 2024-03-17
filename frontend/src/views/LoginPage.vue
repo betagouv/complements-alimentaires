@@ -42,13 +42,15 @@ const rules = {
 const v$ = useVuelidate(rules, state)
 
 // Request definition
-const { error, execute, isFetching } = useFetch(
+const { data, error, execute, isFetching } = useFetch(
   "/api/v1/login/",
   {
-    headers: headers,
+    headers: headers(),
   },
   { immediate: false }
-).post(state)
+)
+  .post(state)
+  .json()
 
 // Form validation
 const submit = async () => {
@@ -63,6 +65,7 @@ const submit = async () => {
     addUnknownErrorMessage() // TODO: we need to get actual backend errors here!
   } else {
     await rootStore.fetchInitialData()
+    window.CSRF_TOKEN = data.value.csrfToken
     addMessage({
       type: "success",
       title: "Vous êtes connecté",

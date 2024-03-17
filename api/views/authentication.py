@@ -1,27 +1,23 @@
-from django.views import View
-from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-import json
+from django.middleware.csrf import get_token
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class LoginView(View):
+class LoginView(APIView):
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        username = data.get("username")
-        password = data.get("password")
+        username = request.data.get("username")
+        password = request.data.get("password")
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)  # will create the user session
-            return JsonResponse({"detail": "Successfully logged in."})
+            return Response({"csrf_token": get_token(request)})
         else:
-            return JsonResponse({"detail": "Invalid credentials."}, status=400)
+            # TODO: change with back-end error (when merge will be done)
+            return Response(status=400)
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class LogoutView(View):
+class LogoutView(APIView):
     def post(self, request, *args, **kwargs):
         logout(request)
-        return JsonResponse({"detail": "Successfully logged out."})
+        return Response()

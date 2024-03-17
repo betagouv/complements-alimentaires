@@ -18,6 +18,7 @@
 import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
 import { useFetch } from "@vueuse/core"
+import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { useRouter } from "vue-router"
 
@@ -49,7 +50,7 @@ const loggedOnlyNavItems = [
 ]
 
 const logOut = async () => {
-  const { error } = await useFetch("/api/v1/logout/").post()
+  const { error } = await useFetch("/api/v1/logout/", { headers: headers() }).post()
   if (error.value) {
     addUnknownErrorMessage()
   } else {
