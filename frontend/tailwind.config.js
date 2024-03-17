@@ -26,6 +26,7 @@ module.exports = {
         "red-marianne-125": "#3b2424",
         "red-marianne-100": "#331f1f",
         "red-marianne-75": "#2b1919",
+        "grey-975": "#f6f6f6",
         "success-main-525": "#1f8d49",
         "success-425": "#18753c",
         "success-975": "#dffee6",
