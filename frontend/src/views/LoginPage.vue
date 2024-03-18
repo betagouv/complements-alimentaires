@@ -1,36 +1,34 @@
 <template>
-  <div class="my-24">
-    <div class="mx-auto max-w-[500px] border px-16 py-12 bg-grey-975">
-      <h4>Se connecter avec son compte</h4>
-      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'username')">
-        <DsfrInput v-model="state.username" label="Identifiant" :labelVisible="true" autofocus />
-      </DsfrInputGroup>
-      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'password')">
-        <DsfrInput :type="showPassword ? 'text' : 'password'" v-model="state.password" :labelVisible="true">
-          <template #label>
-            <div class="flex items-center justify-between">
-              <div>Mot de passe</div>
-              <DsfrButton
-                @click="showPassword = !showPassword"
-                :label="showPassword ? 'Cacher' : 'Afficher'"
-                :icon="showPassword ? 'ri-eye-off-line' : 'ri-eye-line'"
-                size="sm"
-                tertiary
-                noOutline
-              />
-            </div>
-          </template>
-        </DsfrInput>
-        <div class="mt-2">
-          <a class="fr-link" href="#">Mot de passe oublié ?</a>
-        </div>
-      </DsfrInputGroup>
-      <DsfrButton class="!block !w-full" :disabled="isFetching" label="Se connecter" @click="submit" />
-      <hr class="mt-8" />
-      <h4>Vous n'avez pas de compte ?</h4>
-      <DsfrButton class="!block !w-full" secondary label="S'enregistrer" @click="router.push('inscription')" />
-    </div>
-  </div>
+  <SingleItemWrapper>
+    <h4>Se connecter avec son compte</h4>
+    <DsfrInputGroup :error-message="firstErrorMsg(v$, 'username')">
+      <DsfrInput v-model="state.username" label="Identifiant" :labelVisible="true" autofocus />
+    </DsfrInputGroup>
+    <DsfrInputGroup :error-message="firstErrorMsg(v$, 'password')">
+      <DsfrInput :type="showPassword ? 'text' : 'password'" v-model="state.password" :labelVisible="true">
+        <template #label>
+          <div class="flex items-center justify-between">
+            <div>Mot de passe</div>
+            <DsfrButton
+              @click="showPassword = !showPassword"
+              :label="showPassword ? 'Cacher' : 'Afficher'"
+              :icon="showPassword ? 'ri-eye-off-line' : 'ri-eye-line'"
+              size="sm"
+              tertiary
+              noOutline
+            />
+          </div>
+        </template>
+      </DsfrInput>
+      <div class="mt-2">
+        <a class="fr-link" href="#">Mot de passe oublié ?</a>
+      </div>
+    </DsfrInputGroup>
+    <DsfrButton class="!block !w-full" :disabled="isFetching" label="Se connecter" @click="submit" />
+    <hr class="mt-8" />
+    <h4>Vous n'avez pas de compte ?</h4>
+    <DsfrButton class="!block !w-full" secondary label="S'enregistrer" @click="router.push('inscription')" />
+  </SingleItemWrapper>
 </template>
 
 <script setup>
@@ -43,6 +41,7 @@ import { firstErrorMsg } from "@/utils/forms"
 import useToaster from "@/composables/use-toaster"
 import { useRouter } from "vue-router"
 import { useRootStore } from "@/stores/root"
+import SingleItemWrapper from "@/components/SingleItemWrapper"
 
 const router = useRouter()
 const rootStore = useRootStore()
