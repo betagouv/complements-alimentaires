@@ -22,9 +22,8 @@
 <script setup>
 import { ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
-import { required, email, helpers } from "@vuelidate/validators"
 import { headers } from "@/utils/data-fetching"
-import { firstErrorMsg } from "@/utils/forms"
+import { errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
 import { useFetch } from "@vueuse/core"
 import useToaster from "@/composables/use-toaster"
 import { useRootStore } from "@/stores/root"
@@ -36,10 +35,7 @@ const { loggedUser } = useRootStore()
 const state = ref({ email: loggedUser ? loggedUser.email : "" })
 
 const rules = {
-  email: {
-    required: helpers.withMessage("Ce champ doit être rempli", required),
-    email: helpers.withMessage("Ce champ doit contenir un e-mail valide", email),
-  },
+  email: errorRequiredEmail,
 }
 
 const v$ = useVuelidate(rules, state)

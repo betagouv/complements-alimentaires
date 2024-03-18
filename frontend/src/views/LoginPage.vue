@@ -34,10 +34,9 @@
 <script setup>
 import { ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
-import { required, helpers } from "@vuelidate/validators"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
-import { firstErrorMsg } from "@/utils/forms"
+import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
 import useToaster from "@/composables/use-toaster"
 import { useRouter } from "vue-router"
 import { useRootStore } from "@/stores/root"
@@ -55,8 +54,8 @@ const state = ref({
 })
 
 const rules = {
-  username: { required: helpers.withMessage("Ce champ doit être rempli", required) },
-  password: { required: helpers.withMessage("Ce champ doit être rempli", required) },
+  username: errorRequiredField,
+  password: errorRequiredField,
 }
 
 const v$ = useVuelidate(rules, state)
