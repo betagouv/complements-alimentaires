@@ -27,7 +27,7 @@
     <DsfrButton class="!block !w-full" :disabled="isFetching" label="Se connecter" @click="submit" />
     <hr class="mt-8" />
     <h4>Vous n'avez pas de compte ?</h4>
-    <DsfrButton class="!block !w-full" secondary label="S'enregistrer" @click="router.push('inscription')" />
+    <DsfrButton class="!block !w-full" secondary label="S'enregistrer" @click="router.push('/inscription')" />
   </SingleItemWrapper>
 </template>
 
