@@ -2,7 +2,7 @@
   <div class="p-4 border shadow-md">
     <div class="sm:flex">
       <div class="flex">
-        <div :class="`mr-4 self-center justify-center rounded-full icon icon-${model.element.objectType} h-8 w-8 flex`">
+        <div :class="`mr-4 self-center justify-center rounded-full icon icon-${model.element.objectType} size-8 flex`">
           <v-icon class="self-center" fill="white" :name="getTypeIcon(model.element.objectType)" />
         </div>
         <div class="self-center">
