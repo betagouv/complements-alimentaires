@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from data.factories import PlantFactory, IngredientFactory, MicroorganismFactory, SubstanceFactory
+from data.factories import PlantFactory, IngredientFactory, MicroorganismFactory, SubstanceFactory, PlantPartFactory
 
 
 class TestElementsApi(APITestCase):
@@ -40,3 +40,14 @@ class TestElementsApi(APITestCase):
 
         self.assertEqual(substance.name, body["name"])
         self.assertEqual(substance.id, body["id"])
+
+    def test_get_plant_parts(self):
+        part_1 = PlantPartFactory.create()
+        part_2 = PlantPartFactory.create()
+        response = self.client.get(reverse("plant_part_list"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+
+        self.assertEqual(len(body), 2)
+        self.assertIsNotNone(filter(lambda x: x["id"] == part_1.id, body))
+        self.assertIsNotNone(filter(lambda x: x["id"] == part_2.id, body))
