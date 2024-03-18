@@ -27,6 +27,7 @@ class SubstanceSerializer(serializers.ModelSerializer):
             "must_specify_quantity",
             "max_quantity",
             "nutritional_reference",
+            "unit",
             "synonyms",
             "public_comments",
         )
