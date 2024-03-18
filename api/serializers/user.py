@@ -3,10 +3,12 @@ from django.contrib.auth import get_user_model
 from .roles import CompanySupervisorSerializer, DeclarantSerializer
 from data.models import CompanySupervisor, Declarant
 
+User = get_user_model()
+
 
 class BlogPostAuthor(serializers.ModelSerializer):
     class Meta:
-        model = get_user_model()
+        model = User
         fields = (
             "first_name",
             "last_name",
@@ -17,7 +19,7 @@ class LoggedUserSerializer(serializers.ModelSerializer):
     roles = serializers.SerializerMethodField()
 
     class Meta:
-        model = get_user_model()
+        model = User
         fields = ("id", "email", "username", "first_name", "last_name", "roles")
         read_only_fields = fields
 
@@ -41,3 +43,15 @@ class LoggedUserSerializer(serializers.ModelSerializer):
                 roles_data.append(serializer_instance.data)
 
         return roles_data
+
+
+class UserInputSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True)  # prevent to return hash in response
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "last_name", "first_name", "password")
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        return user
