@@ -23,6 +23,7 @@
   </div>
 </template>
 <script setup>
+import { useRootStore } from "@/stores/root"
 import { onMounted, ref, computed, watch } from "vue"
 import ProductStep from "./ProductStep"
 import CompositionStep from "./CompositionStep"
@@ -31,12 +32,21 @@ import AttachmentStep from "./AttachmentStep"
 import StepButtons from "./StepButtons"
 import { useRoute, useRouter } from "vue-router"
 
+const store = useRootStore()
+store.fetchConditions()
+store.fetchPopulations()
+store.fetchPlantParts()
+
 const payload = ref({
   effects: [],
   conditions: [],
   populations: [],
   elements: [],
   substances: [],
+  files: {
+    labels: [],
+    others: [],
+  },
 })
 
 const currentStep = ref(null)

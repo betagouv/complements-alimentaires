@@ -32,9 +32,10 @@
         <!-- Cells des inputs (communes à toutes les substances) -->
         <div class="sm:table-cell ca-cell">
           <div class="sm:hidden ca-xs-title">Quantité par DJR (en mg)</div>
-          <DsfrInputGroup class="max-w-28">
+          <DsfrInputGroup class="max-w-28" v-if="!props.readonly">
             <DsfrInput v-model="payload.substances[rowIndex].quantity" label="Quantité par DJR" :required="true" />
           </DsfrInputGroup>
+          <div v-else>{{ payload.substances[rowIndex].quantity }}</div>
         </div>
         <div class="hidden sm:table-cell fr-text-alt ca-cell font-italic">mg</div>
       </div>
@@ -46,6 +47,8 @@
 import { computed, defineModel, watch } from "vue"
 
 const payload = defineModel()
+const props = defineProps({ readonly: Boolean })
+
 const headers = ["Nom", "Num CAS", "Num EINEC", "Ingrédient(s) source", "Qté par DJR", "Unité"]
 const rows = computed(() =>
   payload.value.substances.map((x) => [
@@ -57,10 +60,11 @@ const rows = computed(() =>
 )
 
 const elements = computed(() => payload.value.elements)
+const activeElements = computed(() => payload.value.elements.filter((x) => x.element.active))
 
 const sourceElements = (substance) => {
-  const sources = elements.value.filter(
-    (x) => x.element.objectType === "substance" || x.element.substances.indexOf(substance) > -1
+  const sources = activeElements.value.filter(
+    (x) => x.element.objectType === "substance" || x.element.substances?.indexOf(substance) > -1
   )
   return sources.map((x) => x.element.name).join(", ")
 }
@@ -68,7 +72,7 @@ const sourceElements = (substance) => {
 watch(
   elements,
   () => {
-    const newSubstances = elements.value
+    const newSubstances = activeElements.value
       .map((x) => (x.element.objectType === "substance" ? [x.element] : x.element.substances))
       .flat()
       .filter((x) => !!x)

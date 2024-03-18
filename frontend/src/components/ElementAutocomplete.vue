@@ -123,7 +123,9 @@ function checkKeyboardNav($event) {
     if (!props.options.length) return
   }
   if ($event.key === "Enter") {
-    selectOption(props.options[activeOption.value])
+    // Prendre le premier élément si on n'a pas explicitement sélectionné un autre
+    const option = activeOption.value < 0 ? 0 : activeOption.value
+    selectOption(props.options[option])
   } else if ($event.key === "ArrowUp") {
     moveToPreviousOption()
   } else if ($event.key === "ArrowDown") {

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from data.models import Plant, PlantFamily, PlantSynonym, Part
+from data.models import Plant, PlantFamily, PlantSynonym, Part, PlantPart
 from .substance import SubstanceShortSerializer
 
 
@@ -13,6 +13,12 @@ class PlantFamilySerializer(serializers.ModelSerializer):
             "siccrf_id",
         )
         read_only_fields = fields
+
+
+class PlantPartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlantPart
+        fields = ("id", "name")
 
 
 class PartRelationSerializer(serializers.ModelSerializer):

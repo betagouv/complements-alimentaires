@@ -165,6 +165,15 @@ export const RiFileTextLine = {
   raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M21 8v12.993A1 1 0 0120.007 22H3.993A.993.993 0 013 21.008V2.992C3 2.455 3.449 2 4.002 2h10.995L21 8zm-2 1h-5V4H5v16h14V9zM8 7h3v2H8V7zm0 4h8v2H8v-2zm0 4h8v2H8v-2z"/>',
 }
 
+export const RiDropLine = {
+  name: "ri-drop-line",
+  minX: 0,
+  minY: 0,
+  width: 24,
+  height: 24,
+  raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M12 3.1L7.05 8.05a7 7 0 109.9 0L12 3.1zm0-2.828l6.364 6.364a9 9 0 11-12.728 0L12 .272z"/>',
+}
+
 export const RiEyeLine = {
   name: "ri-eye-line",
   minX: 0,

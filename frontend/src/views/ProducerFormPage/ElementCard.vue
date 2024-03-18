@@ -1,67 +1,92 @@
 <template>
   <div class="p-4 border shadow-md">
-    <div class="flex">
-      <div :class="`mr-4 self-center justify-center rounded-full icon-${element.element.objectType} h-8 w-8 flex`">
-        <v-icon class="self-center" fill="white" :name="getTypeIcon(element.element.objectType)" />
-      </div>
-      <div class="grow self-center">
-        <div class="font-bold capitalize">
-          {{ element.element.name.toLowerCase() }}
-          <span class="uppercase text-gray-400 text-sm ml-2">{{ getType(element.element.objectType) }}</span>
+    <div class="sm:flex">
+      <div class="flex">
+        <div :class="`mr-4 self-center justify-center rounded-full icon icon-${model.element.objectType} size-8 flex`">
+          <v-icon class="self-center" fill="white" :name="getTypeIcon(model.element.objectType)" />
         </div>
-        <div v-if="element.element.synonyms?.length">
-          {{ element.element.synonyms.map((x) => x.name).join(", ") }}
+        <div class="self-center">
+          <div class="font-bold capitalize">
+            {{ model.element.name.toLowerCase() }}
+            <span class="uppercase text-gray-400 text-sm ml-2">{{ getType(model.element.objectType) }}</span>
+          </div>
+          <div v-if="model.element.synonyms?.length">
+            {{ model.element.synonyms.map((x) => x.name).join(", ") }}
+          </div>
+          <div v-if="model.element.new" class="self-center mt-1">
+            <DsfrBadge label="Nouvel ingrédient" type="info" />
+          </div>
         </div>
       </div>
-      <div>
-        <DsfrButton secondary @click="$emit('remove', element)">Enlever</DsfrButton>
+      <div class="flex grow">
+        <div class="grow pl-4 ml-6 sm:border-l self-center">
+          <DsfrCheckbox
+            class="!my-2"
+            v-model="model.element.active"
+            :label="model.element.active ? 'Actif' : 'Non actif'"
+          />
+        </div>
+        <div><DsfrButton secondary @click="$emit('remove', element)">Enlever</DsfrButton></div>
       </div>
     </div>
-    <hr class="mt-2" v-if="element.element.objectType !== 'substance' && element.element.objectType !== 'ingredient'" />
-    <div v-if="element.element.objectType === 'plant'" class="md:ml-12 block sm:flex gap-2 md:gap-4">
-      <DsfrInputGroup class="max-w-sm" v-if="plantParts.length > 0">
-        <DsfrSelect
-          label="Partie utilisée"
-          defaultUnselectedText=""
-          v-model="element.plantPart"
-          :options="plantParts"
-          :required="true"
-        />
-      </DsfrInputGroup>
-      <DsfrInputGroup class="max-w-28">
-        <DsfrInput label="Qté par DJR" v-model="element.quantity" label-visible :required="true" />
-      </DsfrInputGroup>
-      <DsfrInputGroup class="min-w-20 max-w-24">
-        <DsfrSelect label="Unité" :options="units" v-model="element.unit" defaultUnselectedText="" :required="true" />
-      </DsfrInputGroup>
-      <DsfrInputGroup class="max-w-sm">
-        <DsfrSelect
-          label="Préparation"
-          :options="preparations"
-          v-model="element.preparation"
-          defaultUnselectedText=""
-          :required="true"
-        />
-      </DsfrInputGroup>
-    </div>
-    <div v-else-if="element.element.objectType === 'microorganism'" class="ml-12 flex gap-4">
-      <DsfrInputGroup class="max-w-sm">
-        <DsfrInput label-visible label="Souche" v-model="element.strain" :required="true" />
-      </DsfrInputGroup>
-      <DsfrInputGroup>
-        <DsfrInput label-visible v-model="element.cfu_quantity" label="Qté par DJR (en CFU)" :required="true" />
-      </DsfrInputGroup>
+    <div v-if="showFields">
+      <hr class="mt-2" />
+      <div v-if="model.element.objectType === 'plant'" class="md:ml-12 block sm:flex gap-2 md:gap-4">
+        <DsfrInputGroup class="max-w-sm" v-if="plantParts.length > 0">
+          <DsfrSelect
+            label="Partie utilisée"
+            defaultUnselectedText=""
+            v-model="model.plantPart"
+            :options="plantParts"
+            :required="true"
+          />
+        </DsfrInputGroup>
+        <DsfrInputGroup class="max-w-28">
+          <DsfrInput label="Qté par DJR" v-model="model.quantity" label-visible :required="true" />
+        </DsfrInputGroup>
+        <DsfrInputGroup class="min-w-20 max-w-24">
+          <DsfrSelect label="Unité" :options="units" v-model="model.unit" defaultUnselectedText="" :required="true" />
+        </DsfrInputGroup>
+        <DsfrInputGroup class="max-w-sm">
+          <DsfrSelect
+            label="Préparation"
+            :options="preparations"
+            v-model="model.preparation"
+            defaultUnselectedText=""
+            :required="true"
+          />
+        </DsfrInputGroup>
+      </div>
+      <div v-else-if="model.element.objectType === 'microorganism'" class="ml-12 flex gap-4">
+        <DsfrInputGroup class="max-w-sm">
+          <DsfrInput label-visible label="Souche" v-model="model.strain" :required="true" />
+        </DsfrInputGroup>
+        <DsfrInputGroup>
+          <DsfrInput label-visible v-model="model.cfu_quantity" label="Qté par DJR (en CFU)" :required="true" />
+        </DsfrInputGroup>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useRootStore } from "@/stores/root"
 import { computed, defineModel } from "vue"
 import { getTypeIcon, getType } from "@/utils/mappings"
 
-const element = defineModel()
+const model = defineModel()
+const store = useRootStore()
+defineEmits(["remove"])
 
-const plantParts = computed(() => element.value.element.plantParts.map((x) => ({ text: x.name, value: x.id })))
+const plantParts = computed(() => {
+  const parts = model.value.element.plantParts || store.plantParts
+  return parts.map((x) => ({ text: x.name, value: x.id }))
+})
+const showFields = computed(
+  () =>
+    model.value.element.active &&
+    (model.value.element.objectType === "plant" || model.value.element.objectType === "microorganism")
+)
 
 // TODO: s'assurer que les unités utilisées sont les mêmes partout, et possiblement les mettre dans la base de données
 const units = [
@@ -110,16 +135,19 @@ const preparations = [
 </script>
 
 <style scoped>
-.icon-plant {
+.icon {
+  @apply bg-slate-600;
+}
+.icon.icon-plant {
   @apply bg-ca-plant;
 }
-.icon-microorganism {
+.icon.icon-microorganism {
   @apply bg-ca-microorganism;
 }
-.icon-substance {
+.icon.icon-substance {
   @apply bg-ca-substance;
 }
-.icon-ingredient {
+.icon.icon-ingredient {
   @apply bg-ca-ingredient;
 }
 </style>
