@@ -14,6 +14,7 @@ class SubstanceSynonymSerializer(serializers.ModelSerializer):
 
 class SubstanceSerializer(serializers.ModelSerializer):
     synonyms = SubstanceSynonymSerializer(many=True, read_only=True, source="substancesynonym_set")
+    unit = serializers.CharField(read_only=True, source="unit.name")
 
     class Meta:
         model = Substance
