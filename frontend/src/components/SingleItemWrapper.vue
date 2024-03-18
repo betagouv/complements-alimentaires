@@ -1,6 +1,6 @@
 <template>
-  <div class="my-24">
-    <div class="mx-auto max-w-[500px] border border-black px-16 py-12">
+  <div class="md:my-24">
+    <div class="mx-auto max-w-[600px] md:border md:border-black px-8 py-6 md:px-16 md:py-12">
       <slot />
     </div>
   </div>

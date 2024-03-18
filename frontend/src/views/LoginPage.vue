@@ -2,10 +2,10 @@
   <SingleItemWrapper>
     <h4>Se connecter avec son compte</h4>
     <DsfrInputGroup :error-message="firstErrorMsg(v$, 'username')">
-      <DsfrInput v-model="state.username" label="Identifiant" :labelVisible="true" autofocus />
+      <DsfrInput v-model="state.username" label="Identifiant" labelVisible autofocus />
     </DsfrInputGroup>
     <DsfrInputGroup :error-message="firstErrorMsg(v$, 'password')">
-      <DsfrInput :type="showPassword ? 'text' : 'password'" v-model="state.password" :labelVisible="true">
+      <DsfrInput :type="showPassword ? 'text' : 'password'" v-model="state.password" labelVisible>
         <template #label>
           <div class="flex items-center justify-between">
             <div>Mot de passe</div>
