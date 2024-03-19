@@ -64,7 +64,7 @@ const activeElements = computed(() => payload.value.elements.filter((x) => x.ele
 
 const sourceElements = (substance) => {
   const sources = activeElements.value.filter(
-    (x) => x.element.objectType === "substance" || x.element.substances.indexOf(substance) > -1
+    (x) => x.element.objectType === "substance" || x.element.substances?.indexOf(substance) > -1
   )
   return sources.map((x) => x.element.name).join(", ")
 }

@@ -6,7 +6,10 @@
       <DsfrBadge v-else :label="environment" type="warning" />
     </template>
     <template #mainnav>
-      <DsfrNavigation :nav-items="navItems" />
+      <div class="flex justify-between">
+        <DsfrNavigation :nav-items="navItems" />
+        <DsfrNavigation v-if="store.loggedUser" :nav-items="loggedOnlyNavItems" />
+      </div>
     </template>
   </DsfrHeader>
 </template>
@@ -14,16 +17,20 @@
 <script setup>
 import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
-import { headers } from "@/utils/data-fetching"
 import { useFetch } from "@vueuse/core"
+import { headers } from "@/utils/data-fetching"
+import useToaster from "@/composables/use-toaster"
+import { useRouter } from "vue-router"
 
 defineProps({ logoText: Array })
 
 const environment = window.ENVIRONMENT
+const { addMessage, addUnknownErrorMessage } = useToaster()
+const router = useRouter()
 const store = useRootStore()
 const navItems = [
   {
-    to: "/",
+    to: "/accueil",
     text: "Accueil",
   },
   {
@@ -35,26 +42,50 @@ const navItems = [
     text: "Blog",
   },
 ]
+const loggedOnlyNavItems = [
+  {
+    to: "/tableau-de-bord",
+    text: "Dashboard",
+  },
+]
+
+const logOut = async () => {
+  const { error } = await useFetch("/api/v1/logout/", { headers: headers() }).post()
+  if (error.value) {
+    addUnknownErrorMessage()
+  } else {
+    await store.resetInitialData()
+    router.replace({ name: "LandingPage" })
+    addMessage({
+      type: "success",
+      title: "Vous êtes déconnecté",
+      description: "Vous avez été déconnecté de la plateforme.",
+    })
+  }
+}
 
 const quickLinks = computed(() => {
   if (store.loggedUser)
     return [
       {
         label: "Se déconnecter",
-        icon: "ri-logout-box-r-line",
+        icon: "ri-logout-circle-line",
         button: true,
-        onClick: logout,
+        onClick: logOut,
       },
     ]
-  else return []
+  else
+    return [
+      {
+        label: "Se connecter",
+        icon: "ri-login-circle-line",
+        to: "/connexion",
+      },
+      {
+        label: "S'enregistrer",
+        icon: "ri-account-circle-line",
+        to: "/inscription",
+      },
+    ]
 })
-
-const logout = async () => {
-  const { response } = await useFetch("/se-deconnecter", {
-    headers: headers,
-    redirect: "follow",
-  }).post()
-
-  if (response.value.redirected) window.location.href = response.value.url
-}
 </script>

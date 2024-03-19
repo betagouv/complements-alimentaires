@@ -35,6 +35,7 @@ import { useRoute, useRouter } from "vue-router"
 const store = useRootStore()
 store.fetchConditions()
 store.fetchPopulations()
+store.fetchPlantParts()
 
 const payload = ref({
   effects: [],

@@ -45,7 +45,7 @@ ENVIRONMENT = env("ENVIRONMENT")
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -53,16 +53,24 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+]
+
+THIRD_PARTY_APPS = [
     "webpack_loader",
     "django_ckeditor_5",
     "anymail",
+    "simple_history",
+    "django_extensions",
+]
+
+PROJECT_APPS = [
     "icare",
     "api",
     "data",
     "web",
-    "simple_history",
-    "django_extensions",
 ]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

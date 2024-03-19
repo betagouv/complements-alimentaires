@@ -12,6 +12,9 @@ import LegalNoticesPage from "@/views/LegalNoticesPage"
 import CookiesInfoPage from "@/views/CookiesInfoPage"
 import ProducerFormPage from "@/views/ProducerFormPage"
 import NotFound from "@/views/NotFound"
+import LoginPage from "@/views/LoginPage.vue"
+import SignupPage from "@/views/SignupPage.vue"
+import DashboardPage from "@/views/DashboardPage.vue"
 
 const routes = [
   {
@@ -93,11 +96,37 @@ const routes = [
     },
   },
   {
+    path: "/tableau-de-bord",
+    name: "DashboardPage",
+    component: DashboardPage,
+    meta: {
+      title: "Tableau de bord",
+      authenticationRequired: true,
+    },
+  },
+  {
     path: "/nouvelle-demarche",
     name: "ProducerFormPage",
     component: ProducerFormPage,
     meta: {
+      title: "Nouvelle démarche",
       authenticationRequired: true,
+    },
+  },
+  {
+    path: "/connexion",
+    name: "LoginPage",
+    component: LoginPage,
+    meta: {
+      title: "Se connecter",
+    },
+  },
+  {
+    path: "/inscription",
+    name: "SignupPage",
+    component: SignupPage,
+    meta: {
+      title: "S'enregistrer",
     },
   },
   {
@@ -129,7 +158,7 @@ function chooseAuthorisedRoute(to, from, next, store) {
   } else {
     if (to.meta.home) next({ name: "LandingPage" })
     else if (!to.meta.authenticationRequired || store.loggedUser) next()
-    else window.location.href = `/s-identifier?next=${to.path}`
+    else next({ name: "LoginPage" })
   }
 }
 
