@@ -9,12 +9,13 @@
     </div>
     <div class="col-span-12 md:col-span-5 my-6 md:my-0">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
-        <DsfrInput v-model="state.email" placeholder="Votre e-mail (optionnel)" />
+        <DsfrInput label="Votre e-mail (optionnel)" labelVisible v-model="state.email" />
       </DsfrInputGroup>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reportMessage')">
         <DsfrInput
+          label="Quel(s) problème(s) constatez-vous ?"
+          labelVisible
           v-model="state.reportMessage"
-          placeholder="Quel(s) problème(s) constatez-vous ?"
           :isTextarea="true"
         />
       </DsfrInputGroup>
@@ -33,14 +34,18 @@ import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { firstErrorMsg } from "@/utils/forms"
 import useToaster from "@/composables/use-toaster"
+import { useRootStore } from "@/stores/root"
 
 // Props
 const props = defineProps({ elementName: String })
 
+// Get potential existing user from root store to pre-fill email address
+const { loggedUser } = useRootStore()
+
 // Form state & rules
 const getInitialState = () => ({
   name: "",
-  email: "",
+  email: loggedUser ? loggedUser.email : "",
   elementName: props.elementName, // not used by the form validation itself, but make the payload building easier
 })
 
@@ -57,7 +62,7 @@ const v$ = useVuelidate(rules, state)
 const { error, execute, isFetching } = useFetch(
   "/api/v1/reportIssue/",
   {
-    headers: headers,
+    headers: headers(),
   },
   { immediate: false }
 ).post(state)

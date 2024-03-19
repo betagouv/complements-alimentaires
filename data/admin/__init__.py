@@ -1,6 +1,8 @@
 from django.contrib import admin
 
 from .user import UserAdmin  # noqa
+from .roles import CompanySupervisorAdmin, DeclarantAdmin  # noqa
+from .company import CompanyAdmin  # noqa
 from .blogpost import BlogPostAdmin  # noqa
 from .webinar import WebinarAdmin  # noqa
 from .substance import SubstanceAdmin  # noqa

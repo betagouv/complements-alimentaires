@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 class LoggedUserView(RetrieveAPIView):
     model = get_user_model()
     serializer_class = LoggedUserSerializer
-    queryset = get_user_model().objects.all()
+    queryset = get_user_model().objects.active()
 
     def get(self, request, *args, **kwargs):
         if permissions.IsAuthenticated().has_permission(self.request, self):

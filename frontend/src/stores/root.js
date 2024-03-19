@@ -23,6 +23,11 @@ export const useRootStore = defineStore("root", () => {
         console.error("fetchLoggedUser", e)
       })
   }
+  const resetInitialData = () => {
+    loggedUser.value = null
+    initialDataLoaded.value = null
+  }
+
   const fetchPopulations = async () => {
     const { data } = await useFetch("/api/v1/populations/").json()
     populations.value = data.value
@@ -39,6 +44,7 @@ export const useRootStore = defineStore("root", () => {
     loggedUser,
     initialDataLoaded,
     fetchInitialData,
+    resetInitialData,
     fetchLoggedUser,
     fetchPopulations,
     fetchConditions,

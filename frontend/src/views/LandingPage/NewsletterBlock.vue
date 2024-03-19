@@ -8,8 +8,10 @@
     </div>
     <div class="col-span-12 md:col-span-5 my-6 md:my-0">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
-        <div class="md:flex">
-          <DsfrInput v-model="state.email" placeholder="Votre e-mail" @keydown.enter="submit" />
+        <div class="md:flex justify-between items-end">
+          <div class="grow">
+            <DsfrInput v-model="state.email" label="Votre e-mail" labelVisible @keydown.enter="submit" />
+          </div>
           <DsfrButton class="mt-4 md:mt-0 md:ml-4" :disabled="isFetching" label="Valider" @click="submit" />
         </div>
       </DsfrInputGroup>
@@ -20,20 +22,20 @@
 <script setup>
 import { ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
-import { required, email, helpers } from "@vuelidate/validators"
 import { headers } from "@/utils/data-fetching"
-import { firstErrorMsg } from "@/utils/forms"
+import { errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
 import { useFetch } from "@vueuse/core"
 import useToaster from "@/composables/use-toaster"
+import { useRootStore } from "@/stores/root"
+
+// Get potential existing user from root store to pre-fill email address
+const { loggedUser } = useRootStore()
 
 // Form state & rules
-const state = ref({ email: "" })
+const state = ref({ email: loggedUser ? loggedUser.email : "" })
 
 const rules = {
-  email: {
-    required: helpers.withMessage("Ce champ doit être rempli", required),
-    email: helpers.withMessage("Ce champ doit contenir un e-mail valide", email),
-  },
+  email: errorRequiredEmail,
 }
 
 const v$ = useVuelidate(rules, state)
@@ -42,7 +44,7 @@ const v$ = useVuelidate(rules, state)
 const { error, execute, isFetching } = useFetch(
   "/api/v1/subscribeNewsletter/",
   {
-    headers: headers,
+    headers: headers(),
   },
   { immediate: false }
 ).post(state)
