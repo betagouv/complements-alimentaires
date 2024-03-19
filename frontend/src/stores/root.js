@@ -9,6 +9,7 @@ export const useRootStore = defineStore("root", () => {
   const populations = ref(null)
   const conditions = ref(null)
   const plantParts = ref(null)
+  const units = ref(null)
 
   const fetchInitialData = () => {
     return fetchLoggedUser().then(() => (initialDataLoaded.value = true))
@@ -40,6 +41,10 @@ export const useRootStore = defineStore("root", () => {
     const { data } = await useFetch("/api/v1/plantParts/").json()
     plantParts.value = data.value
   }
+  const fetchUnits = async () => {
+    const { data } = await useFetch("/api/v1/units/").json()
+    units.value = data.value
+  }
   return {
     loggedUser,
     initialDataLoaded,
@@ -49,8 +54,10 @@ export const useRootStore = defineStore("root", () => {
     fetchPopulations,
     fetchConditions,
     fetchPlantParts,
+    fetchUnits,
     plantParts,
     populations,
     conditions,
+    units,
   }
 })

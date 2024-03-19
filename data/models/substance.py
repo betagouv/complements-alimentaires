@@ -5,7 +5,7 @@ from simple_history.models import HistoricalRecords
 
 from .mixins import WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithComments
 from .abstract_models import CommonModel
-from .enum import SubstanceUnit
+from .unit import SubstanceUnit
 
 
 class Substance(CommonModel, WithComments):

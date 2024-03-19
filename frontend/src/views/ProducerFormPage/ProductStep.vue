@@ -149,7 +149,7 @@ import { storeToRefs } from "pinia"
 const payload = defineModel()
 
 const store = useRootStore()
-const { populations, conditions } = storeToRefs(store)
+const { populations, conditions, units } = storeToRefs(store)
 const galenicFormulation = [
   {
     text: "Ampoule",
@@ -158,20 +158,6 @@ const galenicFormulation = [
   {
     text: "Comprimé",
     value: "comprime",
-  },
-]
-const units = [
-  {
-    text: "g",
-    value: "g",
-  },
-  {
-    text: "mg",
-    value: "mg",
-  },
-  {
-    text: "l",
-    value: "l",
   },
 ]
 
