@@ -45,7 +45,13 @@
           <DsfrInput label="Qté par DJR" v-model="model.quantity" label-visible :required="true" />
         </DsfrInputGroup>
         <DsfrInputGroup class="min-w-20 max-w-24">
-          <DsfrSelect label="Unité" :options="units" v-model="model.unit" defaultUnselectedText="" :required="true" />
+          <DsfrSelect
+            label="Unité"
+            :options="store.units"
+            v-model="model.unit"
+            defaultUnselectedText=""
+            :required="true"
+          />
         </DsfrInputGroup>
         <DsfrInputGroup class="max-w-sm">
           <DsfrSelect
@@ -88,21 +94,6 @@ const showFields = computed(
     (model.value.element.objectType === "plant" || model.value.element.objectType === "microorganism")
 )
 
-// TODO: s'assurer que les unités utilisées sont les mêmes partout, et possiblement les mettre dans la base de données
-const units = [
-  {
-    text: "g",
-    value: "g",
-  },
-  {
-    text: "mg",
-    value: "mg",
-  },
-  {
-    text: "l",
-    value: "l",
-  },
-]
 // TODO: vérifier qu'on ait ces infos en base ou accepter de les avoir en front only
 const preparations = [
   "Alcoolature",
