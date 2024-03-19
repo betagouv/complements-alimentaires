@@ -136,7 +136,7 @@ const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
 
 const url = computed(() => `/api/v1/${typeMapping[type.value]}s/${elementId.value}`)
-const { data: element, response, error, execute } = useFetch(url, { immediate: false }).get().json()
+const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
 const getElementFromApi = async () => {
   if (!type.value || !elementId.value) {
@@ -144,7 +144,7 @@ const getElementFromApi = async () => {
     return
   }
   await execute()
-  await handleError(response, error)
+  await handleError(response)
 }
 
 const searchPageSource = ref(null)

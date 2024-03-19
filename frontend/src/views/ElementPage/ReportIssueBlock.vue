@@ -60,7 +60,7 @@ const rules = {
 const v$ = useVuelidate(rules, state)
 
 // Request definition
-const { error, response, execute, isFetching } = useFetch(
+const { response, execute, isFetching } = useFetch(
   "/api/v1/reportIssue/",
   {
     headers: headers(),
@@ -75,8 +75,8 @@ const submit = async () => {
     return // prevent API call if there is a front-end error
   }
   await execute()
-  await handleError(response, error) // we don't get returned result as we don't except other errors than global
-  if (!error.value) {
+  await handleError(response) // we don't get returned result as we don't except other errors than global
+  if (response.value.ok) {
     useToaster().addMessage({
       type: "success",
       title: "C'est envoyé !",

@@ -1,7 +1,6 @@
 import { defineStore } from "pinia"
 import { useFetch } from "@vueuse/core"
 import { ref } from "vue"
-import { handleError } from "@/utils/error-handling"
 
 export const useRootStore = defineStore("root", () => {
   const loggedUser = ref(null)

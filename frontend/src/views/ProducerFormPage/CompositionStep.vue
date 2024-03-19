@@ -99,9 +99,9 @@ const fetchAutocompleteResults = useDebounceFn(async () => {
 }, debounceDelay)
 
 const fetchElement = async (type, id) => {
-  const { error, data, response } = await useFetch(`/api/v1/${type}s/${id}`).get().json()
-  await handleError(response, error)
-  if (error.value) return null
+  const { data, response } = await useFetch(`/api/v1/${type}s/${id}`).get().json()
+  await handleError(response)
+  if (!response.value.ok) return null
   // Pour l'instant on met `active: true` mais une fois qu'on intègrera les additifs, il faudra
   // ajouter un peu de logique car les additifs sont par défaut "non actifs". Potentiellement
   // ils ne pourront jamais devenir "actifs" d'un point de vue métier.

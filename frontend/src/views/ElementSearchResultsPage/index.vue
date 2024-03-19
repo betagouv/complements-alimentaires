@@ -81,7 +81,7 @@ const updatePage = (newPage) => (page.value = newPage + 1)
 
 // Search request
 const body = computed(() => ({ search: currentSearch.value, limit: limit, offset: offset.value }))
-const { error, data, response, isFetching, execute } = useFetch(
+const { data, response, isFetching, execute } = useFetch(
   "/api/v1/search/",
   { headers: headers() },
   { immediate: false }
@@ -91,7 +91,7 @@ const { error, data, response, isFetching, execute } = useFetch(
 
 const fetchSearchResults = async () => {
   await execute()
-  await handleError(response, error)
+  await handleError(response)
 }
 
 // Initial search

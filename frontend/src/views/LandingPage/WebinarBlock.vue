@@ -40,6 +40,6 @@ const dateOptions = {
   day: "numeric",
 }
 
-const { data: webinars, response, error } = await useFetch("/api/v1/webinars").json()
-await handleError(response, error)
+const { data: webinars, response } = await useFetch("/api/v1/webinars").json()
+await handleError(response)
 </script>

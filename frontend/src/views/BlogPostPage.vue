@@ -26,15 +26,10 @@ const props = defineProps({
   id: String,
 })
 
-const {
-  data: blogPost,
-  response,
-  execute,
-  error,
-} = useFetch(`/api/v1/blogPosts/${props.id}`, { immediate: false }).json()
+const { data: blogPost, response, execute } = useFetch(`/api/v1/blogPosts/${props.id}`, { immediate: false }).json()
 const fetchBlogPost = async () => {
   await execute()
-  await handleError(response, error)
+  await handleError(response)
 }
 
 const date = computed(() => {

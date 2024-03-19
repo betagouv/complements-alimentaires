@@ -66,7 +66,7 @@ const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Request definition
-const { data, error, response, execute, isFetching } = useFetch(
+const { data, response, execute, isFetching } = useFetch(
   "/api/v1/login/",
   {
     headers: headers(),
@@ -83,9 +83,9 @@ const submit = async () => {
     return // prevent API call if there is a front-end error
   }
   await execute()
-  $externalResults.value = await handleError(response, error)
+  $externalResults.value = await handleError(response)
 
-  if (!error.value) {
+  if (response.value.ok) {
     {
       await rootStore.fetchInitialData()
       window.CSRF_TOKEN = data.value.csrfToken

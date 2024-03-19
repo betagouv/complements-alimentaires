@@ -69,11 +69,11 @@ watch(page, updateRoute)
 
 // Blog posts
 const url = computed(() => `/api/v1/blogPosts/?limit=${limit}&offset=${offset.value}`)
-const { data, response, error, execute, isFetching } = useFetch(url, { immediate: false }).json()
+const { data, response, execute, isFetching } = useFetch(url, { immediate: false }).json()
 
 const fetchCurrentPage = async () => {
   await execute()
-  if (error.value) await handleError(response, error)
+  await handleError(response)
 }
 
 // Route management

@@ -2,9 +2,9 @@ import useToaster from "@/composables/use-toaster"
 import router from "@/router/index"
 const { addErrorMessage } = useToaster()
 
-export const handleError = async (response, error) => {
+export const handleError = async (response) => {
   // Do nothing if there is actually no error
-  if (!error.value) {
+  if (response.value.ok) {
     return
   }
 

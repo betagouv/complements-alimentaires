@@ -46,7 +46,7 @@ const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Request definition
-const { error, response, execute, isFetching } = useFetch(
+const { response, execute, isFetching } = useFetch(
   "/api/v1/subscribeNewsletter/",
   {
     headers: headers(),
@@ -61,10 +61,10 @@ const submit = async () => {
     return // prevent API call if there is a front-end error
   }
   await execute()
-  $externalResults.value = await handleError(response, error)
+  $externalResults.value = await handleError(response)
 
   const { addMessage } = useToaster()
-  if (!error.value) {
+  if (response.value.ok) {
     addMessage({
       type: "success",
       title: "C'est tout bon !",
