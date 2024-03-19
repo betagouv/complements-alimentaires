@@ -136,7 +136,10 @@ const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))
 const casNumber = computed(() => element.value?.casNumber)
 const einecNumber = computed(() => element.value?.einecNumber)
-const nutritionalReference = computed(() => element.value?.nutritionalReference + " " + element.value?.unit)
+const nutritionalReference = computed(() => {
+  if (!element.value?.unit) return element.value?.nutritionalReference
+  else return element.value?.nutritionalReference + " " + element.value?.unit
+})
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
 
