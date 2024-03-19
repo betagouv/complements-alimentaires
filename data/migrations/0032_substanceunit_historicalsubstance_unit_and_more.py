@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("data", "0022_merge_20240307_1122"),
+        ("data", "0031_alter_user_username"),
     ]
 
     operations = [
@@ -25,9 +25,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "missing_import_data",
-                    models.BooleanField(
-                        blank=True, default=False, editable=False, null=True
-                    ),
+                    models.BooleanField(blank=True, default=False, editable=False, null=True),
                 ),
                 (
                     "siccrf_id",
