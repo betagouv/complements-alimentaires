@@ -83,7 +83,7 @@ const fetchAutocompleteResults = useDebounceFn(async () => {
   }
 
   const body = { term: searchTerm.value }
-  const { error, data } = await useFetch("/api/v1/elements/autocomplete/", { headers }).post(body).json()
+  const { error, data } = await useFetch("/api/v1/elements/autocomplete/", { headers: headers() }).post(body).json()
 
   if (error.value) {
     useToaster().addMessage({
