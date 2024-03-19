@@ -39,7 +39,7 @@ import { useRoute, useRouter } from "vue-router"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import BlogCard from "@/components/BlogCard"
 import { useFetch } from "@vueuse/core"
-import useToaster from "@/composables/use-toaster"
+import { handleError } from "@/utils/error-handling"
 
 const route = useRoute()
 const router = useRouter()
@@ -69,11 +69,11 @@ watch(page, updateRoute)
 
 // Blog posts
 const url = computed(() => `/api/v1/blogPosts/?limit=${limit}&offset=${offset.value}`)
-const { data, error, execute, isFetching } = useFetch(url, { immediate: false }).json()
+const { data, response, error, execute, isFetching } = useFetch(url, { immediate: false }).json()
 
 const fetchCurrentPage = async () => {
   await execute()
-  if (error.value) useToaster().addUnknownErrorMessage()
+  if (error.value) await handleError(response, error)
 }
 
 // Route management

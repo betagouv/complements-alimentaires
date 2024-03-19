@@ -48,7 +48,7 @@ import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import ResultCard from "./ResultCard"
 import ProgressSpinner from "@/components/ProgressSpinner"
-import useToaster from "@/composables/use-toaster"
+import { handleError } from "@/utils/error-handling"
 
 const router = useRouter()
 const route = useRoute()
@@ -81,13 +81,17 @@ const updatePage = (newPage) => (page.value = newPage + 1)
 
 // Search request
 const body = computed(() => ({ search: currentSearch.value, limit: limit, offset: offset.value }))
-const { error, data, isFetching, execute } = useFetch("/api/v1/search/", { headers: headers() }, { immediate: false })
+const { error, data, response, isFetching, execute } = useFetch(
+  "/api/v1/search/",
+  { headers: headers() },
+  { immediate: false }
+)
   .post(body)
   .json()
 
 const fetchSearchResults = async () => {
   await execute()
-  if (error.value) useToaster().addUnknownErrorMessage()
+  await handleError(response, error)
 }
 
 // Initial search

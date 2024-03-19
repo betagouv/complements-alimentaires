@@ -90,7 +90,7 @@ import { ref, computed, watch } from "vue"
 import { getTypeIcon } from "@/utils/mappings"
 import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
-import useToaster from "@/composables/use-toaster"
+import { handleError } from "@/utils/error-handling"
 import ElementColumn from "./ElementColumn.vue"
 import ElementTag from "./ElementTag.vue"
 import ElementText from "./ElementText.vue"
@@ -136,7 +136,7 @@ const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
 
 const url = computed(() => `/api/v1/${typeMapping[type.value]}s/${elementId.value}`)
-const { data: element, error, execute } = useFetch(url, { immediate: false }).get().json()
+const { data: element, response, error, execute } = useFetch(url, { immediate: false }).get().json()
 
 const getElementFromApi = async () => {
   if (!type.value || !elementId.value) {
@@ -144,7 +144,7 @@ const getElementFromApi = async () => {
     return
   }
   await execute()
-  if (error.value) useToaster().addUnknownErrorMessage()
+  await handleError(response, error)
 }
 
 const searchPageSource = ref(null)

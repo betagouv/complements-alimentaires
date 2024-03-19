@@ -6,7 +6,8 @@ from django.conf import settings
 from django.utils import timezone
 from django.template.defaultfilters import date, time
 from ..utils.emails import get_email_from_request
-from ..utils.responses import InvalidEmailResponse, EmptyValidResponse
+from ..utils.responses import EmptyValidResponse
+from data.exceptions import InvalidEmail
 
 
 logger = logging.getLogger(__name__)
@@ -16,9 +17,8 @@ class ReportIssue(APIView):
     def post(self, request):
         try:
             email = get_email_from_request(request, required=False)
-        except ValidationError as e:
-            logger.warning(f"Invalid email on reporting issue:\n{e}")
-            return InvalidEmailResponse
+        except ValidationError:  # NOTE: should not actually happen with the front-end validation
+            raise InvalidEmail
         now = timezone.now()
         user_str = email or "Un utilisateur anonyme"
         element_str = request.data["element_name"]

@@ -88,7 +88,8 @@ def custom_exception_handler(exc, context):
         else:
             response = Response(
                 data=ProjectAPIException(
-                    global_error="Une erreur inconnue est survenue.", log_level=logging.ERROR
+                    global_error="Une erreur innatendue est survenue, veuillez réessayer plus tard.",
+                    log_level=logging.ERROR,
                 ).__dict__,
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

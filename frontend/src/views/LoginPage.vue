@@ -84,7 +84,6 @@ const submit = async () => {
   }
   await execute()
   $externalResults.value = await handleError(response, error)
-  console.log($externalResults.value)
 
   if (!error.value) {
     {

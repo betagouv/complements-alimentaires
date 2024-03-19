@@ -54,6 +54,7 @@ import ElementCard from "./ElementCard.vue"
 import SubstancesTable from "./SubstancesTable.vue"
 import NewElementModal from "./NewElementModal.vue"
 import useToaster from "@/composables/use-toaster"
+import { handleError } from "@/utils/error-handling"
 
 const payload = defineModel()
 
@@ -98,11 +99,9 @@ const fetchAutocompleteResults = useDebounceFn(async () => {
 }, debounceDelay)
 
 const fetchElement = async (type, id) => {
-  const { error, data } = await useFetch(`/api/v1/${type}s/${id}`).get().json()
-  if (error.value) {
-    useToaster().addErrorMessage("Une erreur est survenue en ajoutant cet élément, veuillez réessayer plus tard.")
-    return null
-  }
+  const { error, data, response } = await useFetch(`/api/v1/${type}s/${id}`).get().json()
+  await handleError(response, error)
+  if (error.value) return null
   // Pour l'instant on met `active: true` mais une fois qu'on intègrera les additifs, il faudra
   // ajouter un peu de logique car les additifs sont par défaut "non actifs". Potentiellement
   // ils ne pourront jamais devenir "actifs" d'un point de vue métier.
