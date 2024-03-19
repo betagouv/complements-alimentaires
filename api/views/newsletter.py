@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class SubscribeNewsletter(APIView):
     def post(self, request):
-        email = request.data["email"]
+        email = request.data["email"].strip()
         User.objects.normalize_email(email)
         validate_email(email)
 

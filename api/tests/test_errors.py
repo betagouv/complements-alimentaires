@@ -33,7 +33,11 @@ class TestApiErrorMessages(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
         self.assertEqual(
             response.data,
-            {"global_error": "Une erreur inconnue est survenue.", "non_field_errors": [], "field_errors": {}},
+            {
+                "global_error": "Une erreur innatendue est survenue, veuillez réessayer plus tard.",
+                "non_field_errors": [],
+                "field_errors": {},
+            },
         )
 
     def test_project_error_with_global(self):
