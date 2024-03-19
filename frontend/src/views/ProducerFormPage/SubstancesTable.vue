@@ -66,7 +66,7 @@ const sourceElements = (substance) => {
   const sources = activeElements.value.filter(
     (x) =>
       (x.element.objectType === "substance" && x.element.id === substance.id) ||
-      x.element.substances?.indexOf(substance) > -1
+      x.element.substances?.map((item) => item.id).indexOf(substance.id) > -1
   )
   return sources.map((x) => x.element.name).join(", ")
 }
