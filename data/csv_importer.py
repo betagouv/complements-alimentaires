@@ -22,7 +22,7 @@ from .models.microorganism import Microorganism
 from .models.plant import Plant, PlantPart, PlantSynonym, PlantFamily, Part
 from .models.population import Population
 from .models.substance import Substance, SubstanceSynonym
-from .models.enum import SubstanceUnit
+from .models.unit import SubstanceUnit
 
 logger = logging.getLogger(__name__)
 

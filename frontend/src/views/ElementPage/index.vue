@@ -47,7 +47,7 @@
         </ElementColumn>
 
         <ElementColumn title="Apport nutritionnel de référence" v-if="nutritionalReference">
-          <ElementText :text="nutritionalReference" />
+          <ElementText :text="nutritionalReference" :lowercase="true" />
         </ElementColumn>
 
         <ElementColumn title="Parties utiles" v-if="plantParts?.length">
