@@ -50,9 +50,9 @@ const loggedOnlyNavItems = [
 ]
 
 const logOut = async () => {
-  const { response, error } = await useFetch("/api/v1/logout/", { headers: headers() }).post()
-  await handleError(response, error)
-  if (!error.value) {
+  const { response } = await useFetch("/api/v1/logout/", { headers: headers() }).post()
+  await handleError(response)
+  if (response.value.ok) {
     await store.resetInitialData()
     router.replace({ name: "LandingPage" })
     useToaster().addMessage({
