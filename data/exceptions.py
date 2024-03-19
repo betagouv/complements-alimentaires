@@ -10,11 +10,4 @@ class CSVFileError(Exception):
 
 
 class EmailAlreadyExists(ProjectAPIException):
-    default_detail = "L'adresse e-mail renseignée existe déjà."
-    display = "field"
-    field_name = "email"
-
-
-class UnknownSIBError(ProjectAPIException):
-    default_detail = "Une erreur inconnue avec l'API SendInBlue a eu lieu."
-    display = "global"
+    field_errors = {"email": "L'adresse e-mail renseignée existe déjà."}

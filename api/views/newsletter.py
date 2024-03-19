@@ -7,7 +7,8 @@ from rest_framework.views import APIView
 from ..utils.responses import EmptyValidResponse
 import sib_api_v3_sdk
 from django.contrib.auth import get_user_model
-from data.exceptions import EmailAlreadyExists, UnknownSIBError
+from api.exception_handling import ProjectAPIException
+from data.exceptions import EmailAlreadyExists
 
 User = get_user_model()
 
@@ -36,4 +37,4 @@ class SubscribeNewsletter(APIView):
         except sib_api_v3_sdk.rest.ApiException as e:
             if json.loads(e.body).get("message") == "Contact already exist":
                 raise EmailAlreadyExists
-            raise UnknownSIBError
+            raise ProjectAPIException(global_error="Une erreur inconnue avec l'API SendInBlue a eu lieu.")

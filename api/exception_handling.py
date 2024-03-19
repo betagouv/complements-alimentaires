@@ -1,88 +1,96 @@
 # https://www.django-rest-framework.org/api-guide/exceptions/#custom-exception-handling
 
 import logging
-from typing import Literal
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
 
-class ProjectAPIException(APIException):
+class ProjectAPIException(Exception):
     """
-    Raise for specific exceptions related to this project.
-    Additional binded data will be injected in the error response
-    to allow front-end to deal with the exception.
+    This is the base Exception used to create any DRF error. It is used in two ways:
+    1) by custom DRF handler, to format response accordingly
+    2) by ourselves, subclassing and raising this exception in our views.
 
     Parameters:
-    * display: to know how to display the error:
-        - 'global' -> in a toast
-        - 'non_field' -> at the top of the form
-        - 'field' -> on a specific field
-    * field_name: if display is 'field', provide the field name
+    * global_error: error to be displayed globally (e.g. in a toast)
+    * non_field_errors: errors to be displayed at a top of a form
+    * field_errors: errors to be displayed on a specific form field
     * log_level: allow to provide the log level of the exception
+
+    Example of __dict__ value:
+    {
+        "global_error": "msg",
+        "non_field_errors": ["msg", "msg"],
+        "field_errors": {"field_1": ["msg", "msg"], "field_2": ["msg"]}
+    }
+
 
     Note that every exception can be overrided when instanciated. This can be handful to adapt the error the context.
     """
 
-    status_code = status.HTTP_400_BAD_REQUEST
-
     def __init__(
         self,
-        display: Literal["global", "non_field", "field"] = None,
-        field_name: str | None = None,
-        log_level: str | None = logging.INFO,
-        **detail_values: str,  # optionnaly inject dynamic values in error messages
+        global_error: str | None = None,
+        non_field_errors: list[str] | None = None,
+        field_errors: dict[str, list[str]] | None = None,
+        log_level: int | None = logging.INFO,
+        **kwargs
     ):
-        super().__init__()
-
-        if self.__class__.__subclasses__():
-            raise NotImplementedError(f"{self.__class__.__name__} should not be instanciated directly.")
+        super().__init__(**kwargs)
 
         # Define attributes from class definition or object instanciation
-        for attr_name, attr_value in {
-            "display": display,
-            "field_name": field_name,
+        for attr_name, (attr_value, default_type) in {
+            "global_error": (global_error, None),
+            "non_field_errors": (non_field_errors, list),
+            "field_errors": (field_errors, dict),
         }.items():
             if attr_value:
                 setattr(self, attr_name, attr_value)
             elif hasattr(self.__class__, attr_name):
                 setattr(self, attr_name, getattr(self.__class__, attr_name))
+            else:
+                type_instance = default_type() if default_type else None
+                setattr(self, attr_name, type_instance)
 
         # Verification Checks
-        if not self.detail or not self.display:
-            raise ValueError(
-                "A 'detail' and an 'display' must be defined, either in class definition, either in object instanciation."
-            )
+        if not any([self.global_error, self.non_field_errors, self.field_errors]):
+            raise ValueError("An exception must contain at least one error type.")
 
-        if bool(self.display == "field") != hasattr(self, "field_name"):
-            raise ValueError("'field_name' must be defined when display is 'field'")
-
-        # Inject dynamic values
-        self.detail = self.detail.format(**detail_values)
-
-        # Create a log (not not) using provided log level
+        # Create an optional log using provided log level
         if log_level:
-            logger.log(level=log_level, msg=self.detail)
+            logger.log(level=log_level, msg=self.__class__.__name__, extra=self.__dict__)
 
 
 def custom_exception_handler(exc, context):
     """This will be called as soon as any exception occured in a DRF endpoint"""
 
-    # Call DRF's default exception handler first
-    response = exception_handler(exc, context)
-    if response:  # exc is instance of DRF APIException (or Django Http404 / PermissionDenied)
-        if isinstance(exc, ProjectAPIException):
-            response.data |= exc.__dict__
+    response = exception_handler(exc, context)  # call DRF's default exception handler first
+    if response:
+        # CASE: DRF Validation error (e.g raised in serializer with `is_valid(raise_exception=True)`)
+        if isinstance(exc, ValidationError):
+            non_field_errors = response.data.pop(
+                "non_field_errors", []
+            )  # the base response should now contain only field errors
+            response.data = ProjectAPIException(non_field_errors=non_field_errors, field_errors=response.data).__dict__
+        # CASE: Other DRF APIException (or Django Http404 / PermissionDenied)
         else:
-            response.data |= {"display": "global"}
-    else:  # Other uncaugh error that should not be displayed to the client
-        new_exc = APIException()  # we'll show this chosen error to the client instead
-        response = Response(
-            data={"display": "global"} | new_exc.__dict__,
-            status=new_exc.status_code,
-        )
+            response.data = ProjectAPIException(global_error=response.data["detail"]).__dict__
+            # NOTE: status code is already set in the base response coming from the base `exception_handler`
+    else:
+        # CASE: ProjectAPIException raised directly from a view (already well formatted)
+        if isinstance(exc, ProjectAPIException):
+            response = Response(data=exc.__dict__, status=status.HTTP_400_BAD_REQUEST)
+        # CASE: # Other uncaught error that should not be displayed to the client
+        else:
+            response = Response(
+                data=ProjectAPIException(
+                    global_error="Une erreur inconnue est survenue.", log_level=logging.ERROR
+                ).__dict__,
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     return response
