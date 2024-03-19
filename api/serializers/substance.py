@@ -36,6 +36,8 @@ class SubstanceSerializer(serializers.ModelSerializer):
 
 
 class SubstanceShortSerializer(serializers.ModelSerializer):
+    unit = serializers.CharField(read_only=True, source="unit.name")
+
     class Meta:
         model = Substance
         fields = (
@@ -44,5 +46,6 @@ class SubstanceShortSerializer(serializers.ModelSerializer):
             "name_en",
             "cas_number",
             "einec_number",
+            "unit",
         )
         read_only_fields = fields
