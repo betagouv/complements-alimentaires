@@ -90,7 +90,6 @@ const authorisationOptions = [
   },
 ]
 const countries = [
-  { text: "France", value: "FR" },
   { text: "Allemagne", value: "DE" },
   { text: "Autriche", value: "AT" },
   { text: "Belgique", value: "BE" },
