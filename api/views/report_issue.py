@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.template.defaultfilters import date, time
 from ..utils.emails import get_email_from_request
 from ..utils.responses import EmptyValidResponse
-from data.exceptions import InvalidEmail
+from api.exceptions import InvalidEmail
 
 
 logger = logging.getLogger(__name__)

@@ -4,11 +4,12 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import validate_email
 from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.response import Response
 from ..utils.responses import EmptyValidResponse
 import sib_api_v3_sdk
 from django.contrib.auth import get_user_model
-from api.exception_handling import ProjectAPIException
-from data.exceptions import EmailAlreadyExists
+
 
 User = get_user_model()
 
@@ -36,5 +37,5 @@ class SubscribeNewsletter(APIView):
             return EmptyValidResponse
         except sib_api_v3_sdk.rest.ApiException as e:
             if json.loads(e.body).get("message") == "Contact already exist":
-                raise EmailAlreadyExists
-            raise ProjectAPIException(global_error="Une erreur inconnue avec l'API SendInBlue a eu lieu.")
+                return Response("Cette adresse e-mail est déjà inscrite à notre newsletter", status=status.HTTP_200_OK)
+            raise e
