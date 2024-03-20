@@ -140,22 +140,3 @@ const additionReasons = [
   },
 ]
 </script>
-
-<!-- TODO : factor out -->
-<style scoped>
-.icon {
-  @apply bg-slate-600;
-}
-.icon.icon-plant {
-  @apply bg-ca-plant;
-}
-.icon.icon-microorganism {
-  @apply bg-ca-microorganism;
-}
-.icon.icon-substance {
-  @apply bg-ca-substance;
-}
-.icon.icon-ingredient {
-  @apply bg-ca-ingredient;
-}
-</style>
