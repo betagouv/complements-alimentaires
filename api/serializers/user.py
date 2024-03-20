@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password as django_validate_password
 from .roles import CompanySupervisorSerializer, DeclarantSerializer
 from data.models import CompanySupervisor, Declarant
 
@@ -51,6 +52,11 @@ class UserInputSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("username", "email", "last_name", "first_name", "password")
+
+    def validate_password(self, value):
+        """Validate the password against settings-defined rules"""
+        django_validate_password(value)
+        return value
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)

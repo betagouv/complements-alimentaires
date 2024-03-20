@@ -90,12 +90,13 @@ import SingleItemWrapper from "@/components/SingleItemWrapper"
 import { errorRequiredField, errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
+import { useRouter } from "vue-router"
 
 const showPassword = ref(false)
 const passwordRules = [
-  "doit contenir 8 caractères minimum",
-  "ne doit pas contenir que des chiffres",
-  "doit être distinct de votre nom, prénom, identifiant, ou e-mail",
+  "doit contenir au minimum 8 caractères",
+  "ne peut pas être entièrement numérique",
+  "ne peut pas trop ressembler à vos autres informations personnelles",
 ]
 
 // Form state & rules
@@ -118,7 +119,7 @@ const rules = {
 const v$ = useVuelidate(rules, state)
 
 // Request definition
-const { execute, isFetching } = useFetch(
+const { response, execute, isFetching } = useFetch(
   "/api/v1/signup/",
   {
     headers: headers(),
@@ -131,9 +132,13 @@ const { execute, isFetching } = useFetch(
 // Form validation
 const submit = async () => {
   v$.value.$validate()
-  // if (v$.value.$error) {
-  //   return // prevent API call if there is a front-end error
-  // }
+  if (v$.value.$error) {
+    return // prevent API call if there is a front-end error
+  }
   await execute()
+  // TODO HERE: wait for PR validation to handle back errors
+  // if (response.value.ok) {
+  //   useRouter().push({ name: "LoginPage" })
+  // }
 }
 </script>

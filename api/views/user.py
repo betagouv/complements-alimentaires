@@ -26,9 +26,6 @@ class LoggedUserView(RetrieveAPIView):
 class SignupView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = UserInputSerializer(data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            # TODO: handle errors from backend
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({}, status=status.HTTP_201_CREATED)
