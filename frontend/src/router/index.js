@@ -157,7 +157,7 @@ function chooseAuthorisedRoute(to, from, next, store) {
         next({ name: "LandingPage" })
       })
   } else {
-    if (to.meta.home) next({ name: "LandingPage" })
+    if (to.meta.home) next({ name: store.loggedUser ? "DashboardPage" : "LandingPage" })
     const authenticationCheck = !to.meta.authenticationRequired || store.loggedUser
     const roleCheck = !to.meta.requiredRole || store.loggedUser.roles?.some((x) => x.name === to.meta.requiredRole)
 
