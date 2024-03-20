@@ -6,3 +6,4 @@ from api.serializers import SubstanceUnitSerializer
 class UnitListView(ListAPIView):
     model = SubstanceUnit
     serializer_class = SubstanceUnitSerializer
+    queryset = SubstanceUnit.objects.all()

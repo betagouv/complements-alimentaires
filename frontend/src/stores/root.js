@@ -44,6 +44,7 @@ export const useRootStore = defineStore("root", () => {
   const fetchUnits = async () => {
     const { data } = await useFetch("/api/v1/units/").json()
     units.value = data.value
+    console.log(units.value)
   }
   return {
     loggedUser,
