@@ -4,7 +4,7 @@
     Nouveaux ingrédients
   </h2>
   <p>
-    Vous avez ajoté les nouveaux ingrédients affichés ci-dessous. Des informations supplémentaires les concernant sont
+    Vous avez ajouté les nouveaux ingrédients affichés ci-dessous. Des informations supplémentaires les concernant sont
     requises.
   </p>
   <div>
