@@ -17,11 +17,12 @@ urlpatterns = {
     path("elements/autocomplete/", views.AutocompleteView.as_view(), name="substance_autocomplete"),
     path("populations/", views.PopulationListView.as_view(), name="population_list"),
     path("conditions/", views.ConditionListView.as_view(), name="condition_list"),
-    # Authentication
+    # User features
     path("loggedUser/", views.LoggedUserView.as_view(), name="logged_user"),
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
     path("signup/", views.SignupView.as_view(), name="signup"),
+    path("generate-username/", views.GenerateUsernameView.as_view(), name="generate_username"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

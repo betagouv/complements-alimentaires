@@ -17,7 +17,7 @@ class LoggedUserView(RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         if permissions.IsAuthenticated().has_permission(self.request, self):
             return super().get(request, *args, **kwargs)
-        return Response(None, status=status.HTTP_204_NO_CONTENT)
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
 
     def get_object(self):
         return self.request.user
@@ -29,3 +29,8 @@ class SignupView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response({}, status=status.HTTP_201_CREATED)
+
+
+class GenerateUsernameView(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response({"username": User.generate_username(**request.query_params)})
