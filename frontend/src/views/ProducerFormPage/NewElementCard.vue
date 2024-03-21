@@ -80,17 +80,17 @@
               label-visible
               label="Source réglementaire"
               is-textarea
+              :required="true"
               hint="Veuillez préciser la référence exacte du texte réglementaire."
             />
           </DsfrInputGroup>
           <DsfrInputGroup>
             <DsfrInput
-              v-model="model.euApplicableRestrictions"
+              v-model="model.euDetails"
               label-visible
-              label="Restrictions applicables"
+              label="Information additionnelle"
               is-textarea
-              :required="true"
-              hint="Saisissez ici toutes les informations relatives aux restrictions et qui seraient susceptibles de permettre à l'administration de traiter votre demande. Eviter, si possible, toute information directement ou indirectement nominative."
+              hint="Saisissez ici toutes les informations qui seraient susceptibles de permettre à l'administration de traiter votre demande. Eviter, si possible, toute information directement ou indirectement nominative."
             />
           </DsfrInputGroup>
         </div>
