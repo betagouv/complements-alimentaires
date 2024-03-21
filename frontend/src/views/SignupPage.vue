@@ -95,6 +95,7 @@ import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
+import useToaster from "@/composables/use-toaster"
 
 const showPassword = ref(false)
 const passwordRules = [
@@ -119,7 +120,7 @@ const rules = {
   username: errorRequiredField, // let back-end specify other errors (length),
   password: errorRequiredField, // let back-end specify other errors (length, rules)
 }
-
+const router = useRouter()
 const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
@@ -145,7 +146,8 @@ const submit = async () => {
   await execute()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
-    useRouter().push({ name: "LoginPage" })
+    useToaster().addSuccessMessage("Votre compte utilisateur a bien été créé. Veuillez vous identifier avec.")
+    router.push({ name: "LoginPage" })
   }
 }
 </script>
