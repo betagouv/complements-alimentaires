@@ -31,7 +31,9 @@
 
         <!-- Cells des inputs (communes à toutes les substances) -->
         <div class="sm:table-cell ca-cell">
-          <div class="sm:hidden ca-xs-title">Quantité par DJR (en {{ payload.substances[rowIndex].quantity }})</div>
+          <div class="sm:hidden ca-xs-title">
+            Quantité par DJR (en {{ payload.substances[rowIndex].substance.unit }})
+          </div>
           <DsfrInputGroup class="max-w-28" v-if="!props.readonly">
             <DsfrInput v-model="payload.substances[rowIndex].quantity" label="Quantité par DJR" :required="true" />
           </DsfrInputGroup>

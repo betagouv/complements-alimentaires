@@ -48,7 +48,7 @@
           </div>
           <div class="max-w-32 ml-4">
             <DsfrSelect
-              :options="units?.map((unit) => ({ text: unit.name, value: unit.name }))"
+              :options="units?.map((unit) => unit.name)"
               v-model="payload.unitMeasurement"
               defaultUnselectedText="Unité"
             />

@@ -47,7 +47,7 @@
         <DsfrInputGroup class="min-w-20 max-w-24">
           <DsfrSelect
             label="Unité"
-            :options="store.units?.map((unit) => ({ text: unit.name, value: unit.name }))"
+            :options="store.units?.map((unit) => unit.name)"
             v-model="model.unit"
             defaultUnselectedText=""
             :required="true"
