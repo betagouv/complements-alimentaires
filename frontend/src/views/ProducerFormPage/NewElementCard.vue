@@ -11,12 +11,33 @@
     </div>
     <hr class="mt-4 pb-1" />
     <DsfrInputGroup>
-      <DsfrRadioButtonSet
-        v-model="model.element.authorisationMode"
+      <DsfrRadioButton
         name="authorisationMode"
-        legend="Modalité d'autorisation"
-        :options="authorisationOptions"
-      ></DsfrRadioButtonSet>
+        hint="Cet ingrédient est autorisé ou utilisable en France"
+        v-model="model.element.authorisationMode"
+        value="FR"
+      >
+        <template v-slot:label>
+          <div>
+            <img src="/static/images/flags/fr.svg" class="w-5 mr-1 -mt-1 inline rounded-sm" />
+            Utilisable en France
+          </div>
+        </template>
+      </DsfrRadioButton>
+
+      <DsfrRadioButton
+        name="authorisationMode"
+        hint="Cet ingrédient n'est pas autorisée en France mais l'est dans un autre pays de l'UE (déclaré au titre de l'article 16 du décret 2006-352)"
+        v-model="model.element.authorisationMode"
+        value="EU"
+      >
+        <template v-slot:label>
+          <div>
+            <img src="/static/images/flags/eu.svg" class="w-5 mr-1 -mt-1 inline rounded-sm" />
+            Autorisé dans un État membre de l'UE
+          </div>
+        </template>
+      </DsfrRadioButton>
     </DsfrInputGroup>
     <div v-if="model.element.authorisationMode === 'FR'">
       <hr class="pb-1 -mt-3" />
@@ -81,14 +102,6 @@
 <script setup>
 import { getTypeIcon, getType } from "@/utils/mappings"
 const model = defineModel()
-const authorisationOptions = [
-  { label: "🇫🇷 Utilisable en France", value: "FR", hint: "Cet ingrédient est autorisé ou utilisable en France" },
-  {
-    label: "🇪🇺 Autorisé dans un État membre de l'UE ",
-    value: "EU",
-    hint: "Cet ingrédient n'est pas autorisée en France mais l'est dans un autre pays de l'UE (déclaré au titre de l'article 16 du décret 2006-352)",
-  },
-]
 const countries = [
   { text: "Allemagne", value: "DE" },
   { text: "Autriche", value: "AT" },
