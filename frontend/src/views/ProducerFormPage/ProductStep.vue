@@ -48,7 +48,7 @@
           </div>
           <div class="max-w-32 ml-4">
             <DsfrSelect
-              :options="units?.map((unit) => unit.name)"
+              :options="store.units?.map((unit) => unit.name)"
               v-model="payload.unitMeasurement"
               defaultUnselectedText="Unité"
             />
@@ -153,7 +153,7 @@ import { storeToRefs } from "pinia"
 const payload = defineModel()
 
 const store = useRootStore()
-const { populations, conditions, units } = storeToRefs(store)
+const { populations, conditions } = storeToRefs(store)
 const galenicFormulation = [
   {
     text: "Ampoule",
