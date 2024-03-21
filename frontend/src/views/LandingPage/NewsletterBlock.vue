@@ -28,12 +28,14 @@ import { useFetch } from "@vueuse/core"
 import useToaster from "@/composables/use-toaster"
 import { handleError } from "@/utils/error-handling"
 import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
 
 // Get potential existing user from root store to pre-fill email address
-const { loggedUser } = useRootStore()
+const store = useRootStore()
+const { loggedUser } = storeToRefs(store)
 
 // Form state & rules
-const state = ref({ email: loggedUser ? loggedUser.email : "" })
+const state = ref({ email: loggedUser.value ? loggedUser.value.email : "" })
 
 const rules = {
   email: errorRequiredEmail,

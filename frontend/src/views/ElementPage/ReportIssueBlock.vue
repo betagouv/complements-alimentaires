@@ -36,17 +36,19 @@ import { firstErrorMsg } from "@/utils/forms"
 import useToaster from "@/composables/use-toaster"
 import { useRootStore } from "@/stores/root"
 import { handleError } from "@/utils/error-handling"
+import { storeToRefs } from "pinia"
 
 // Props
 const props = defineProps({ elementName: String })
 
 // Get potential existing user from root store to pre-fill email address
-const { loggedUser } = useRootStore()
+const store = useRootStore()
+const { loggedUser } = storeToRefs(store)
 
 // Form state & rules
 const getInitialState = () => ({
   name: "",
-  email: loggedUser ? loggedUser.email : "",
+  email: loggedUser.value ? loggedUser.value.email : "",
   elementName: props.elementName, // not used by the form validation itself, but make the payload building easier
 })
 
