@@ -20,9 +20,8 @@
 
 - Nous créeons une classe d'exception `ProjectAPIException` qui permet de formatter une réponse toujours de la même manière.
 
-- DRF propose d'utilise un custom handler : une fonction (cf. méthode `custom_exception_handler`) qui est appelée dès qu'une exception est levée dans un endpoint, pour nous permettre de personnaliser la réponse à ce moment.
 
-- En fonction du type de cas rencontré, nous nous assurons de récupérer les données initiales, puis de les réinjecter dans `ProjectAPIException` pour avoir un formattage identique. Nous gérons aussi à ce moment le code HTTP renvoyé
+- Dans le custom handler, en fonction du type de cas rencontré, nous nous assurons de récupérer les données initiales, puis de les réinjecter dans `ProjectAPIException` pour avoir un formattage identique. Nous gérons aussi à ce moment le code HTTP renvoyé
 
 - Le format que nous avons choisi permet de distinguer 3 types d'erreurs utilisables différemment dans notre front-end. Voici un exemple de réponse qui contiendrait les 3 :
 
