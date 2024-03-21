@@ -32,7 +32,7 @@ class TestSearch(APITestCase):
         The pagination limit must not be exceeded
         """
         response = self.client.post(f"{reverse('search')}", {"search": "abc", "limit": 49})
-        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_search_name(self):
         """
