@@ -3,14 +3,18 @@ import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from collections import OrderedDict
-from django.core.exceptions import BadRequest
 from api.serializers import SearchResultSerializer
 from data.models import Plant, Microorganism, Ingredient, Substance
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.contrib.postgres.aggregates import StringAgg
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
+from api.exception_handling import ProjectAPIException
 
 logger = logging.getLogger(__name__)
+
+
+class PaginationExceded:
+    global_error = "La limite de pagination excède {max_pagination_limit}"
 
 
 class SearchView(APIView):
@@ -23,9 +27,11 @@ class SearchView(APIView):
     def post(self, request, *args, **kwargs):
         search_term = request.data.get("search")
         if not search_term or len(search_term) < self.min_query_length:
-            raise BadRequest(f"Le terme de recherche doit être supérieur ou égal à {self.min_query_length} caractères")
+            raise ProjectAPIException(
+                global_error=f"Le terme de recherche doit être supérieur ou égal à {self.min_query_length} caractères"
+            )
         if int(self.request.data.get("limit", 0)) > self.max_pagination_limit:
-            raise BadRequest(f"La limite de pagination excède {self.max_pagination_limit}")
+            raise ProjectAPIException(global_error=f"La limite de pagination excède {self.max_pagination_limit}")
 
         results = self.get_sorted_objects(search_term)
         paginated_results = self.paginate_results(results)

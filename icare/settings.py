@@ -233,6 +233,7 @@ REST_FRAMEWORK = {
     },
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework.authentication.SessionAuthentication",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "EXCEPTION_HANDLER": "api.exception_handling.custom_exception_handler",
 }
 
 # logging

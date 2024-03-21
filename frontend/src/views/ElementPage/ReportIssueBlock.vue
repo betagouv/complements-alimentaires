@@ -35,6 +35,7 @@ import { headers } from "@/utils/data-fetching"
 import { firstErrorMsg } from "@/utils/forms"
 import useToaster from "@/composables/use-toaster"
 import { useRootStore } from "@/stores/root"
+import { handleError } from "@/utils/error-handling"
 import { storeToRefs } from "pinia"
 
 // Props
@@ -61,7 +62,7 @@ const rules = {
 const v$ = useVuelidate(rules, state)
 
 // Request definition
-const { error, execute, isFetching } = useFetch(
+const { response, execute, isFetching } = useFetch(
   "/api/v1/reportIssue/",
   {
     headers: headers(),
@@ -76,12 +77,9 @@ const submit = async () => {
     return // prevent API call if there is a front-end error
   }
   await execute()
-
-  const { addMessage, addUnknownErrorMessage } = useToaster()
-  if (error.value) {
-    addUnknownErrorMessage()
-  } else {
-    addMessage({
+  await handleError(response) // we don't get returned result as we don't except other errors than global
+  if (response.value.ok) {
+    useToaster().addMessage({
       type: "success",
       title: "C'est envoyé !",
       description: "Votre message a bien été envoyé. Merci pour votre contribution.",

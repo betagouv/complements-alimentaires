@@ -62,14 +62,11 @@ const useToaster = () => {
 
   const addErrorMessage = (description) => addMessage({ type: "error", title: "Erreur", description })
 
-  const addUnknownErrorMessage = () => addErrorMessage("Une erreur est survenue, veuillez réessayer plus tard.")
-
   return {
     messages,
     addMessage,
     addSuccessMessage,
     addErrorMessage,
-    addUnknownErrorMessage,
     removeMessage,
   }
 }

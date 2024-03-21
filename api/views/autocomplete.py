@@ -3,7 +3,7 @@ import json
 from difflib import SequenceMatcher
 from rest_framework.views import APIView
 from django.http import JsonResponse
-from django.core.exceptions import BadRequest
+from api.exception_handling import ProjectAPIException
 from django.db.models import F
 from api.serializers import AutocompleteItemSerializer
 from data.models import Plant, Microorganism, Ingredient, Substance
@@ -20,7 +20,9 @@ class AutocompleteView(APIView):
     def post(self, request, *args, **kwargs):
         query = request.data.get("term")
         if not query or len(query) < self.min_query_length:
-            raise BadRequest(f"Le terme de recherche doit être supérieur ou égal à {self.min_query_length} caractères")
+            raise ProjectAPIException(
+                global_error=f"Le terme de recherche doit être supérieur ou égal à {self.min_query_length} caractères"
+            )
 
         results = self.get_sorted_objects(query)[: self.max_autocomplete_items]
         return JsonResponse(self.serialize_results(results), safe=False)
