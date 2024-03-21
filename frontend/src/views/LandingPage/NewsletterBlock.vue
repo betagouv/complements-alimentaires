@@ -26,13 +26,16 @@ import { headers } from "@/utils/data-fetching"
 import { errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
 import { useFetch } from "@vueuse/core"
 import useToaster from "@/composables/use-toaster"
+import { handleError } from "@/utils/error-handling"
 import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
 
 // Get potential existing user from root store to pre-fill email address
-const { loggedUser } = useRootStore()
+const store = useRootStore()
+const { loggedUser } = storeToRefs(store)
 
 // Form state & rules
-const state = ref({ email: loggedUser ? loggedUser.email : "" })
+const state = ref({ email: loggedUser.value ? loggedUser.value.email : "" })
 
 const rules = {
   email: errorRequiredEmail,
@@ -41,7 +44,7 @@ const rules = {
 const v$ = useVuelidate(rules, state)
 
 // Request definition
-const { error, execute, isFetching } = useFetch(
+const { response, execute, isFetching } = useFetch(
   "/api/v1/subscribeNewsletter/",
   {
     headers: headers(),
@@ -56,19 +59,18 @@ const submit = async () => {
     return // prevent API call if there is a front-end error
   }
   await execute()
+  await handleError(response)
 
-  const { addMessage, addUnknownErrorMessage } = useToaster()
-  if (error.value) {
-    addUnknownErrorMessage()
-  } else {
+  const { addMessage } = useToaster()
+  if (response.value.ok) {
     addMessage({
       type: "success",
       title: "C'est tout bon !",
       description: "Votre inscription a bien été prise en compte.",
     })
+    // Reset both form state & Vuelidate validation state
+    state.value.email = ""
+    v$.value.$reset()
   }
-  // Reset both form state & Vuelidate validation state
-  state.value.email = ""
-  v$.value.$reset()
 }
 </script>

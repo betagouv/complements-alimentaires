@@ -21,11 +21,11 @@ import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { useRouter } from "vue-router"
+import { handleError } from "@/utils/error-handling"
 
 defineProps({ logoText: Array })
 
 const environment = window.ENVIRONMENT
-const { addMessage, addUnknownErrorMessage } = useToaster()
 const router = useRouter()
 const store = useRootStore()
 const navItems = [
@@ -50,13 +50,12 @@ const loggedOnlyNavItems = [
 ]
 
 const logOut = async () => {
-  const { error } = await useFetch("/api/v1/logout/", { headers: headers() }).post()
-  if (error.value) {
-    addUnknownErrorMessage()
-  } else {
+  const { response } = await useFetch("/api/v1/logout/", { headers: headers() }).post()
+  await handleError(response)
+  if (response.value.ok) {
     await store.resetInitialData()
     router.replace({ name: "LandingPage" })
-    addMessage({
+    useToaster().addMessage({
       type: "success",
       title: "Vous êtes déconnecté",
       description: "Vous avez été déconnecté de la plateforme.",

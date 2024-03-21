@@ -32,7 +32,7 @@
 <script setup>
 import { useFetch } from "@vueuse/core"
 import { isoToPrettyDate, isoToPrettyTime } from "@/utils/date"
-import useToaster from "@/composables/use-toaster"
+import { handleError } from "@/utils/error-handling"
 
 const dateOptions = {
   weekday: "long",
@@ -40,6 +40,6 @@ const dateOptions = {
   day: "numeric",
 }
 
-const { data: webinars, error } = await useFetch("/api/v1/webinars").json()
-if (error.value) useToaster().addUnknownErrorMessage()
+const { data: webinars, response } = await useFetch("/api/v1/webinars").json()
+await handleError(response)
 </script>
