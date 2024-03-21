@@ -37,6 +37,7 @@ const store = useRootStore()
 store.fetchConditions()
 store.fetchPopulations()
 store.fetchPlantParts()
+store.fetchUnits()
 
 const payload = ref({
   effects: [],

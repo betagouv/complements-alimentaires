@@ -47,7 +47,11 @@
             <DsfrInput v-model="payload.unitQuantity" class="max-w-64" :required="true" />
           </div>
           <div class="max-w-32 ml-4">
-            <DsfrSelect :options="units" v-model="payload.unitMeasurement" defaultUnselectedText="Unité" />
+            <DsfrSelect
+              :options="store.units?.map((unit) => unit.name)"
+              v-model="payload.unitMeasurement"
+              defaultUnselectedText="Unité"
+            />
           </div>
         </div>
       </DsfrFieldset>
@@ -160,21 +164,6 @@ const galenicFormulation = [
     value: "comprime",
   },
 ]
-const units = [
-  {
-    text: "g",
-    value: "g",
-  },
-  {
-    text: "mg",
-    value: "mg",
-  },
-  {
-    text: "l",
-    value: "l",
-  },
-]
-
 const effects = [
   "Non défini",
   "Antioxydant",

@@ -5,6 +5,7 @@ from simple_history.models import HistoricalRecords
 
 from .mixins import WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithComments
 from .abstract_models import CommonModel
+from .unit import SubstanceUnit
 
 
 class Substance(CommonModel, WithComments):
@@ -81,13 +82,18 @@ class Substance(CommonModel, WithComments):
     siccrf_nutritional_reference = models.FloatField(
         null=True, blank=True, verbose_name="apport nutritionnel conseillé"
     )
-    ca_nutritional_reference = models.FloatField(
-        null=True, blank=True, verbose_name="apport nutritionnel conseillé"
-    )  # cette colonne devrat être associée à une unité
+    ca_nutritional_reference = models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé")
     nutritional_reference = models.GeneratedField(
         expression=Coalesce("ca_nutritional_reference", "siccrf_nutritional_reference"),
         output_field=models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé"),
         db_persist=True,
+    )
+    unit = models.ForeignKey(
+        SubstanceUnit,
+        default=None,
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name="unité des quantités spécifiées (quantité max, apport de référence)",
     )
     history = HistoricalRecords(
         inherit=True,
