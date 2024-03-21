@@ -113,9 +113,10 @@ REF_ICA_FONCTION_INGREDIENT     |       |       |       |       |       |
 |ICA_INSTANTANEDECLARATION     | ❌ |  Vue probable ?     |
 |ICA_INSTANTANEUSAGER     | ❌ |  Vue probable ?    |       |       |
 |REF_ICA_QTE_POPULATION   |       |Fichier vide|
+aspnet_UsersInRoles  |   | 6213 Administrateurs et 7053 Usagers (join avec aspnetRoles) |
+aspnet_Membership | | donne une idée des activités des users (si certains n'ont pas d'activité depuis trop longtemps on pourrait ne pas les importer) |
 
-
-### Nobmre d'enregistrements dans chaque table
+### Nombre d'enregistrements dans chaque table
 
 |nom de table|nb d'enregistrements|
 |---    |:-:    |
