@@ -41,9 +41,12 @@
           label="Identifiant"
           labelVisible
           type="text"
-          hint="Il servira à vous connecter au service. Minimum 8 caractères."
+          :disabled="isFetchingPF"
+          :hint="dataPF ? 'Un identifiant a été automatiquement généré. Il est possible de le modifier.' : ''"
           autocomplete="off"
           spellcheck="false"
+          @focus="prefillUsername"
+          ref="usernameInput"
         />
       </DsfrInputGroup>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'password')">
@@ -86,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import SingleItemWrapper from "@/components/SingleItemWrapper"
 import FormWrapper from "@/components/FormWrapper"
@@ -124,7 +127,7 @@ const router = useRouter()
 const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
-// Request definition
+// Main request definition
 const { response, execute, isFetching } = useFetch(
   "/api/v1/signup/",
   {
@@ -148,6 +151,23 @@ const submit = async () => {
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre compte utilisateur a bien été créé. Veuillez vous identifier avec.")
     router.push({ name: "LoginPage" })
+  }
+}
+
+// Username Pre-fill
+const usernameInput = ref(null)
+const urlPF = computed(
+  () => `/api/v1/generate-username?first_name=${state.value.firstName}&last_name=${state.value.lastName}`
+)
+const { data: dataPF, execute: executePF, isFetching: isFetchingPF } = useFetch(urlPF, {}, { immediate: false }).json()
+
+const prefillUsername = async () => {
+  if (state.value.firstName && state.value.lastName && !state.value.username) {
+    await executePF()
+    usernameInput.value.focus() // because the focus is lost when calling the endpoint
+    if (dataPF.value) {
+      state.value.username = dataPF.value.username
+    }
   }
 }
 </script>
