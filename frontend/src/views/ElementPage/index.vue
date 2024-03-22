@@ -46,6 +46,10 @@
           <ElementText :text="einecNumber" />
         </ElementColumn>
 
+        <ElementColumn title="Apport nutritionnel de référence" v-if="nutritionalReference">
+          <ElementText :text="nutritionalReference" :lowercase="true" />
+        </ElementColumn>
+
         <ElementColumn title="Parties utiles" v-if="plantParts?.length">
           <ElementTag :label="part" v-for="part in plantParts" :key="part" />
         </ElementColumn>
@@ -132,6 +136,10 @@ const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))
 const casNumber = computed(() => element.value?.casNumber)
 const einecNumber = computed(() => element.value?.einecNumber)
+const nutritionalReference = computed(() => {
+  if (!element.value?.unit) return element.value?.nutritionalReference
+  else return element.value?.nutritionalReference + " " + element.value?.unit
+})
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
 

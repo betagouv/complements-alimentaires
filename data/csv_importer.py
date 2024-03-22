@@ -12,6 +12,7 @@ from django.db.models import (
     GeneratedField,
 )
 from simple_history.utils import update_change_reason
+from simple_history.exceptions import NotHistoricalModelError
 
 from .exceptions import CSVFileError
 
@@ -21,6 +22,7 @@ from .models.microorganism import Microorganism
 from .models.plant import Plant, PlantPart, PlantSynonym, PlantFamily, Part
 from .models.population import Population
 from .models.substance import Substance, SubstanceSynonym
+from .models.unit import SubstanceUnit
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +83,7 @@ PREFIX_TO_MODEL_MAPPINT = {
     "SYNPLA": PlantSynonym,
     "SYNSBSTA": SubstanceSynonym,
     "FAMPL": PlantFamily,
+    "UNT": SubstanceUnit,
 }
 
 # Établi les suffix des champ des csv correspondant aux champs des modèles Django
@@ -102,6 +105,7 @@ DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
     "siccrf_must_specify_quantity": ["QUANTITE_ARENSEIGNER"],
     "siccrf_max_quantity": ["QTE_MAX"],
     "siccrf_nutritional_reference": ["APPORT_REF"],
+    "unit": ["UNT_IDENT"],
     "siccrf_genre": ["GENRE"],
     "min_age": ["AGE_MIN"],
     "max_age": ["AGE_MAX"],
@@ -201,10 +205,9 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
                 if csv_filename == "REF_ICA_PARTIE_PL_A_SURVEILLER.csv"
                 else {"siccrf_is_useful": True}
             )
-            object_with_history, created = model.objects.update_or_create(
-                **object_definition, defaults=default_extra_fields
+            object_with_history, created = _update_or_create_object(
+                model, object_definition, default_extra_fields, f"Import csv {csv_filename}."
             )
-            update_change_reason(object_with_history, f"Import csv {csv_filename}.")
         else:
             primary_key = _get_primary_key_label(csv_filename)
             if is_relation:
@@ -220,11 +223,12 @@ def _import_csv_to_model(csv_reader, csv_filename, model, is_relation=False):
                 # c'est le csv d'un Model qui est importé
                 # le champ `missing_import_data` devient False
                 object_definition["missing_import_data"] = False
-                # object_definition["_history_user"] = False
-                object_with_history, created = model.objects.update_or_create(
-                    siccrf_id=row.get(primary_key), defaults=object_definition
+                object_with_history, created = _update_or_create_object(
+                    model,
+                    object_definition={"siccrf_id": row.get(primary_key)},
+                    default_extra_fields=object_definition,
+                    change_message=f"Import csv {csv_filename}.",
                 )
-                update_change_reason(object_with_history, f"Import csv {csv_filename}.")
 
         nb_objects_created += created
         nb_line_in_success += 1
@@ -324,6 +328,15 @@ def _clean_value(value, field):
     return value
 
 
+def _update_or_create_object(model, object_definition, default_extra_fields, change_message):
+    model_object, created = model.objects.update_or_create(**object_definition, defaults=default_extra_fields)
+    try:
+        update_change_reason(model_object, change_message)
+    except NotHistoricalModelError:
+        pass
+    return model_object, created
+
+
 def _get_update_or_create_related_object(model, id, csv_filename):
     """
     Indépendamment de l'ordre dans lequel les fichiers sont importés,
@@ -334,8 +347,10 @@ def _get_update_or_create_related_object(model, id, csv_filename):
         return model.objects.get(siccrf_id=id)
     except model.DoesNotExist as e:
         logger.warning(f"Création de l'id {id}, qui n'existait pas encore dans {e}.")
-
-        linked_obj, _ = model.objects.update_or_create(siccrf_id=id, defaults={"name": ""})
-        update_change_reason(linked_obj, f"Import csv {csv_filename}.")
-
+        linked_obj, _ = _update_or_create_object(
+            model,
+            object_definition={"siccrf_id": id},
+            default_extra_fields={"name": ""},
+            change_message=f"Import csv {csv_filename}.",
+        )
         return linked_obj

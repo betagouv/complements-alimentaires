@@ -14,6 +14,7 @@ class SubstanceSynonymSerializer(serializers.ModelSerializer):
 
 class SubstanceSerializer(serializers.ModelSerializer):
     synonyms = SubstanceSynonymSerializer(many=True, read_only=True, source="substancesynonym_set")
+    unit = serializers.CharField(read_only=True, source="unit.name")
 
     class Meta:
         model = Substance
@@ -27,6 +28,7 @@ class SubstanceSerializer(serializers.ModelSerializer):
             "must_specify_quantity",
             "max_quantity",
             "nutritional_reference",
+            "unit",
             "synonyms",
             "public_comments",
         )
@@ -34,6 +36,8 @@ class SubstanceSerializer(serializers.ModelSerializer):
 
 
 class SubstanceShortSerializer(serializers.ModelSerializer):
+    unit = serializers.CharField(read_only=True, source="unit.name")
+
     class Meta:
         model = Substance
         fields = (
@@ -42,5 +46,6 @@ class SubstanceShortSerializer(serializers.ModelSerializer):
             "name_en",
             "cas_number",
             "einec_number",
+            "unit",
         )
         read_only_fields = fields

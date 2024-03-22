@@ -8,4 +8,5 @@ from .microorganism import MicroorganismSerializer  # noqa: F401
 from .substance import SubstanceSerializer, SubstanceShortSerializer  # noqa: F401
 from .population import PopulationSerializer  # noqa: F401
 from .condition import ConditionSerializer  # noqa: F401
+from .unit import SubstanceUnitSerializer  # noqa: F401
 from .autocomplete_item import AutocompleteItemSerializer  # noqa: F401
