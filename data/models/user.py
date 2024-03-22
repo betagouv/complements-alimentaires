@@ -75,6 +75,7 @@ class User(PermissionsMixin, AutoValidable, Deactivable, AbstractBaseUser):
         help_text=_("Designates whether the user can log into this admin site."),
     )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
+    is_verified = models.BooleanField("Compte vérifié ?", default=False)
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "username"
@@ -129,6 +130,11 @@ class User(PermissionsMixin, AutoValidable, Deactivable, AbstractBaseUser):
             if not cls.objects.filter(username=username).exists():
                 return username
             i += 1
+
+    def verify(self):
+        """Mark an account as verified."""
+        self.is_verified = True
+        self.save()
 
     @property
     def name(self) -> str:

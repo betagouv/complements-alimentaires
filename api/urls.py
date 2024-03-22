@@ -23,6 +23,7 @@ urlpatterns = {
     path("logout/", views.LogoutView.as_view(), name="logout"),
     path("signup/", views.SignupView.as_view(), name="signup"),
     path("generate-username/", views.GenerateUsernameView.as_view(), name="generate_username"),
+    path("verify-email/", views.VerifyEmailView.as_view(), name="verify_email"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

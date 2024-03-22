@@ -1,7 +1,7 @@
 <template>
   <SingleItemWrapper>
-    <h4>Se créer un compte</h4>
-    <FormWrapper :externalResults="$externalResults">
+    <h1>Se créer un compte</h1>
+    <FormWrapper v-if="!response?.ok" :externalResults="$externalResults">
       <p class="fr-hint-text">Sauf mention contraire, tous les champs sont obligatoires.</p>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'lastName')">
         <DsfrInput
@@ -11,7 +11,6 @@
           type="text"
           spellcheck="false"
           autocomplete="family-name"
-          autofocus
         />
       </DsfrInputGroup>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'firstName')">
@@ -85,6 +84,18 @@
       </DsfrInputGroup>
       <DsfrButton class="!block !w-full" :disabled="isFetching" label="Créer le compte" @click="submit" />
     </FormWrapper>
+    <DsfrCallout v-if="response?.ok" class="space-y-4" title="E-mail de vérification envoyé">
+      <p>
+        Un e-mail vient d'être envoyé à
+        <strong>{{ state.email }}</strong>
+        Veuillez cliquez dans le lien à l'intérieur pour vérifier votre adresse e-email et pouvoir utiliser votre
+        compte.
+      </p>
+      <p>
+        Si vous n'avez pas reçu l'email au bout de quelques minutes, veuillez vérifier l'adresse e-mail entrée, ainsi
+        que vos courriers indésirables.
+      </p>
+    </DsfrCallout>
   </SingleItemWrapper>
 </template>
 
@@ -96,9 +107,7 @@ import FormWrapper from "@/components/FormWrapper"
 import { errorRequiredField, errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
-import { useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
-import useToaster from "@/composables/use-toaster"
 
 const showPassword = ref(false)
 const passwordRules = [
@@ -123,7 +132,6 @@ const rules = {
   username: errorRequiredField, // let back-end specify other errors (length),
   password: errorRequiredField, // let back-end specify other errors (length, rules)
 }
-const router = useRouter()
 const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
@@ -148,10 +156,6 @@ const submit = async () => {
   }
   await execute()
   $externalResults.value = await handleError(response)
-  if (response.value.ok) {
-    useToaster().addSuccessMessage("Votre compte utilisateur a bien été créé. Veuillez vous identifier avec.")
-    router.push({ name: "LoginPage" })
-  }
 }
 
 // Username Pre-fill
@@ -164,7 +168,7 @@ const { data: dataPF, execute: executePF, isFetching: isFetchingPF } = useFetch(
 const prefillUsername = async () => {
   if (state.value.firstName && state.value.lastName && !state.value.username) {
     await executePF()
-    usernameInput.value.focus() // because the focus is lost when calling the endpoint
+    usernameInput.value.focus() // because the focus is lost as soon as the field is disabled when fetching
     if (dataPF.value) {
       state.value.username = dataPF.value.username
     }
