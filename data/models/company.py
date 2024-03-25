@@ -20,6 +20,17 @@ class Address(models.Model):
     cedex = models.CharField("CEDEX", blank=True, null=False)
     country = models.CharField("pays", max_length=50, choices=CountryChoices, default=CountryChoices.FRANCE)
 
+    @property
+    def displayable_address(self):
+        lines = [
+            self.address,
+            self.additional_details,
+            f"{self.postal_code} {self.city}",
+            self.cedex,
+            self.get_country_display().upper(),
+        ]
+        return "\n".join(filter(None, lines))
+
 
 class Company(Address, models.Model):
     class Meta:
@@ -33,14 +44,3 @@ class Company(Address, models.Model):
 
     def __str__(self):
         return self.social_name
-
-    @property
-    def displayable_address(self):
-        lines = [
-            self.address,
-            self.additional_details,
-            f"{self.postal_code} {self.city}",
-            self.cedex,
-            self.get_country_display().upper(),
-        ]
-        return "\n".join(filter(None, lines))
