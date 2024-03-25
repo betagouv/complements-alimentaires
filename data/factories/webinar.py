@@ -1,6 +1,6 @@
 import factory
 from data.models import Webinar
-import pytz
+from zoneinfo import ZoneInfo
 
 
 class WebinarFactory(factory.django.DjangoModelFactory):
@@ -9,6 +9,6 @@ class WebinarFactory(factory.django.DjangoModelFactory):
 
     title = factory.Faker("catch_phrase")
     tagline = factory.Faker("paragraph")
-    start_date = factory.Faker("future_datetime", tzinfo=pytz.timezone("Europe/Paris"))
-    end_date = factory.Faker("future_datetime", tzinfo=pytz.timezone("Europe/Paris"))
+    start_date = factory.Faker("future_datetime", tzinfo=ZoneInfo("Europe/Paris"))
+    end_date = factory.Faker("future_datetime", tzinfo=ZoneInfo("Europe/Paris"))
     link = factory.Faker("uri")
