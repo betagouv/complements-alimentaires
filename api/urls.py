@@ -18,7 +18,8 @@ urlpatterns = {
     path("populations/", views.PopulationListView.as_view(), name="population_list"),
     path("conditions/", views.ConditionListView.as_view(), name="condition_list"),
     path("units/", views.UnitListView.as_view(), name="unit_list"),
-    # User features
+    path("countries/", views.CountryListView.as_view(), name="country_list"),
+    # Authentication
     path("loggedUser/", views.LoggedUserView.as_view(), name="logged_user"),
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),

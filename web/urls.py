@@ -4,7 +4,7 @@ from web.views import VueAppDisplayView, RegisterUserView
 
 urlpatterns = [
     path("", VueAppDisplayView.as_view(), name="app"),
-    # https://docs.djangoproject.com/en/4.2/topics/auth/default/#django.contrib.auth.views.LoginView
+    # https://docs.djangoproject.com/en/5.0/topics/auth/default/#django.contrib.auth.views.LoginView
     path(
         "s-identifier",
         auth_views.LoginView.as_view(
@@ -13,7 +13,7 @@ urlpatterns = [
         ),
         name="login",
     ),
-    # https://docs.djangoproject.com/en/4.2/topics/auth/default/#django.contrib.auth.views.LogoutView
+    # https://docs.djangoproject.com/en/5.0/topics/auth/default/#django.contrib.auth.views.LogoutView
     path(
         "se-deconnecter",
         auth_views.LogoutView.as_view(
@@ -21,7 +21,7 @@ urlpatterns = [
         ),
         name="logout",
     ),
-    # https://docs.djangoproject.com/en/4.2/topics/auth/default/#django.contrib.auth.views.PasswordChangeView
+    # https://docs.djangoproject.com/en/5.0/topics/auth/default/#django.contrib.auth.views.PasswordChangeView
     path(
         "modification-mot-de-passe",
         auth_views.PasswordChangeView.as_view(
@@ -29,7 +29,7 @@ urlpatterns = [
         ),
         name="password_change",
     ),
-    # https://docs.djangoproject.com/en/4.2/topics/auth/default/#django.contrib.auth.views.PasswordChangeDoneView
+    # https://docs.djangoproject.com/en/5.0/topics/auth/default/#django.contrib.auth.views.PasswordChangeDoneView
     path(
         "mot-de-passe-modifie",
         auth_views.PasswordChangeDoneView.as_view(
@@ -37,7 +37,7 @@ urlpatterns = [
         ),
         name="password_change_done",
     ),
-    # https://docs.djangoproject.com/en/4.2/topics/auth/default/#django.contrib.auth.views.PasswordResetView
+    # https://docs.djangoproject.com/en/5.0/topics/auth/default/#django.contrib.auth.views.PasswordResetView
     path(
         "reinitialisation-mot-de-passe",
         auth_views.PasswordResetView.as_view(
@@ -45,7 +45,7 @@ urlpatterns = [
         ),
         name="password_reset",
     ),
-    # https://docs.djangoproject.com/en/4.2/topics/auth/default/#django.contrib.auth.views.PasswordResetDoneView
+    # https://docs.djangoproject.com/en/5.0/topics/auth/default/#django.contrib.auth.views.PasswordResetDoneView
     path(
         "email-reinitialisation-envoye",
         auth_views.PasswordResetDoneView.as_view(
@@ -53,7 +53,7 @@ urlpatterns = [
         ),
         name="password_reset_done",
     ),
-    # https://docs.djangoproject.com/en/4.2/topics/auth/default/#django.contrib.auth.views.PasswordResetConfirmView
+    # https://docs.djangoproject.com/en/5.0/topics/auth/default/#django.contrib.auth.views.PasswordResetConfirmView
     path(
         "nouveau-mot-de-passe/<uidb64>/<token>",
         auth_views.PasswordResetConfirmView.as_view(
@@ -61,7 +61,7 @@ urlpatterns = [
         ),
         name="password_reset_confirm",
     ),
-    # https://docs.djangoproject.com/en/4.2/topics/auth/default/#django.contrib.auth.views.PasswordResetCompleteView
+    # https://docs.djangoproject.com/en/5.0/topics/auth/default/#django.contrib.auth.views.PasswordResetCompleteView
     path(
         "mot-de-passe-reinitialise",
         auth_views.PasswordResetCompleteView.as_view(

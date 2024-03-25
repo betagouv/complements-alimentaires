@@ -170,7 +170,7 @@ if (router.options.history.state.back && router.options.history.state.back.index
 getElementFromApi()
 
 watch(element, (newElement) => {
-  if (newElement) document.title = `${newElement.name} - Compléments alimentaires`
+  if (newElement) document.title = `${newElement.name} - Compl'Alim`
 })
 
 watch(route, getElementFromApi)

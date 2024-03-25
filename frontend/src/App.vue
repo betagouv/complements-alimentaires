@@ -9,7 +9,7 @@
     :afterMandatoryLinks="[{ label: 'Conditions générales d’utilisation', to: { name: 'CGUPage' } }]"
   >
     <template v-slot:description>
-      <p>Compléments alimentaires</p>
+      <p>Compl'Alim</p>
     </template>
   </DsfrFooter>
 
@@ -28,7 +28,7 @@ const route = useRoute()
 const { messages, removeMessage } = useToaster()
 
 watch(route, (to) => {
-  const suffix = "Compléments alimentaires"
+  const suffix = "Compl'Alim"
   document.title = to.meta.title ? to.meta.title + " - " + suffix : suffix
 })
 </script>
