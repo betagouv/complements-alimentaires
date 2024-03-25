@@ -13,3 +13,4 @@ from .condition import ConditionListView  # noqa: F401
 from .unit import UnitListView  # noqa: F401
 from .autocomplete import AutocompleteView  # noqa: F401
 from .authentication import LoginView, LogoutView  # noqa: F401
+from .company import CountryListView  # noqa: F401
