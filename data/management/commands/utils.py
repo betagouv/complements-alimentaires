@@ -3,7 +3,7 @@ from django.apps import apps
 from django.conf import settings
 from django.db.models.base import ModelBase
 
-FIXTURE_FOLDER = settings.BASE_DIR / "fixtures"
+FIXTURE_FOLDER = settings.BASE_DIR / "data" / "fixtures"
 
 
 def get_models() -> list[ModelBase]:
