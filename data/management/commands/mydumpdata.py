@@ -7,10 +7,12 @@ from .utils import get_model_path, get_models, get_full_path
 
 
 class Command(BaseCommand):
-    help = """Slight wrapper around dumpdata to:
+    help = """Slight wrapper around orginal dumpdata command to:
     - have default parameters
     - have a confirmation prompt
-    - create 1 file per model, to ease reading"""
+    - create 1 file per model, to ease reading
+    https://docs.djangoproject.com/en/5.0/ref/django-admin/#dumpdata
+    """
 
     @transaction.atomic()
     def handle(self, *args, **options):
@@ -19,14 +21,7 @@ class Command(BaseCommand):
                 full_path = get_full_path(model)
                 try:
                     call_command(
-                        "dumpdata",
-                        get_model_path(model),
-                        "--format",
-                        "yaml",
-                        "--output",
-                        full_path,
-                        "--verbosity",
-                        0,
+                        "dumpdata", get_model_path(model), "--format", "yaml", "--output", full_path, "--verbosity", 0
                     )
                 except CommandError:
                     self.stderr.write(self.style.ERROR(f"⨉ {full_path}"))

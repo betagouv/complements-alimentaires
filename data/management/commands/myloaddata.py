@@ -9,11 +9,12 @@ from .utils import get_models, get_full_path
 
 
 class Command(BaseCommand):
-    help = """Slight wrapper around loaddata to:
+    help = """Slight wrapper around original loaddata command to:
     - flush the database first
     - have default parameters
     - have a confirmation prompt
     - remove warnings if a file has no model in it
+    # https://docs.djangoproject.com/en/5.0/ref/django-admin/#django-admin-loaddata
     """
 
     @transaction.atomic()
@@ -26,10 +27,5 @@ class Command(BaseCommand):
                 full_path = get_full_path(model)
                 with warnings.catch_warnings():
                     warnings.filterwarnings("ignore", category=RuntimeWarning)
-                    call_command(
-                        "loaddata",
-                        full_path,
-                        "--verbosity",
-                        2,
-                    )
+                    call_command("loaddata", full_path, "--verbosity", 2)
                     self.stdout.write("\n\n")
