@@ -1,1 +1,23 @@
-[]
+- model: data.webinar
+  pk: 1
+  fields:
+    creation_date: 2024-03-25 16:24:28.898195+00:00
+    modification_date: 2024-03-25 16:24:28.898205+00:00
+    title: les dangers des compléments alimentaires
+    start_date: 2025-03-25 17:00:00+00:00
+    end_date: 2025-03-25 18:30:00+00:00
+    tagline: Les compléments alimentaires, bien que souvent perçus comme bénéfiques
+      pour la santé, peuvent présenter plusieurs risques s'ils ne sont pas utilisés
+      correctement.
+    link: www.exemple.com/lien/123
+- model: data.webinar
+  pk: 2
+  fields:
+    creation_date: 2024-03-25 16:25:29.224370+00:00
+    modification_date: 2024-03-25 16:25:29.224381+00:00
+    title: 'Quizz : suis-je un complément alimentaire ?'
+    start_date: 2024-12-03 16:00:00+00:00
+    end_date: 2024-12-03 17:00:00+00:00
+    tagline: Jouez avec nous pour découvrir si un complément alimentaire en est vraiment
+      un ou pas.
+    link: www.exemple.com/lien/345

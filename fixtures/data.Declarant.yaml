@@ -1,1 +1,10 @@
-[]
+- model: data.declarant
+  pk: 1
+  fields:
+    is_active: true
+    user: 2
+- model: data.declarant
+  pk: 2
+  fields:
+    is_active: true
+    user: 3

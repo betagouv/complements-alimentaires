@@ -1,1 +1,60 @@
-[]
+- model: data.user
+  pk: 1
+  fields:
+    password: pbkdf2_sha256$720000$j8erHrBDtih9Gh2WcLaR33$xyaaly4Ed/ufvROyGC+o4nO2ekkcPWNrIcDj1KETOxk=
+    last_login: 2024-03-25 16:21:16.741653+00:00
+    is_superuser: true
+    is_active: true
+    username: admin
+    first_name: ''
+    last_name: ''
+    email: admin@exemple.com
+    is_staff: true
+    date_joined: 2024-03-25 16:21:08.827286+00:00
+    groups: []
+    user_permissions: []
+- model: data.user
+  pk: 2
+  fields:
+    password: pbkdf2_sha256$720000$plBMw2DaLs4lu9lccWCxJb$dCyk0ZeM/XJYuc3lXe98KN7TAk+hqzQi+ga7742XNg4=
+    last_login: null
+    is_superuser: false
+    is_active: true
+    username: jean.dupon
+    first_name: Jean
+    last_name: DUPON
+    email: jean.dupon@exemple.com
+    is_staff: false
+    date_joined: 2024-03-25 16:21:58.739882+00:00
+    groups: []
+    user_permissions: []
+- model: data.user
+  pk: 3
+  fields:
+    password: pbkdf2_sha256$720000$MISfIqVQtcoTgvM71C0hjm$WqQxFbaVCFrAR/G5w82FCxt6K8fV2UklTVUWpVrocwI=
+    last_login: null
+    is_superuser: false
+    is_active: true
+    username: marie.dupuis
+    first_name: Marie
+    last_name: DUPUIS
+    email: marie.dupuis@exemple.com
+    is_staff: false
+    date_joined: 2024-03-25 16:22:25.561261+00:00
+    groups: []
+    user_permissions: []
+- model: data.user
+  pk: 4
+  fields:
+    password: pbkdf2_sha256$720000$gKdAMpGuiaKV0EX95UgqDl$B4RHnxlothteBhVJvl4hSiQkxnaPMTrkkOIIdhabZUc=
+    last_login: null
+    is_superuser: false
+    is_active: true
+    username: jenn.stephan
+    first_name: Jenn
+    last_name: STEPHAN
+    email: jenn.stephan@exemple.com
+    is_staff: true
+    date_joined: 2024-03-25 16:22:43+00:00
+    groups: []
+    user_permissions: []
