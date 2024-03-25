@@ -37,8 +37,11 @@ django-storages = "*" # https://github.com/jschneier/django-storages
 ######################################################################################################################
 # Additional fields, tags, or Django features etc.
 ######################################################################################################################
-django-filter = "*"         # https://github.com/carltongibson/django-filter
+django-filter = "*" # https://github.com/carltongibson/django-filter
 django-simple-history = "*" # https://github.com/jazzband/django-simple-history
+django-phonenumber-field = { extras = [
+    "phonenumbers",
+], version = "*" } # https://github.com/stefanfoulis/django-phonenumber-field
 
 ######################################################################################################################
 # Linting & Formatting

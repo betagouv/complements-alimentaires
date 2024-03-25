@@ -62,6 +62,7 @@ THIRD_PARTY_APPS = [
     "anymail",
     "simple_history",
     "django_extensions",
+    "phonenumber_field",
 ]
 
 PROJECT_APPS = [

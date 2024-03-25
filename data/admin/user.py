@@ -5,4 +5,6 @@ from django.contrib.auth.admin import UserAdmin
 
 @admin.register(get_user_model())
 class UserAdmin(UserAdmin):
-    add_fieldsets = UserAdmin.add_fieldsets + ((None, {"fields": ("email", "first_name", "last_name")}),)
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        (None, {"fields": ("email", "first_name", "last_name", "phone_number")}),
+    )
