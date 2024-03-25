@@ -11,4 +11,5 @@ class MagicLinkTokenAdmin(admin.ModelAdmin):
         "key",
         "usage",
     )
+    readonly_fields = ("key",)
     list_filter = ("expiration", "user")
