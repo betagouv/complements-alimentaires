@@ -2,7 +2,7 @@
   pk: 1
   fields:
     password: pbkdf2_sha256$720000$j8erHrBDtih9Gh2WcLaR33$xyaaly4Ed/ufvROyGC+o4nO2ekkcPWNrIcDj1KETOxk=
-    last_login: 2024-03-25 16:21:16.741653+00:00
+    last_login: 2024-03-25 16:30:32.234612+00:00
     is_superuser: true
     is_active: true
     username: admin

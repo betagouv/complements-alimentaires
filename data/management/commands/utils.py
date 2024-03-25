@@ -10,8 +10,19 @@ def get_models() -> list[ModelBase]:
     """Return all installed models using introspection, except the backlisted one
     because they are useless and can create integrity errors during deserialization.
     """
-    BLACKLISTED_APPS = ["contenttypes", "sessions", "admin"]
-    return [model for model in apps.get_models() if model._meta.app_label not in BLACKLISTED_APPS]
+    model_data = [
+        # Useful Django models
+        ("auth", "Permission"),
+        ("auth", "Group"),
+        # Our models (order matters because of model relations)
+        ("data", "User"),
+        ("data", "Company"),
+        ("data", "CompanySupervisor"),
+        ("data", "Declarant"),
+        ("data", "BlogPost"),
+        ("data", "Webinar"),
+    ]
+    return [apps.get_model(d[0], d[1]) for d in model_data]
 
 
 def get_full_path(model: ModelBase) -> Path:
