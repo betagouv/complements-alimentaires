@@ -49,7 +49,7 @@ const author = computed(() => {
 fetchBlogPost()
 
 watch(blogPost, (post) => {
-  if (post) document.title = `${post.title} - Compléments alimentaires`
+  if (post) document.title = `${post.title} - Compl'Alim`
 })
 </script>
 

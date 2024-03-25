@@ -1,5 +1,5 @@
 <template>
-  <DsfrHeader :logo-text="logoText" service-title="Compléments alimentaires" :quickLinks="quickLinks">
+  <DsfrHeader :logo-text="logoText" service-title="Compl'Alim" :quickLinks="quickLinks">
     <template v-if="environment != 'prod'" #operator>
       <DsfrBadge v-if="environment === 'dev'" :label="environment" type="info" />
       <DsfrBadge v-else-if="environment === 'demo'" :label="environment" type="new" />
