@@ -23,7 +23,7 @@ class LoggedUserView(RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         if permissions.IsAuthenticated().has_permission(self.request, self):
             return super().get(request, *args, **kwargs)
-        return Response({}, status=status.HTTP_204_NO_CONTENT)
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
     def get_object(self):
         return self.request.user
