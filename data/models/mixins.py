@@ -1,22 +1,6 @@
 from django.db import models
 from django.db.models.functions import Coalesce, NullIf
 from django.db.models import F, Value
-from simple_history.models import HistoricalRecords
-
-
-class WithCreationAndModificationDate(models.Model):
-    class Meta:
-        abstract = True
-
-    creation_date = models.DateTimeField(auto_now_add=True)
-    modification_date = models.DateTimeField(auto_now=True)
-
-
-class WithHistory(models.Model):
-    class Meta:
-        abstract = True
-
-    history = HistoricalRecords(inherit=True)
 
 
 class WithMissingImportBoolean(models.Model):

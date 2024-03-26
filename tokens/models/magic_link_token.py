@@ -7,7 +7,7 @@ from django.db import models
 from django.db.models.deletion import CASCADE
 from django.db.models.manager import Manager
 
-from data.mixins import AutoValidable, TimeStampable
+from data.behaviours import AutoValidable, TimeStampable
 
 from ..mixins.expirable import Expirable, ExpirableQuerySet
 from ..mixins.unique_secret_key import UniqueSecretKeyMixin
