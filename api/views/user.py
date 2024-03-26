@@ -40,7 +40,7 @@ class SignupView(APIView):
                 subject="Vérifiez votre adresse e-mail",
                 message=f"Cliquez sur le lien suivant pour vérifier votre adresse e-mail : {verification_url}",
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[settings.CONTACT_EMAIL],
+                recipient_list=[new_user.email],
             )
             return Response({}, status=status.HTTP_201_CREATED)
 
