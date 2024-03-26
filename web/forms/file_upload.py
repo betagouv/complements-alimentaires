@@ -1,4 +1,7 @@
 from django import forms
+from data.models import ELEMENT_MODELS
+
+# TODO ajout des relations
 
 
 class FileUploadForm(forms.Form):
@@ -7,6 +10,6 @@ class FileUploadForm(forms.Form):
     )
 
     file_type = forms.ChoiceField(
-        choices=[("ingredient", "Ingredient"), ("plante", "Plante")],
-        label="Fichier contenant les données de ",
+        choices=[(model.__name__, model.__name__) for model in ELEMENT_MODELS],
+        label="Dans quelle table ces données doivent-elles être importées ?",
     )

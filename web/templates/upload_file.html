@@ -21,7 +21,7 @@
             </p>
         {% endfor %}
     {% endif %}
-
+    <h2> Import de fichiers dans la base de donnée ingrédients</h2>
     <form role="form" method="post" enctype="multipart/form-data" action="{% url 'file_upload' %}">
         {% csrf_token %}
 
@@ -32,11 +32,10 @@
 
         {{ form.file_type.label_tag }}
         {{ form.file_type }}
+        <br><br>
 
 
         <button type="submit">Importer</button>
-        <p id="file-upload-with-error-desc-error" class="fr-error-text">
-            {{ form.non_field_errors }}
-        </p>
+
     </form>
 {% endblock %}
