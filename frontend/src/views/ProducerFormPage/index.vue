@@ -29,6 +29,7 @@ import ProductStep from "./ProductStep"
 import CompositionStep from "./CompositionStep"
 import SummaryStep from "./SummaryStep"
 import AttachmentStep from "./AttachmentStep"
+import NewElementStep from "./NewElementStep"
 import StepButtons from "./StepButtons"
 import { useRoute, useRouter } from "vue-router"
 
@@ -36,6 +37,7 @@ const store = useRootStore()
 store.fetchConditions()
 store.fetchPopulations()
 store.fetchPlantParts()
+store.fetchUnits()
 
 const payload = ref({
   effects: [],
@@ -49,21 +51,32 @@ const payload = ref({
   },
 })
 
+const hasNewElements = computed(() => payload.value.elements.some((x) => x.element.new))
+
 const currentStep = ref(null)
-const steps = ["Le produit", "La composition", "Pièces jointes", "Résumé"]
-const components = [ProductStep, CompositionStep, AttachmentStep, SummaryStep]
+const steps = computed(() => {
+  const baseSteps = ["Le produit", "La composition", "Pièces jointes", "Résumé"]
+  if (hasNewElements.value) baseSteps.splice(2, 0, "Nouveaux éléments")
+  return baseSteps
+})
+
+const components = computed(() => {
+  const baseComponents = [ProductStep, CompositionStep, AttachmentStep, SummaryStep]
+  if (hasNewElements.value) baseComponents.splice(2, 0, NewElementStep)
+  return baseComponents
+})
 
 const goForward = () => router.push({ query: { step: currentStep.value + 1 } })
 const goBackward = () => router.push({ query: { step: currentStep.value - 1 } })
 
 const disablePrevious = computed(() => currentStep.value === 1)
-const disableNext = computed(() => currentStep.value === steps.length)
+const disableNext = computed(() => currentStep.value === steps.value.length)
 
 const route = useRoute()
 const router = useRouter()
 
 const ensureStepInUrl = () => {
-  if (route.query.step && parseInt(route.query.step) >= 1 && parseInt(route.query.step) <= steps.length)
+  if (route.query.step && parseInt(route.query.step) >= 1 && parseInt(route.query.step) <= steps.value.length)
     currentStep.value = parseInt(route.query.step)
   else router.replace({ query: { step: 1 } })
 }

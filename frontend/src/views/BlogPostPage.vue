@@ -19,27 +19,17 @@
 
 <script setup>
 import { computed, watch } from "vue"
-import { useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
-import useToaster from "@/composables/use-toaster"
+import { handleError } from "@/utils/error-handling"
 
 const props = defineProps({
   id: String,
 })
 
-const router = useRouter()
-
-const {
-  data: blogPost,
-  execute,
-  error,
-  statusCode,
-} = useFetch(`/api/v1/blogPosts/${props.id}`, { immediate: false }).json()
+const { data: blogPost, response, execute } = useFetch(`/api/v1/blogPosts/${props.id}`, { immediate: false }).json()
 const fetchBlogPost = async () => {
   await execute()
-  if (statusCode.value === 404) {
-    router.replace({ name: "NotFound" })
-  } else if (error.value) useToaster().addUnknownErrorMessage()
+  await handleError(response)
 }
 
 const date = computed(() => {
@@ -59,7 +49,7 @@ const author = computed(() => {
 fetchBlogPost()
 
 watch(blogPost, (post) => {
-  if (post) document.title = `${post.title} - Compléments alimentaires`
+  if (post) document.title = `${post.title} - Compl'Alim`
 })
 </script>
 

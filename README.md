@@ -46,10 +46,10 @@ npm install
 
 #### Créer la base de données
 
-Par exemple, pour utiliser une base de données nommée _icare_ :
+Par exemple, pour utiliser une base de données nommée _complalim_db_ :
 
 ```
-createdb icare
+createdb complalim_db
 ```
 Le user doit avoir les droits de creation
 

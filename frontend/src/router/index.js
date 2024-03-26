@@ -14,6 +14,7 @@ import ProducerFormPage from "@/views/ProducerFormPage"
 import NotFound from "@/views/NotFound"
 import LoginPage from "@/views/LoginPage.vue"
 import SignupPage from "@/views/SignupPage.vue"
+import VerifyEmailPage from "@/views/VerifyEmailPage.vue"
 import DashboardPage from "@/views/DashboardPage"
 
 const routes = [
@@ -128,6 +129,14 @@ const routes = [
     component: SignupPage,
     meta: {
       title: "S'enregistrer",
+    },
+  },
+  {
+    path: "/verification-email",
+    name: "VerifyEmailPage",
+    component: VerifyEmailPage,
+    meta: {
+      title: "Vérifier son adresse e-mail",
     },
   },
   {

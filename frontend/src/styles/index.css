@@ -15,4 +15,19 @@
     .gradient-dsfr {
         @apply bg-gradient-to-r from-blue-france-925 via-blue-france-850 via-30% to-transparent
     }
+    .icon {
+        @apply bg-slate-600;
+    }
+    .icon.icon-plant {
+        @apply bg-ca-plant;
+    }
+    .icon.icon-microorganism {
+        @apply bg-ca-microorganism;
+    }
+    .icon.icon-substance {
+        @apply bg-ca-substance;
+    }
+    .icon.icon-ingredient {
+        @apply bg-ca-ingredient;
+    }
 }
