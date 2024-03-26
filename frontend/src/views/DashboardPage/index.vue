@@ -1,6 +1,11 @@
 <template>
   <div class="fr-container my-8 flex flex-col gap-8">
-    <ActionGrid v-if="isSupervisor" :actions="supervisorActions" title="Gestion d'entreprise" icon="ri-home-2-fill" />
+    <ActionGrid
+      v-if="isCompanySupervisor"
+      :actions="supervisorActions"
+      title="Gestion d'entreprise"
+      icon="ri-home-2-fill"
+    />
     <ActionGrid v-if="isDeclarant" :actions="declarantActions" title="Mes déclarations" icon="ri-capsule-fill" />
     <ActionGrid v-if="emptyRoles" :actions="onboardingActions" title="Démarrez chez Compl-Alim !" />
     <ActionGrid :actions="userActions" title="Mon compte" icon="ri-account-circle-line" />
@@ -17,7 +22,7 @@ const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
 
 const emptyRoles = computed(() => !loggedUser.value.roles || loggedUser.value.roles.length === 0)
-const isSupervisor = computed(() => loggedUser.value.roles.some((x) => x.name === "CompanySupervisor"))
+const isCompanySupervisor = computed(() => loggedUser.value.roles.some((x) => x.name === "CompanySupervisor"))
 const isDeclarant = computed(() => loggedUser.value.roles.some((x) => x.name === "Declarant"))
 
 const supervisorActions = [
