@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Import de fichiers{% endblock %}
+
+{% load static %}
+
+{% block content %}
+    <!-- List of uploaded documents -->
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+            <p class="error-container">
+                {{ error }}
+            </p>
+        {% endfor %}
+    {% endif %}
+
+    <form role="form" method="post" enctype="multipart/form-data" action="{% url 'file_upload' %}">
+        {% csrf_token %}
+
+        {{form.file.label_tag }}
+        {{form.file}}
+
+        <br><br>
+
+        {{ form.file_type.label_tag }}
+        {{ form.file_type }}
+
+
+        <button type="submit">Importer</button>
+        <p id="file-upload-with-error-desc-error" class="fr-error-text">
+            {{ form.non_field_errors }}
+        </p>
+    </form>
+{% endblock %}
