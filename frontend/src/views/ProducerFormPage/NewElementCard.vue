@@ -27,14 +27,14 @@
 
       <DsfrRadioButton
         name="authorisationMode"
-        hint="Cet ingrédient n'est pas autorisée en France mais l'est dans un autre pays de l'UE (déclaré au titre de l'article 16 du décret 2006-352)"
+        hint="Cet ingrédient n'est pas autorisée en France mais l'est dans un autre pays de l'UE ou EEE (déclaré au titre de l'article 16 du décret 2006-352)"
         v-model="model.element.authorisationMode"
         value="EU"
       >
         <template v-slot:label>
           <div>
             <img src="/static/images/flags/eu.svg" class="w-5 mr-1 -mt-1 inline rounded-sm" />
-            Autorisé dans un État membre de l'UE
+            Autorisé dans un État membre de l'UE ou EEE
           </div>
         </template>
       </DsfrRadioButton>
@@ -136,14 +136,14 @@ const countries = [
 ]
 const additionReasons = [
   {
-    label: "Usage traditionnel",
+    label: "Usage établi",
     value: "traditional-usage",
-    hint: "Demande d’autorisation simplifiée pour un ingŕedient à usage traditionnel (directive 2004/24/CE)",
+    hint: "Ingrédient bénéficiant d'un historique de consommation selon le catalogue Novel Food ou dont l'utilisation en alimentation humaine est bien établie (directive 2004/24/CE)",
   },
   {
     label: "Novel Food",
     value: "novel-food",
-    hint: "L'ingrédient fait partie de la liste novel food",
+    hint: "L'ingrédient figure sur la liste de l'Union des nouveaux aliments conformément au règlement (UE) 2017/2470",
   },
   {
     label: "Ingrédient absent en base de données",
