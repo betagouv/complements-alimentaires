@@ -1,5 +1,7 @@
 from urllib.parse import urljoin
 from django.conf import settings
+from django.contrib.auth import login
+from django.middleware.csrf import get_token
 from django.core.mail import send_mail
 from rest_framework.views import APIView
 from rest_framework.generics import RetrieveAPIView
@@ -54,7 +56,9 @@ class VerifyEmailView(APIView):
     def post(self, request, *args, **kwargs):
         user = MagicLinkToken.run_email_verification(request.data["key"])
         if user:
-            return Response({}, status=status.HTTP_200_OK)
+            # we log the user in to avoid an unnecessary login step
+            login(request, user)  # will create the user session
+            return Response({"csrf_token": get_token(request)})
         else:
             raise ProjectAPIException(
                 global_error="Le lien de validation n'a pas fonctionné. Il a peut-être été déjà utilisé ou n'est plus valide."
