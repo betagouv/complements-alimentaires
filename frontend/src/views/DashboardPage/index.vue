@@ -27,7 +27,7 @@ const isDeclarant = computed(() => loggedUser.value.roles.some((x) => x.name ===
 
 const supervisorActions = [
   {
-    title: "Les déclartions de mes entreprises",
+    title: "Les déclarations de mes entreprises",
     description: "Visualisez et gérez les déclarations de votre entreprise",
   },
   {
@@ -55,7 +55,7 @@ const declarantActions = [
 const onboardingActions = [
   {
     title: "Créez ou rejoignez une entreprise",
-    description: "Renseignez les données de votre entreprise pour effetuer vos déclarations",
+    description: "Renseignez les données de votre entreprise pour effectuer vos déclarations",
   },
   {
     title: "Contactez notre équipe",
