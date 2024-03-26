@@ -1,6 +1,8 @@
 from functools import cached_property
+from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import slugify
 from django.db import models, transaction
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -68,12 +70,14 @@ class User(PermissionsMixin, AutoValidable, Deactivable, AbstractBaseUser):
     first_name = models.CharField(_("first name"), max_length=150, blank=True)
     last_name = models.CharField(_("last name"), max_length=150, blank=True)
     email = models.EmailField(_("email address"), unique=True)
+    phone_number = PhoneNumberField("numéro de téléphone", blank=True, null=True)
     is_staff = models.BooleanField(
         _("staff status"),
         default=False,
         help_text=_("Designates whether the user can log into this admin site."),
     )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
+    is_verified = models.BooleanField("Compte vérifié ?", default=False)
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "username"
@@ -85,8 +89,8 @@ class User(PermissionsMixin, AutoValidable, Deactivable, AbstractBaseUser):
         # NOTE: full_clean() is called in save() with the Autovalidable mixin
         super().clean()
         self.email = self.__class__.objects.normalize_email(self.email)
-        self.first_name = self.first_name.capitalize()
-        self.last_name = self.last_name.upper()
+        self.first_name = self.first_name.strip()
+        self.last_name = self.last_name.strip()
 
     @cached_property
     def roles(self) -> list[BaseRole]:
@@ -109,11 +113,30 @@ class User(PermissionsMixin, AutoValidable, Deactivable, AbstractBaseUser):
             return None
 
     def get_full_name(self) -> str:
-        """
-        Return the first_name plus the last_name, with a space in between.
-        """
+        """Return the first_name plus the last_name, with a space in between."""
         full_name = "{} {}".format(self.first_name, self.last_name)
         return full_name.strip()
+
+    @classmethod
+    def generate_username(cls, first_name, last_name) -> str:
+        """Return an auto-generated username that could be valid based on given user infos
+        ⛔️ Using `while...True` structure must be tested carefully to avoid infinite loop.
+        """
+
+        assert all([first_name, last_name])  # given fields can't be empty
+        base_username = slugify(first_name) + "." + slugify(last_name)
+        i = 1
+        while "the generated username already exists in database":
+            suffix = "" if i == 1 else str(i)
+            username = base_username + suffix
+            if not cls.objects.filter(username=username).exists():
+                return username
+            i += 1
+
+    def verify(self):
+        """Mark an account as verified."""
+        self.is_verified = True
+        self.save()
 
     @property
     def name(self) -> str:

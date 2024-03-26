@@ -48,3 +48,10 @@ class TestLoggedUserApi(APITestCase):
 
         response = self.client.get(reverse("logged_user"))
         self.assertEqual(_get_role_names(response), {"Declarant", "CompanySupervisor"})
+
+
+class TestGenerateUsername(APITestCase):
+    def test_generate_username(self):
+        response = self.client.get(reverse("generate_username") + "?first_name=jean&last_name=dupon")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"username": "jean.dupon"})
