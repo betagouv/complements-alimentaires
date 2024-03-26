@@ -11,7 +11,7 @@ class TimeStampableQueryset(models.query.QuerySet):
         """
 
         assert i_start <= i_end
-        return self.filter(created__lte=i_end, created__gte=i_start)
+        return self.filter(creation_date__lte=i_end, creation_date__gte=i_start)
 
 
 class TimeStampable(models.Model):
