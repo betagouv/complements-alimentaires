@@ -1,31 +1,9 @@
 <template>
-  <div class="fr-container my-8">
-    <template v-if="isSupervisor">
-      <h2 class="fr-h5">
-        <v-icon class="mr-1 mb-[3px]" name="ri-home-2-fill" />
-        Gestion d'entreprise
-      </h2>
-      <ActionGrid :actions="supervisorActions" />
-    </template>
-
-    <template v-if="isDeclarant">
-      <h2 class="fr-h5 !mt-8">
-        <v-icon class="mr-1 mb-[3px]" name="ri-capsule-fill" />
-        Mes déclarations
-      </h2>
-      <ActionGrid :actions="declarantActions" />
-    </template>
-
-    <template v-if="emptyRoles">
-      <h2 class="fr-h5 !mt-8">Démarrez chez Compl-Alim !</h2>
-      <ActionGrid :actions="onboardingActions" />
-    </template>
-
-    <h2 class="fr-h5 !mt-8">
-      <v-icon class="mr-1 mb-[3px]" name="ri-account-circle-line" />
-      Mon compte
-    </h2>
-    <ActionGrid :actions="userActions" />
+  <div class="fr-container my-8 flex flex-col gap-8">
+    <ActionGrid v-if="isSupervisor" :actions="supervisorActions" title="Gestion d'entreprise" icon="ri-home-2-fill" />
+    <ActionGrid v-if="isDeclarant" :actions="declarantActions" title="Mes déclarations" icon="ri-capsule-fill" />
+    <ActionGrid v-if="emptyRoles" :actions="onboardingActions" title="Démarrez chez Compl-Alim !" />
+    <ActionGrid :actions="userActions" title="Mon compte" icon="ri-account-circle-line" />
   </div>
 </template>
 
