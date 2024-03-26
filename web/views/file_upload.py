@@ -11,6 +11,9 @@ class FileUploadView(FormView):
     View du formulaire d'upload de fichier à importer en BDD
     """
 
+    def get(self, request, *args, **kwargs):
+        return render(request, "upload_file.html", {"form": FileUploadForm()})
+
     def post(self, request, *args, **kwargs):
         form = FileUploadForm(request.POST, request.FILES)
         if form.is_valid():
