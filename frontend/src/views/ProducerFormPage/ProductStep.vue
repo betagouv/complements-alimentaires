@@ -15,7 +15,7 @@
     <DsfrInputGroup class="max-w-md" v-else>
       <DsfrSelect
         label="Entreprise qui produit le complément"
-        v-model="payload.company"
+        v-model.number="payload.company"
         :options="companies.map((x) => ({ text: x.socialName, value: x.id }))"
         :required="true"
       />
@@ -166,13 +166,46 @@
     <v-icon class="mr-1" name="ri-home-2-fill" />
     Adresse sur l'étiquetage
   </h2>
-  TODO car on aura déjà l'adresse à partir du SIRET
+  <div class="max-w-2xl mb-8 address-form">
+    <DsfrInputGroup>
+      <DsfrInput
+        v-model="payload.labelAddress.address"
+        label-visible
+        label="Adresse"
+        hint="Numéro et voie"
+        :required="true"
+      />
+    </DsfrInputGroup>
+    <DsfrInputGroup>
+      <DsfrInput
+        v-model="payload.labelAddress.additionalDetails"
+        label-visible
+        label="Complément d'adresse"
+        hint="Bâtiment, immeuble, escalier et numéro d’appartement"
+      />
+    </DsfrInputGroup>
+    <div class="grid grid-cols-7 gap-6">
+      <DsfrInputGroup class="col-span-12 md:col-span-3">
+        <DsfrInput v-model="payload.labelAddress.postalCode" label-visible label="Code Postal" :required="true" />
+      </DsfrInputGroup>
+      <DsfrInputGroup class="col-span-12 md:col-span-4">
+        <DsfrInput v-model="payload.labelAddress.city" label-visible label="Ville ou commune" :required="true" />
+      </DsfrInputGroup>
+    </div>
+    <DsfrInputGroup>
+      <DsfrInput v-model="payload.labelAddress.cedex" label-visible label="Cedex" />
+    </DsfrInputGroup>
+    <DsfrInputGroup>
+      <DsfrSelect label="Pays" v-model="payload.labelAddress.country" :options="countries" :required="true" />
+    </DsfrInputGroup>
+  </div>
 </template>
 <script setup>
 import { computed } from "vue"
 import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
+import { countries } from "@/utils/mappings"
 
 const payload = defineModel()
 
@@ -230,3 +263,9 @@ const effects = [
 // If there is only one company, assign it as a default value
 if (companies.value?.length === 1) payload.value.company = companies.value[0].id
 </script>
+
+<style scoped>
+.address-form .fr-input-group:not(:last-child) {
+  @apply mb-0;
+}
+</style>
