@@ -26,7 +26,6 @@ class Microorganism(CommonModel, WithComments):
         db_persist=True,
     )
 
-    siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     siccrf_genre = models.TextField(verbose_name="genre de micro-organisme (selon la base SICCRF)")
     ca_genre = models.TextField(verbose_name="genre de micro-organisme")
 
@@ -35,10 +34,6 @@ class Microorganism(CommonModel, WithComments):
 
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
     history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete", "genre"])
-
-    @property
-    def name_en(self):
-        return self.siccrf_name_en
 
 
 class MicroorganismSubstanceRelation(WithCreationAndModificationDate, WithHistory):
