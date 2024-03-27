@@ -68,7 +68,7 @@ class TestSearch(APITestCase):
         plant = PlantFactory.create(ca_name="matcha latte")
         ingredient = IngredientFactory.create(ca_name="matcha powder")
         substance = SubstanceFactory.create(ca_name="cafe latte")
-        microorganism = MicroorganismFactory.create(ca_name="cafe powder")
+        microorganism = MicroorganismFactory.create(name="cafe powder")
 
         search_term = "matcha"
         response = self.client.post(f"{reverse('search')}", {"search": search_term})
@@ -117,11 +117,10 @@ class TestSearch(APITestCase):
     def test_microorganism_field_priorities(self):
         """
         The weighting of certain fields yields different scores. For example,
-        a microorganism `name` has a higher search priority than its `name_en` and `microorganismsynonym`
+        a microorganism `name` has a higher search priority than `microorganismsynonym`
         """
-        microorganism_name = MicroorganismFactory(ca_name="matcha")
-        microorganism_name_en = MicroorganismFactory(siccrf_name_en="matcha")
-        microorganism_synonym = MicroorganismFactory(ca_name="other")
+        microorganism_name = MicroorganismFactory(name="matcha")
+        microorganism_synonym = MicroorganismFactory(name="other")
         MicroorganismSynonymFactory(name="matcha", standard_name=microorganism_synonym)
 
         search_term = "matcha"
@@ -129,10 +128,7 @@ class TestSearch(APITestCase):
         results = response.json().get("results", [])
 
         self.assertEqual(results[0]["id"], microorganism_name.id)
-
-        two_last_results = [result["id"] for result in results[-2:]]
-        self.assertIn(microorganism_name_en.id, two_last_results)
-        self.assertIn(microorganism_synonym.id, two_last_results)
+        self.assertEqual(results[1]["id"], microorganism_synonym.id)
 
     def test_substance_field_priorities(self):
         """
@@ -159,7 +155,7 @@ class TestSearch(APITestCase):
         """The search_term might be found in several fields,
         in this case, the object should appear only once in search results
         """
-        moorg = MicroorganismFactory(ca_name="matcha")
+        moorg = MicroorganismFactory(name="matcha")
         MicroorganismSynonymFactory(name="matcha latte", standard_name=moorg)
         MicroorganismSynonymFactory(name="boisson matcha", standard_name=moorg)
 
