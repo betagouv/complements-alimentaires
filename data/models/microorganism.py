@@ -18,7 +18,10 @@ class Microorganism(CommonModel, WithComments):
     siccrf_name = None
     ca_name = None
     name = models.GeneratedField(
-        expression=Coalesce(F("genre"), F("espece")),
+        expression=Coalesce(
+            Coalesce(NullIf(F("ca_genre"), Value("")), F("siccrf_genre")),
+            Coalesce(NullIf(F("ca_espece"), Value("")), F("siccrf_espece")),
+        ),
         output_field=models.TextField(verbose_name="nom"),
         db_persist=True,
     )
@@ -26,18 +29,9 @@ class Microorganism(CommonModel, WithComments):
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     siccrf_genre = models.TextField(verbose_name="genre de micro-organisme (selon la base SICCRF)")
     ca_genre = models.TextField(verbose_name="genre de micro-organisme")
-    genre = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_genre"), Value("")), F("siccrf_genre")),
-        output_field=models.TextField(verbose_name="genre de micro-organisme"),
-        db_persist=True,
-    )
+
     siccrf_espece = models.TextField(verbose_name="espèce de micro-organisme (selon la base SICCRF)")
     ca_espece = models.TextField(verbose_name="espèce de micro-organisme")
-    espece = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_espece"), Value("")), F("siccrf_espece")),
-        output_field=models.TextField(verbose_name="espèce de micro-organisme"),
-        db_persist=True,
-    )
 
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
     history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete", "genre"])
