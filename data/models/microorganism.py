@@ -9,6 +9,16 @@ from .abstract_models import CommonModel
 from .substance import Substance
 
 
+# cette fonction remplace le fonction Concat qui est mutable avec PSQL
+# les GeneratedFields doivent avoir des expression de génération immutables
+# Avec Django 5.1 ce problème sera résolu https://forum.djangoproject.com/t/using-generatedfield-with-postgres/27224/4
+class ConcatOp(models.Func):
+    arg_joiner = " || "
+    function = None
+    output_field = models.TextField()
+    template = "%(expressions)s"
+
+
 class Microorganism(CommonModel, WithComments):
     class Meta:
         verbose_name = "micro-organisme"
@@ -18,8 +28,9 @@ class Microorganism(CommonModel, WithComments):
     siccrf_name = None
     ca_name = None
     name = models.GeneratedField(
-        expression=Coalesce(
+        expression=ConcatOp(
             Coalesce(NullIf(F("ca_genus"), Value("")), F("siccrf_genus")),
+            Value(" "),
             Coalesce(NullIf(F("ca_species"), Value("")), F("siccrf_species")),
         ),
         output_field=models.TextField(verbose_name="nom"),
