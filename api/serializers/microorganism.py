@@ -22,8 +22,8 @@ class MicroorganismSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
-            "name_en",
-            "genre",
+            "genus",
+            "species",
             "synonyms",
             "substances",
             "public_comments",

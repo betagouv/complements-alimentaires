@@ -72,7 +72,7 @@ class TestAutocomplete(APITestCase):
         buplevre_2 = PlantFactory.create(ca_name="Buplèvre en faux")
 
         # Troisième position grâce à son synonyme de nom « "Buplèvre à feuilles rondes" »
-        pancic = MicroorganismFactory.create(ca_name="Pančić")
+        pancic = MicroorganismFactory.create(name="Pančić")
         MicroorganismSynonymFactory.create(name="Buplèvre à feuilles rondes", standard_name=pancic)
 
         # Ne devrait pas apparaître

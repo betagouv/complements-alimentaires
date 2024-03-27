@@ -58,10 +58,8 @@ class SearchView(APIView):
         return list(plants.filter(rank__gte=self.search_rank_threshold).all())
 
     def get_microorganisms(self, query):
-        vector = (
-            SearchVector("name", weight="A")
-            + SearchVector(StringAgg("microorganismsynonym__name", delimiter=" "), weight="B")
-            + SearchVector("siccrf_name_en", weight="B")
+        vector = SearchVector("name", weight="A") + SearchVector(
+            StringAgg("microorganismsynonym__name", delimiter=" "), weight="B"
         )
         microorganisms = Microorganism.objects.annotate(rank=SearchRank(vector, query))
         return list(microorganisms.filter(rank__gte=self.search_rank_threshold).all())

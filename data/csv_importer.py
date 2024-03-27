@@ -89,8 +89,8 @@ PREFIX_TO_MODEL_MAPPINT = {
 # Établi les suffix des champ des csv correspondant aux champs des modèles Django
 DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
     # Les champs simples
-    "name": ["LIBELLE", "ESPECE"],  # Pour les Model *Synonym, le champ `name` n'est pas préfixé par `siccrf_`
-    "siccrf_name": ["LIBELLE", "ESPECE"],
+    "name": ["LIBELLE"],  # Pour les Model *Synonym, le champ `name` n'est pas préfixé par `siccrf_`
+    "siccrf_name": ["LIBELLE"],
     "siccrf_name_en": ["LIBELLE_EN"],
     "siccrf_is_obsolete": ["OBSOLET"],
     "siccrf_public_comments": ["COMMENTAIRE_PUBLIC"],
@@ -106,7 +106,8 @@ DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
     "siccrf_max_quantity": ["QTE_MAX"],
     "siccrf_nutritional_reference": ["APPORT_REF"],
     "unit": ["UNT_IDENT"],
-    "siccrf_genre": ["GENRE"],
+    "siccrf_genus": ["GENRE"],
+    "siccrf_species": ["ESPECE"],
     "min_age": ["AGE_MIN"],
     "max_age": ["AGE_MAX"],
     "is_defined_by_anses": ["CATEGORIE_ANSES"],
