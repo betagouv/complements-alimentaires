@@ -68,7 +68,7 @@ class TestSearch(APITestCase):
         plant = PlantFactory.create(ca_name="matcha latte")
         ingredient = IngredientFactory.create(ca_name="matcha powder")
         substance = SubstanceFactory.create(ca_name="cafe latte")
-        microorganism = MicroorganismFactory.create(name="cafe powder")
+        microorganism = MicroorganismFactory.create(ca_genus="cafe", ca_species="powder")
 
         search_term = "matcha"
         response = self.client.post(f"{reverse('search')}", {"search": search_term})
@@ -119,8 +119,8 @@ class TestSearch(APITestCase):
         The weighting of certain fields yields different scores. For example,
         a microorganism `name` has a higher search priority than `microorganismsynonym`
         """
-        microorganism_name = MicroorganismFactory(name="matcha")
-        microorganism_synonym = MicroorganismFactory(name="other")
+        microorganism_name = MicroorganismFactory(ca_genus="matcha")
+        microorganism_synonym = MicroorganismFactory(ca_genus="other")
         MicroorganismSynonymFactory(name="matcha", standard_name=microorganism_synonym)
 
         search_term = "matcha"
@@ -155,7 +155,7 @@ class TestSearch(APITestCase):
         """The search_term might be found in several fields,
         in this case, the object should appear only once in search results
         """
-        moorg = MicroorganismFactory(name="matcha")
+        moorg = MicroorganismFactory(ca_genus="matcha")
         MicroorganismSynonymFactory(name="matcha latte", standard_name=moorg)
         MicroorganismSynonymFactory(name="boisson matcha", standard_name=moorg)
 
