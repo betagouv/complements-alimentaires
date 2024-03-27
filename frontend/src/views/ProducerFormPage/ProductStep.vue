@@ -1,5 +1,28 @@
 <template>
-  <h2 class="fr-h6">
+  <!-- Si on a une seule compagnie, pas besoin d'afficher ce champ -->
+  <template v-if="!companies || companies.length !== 1">
+    <h2 class="fr-h6">
+      <v-icon class="mr-1" name="ri-home-2-fill" />
+      Entreprise
+    </h2>
+    <DsfrAlert type="warning" v-if="!companies || companies.length === 0">
+      <p>
+        Vous n'avez pas d'entreprise assignée. Contacter l'administrateur de votre entreprise ou
+        <router-link :to="{ name: 'Root' }">ajoutez une entreprise</router-link>
+        .
+      </p>
+    </DsfrAlert>
+    <DsfrInputGroup class="max-w-md" v-else>
+      <DsfrSelect
+        label="Entreprise qui produit le complément"
+        v-model="payload.company"
+        :options="companies.map((x) => ({ text: x.socialName, value: x.id }))"
+        :required="true"
+      />
+    </DsfrInputGroup>
+  </template>
+
+  <h2 class="fr-h6 !mt-8">
     <v-icon class="mr-1" name="ri-price-tag-2-fill" />
     Dénomination commerciale
   </h2>
@@ -146,6 +169,7 @@
   TODO car on aura déjà l'adresse à partir du SIRET
 </template>
 <script setup>
+import { computed } from "vue"
 import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
@@ -153,7 +177,8 @@ import { storeToRefs } from "pinia"
 const payload = defineModel()
 
 const store = useRootStore()
-const { populations, conditions } = storeToRefs(store)
+const { populations, conditions, loggedUser } = storeToRefs(store)
+const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
 const galenicFormulation = [
   {
     text: "Ampoule",
@@ -201,4 +226,7 @@ const effects = [
   "Voies respiratoires",
   "Autre (à préciser)",
 ]
+
+// If there is only one company, assign it as a default value
+if (companies.value?.length === 1) payload.value.company = companies.value[0].id
 </script>
