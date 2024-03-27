@@ -32,10 +32,10 @@ class MicroorganismAdmin(IngredientAdminWithHistoryChangedFields):
             "Genre et espèce",
             {
                 "fields": [
-                    "siccrf_genre",
-                    "ca_genre",
-                    "siccrf_espece",
-                    "ca_espece",
+                    "siccrf_genus",
+                    "ca_genus",
+                    "siccrf_species",
+                    "ca_species",
                 ],
             },
         ),
@@ -60,6 +60,6 @@ class MicroorganismAdmin(IngredientAdminWithHistoryChangedFields):
         "is_obsolete",
         "siccrf_public_comments",
         "siccrf_private_comments",
-        "siccrf_genre",
-        "siccrf_espece",
+        "siccrf_genus",
+        "siccrf_species",
     )

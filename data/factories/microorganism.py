@@ -11,10 +11,10 @@ class MicroorganismFactory(factory.django.DjangoModelFactory):
 
     name = factory.Faker("text", max_nb_chars=20)
     siccrf_id = factory.Faker("random_int", min=1, max=2000)
-    siccrf_genre = factory.Faker("text", max_nb_chars=20)
-    ca_genre = factory.Faker("text", max_nb_chars=20)
-    siccrf_espece = factory.Faker("text", max_nb_chars=20)
-    ca_espece = factory.Faker("text", max_nb_chars=20)
+    siccrf_genus = factory.Faker("text", max_nb_chars=20)
+    ca_genus = factory.Faker("text", max_nb_chars=20)
+    siccrf_species = factory.Faker("text", max_nb_chars=20)
+    ca_species = factory.Faker("text", max_nb_chars=20)
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):
