@@ -26,6 +26,11 @@ urlpatterns = {
     path("signup/", views.SignupView.as_view(), name="signup"),
     path("generate-username/", views.GenerateUsernameView.as_view(), name="generate_username"),
     path("verify-email/", views.VerifyEmailView.as_view(), name="verify_email"),
+    path(
+        "send-new-signup-verification-email/<int:user_id>",
+        views.SendNewSignupVerificationEmailView.as_view(),
+        name="send_new_signup_verification_email",
+    ),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
