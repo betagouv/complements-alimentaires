@@ -11,7 +11,7 @@
     >
       <p>
         Si vous n'avez pas reçu d'email au bout de quelques minutes, veuillez vérifier l'adresse e-mail entrée, ainsi
-        que vos courriers indésirables. Sinon, cliquez sur le bouton ci-dessous pour recevoir un nouvel e-mail :
+        que vos courriers indésirables. Sinon, cliquez sur le bouton ci-dessous pour recevoir un nouvel e-mail.
       </p>
     </DsfrModal>
   </div>
