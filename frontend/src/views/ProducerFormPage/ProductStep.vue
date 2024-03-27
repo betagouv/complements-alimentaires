@@ -201,7 +201,7 @@
   </div>
 </template>
 <script setup>
-import { computed } from "vue"
+import { computed, watch } from "vue"
 import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
@@ -212,6 +212,7 @@ const payload = defineModel()
 const store = useRootStore()
 const { populations, conditions, loggedUser } = storeToRefs(store)
 const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
+const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))
 const galenicFormulation = [
   {
     text: "Ampoule",
@@ -259,6 +260,13 @@ const effects = [
   "Voies respiratoires",
   "Autre (à préciser)",
 ]
+
+watch(selectedCompany, () => {
+  const addressFields = ["address", "additionalDetails", "postalCode", "city", "cedex", "country"]
+  const addressEmpty = addressFields.every((field) => !payload.value.labelAddress[field])
+  if (addressEmpty && selectedCompany.value)
+    addressFields.forEach((field) => (payload.value.labelAddress[field] = selectedCompany.value[field]))
+})
 
 // If there is only one company, assign it as a default value
 if (companies.value?.length === 1) payload.value.company = companies.value[0].id
