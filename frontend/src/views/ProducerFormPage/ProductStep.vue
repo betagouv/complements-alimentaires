@@ -268,7 +268,7 @@ watch(selectedCompany, () => {
     addressFields.forEach((field) => (payload.value.labelAddress[field] = selectedCompany.value[field]))
 })
 
-// If there is only one company, assign it as a default value
+// S'il n'y a qu'une entreprise on l'assigne par défaut
 if (companies.value?.length === 1) payload.value.company = companies.value[0].id
 </script>
 
