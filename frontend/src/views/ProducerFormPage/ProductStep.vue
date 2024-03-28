@@ -1,5 +1,5 @@
 <template>
-  <!-- Si on a une seule compagnie, pas besoin d'afficher ce champ -->
+  <!-- Si on a une seule entreprise, pas besoin d'afficher ce champ -->
   <template v-if="!companies || companies.length !== 1">
     <h2 class="fr-h6">
       <v-icon class="mr-1" name="ri-home-2-fill" />
