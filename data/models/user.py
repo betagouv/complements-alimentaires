@@ -9,7 +9,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-from data.mixins import AutoValidable, Deactivable, DeactivableQuerySet
+from data.behaviours import AutoValidable, Deactivable, DeactivableQuerySet
 from django.db.models import OneToOneRel
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist

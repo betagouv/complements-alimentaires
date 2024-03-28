@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.db import models
 
 from data.models import Plant, PlantSynonym
-from data.admin.abstract_admin import IngredientAdminWithHistoryChangedFields
+from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
 
 
 class PlantSynonymInline(admin.TabularInline):
@@ -36,7 +36,7 @@ class PlantForm(forms.ModelForm):
 
 
 @admin.register(Plant)
-class PlantAdmin(IngredientAdminWithHistoryChangedFields):
+class PlantAdmin(IngredientAdminHistorisableChangedFields):
     form = PlantForm
     fieldsets = [
         (
