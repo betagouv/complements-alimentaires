@@ -1054,3 +1054,27 @@
     name: Can view substance unit
     content_type: 44
     codename: view_substanceunit
+- model: auth.permission
+  pk: 177
+  fields:
+    name: Can add magic link token
+    content_type: 45
+    codename: add_magiclinktoken
+- model: auth.permission
+  pk: 178
+  fields:
+    name: Can change magic link token
+    content_type: 45
+    codename: change_magiclinktoken
+- model: auth.permission
+  pk: 179
+  fields:
+    name: Can delete magic link token
+    content_type: 45
+    codename: delete_magiclinktoken
+- model: auth.permission
+  pk: 180
+  fields:
+    name: Can view magic link token
+    content_type: 45
+    codename: view_magiclinktoken
