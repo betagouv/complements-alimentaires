@@ -1,0 +1,197 @@
+- model: data.blogpost
+  pk: 1
+  fields:
+    creation_date: 2024-03-25 16:27:25.693246+00:00
+    modification_date: 2024-03-25 16:27:25.693259+00:00
+    title: Les obligations réglementaires des étiquettes de compléments alimentaires
+    tagline: il existe de nombreuses obligations réglementaires  connaître.
+    display_date: 2024-01-11
+    body: '<p style="margin-left:var(--text-spacing);">La commercialisation de compléments
+      alimentaires en France est soumise à une réglementation stricte afin de garantir
+      la sécurité des consommateurs et de fournir des informations transparentes et
+      précises.</p><p style="margin-left:var(--text-spacing);">Les compléments aliments
+      sont des denrées alimentaires : leur étiquetage doit donc répondre aux dispositions
+      générales applicables aux denrées, notamment le&nbsp;<a href="http://eur-lex.europa.eu/legal-content/fr/ALL/?uri=CELEX:32011R1169">règlement
+      (UE) n°1169/2011</a>&nbsp;relatif à l’information des consommateurs sur les
+      denrées alimentaire. En particulier, la présentation des compléments alimentaires
+      et la publicité qui en est faite ne doit pas attribuer à ces produits des propriétés
+      de prévention, de traitement ou de guérison d’une maladie humaine, ni évoquer
+      ces propriétés.</p><p style="margin-left:var(--text-spacing);">Les&nbsp;<strong>allégations
+      nutritionnelles et de santé</strong>&nbsp;mises en œuvre sur les compléments
+      alimentaires ou dans les communications à caractère commercial doivent être
+      conformes aux dispositions du&nbsp;<a href="http://eur-lex.europa.eu/legal-content/FR/TXT/?uri=celex:32006R1924">règlement
+      (CE) n° 1924/2006</a>.</p><p style="margin-left:var(--text-spacing);">Les étiquettes
+      de ces produits jouent un rôle crucial dans la communication des informations
+      essentielles aux consommateurs. Voici un aperçu des obligations réglementaires
+      associées aux étiquettes des compléments alimentaires :</p><ol><li><p style="margin-left:var(--text-spacing);"><strong>La
+      mention « complément alimentaire"</strong>;</p></li><li><p style="margin-left:var(--text-spacing);"><strong>Dénomination
+      du produit</strong> : L''étiquette doit clairement indiquer la nature du produit,&nbsp;i.e.
+      le nom des catégories de nutriments ou substances ou plantes ou autres ingrédients
+      autorisés caractérisant le produit, par exemple "complément alimentaire à base
+      de vitamine C";</p></li><li><p style="margin-left:var(--text-spacing);"><strong>Liste
+      des ingrédients</strong> : Tous les ingrédients présents dans le complément
+      alimentaire doivent être listés par ordre décroissant de leur poids. Cette liste
+      permet aux consommateurs d''identifier les substances qu''ils consomment;</p></li><li><p
+      style="margin-left:0px;"><strong>La dose journalière recommandée</strong> et
+      un avertissement indiquant qu''il est déconseillé de dépasser cette dose ;</p></li><li><p
+      style="margin-left:var(--text-spacing);"><strong>Quantité nette du produit</strong>
+      : L''étiquette doit mentionner la quantité nette du produit, généralement exprimée
+      en grammes, millilitres ou unités, pour informer le consommateur sur la quantité
+      qu''il achète</p></li><li><p style="margin-left:var(--text-spacing);"><strong>Date
+      limite de consommation (DLC)</strong> ou <strong>Date de durabilité minimale
+      (DDM)</strong> : Cette information indique la durée pendant laquelle le produit
+      est sûr à consommer. Elle est cruciale pour garantir la sécurité alimentaire</p></li><li><p
+      style="margin-left:var(--text-spacing);"><strong>Conditions de conservation</strong>
+      : L''étiquette doit fournir des indications sur les conditions de conservation
+      appropriées pour le produit, telles que "à conserver dans un endroit frais et
+      sec"</p></li><li><p style="margin-left:0px;"><strong>Une déclaration </strong>visant
+      à éviter que les compléments alimentaires ne soient utilisés comme substituts
+      d''un régime alimentaire varié et <strong>un avertissement</strong> indiquant
+      que les produits doivent être tenus hors de la portée des jeunes enfants ;</p></li><li><p
+      style="margin-left:var(--text-spacing);"><strong>Informations sur le fabricant
+      ou le distributeur</strong> : Les coordonnées du fabricant, du distributeur
+      ou de l''importateur doivent être clairement indiquées sur l''étiquette pour
+      permettre aux consommateurs de les contacter en cas de besoin</p></li></ol><p
+      style="margin-left:var(--text-spacing);">En complément de ces mentions, en fonction
+      des substances incorporées, d’autres messages d’avertissements doivent être
+      apposés sur les compléments alimentaires.</p><p style="margin-left:var(--text-spacing);">Par
+      ailleurs, ces messages ne doivent pas donner lieu à confusion, notamment avec
+      des médicaments.</p><p style="margin-left:var(--text-spacing);">Il est essentiel
+      pour les fabricants et les distributeurs de compléments alimentaires de se conformer
+      strictement à ces obligations réglementaires afin d''assurer la sécurité des
+      consommateurs et de fournir des informations transparentes et fiables. En cas
+      de non-conformité, des sanctions peuvent être appliquées, soulignant l''importance
+      de respecter ces règles pour tous les acteurs de l''industrie des compléments
+      alimentaires.</p><p style="margin-left:var(--text-spacing);">autres infos à
+      voir articles 9, 10 et 12 du&nbsp;<a href="https://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000000638341">décret
+      n°2006-352</a>&nbsp;du 20 mars 2006</p>'
+    published: true
+    author: 4
+- model: data.blogpost
+  pk: 2
+  fields:
+    creation_date: 2024-03-25 16:27:54.526623+00:00
+    modification_date: 2024-03-25 16:28:02.652026+00:00
+    title: La déclaration de mise sur le marché des compléments alimentaires
+    tagline: ''
+    display_date: 2024-03-25
+    body: '<p style="margin-left:var(--text-spacing);"><strong>Pour pouvoir être commercialisé,
+      un complément alimentaire doit obligatoirement faire l’objet d’une déclaration
+      auprès des autorités compétentes, conformément aux exigences des articles 15
+      et 16 du&nbsp;</strong><a href="https://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000000638341"><strong>décret
+      n°2006-352</strong></a><strong>.</strong></p><p style="margin-left:var(--text-spacing);">Deux
+      procédures distinctes sont prévues selon la nature des substances présentes
+      dans les compléments alimentaires :</p><p style="margin-left:var(--text-spacing);"><strong>Procédure
+      Article 15 (ou déclaration directe)</strong>&nbsp;:</p><p style="margin-left:var(--text-spacing);">Le
+      produit est conforme à la réglementation française, les ingrédients ajoutés
+      dans le produit sont listés dans les listes positives françaises. L’opérateur
+      déclarant un produit en article 15 peut choisir de le mettre sur le marché dès
+      que la procédure de déclaration est finalisée, sans nécessairement attendre
+      le retour des autorités sur la conformité du produit.</p><p style="margin-left:var(--text-spacing);">C''est
+      une procédure déclarative pour les compléments alimentaires contenant uniquement
+      des substances qui répondent aux prescriptions nationales (article 15). Une
+      « attestation de déclaration » est délivrée : elle ne constitue pas une garantie
+      de conformité aux dispositions en vigueur, ni une autorisation de mise sur le
+      marché ;</p><p style="margin-left:auto;"><strong>Procédure Article 16 (ou procédure
+      de reconnaissance mutuelle)&nbsp;:</strong></p><p style="margin-left:var(--text-spacing);">Le
+      produit ou l’ingrédient qui fait l’objet de la reconnaissance mutuelle est légalement
+      commercialisé dans un autre Etat membre de l’Union européenne (par exemple la
+      Belgique, l’Italie, la Croatie…). Un produit en article 16 ne peut pas être
+      mis sur le marché sans avoir reçu le retour des autorités dans un délai maximum
+      de 2 mois.</p><p style="margin-left:var(--text-spacing);">C''est une procédure
+      d’autorisation préalable lorsque des substances ne répondant pas aux exigences
+      nationales sont utilisées et que les compléments alimentaires en question sont
+      légalement fabriqués ou commercialisés dans un autre Etat membre ou dans un
+      autre Etat partie à l''accord sur l''Espace économique européen, selon le principe
+      de reconnaissance mutuelle (article 16).</p><h3 style="margin-left:var(--title-spacing);"><strong>Contenu
+      de la déclaration</strong></h3><p style="margin-left:var(--text-spacing);">Toute
+      déclaration doit comporter une copie lisible de l’étiquetage du produit ainsi
+      que des informations permettant de juger de la recevabilité du produit au regard
+      des exigences des articles 15 et 16. La nature des ingrédients à but nutritionnel
+      ou physiologique ainsi que la composition du complément alimentaire déclaré
+      sont des informations essentielles.</p><p style="margin-left:var(--text-spacing);">En
+      outre, les déclarations fondées sur l’article 16 doivent comporter une preuve
+      permettant d’apprécier que le complément alimentaire est en effet bien légalement
+      fabriqué ou commercialisé dans un autre Etat membre ou dans un autre Etat partie
+      à l''accord sur l''Espace économique européen.</p><p style="margin-left:var(--text-spacing);">Enfin,
+      le fabricant doit s’engager à mettre sur le marché un produit conforme à sa
+      déclaration et respectant l’ensemble des réglementations qui s’appliquent aux
+      compléments alimentaires.</p><p style="margin-left:var(--text-spacing);">Les
+      dossiers de déclaration déposés au titre de l’article 15 peuvent faire l’objet
+      d’un examen de l’administration, sur la base d’une analyse de risque et d’un
+      ciblage.</p><p style="margin-left:var(--text-spacing);">Les dossiers de demande
+      d’autorisation préalable à la mise sur le marché déposé au titre de l’article
+      16 font l’objet d’un examen systématique de l’administration.</p><p style="margin-left:auto;">&nbsp;</p>'
+    published: true
+    author: null
+- model: data.blogpost
+  pk: 3
+  fields:
+    creation_date: 2024-03-25 16:28:35.179825+00:00
+    modification_date: 2024-03-25 16:28:35.179847+00:00
+    title: Qu'est ce qu'un complément alimentaire ?
+    tagline: ''
+    display_date: 2024-03-25
+    body: '<p style="margin-left:var(--text-spacing);">En France, un complément alimentaire
+      est défini comme une <strong>denrée alimentaire dont le but principal est de
+      compléter le régime alimentaire normal </strong>et qui constitue une source
+      concentrée de nutriments ou d''autres substances ayant un effet nutritionnel
+      ou physiologique. Ces produits sont généralement commercialisés sous forme de
+      pilules, capsules, comprimés, gélules, liquides, etc., et sont destinés à être
+      pris en complément d''une alimentation variée et équilibrée.</p><p style="margin-left:var(--text-spacing);"><strong>Les
+      compléments alimentaires&nbsp;</strong>ne se substituent pas aux aliments courants.
+      Leurs apports nutritionnels s''ajoutent aux apports issus de l''alimentation
+      courante, y compris ceux provenant des aliments enrichis.</p><p style="margin-left:var(--text-spacing);">Il
+      est important de noter que les compléments alimentaires ne sont pas des médicaments
+      et ne sont donc pas conçus pour traiter, guérir ou prévenir des maladies. Leur
+      utilisation est basée sur des besoins spécifiques tels que le renforcement des
+      <strong>apports en vitamines, minéraux, acides aminés ou autres substances naturelles</strong>.&nbsp;</p><p
+      style="margin-left:var(--text-spacing);">La réglementation française encadre
+      strictement la mise sur le marché des compléments alimentaires afin d''assurer
+      leur sécurité et leur qualité. Ainsi, avant d''être commercialisés, ils doivent
+      faire l''objet d''une notification auprès des autorités compétentes et respecter
+      des critères spécifiques liés à leur composition, leur étiquetage et leur publicité.</p><p
+      style="margin-left:var(--text-spacing);">En résumé, un complément alimentaire
+      en France est un produit destiné à compléter l''alimentation courante, fournissant
+      des nutriments ou substances ayant une valeur nutritionnelle ou physiologique,
+      tout en respectant une réglementation stricte garantissant leur sécurité et
+      leur qualité.</p><h3 style="margin-left:var(--title-spacing);"><strong>Composition</strong></h3><p
+      style="margin-left:var(--text-spacing);"><strong>Les compléments alimentaires
+      constituent une source concentrée de nutriments (vitamines et minéraux) ou d''autres
+      substances et plantes, ayant un effet nutritionnel ou physiologique, seul ou
+      combiné.</strong>&nbsp;Ils peuvent aussi contenir des ingrédients « non actifs
+      » utilisés pour des fonctions technologiques ou d’aromatisation.</p><p style="margin-left:var(--text-spacing);">Contrairement
+      aux denrées classiques, ils ne sont pas constitués d’une matrice alimentaire,
+      c’est-à-dire d’une structure physique complexe associant notamment des macronutriments
+      (glucides, lipides et protéines).</p><p style="margin-left:var(--text-spacing);">L’article
+      4 du&nbsp;<a href="https://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000000638341">décret
+      n°2006-352</a>&nbsp;du 20 mars 2006 relatif aux compléments alimentaires (cf.
+      infra) dispose que seuls peuvent être utilisés pour la fabrication des compléments
+      alimentaires : :</p><ul><li><p style="margin-left:0px;">les&nbsp;<strong>nutriments</strong>,
+      c’est-à-dire les vitamines et les minéraux ;</p></li><li><p style="margin-left:0px;">les&nbsp;<strong>substances
+      à but nutritionnel ou physiologique</strong>, c’est-à-dire les substances chimiquement
+      définies à l’exception des vitamines et minéraux et des substances possédant
+      des propriétés exclusivement pharmacologiques ;</p></li><li><p style="margin-left:0px;">les&nbsp;<strong>plantes</strong>&nbsp;et
+      les&nbsp;<strong>préparations de plantes</strong>, incluant tous les végétaux
+      au sens large (champignons, algues, microalgues…), à l’exclusion de celles possédant
+      des propriétés pharmacologiques et destinées à un usage exclusivement thérapeutique
+      ;</p></li><li><p style="margin-left:0px;"><strong>les autres ingrédients</strong>&nbsp;dont
+      l’utilisation en alimentation humaine est traditionnelle ou reconnue comme telle
+      au sens du&nbsp;<a href="https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=OJ%3AJOL_2015_327_R_0001">règlement
+      (UE) n°2015/2283</a>&nbsp;relatif aux nouveaux aliments, ou autorisés conformément
+      à ce règlement ;</p></li><li><p style="margin-left:0px;">les<strong>&nbsp;additifs,
+      les arômes et les auxiliaires technologiques</strong>&nbsp;dont l’emploi est
+      autorisé en alimentation humaine.</p></li></ul><p style="margin-left:-1.25rem;">&nbsp;</p>'
+    published: true
+    author: 4
+- model: data.blogpost
+  pk: 4
+  fields:
+    creation_date: 2024-03-25 16:29:01.903485+00:00
+    modification_date: 2024-03-25 16:29:01.903513+00:00
+    title: Article en brouillon
+    tagline: ''
+    display_date: 2024-03-25
+    body: <p>À écrire !</p>
+    published: false
+    author: null

@@ -366,3 +366,20 @@ if SENTRY_DSN:
         send_default_pii=False,
         send_client_reports=False,
     )
+
+# Custom settings (used by our apps)
+
+# Models to be used with myloaddata/mydumpdata commands
+FIXTURE_FOLDER = BASE_DIR / "fixtures"
+FIXTURE_MODELS = [
+    # Useful Django models
+    ("auth", "Permission"),
+    ("auth", "Group"),
+    # Our models (order matters because of model relations)
+    ("data", "User"),
+    ("data", "Company"),
+    ("data", "CompanySupervisor"),
+    ("data", "Declarant"),
+    ("data", "BlogPost"),
+    ("data", "Webinar"),
+]
