@@ -14,7 +14,8 @@ import ProducerFormPage from "@/views/ProducerFormPage"
 import NotFound from "@/views/NotFound"
 import LoginPage from "@/views/LoginPage.vue"
 import SignupPage from "@/views/SignupPage.vue"
-import DashboardPage from "@/views/DashboardPage.vue"
+import VerifyEmailPage from "@/views/VerifyEmailPage.vue"
+import DashboardPage from "@/views/DashboardPage"
 
 const routes = [
   {
@@ -111,6 +112,7 @@ const routes = [
     meta: {
       title: "Nouvelle démarche",
       authenticationRequired: true,
+      requiredRole: "Declarant",
     },
   },
   {
@@ -127,6 +129,14 @@ const routes = [
     component: SignupPage,
     meta: {
       title: "S'enregistrer",
+    },
+  },
+  {
+    path: "/verification-email",
+    name: "VerifyEmailPage",
+    component: VerifyEmailPage,
+    meta: {
+      title: "Vérifier son adresse e-mail",
     },
   },
   {
@@ -156,9 +166,11 @@ function chooseAuthorisedRoute(to, from, next, store) {
         next({ name: "LandingPage" })
       })
   } else {
-    if (to.meta.home) next({ name: "LandingPage" })
-    else if (!to.meta.authenticationRequired || store.loggedUser) next()
-    else next({ name: "LoginPage" })
+    if (to.meta.home) next({ name: store.loggedUser ? "DashboardPage" : "LandingPage" })
+    const authenticationCheck = !to.meta.authenticationRequired || store.loggedUser
+    const roleCheck = !to.meta.requiredRole || store.loggedUser.roles?.some((x) => x.name === to.meta.requiredRole)
+
+    authenticationCheck && roleCheck ? next() : next({ name: "LoginPage" })
   }
 }
 

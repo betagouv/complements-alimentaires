@@ -1,6 +1,6 @@
 <template>
   <SingleItemWrapper>
-    <h4>Se connecter avec son compte</h4>
+    <h1>Se connecter</h1>
     <FormWrapper :externalResults="$externalResults">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'username')">
         <DsfrInput v-model="state.username" label="Identifiant" labelVisible autofocus />
