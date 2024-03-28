@@ -120,13 +120,13 @@ export const RiFocus2Fill = {
   height: 24,
   raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zm0 18c4.427 0 8-3.573 8-8s-3.573-8-8-8a7.99 7.99 0 00-8 8c0 4.427 3.573 8 8 8zm0-2c-3.32 0-6-2.68-6-6s2.68-6 6-6 6 2.68 6 6-2.68 6-6 6zm0-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>',
 }
-export const RiHome2Fill = {
-  name: "ri-home-2-fill",
+export const RiHome4Line = {
+  name: "ri-home-4-line",
   minX: 0,
   minY: 0,
   width: 24,
   height: 24,
-  raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M20 20a1 1 0 01-1 1H5a1 1 0 01-1-1v-9H1l10.327-9.388a1 1 0 011.346 0L23 11h-3v9z"/>',
+  raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M19 21H5a1 1 0 01-1-1v-9H1l10.327-9.388a1 1 0 011.346 0L23 11h-3v9a1 1 0 01-1 1zm-6-2h5V9.157l-6-5.454-6 5.454V19h5v-6h2v6z"/>',
 }
 
 export const RiArrowLeftLine = {
@@ -199,4 +199,22 @@ export const RiMailForbidLine = {
   width: 24,
   height: 24,
   raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M20 7.238l-7.928 7.1L4 7.216V19h7.07a6.95 6.95 0 00.604 2H3a1 1 0 01-1-1V4a1 1 0 011-1h18a1 1 0 011 1v8.255a6.972 6.972 0 00-2-.965V7.238zM19.501 5H4.511l7.55 6.662L19.502 5zm-2.794 15.708a3 3 0 004.001-4.001l-4.001 4zm-1.415-1.415l4.001-4a3 3 0 00-4.001 4.001zM18 23a5 5 0 110-10 5 5 0 010 10z"/>',
+}
+
+export const RiShieldUserLine = {
+  name: "ri-shield-user-line",
+  minX: 0,
+  minY: 0,
+  width: 24,
+  height: 24,
+  raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M3.783 2.826L12 1l8.217 1.826a1 1 0 01.783.976v9.987a6 6 0 01-2.672 4.992L12 23l-6.328-4.219A6 6 0 013 13.79V3.802a1 1 0 01.783-.976zM5 4.604v9.185a4 4 0 001.781 3.328L12 20.597l5.219-3.48A4 4 0 0019 13.79V4.604L12 3.05 5 4.604zM12 11a2.5 2.5 0 110-5 2.5 2.5 0 010 5zm-4.473 5a4.5 4.5 0 018.946 0H7.527z"/>',
+}
+
+export const RiUserUnfollowLine = {
+  name: "ri-user-unfollow-line",
+  minX: 0,
+  minY: 0,
+  width: 24,
+  height: 24,
+  raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M14 14.252v2.09A6 6 0 006 22l-2-.001a8 8 0 0110-7.748zM12 13c-3.315 0-6-2.685-6-6s2.685-6 6-6 6 2.685 6 6-2.685 6-6 6zm0-2c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm7 6.586l2.121-2.122 1.415 1.415L20.414 19l2.122 2.121-1.415 1.415L19 20.414l-2.121 2.122-1.415-1.415L17.586 19l-2.122-2.121 1.415-1.415L19 17.586z"/>',
 }

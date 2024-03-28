@@ -5,16 +5,17 @@ from .company import CompanySerializer
 
 class BaseRoleSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
+    display_name = serializers.SerializerMethodField()
 
     class Meta:
         abstract = True
-        fields = (
-            "id",
-            "name",
-        )
+        fields = ("id", "name", "display_name")
 
     def get_name(self, obj):
         return obj.__class__.__name__
+
+    def get_display_name(self, obj):
+        return obj._meta.verbose_name
 
 
 class CompanySupervisorSerializer(BaseRoleSerializer):

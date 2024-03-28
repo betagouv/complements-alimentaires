@@ -1,10 +1,25 @@
 <template>
+  <DsfrNotice>
+    <div class="flex md:items-center flex-col md:flex-row md:justify-between">
+      <p>Bienvenue, {{ firstName }}</p>
+      <div class="flex gap-x-2 -mr-12">
+        <DsfrTag
+          v-for="displayName in roleNames"
+          :key="displayName"
+          :label="displayName"
+          icon="ri-account-circle-line"
+          class="flex gap-x-1 border border-gray-300 uppercase"
+          small
+        />
+      </div>
+    </div>
+  </DsfrNotice>
   <div class="fr-container my-8 flex flex-col gap-8">
     <ActionGrid
       v-if="isCompanySupervisor"
       :actions="supervisorActions"
       title="Gestion d'entreprise"
-      icon="ri-home-2-fill"
+      icon="ri-home-4-line"
     />
     <ActionGrid v-if="isDeclarant" :actions="declarantActions" title="Mes déclarations" icon="ri-capsule-fill" />
     <ActionGrid v-if="emptyRoles" :actions="onboardingActions" title="Démarrez chez Compl-Alim !" />
@@ -20,6 +35,9 @@ import ActionGrid from "./ActionGrid"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
+
+const firstName = computed(() => loggedUser.value.firstName)
+const roleNames = computed(() => loggedUser.value.roles.map((role) => role.displayName))
 
 const emptyRoles = computed(() => !loggedUser.value.roles || loggedUser.value.roles.length === 0)
 const isCompanySupervisor = computed(() => loggedUser.value.roles.some((x) => x.name === "CompanySupervisor"))

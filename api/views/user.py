@@ -52,6 +52,14 @@ class SignupView(APIView):
             return Response({"user_id": new_user.id}, status=status.HTTP_201_CREATED)
 
 
+class DeleteUserView(APIView):
+    def delete(self, request, *args, **kwargs):
+        """NOTE: this does not delete anything actually"""
+        user = request.user
+        user.deactivate()
+        return Response({}, status=status.HTTP_200_OK)
+
+
 class SendNewSignupVerificationEmailView(APIView):
     def get(self, request, user_id, *args, **kwargs):
         user = get_object_or_404(User, id=user_id)
