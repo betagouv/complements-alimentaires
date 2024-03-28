@@ -91,10 +91,7 @@
         Veuillez cliquez dans le lien à l'intérieur pour vérifier votre adresse e-email et pouvoir utiliser votre
         compte.
       </p>
-      <p>
-        Si vous n'avez pas reçu l'email au bout de quelques minutes, veuillez vérifier l'adresse e-mail entrée, ainsi
-        que vos courriers indésirables.
-      </p>
+      <SendNewSignupVerificationEmail :userId="data?.userId" />
     </DsfrCallout>
   </SingleItemWrapper>
 </template>
@@ -103,6 +100,7 @@
 import { computed, ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import SingleItemWrapper from "@/components/SingleItemWrapper"
+import SendNewSignupVerificationEmail from "@/components/SendNewSignupVerificationEmail"
 import FormWrapper from "@/components/FormWrapper"
 import { errorRequiredField, errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
 import { useFetch } from "@vueuse/core"
@@ -136,7 +134,7 @@ const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Main request definition
-const { response, execute, isFetching } = useFetch(
+const { data, response, execute, isFetching } = useFetch(
   "/api/v1/signup/",
   {
     headers: headers(),
