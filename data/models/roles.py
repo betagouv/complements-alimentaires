@@ -2,7 +2,7 @@ from django.db import models, transaction
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from data.mixins import Deactivable, DeactivableQuerySet
+from data.behaviours import Deactivable, DeactivableQuerySet
 from .company import Company
 
 

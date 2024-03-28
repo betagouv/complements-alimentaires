@@ -1,7 +1,8 @@
 from django.db import models
 from simple_history.models import HistoricalRecords
 
-from .mixins import WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithComments
+from data.behaviours import TimeStampable, Historisable
+from .mixins import WithMissingImportBoolean, WithComments
 from .abstract_models import CommonModel
 from .substance import Substance
 
@@ -25,7 +26,7 @@ class Ingredient(CommonModel, WithComments):
         return self.siccrf_description
 
 
-class IngredientSubstanceRelation(WithCreationAndModificationDate, WithHistory):
+class IngredientSubstanceRelation(TimeStampable, Historisable):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
     siccrf_is_related = models.BooleanField(
@@ -34,7 +35,7 @@ class IngredientSubstanceRelation(WithCreationAndModificationDate, WithHistory):
     ca_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à l'ingrédient")
 
 
-class IngredientSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):
+class IngredientSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
     class Meta:
         verbose_name = "synonyme d'ingrédient"
 
