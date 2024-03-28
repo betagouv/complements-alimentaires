@@ -11,26 +11,26 @@ from .population import Population  # noqa
 from .condition import Condition  # noqa
 
 from data.models import Ingredient, PlantPart, PlantFamily, Microorganism
-from data.admin.abstract_admin import IngredientAdminWithHistoryChangedFields
+from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
 
 
 @admin.register(Ingredient)
-class IngredientAdmin(IngredientAdminWithHistoryChangedFields):
+class IngredientAdmin(IngredientAdminHistorisableChangedFields):
     pass
 
 
 @admin.register(PlantPart)
-class PlantPartAdmin(IngredientAdminWithHistoryChangedFields):
+class PlantPartAdmin(IngredientAdminHistorisableChangedFields):
     pass
 
 
 @admin.register(PlantFamily)
-class PlantFamilyAdmin(IngredientAdminWithHistoryChangedFields):
+class PlantFamilyAdmin(IngredientAdminHistorisableChangedFields):
     pass
 
 
 @admin.register(Microorganism)
-class MicroorganismAdmin(IngredientAdminWithHistoryChangedFields):
+class MicroorganismAdmin(IngredientAdminHistorisableChangedFields):
     pass
 
 
