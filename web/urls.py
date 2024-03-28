@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from web.views import VueAppDisplayView, RegisterUserView
+
+from web.views import VueAppDisplayView, RegisterUserView, FileUploadView
 
 urlpatterns = [
     path("", VueAppDisplayView.as_view(), name="app"),
@@ -70,4 +71,6 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path("creer-mon-compte", RegisterUserView.as_view(), name="register"),
+    path("envoyer-un-fichier", FileUploadView.as_view(), name="file_upload"),
+    # static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
