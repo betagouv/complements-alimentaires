@@ -3,7 +3,8 @@ from django.db.models.functions import Coalesce, NullIf
 from django.db.models import F, Value
 from simple_history.models import HistoricalRecords
 
-from .mixins import WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithComments
+from data.behaviours import TimeStampable, Historisable
+from .mixins import WithMissingImportBoolean, WithComments
 from .abstract_models import CommonModel
 from .unit import SubstanceUnit
 
@@ -114,7 +115,7 @@ class Substance(CommonModel, WithComments):
         return self.siccrf_name_en
 
 
-class SubstanceSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):
+class SubstanceSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
     class Meta:
         verbose_name = "synonyme substance active"
 

@@ -1,7 +1,8 @@
-from .mixins import WithCreationAndModificationDate, WithMissingImportBoolean, WithDefaultFields
+from data.behaviours import TimeStampable
+from .mixins import WithMissingImportBoolean, WithDefaultFields
 
 
-class CommonModel(WithCreationAndModificationDate, WithMissingImportBoolean, WithDefaultFields):
+class CommonModel(TimeStampable, WithMissingImportBoolean, WithDefaultFields):
     """
     Les modèles ingrédients et les synonymes héritent de ce modèle
     """
