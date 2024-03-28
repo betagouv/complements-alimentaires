@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth import login
 from django.middleware.csrf import get_token
 from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
@@ -31,20 +32,31 @@ class LoggedUserView(RetrieveAPIView):
         return self.request.user
 
 
+def _send_verification_mail(request, user):
+    new_token = MagicLinkToken.objects.create(user=user, usage=MagicLinkUsage.VERIFY_EMAIL_ADDRESS)
+    verification_url = urljoin(get_base_url(request), new_token.as_url(key=new_token.key))
+    send_mail(
+        subject="Vérifiez votre adresse e-mail",
+        message=f"Cliquez sur le lien suivant pour vérifier votre adresse e-mail : {verification_url}",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[user.email],
+    )
+
+
 class SignupView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = UserInputSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             new_user = serializer.save()
-            new_token = MagicLinkToken.objects.create(user=new_user, usage=MagicLinkUsage.VERIFY_EMAIL_ADDRESS)
-            verification_url = urljoin(get_base_url(request), new_token.as_url(key=new_token.key))
-            send_mail(
-                subject="Vérifiez votre adresse e-mail",
-                message=f"Cliquez sur le lien suivant pour vérifier votre adresse e-mail : {verification_url}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[new_user.email],
-            )
-            return Response({}, status=status.HTTP_201_CREATED)
+            _send_verification_mail(request, new_user)
+            return Response({"user_id": new_user.id}, status=status.HTTP_201_CREATED)
+
+
+class SendNewSignupVerificationEmailView(APIView):
+    def get(self, request, user_id, *args, **kwargs):
+        user = get_object_or_404(User, id=user_id)
+        _send_verification_mail(request, user)
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
 class GenerateUsernameView(APIView):
