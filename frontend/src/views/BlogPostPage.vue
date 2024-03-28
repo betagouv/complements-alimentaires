@@ -54,7 +54,7 @@ watch(blogPost, (post) => {
 </script>
 
 <style scoped>
-#content >>> img {
+#content :deep(img) {
   max-width: 100%;
   height: auto;
 }
