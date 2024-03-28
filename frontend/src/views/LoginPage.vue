@@ -92,7 +92,7 @@ const submit = async () => {
 
   // Give the ability to ask for a new e-email, only if the user is not verified yet.
   // ⛔️ TODO: change this dirty hack: we use error message until having appropriate error codes in responses
-  if ($externalResults.value.nonFieldErrors[0].includes("vérifié")) {
+  if ($externalResults.value?.nonFieldErrors[0].includes("vérifié")) {
     showSendNewConfirmationMail.value = true
     userIdForNewConfirmationMail.value = $externalResults.value.extra.userId
   }
