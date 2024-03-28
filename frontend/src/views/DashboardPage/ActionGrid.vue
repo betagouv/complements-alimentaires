@@ -9,6 +9,7 @@
         v-for="(action, index) in props.actions"
         :key="`${action.title}-${index}`"
         :action="props.actions[index]"
+        :link="action.link"
         class="col-span-12 sm:col-span-6 md:col-span-4"
       />
     </div>

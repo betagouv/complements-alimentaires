@@ -16,6 +16,7 @@ import LoginPage from "@/views/LoginPage.vue"
 import SignupPage from "@/views/SignupPage.vue"
 import VerifyEmailPage from "@/views/VerifyEmailPage.vue"
 import DashboardPage from "@/views/DashboardPage"
+import UserAccountPage from "@/views/UserAccountPage"
 
 const routes = [
   {
@@ -113,6 +114,15 @@ const routes = [
       title: "Nouvelle démarche",
       authenticationRequired: true,
       requiredRole: "Declarant",
+    },
+  },
+  {
+    path: "/informations-personnelles",
+    name: "UserAccountPage",
+    component: UserAccountPage,
+    meta: {
+      title: "Mes informations personnelles",
+      authenticationRequired: true,
     },
   },
   {

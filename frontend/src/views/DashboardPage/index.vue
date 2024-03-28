@@ -67,6 +67,7 @@ const userActions = [
   {
     title: "Mes informations personnelles",
     description: "Consultez et mettez à jour vos informations personnelles",
+    link: "/informations-personnelles",
   },
 ]
 </script>
