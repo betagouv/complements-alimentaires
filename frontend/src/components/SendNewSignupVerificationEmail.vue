@@ -1,6 +1,13 @@
 <template>
   <div>
-    <DsfrButton size="sm" label="Je n'ai pas reçu d'email" @click="opened = true" ref="modalOrigin" />
+    <DsfrButton
+      secondary
+      icon="ri-mail-forbid-line"
+      size="sm"
+      label="Je n'ai pas reçu d'email"
+      @click="opened = true"
+      ref="modalOrigin"
+    />
     <DsfrModal
       :actions="actions"
       ref="modal"
