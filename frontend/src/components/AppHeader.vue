@@ -17,16 +17,11 @@
 <script setup>
 import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
-import { useFetch } from "@vueuse/core"
-import { headers } from "@/utils/data-fetching"
-import useToaster from "@/composables/use-toaster"
-import { useRouter } from "vue-router"
-import { handleError } from "@/utils/error-handling"
+import { logOut } from "@/utils/auth"
 
 defineProps({ logoText: Array })
 
 const environment = window.ENVIRONMENT
-const router = useRouter()
 const store = useRootStore()
 const navItems = [
   {
@@ -48,20 +43,6 @@ const loggedOnlyNavItems = [
     text: "Dashboard",
   },
 ]
-
-const logOut = async () => {
-  const { response } = await useFetch("/api/v1/logout/", { headers: headers() }).post()
-  await handleError(response)
-  if (response.value.ok) {
-    await router.replace({ name: "LandingPage" })
-    await store.resetInitialData()
-    useToaster().addMessage({
-      type: "success",
-      title: "Vous êtes déconnecté",
-      description: "Vous avez été déconnecté de la plateforme.",
-    })
-  }
-}
 
 const quickLinks = computed(() => {
   if (store.loggedUser)

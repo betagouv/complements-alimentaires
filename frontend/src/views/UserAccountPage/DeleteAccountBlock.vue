@@ -9,9 +9,9 @@
       icon="ri-user-unfollow-line"
     >
       <p>
-        Êtes-vous sûrs de vouloir supprimer votre compte ? Il sera immédiatemment désactivé (vous ne pourrez plus vous
-        connecter). Nous supprimerons ensuite dans les 3 mois l'ensemble des données personnelles relatives à votre
-        compte, conformément à la réglementation en vigueur.
+        Votre compte sera immédiatemment désactivé (vous ne pourrez plus vous connecter). Nous supprimerons ensuite dans
+        les 3 mois l'ensemble des données personnelles relatives à votre compte, conformément à la réglementation en
+        vigueur.
       </p>
     </DsfrModal>
 
@@ -27,6 +27,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import useToaster from "@/composables/use-toaster"
 import { headers } from "@/utils/data-fetching"
+import { logOut } from "@/utils/auth"
 
 const opened = ref(false)
 const close = () => (opened.value = false)
@@ -46,9 +47,14 @@ const deleteAccount = async () => {
   await execute()
   await handleError(response)
   if (response.value.ok) {
-    useToaster().addSuccessMessage("Votre compte a bien été supprimé.")
+    useToaster().addMessage({
+      type: "success",
+      title: "Compte supprimé",
+      description: "Votre compte a bien été supprimé.",
+    })
   }
   close()
+  await logOut()
 }
 
 const actions = [
