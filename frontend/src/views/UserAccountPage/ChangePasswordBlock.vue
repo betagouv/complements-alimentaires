@@ -28,7 +28,7 @@
             labelVisible
           />
         </DsfrInputGroup>
-        <div class="flex items-center justify-between">
+        <div class="flex justify-between">
           <DsfrButton :disabled="isFetching" label="Modifier" @click="submit" size="sm" />
           <PasswordDisplayToggle
             manyPasswords
@@ -52,7 +52,6 @@ import FormWrapper from "@/components/FormWrapper"
 import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
 import PasswordRules from "@/components/PasswordRules"
 import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
-import useToaster from "@/composables/use-toaster"
 import { logOut } from "@/utils/auth"
 
 const showPassword = ref(false)
@@ -96,9 +95,8 @@ const submit = async () => {
   await execute()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
-    useToaster().addSuccessMessage("Votre mot de passe a bien été modifié. Veuillez vous reconnecter.")
-    // Not usually necessary but Django removes session id from front-end after a change password
-    await logOut()
+    // Logout is not really necessary but Django removes session id from front-end after a change password
+    await logOut("Votre mot de passe a bien été modifié. Veuillez vous reconnecter.")
   }
 }
 </script>

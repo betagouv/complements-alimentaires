@@ -51,7 +51,7 @@ const quickLinks = computed(() => {
         label: "Se déconnecter",
         icon: "ri-logout-circle-line",
         button: true,
-        onClick: logOut,
+        onClick: () => logOut("Vous avez été déconnecté de la plateforme."),
       },
     ]
   else

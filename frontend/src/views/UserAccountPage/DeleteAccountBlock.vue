@@ -25,7 +25,6 @@ import { ref } from "vue"
 import SectionTitle from "@/components/SectionTitle"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
-import useToaster from "@/composables/use-toaster"
 import { headers } from "@/utils/data-fetching"
 import { logOut } from "@/utils/auth"
 
@@ -47,14 +46,9 @@ const deleteAccount = async () => {
   await execute()
   await handleError(response)
   if (response.value.ok) {
-    useToaster().addMessage({
-      type: "success",
-      title: "Compte supprimé",
-      description: "Votre compte a bien été supprimé.",
-    })
+    await logOut("Votre compte a bien été supprimé.")
   }
   close()
-  await logOut()
 }
 
 const actions = [
