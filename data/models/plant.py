@@ -61,7 +61,9 @@ class Plant(CommonModel, WithComments):
     )
     plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
     substances = models.ManyToManyField(Substance, through="PlantSubstanceRelation")
-    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete", "family"])
+    history = HistoricalRecords(
+        inherit=True, excluded_fields=["name", "is_obsolete", "family", "private_comments", "public_comments"]
+    )
 
 
 class Part(TimeStampable):

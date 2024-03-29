@@ -15,7 +15,9 @@ class Ingredient(CommonModel, WithComments):
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     siccrf_description = models.TextField(blank=True)
     substances = models.ManyToManyField(Substance, through="IngredientSubstanceRelation")
-    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete"])
+    history = HistoricalRecords(
+        inherit=True, excluded_fields=["name", "is_obsolete", "private_comments", "public_comments"]
+    )
 
     @property
     def name_en(self):
