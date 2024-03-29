@@ -1,8 +1,8 @@
 <template>
   <div>
     <SectionTitle title="Modifier mon mot de passe" icon="ri-shield-user-line" />
-    <FormWrapper :externalResults="$externalResults">
-      <div class="max-w-md">
+    <div class="max-w-md">
+      <FormWrapper :externalResults="$externalResults">
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'oldPassword')">
           <DsfrInput
             label="Ancien mot de passe"
@@ -20,11 +20,11 @@
           />
           <PasswordRules />
         </DsfrInputGroup>
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'newPasswordConfirm')">
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'confirmNewPassword')">
           <DsfrInput
             label="Confirmez votre nouveau mot de passe"
             :type="showPassword ? 'text' : 'password'"
-            v-model="state.newPasswordConfirm"
+            v-model="state.confirmNewPassword"
             labelVisible
           />
         </DsfrInputGroup>
@@ -36,8 +36,8 @@
             @update:showPassword="showPassword = $event"
           />
         </div>
-      </div>
-    </FormWrapper>
+      </FormWrapper>
+    </div>
   </div>
 </template>
 
@@ -46,32 +46,37 @@ import { ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import SectionTitle from "@/components/SectionTitle"
 import { headers } from "@/utils/data-fetching"
+import { handleError } from "@/utils/error-handling"
 import { useFetch } from "@vueuse/core"
 import FormWrapper from "@/components/FormWrapper"
 import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
 import PasswordRules from "@/components/PasswordRules"
 import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
+import useToaster from "@/composables/use-toaster"
+import { logOut } from "@/utils/auth"
 
 const showPassword = ref(false)
 
 // Form state & rules
-const state = ref({
+const getInitialState = () => ({
   oldPassword: "",
   newPassword: "",
-  newPasswordConfirm: "",
+  confirmNewPassword: "",
 })
+
+const state = ref(getInitialState())
 
 const rules = {
   oldPassword: errorRequiredField,
   newPassword: errorRequiredField,
-  newPasswordConfirm: errorRequiredField,
+  confirmNewPassword: errorRequiredField,
 }
 
 const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Request definition
-const { data, response, execute, isFetching } = useFetch(
+const { response, execute, isFetching } = useFetch(
   "/api/v1/change-password/",
   {
     headers: headers(),
@@ -83,9 +88,17 @@ const { data, response, execute, isFetching } = useFetch(
 
 // Form validation
 const submit = async () => {
+  v$.value.$clearExternalResults()
   v$.value.$validate()
   if (v$.value.$error) {
     return // prevent API call if there is a front-end error
+  }
+  await execute()
+  $externalResults.value = await handleError(response)
+  if (response.value.ok) {
+    useToaster().addSuccessMessage("Votre mot de passe a bien été modifié. Veuillez vous reconnecter.")
+    // Not usually necessary but Django removes session id from front-end after a change password
+    await logOut()
   }
 }
 </script>

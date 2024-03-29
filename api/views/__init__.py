@@ -7,6 +7,7 @@ from .user import (  # noqa: F401
     GenerateUsernameView,
     VerifyEmailView,
     SendNewSignupVerificationEmailView,
+    ChangePasswordView,
     DeleteUserView,
 )
 from .webinar import WebinarView  # noqa

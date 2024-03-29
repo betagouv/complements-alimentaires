@@ -47,7 +47,9 @@ class LoggedUserSerializer(serializers.ModelSerializer):
 
 
 class UserInputSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True)  # empêche le retour du hash du mdp dans la réponse
+    password = serializers.CharField(
+        write_only=True, required=True
+    )  # empêche le retour du hash du mdp dans la réponse
 
     class Meta:
         model = User
@@ -61,3 +63,27 @@ class UserInputSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_new_password = serializers.CharField(required=True)
+
+    def validate_old_password(self, value):
+        user = self.context["request"].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("L'ancien mot de passe est incorrect")
+        return value
+
+    def validate(self, data):
+        if data["new_password"] != data["confirm_new_password"]:
+            raise serializers.ValidationError(
+                {"confirm_new_password": "La confirmation ne correspond pas au mot de passe entré"}
+            )
+        if data["old_password"] == data["new_password"]:
+            raise serializers.ValidationError(
+                {"confirm_new_password": "Le nouveau mot de passe est identique à l'actuel"}
+            )
+        django_validate_password(data["new_password"])
+        return data

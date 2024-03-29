@@ -9,7 +9,7 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework import status
-from api.serializers import LoggedUserSerializer, UserInputSerializer
+from api.serializers import LoggedUserSerializer, UserInputSerializer, ChangePasswordSerializer
 from api.exception_handling import ProjectAPIException
 from django.contrib.auth import get_user_model
 from tokens.models import MagicLinkToken, MagicLinkUsage
@@ -52,7 +52,21 @@ class SignupView(APIView):
             return Response({"user_id": new_user.id}, status=status.HTTP_201_CREATED)
 
 
+class ChangePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = ChangePasswordSerializer(data=request.data, context={"request": request})
+        if serializer.is_valid(raise_exception=True):
+            user = request.user
+            user.set_password(serializer.validated_data["new_password"])
+            user.save()
+            return Response({}, status=status.HTTP_200_OK)
+
+
 class DeleteUserView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def delete(self, request, *args, **kwargs):
         """NOTE: this does not delete anything actually"""
         user = request.user
