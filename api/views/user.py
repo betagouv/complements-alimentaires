@@ -57,6 +57,12 @@ class DeleteUserView(APIView):
         """NOTE: this does not delete anything actually"""
         user = request.user
         user.deactivate()
+        send_mail(
+            subject="Nouvelle demande de suppression de compte",
+            message=f"{user.name} (id: {user.id}) a demandé la suppression de son compte.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.CONTACT_EMAIL],
+        )
         return Response({}, status=status.HTTP_200_OK)
 
 
