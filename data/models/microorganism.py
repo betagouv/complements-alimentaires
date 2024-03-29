@@ -4,7 +4,8 @@ from django.db.models import F, Value
 
 from simple_history.models import HistoricalRecords
 
-from .mixins import WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithComments
+from data.behaviours import TimeStampable, Historisable
+from .mixins import WithMissingImportBoolean, WithComments
 from .abstract_models import CommonModel
 from .substance import Substance
 
@@ -56,7 +57,7 @@ class Microorganism(CommonModel, WithComments):
     history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete", "genus", "species"])
 
 
-class MicroorganismSubstanceRelation(WithCreationAndModificationDate, WithHistory):
+class MicroorganismSubstanceRelation(TimeStampable, Historisable):
     microorganism = models.ForeignKey(Microorganism, on_delete=models.CASCADE)
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
     siccrf_is_related = models.BooleanField(
@@ -65,7 +66,7 @@ class MicroorganismSubstanceRelation(WithCreationAndModificationDate, WithHistor
     ca_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée au micro-organisme")
 
 
-class MicroorganismSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):
+class MicroorganismSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
     class Meta:
         verbose_name = "synonyme de micro-organisme"
 

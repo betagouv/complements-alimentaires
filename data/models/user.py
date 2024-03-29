@@ -9,7 +9,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-from data.mixins import AutoValidable, Deactivable, DeactivableQuerySet
+from data.behaviours import AutoValidable, Deactivable, DeactivableQuerySet
 from django.db.models import OneToOneRel
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
@@ -37,6 +37,7 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email, password, **extra_fields):
         user = self.create_user(email, password, **extra_fields)
+        user.is_verified = True
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
@@ -44,6 +45,7 @@ class UserManager(BaseUserManager):
 
     def create_staffuser(self, email, password, **extra_fields):
         user = self.create_user(email, password, **extra_fields)
+        user.is_verified = True
         user.is_staff = True
         user.save(using=self._db)
         return user

@@ -2,6 +2,7 @@
   <SingleItemWrapper>
     <h1>Se connecter</h1>
     <FormWrapper :externalResults="$externalResults">
+      <SendNewSignupVerificationEmail v-if="showSendNewConfirmationMail" :userId="userIdForNewConfirmationMail" />
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'username')">
         <DsfrInput v-model="state.username" label="Identifiant" labelVisible autofocus />
       </DsfrInputGroup>
@@ -45,6 +46,7 @@ import { useRouter } from "vue-router"
 import { useRootStore } from "@/stores/root"
 import FormWrapper from "@/components/FormWrapper"
 import SingleItemWrapper from "@/components/SingleItemWrapper"
+import SendNewSignupVerificationEmail from "@/components/SendNewSignupVerificationEmail"
 
 const router = useRouter()
 const rootStore = useRootStore()
@@ -76,6 +78,9 @@ const { data, response, execute, isFetching } = useFetch(
   .post(state)
   .json()
 
+const showSendNewConfirmationMail = ref(false)
+const userIdForNewConfirmationMail = ref()
+
 // Form validation
 const submit = async () => {
   v$.value.$validate()
@@ -84,6 +89,13 @@ const submit = async () => {
   }
   await execute()
   $externalResults.value = await handleError(response)
+
+  // Give the ability to ask for a new e-email, only if the user is not verified yet.
+  // ⛔️ TODO: change this dirty hack: we use error message until having appropriate error codes in responses
+  if ($externalResults.value?.nonFieldErrors?.[0]?.includes("vérifié")) {
+    showSendNewConfirmationMail.value = true
+    userIdForNewConfirmationMail.value = $externalResults.value.extra.userId
+  }
 
   if (response.value.ok) {
     {
