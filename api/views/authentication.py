@@ -11,6 +11,13 @@ class LoginView(APIView):
         password = request.data.get("password")
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            if not user.is_verified:
+                raise ProjectAPIException(
+                    non_field_errors=[
+                        "Votre compte n'est pas encore vérifié. Veuillez vérifier vos e-mails reçus, et vos courriers indésirables."
+                    ],
+                    extra={"user_id": user.id},
+                )
             login(request, user)  # will create the user session
             return Response({"csrf_token": get_token(request)})
         else:

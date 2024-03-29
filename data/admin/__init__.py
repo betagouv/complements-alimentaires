@@ -7,30 +7,26 @@ from .blogpost import BlogPostAdmin  # noqa
 from .webinar import WebinarAdmin  # noqa
 from .substance import SubstanceAdmin  # noqa
 from .plant import PlantAdmin  # noqa
+from .microorganism import MicroorganismAdmin  # noqa
 from .population import Population  # noqa
 from .condition import Condition  # noqa
 
-from data.models import Ingredient, PlantPart, PlantFamily, Microorganism
-from data.admin.abstract_admin import IngredientAdminWithHistoryChangedFields
+from data.models import Ingredient, PlantPart, PlantFamily
+from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
 
 
 @admin.register(Ingredient)
-class IngredientAdmin(IngredientAdminWithHistoryChangedFields):
+class IngredientAdmin(IngredientAdminHistorisableChangedFields):
     pass
 
 
 @admin.register(PlantPart)
-class PlantPartAdmin(IngredientAdminWithHistoryChangedFields):
+class PlantPartAdmin(IngredientAdminHistorisableChangedFields):
     pass
 
 
 @admin.register(PlantFamily)
-class PlantFamilyAdmin(IngredientAdminWithHistoryChangedFields):
-    pass
-
-
-@admin.register(Microorganism)
-class MicroorganismAdmin(IngredientAdminWithHistoryChangedFields):
+class PlantFamilyAdmin(IngredientAdminHistorisableChangedFields):
     pass
 
 

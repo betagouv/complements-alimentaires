@@ -53,8 +53,8 @@ const logOut = async () => {
   const { response } = await useFetch("/api/v1/logout/", { headers: headers() }).post()
   await handleError(response)
   if (response.value.ok) {
+    await router.replace({ name: "LandingPage" })
     await store.resetInitialData()
-    router.replace({ name: "LandingPage" })
     useToaster().addMessage({
       type: "success",
       title: "Vous êtes déconnecté",

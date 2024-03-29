@@ -4,32 +4,60 @@ from django.db.models import F, Value
 
 from simple_history.models import HistoricalRecords
 
-from .mixins import WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean, WithComments
+from data.behaviours import TimeStampable, Historisable
+from .mixins import WithMissingImportBoolean, WithComments
 from .abstract_models import CommonModel
 from .substance import Substance
+
+
+# cette fonction remplace le fonction Concat qui est mutable avec PSQL
+# les GeneratedFields doivent avoir des expression de génération immutables
+# Avec Django 5.1 ce problème sera résolu https://forum.djangoproject.com/t/using-generatedfield-with-postgres/27224/4
+class ConcatOp(models.Func):
+    arg_joiner = " || "
+    function = None
+    output_field = models.TextField()
+    template = "%(expressions)s"
 
 
 class Microorganism(CommonModel, WithComments):
     class Meta:
         verbose_name = "micro-organisme"
 
-    siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
-    siccrf_genre = models.TextField(verbose_name="genre de micro-organisme (selon la base SICCRF)")
-    ca_genre = models.TextField(verbose_name="genre de micro-organisme")
-    genre = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_genre"), Value("")), F("siccrf_genre")),
+    # réécriture des champs provenant de la mixin WithDefaultFields
+    # le champ name n'existe pas dans la base SICCRF il est calculé à partir du genre et de l'espèce
+    siccrf_name = None
+    ca_name = None
+    name = models.GeneratedField(
+        expression=ConcatOp(
+            Coalesce(NullIf(F("ca_genus"), Value("")), F("siccrf_genus")),
+            Value(" "),
+            Coalesce(NullIf(F("ca_species"), Value("")), F("siccrf_species")),
+        ),
+        output_field=models.TextField(verbose_name="nom"),
+        db_persist=True,
+    )
+
+    siccrf_genus = models.TextField(verbose_name="genre de micro-organisme (selon la base SICCRF)")
+    ca_genus = models.TextField(verbose_name="genre de micro-organisme")
+    genus = models.GeneratedField(
+        expression=Coalesce(NullIf(F("ca_genus"), Value("")), F("siccrf_genus")),
         output_field=models.TextField(verbose_name="genre de micro-organisme"),
         db_persist=True,
     )
+    siccrf_species = models.TextField(verbose_name="espèce de micro-organisme (selon la base SICCRF)")
+    ca_species = models.TextField(verbose_name="espèce de micro-organisme")
+    species = models.GeneratedField(
+        expression=Coalesce(NullIf(F("ca_species"), Value("")), F("siccrf_species")),
+        output_field=models.TextField(verbose_name="espèce de micro-organisme"),
+        db_persist=True,
+    )
+
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
-    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete", "genre"])
-
-    @property
-    def name_en(self):
-        return self.siccrf_name_en
+    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete", "genus", "species"])
 
 
-class MicroorganismSubstanceRelation(WithCreationAndModificationDate, WithHistory):
+class MicroorganismSubstanceRelation(TimeStampable, Historisable):
     microorganism = models.ForeignKey(Microorganism, on_delete=models.CASCADE)
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
     siccrf_is_related = models.BooleanField(
@@ -38,7 +66,7 @@ class MicroorganismSubstanceRelation(WithCreationAndModificationDate, WithHistor
     ca_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée au micro-organisme")
 
 
-class MicroorganismSynonym(WithCreationAndModificationDate, WithHistory, WithMissingImportBoolean):
+class MicroorganismSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
     class Meta:
         verbose_name = "synonyme de micro-organisme"
 

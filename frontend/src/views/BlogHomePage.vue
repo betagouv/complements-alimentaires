@@ -92,13 +92,13 @@ if (Object.keys(route.query).length > 0) fetchCurrentPage()
 
 <style scoped>
 /* Affichage des deux premières lignes du corps de l'article */
-div >>> .fr-card__desc {
+div :deep(.fr-card__desc) {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
-div >>> .fr-card__detail {
+div :deep(.fr-card__detail) {
   margin-bottom: 6px;
 }
 </style>

@@ -22,8 +22,9 @@ export const handleError = async (response) => {
     // show an error toast
     addErrorMessage(backErrorData.globalError)
   }
-  // return other errors to be handled by Vuelidate directly
-  return { nonFieldErrors: backErrorData.nonFieldErrors, ...backErrorData.fieldErrors }
+  // Return other errors to be handled by Vuelidate directly (and "extra" parameters to get additional data)
+  // If you don't have a form and expect global errors only, just ignore the result of this function when called.
+  return { nonFieldErrors: backErrorData.nonFieldErrors, ...backErrorData.fieldErrors, extra: backErrorData.extra }
 
   // TODO LATER: auto logout (in case of 401) could be handled here
   // TODO LATER: timeout could be handled here too

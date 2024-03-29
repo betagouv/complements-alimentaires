@@ -38,6 +38,7 @@ class ProjectAPIException(Exception):
         non_field_errors: list[str] | None = None,
         field_errors: dict[str, list[str]] | None = None,
         log_level: int | None = logging.INFO,
+        extra: dict = None,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -59,6 +60,10 @@ class ProjectAPIException(Exception):
         # Verification Checks
         if not any([self.global_error, self.non_field_errors, self.field_errors]):
             raise ValueError("An exception must contain at least one error type.")
+
+        # Inject addtional data of your choice into the response
+        if extra:
+            self.extra = extra
 
         # Create an optional log using provided log level
         if log_level:
