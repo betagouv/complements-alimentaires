@@ -1,5 +1,5 @@
 <template>
-  <RoleBarBlock :name="loggedUser.firstName" :roleNames="loggedUser.roles.map((role) => role.displayName)" />
+  <RoleBarBlock :name="loggedUser.firstName" :roles="loggedUser.roles" />
   <div class="fr-container my-8 flex flex-col gap-8">
     <ActionGrid
       v-if="isCompanySupervisor"

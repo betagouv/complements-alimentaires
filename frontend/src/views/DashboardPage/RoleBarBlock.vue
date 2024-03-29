@@ -4,9 +4,9 @@
       <p class="shrink-0">Bienvenue, {{ name }}</p>
       <div class="flex gap-x-1.5">
         <DsfrTag
-          v-for="displayName in roleNames"
-          :key="displayName"
-          :label="displayName"
+          v-for="role in roles"
+          :key="role.name"
+          :label="role.displayName"
           icon="ri-account-circle-line"
           class="flex gap-x-1 border border-gray-300 capitalize whitespace-nowrap"
           small
@@ -17,5 +17,5 @@
 </template>
 
 <script setup>
-defineProps({ name: String, roleNames: Array })
+defineProps({ name: String, roles: Array })
 </script>
