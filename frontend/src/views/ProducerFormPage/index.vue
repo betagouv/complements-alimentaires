@@ -41,7 +41,7 @@ store.fetchUnits()
 
 const payload = ref({
   effects: [],
-  conditions: [],
+  conditionsNotRecommended: [],
   populations: [],
   elements: [],
   substances: [],

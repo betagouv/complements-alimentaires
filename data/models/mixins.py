@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.functions import Coalesce, NullIf
 from django.db.models import F, Value
+from data.choices import CountryChoices
 
 
 class WithMissingImportBoolean(models.Model):
@@ -76,3 +77,31 @@ class WithComments(models.Model):
     siccrf_private_comments_en = models.TextField(
         blank=True, editable=False, verbose_name="commentaires privés en anglais SICCRF"
     )
+
+
+class WithAddress(models.Model):
+    class Meta:
+        abstract = True
+
+    address = models.CharField("adresse", help_text="numéro et voie")
+    additional_details = models.CharField(
+        "complément d’adresse",
+        blank=True,
+        null=False,
+        help_text="bâtiment, immeuble, escalier et numéro d’appartement",
+    )
+    postal_code = models.CharField("code postal", max_length=10)
+    city = models.CharField("ville ou commune")
+    cedex = models.CharField("CEDEX", blank=True, null=False)
+    country = models.CharField("pays", max_length=50, choices=CountryChoices, default=CountryChoices.FRANCE)
+
+    @property
+    def displayable_address(self):
+        lines = [
+            self.address,
+            self.additional_details,
+            f"{self.postal_code} {self.city}",
+            self.cedex,
+            self.get_country_display().upper(),
+        ]
+        return "\n".join(filter(None, lines))
