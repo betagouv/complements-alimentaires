@@ -1,19 +1,5 @@
 <template>
-  <DsfrNotice>
-    <div class="flex md:items-center flex-col md:flex-row md:justify-between">
-      <p>Bienvenue, {{ firstName }}</p>
-      <div class="flex gap-x-2 -mr-12">
-        <DsfrTag
-          v-for="displayName in roleNames"
-          :key="displayName"
-          :label="displayName"
-          icon="ri-account-circle-line"
-          class="flex gap-x-1 border border-gray-300 uppercase"
-          small
-        />
-      </div>
-    </div>
-  </DsfrNotice>
+  <RoleBarBlock :name="loggedUser.firstName" :roleNames="loggedUser.roles.map((role) => role.displayName)" />
   <div class="fr-container my-8 flex flex-col gap-8">
     <ActionGrid
       v-if="isCompanySupervisor"
@@ -32,12 +18,10 @@ import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import ActionGrid from "./ActionGrid"
+import RoleBarBlock from "./RoleBarBlock"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
-
-const firstName = computed(() => loggedUser.value.firstName)
-const roleNames = computed(() => loggedUser.value.roles.map((role) => role.displayName))
 
 const emptyRoles = computed(() => !loggedUser.value.roles || loggedUser.value.roles.length === 0)
 const isCompanySupervisor = computed(() => loggedUser.value.roles.some((x) => x.name === "CompanySupervisor"))
