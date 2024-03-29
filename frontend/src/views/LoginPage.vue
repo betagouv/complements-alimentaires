@@ -11,14 +11,7 @@
           <template #label>
             <div class="flex items-center justify-between">
               <div>Mot de passe</div>
-              <DsfrButton
-                @click="showPassword = !showPassword"
-                :label="showPassword ? 'Cacher' : 'Afficher'"
-                :icon="showPassword ? 'ri-eye-off-line' : 'ri-eye-line'"
-                size="sm"
-                tertiary
-                noOutline
-              />
+              <PasswordDisplayToggle :showPassword="showPassword" @update:showPassword="showPassword = $event" />
             </div>
           </template>
         </DsfrInput>
@@ -47,6 +40,7 @@ import { useRootStore } from "@/stores/root"
 import FormWrapper from "@/components/FormWrapper"
 import SingleItemWrapper from "@/components/SingleItemWrapper"
 import SendNewSignupVerificationEmail from "@/components/SendNewSignupVerificationEmail"
+import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
 
 const router = useRouter()
 const rootStore = useRootStore()

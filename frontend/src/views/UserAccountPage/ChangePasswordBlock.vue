@@ -6,7 +6,7 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'oldPassword')">
           <DsfrInput
             label="Ancien mot de passe"
-            :type="showPasswords ? 'text' : 'password'"
+            :type="showPassword ? 'text' : 'password'"
             v-model="state.oldPassword"
             labelVisible
           />
@@ -14,7 +14,7 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'newPassword')">
           <DsfrInput
             label="Nouveau mot de passe"
-            :type="showPasswords ? 'text' : 'password'"
+            :type="showPassword ? 'text' : 'password'"
             v-model="state.newPassword"
             labelVisible
           />
@@ -23,12 +23,19 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'newPasswordConfirm')">
           <DsfrInput
             label="Confirmez votre nouveau mot de passe"
-            :type="showPasswords ? 'text' : 'password'"
+            :type="showPassword ? 'text' : 'password'"
             v-model="state.newPasswordConfirm"
             labelVisible
           />
         </DsfrInputGroup>
-        <DsfrButton :disabled="isFetching" label="Modifier" @click="submit" size="sm" />
+        <div class="flex items-center justify-between">
+          <DsfrButton :disabled="isFetching" label="Modifier" @click="submit" size="sm" />
+          <PasswordDisplayToggle
+            manyPasswords
+            :showPassword="showPassword"
+            @update:showPassword="showPassword = $event"
+          />
+        </div>
       </div>
     </FormWrapper>
   </div>
@@ -43,8 +50,9 @@ import { useFetch } from "@vueuse/core"
 import FormWrapper from "@/components/FormWrapper"
 import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
 import PasswordRules from "@/components/PasswordRules"
+import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
 
-const showPasswords = ref(false)
+const showPassword = ref(false)
 
 // Form state & rules
 const state = ref({

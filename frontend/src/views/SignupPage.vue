@@ -59,14 +59,7 @@
           <template #label>
             <div class="flex items-center justify-between">
               <div>Mot de passe</div>
-              <DsfrButton
-                @click="showPassword = !showPassword"
-                :label="showPassword ? 'Cacher' : 'Afficher'"
-                :icon="showPassword ? 'ri-eye-off-line' : 'ri-eye-line'"
-                size="sm"
-                tertiary
-                noOutline
-              />
+              <PasswordDisplayToggle :showPassword="showPassword" @update:showPassword="showPassword = $event" />
             </div>
           </template>
         </DsfrInput>
@@ -97,6 +90,7 @@ import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import PasswordRules from "@/components/PasswordRules"
+import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
 
 const showPassword = ref(false)
 
