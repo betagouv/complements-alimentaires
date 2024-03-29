@@ -15,8 +15,8 @@
       </p>
     </DsfrModal>
 
-    <SectionTitle title="Supprimer mon compte" icon="ri-user-unfollow-line" />
-    <DsfrButton size="sm" class="!bg-red-marianne-425" label="Supprimer" @click="opened = true" />
+    <SectionTitle title="Supprimer mon compte" icon="ri-user-unfollow-line" class="!text-red-marianne-425" />
+    <DsfrButton size="sm" label="Supprimer" @click="opened = true" />
   </div>
 </template>
 

@@ -70,17 +70,7 @@
             </div>
           </template>
         </DsfrInput>
-        <div class="mt-1 fr-hint-text flex flex-col">
-          <div>Votre mot de passe :</div>
-          <DsfrBadge
-            v-for="rule in passwordRules"
-            :key="rule"
-            :label="rule"
-            class="!block !lowercase !bg-transparent !pl-0"
-            small
-            type="info"
-          />
-        </div>
+        <PasswordRules />
       </DsfrInputGroup>
       <DsfrButton class="!block !w-full" :disabled="isFetching" label="Créer le compte" @click="submit" />
     </FormWrapper>
@@ -106,13 +96,9 @@ import { errorRequiredField, errorRequiredEmail, firstErrorMsg } from "@/utils/f
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
+import PasswordRules from "@/components/PasswordRules"
 
 const showPassword = ref(false)
-const passwordRules = [
-  "doit contenir au minimum 8 caractères",
-  "ne peut pas être entièrement numérique",
-  "ne peut pas trop ressembler à vos autres informations personnelles",
-]
 
 // Form state & rules
 const state = ref({
