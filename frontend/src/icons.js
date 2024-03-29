@@ -131,3 +131,8 @@ export const RiFileUserLine = remixIcon(
   "ri-file-user-line",
   "M15 4H5v16h14V8h-4V4zM3 2.992C3 2.444 3.447 2 3.999 2H16l5 5v13.993A1 1 0 0120.007 22H3.993A1 1 0 013 21.008V2.992zm9 8.508a2.5 2.5 0 110-5 2.5 2.5 0 010 5zM7.527 17a4.5 4.5 0 018.946 0H7.527z"
 )
+
+export const RiErrorWarningLine = remixIcon(
+  "ri-error-warning-line",
+  "M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 100-16 8 8 0 000 16zm-1-5h2v2h-2v-2zm0-8h2v6h-2V7z"
+)
