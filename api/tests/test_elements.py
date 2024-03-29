@@ -7,7 +7,7 @@ from data.factories import PlantFactory, IngredientFactory, MicroorganismFactory
 class TestElementsApi(APITestCase):
     def test_get_single_plant(self):
         plant = PlantFactory.create()
-        response = self.client.get(reverse("single_plant", kwargs={"pk": plant.id}))
+        response = self.client.get(reverse("api:single_plant", kwargs={"pk": plant.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
 
@@ -16,7 +16,7 @@ class TestElementsApi(APITestCase):
 
     def test_get_single_ingredient(self):
         ingredient = IngredientFactory.create()
-        response = self.client.get(reverse("single_ingredient", kwargs={"pk": ingredient.id}))
+        response = self.client.get(reverse("api:single_ingredient", kwargs={"pk": ingredient.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
 
@@ -25,7 +25,7 @@ class TestElementsApi(APITestCase):
 
     def test_get_single_microorganism(self):
         microorganism = MicroorganismFactory.create()
-        response = self.client.get(reverse("single_microorganism", kwargs={"pk": microorganism.id}))
+        response = self.client.get(reverse("api:single_microorganism", kwargs={"pk": microorganism.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
 
@@ -34,7 +34,7 @@ class TestElementsApi(APITestCase):
 
     def test_get_single_substance(self):
         substance = SubstanceFactory.create()
-        response = self.client.get(reverse("single_substance", kwargs={"pk": substance.id}))
+        response = self.client.get(reverse("api:single_substance", kwargs={"pk": substance.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
 
@@ -44,7 +44,7 @@ class TestElementsApi(APITestCase):
     def test_get_plant_parts(self):
         part_1 = PlantPartFactory.create()
         part_2 = PlantPartFactory.create()
-        response = self.client.get(reverse("plant_part_list"))
+        response = self.client.get(reverse("api:plant_part_list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
 

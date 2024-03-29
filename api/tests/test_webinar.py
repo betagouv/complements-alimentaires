@@ -14,7 +14,7 @@ class TestWebinarAPI(APITestCase):
         today = timezone.now()
         WebinarFactory.create(end_date=today)
 
-        response = self.client.get(reverse("webinar_list"))
+        response = self.client.get(reverse("api:webinar_list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
 
@@ -40,7 +40,7 @@ class TestWebinarAPI(APITestCase):
             WebinarFactory.create(start_date=(today + timedelta(days=8)), end_date=(today + timedelta(days=20))),
         ]
 
-        response = self.client.get(reverse("webinar_list"))
+        response = self.client.get(reverse("api:webinar_list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
 
