@@ -9,8 +9,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("ckeditor5/", include("django_ckeditor_5.urls"), name="ck_editor_5_upload_file"),
 ]
-urlpatterns.append(re_path(r"", include("web.urls")))
-urlpatterns.append(re_path(r"^api/v1/", include("api.urls")))
+urlpatterns.append(re_path(r"", include(("web.urls", "web"), namespace="web")))
+urlpatterns.append(re_path(r"^api/v1/", include(("api.urls", "api"), namespace="api")))
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
