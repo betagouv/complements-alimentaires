@@ -77,6 +77,7 @@ class Declaration(WithAddress, Historisable, TimeStampable):
     effects = ArrayField(
         base_field=models.TextField(), blank=True, null=True, size=None, verbose_name="objectifs ou effets"
     )
+    other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non-listés")
 
 
 # Les modèles commençant par `Declared` représentent des éléments ajoutés par l'utilisateur.ice dans sa
@@ -93,7 +94,7 @@ class DeclaredPlant(Historisable):
         Plant, null=True, blank=True, verbose_name="plante ajoutée par l'user", on_delete=models.RESTRICT
     )
 
-    is_new = models.BooleanField(default=False)
+    new = models.BooleanField(default=False)
     new_name = models.TextField(blank=True, verbose_name="nom de la plante ajoutée manuellement")
     new_description = models.TextField(blank=True, verbose_name="description de la plante ajoutée manuellement")
 
@@ -118,16 +119,16 @@ class DeclaredMicroorganism(Historisable):
         on_delete=models.RESTRICT,
     )
 
-    is_new = models.BooleanField(default=False)
+    new = models.BooleanField(default=False)
 
-    # TODO : Update fields after merging of#339
+    # TODO : Update fields after merging of #339
     new_name = models.TextField(blank=True, verbose_name="nom du micro-organisme ajoutée manuellement")
     new_genre = models.TextField(blank=True, verbose_name="genre du micro-organisme ajoutée manuellement")
     new_description = models.TextField(blank=True, verbose_name="description du micro-organisme ajoutée manuellement")
 
     active = models.BooleanField(default=True)
     souche = models.TextField(blank=True, verbose_name="souche")
-    quantity = models.TextField(blank=True, verbose_name="quantité par DJR (en CFU)")
+    quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR (en CFU)")
 
 
 class DeclaredIngredient(Historisable):
@@ -138,7 +139,7 @@ class DeclaredIngredient(Historisable):
         Ingredient, null=True, blank=True, verbose_name="ingrédient ajouté par l'user", on_delete=models.RESTRICT
     )
 
-    is_new = models.BooleanField(default=False)
+    new = models.BooleanField(default=False)
     new_name = models.TextField(blank=True, verbose_name="libellé")
     new_description = models.TextField(blank=True, verbose_name="description")
 
@@ -152,7 +153,6 @@ class DeclaredSubstance(Historisable):
     substance = models.ForeignKey(
         Substance, null=True, blank=True, verbose_name="substance ajoutée par l'user", on_delete=models.RESTRICT
     )
-    is_new = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
 
 
@@ -205,7 +205,16 @@ class Attachment(Historisable):
             "Bulletin d'analyse",
         )
 
+    type = models.CharField(
+        max_length=50,
+        choices=AttachmentType.choices,
+        null=True,
+        blank=True,
+        verbose_name="type",
+    )
     declaration = models.ForeignKey(
         Declaration, related_name="attachments", verbose_name="déclaration", on_delete=models.CASCADE
     )
-    models.FileField(null=True, blank=True, upload_to="declaration-attachments/%Y/%m/%d/", verbose_name="pièce jointe")
+    file = models.FileField(
+        null=True, blank=True, upload_to="declaration-attachments/%Y/%m/%d/", verbose_name="pièce jointe"
+    )

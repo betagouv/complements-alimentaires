@@ -31,6 +31,7 @@ urlpatterns = {
         views.SendNewSignupVerificationEmailView.as_view(),
         name="send_new_signup_verification_email",
     ),
+    path("declarations/", views.DeclarationCreateApiView.as_view(), name="create_declaration"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
