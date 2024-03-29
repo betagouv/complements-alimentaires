@@ -107,7 +107,7 @@ const rules = {
   lastName: errorRequiredField,
   firstName: errorRequiredField,
   email: errorRequiredEmail,
-  username: errorRequiredField, // let back-end specify other errors (length),
+  username: errorRequiredField, // let back-end specify other errors (already taken),
   password: errorRequiredField, // let back-end specify other errors (length, rules)
 }
 const $externalResults = ref({})

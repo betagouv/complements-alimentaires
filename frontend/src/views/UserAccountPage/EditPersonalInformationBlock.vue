@@ -75,8 +75,10 @@ import FormWrapper from "@/components/FormWrapper"
 import { errorRequiredField, errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
 import { storeToRefs } from "pinia"
 import { logOut } from "@/utils/auth"
+import useToaster from "@/composables/use-toaster"
 
 const store = useRootStore()
+const { addSuccessMessage } = useToaster()
 const { loggedUser } = storeToRefs(store)
 
 // Form state & rules
@@ -91,14 +93,14 @@ const rules = {
   lastName: errorRequiredField,
   firstName: errorRequiredField,
   email: errorRequiredEmail,
-  username: errorRequiredField, // let back-end specify other errors (length),
+  username: errorRequiredField, // let back-end specify other errors (already taken),
 }
 const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Main request definition
 const { response, execute, isFetching } = useFetch(
-  `/api/v1/edit-user`,
+  `/api/v1/edit-user/`,
   { headers: headers() },
   {
     immediate: false,
@@ -115,11 +117,21 @@ const submit = async (displayWarning = true) => {
     return
   }
   close()
-  if (displayWarning && emailHasChanged.value) open()
+  if (displayWarning && emailHasChanged.value) {
+    open()
+    return
+  }
   await execute()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
-    await logOut("Vos informations personnelles ont bien été modifiées. Veuillez vous reconnecter", "LoginPage")
+    const baseMessage = "Vos informations personnelles ont bien été modifiées."
+    if (emailHasChanged.value) {
+      // TODO: créer un toast qui se ferme pas, avec action
+      // + logOut(null) ou logOut() pour ne pas mettre de message dans ce cas
+      await logOut(baseMessage + " Veuillez vous reconnecter.", "LoginPage")
+    } else {
+      addSuccessMessage(baseMessage)
+    }
   }
 }
 

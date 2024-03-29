@@ -8,6 +8,7 @@ from .user import (  # noqa: F401
     VerifyEmailView,
     SendNewSignupVerificationEmailView,
     ChangePasswordView,
+    EditUserView,
     DeleteUserView,
 )
 from .webinar import WebinarView  # noqa

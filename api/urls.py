@@ -25,6 +25,7 @@ urlpatterns = {
     path("logout/", views.LogoutView.as_view(), name="logout"),
     path("signup/", views.SignupView.as_view(), name="signup"),
     path("change-password/", views.ChangePasswordView.as_view(), name="change_password"),
+    path("edit-user/", views.EditUserView.as_view(), name="edit_user"),
     path("delete-user/", views.DeleteUserView.as_view(), name="delete_user"),
     path("generate-username/", views.GenerateUsernameView.as_view(), name="generate_username"),
     path("verify-email/", views.VerifyEmailView.as_view(), name="verify_email"),

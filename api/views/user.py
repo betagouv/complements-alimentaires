@@ -64,6 +64,13 @@ class ChangePasswordView(APIView):
             return Response({}, status=status.HTTP_200_OK)
 
 
+class EditUserView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        return Response({}, status=status.HTTP_200_OK)
+
+
 class DeleteUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
