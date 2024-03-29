@@ -6,7 +6,7 @@
       <DsfrBadge v-else :label="environment" type="warning" />
     </template>
     <template #mainnav>
-      <div class="flex justify-between">
+      <div class="flex justify-between whitespace-nowrap">
         <DsfrNavigation :nav-items="navItems" />
         <DsfrNavigation v-if="store.loggedUser" :nav-items="loggedOnlyNavItems" />
       </div>
@@ -40,7 +40,7 @@ const navItems = [
 const loggedOnlyNavItems = [
   {
     to: "/tableau-de-bord",
-    text: "Dashboard",
+    text: "Tableau de bord",
   },
 ]
 
