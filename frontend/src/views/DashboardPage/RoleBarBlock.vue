@@ -7,8 +7,8 @@
           v-for="role in roles"
           :key="role.name"
           :label="role.displayName"
-          icon="ri-account-circle-line"
-          class="flex gap-x-1 border border-gray-300 capitalize whitespace-nowrap"
+          icon="ri-file-user-line"
+          class="flex gap-x-1 border border-gray-300 whitespace-nowrap"
           small
         />
       </div>

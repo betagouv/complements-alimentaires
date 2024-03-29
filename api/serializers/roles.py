@@ -15,7 +15,7 @@ class BaseRoleSerializer(serializers.ModelSerializer):
         return obj.__class__.__name__
 
     def get_display_name(self, obj):
-        return obj._meta.verbose_name
+        return obj._meta.verbose_name.capitalize()
 
 
 class CompanySupervisorSerializer(BaseRoleSerializer):
