@@ -17,21 +17,21 @@ class TestSearch(APITestCase):
         """
         A missing search term is considered a bad request
         """
-        response = self.client.post(f"{reverse('search')}", {})
+        response = self.client.post(f"{reverse('api:search')}", {})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_short_search_term(self):
         """
         A search term of less than three chars is considered a bad request
         """
-        response = self.client.post(f"{reverse('search')}", {"search": "ab"})
+        response = self.client.post(f"{reverse('api:search')}", {"search": "ab"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_max_limit(self):
         """
         The pagination limit must not be exceeded
         """
-        response = self.client.post(f"{reverse('search')}", {"search": "abc", "limit": 49})
+        response = self.client.post(f"{reverse('api:search')}", {"search": "abc", "limit": 49})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_search_name(self):
@@ -43,7 +43,7 @@ class TestSearch(APITestCase):
         vanille = PlantFactory.create(ca_name="vanille")
 
         search_term = "eucalyptus"
-        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json().get("results", [])
@@ -57,7 +57,7 @@ class TestSearch(APITestCase):
         """Simple synonym test"""
         IngredientSynonymFactory(name="matcha", standard_name=IngredientFactory(ca_name="other"))
         search_term = "matcha"
-        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
         results = response.json().get("results", [])
         self.assertTrue("other" in [result["name"] for result in results])
 
@@ -71,7 +71,7 @@ class TestSearch(APITestCase):
         microorganism = MicroorganismFactory.create(ca_genus="cafe", ca_species="powder")
 
         search_term = "matcha"
-        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
         results, count = response.json().get("results", []), response.json().get("count")
 
         self.assertEqual(count, 2)
@@ -80,7 +80,7 @@ class TestSearch(APITestCase):
         self.assertIn(ingredient.id, returned_ids)
 
         search_term = "cafe"
-        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
         results, count = response.json().get("results", []), response.json().get("count")
 
         self.assertEqual(count, 2)
@@ -89,7 +89,7 @@ class TestSearch(APITestCase):
         self.assertIn(microorganism.id, returned_ids)
 
         search_term = "powder"
-        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
         results, count = response.json().get("results", []), response.json().get("count")
 
         self.assertEqual(count, 2)
@@ -109,7 +109,7 @@ class TestSearch(APITestCase):
         ingredient_description = IngredientFactory(siccrf_description="matcha")
 
         search_term = "matcha"
-        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
         results = response.json().get("results", [])
         self.assertEqual(results[0]["id"], ingredient_name.id)
         self.assertEqual(results[3]["id"], ingredient_description.id)
@@ -124,7 +124,7 @@ class TestSearch(APITestCase):
         MicroorganismSynonymFactory(name="matcha", standard_name=microorganism_synonym)
 
         search_term = "matcha"
-        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
         results = response.json().get("results", [])
 
         self.assertEqual(results[0]["id"], microorganism_name.id)
@@ -144,7 +144,7 @@ class TestSearch(APITestCase):
         SubstanceFactory(ca_name="matcha")
 
         search_term = "matcha"
-        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
         results = response.json().get("results", [])
 
         two_last_results = [result["id"] for result in results[-2:]]
@@ -160,7 +160,7 @@ class TestSearch(APITestCase):
         MicroorganismSynonymFactory(name="boisson matcha", standard_name=moorg)
 
         search_term = "matcha"
-        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
         results = response.json().get("results", [])
 
         self.assertEqual(len(results), 1)
@@ -174,7 +174,7 @@ class TestSearch(APITestCase):
         SubstanceSynonymFactory(name="boisson matcha", standard_name=substance)
 
         search_term = "matcha"
-        response = self.client.post(f"{reverse('search')}", {"search": search_term})
+        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
         results = response.json().get("results", [])
 
         self.assertEqual(len(results), 1)
@@ -188,11 +188,15 @@ class TestSearch(APITestCase):
 
         search_term = "matcha"
 
-        response_page_1 = self.client.post(f"{reverse('search')}", {"search": search_term, "limit": 5, "offset": 0})
+        response_page_1 = self.client.post(
+            f"{reverse('api:search')}", {"search": search_term, "limit": 5, "offset": 0}
+        )
         page_1_ids = [result["id"] for result in response_page_1.json().get("results", [])]
         self.assertEqual(len(page_1_ids), 5)
 
-        response_page_2 = self.client.post(f"{reverse('search')}", {"search": search_term, "limit": 5, "offset": 5})
+        response_page_2 = self.client.post(
+            f"{reverse('api:search')}", {"search": search_term, "limit": 5, "offset": 5}
+        )
         page_2_ids = [result["id"] for result in response_page_2.json().get("results", [])]
         self.assertEqual(len(page_2_ids), 4)
 

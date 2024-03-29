@@ -16,7 +16,7 @@ class TestPopulationApi(APITestCase):
             PopulationFactory.create(missing_import_data=True, is_obsolete=False) for i in range(2)
         ]
         obsolete_populations = [PopulationFactory.create(missing_import_data=True, is_obsolete=True) for i in range(3)]
-        response = self.client.get(reverse("population_list"))
+        response = self.client.get(reverse("api:population_list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
 

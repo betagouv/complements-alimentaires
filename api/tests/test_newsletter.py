@@ -36,7 +36,7 @@ class TestSubscription(APITestCase):
         sib_api_v3_sdk.CreateContact = MagicMock(return_value=fake_contact_create)
 
         self.client.post(
-            reverse("subscribe_newsletter"),
+            reverse("api:subscribe_newsletter"),
             {"email": "test@example.com"},
             format="json",
         )
@@ -84,7 +84,7 @@ class TestSubscription(APITestCase):
         sib_api_v3_sdk.CreateContact = MagicMock(return_value=fake_contact_create)
 
         response = self.client.post(
-            reverse("subscribe_newsletter"),
+            reverse("api:subscribe_newsletter"),
             {"email": "  test@example.com      "},
             format="json",
         )
