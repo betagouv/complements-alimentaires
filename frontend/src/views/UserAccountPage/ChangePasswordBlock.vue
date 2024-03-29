@@ -96,7 +96,7 @@ const submit = async () => {
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
     // Logout is not really necessary but Django removes session id from front-end after a change password
-    await logOut("Votre mot de passe a bien été modifié. Veuillez vous reconnecter.")
+    await logOut("Votre mot de passe a bien été modifié. Veuillez vous reconnecter.", "LoginPage")
   }
 }
 </script>
