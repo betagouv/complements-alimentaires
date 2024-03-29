@@ -17,15 +17,21 @@ class BaseRoleSerializer(serializers.ModelSerializer):
         return obj.__class__.__name__
 
 
-class CompanySupervisorSerializer(BaseRoleSerializer):
+class CompanyRoleSerializer(BaseRoleSerializer):
     companies = CompanySerializer(many=True, read_only=True)
 
     class Meta:
-        model = CompanySupervisor
+        abstract = True
         fields = BaseRoleSerializer.Meta.fields + ("companies",)
 
 
-class DeclarantSerializer(BaseRoleSerializer):
+class CompanySupervisorSerializer(CompanyRoleSerializer):
+    class Meta:
+        model = CompanySupervisor
+        fields = CompanyRoleSerializer.Meta.fields
+
+
+class DeclarantSerializer(CompanyRoleSerializer):
     class Meta:
         model = Declarant
-        fields = BaseRoleSerializer.Meta.fields + ()
+        fields = CompanyRoleSerializer.Meta.fields

@@ -69,7 +69,7 @@
             label="Pays de référence"
             defaultUnselectedText=""
             v-model="model.referenceCountry"
-            :options="countries"
+            :options="countries.filter((x) => x.value !== 'FR')"
             :required="true"
           />
         </DsfrInputGroup>
@@ -101,39 +101,8 @@
 
 <script setup>
 import { getTypeIcon, getType } from "@/utils/mappings"
+import { countries } from "@/utils/mappings"
 const model = defineModel()
-const countries = [
-  { text: "Allemagne", value: "DE" },
-  { text: "Autriche", value: "AT" },
-  { text: "Belgique", value: "BE" },
-  { text: "Bulgarie", value: "BG" },
-  { text: "Chypre", value: "CY" },
-  { text: "Croatie", value: "HR" },
-  { text: "Danemark", value: "DK" },
-  { text: "Espagne", value: "ES" },
-  { text: "Estonie", value: "EE" },
-  { text: "Finlande", value: "FI" },
-  { text: "Grèce", value: "GR" },
-  { text: "Hongrie", value: "HU" },
-  { text: "Irlande", value: "IE" },
-  { text: "Irlande du Nord", value: "IEN" },
-  { text: "Islande", value: "IS" },
-  { text: "Italie", value: "IT" },
-  { text: "Lettonie", value: "LV" },
-  { text: "Liechtenstein", value: "LI" },
-  { text: "Lituanie", value: "LT" },
-  { text: "Luxembourg", value: "LU" },
-  { text: "Malte", value: "MT" },
-  { text: "Norvège", value: "NO" },
-  { text: "Pays-Bas", value: "NL" },
-  { text: "Pologne", value: "PL" },
-  { text: "Portugal", value: "PT" },
-  { text: "République Tchèque", value: "CZ" },
-  { text: "Roumanie", value: "RO" },
-  { text: "Slovaquie", value: "SK" },
-  { text: "Slovénie", value: "SI" },
-  { text: "Suède", value: "SE" },
-]
 const additionReasons = [
   {
     label: "Usage établi",

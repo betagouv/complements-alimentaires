@@ -50,3 +50,5 @@ class CompanySupervisor(BaseRole):
 class Declarant(BaseRole):
     class Meta:
         verbose_name = "déclarant"
+
+    companies = models.ManyToManyField(Company, verbose_name=Company._meta.verbose_name_plural)

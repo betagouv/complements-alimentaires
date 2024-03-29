@@ -1,5 +1,28 @@
 <template>
-  <h2 class="fr-h6">
+  <!-- Si on a une seule entreprise, pas besoin d'afficher ce champ -->
+  <template v-if="!companies || companies.length !== 1">
+    <h2 class="fr-h6">
+      <v-icon class="mr-1" name="ri-home-2-fill" />
+      Entreprise
+    </h2>
+    <DsfrAlert type="warning" v-if="!companies || companies.length === 0">
+      <p>
+        Vous n'avez pas d'entreprise assignée. Contacter l'administrateur de votre entreprise ou
+        <router-link :to="{ name: 'Root' }">ajoutez une entreprise</router-link>
+        .
+      </p>
+    </DsfrAlert>
+    <DsfrInputGroup class="max-w-md" v-else>
+      <DsfrSelect
+        label="Entreprise qui produit le complément"
+        v-model.number="payload.company"
+        :options="companies.map((x) => ({ text: x.socialName, value: x.id }))"
+        :required="true"
+      />
+    </DsfrInputGroup>
+  </template>
+
+  <h2 class="fr-h6 !mt-8">
     <v-icon class="mr-1" name="ri-price-tag-2-fill" />
     Dénomination commerciale
   </h2>
@@ -143,17 +166,53 @@
     <v-icon class="mr-1" name="ri-home-2-fill" />
     Adresse sur l'étiquetage
   </h2>
-  TODO car on aura déjà l'adresse à partir du SIRET
+  <div class="max-w-2xl mb-8 address-form">
+    <DsfrInputGroup>
+      <DsfrInput
+        v-model="payload.labelAddress.address"
+        label-visible
+        label="Adresse"
+        hint="Numéro et voie"
+        :required="true"
+      />
+    </DsfrInputGroup>
+    <DsfrInputGroup>
+      <DsfrInput
+        v-model="payload.labelAddress.additionalDetails"
+        label-visible
+        label="Complément d'adresse"
+        hint="Bâtiment, immeuble, escalier et numéro d’appartement"
+      />
+    </DsfrInputGroup>
+    <div class="grid grid-cols-7 gap-6">
+      <DsfrInputGroup class="col-span-12 md:col-span-3">
+        <DsfrInput v-model="payload.labelAddress.postalCode" label-visible label="Code Postal" :required="true" />
+      </DsfrInputGroup>
+      <DsfrInputGroup class="col-span-12 md:col-span-4">
+        <DsfrInput v-model="payload.labelAddress.city" label-visible label="Ville ou commune" :required="true" />
+      </DsfrInputGroup>
+    </div>
+    <DsfrInputGroup>
+      <DsfrInput v-model="payload.labelAddress.cedex" label-visible label="Cedex" />
+    </DsfrInputGroup>
+    <DsfrInputGroup>
+      <DsfrSelect label="Pays" v-model="payload.labelAddress.country" :options="countries" :required="true" />
+    </DsfrInputGroup>
+  </div>
 </template>
 <script setup>
+import { computed, watch } from "vue"
 import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
+import { countries } from "@/utils/mappings"
 
 const payload = defineModel()
 
 const store = useRootStore()
-const { populations, conditions } = storeToRefs(store)
+const { populations, conditions, loggedUser } = storeToRefs(store)
+const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
+const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))
 const galenicFormulation = [
   {
     text: "Ampoule",
@@ -201,4 +260,20 @@ const effects = [
   "Voies respiratoires",
   "Autre (à préciser)",
 ]
+
+watch(selectedCompany, () => {
+  const addressFields = ["address", "additionalDetails", "postalCode", "city", "cedex", "country"]
+  const addressEmpty = addressFields.every((field) => !payload.value.labelAddress[field])
+  if (addressEmpty && selectedCompany.value)
+    addressFields.forEach((field) => (payload.value.labelAddress[field] = selectedCompany.value[field]))
+})
+
+// S'il n'y a qu'une entreprise on l'assigne par défaut
+if (companies.value?.length === 1) payload.value.company = companies.value[0].id
 </script>
+
+<style scoped>
+.address-form .fr-input-group:not(:last-child) {
+  @apply mb-0;
+}
+</style>
