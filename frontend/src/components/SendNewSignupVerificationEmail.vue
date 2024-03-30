@@ -30,7 +30,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import useToaster from "@/composables/use-toaster"
 
-const props = defineProps({ userId: Number })
+const props = defineProps({ userId: String })
 const opened = ref(false)
 
 const close = () => (opened.value = false)

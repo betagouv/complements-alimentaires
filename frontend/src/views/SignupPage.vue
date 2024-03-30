@@ -1,7 +1,7 @@
 <template>
   <SingleItemWrapper>
     <h1>Se créer un compte</h1>
-    <FormWrapper v-if="!response?.ok" :externalResults="$externalResults">
+    <FormWrapper :externalResults="$externalResults">
       <p class="fr-hint-text">Sauf mention contraire, tous les champs sont obligatoires.</p>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'lastName')">
         <DsfrInput
@@ -67,15 +67,6 @@
       </DsfrInputGroup>
       <DsfrButton class="!block !w-full" :disabled="isFetching" label="Créer le compte" @click="submit" />
     </FormWrapper>
-    <DsfrCallout v-if="response?.ok" class="space-y-4" title="E-mail de vérification envoyé">
-      <p>
-        Un e-mail vient d'être envoyé à
-        <strong>{{ state.email }}</strong>
-        Veuillez cliquez dans le lien à l'intérieur pour vérifier votre adresse e-email et pouvoir utiliser votre
-        compte.
-      </p>
-      <SendNewSignupVerificationEmail :userId="data?.userId" />
-    </DsfrCallout>
   </SingleItemWrapper>
 </template>
 
@@ -83,7 +74,6 @@
 import { computed, ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import SingleItemWrapper from "@/components/SingleItemWrapper"
-import SendNewSignupVerificationEmail from "@/components/SendNewSignupVerificationEmail"
 import FormWrapper from "@/components/FormWrapper"
 import { errorRequiredField, errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
 import { useFetch } from "@vueuse/core"
@@ -91,7 +81,9 @@ import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import PasswordRules from "@/components/PasswordRules"
 import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
+import { useRouter } from "vue-router"
 
+const router = useRouter()
 const showPassword = ref(false)
 
 // Form state & rules
@@ -134,6 +126,9 @@ const submit = async () => {
   }
   await execute()
   $externalResults.value = await handleError(response)
+  if (response.value.ok) {
+    router.push({ name: "VerificationSentPage", query: { email: state.value.email, userId: data.value.userId } })
+  }
 }
 
 // Username Pre-fill

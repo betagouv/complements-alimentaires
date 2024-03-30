@@ -12,11 +12,12 @@ import LegalNoticesPage from "@/views/LegalNoticesPage"
 import CookiesInfoPage from "@/views/CookiesInfoPage"
 import ProducerFormPage from "@/views/ProducerFormPage"
 import NotFound from "@/views/NotFound"
-import LoginPage from "@/views/LoginPage.vue"
-import SignupPage from "@/views/SignupPage.vue"
-import VerifyEmailPage from "@/views/VerifyEmailPage.vue"
+import LoginPage from "@/views/LoginPage"
+import SignupPage from "@/views/SignupPage"
+import VerifyEmailPage from "@/views/VerifyEmailPage"
 import DashboardPage from "@/views/DashboardPage"
 import UserAccountPage from "@/views/UserAccountPage"
+import VerificationSentPage from "@/views//VerificationSentPage"
 
 const routes = [
   {
@@ -139,6 +140,14 @@ const routes = [
     component: SignupPage,
     meta: {
       title: "S'enregistrer",
+    },
+  },
+  {
+    path: "/verification-envoyee",
+    name: "VerificationSentPage",
+    component: VerificationSentPage,
+    meta: {
+      title: "Vérification envoyée",
     },
   },
   {
