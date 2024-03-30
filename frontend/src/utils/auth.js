@@ -7,12 +7,13 @@ import { useRootStore } from "@/stores/root"
 
 export const logOut = async (
   message = "Vous avez été déconnecté de la plateforme.",
-  redirectRouteName = "LandingPage"
+  redirectRouteName = "LandingPage",
+  routeQueryParams = {}
 ) => {
   const { response } = await useFetch("/api/v1/logout/", { headers: headers() }).post()
   await handleError(response)
   if (response.value.ok) {
-    await router.replace({ name: redirectRouteName })
+    await router.replace({ name: redirectRouteName, query: routeQueryParams })
     await useRootStore().resetInitialData()
     useToaster().addSuccessMessage(message)
   }

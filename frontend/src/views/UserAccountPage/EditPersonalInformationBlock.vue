@@ -126,9 +126,7 @@ const submit = async (displayWarning = true) => {
   if (response.value.ok) {
     const baseMessage = "Vos informations personnelles ont bien été modifiées."
     if (emailHasChanged.value) {
-      // TODO: créer un toast qui se ferme pas, avec action
-      // + logOut(null) ou logOut() pour ne pas mettre de message dans ce cas
-      await logOut(baseMessage + " Veuillez vous reconnecter.", "LoginPage")
+      await logOut(baseMessage, "VerificationSentPage", { userId: loggedUser.value.id, email: state.value.email })
     } else {
       addSuccessMessage(baseMessage)
     }
