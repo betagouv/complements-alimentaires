@@ -4,7 +4,7 @@
     <FormWrapper :externalResults="$externalResults">
       <SendNewSignupVerificationEmail v-if="showSendNewConfirmationMail" :userId="userIdForNewConfirmationMail" />
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'username')">
-        <DsfrInput v-model="state.username" label="Identifiant" labelVisible autofocus />
+        <DsfrInput v-model="state.username" label="Identifiant" labelVisible />
       </DsfrInputGroup>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'password')">
         <DsfrInput :type="showPassword ? 'text' : 'password'" v-model="state.password" labelVisible>

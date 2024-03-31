@@ -4,14 +4,14 @@
     <p>Pour confirmer l'adresse email de votre compte Compléments Alimentaires, il suffit de cliquer sur ce bouton :</p>
 
     <div class="cta">
-        <a href="{{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}">
+        <a href="{{ protocol }}://{{ domain }}{% web:activate' uidb64=uid token=token %}">
             Confirmer mon adresse email
         </a>
     </div>
 
     <p>En cas de difficultés, vous pouvez copier ce lien directement dans votre navigateur :</p>
 
-    <p>{{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}</p>
+    <p>{{ protocol }}://{{ domain }}{% url 'web:activate' uidb64=uid token=token %}</p>
 
     <p>Si vous n'êtes pas à l'origine de cette demande vous pouvez ignorer ce message.</p>
 {% endblock %}

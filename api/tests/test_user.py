@@ -11,7 +11,7 @@ class TestLoggedUserApi(APITestCase):
         """
         When calling this API unathenticated we expect a 204
         """
-        response = self.client.get(reverse("logged_user"))
+        response = self.client.get(reverse("api:logged_user"))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     @authenticate
@@ -20,7 +20,7 @@ class TestLoggedUserApi(APITestCase):
         When calling this API authenticated we expect to get a
         JSON representation of the authenticated user
         """
-        response = self.client.get(reverse("logged_user"))
+        response = self.client.get(reverse("api:logged_user"))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = json.loads(response.content.decode())
@@ -39,19 +39,19 @@ class TestLoggedUserApi(APITestCase):
             return {role["name"] for role in resp.data["roles"]}
 
         # Without role
-        response = self.client.get(reverse("logged_user"))
+        response = self.client.get(reverse("api:logged_user"))
         self.assertEqual(_get_role_names(response), set())
 
         # With two roles
         DeclarantFactory(user=authenticate.user)
         CompanySupervisorFactory(user=authenticate.user)
 
-        response = self.client.get(reverse("logged_user"))
+        response = self.client.get(reverse("api:logged_user"))
         self.assertEqual(_get_role_names(response), {"Declarant", "CompanySupervisor"})
 
 
 class TestGenerateUsername(APITestCase):
     def test_generate_username(self):
-        response = self.client.get(reverse("generate_username") + "?first_name=jean&last_name=dupon")
+        response = self.client.get(reverse("api:generate_username") + "?first_name=jean&last_name=dupon")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {"username": "jean.dupon"})

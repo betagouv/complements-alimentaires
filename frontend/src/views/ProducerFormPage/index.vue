@@ -49,6 +49,7 @@ const payload = ref({
     labels: [],
     others: [],
   },
+  labelAddress: {},
 })
 
 const hasNewElements = computed(() => payload.value.elements.some((x) => x.element.new))
