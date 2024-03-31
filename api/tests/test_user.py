@@ -154,6 +154,70 @@ class TestChangePassword(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
+class TestEditUser(APITestCase):
+    def setUp(self):
+        self.url = reverse("api:edit_user")
+        self.user_data = dict(last_name="Cook", first_name="Tim", email="tim.cook@exemple.com", username="tcook")
+        self.user = UserFactory(**self.user_data, is_verified=True)
+
+    def test_edit_user_ok(self):
+        self.client.force_login(self.user)
+        new_last_name = "Cookie"
+        response = self.client.post(self.url, self.user_data | dict(last_name=new_last_name))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["last_name"], new_last_name)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.last_name, new_last_name)
+        self.assertTrue(self.user.is_verified)  # user is still verified since email has not been changed
+
+    def test_edit_user_with_email_changed_ok(self):
+        self.client.force_login(self.user)
+        new_email = "tim.cookie@exemple.com"
+        response = self.client.post(self.url, self.user_data | dict(email=new_email))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["email"], new_email)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, new_email)
+        self.assertFalse(self.user.is_verified)
+
+    def test_edit_user_with_existing_email_ko(self):
+        existing_email = "sundar.pichai@exemple.com"
+        UserFactory(email=existing_email)
+        self.client.force_login(self.user)
+        response = self.client.post(self.url, self.user_data | dict(email=existing_email))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("email", response.data["field_errors"])
+
+    def test_edit_user_with_missing_data_ko(self):
+        self.client.force_login(self.user)
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # NOTE: first_name and last_name are not mandatory at back-end level (should they?)
+        self.assertEqual(len(response.data["field_errors"]), 2)
+
+    def test_edit_user_unauthenticated(self):
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestDeleteUser(APITestCase):
+    def setUp(self):
+        self.url = reverse("api:delete_user")
+        self.user = UserFactory(is_verified=True)
+
+    def test_delete_user_ok(self):
+        self.assertTrue(self.user.is_active)
+        self.client.force_login(self.user)
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.is_active)
+
+    def test_delete_user_unauthenticated(self):
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
 class TestGenerateUsername(APITestCase):
     def test_generate_username(self):
         response = self.client.get(reverse("api:generate_username") + "?first_name=jean&last_name=dupon")
