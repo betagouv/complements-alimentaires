@@ -1,5 +1,10 @@
 from .blogpost import BlogPostSerializer  # noqa: F401
-from .user import LoggedUserSerializer, UserInputSerializer, ChangePasswordSerializer  # noqa: F401
+from .user import (  # noqa: F401
+    LoggedUserSerializer,
+    CreateUserSerializer,
+    EditUserSerializer,
+    ChangePasswordSerializer,
+)
 from .webinar import WebinarSerializer  # noqa
 from .search_result import SearchResultSerializer  # noqa: F401
 from .plant import PlantSerializer, PlantPartSerializer  # noqa: F401

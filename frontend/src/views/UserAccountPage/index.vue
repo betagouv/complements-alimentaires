@@ -1,9 +1,9 @@
 <template>
   <div class="fr-container my-8 flex flex-col">
     <EditPersonalInformationBlock />
-    <hr class="mt-12 mb-2" />
+    <hr class="mt-14 mb-4" />
     <ChangePasswordBlock />
-    <hr class="mt-12 mb-2" />
+    <hr class="mt-14 mb-4" />
     <DeleteAccountBlock />
   </div>
 </template>

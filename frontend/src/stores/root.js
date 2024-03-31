@@ -15,9 +15,13 @@ export const useRootStore = defineStore("root", () => {
     initialDataLoaded.value = true
   }
 
+  const setLoggedUser = (userData) => {
+    loggedUser.value = userData ? userData : null
+  }
+
   const fetchLoggedUser = async () => {
     const { data } = await useFetch("/api/v1/loggedUser/").json()
-    loggedUser.value = data.value ? data.value : null
+    setLoggedUser(data.value)
     // TODO: add error handling here, but weird bug with await and response
   }
 
@@ -47,6 +51,7 @@ export const useRootStore = defineStore("root", () => {
     initialDataLoaded,
     fetchInitialData,
     resetInitialData,
+    setLoggedUser,
     fetchLoggedUser,
     fetchPopulations,
     fetchConditions,

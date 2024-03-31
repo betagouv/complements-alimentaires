@@ -99,7 +99,12 @@ const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Main request definition
-const { response, execute, isFetching } = useFetch(
+const {
+  data: userData,
+  response,
+  execute,
+  isFetching,
+} = useFetch(
   `/api/v1/edit-user/`,
   { headers: headers() },
   {
@@ -130,6 +135,8 @@ const submit = async (displayWarning = true) => {
     } else {
       addSuccessMessage(baseMessage)
     }
+    store.setLoggedUser(userData.value) // update store to avoid having the need to reload the page
+    // TODO: we should repopulate form fields with reactive loggedUser, in case backend change data (e.g. normalization)
   }
 }
 

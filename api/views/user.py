@@ -4,12 +4,13 @@ from django.contrib.auth import login
 from django.middleware.csrf import get_token
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework import status
-from api.serializers import LoggedUserSerializer, UserInputSerializer, ChangePasswordSerializer
+from api.serializers import LoggedUserSerializer, CreateUserSerializer, EditUserSerializer, ChangePasswordSerializer
 from api.exception_handling import ProjectAPIException
 from django.contrib.auth import get_user_model
 from tokens.models import MagicLinkToken, MagicLinkUsage
@@ -45,7 +46,7 @@ def _send_verification_mail(request, user):
 
 class SignupView(APIView):
     def post(self, request, *args, **kwargs):
-        serializer = UserInputSerializer(data=request.data)
+        serializer = CreateUserSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             new_user = serializer.save()
             _send_verification_mail(request, new_user)
@@ -67,8 +68,18 @@ class ChangePasswordView(APIView):
 class EditUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
-        return Response({}, status=status.HTTP_200_OK)
+        """Classic edit except that the user is unverified if email has changed."""
+        user = request.user
+        old_email = user.email
+        serializer = EditUserSerializer(user, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            if user.email != old_email:
+                user.unverify()
+                _send_verification_mail(request, user)
+            return Response(LoggedUserSerializer(user).data, status=status.HTTP_200_OK)
 
 
 class DeleteUserView(APIView):
