@@ -96,8 +96,6 @@ class ChangePasswordSerializer(serializers.Serializer):
                 {"confirm_new_password": "La confirmation ne correspond pas au mot de passe entré"}
             )
         if data["old_password"] == data["new_password"]:
-            raise serializers.ValidationError(
-                {"confirm_new_password": "Le nouveau mot de passe est identique à l'actuel"}
-            )
+            raise serializers.ValidationError({"new_password": "Le nouveau mot de passe est identique à l'actuel"})
         django_validate_password(data["new_password"])
         return data

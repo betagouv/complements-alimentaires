@@ -16,6 +16,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     last_name = factory.Faker("last_name")
     email = factory.Faker("email")
     username = factory.LazyFunction(_make_username)
+    password = "abcdefg123$"
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
