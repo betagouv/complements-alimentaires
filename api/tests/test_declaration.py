@@ -167,6 +167,28 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(new_declared_plant.preparation, "Autre")
 
     @authenticate
+    def test_create_declaration_unknown_plant(self):
+        """
+        Si la plante spécifié n'existe pas, on doit lever une erreur
+        """
+        payload = {
+            "company": CompanyFactory.create().id,
+            "declaredPlants": [
+                {
+                    "plant": {
+                        "id": 999999,
+                    },
+                }
+            ],
+        }
+
+        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        body = response.json()
+        self.assertIn("declaredPlants", body.get("fieldErrors"))
+
+    @authenticate
     def test_create_declaration_declared_microorganisms(self):
         """
         Création de l'objet « déclaration » avec les données de la composition,
@@ -222,6 +244,28 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(new_declared_microorganism.souche, "Nouvelle souche")
 
     @authenticate
+    def test_create_declaration_unknown_microorganism(self):
+        """
+        Si le micro-organisme spécifié n'existe pas, on doit lever une erreur
+        """
+        payload = {
+            "company": CompanyFactory.create().id,
+            "declaredMicroorganisms": [
+                {
+                    "microorganism": {
+                        "id": 999999,
+                    },
+                }
+            ],
+        }
+
+        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        body = response.json()
+        self.assertIn("declaredMicroorganisms", body.get("fieldErrors"))
+
+    @authenticate
     def test_create_declaration_declared_ingredients(self):
         """
         Création de l'objet « déclaration » avec les données de la composition,
@@ -267,6 +311,28 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(new_declared_ingredient.active, True)
 
     @authenticate
+    def test_create_declaration_unknown_ingredient(self):
+        """
+        Si l'ingrédient spécifié n'existe pas, on doit lever une erreur
+        """
+        payload = {
+            "company": CompanyFactory.create().id,
+            "declaredIngredients": [
+                {
+                    "ingredient": {
+                        "id": 999999,
+                    },
+                }
+            ],
+        }
+
+        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        body = response.json()
+        self.assertIn("declaredIngredients", body.get("fieldErrors"))
+
+    @authenticate
     def test_create_declaration_declared_substances(self):
         """
         Création de l'objet « déclaration » avec les données de la composition,
@@ -297,6 +363,28 @@ class TestDeclarationApi(APITestCase):
 
         self.assertEqual(existing_declared_substance.substance, substance)
         self.assertEqual(existing_declared_substance.active, True)
+
+    @authenticate
+    def test_create_declaration_unknown_substance(self):
+        """
+        Si la substance spécifiée n'existe pas, on doit lever une erreur
+        """
+        payload = {
+            "company": CompanyFactory.create().id,
+            "declaredSubstances": [
+                {
+                    "substance": {
+                        "id": 999999,
+                    },
+                }
+            ],
+        }
+
+        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        body = response.json()
+        self.assertIn("declaredSubstances", body.get("fieldErrors"))
 
     @authenticate
     def test_create_declaration_computed_substances(self):

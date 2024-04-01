@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from api.exceptions import ProjectAPIException
 from drf_base64.fields import Base64FileField
 from data.models import (
     Declaration,
@@ -106,7 +107,10 @@ class DeclaredPlantSerializer(serializers.ModelSerializer):
         # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
         plant = validated_data.pop("plant", None)
         if plant:
-            validated_data["plant"] = Plant.objects.get(pk=plant.get("id"))  # TODO exception handling - not found
+            try:
+                validated_data["plant"] = Plant.objects.get(pk=plant.get("id"))
+            except Plant.DoesNotExist:
+                raise ProjectAPIException(field_errors={"declared_plants": "La plante spécifiée n'existe pas."})
 
         return super().create(validated_data)
 
@@ -133,9 +137,12 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
         # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
         microorganism = validated_data.pop("microorganism", None)
         if microorganism:
-            validated_data["microorganism"] = Microorganism.objects.get(
-                pk=microorganism.get("id")
-            )  # TODO exception handling - not found
+            try:
+                validated_data["microorganism"] = Microorganism.objects.get(pk=microorganism.get("id"))
+            except Microorganism.DoesNotExist:
+                raise ProjectAPIException(
+                    field_errors={"declared_microorganisms": "Le micro-organisme spécifié n'existe pas."}
+                )
 
         return super().create(validated_data)
 
@@ -159,9 +166,10 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
         # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
         ingredient = validated_data.pop("ingredient", None)
         if ingredient:
-            validated_data["ingredient"] = Ingredient.objects.get(
-                pk=ingredient.get("id")
-            )  # TODO exception handling - not found
+            try:
+                validated_data["ingredient"] = Ingredient.objects.get(pk=ingredient.get("id"))
+            except Ingredient.DoesNotExist:
+                raise ProjectAPIException(field_errors={"declared_ingredients": "L'ingrédient spécifié n'existe pas."})
 
         return super().create(validated_data)
 
@@ -182,9 +190,10 @@ class DeclaredSubstanceSerializer(serializers.ModelSerializer):
         # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
         substance = validated_data.pop("substance", None)
         if substance:
-            validated_data["substance"] = Substance.objects.get(
-                pk=substance.get("id")
-            )  # TODO exception handling - not found
+            try:
+                validated_data["substance"] = Substance.objects.get(pk=substance.get("id"))
+            except Substance.DoesNotExist:
+                raise ProjectAPIException(field_errors={"declared_substances": "La substance spécifiée n'existe pas."})
 
         return super().create(validated_data)
 
@@ -207,9 +216,10 @@ class ComputedSubstanceSerializer(serializers.ModelSerializer):
         # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
         substance = validated_data.pop("substance", None)
         if substance:
-            validated_data["substance"] = Substance.objects.get(
-                pk=substance.get("id")
-            )  # TODO exception handling - not found
+            try:
+                validated_data["substance"] = Substance.objects.get(pk=substance.get("id"))
+            except Substance.DoesNotExist:
+                raise ProjectAPIException(field_errors={"declared_substances": "La substance spécifiée n'existe pas."})
 
         return super().create(validated_data)
 

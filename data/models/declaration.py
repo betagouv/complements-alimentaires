@@ -88,7 +88,7 @@ class Declaration(Historisable, TimeStampable):
     populations = models.ManyToManyField(Population, blank=True, verbose_name="populations cible")
     conditions_not_recommended = models.ManyToManyField(Condition, verbose_name="consommation déconseillée")
 
-    # TODO : à transformer dans un Many-to-Many une fois qu'on aura les effets de ce côté
+    # TODO : à transformer dans un champ avec ForeignKey une fois qu'on aura les effets dans notre DB
     effects = ArrayField(
         base_field=models.TextField(), blank=True, null=True, size=None, verbose_name="objectifs ou effets"
     )
