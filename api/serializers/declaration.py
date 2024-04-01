@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from drf_base64.fields import Base64FileField
 from data.models import (
     Declaration,
     DeclaredPlant,
@@ -15,6 +16,7 @@ from data.models import (
     Ingredient,
     Microorganism,
     Substance,
+    SubstanceUnit,
 )
 from .plant import PlantSerializer
 from .microorganism import MicroorganismSerializer
@@ -81,6 +83,7 @@ class DeclaredListSerializer(serializers.ListSerializer):
 
 class DeclaredPlantSerializer(serializers.ModelSerializer):
     plant = PassthroughPlantSerializer(required=False)
+    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False)
     used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False)
 
     class Meta:
@@ -103,7 +106,7 @@ class DeclaredPlantSerializer(serializers.ModelSerializer):
         # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
         plant = validated_data.pop("plant", None)
         if plant:
-            validated_data["plant"] = Plant.objects.get(pk=plant.get("id"))  # TODO exception handling
+            validated_data["plant"] = Plant.objects.get(pk=plant.get("id"))  # TODO exception handling - not found
 
         return super().create(validated_data)
 
@@ -132,7 +135,7 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
         if microorganism:
             validated_data["microorganism"] = Microorganism.objects.get(
                 pk=microorganism.get("id")
-            )  # TODO exception handling
+            )  # TODO exception handling - not found
 
         return super().create(validated_data)
 
@@ -156,7 +159,9 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
         # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
         ingredient = validated_data.pop("ingredient", None)
         if ingredient:
-            validated_data["ingredient"] = Ingredient.objects.get(pk=ingredient.get("id"))  # TODO exception handling
+            validated_data["ingredient"] = Ingredient.objects.get(
+                pk=ingredient.get("id")
+            )  # TODO exception handling - not found
 
         return super().create(validated_data)
 
@@ -177,13 +182,16 @@ class DeclaredSubstanceSerializer(serializers.ModelSerializer):
         # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
         substance = validated_data.pop("substance", None)
         if substance:
-            validated_data["substance"] = Substance.objects.get(pk=substance.get("id"))  # TODO exception handling
+            validated_data["substance"] = Substance.objects.get(
+                pk=substance.get("id")
+            )  # TODO exception handling - not found
 
         return super().create(validated_data)
 
 
 class ComputedSubstanceSerializer(serializers.ModelSerializer):
-    substance = SubstanceSerializer()
+    substance = PassthroughSubstanceSerializer()
+    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False)
 
     class Meta:
         model = ComputedSubstance
@@ -194,8 +202,21 @@ class ComputedSubstanceSerializer(serializers.ModelSerializer):
             "unit",
         )
 
+    def create(self, validated_data):
+        # DRF ne gère pas automatiquement la création des nested-fields :
+        # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
+        substance = validated_data.pop("substance", None)
+        if substance:
+            validated_data["substance"] = Substance.objects.get(
+                pk=substance.get("id")
+            )  # TODO exception handling - not found
+
+        return super().create(validated_data)
+
 
 class AttachmentSerializer(serializers.ModelSerializer):
+    file = Base64FileField(required=False, allow_null=True)
+
     class Meta:
         model = Attachment
         fields = (
@@ -208,6 +229,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
 class DeclarationSerializer(serializers.ModelSerializer):
     author = serializers.PrimaryKeyRelatedField(read_only=True)
     company = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all())
+    unit_measurement = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False)
     conditions_not_recommended = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Condition.objects.all(), required=False
     )
@@ -217,8 +239,8 @@ class DeclarationSerializer(serializers.ModelSerializer):
     declared_microorganisms = DeclaredListSerializer(child=DeclaredMicroorganismSerializer(), required=False)
     declared_ingredients = DeclaredListSerializer(child=DeclaredIngredientSerializer(), required=False)
     declared_substances = DeclaredListSerializer(child=DeclaredSubstanceSerializer(), required=False)
-    computed_substances = ComputedSubstanceSerializer(many=True, required=False)
-    attachments = AttachmentSerializer(many=True, required=False)
+    computed_substances = DeclaredListSerializer(child=ComputedSubstanceSerializer(), required=False)
+    attachments = DeclaredListSerializer(child=AttachmentSerializer(), required=False)
 
     class Meta:
         model = Declaration
@@ -227,6 +249,12 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "status",
             "author",
             "company",
+            "address",
+            "additional_details",
+            "postal_code",
+            "city",
+            "cedex",
+            "country",
             "name",
             "brand",
             "gamme",
@@ -251,6 +279,11 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "attachments",
             "other_effects",
         )
+        read_only_fields = (
+            "id",
+            "status",
+            "author",
+        )
 
     def create(self, validated_data):
         # DRF ne gère pas automatiquement la création des nested-fields :
@@ -270,7 +303,14 @@ class DeclarationSerializer(serializers.ModelSerializer):
         Enlève les éléments déclarés pour les traiter manuellement, en leur assignant la déclaration
         et en les mettant dans la base de données.
         """
-        declared_fields = ["declared_plants", "declared_microorganisms", "declared_ingredients", "declared_substances"]
+        declared_fields = [
+            "declared_plants",
+            "declared_microorganisms",
+            "declared_ingredients",
+            "declared_substances",
+            "computed_substances",
+            "attachments",
+        ]
         declared_data = [(field, validated_data.pop(field, None)) for field in declared_fields]
 
         declaration = super().update(instance, validated_data) if instance else super().create(validated_data)

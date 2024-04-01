@@ -1,7 +1,9 @@
+import os
+import base64
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from data.models import Declaration
+from data.models import Declaration, Attachment
 from data.factories import (
     ConditionFactory,
     PopulationFactory,
@@ -11,6 +13,7 @@ from data.factories import (
     SubstanceFactory,
     IngredientFactory,
     CompanyFactory,
+    SubstanceUnitFactory,
 )
 from .utils import authenticate
 
@@ -25,9 +28,16 @@ class TestDeclarationApi(APITestCase):
         conditions = [ConditionFactory.create() for i in range(3)]
         populations = [PopulationFactory.create() for i in range(3)]
         company = CompanyFactory.create()
+        unit = SubstanceUnitFactory.create()
 
         payload = {
             "company": company.id,
+            "address": "243 rue Victor Hugo",
+            "additional_details": "Deuxième étage",
+            "postalCode": "69004",
+            "city": "Lyon",
+            "cedex": "Lyon 4",
+            "country": "FR",
             "effects": ["Artères et cholestérol", "Autre (à préciser)"],
             "otherEffects": "Moduler les défenses naturelles",
             "conditionsNotRecommended": [conditions[0].id, conditions[1].id],
@@ -39,6 +49,7 @@ class TestDeclarationApi(APITestCase):
             "description": "Ce complément alimentaire naturel est composé d'un extrait de Chaga BIO concentré à 30% polysaccharides hautement dosé pour une efficacité optimale",
             "galenicFormulation": "gélule",
             "unitQuantity": "500",
+            "unitMeasurement": unit.id,
             "conditioning": "Sans chitine, pour une bonne absorption et tolérance digestive",
             "dailyRecommendedDose": "2",
             "minimumDuration": "1 mois",
@@ -61,6 +72,13 @@ class TestDeclarationApi(APITestCase):
         self.assertNotIn(populations[2], declaration_populations)
 
         self.assertEqual(declaration.company, company)
+        self.assertEqual(declaration.address, "243 rue Victor Hugo")
+        self.assertEqual(declaration.additional_details, "Deuxième étage")
+        self.assertEqual(declaration.postal_code, "69004")
+        self.assertEqual(declaration.city, "Lyon")
+        self.assertEqual(declaration.cedex, "Lyon 4")
+        self.assertEqual(declaration.country, "FR")
+
         self.assertEqual(declaration.name, "Extrait de Chaga BIO")
         self.assertEqual(declaration.brand, "Azona Rome")
         self.assertEqual(declaration.gamme, "Vegan")
@@ -71,6 +89,7 @@ class TestDeclarationApi(APITestCase):
         )
         self.assertEqual(declaration.galenic_formulation, "gélule")
         self.assertEqual(declaration.unit_quantity, 500.0)
+        self.assertEqual(declaration.unit_measurement, unit)
         self.assertEqual(declaration.conditioning, "Sans chitine, pour une bonne absorption et tolérance digestive")
         self.assertEqual(declaration.daily_recommended_dose, "2")
         self.assertEqual(declaration.minimum_duration, "1 mois")
@@ -92,6 +111,7 @@ class TestDeclarationApi(APITestCase):
         plant = PlantFactory.create()
         plant_part = PlantPartFactory.create()
         plant.plant_parts.add(plant_part)
+        unit = SubstanceUnitFactory.create()
 
         payload = {
             "company": CompanyFactory.create().id,
@@ -106,6 +126,7 @@ class TestDeclarationApi(APITestCase):
                     "usedPart": plant_part.id,
                     "quantity": "123",
                     "preparation": "Teinture",
+                    "unit": unit.id,
                 },
                 {
                     "newName": "New plant name",
@@ -115,6 +136,7 @@ class TestDeclarationApi(APITestCase):
                     "usedPart": plant_part.id,
                     "quantity": "890",
                     "preparation": "Autre",
+                    "unit": unit.id,
                 },
             ],
         }
@@ -132,6 +154,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(existing_declared_plant.active, True)
         self.assertEqual(existing_declared_plant.used_part, plant_part)
         self.assertEqual(existing_declared_plant.quantity, 123)
+        self.assertEqual(existing_declared_plant.unit, unit)
         self.assertEqual(existing_declared_plant.preparation, "Teinture")
 
         self.assertIsNone(new_declared_plant.plant)
@@ -140,6 +163,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(new_declared_plant.active, True)
         self.assertEqual(new_declared_plant.used_part, plant_part)
         self.assertEqual(new_declared_plant.quantity, 890)
+        self.assertEqual(existing_declared_plant.unit, unit)
         self.assertEqual(new_declared_plant.preparation, "Autre")
 
     @authenticate
@@ -273,3 +297,86 @@ class TestDeclarationApi(APITestCase):
 
         self.assertEqual(existing_declared_substance.substance, substance)
         self.assertEqual(existing_declared_substance.active, True)
+
+    @authenticate
+    def test_create_declaration_computed_substances(self):
+        """
+        Création de l'objet « déclaration » avec les données de la composition,
+        focus sur les substances générées à partir des autres éléments
+        """
+        substance = SubstanceFactory.create()
+        unit = SubstanceUnitFactory.create()
+
+        payload = {
+            "company": CompanyFactory.create().id,
+            "computedSubstances": [
+                {
+                    "substance": {
+                        "id": substance.id,
+                        "name": substance.name,
+                    },
+                    "quantity": "123",
+                    "unit": unit.id,
+                }
+            ],
+        }
+
+        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        declaration = Declaration.objects.get(pk=response.json()["id"])
+
+        self.assertEqual(declaration.computed_substances.count(), 1)
+
+        existing_declared_substance = declaration.computed_substances.first()
+
+        self.assertEqual(existing_declared_substance.substance, substance)
+        self.assertEqual(existing_declared_substance.quantity, 123)
+        self.assertEqual(existing_declared_substance.unit, unit)
+
+    @authenticate
+    def test_create_declaration_attachments(self):
+        """
+        Création de l'objet « déclaration » avec les données de la composition,
+        focus sur les pièces jointes
+        """
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+
+        blue_image_base_64 = None
+        with open(os.path.join(current_dir, "files/Blue.jpg"), "rb") as image:
+            blue_image_base_64 = base64.b64encode(image.read()).decode("utf-8")
+
+        green_image_base_64 = None
+        with open(os.path.join(current_dir, "files/Green.jpg"), "rb") as image:
+            green_image_base_64 = base64.b64encode(image.read()).decode("utf-8")
+
+        payload = {
+            "company": CompanyFactory.create().id,
+            "attachments": [
+                {
+                    "file": f"data:image/jpeg;base64,{blue_image_base_64}",
+                    "type": "REGULATORY_PROOF",
+                },
+                {
+                    "file": f"data:image/jpeg;base64,{green_image_base_64}",
+                    "type": "CERTIFICATE_AUTHORITY",
+                },
+            ],
+        }
+
+        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        declaration = Declaration.objects.get(pk=response.json()["id"])
+
+        self.assertEqual(declaration.attachments.count(), 2)
+
+        self.maxDiff = None
+
+        regulatory_proof = declaration.attachments.get(type=Attachment.AttachmentType.REGULATORY_PROOF)
+        saved_regulatory_proof_image = base64.b64encode(regulatory_proof.file.file.file.read()).decode("utf-8")
+        self.assertEqual(saved_regulatory_proof_image, blue_image_base_64)
+
+        certificate_authority = declaration.attachments.get(type=Attachment.AttachmentType.CERTIFICATE_AUTHORITY)
+        saved_certificate_authority_image = base64.b64encode(certificate_authority.file.file.file.read()).decode(
+            "utf-8"
+        )
+        self.assertEqual(saved_certificate_authority_image, green_image_base_64)

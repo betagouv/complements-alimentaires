@@ -1,5 +1,6 @@
 from django.db import models
 from data.behaviours import Historisable, TimeStampable
+from data.choices import CountryChoices
 from data.models import (
     SubstanceUnit,
     Population,
@@ -13,10 +14,9 @@ from data.models import (
 )
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth import get_user_model
-from data.models.mixins import WithAddress
 
 
-class Declaration(WithAddress, Historisable, TimeStampable):
+class Declaration(Historisable, TimeStampable):
 
     class Meta:
         verbose_name = "déclaration"
@@ -46,11 +46,26 @@ class Declaration(WithAddress, Historisable, TimeStampable):
         Company, null=True, on_delete=models.SET_NULL, verbose_name="entreprise", related_name="declarations"
     )
 
+    # Champs adresse :
+    # On ne prend pas la même classe que l'adresse de la compagnie car on a besoin
+    # d'avoir ces champs facultatifs
+    address = models.TextField("adresse", blank=True, help_text="numéro et voie")
+    additional_details = models.TextField(
+        "complément d’adresse",
+        blank=True,
+        help_text="bâtiment, immeuble, escalier et numéro d’appartement",
+    )
+    postal_code = models.TextField("code postal", blank=True, max_length=10)
+    city = models.TextField("ville ou commune", blank=True)
+    cedex = models.TextField("CEDEX", blank=True)
+    country = models.TextField("pays", blank=True, choices=CountryChoices)
+
     name = models.TextField(blank=True, verbose_name="nom du produit")
     brand = models.TextField(blank=True, verbose_name="marque")
     gamme = models.TextField(blank=True, verbose_name="gamme")
     flavor = models.TextField(blank=True, verbose_name="arôme")
     description = models.TextField(blank=True, verbose_name="description")
+    #########
 
     galenic_formulation = models.TextField(
         blank=True, verbose_name="forme galénique"
