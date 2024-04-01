@@ -1,4 +1,3 @@
-import json
 from rest_framework import status
 from .utils import ProjectAPITestCase
 from data.factories import DeclarantFactory, CompanySupervisorFactory
@@ -27,14 +26,13 @@ class TestLoggedUserApi(ProjectAPITestCase):
         response = self.get(self.url())
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        body = json.loads(response.content.decode())
-        self.assertEqual(body.get("id"), user.id)
-        self.assertEqual(body.get("username"), user.username)
-        self.assertEqual(body.get("email"), user.email)
-        self.assertEqual(body.get("firstName"), user.first_name)
-        self.assertEqual(body.get("lastName"), user.last_name)
-        self.assertEqual(body.get("roles"), [])
-        self.assertIn("id", body)
+        self.assertEqual(response.data.get("id"), user.id)
+        self.assertEqual(response.data.get("username"), user.username)
+        self.assertEqual(response.data.get("email"), user.email)
+        self.assertEqual(response.data.get("first_name"), user.first_name)
+        self.assertEqual(response.data.get("last_name"), user.last_name)
+        self.assertEqual(response.data.get("roles"), [])
+        self.assertIn("id", response.data)
 
     def test_authenticated_logged_user_call_with_roles(self):
         """Ensure that roles are added to the JSON representation of the user"""
