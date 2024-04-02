@@ -145,19 +145,19 @@ class CSVImporter:
     def _check_file_format(self):
         path = pathlib.PurePath(self.file.name)
         if not path.suffix.lower() == ".csv":
-            raise CSVFileError(f"'{self.file}' n'est pas un fichier csv.")
+            raise CSVFileError(f"'{path.name}' n'est pas un fichier csv.")
         return path.name
 
     def _check_file_encoding(self):
         try:
             csv_string = self.file.read().decode("utf-8-sig")
         except UnicodeDecodeError as e:
-            raise CSVFileError(f"'{self.file.name}' n'est pas un fichier unicode.", e)
+            raise CSVFileError(f"'{self.filename}' n'est pas un fichier unicode.", e)
         try:
             csv_lines = csv_string.splitlines()
             dialect = csv.Sniffer().sniff(csv_lines[0])
         except csv.Error as e:
-            raise CSVFileError(f"'{self.file.name}' n'est pas un fichier csv.", e)
+            raise CSVFileError(f"'{self.filename}' n'est pas un fichier csv.", e)
         return csv_lines, dialect
 
     @property

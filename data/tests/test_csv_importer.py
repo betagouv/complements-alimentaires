@@ -4,7 +4,7 @@ from unittest.mock import patch
 from django.core.management import call_command
 from django.db.models import TextField, CharField, FloatField, IntegerField
 
-from data.csv_importer import import_csv_from_filepath
+from data.csv_importer import import_csv_from_filepath, CSVImporter
 from data.utils.importer_utils import clean_value
 from data.exceptions import CSVFileError
 from data.models import Plant, PlantFamily, PlantPart, Ingredient, Microorganism, Substance
@@ -22,10 +22,10 @@ class CSVImporterTestCase(TestCase):
         )
 
     def test_non_csv_file_is_not_imported(self):
-        file_name = "REF_ICA_INGREDIENT_AUTRE.pdf"
-        with self.assertRaises(CSVFileError) as context:
-            import_csv_from_filepath(file_name)
-        self.assertEqual("'REF_ICA_INGREDIENT_AUTRE.pdf' n'est pas un fichier csv.", context.exception.message)
+        with open("data/tests/files/raises_if_not_csv/blank.pdf") as file:
+            with self.assertRaises(CSVFileError) as context:
+                CSVImporter(file, Plant)
+            self.assertEqual("'blank.pdf' n'est pas un fichier csv.", context.exception.message)
 
     @patch("data.management.commands.load_ingredients.logger")
     def test_raises_if_not_utf_8_file(self, mocked_logger):
