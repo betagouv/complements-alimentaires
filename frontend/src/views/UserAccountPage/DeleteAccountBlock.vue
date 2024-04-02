@@ -10,8 +10,7 @@
     >
       <p>
         Votre compte sera immédiatemment désactivé (vous ne pourrez plus vous connecter). Nous supprimerons ensuite dans
-        les 3 mois l'ensemble des données personnelles relatives à votre compte, conformément à la réglementation en
-        vigueur.
+        les meilleurs délais l'ensemble des données personnelles relatives à votre compte.
       </p>
     </DsfrModal>
 

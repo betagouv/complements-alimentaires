@@ -1,7 +1,18 @@
+import functools
 from django.urls import reverse
 from django.core.exceptions import ImproperlyConfigured
 from data.factories import UserFactory
 from rest_framework.test import APITestCase
+
+
+def authenticate(func):
+    @functools.wraps(func)
+    def authenticate_and_func(*args, **kwargs):
+        authenticate.user = UserFactory.create()
+        args[0].client.force_login(user=authenticate.user)
+        return func(*args, **kwargs)
+
+    return authenticate_and_func
 
 
 class ProjectAPITestCase(APITestCase):

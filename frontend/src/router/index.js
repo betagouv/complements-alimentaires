@@ -17,7 +17,7 @@ import SignupPage from "@/views/SignupPage"
 import VerifyEmailPage from "@/views/VerifyEmailPage"
 import DashboardPage from "@/views/DashboardPage"
 import UserAccountPage from "@/views/UserAccountPage"
-import VerificationSentPage from "@/views//VerificationSentPage"
+import VerificationSentPage from "@/views/VerificationSentPage"
 
 const routes = [
   {
