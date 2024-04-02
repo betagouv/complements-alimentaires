@@ -8,7 +8,7 @@ from simple_history.utils import update_change_reason
 from simple_history.exceptions import NotHistoricalModelError
 
 
-def clean_value(self, value, field):
+def clean_value(value, field):
     if value == "NULL":
         if isinstance(field, TextField) or isinstance(field, CharField):
             return ""
@@ -32,7 +32,7 @@ def clean_value(self, value, field):
     return value
 
 
-def update_or_create_object(self, model, object_definition, default_extra_fields, change_message):
+def update_or_create_object(model, object_definition, default_extra_fields, change_message):
     model_object, created = model.objects.update_or_create(**object_definition, defaults=default_extra_fields)
     try:
         update_change_reason(model_object, change_message)
@@ -41,7 +41,7 @@ def update_or_create_object(self, model, object_definition, default_extra_fields
     return model_object, created
 
 
-def get_update_or_create_related_object(self, model, id, csv_filename):
+def get_update_or_create_related_object(model, id, csv_filename):
     """
     Indépendamment de l'ordre dans lequel les fichiers sont importés,
     les objets sont créés avec seulement leur id s'ils existent dans un fichier relation

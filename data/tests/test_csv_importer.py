@@ -4,7 +4,8 @@ from unittest.mock import patch
 from django.core.management import call_command
 from django.db.models import TextField, CharField, FloatField, IntegerField
 
-from data.csv_importer import import_csv, _clean_value
+from data.csv_importer import import_csv_from_filepath
+from data.utils.importer_utils import clean_value
 from data.exceptions import CSVFileError
 from data.models import Plant, PlantFamily, PlantPart, Ingredient, Microorganism, Substance
 
@@ -14,7 +15,7 @@ class CSVImporterTestCase(TestCase):
         file_name = "déclaration_impots_2002.csv"
 
         with self.assertRaises(CSVFileError) as context:
-            import_csv(file_name)
+            import_csv_from_filepath(file_name)
         self.assertEqual(
             "Ce nom de fichier ne ressemble pas à ceux attendus : 'déclaration_impots_2002.csv'",
             context.exception.message,
@@ -23,7 +24,7 @@ class CSVImporterTestCase(TestCase):
     def test_non_csv_file_is_not_imported(self):
         file_name = "REF_ICA_INGREDIENT_AUTRE.pdf"
         with self.assertRaises(CSVFileError) as context:
-            import_csv(file_name)
+            import_csv_from_filepath(file_name)
         self.assertEqual("'REF_ICA_INGREDIENT_AUTRE.pdf' n'est pas un fichier csv.", context.exception.message)
 
     @patch("data.management.commands.load_ingredients.logger")
@@ -37,16 +38,16 @@ class CSVImporterTestCase(TestCase):
         """TextField should be "" if no value istead of "NULL"
         FloatField should work with french decimal values with a comma
         """
-        self.assertEqual(2.5, _clean_value("2,5", FloatField()))
-        self.assertEqual(2.5, _clean_value("2.5", FloatField()))
-        self.assertEqual("2,5", _clean_value("2,5", IntegerField()))
-        self.assertEqual(None, _clean_value("NULL", IntegerField()))
-        self.assertEqual(None, _clean_value("", FloatField()))
-        self.assertEqual(None, _clean_value("", IntegerField()))
-        self.assertEqual("", _clean_value("", TextField()))
-        self.assertEqual("", _clean_value("NULL", TextField()))
-        self.assertEqual("", _clean_value("NULL", CharField()))
-        self.assertEqual("Eloides rhamnosus trulul", _clean_value(" Eloides rhamnosus trulul ", CharField()))
+        self.assertEqual(2.5, clean_value("2,5", FloatField()))
+        self.assertEqual(2.5, clean_value("2.5", FloatField()))
+        self.assertEqual("2,5", clean_value("2,5", IntegerField()))
+        self.assertEqual(None, clean_value("NULL", IntegerField()))
+        self.assertEqual(None, clean_value("", FloatField()))
+        self.assertEqual(None, clean_value("", IntegerField()))
+        self.assertEqual("", clean_value("", TextField()))
+        self.assertEqual("", clean_value("NULL", TextField()))
+        self.assertEqual("", clean_value("NULL", CharField()))
+        self.assertEqual("Eloides rhamnosus trulul", clean_value(" Eloides rhamnosus trulul ", CharField()))
 
     def test_models_created(self):
         path = "data/tests/files/test_model_creation/"

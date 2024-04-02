@@ -1,6 +1,7 @@
 import csv
 import logging
 import os
+import pathlib
 
 from functools import cached_property
 from django.db.models import (
@@ -18,7 +19,7 @@ from .models.plant import Plant, PlantPart, PlantSynonym, PlantFamily, Part
 from .models.population import Population
 from .models.substance import Substance, SubstanceSynonym
 from .models.unit import SubstanceUnit
-from .utils.field_cleaning import clean_value, update_or_create_object, get_update_or_create_related_object
+from .utils.importer_utils import clean_value, update_or_create_object, get_update_or_create_related_object
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +70,7 @@ CSV_TO_TABLE_PREFIX_MAPPING = {
     # "FAMPL"
 }
 
-PREFIX_TO_MODEL_MAPPINT = {
+PREFIX_TO_MODEL_MAPPING = {
     "INGA": Ingredient,
     "MORG": Microorganism,
     "PPLAN": PlantPart,
@@ -142,10 +143,10 @@ class CSVImporter:
         self.nb_objects_created = 0
 
     def _check_file_format(self):
-        if not self.file.endswith(".csv"):
-            msg = f"'{self.file}' n'est pas un fichier csv."
-            raise CSVFileError(msg)
-        return self.file.name
+        path = pathlib.PurePath(self.file.name)
+        if not path.suffix.lower() == ".csv":
+            raise CSVFileError(f"'{self.file}' n'est pas un fichier csv.")
+        return path.name
 
     def _check_file_encoding(self):
         try:
@@ -179,9 +180,9 @@ class CSVImporter:
         Récupération des modèles en lien par les champs de type ForeignKey
         """
         column_to_linked_model = {}
-        for field, column_name in self.django_fields_to_csv_column_mapping.iteritems():
+        for field, column_name in self.django_fields_to_csv_column_mapping.items():
             if isinstance(field, ForeignKey) or isinstance(field, ManyToManyField):
-                column_to_linked_model[column_name] = PREFIX_TO_MODEL_MAPPINT[column_name.split("_")[0]]
+                column_to_linked_model[column_name] = PREFIX_TO_MODEL_MAPPING[column_name.split("_")[0]]
         return column_to_linked_model
 
     @cached_property
@@ -282,7 +283,7 @@ class CSVImporter:
 
             self.nb_objects_created += created
             self.nb_line_in_success += 1
-        return self.linked_models.values()
+        return list(self.linked_models.values())
 
 
 def import_csv_from_filepath(csv_filepath):
@@ -303,11 +304,10 @@ def import_csv_from_filepath(csv_filepath):
         logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} en cours.")
         updated_models = csv_importer.import_csv()
         logger.info(
-            f"Import de {csv_filename} dans le modèle {model.__name__} terminé : {csv_importer.nb_row} objets importés, {csv_importer.nb_created} objets créés."
+            f"Import de {csv_filename} dans le modèle {model.__name__} terminé : {csv_importer.nb_line_in_success} objets importés, {csv_importer.nb_objects_created} objets créés."
         )
-    updated_models.add(model)
 
-    return updated_models
+    return updated_models + [model]
 
 
 def _get_model_from_csv_name(csv_filename):
