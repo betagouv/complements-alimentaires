@@ -105,7 +105,6 @@ class User(PermissionsMixin, AutoValidable, Verifiable, Deactivable, AbstractBas
                     pass
         return roles
 
-    @cached_property
     def role(self, name) -> BaseRole | None:
         """Get the given role or None if it does not exist."""
         try:
