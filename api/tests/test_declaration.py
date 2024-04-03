@@ -14,6 +14,7 @@ from data.factories import (
     IngredientFactory,
     CompanyFactory,
     SubstanceUnitFactory,
+    DeclarantFactory,
 )
 from .utils import authenticate
 
@@ -21,10 +22,21 @@ from .utils import authenticate
 class TestDeclarationApi(APITestCase):
 
     @authenticate
+    def test_create_not_allowed_without_role(self):
+        """
+        La création des déclaration est possible seulement pour les users avec
+        rôle « declarant »
+        """
+        response = self.client.post(reverse("api:create_declaration"), {}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
     def test_create_declaration_product_data(self):
         """
         Création de l'objet « déclaration » avec les données du produit
         """
+        DeclarantFactory(user=authenticate.user)
+
         conditions = [ConditionFactory.create() for _ in range(3)]
         populations = [PopulationFactory.create() for _ in range(3)]
         company = CompanyFactory.create()
@@ -108,6 +120,8 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les plantes
         """
+        DeclarantFactory(user=authenticate.user)
+
         plant = PlantFactory.create()
         plant_part = PlantPartFactory.create()
         plant.plant_parts.add(plant_part)
@@ -171,6 +185,8 @@ class TestDeclarationApi(APITestCase):
         """
         Si la plante spécifié n'existe pas, on doit lever une erreur
         """
+        DeclarantFactory(user=authenticate.user)
+
         payload = {
             "company": CompanyFactory.create().id,
             "declaredPlants": [
@@ -194,6 +210,7 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les micro-organismes
         """
+        DeclarantFactory(user=authenticate.user)
         microorganism = MicroorganismFactory.create()
 
         payload = {
@@ -248,6 +265,8 @@ class TestDeclarationApi(APITestCase):
         """
         Si le micro-organisme spécifié n'existe pas, on doit lever une erreur
         """
+        DeclarantFactory(user=authenticate.user)
+
         payload = {
             "company": CompanyFactory.create().id,
             "declaredMicroorganisms": [
@@ -271,6 +290,7 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les ingrédients
         """
+        DeclarantFactory(user=authenticate.user)
         ingredient = IngredientFactory.create()
 
         payload = {
@@ -315,6 +335,8 @@ class TestDeclarationApi(APITestCase):
         """
         Si l'ingrédient spécifié n'existe pas, on doit lever une erreur
         """
+        DeclarantFactory(user=authenticate.user)
+
         payload = {
             "company": CompanyFactory.create().id,
             "declaredIngredients": [
@@ -338,6 +360,8 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les substances
         """
+        DeclarantFactory(user=authenticate.user)
+
         substance = SubstanceFactory.create()
 
         payload = {
@@ -369,6 +393,8 @@ class TestDeclarationApi(APITestCase):
         """
         Si la substance spécifiée n'existe pas, on doit lever une erreur
         """
+        DeclarantFactory(user=authenticate.user)
+
         payload = {
             "company": CompanyFactory.create().id,
             "declaredSubstances": [
@@ -392,6 +418,8 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les substances générées à partir des autres éléments
         """
+        DeclarantFactory(user=authenticate.user)
+
         substance = SubstanceFactory.create()
         unit = SubstanceUnitFactory.create()
 
@@ -427,6 +455,8 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les pièces jointes
         """
+        DeclarantFactory(user=authenticate.user)
+
         current_dir = os.path.dirname(os.path.realpath(__file__))
 
         blue_image_base_64 = None
