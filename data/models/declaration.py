@@ -110,7 +110,10 @@ class Declaration(Historisable, TimeStampable):
 
 class DeclaredPlant(Historisable):
     declaration = models.ForeignKey(
-        Declaration, related_name="declared_plants", verbose_name="déclaration", on_delete=models.CASCADE
+        Declaration,
+        related_name="declared_plants",
+        verbose_name=Declaration._meta.verbose_name,
+        on_delete=models.CASCADE,
     )
     plant = models.ForeignKey(
         Plant, null=True, blank=True, verbose_name="plante ajoutée par l'user", on_delete=models.RESTRICT
@@ -155,7 +158,10 @@ class DeclaredMicroorganism(Historisable):
 
 class DeclaredIngredient(Historisable):
     declaration = models.ForeignKey(
-        Declaration, related_name="declared_ingredients", verbose_name="déclaration", on_delete=models.CASCADE
+        Declaration,
+        related_name="declared_ingredients",
+        verbose_name=Declaration._meta.verbose_name,
+        on_delete=models.CASCADE,
     )
     ingredient = models.ForeignKey(
         Ingredient, null=True, blank=True, verbose_name="ingrédient ajouté par l'user", on_delete=models.RESTRICT
@@ -170,7 +176,10 @@ class DeclaredIngredient(Historisable):
 
 class DeclaredSubstance(Historisable):
     declaration = models.ForeignKey(
-        Declaration, related_name="declared_substances", verbose_name="déclaration", on_delete=models.CASCADE
+        Declaration,
+        related_name="declared_substances",
+        verbose_name=Declaration._meta.verbose_name,
+        on_delete=models.CASCADE,
     )
     substance = models.ForeignKey(
         Substance, null=True, blank=True, verbose_name="substance ajoutée par l'user", on_delete=models.RESTRICT
@@ -185,7 +194,10 @@ class DeclaredSubstance(Historisable):
 
 class ComputedSubstance(Historisable):
     declaration = models.ForeignKey(
-        Declaration, related_name="computed_substances", verbose_name="déclaration", on_delete=models.CASCADE
+        Declaration,
+        related_name="computed_substances",
+        verbose_name=Declaration._meta.verbose_name,
+        on_delete=models.CASCADE,
     )
     substance = models.ForeignKey(
         Substance, null=True, blank=True, verbose_name="substance ajoutée par l'user", on_delete=models.RESTRICT
@@ -235,7 +247,7 @@ class Attachment(Historisable):
         verbose_name="type",
     )
     declaration = models.ForeignKey(
-        Declaration, related_name="attachments", verbose_name="déclaration", on_delete=models.CASCADE
+        Declaration, related_name="attachments", verbose_name=Declaration._meta.verbose_name, on_delete=models.CASCADE
     )
     file = models.FileField(
         null=True, blank=True, upload_to="declaration-attachments/%Y/%m/%d/", verbose_name="pièce jointe"
