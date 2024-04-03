@@ -25,8 +25,8 @@ class TestDeclarationApi(APITestCase):
         """
         Création de l'objet « déclaration » avec les données du produit
         """
-        conditions = [ConditionFactory.create() for i in range(3)]
-        populations = [PopulationFactory.create() for i in range(3)]
+        conditions = [ConditionFactory.create() for _ in range(3)]
+        populations = [PopulationFactory.create() for _ in range(3)]
         company = CompanyFactory.create()
         unit = SubstanceUnitFactory.create()
 
