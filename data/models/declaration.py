@@ -59,7 +59,7 @@ class Declaration(Historisable, TimeStampable):
         blank=True,
         help_text="bâtiment, immeuble, escalier et numéro d’appartement",
     )
-    postal_code = models.TextField("code postal", blank=True, max_length=10)
+    postal_code = models.CharField("code postal", blank=True, max_length=10)
     city = models.TextField("ville ou commune", blank=True)
     cedex = models.TextField("CEDEX", blank=True)
     country = models.TextField("pays", blank=True, choices=CountryChoices)
