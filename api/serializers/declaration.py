@@ -59,7 +59,7 @@ class DeclaredListSerializer(serializers.ListSerializer):
     """
 
     def update(self, instance, validated_data):
-        instance_mapping = {instance.id: instance for instance in instance}
+        instance_mapping = {element.id: element for element in instance}
 
         declared_items = []
 
