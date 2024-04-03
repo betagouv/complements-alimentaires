@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from data.behaviours import Historisable, TimeStampable
 from data.choices import CountryChoices
 from data.models import (
@@ -13,7 +14,6 @@ from data.models import (
     Company,
 )
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.auth import get_user_model
 
 
 class Declaration(Historisable, TimeStampable):
@@ -40,7 +40,11 @@ class Declaration(Historisable, TimeStampable):
         verbose_name="Status",
     )
     author = models.ForeignKey(
-        get_user_model(), null=True, on_delete=models.SET_NULL, verbose_name="auteur", related_name="declarations"
+        settings.AUTH_USER_MODEL,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name="auteur",
+        related_name="declarations",
     )
     company = models.ForeignKey(
         Company, null=True, on_delete=models.SET_NULL, verbose_name="entreprise", related_name="declarations"
