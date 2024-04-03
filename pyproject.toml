@@ -107,7 +107,7 @@ extend-exclude = [
     "clevercloud",
 ]
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 10
 
 [tool.ruff.lint]
@@ -116,10 +116,7 @@ ignore = ["E501"]
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 
-[tool.ruff.format]
-docstring-code-format = true
-
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 section-order = [
     "future",
     "standard-library",
@@ -128,8 +125,13 @@ section-order = [
     "first-party",
     "local-folder",
 ]
-[tool.ruff.isort.sections]
+
+[tool.ruff.lint.isort.sections]
 "django" = ["django"]
+
+
+[tool.ruff.format]
+docstring-code-format = true
 
 
 [build-system]
