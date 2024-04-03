@@ -74,10 +74,13 @@ class Declaration(Historisable, TimeStampable):
     galenic_formulation = models.TextField(
         blank=True, verbose_name="forme galénique"
     )  # TODO : à terme mettre des valeurs de la DB
-    unit_quantity = models.FloatField(null=True, verbose_name="poids ou volume d'une unité de consommation")
+    unit_quantity = models.FloatField(
+        null=True, blank=True, verbose_name="poids ou volume d'une unité de consommation"
+    )
     unit_measurement = models.ForeignKey(
         SubstanceUnit,
         null=True,
+        blank=True,
         on_delete=models.RESTRICT,
         verbose_name="unité de mesure pour une unité de consommation",
     )
