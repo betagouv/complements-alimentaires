@@ -10,7 +10,7 @@ class SubstanceFactory(factory.django.DjangoModelFactory):
     siccrf_name = factory.Faker("text", max_nb_chars=20)
     ca_name = factory.Faker("text", max_nb_chars=20)
     siccrf_name_en = factory.Faker("text", max_nb_chars=20)
-    siccrf_id = factory.Faker("random_int", min=1, max=2000)
+    siccrf_id = factory.Sequence(lambda n: n + 1)
     siccrf_must_specify_quantity = factory.Faker("boolean")
     siccrf_max_quantity = factory.Faker("random_int", min=0, max=20)
     siccrf_nutritional_reference = factory.Faker("random_int", min=0, max=20)
