@@ -57,7 +57,7 @@ class TestDeclarationApi(APITestCase):
             "warning": "Ne pas prendre plus de 20",
         }
 
-        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         declaration = Declaration.objects.get(pk=response.json()["id"])
@@ -141,7 +141,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
@@ -182,7 +182,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         body = response.json()
@@ -221,7 +221,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
@@ -259,7 +259,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         body = response.json()
@@ -293,7 +293,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
@@ -326,7 +326,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         body = response.json()
@@ -353,7 +353,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
@@ -380,7 +380,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         body = response.json()
@@ -409,7 +409,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
@@ -451,7 +451,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
