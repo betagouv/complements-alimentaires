@@ -49,17 +49,13 @@ repos:
   - id: pyupgrade
   repo: https://github.com/asottile/pyupgrade
   rev: v3.15.0
-- hooks:
-  - id: black
-    args: [--line-length=119]
-  repo: https://github.com/ambv/black
-  rev: 24.3.0
-- hooks:
-  - args:
-    - --config=.flake8
-    id: flake8
-  repo: https://github.com/pycqa/flake8
-  rev: 6.1.0
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.3.5
+  hooks:
+    # Run the linter.
+    - id: ruff
+    # Run the formatter.
+    - id: ruff-format
 - hooks:
   - id: python-safety-dependencies-check
     files: pyproject.toml
