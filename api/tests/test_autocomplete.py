@@ -16,14 +16,14 @@ class TestAutocomplete(APITestCase):
         """
         A missing autocomplete term is considered a bad request
         """
-        response = self.client.post(f"{reverse('substance_autocomplete')}", {})
+        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_short_autocomplete_term(self):
         """
         A autocomplete term of less than three chars is considered a bad request
         """
-        response = self.client.post(f"{reverse('substance_autocomplete')}", {"search": "ab"})
+        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"search": "ab"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_autocomplete_name(self):
@@ -45,7 +45,7 @@ class TestAutocomplete(APITestCase):
         # Ne devrait pas apparaître
         PlantFactory.create(ca_name="vanille")
 
-        response = self.client.post(f"{reverse('substance_autocomplete')}", {"term": autocomplete_term})
+        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json()
 
@@ -78,7 +78,7 @@ class TestAutocomplete(APITestCase):
         # Ne devrait pas apparaître
         PlantFactory.create(ca_name="vanille")
 
-        response = self.client.post(f"{reverse('substance_autocomplete')}", {"term": autocomplete_term})
+        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json()
 

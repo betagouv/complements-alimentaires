@@ -14,7 +14,7 @@ class TestConditionApi(APITestCase):
             ConditionFactory.create(missing_import_data=True, is_obsolete=False) for i in range(2)
         ]
         obsolete_conditions = [ConditionFactory.create(missing_import_data=True, is_obsolete=True) for i in range(3)]
-        response = self.client.get(reverse("condition_list"))
+        response = self.client.get(reverse("api:condition_list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
 

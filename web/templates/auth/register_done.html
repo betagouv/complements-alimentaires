@@ -10,7 +10,7 @@
         <p>Vérifiez votre dossier spam, vos courriers indésirables, ou tout autre dossier pour voir si le message a été filtré par votre fournisseur de messagerie. </p>
     </div>
     <hr aria-hidden="true" />
-    <form method="post" action="{% url 'registration_email' %}">
+    <form method="post" action="{% url 'web:registration_email' %}">
         {% csrf_token %}
         <input type="hidden" name="username" value="{{ username }}">
         <button type="submit">Renvoyer email de confirmation</button>
