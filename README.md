@@ -168,8 +168,15 @@ Pour pouvoir utiliser l'application et le backoffice avec des données proches d
 python manage.py myloaddata
 ```
 
-Cela créera aussi un compte administrateur (nom d'utilisateur : `admin`, mot de passe : `azerty`).
 Pour plus d'infos sur le fonctionnement des fixtures, [voir ce document](docs/fixtures.md)
+
+Cela créera aussi un compte administrateur (nom d'utilisateur : `admin`, mot de passe : `azerty`).
+
+Vous pouvez aussi créer votre propre compte administrateur avec la commande :
+
+```
+python manage.py createsuperuser
+```
 
 Vous pouvez aussi charger des éléments (ingrédients, substances, etc.) dans la base avec cette commande :
 
