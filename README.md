@@ -160,19 +160,26 @@ cd frontend
 npm run test
 ```
 
-## Création / import de données initiales
+## Import de données initiales (fixtures)
 
-#### Creation d'un superuser
+Pour pouvoir utiliser l'application et le backoffice avec des données proches de données réelles, il est nécessaire d'importer des données. Pour cela, vous pouvez (ce n'est pas obligatoire) importer les fixtures (données hors éléments) présentes dans le projet :
 
-Afin de pouvoir s'identifier dans le backoffice (sous /admin), il est nécessaire de créer un utilisateur admin avec tous les droits. Pour ce faire, vous pouvez en console lancer :
+```
+python manage.py myloaddata
+```
+
+Pour plus d'infos sur le fonctionnement des fixtures, [voir ce document](docs/fixtures.md)
+
+Cela créera aussi un compte administrateur (nom d'utilisateur : `admin`, mot de passe : `azerty`).
+
+Vous pouvez aussi créer votre propre compte administrateur avec la commande :
 
 ```
 python manage.py createsuperuser
 ```
 
-#### Import de données dans les tables ingrédient
+Vous pouvez aussi charger des éléments (ingrédients, substances, etc.) dans la base avec cette commande :
 
-Pour pouvoir tester l'application et le backoffice avec des données réelles, il est nécessaire d'importer des données. Pour cela :
 ```
 python manage.py load_ingredients
 ```

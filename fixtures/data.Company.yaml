@@ -1,0 +1,12 @@
+- model: data.company
+  pk: 1
+  fields:
+    address: 34 rue des peupliers
+    additional_details: Bâtiment C
+    postal_code: '92370'
+    city: Chaville
+    cedex: ''
+    country: FR
+    social_name: TNTL Corp
+    commercial_name: Too Nice to Leave
+    siret: '90846787100099'
