@@ -9,8 +9,8 @@ from .utils import ProjectAPITestCase
 User = get_user_model()
 
 
-class TestGetUser(ProjectAPITestCase):
-    viewname = "user"
+class TestGetLoggedUser(ProjectAPITestCase):
+    viewname = "get_logged_user"
 
     def test_unauthenticated_logged_user_call(self):
         """
@@ -57,7 +57,7 @@ class TestGetUser(ProjectAPITestCase):
 
 
 class TestCreateUser(ProjectAPITestCase):
-    viewname = "user"
+    viewname = "user_create"
 
     def setUp(self):
         self.user_data = dict(
@@ -67,14 +67,14 @@ class TestCreateUser(ProjectAPITestCase):
     def test_create_user_ok(self):
         response = self.post(self.url(), self.user_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIn("user_id", response.data)
-        new_user = User.objects.get(id=response.data["user_id"])
+        self.assertIn("id", response.data)
+        new_user = User.objects.get(id=response.data["id"])
         self.assertEqual(new_user.email, self.user_data["email"])
         self.assertTrue(new_user.is_active)
         self.assertFalse(new_user.is_verified)
         self.assertFalse(new_user.is_superuser)
         self.assertFalse(new_user.is_staff)
-        self.assertEqual(new_user.roles, [])
+        self.assertEqual(new_user.roles(), [])
 
     def test_create_user_with_existing_email(self):
         email = "eren@example.com"
@@ -102,7 +102,7 @@ class TestCreateUser(ProjectAPITestCase):
 
 
 class TestEditUser(ProjectAPITestCase):
-    viewname = "user"
+    viewname = "user_update_destroy"
 
     def setUp(self):
         self.user_data = dict(last_name="Cook", first_name="Tim", email="tim.cook@example.com", username="tcook")
@@ -111,7 +111,7 @@ class TestEditUser(ProjectAPITestCase):
     def test_edit_user_ok(self):
         self.login(self.user)
         new_last_name = "Cookie"
-        response = self.put(self.url(), self.user_data | dict(last_name=new_last_name))
+        response = self.put(self.url(pk=self.user.id), self.user_data | dict(last_name=new_last_name))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["last_name"], new_last_name)
         self.user.refresh_from_db()
@@ -121,7 +121,7 @@ class TestEditUser(ProjectAPITestCase):
     def test_edit_user_with_email_changed_ok(self):
         self.login(self.user)
         new_email = "tim.cookie@example.com"
-        response = self.put(self.url(), self.user_data | dict(email=new_email))
+        response = self.put(self.url(pk=self.user.id), self.user_data | dict(email=new_email))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["email"], new_email)
         self.user.refresh_from_db()
@@ -132,24 +132,37 @@ class TestEditUser(ProjectAPITestCase):
         existing_email = "sundar.pichai@example.com"
         UserFactory(email=existing_email)
         self.login(self.user)
-        response = self.put(self.url(), self.user_data | dict(email=existing_email))
+        response = self.put(self.url(pk=self.user.id), self.user_data | dict(email=existing_email))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("email", response.data["field_errors"])
 
     def test_edit_user_with_missing_data_ko(self):
         self.login(self.user)
-        response = self.put(self.url(), {})
+        response = self.put(self.url(pk=self.user.id), {})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # NOTE: first_name and last_name are not mandatory at back-end level (should they?)
         self.assertEqual(len(response.data["field_errors"]), 2)
 
-    def test_edit_user_unauthenticated(self):
-        response = self.put(self.url(), {})
+    def test_edit_user_other_than_me_ko(self):
+        not_me = UserFactory()
+        self.login(self.user)
+        response = self.put(self.url(pk=not_me.id))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_edit_user_unauthenticated(self):
+        response = self.put(self.url(pk=self.user.id), {})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_user_ko(self):
+        """Ensure that GET method has been deactivated on the RetrieveUpdateDestroyAPIView
+        (this test should not be exactly there, but is here by convenience)
+        """
+        response = self.get(self.url(pk=self.user.id))
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class TestDeleteUser(ProjectAPITestCase):
-    viewname = "user"
+    viewname = "user_update_destroy"
 
     def setUp(self):
         self.user = UserFactory(is_verified=True)
@@ -157,13 +170,19 @@ class TestDeleteUser(ProjectAPITestCase):
     def test_delete_user_ok(self):
         self.assertTrue(self.user.is_active)
         self.login(self.user)
-        response = self.delete(self.url())
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.delete(self.url(pk=self.user.id))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.user.refresh_from_db()
         self.assertFalse(self.user.is_active)
 
+    def test_delete_user_other_than_me_ko(self):
+        not_me = UserFactory()
+        self.login(self.user)
+        response = self.delete(self.url(pk=not_me.id))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_delete_user_unauthenticated(self):
-        response = self.delete(self.url())
+        response = self.delete(self.url(pk=self.user.id))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 

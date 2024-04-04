@@ -7,9 +7,12 @@ from django.db import transaction
 from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import MethodNotAllowed
+from api.permissions import IsLoggedUser
 
 from api.exception_handling import ProjectAPIException
 from api.serializers import (
@@ -36,12 +39,7 @@ def _send_verification_mail(user):
     )
 
 
-class UserView(APIView):
-    """La gestion d'utilisateur, particulièrement adaptée à l'architecture REST"""
-
-    def get_permissions(self):
-        return [AllowAny()] if self.request.method in ["GET", "POST"] else [IsAuthenticated()]
-
+class LoggedUserView(APIView):
     def get(self, request, *args, **kwargs):
         """Retourne les données d'un utilisateur connecté"""
 
@@ -50,33 +48,39 @@ class UserView(APIView):
             return Response(LoggedUserSerializer(user).data)
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
-    def post(self, request, *args, **kwargs):
-        """Créé un utilisateur (inscription)"""
 
-        serializer = CreateUserSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            new_user = serializer.save()
-            _send_verification_mail(new_user)
-            return Response({"user_id": new_user.id}, status=status.HTTP_201_CREATED)
+class UserCreateView(CreateAPIView):
+    """Inscription d'un utilisateur connecté"""
+
+    permission_classes = [AllowAny]
+    serializer_class = CreateUserSerializer
+
+    def perform_create(self, serializer):
+        new_user = serializer.save()
+        _send_verification_mail(new_user)
+        return new_user
+
+
+class UserUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+    """
+    - Modification d'un utilisateur connecté (hors mot de passe)
+    - Désactivation d'un utilisateur
+    """
+
+    permission_classes = [IsLoggedUser]
+    serializer_class = EditUserSerializer
+    queryset = get_user_model().objects.active()
 
     @transaction.atomic
-    def put(self, request, *args, **kwargs):
-        """Modifie le profil d'un utilisateur (hors changement de mot de passe)"""
-
-        user = request.user
+    def perform_update(self, serializer):
+        user = serializer.instance
         old_email = user.email
-        serializer = EditUserSerializer(user, data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            if user.email != old_email:
-                user.unverify()
-                _send_verification_mail(user)
-            return Response(LoggedUserSerializer(user).data)
+        serializer.save()
+        if user.email != old_email:
+            user.unverify()
+            _send_verification_mail(user)
 
-    def delete(self, request, *args, **kwargs):
-        """Désactive l'utilisateur, sans le supprimer en base"""
-
-        user = request.user
+    def perform_destroy(self, user):
         user.deactivate()
         send_mail(
             subject="Nouvelle demande de suppression de compte",
@@ -84,7 +88,9 @@ class UserView(APIView):
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[settings.CONTACT_EMAIL],
         )
-        return Response({}, status=status.HTTP_200_OK)
+
+    def get(self, request, *args, **kwargs):
+        raise MethodNotAllowed("Retrieve feature should not be used here")
 
 
 class ChangePasswordView(APIView):
@@ -97,22 +103,6 @@ class ChangePasswordView(APIView):
             user.set_password(serializer.validated_data["new_password"])
             user.save()
             return Response({}, status=status.HTTP_200_OK)
-
-
-class DeleteUserView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def delete(self, request, *args, **kwargs):
-        """NOTE: this does not delete anything actually"""
-        user = request.user
-        user.deactivate()
-        send_mail(
-            subject="Nouvelle demande de suppression de compte",
-            message=f"{user.name} (id: {user.id}) a demandé la suppression de son compte.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.CONTACT_EMAIL],
-        )
-        return Response({})
 
 
 class SendNewSignupVerificationEmailView(APIView):

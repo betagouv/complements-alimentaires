@@ -105,7 +105,7 @@ const {
   execute,
   isFetching,
 } = useFetch(
-  `/api/v1/user/`,
+  `/api/v1/users/${loggedUser.value.id}`,
   { headers: headers() },
   {
     immediate: false,

@@ -24,7 +24,9 @@ urlpatterns = {
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
     # User
-    path("user/", views.UserView.as_view(), name="user"),  # GET, PUT, POST, DELETE available
+    path("get-logged-user/", views.LoggedUserView.as_view(), name="get_logged_user"),
+    path("users/", views.UserCreateView.as_view(), name="user_create"),
+    path("users/<int:pk>", views.UserUpdateDestroyView.as_view(), name="user_update_destroy"),
     path("change-password/", views.ChangePasswordView.as_view(), name="change_password"),
     path("generate-username/", views.GenerateUsernameView.as_view(), name="generate_username"),
     path("verify-email/", views.VerifyEmailView.as_view(), name="verify_email"),

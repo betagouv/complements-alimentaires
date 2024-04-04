@@ -26,13 +26,15 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 import { logOut } from "@/utils/auth"
+import { useRootStore } from "@/stores/root"
 
+const store = useRootStore()
 const opened = ref(false)
 const close = () => (opened.value = false)
 
 // Main request definition
 const { response, execute } = useFetch(
-  `/api/v1/user`,
+  `/api/v1/users/${store.loggedUser.id}`,
   { headers: headers() },
   {
     immediate: false,

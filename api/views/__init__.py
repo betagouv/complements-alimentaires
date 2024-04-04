@@ -3,6 +3,7 @@ from .autocomplete import AutocompleteView  # noqa: F401
 from .blog import BlogPostsView, BlogPostView  # noqa: F401
 from .company import CountryListView  # noqa: F401
 from .condition import ConditionListView  # noqa: F401
+from .declaration import DeclarationCreateApiView  # noqa: F401
 from .ingredient import IngredientRetrieveView  # noqa: F401
 from .microorganism import MicroorganismRetrieveView  # noqa: F401
 from .newsletter import SubscribeNewsletter  # noqa: F401
@@ -16,8 +17,9 @@ from .user import (  # noqa: F401
     ChangePasswordView,
     GenerateUsernameView,
     SendNewSignupVerificationEmailView,
-    UserView,
+    UserUpdateDestroyView,
+    UserCreateView,
+    LoggedUserView,
     VerifyEmailView,
 )
 from .webinar import WebinarView  # noqa
-from .declaration import DeclarationCreateApiView  # noqa: F401

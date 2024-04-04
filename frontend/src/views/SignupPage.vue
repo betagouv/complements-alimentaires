@@ -107,7 +107,7 @@ const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Main request definition
 const { data, response, execute, isFetching } = useFetch(
-  "/api/v1/user/",
+  "/api/v1/users/",
   {
     headers: headers(),
   },
@@ -127,7 +127,7 @@ const submit = async () => {
   await execute()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
-    router.push({ name: "VerificationSentPage", query: { email: state.value.email, userId: data.value.userId } })
+    router.push({ name: "VerificationSentPage", query: { email: state.value.email, userId: data.value.id } })
   }
 }
 

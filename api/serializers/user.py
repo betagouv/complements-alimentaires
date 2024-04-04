@@ -57,8 +57,12 @@ class LoggedUserSerializer(BaseUserSerializer):
 class CreateUserSerializer(BaseUserSerializer):
     class Meta:
         model = User
-        fields = BaseUserSerializer.Meta.fields + ("password",)
+        fields = BaseUserSerializer.Meta.fields + (
+            "id",
+            "password",
+        )
 
+    id = serializers.IntegerField(read_only=True)
     password = serializers.CharField(
         write_only=True, required=True
     )  # empêche le retour du hash du mdp dans la réponse

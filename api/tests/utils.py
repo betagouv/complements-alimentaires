@@ -22,7 +22,8 @@ class ProjectAPITestCase(APITestCase):
     def url(self, *args, **kwargs):
         if not self.viewname:
             raise ImproperlyConfigured("Please provide a viewname attribute")
-        return reverse(f"{self.namespace}:{self.viewname}", *args, **kwargs)
+        url = reverse(f"{self.namespace}:{self.viewname}", args=args, kwargs=kwargs)
+        return url
 
     def login(self, user=None):
         """Login the provided user, or a new one if not provided. Return the user"""
