@@ -35,22 +35,22 @@ jobs:
 
       - name: Test Django
         env:
-          DEBUG: True
-          SECRET: test
-          FORCE_HTTPS: False
-          SECURE: False
-          ALLOWED_HOSTS: localhost
-          ENVIRONMENT: ci
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: postgres
-          HOSTNAME: localhost
-          STATICFILES_STORAGE: django.contrib.staticfiles.storage.StaticFilesStorage
-          DEFAULT_FILE_STORAGE: django.core.files.storage.FileSystemStorage
-          DEFAULT_FROM_EMAIL: test@example.com
-          CONTACT_EMAIL: test@example.com
-          EMAIL_BACKEND: django.core.mail.backends.dummy.EmailBackend
+          DJ_DEBUG: True
+          DJ_SECRET: test
+          DJ_FORCE_HTTPS: False
+          DJ_SECURE: False
+          DJ_ALLOWED_HOSTS: localhost
+          DJ_ENVIRONMENT: ci
+          DJ_DB_USER: postgres
+          DJ_DB_PASSWORD: postgres
+          DJ_DB_HOST: localhost
+          DJ_DB_PORT: 5432
+          DJ_DB_NAME: postgres
+          DJ_HOSTNAME: localhost
+          DJ_STATICFILES_STORAGE: django.contrib.staticfiles.storage.StaticFilesStorage
+          DJ_DEFAULT_FILE_STORAGE: django.core.files.storage.FileSystemStorage
+          DJ_DEFAULT_FROM_EMAIL: test@example.com
+          DJ_CONTACT_EMAIL: test@example.com
+          DJ_EMAIL_BACKEND: django.core.mail.backends.dummy.EmailBackend
         run: |
           python3 manage.py test
