@@ -4,6 +4,7 @@ import os
 import pathlib
 
 from functools import cached_property
+
 from django.db.models import (
     ForeignKey,
     ManyToManyField,
@@ -52,21 +53,21 @@ RELATION_CSV = [
 ]
 
 # Établi le préfix des champs du csv
-CSV_TO_TABLE_PREFIX_MAPPING = {
-    "REF_ICA_INGREDIENT_AUTRE.csv": "INGA",
-    "REF_ICA_MICRO_ORGANISME.csv": "MORG",
-    "REF_ICA_PARTIE_PLANTE.csv": "PPLAN",
-    "REF_ICA_PLANTE.csv": "PLTE",
-    "REF_ICA_SUBSTANCE_ACTIVE.csv": "SBSACT",
-    "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": "SYNAO",
-    "REF_ICA_PLANTE_SYNONYME.csv": "SYNPLA",
-    "REF_ICA_SUBSTANCE_ACTIVE_SYNONYME.csv": "SYNSBSTA",
+MODEL_TO_TABLE_PREFIX_MAPPING = {
+    Ingredient: "INGA",
+    Microorganism: "MORG",
+    PlantPart: "PPLAN",
+    Plant: "PLTE",
+    Substance: "SBSACT",
+    IngredientSynonym: "SYNAO",
+    PlantSynonym: "SYNPLA",
+    SubstanceSynonym: "SYNSBSTA",
     # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
-    "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
-    "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
-    "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": "",
-    "REF_ICA_PARTIE_UTILE.csv": "",
-    "POPULATION.csv": "",
+    # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
+    # "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
+    # "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": "",
+    # "REF_ICA_PARTIE_UTILE.csv": "",
+    # "POPULATION.csv": "",
     # "FAMPL"
 }
 
@@ -130,6 +131,9 @@ AUTOMATICALLY_FILLED = [
 
 class CSVImporter:
     def __init__(self, file, model, is_relation=False, mapping=None):
+        """Initialise un CSVImporter avec le fichier source, le modèle de destination, etc
+        :param file: peut être de type InMemoryUploadedFile ou _io.BufferedReader
+        """
         self.file = file
         self.filename = self._check_file_format()
         self.lines, self.dialect = self._check_file_encoding()
@@ -161,7 +165,6 @@ class CSVImporter:
             except UnicodeDecodeError as e:
                 raise CSVFileError(f"'{self.filename}' n'est pas un fichier unicode.", e)
         try:
-
             csv_lines = csv_string.splitlines()
             dialect = csv.Sniffer().sniff(csv_lines[0])
         except csv.Error as e:
@@ -195,7 +198,7 @@ class CSVImporter:
 
     @cached_property
     def prefix(self):
-        return CSV_TO_TABLE_PREFIX_MAPPING[self.filename]
+        return MODEL_TO_TABLE_PREFIX_MAPPING[self.model]
 
     @cached_property
     def primary_key_label(self):

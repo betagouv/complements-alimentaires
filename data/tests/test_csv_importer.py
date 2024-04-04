@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -30,11 +31,20 @@ class CSVImporterTestCase(TestCase):
             self.assertEqual("'blank.pdf' n'est pas un fichier csv.", context.exception.message)
 
     @patch("data.management.commands.load_ingredients.logger")
-    def test_raises_if_not_utf_8_file(self, mocked_logger):
+    def test_raises_if_not_unicode_file(self, mocked_logger):
         test_path = f"{self.TEST_DIR_PATH}/raises_if_not_utf_8_file/"
         call_command("load_ingredients", directory=test_path)
 
         mocked_logger.error.assert_called_with("'REF_ICA_PLANTE.csv' n'est pas un fichier unicode.")
+
+    def test_accepts_utf_8_and_utf_16_files(self):
+        test_path = f"{self.TEST_DIR_PATH}/accepted_encodings/"
+        for filepath in os.listdir(test_path):
+            with open(os.path.join(test_path, filepath), "rb") as file:
+                csv_importer = CSVImporter(file, PlantPart)
+                _ = csv_importer.import_csv()
+            self.assertEqual(csv_importer.nb_line_in_success, 135)
+            self.assertIn(csv_importer.nb_objects_created, [0, 135])
 
     def test_clean_values(self):
         """TextField should be "" if no value istead of "NULL"
