@@ -149,11 +149,19 @@ class CSVImporter:
         return path.name
 
     def _check_file_encoding(self):
+        """
+        2 encoding sont possibles : UTF-8 et UTF-16
+        """
         try:
-            csv_string = self.file.read().decode("utf-8-sig")
-        except UnicodeDecodeError as e:
-            raise CSVFileError(f"'{self.filename}' n'est pas un fichier unicode.", e)
+            raw_file = self.file.read()
+            csv_string = raw_file.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            try:
+                csv_string = raw_file.decode("utf-16")
+            except UnicodeDecodeError as e:
+                raise CSVFileError(f"'{self.filename}' n'est pas un fichier unicode.", e)
         try:
+
             csv_lines = csv_string.splitlines()
             dialect = csv.Sniffer().sniff(csv_lines[0])
         except csv.Error as e:
