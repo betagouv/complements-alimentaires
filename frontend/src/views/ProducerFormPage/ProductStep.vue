@@ -106,7 +106,7 @@
     <DsfrInput v-model="payload.instructions" label-visible label="Mode d'emploi" />
   </DsfrInputGroup>
   <DsfrInputGroup class="max-w-2xl mt-6">
-    <DsfrInput is-textarea v-model="payload.warnings" label-visible label="Mise en garde et avertissement" />
+    <DsfrInput is-textarea v-model="payload.warning" label-visible label="Mise en garde et avertissement" />
   </DsfrInputGroup>
   <h2 class="fr-h6 !mt-8">
     <v-icon class="mr-1" name="ri-file-user-fill" />
@@ -137,7 +137,12 @@
         :key="`condition-${condition.id}`"
         class="flex col-span-6 sm:col-span-3 lg:col-span-2"
       >
-        <input :id="`condition-${condition.id}`" type="checkbox" v-model="payload.conditions" :value="condition.id" />
+        <input
+          :id="`condition-${condition.id}`"
+          type="checkbox"
+          v-model="payload.conditionsNotRecommended"
+          :value="condition.id"
+        />
         <label :for="`condition-${condition.id}`" class="fr-label ml-2">{{ condition.name }}</label>
       </div>
     </div>
