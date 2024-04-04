@@ -185,7 +185,7 @@ class TestEditUser(ProjectAPITestCase):
         self.assertFalse(self.user.is_verified)
 
     def test_edit_user_with_existing_email_ko(self):
-        existing_email = "sundar.pichai@exemple.com"
+        existing_email = "sundar.pichai@example.com"
         UserFactory(email=existing_email)
         self.login(self.user)
         response = self.post(self.url(), self.user_data | dict(email=existing_email))
