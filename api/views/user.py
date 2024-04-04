@@ -25,9 +25,9 @@ from ..utils.urls import get_base_url
 User = get_user_model()
 
 
-def _send_verification_mail(request, user):
+def _send_verification_mail(user):
     new_token = MagicLinkToken.objects.create(user=user, usage=MagicLinkUsage.VERIFY_EMAIL_ADDRESS)
-    verification_url = urljoin(get_base_url(request), new_token.as_url(key=new_token.key))
+    verification_url = urljoin(get_base_url(), new_token.as_url(key=new_token.key))
     send_mail(
         subject="Vérifiez votre adresse e-mail",
         message=f"Cliquez sur le lien suivant pour vérifier votre adresse e-mail : {verification_url}",
@@ -56,7 +56,7 @@ class UserView(APIView):
         serializer = CreateUserSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             new_user = serializer.save()
-            _send_verification_mail(request, new_user)
+            _send_verification_mail(new_user)
             return Response({"user_id": new_user.id}, status=status.HTTP_201_CREATED)
 
     @transaction.atomic
@@ -70,7 +70,7 @@ class UserView(APIView):
             serializer.save()
             if user.email != old_email:
                 user.unverify()
-                _send_verification_mail(request, user)
+                _send_verification_mail(user)
             return Response(LoggedUserSerializer(user).data)
 
     def delete(self, request, *args, **kwargs):
@@ -118,7 +118,7 @@ class DeleteUserView(APIView):
 class SendNewSignupVerificationEmailView(APIView):
     def get(self, request, user_id, *args, **kwargs):
         user = get_object_or_404(User, id=user_id)
-        _send_verification_mail(request, user)
+        _send_verification_mail(user)
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
