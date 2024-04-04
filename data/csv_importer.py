@@ -14,11 +14,22 @@ from django.db.models import (
 from .exceptions import CSVFileError
 
 # Import the model
-from .models.ingredient import Ingredient, IngredientSynonym
-from .models.microorganism import Microorganism
-from .models.plant import Plant, PlantPart, PlantSynonym, PlantFamily, Part
+from .models import (
+    Ingredient,
+    IngredientSynonym,
+    Microorganism,
+    Plant,
+    PlantPart,
+    PlantSynonym,
+    PlantFamily,
+    Part,
+    Substance,
+    SubstanceSynonym,
+)
+
+# from .models.condition import Condition
+from .models.effect import Effect
 from .models.population import Population
-from .models.substance import Substance, SubstanceSynonym
 from .models.unit import SubstanceUnit
 from .utils.importer_utils import clean_value, update_or_create_object, get_update_or_create_related_object
 
@@ -44,6 +55,7 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_MOORG_SUBSTANCE.csv": "à récuperer",
     "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": Part,
     "REF_ICA_PARTIE_UTILE.csv": Part,
+    "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
 }
 
 # Le fichier REF_ICA_PARTIE_PL_A_SURVEILLER n'est pas traité comme une relation car il correspond à un model à part entière
@@ -65,6 +77,7 @@ class CSVImporter:
         "SYNSBSTA": SubstanceSynonym,
         "FAMPL": PlantFamily,
         "UNT": SubstanceUnit,
+        "OBJEFF": Effect,
         # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
         # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
         # "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
