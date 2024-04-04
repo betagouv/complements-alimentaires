@@ -20,3 +20,4 @@ from .user import (  # noqa: F401
     VerifyEmailView,
 )
 from .webinar import WebinarView  # noqa
+from .declaration import DeclarationCreateApiView  # noqa: F401

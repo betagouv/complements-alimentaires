@@ -1,4 +1,3 @@
-from functools import cached_property
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
@@ -93,7 +92,6 @@ class User(PermissionsMixin, AutoValidable, Verifiable, Deactivable, AbstractBas
         self.first_name = self.first_name.strip()
         self.last_name = self.last_name.strip()
 
-    @cached_property
     def roles(self) -> list[BaseRole]:
         """Get the 0 -> N roles object from the user"""
         roles = []
