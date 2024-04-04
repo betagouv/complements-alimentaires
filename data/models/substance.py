@@ -101,6 +101,8 @@ class Substance(CommonModel, WithComments):
         excluded_fields=[
             "name",
             "is_obsolete",
+            "private_comments",
+            "public_comments",
             "cas_number",
             "einec_number",
             "source",
