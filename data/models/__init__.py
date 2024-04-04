@@ -12,6 +12,15 @@ from .substance import Substance, SubstanceSynonym  # noqa: F401
 from .population import Population  # noqa: F401
 from .condition import Condition  # noqa: F401
 from .unit import SubstanceUnit  # noqa: F401
+from .declaration import (  # noqa: F401
+    Declaration,  # noqa: F401
+    DeclaredPlant,  # noqa: F401
+    DeclaredMicroorganism,  # noqa: F401
+    DeclaredIngredient,  # noqa: F401
+    DeclaredSubstance,  # noqa: F401
+    ComputedSubstance,  # noqa: F401
+    Attachment,  # noqa: F401
+)
 
 
 ELEMENT_MODELS = [

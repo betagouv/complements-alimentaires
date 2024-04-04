@@ -91,7 +91,7 @@ const populationNames = computed(() => {
 })
 const conditionNames = computed(() => {
   const findName = (id) => conditions.value.find((y) => y.id === id)?.name
-  return payload.value.conditions.map(findName).join(", ")
+  return payload.value.conditionsNotRecommended.map(findName).join(", ")
 })
 
 const editLink = (step) => ({ name: "ProducerFormPage", query: { step } })
