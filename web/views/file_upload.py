@@ -22,14 +22,14 @@ class FileUploadView(FormView):
         if form.is_valid():
             uploaded_file = request.FILES["file"]
             file_type = form.cleaned_data["file_type"]
-            self.handle_uploaded_file(uploaded_file, file_type)
+            self._handle_uploaded_file(uploaded_file, file_type)
             return render(request, "upload_success.html", {"file_name": uploaded_file.name})
         return render(request, "upload_file.html", {"form": form})
 
     def _handle_uploaded_file(self, csv_file, file_type):
         model = list(filter(lambda model: model.__name__ == file_type, apps.get_models()))[0]
         csv_importer = CSVImporter(csv_file, model, is_relation=False)
-        nb_row, nb_created, updated_models = csv_importer.import_csv()
+        _ = csv_importer.import_csv()
         logger.info(
-            f"Import de {csv_file.name} dans le modèle {model.__name__} terminé : {nb_row} objets importés, {nb_created} objets créés."
+            f"Import de {csv_file.name} dans le modèle {model.__name__} terminé : {csv_importer.nb_line_in_success} objets importés, {csv_importer.nb_objects_created} objets créés."
         )
