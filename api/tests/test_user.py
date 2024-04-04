@@ -75,7 +75,7 @@ class TestSignup(ProjectAPITestCase):
         self.assertEqual(new_user.roles, [])
 
     def test_signup_with_existing_email(self):
-        email = "eren@mikasa.com"
+        email = "eren@example.com"
         UserFactory(email=email)
         self.user_data["email"] = email
 
