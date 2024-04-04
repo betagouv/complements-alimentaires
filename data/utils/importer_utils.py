@@ -10,7 +10,7 @@ from simple_history.exceptions import NotHistoricalModelError
 
 def clean_value(value, field):
     if value == "NULL":
-        if isinstance(field, TextField) or isinstance(field, CharField):
+        if isinstance(field, (TextField, CharField)):
             return ""
         else:
             return None
@@ -27,7 +27,7 @@ def clean_value(value, field):
         if value == "":
             return None
         return value
-    elif isinstance(field, TextField) or isinstance(field, CharField):
+    elif isinstance(field, (TextField, CharField)):
         return value.strip()
     return value
 
