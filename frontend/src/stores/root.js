@@ -7,6 +7,7 @@ export const useRootStore = defineStore("root", () => {
   const initialDataLoaded = ref(false)
   const populations = ref(null)
   const conditions = ref(null)
+  const effects = ref(null)
   const plantParts = ref(null)
   const units = ref(null)
 
@@ -34,6 +35,10 @@ export const useRootStore = defineStore("root", () => {
     const { data } = await useFetch("/api/v1/conditions/").json()
     conditions.value = data.value
   }
+  const fetchEffects = async () => {
+    const { data } = await useFetch("/api/v1/effects/").json()
+    effects.value = data.value
+  }
   const fetchPlantParts = async () => {
     const { data } = await useFetch("/api/v1/plantParts/").json()
     plantParts.value = data.value
@@ -50,11 +55,13 @@ export const useRootStore = defineStore("root", () => {
     fetchLoggedUser,
     fetchPopulations,
     fetchConditions,
+    fetchEffects,
     fetchPlantParts,
     fetchUnits,
     plantParts,
     populations,
     conditions,
+    effects,
     units,
   }
 })

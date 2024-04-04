@@ -17,6 +17,7 @@ urlpatterns = {
     path("elements/autocomplete/", views.AutocompleteView.as_view(), name="substance_autocomplete"),
     path("populations/", views.PopulationListView.as_view(), name="population_list"),
     path("conditions/", views.ConditionListView.as_view(), name="condition_list"),
+    path("effects/", views.EffectListView.as_view(), name="effect_list"),
     path("units/", views.UnitListView.as_view(), name="unit_list"),
     path("countries/", views.CountryListView.as_view(), name="country_list"),
     # Authentication

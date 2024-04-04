@@ -215,7 +215,7 @@ import { countries } from "@/utils/mappings"
 const payload = defineModel()
 
 const store = useRootStore()
-const { populations, conditions, loggedUser } = storeToRefs(store)
+const { populations, conditions, effects, loggedUser } = storeToRefs(store)
 const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
 const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))
 const galenicFormulation = [
@@ -227,43 +227,6 @@ const galenicFormulation = [
     text: "Comprimé",
     value: "comprime",
   },
-]
-const effects = [
-  "Non défini",
-  "Antioxydant",
-  "Artères et cholestérol",
-  "Articulations",
-  "Cheveux et ongles",
-  "Circulation sanguine et lymphatique",
-  "Concentration",
-  "Croissance et developpement",
-  "Cycles féminins",
-  "Détoxifiant / Draineur",
-  "Digestion",
-  "Gestion du poids / minceur",
-  "Grossesse et allaitement",
-  "Humeur",
-  "Immunité",
-  "Mémoire",
-  "Ménopause",
-  "Minceur / Brûleur",
-  "Minceur / Capteur",
-  "Minceur / Glycémie",
-  "Minceur / Modérateur d'appétit",
-  "Minceur / Ventre plat",
-  "Œil / Vision",
-  "Os",
-  "Peau",
-  "Santé bucco-dentaire",
-  "Solaire",
-  "Sommeil",
-  "Sport",
-  "Système nerveux",
-  "Système urinaire",
-  "Tonus sexuel",
-  "Transit",
-  "Voies respiratoires",
-  "Autre (à préciser)",
 ]
 
 watch(selectedCompany, () => {
