@@ -107,7 +107,7 @@ const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Main request definition
 const { data, response, execute, isFetching } = useFetch(
-  "/api/v1/signup/",
+  "/api/v1/user/",
   {
     headers: headers(),
   },

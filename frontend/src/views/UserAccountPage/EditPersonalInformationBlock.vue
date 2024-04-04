@@ -105,13 +105,13 @@ const {
   execute,
   isFetching,
 } = useFetch(
-  `/api/v1/edit-user/`,
+  `/api/v1/user/`,
   { headers: headers() },
   {
     immediate: false,
   }
 )
-  .post(state)
+  .put(state)
   .json()
 
 // Form validation

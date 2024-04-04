@@ -1,5 +1,6 @@
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
+
 import api.views as views
 
 urlpatterns = {
@@ -20,13 +21,11 @@ urlpatterns = {
     path("units/", views.UnitListView.as_view(), name="unit_list"),
     path("countries/", views.CountryListView.as_view(), name="country_list"),
     # Authentication
-    path("loggedUser/", views.LoggedUserView.as_view(), name="logged_user"),
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
-    path("signup/", views.SignupView.as_view(), name="signup"),
+    # User
+    path("user/", views.UserView.as_view(), name="user"),  # GET, PUT, POST, DELETE available
     path("change-password/", views.ChangePasswordView.as_view(), name="change_password"),
-    path("edit-user/", views.EditUserView.as_view(), name="edit_user"),
-    path("delete-user/", views.DeleteUserView.as_view(), name="delete_user"),
     path("generate-username/", views.GenerateUsernameView.as_view(), name="generate_username"),
     path("verify-email/", views.VerifyEmailView.as_view(), name="verify_email"),
     path(

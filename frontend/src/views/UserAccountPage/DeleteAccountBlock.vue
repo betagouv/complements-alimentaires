@@ -32,7 +32,7 @@ const close = () => (opened.value = false)
 
 // Main request definition
 const { response, execute } = useFetch(
-  `/api/v1/delete-user`,
+  `/api/v1/user`,
   { headers: headers() },
   {
     immediate: false,

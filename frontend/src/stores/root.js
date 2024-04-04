@@ -20,7 +20,7 @@ export const useRootStore = defineStore("root", () => {
   }
 
   const fetchLoggedUser = async () => {
-    const { data } = await useFetch("/api/v1/loggedUser/").json()
+    const { data } = await useFetch("/api/v1/user/").json()
     setLoggedUser(data.value)
     // TODO: add error handling here, but weird bug with await and response
   }

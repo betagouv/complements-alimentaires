@@ -9,7 +9,7 @@
     username: admin
     first_name: ""
     last_name: ""
-    email: admin@exemple.com
+    email: admin@example.com
     phone_number: null
     is_staff: true
     date_joined: 2024-03-25 16:21:08.827286+00:00
@@ -26,7 +26,7 @@
     username: jean.dupon
     first_name: Jean
     last_name: DUPON
-    email: jean.dupon@exemple.com
+    email: jean.dupon@example.com
     phone_number: null
     is_staff: false
     date_joined: 2024-03-25 16:21:58.739882+00:00
@@ -43,7 +43,7 @@
     username: marie.dupuis
     first_name: Marie
     last_name: DUPUIS
-    email: marie.dupuis@exemple.com
+    email: marie.dupuis@example.com
     phone_number: null
     is_staff: false
     date_joined: 2024-03-25 16:22:25.561261+00:00
@@ -60,7 +60,7 @@
     username: jenn.stephan
     first_name: Jenn
     last_name: STEPHAN
-    email: jenn.stephan@exemple.com
+    email: jenn.stephan@example.com
     phone_number: null
     is_staff: true
     date_joined: 2024-03-25 16:22:43+00:00
