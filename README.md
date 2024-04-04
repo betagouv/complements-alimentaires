@@ -87,27 +87,27 @@ _À suivre peu importe la méthode d'installation choisie_
 L'application utilise [django-environ](https://django-environ.readthedocs.io/en/latest/), vous pouvez donc créer un fichier `.env` à la racine du projet avec ces variables définies :
 
 ```
-SECRET= Le secret pour Django (vous pouvez le [générer ici](https://djecrety.ir/))
-DEBUG= `True` pour le développement local ou `False` autrement
-DB_USER= L'utilisateur de la base de données. Doit avoir les droits de creation de db pour les tests.
-DB_PASSWORD= Le mot de passe pour accéder à la base de données
-DB_HOST= Le host de la base de données (par ex. '127.0.0.1')
-DB_PORT= Le port de la base de données (par ex. '3306')
-DB_NAME= Le nom de la base de données (par ex. 'complements-alimentaires'
-HOSTNAME= Le hostname dans lequel l'application se trouve (par ex. 127.0.0.1:8000)
-ALLOWED_HOSTS= Des noms de domaine/d’hôte que ce site peut servir (par ex. 'localhost, \*')
-EMAIL_BACKEND= par ex. 'django.core.mail.backends.console.EmailBackend'. Pour utiliser SendInBlue : 'anymail.backends.sendinblue.EmailBackend'
-DEFAULT_FROM_EMAIL= par ex. 'from@example.com'
-CONTACT_EMAIL= par ex. 'contact@example.com'
-STATICFILES_STORAGE= Le système utilisé pour les fichiers statiques (par ex. 'django.contrib.staticfiles.storage.StaticFilesStorage')
-DEFAULT_FILE_STORAGE= Le système de stockage de fichiers (par ex 'django.core.files.storage.FileSystemStorage')
-FORCE_HTTPS= 'False' si on développe en local, 'True' autrement
-SECURE= 'False' si on développe en local, 'True' autrement
-ENVIRONMENT= Optionnel - si cette variable est remplie un badge sera visible dans l'application et l'admin changera. Les options sont : `dev` | `staging` | `demo` | `prod`
-NEWSLETTER_BREVO_LIST_ID= L'ID de la newsletter de Brevo (précedemment Send In Blue)
-BREVO_API_KEY= La clé API de Brevo
-SENTRY_DSN (optionnel)= Le Data Source Name pour Sentry. Peut être vide.
-MATOMO_ID (optionnel)= L'ID pour le suivi avec Matomo. Compl-alim utilise l'ID 95 pour la prod, en local c'est mieux de le laisser vide
+DJ_SECRET= Le secret pour Django (vous pouvez le [générer ici](https://djecrety.ir/))
+DJ_DEBUG= `True` pour le développement local ou `False` autrement
+DJ_DB_USER= L'utilisateur de la base de données. Doit avoir les droits de creation de db pour les tests.
+DJ_DB_PASSWORD= Le mot de passe pour accéder à la base de données
+DJ_DB_HOST= Le host de la base de données (par ex. '127.0.0.1')
+DJ_DB_PORT= Le port de la base de données (par ex. '3306')
+DJ_DB_NAME= Le nom de la base de données (par ex. 'complements-alimentaires'
+DJ_HOSTNAME= Le hostname dans lequel l'application se trouve (par ex. 127.0.0.1:8000)
+DJ_ALLOWED_HOSTS= Des noms de domaine/d’hôte que ce site peut servir (par ex. 'localhost, \*')
+DJ_EMAIL_BACKEND= par ex. 'django.core.mail.backends.console.EmailBackend'. Pour utiliser SendInBlue : 'anymail.backends.sendinblue.EmailBackend'
+DJ_DEFAULT_FROM_EMAIL= par ex. 'from@example.com'
+DJ_CONTACT_EMAIL= par ex. 'contact@example.com'
+DJ_STATICFILES_STORAGE= Le système utilisé pour les fichiers statiques (par ex. 'django.contrib.staticfiles.storage.StaticFilesStorage')
+DJ_DEFAULT_FILE_STORAGE= Le système de stockage de fichiers (par ex 'django.core.files.storage.FileSystemStorage')
+DJ_FORCE_HTTPS= 'False' si on développe en local, 'True' autrement
+DJ_SECURE= 'False' si on développe en local, 'True' autrement
+DJ_ENVIRONMENT= Optionnel - si cette variable est remplie un badge sera visible dans l'application et l'admin changera. Les options sont : `dev` | `staging` | `demo` | `prod`
+DJ_NEWSLETTER_BREVO_LIST_ID= L'ID de la newsletter de Brevo (précedemment Send In Blue)
+DJ_BREVO_API_KEY= La clé API de Brevo
+DJ_SENTRY_DSN (optionnel)= Le Data Source Name pour Sentry. Peut être vide.
+DJ_MATOMO_ID (optionnel)= L'ID pour le suivi avec Matomo. Compl-alim utilise l'ID 95 pour la prod, en local c'est mieux de le laisser vide
 ```
 
 #### Créer les différents modèles Django dans la base de données

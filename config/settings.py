@@ -10,12 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from pathlib import Path
-import sys
 import os
+import sys
+from pathlib import Path
+
+import environ
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
-import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 CONFIG_DIR = Path(__file__).resolve().parent
@@ -29,19 +30,19 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET")
-SECURE_SSL_REDIRECT = env("FORCE_HTTPS", cast=bool)
+SECRET_KEY = env("DJ_SECRET")
+SECURE_SSL_REDIRECT = env("DJ_FORCE_HTTPS", cast=bool)
 
-SECURE = env("SECURE", cast=bool)
+SECURE = env("DJ_SECURE", cast=bool)
 PROTOCOL = "https" if SECURE else "http"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG", cast=bool)
+DEBUG = env("DJ_DEBUG", cast=bool)
 AUTH_USER_MODEL = "data.User"
 
-ALLOWED_HOSTS = [x.strip() for x in env("ALLOWED_HOSTS", cast=list)]
+ALLOWED_HOSTS = [x.strip() for x in env("DJ_ALLOWED_HOSTS", cast=list)]
 
-ENVIRONMENT = env("ENVIRONMENT")
+ENVIRONMENT = env("DJ_ENVIRONMENT")
 
 # Application definition
 
@@ -125,11 +126,11 @@ WEBPACK_LOADER = {
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "USER": env("DB_USER"),
-        "NAME": env("DB_NAME"),
-        "PASSWORD": env("DB_PASSWORD"),
-        "HOST": env("DB_HOST"),
-        "PORT": env("DB_PORT"),
+        "USER": env("DJ_DB_USER"),
+        "NAME": env("DJ_DB_NAME"),
+        "PASSWORD": env("DJ_DB_PASSWORD"),
+        "HOST": env("DJ_DB_HOST"),
+        "PORT": env("DJ_DB_PORT"),
         "CONN_MAX_AGE": 60,
     }
 }
@@ -176,42 +177,42 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Media and file storage
-DEFAULT_FILE_STORAGE = env("DEFAULT_FILE_STORAGE")
+DEFAULT_FILE_STORAGE = env("DJ_DEFAULT_FILE_STORAGE")
 
 if DEFAULT_FILE_STORAGE == "storages.backends.s3.S3Storage":
-    AWS_ACCESS_KEY_ID = env("CELLAR_KEY")
-    AWS_SECRET_ACCESS_KEY = env("CELLAR_SECRET")
-    AWS_S3_ENDPOINT_URL = env("CELLAR_HOST")
-    AWS_STORAGE_BUCKET_NAME = env("CELLAR_BUCKET_NAME")
+    AWS_ACCESS_KEY_ID = env("DJ_CELLAR_KEY")
+    AWS_SECRET_ACCESS_KEY = env("DJ_CELLAR_SECRET")
+    AWS_S3_ENDPOINT_URL = env("DJ_CELLAR_HOST")
+    AWS_STORAGE_BUCKET_NAME = env("DJ_CELLAR_BUCKET_NAME")
     AWS_LOCATION = "media"
     AWS_QUERYSTRING_AUTH = False
 
 MEDIA_ROOT = env("MEDIA_ROOT", default=os.path.join(BASE_DIR, "media"))
 MEDIA_URL = "/media/"
 
-STATICFILES_STORAGE = env("STATICFILES_STORAGE")
+STATICFILES_STORAGE = env("DJ_STATICFILES_STORAGE")
 SESSION_COOKIE_AGE = 31536000
-SESSION_COOKIE_SECURE = env("SECURE", cast=bool)
+SESSION_COOKIE_SECURE = env("DJ_SECURE", cast=bool)
 SESSION_COOKIE_HTTPONLY = True
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_URL = "/s-identifier"
 
-HOSTNAME = env("HOSTNAME")
+HOSTNAME = env("DJ_HOSTNAME")
 
 # Email
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
-CONTACT_EMAIL = env("CONTACT_EMAIL")
-EMAIL_BACKEND = env("EMAIL_BACKEND")
+DEFAULT_FROM_EMAIL = env("DJ_DEFAULT_FROM_EMAIL")
+CONTACT_EMAIL = env("DJ_CONTACT_EMAIL")
+EMAIL_BACKEND = env("DJ_EMAIL_BACKEND")
 
 if DEBUG and EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend":
     EMAIL_HOST = "localhost"
     EMAIL_PORT = 1025
 
-NEWSLETTER_BREVO_LIST_ID = env("NEWSLETTER_BREVO_LIST_ID", cast=int, default=None)
+NEWSLETTER_BREVO_LIST_ID = env("DJ_NEWSLETTER_BREVO_LIST_ID", cast=int, default=None)
 ANYMAIL = {
-    "SENDINBLUE_API_KEY": env("BREVO_API_KEY", default=None),
+    "SENDINBLUE_API_KEY": env("DJ_BREVO_API_KEY", default=None),
 }
 
 # Rest framework
@@ -352,10 +353,10 @@ CKEDITOR_5_CONFIGS = {
 }
 
 # Analytics
-MATOMO_ID = env("MATOMO_ID", default=None)
+MATOMO_ID = env("DJ_MATOMO_ID", default=None)
 
 # Sentry
-SENTRY_DSN = env("SENTRY_DSN", default=None)
+SENTRY_DSN = env("DJ_SENTRY_DSN", default=None)
 if SENTRY_DSN:
     sentry_sdk.init(
         dsn=SENTRY_DSN,
