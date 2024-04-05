@@ -10,7 +10,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("data", "0042_merge_20240404_1103"),
+        ("data", "0043_merge_20240404_1354"),
     ]
 
     operations = [
@@ -30,9 +30,7 @@ class Migration(migrations.Migration):
                 ("modification_date", models.DateTimeField(auto_now=True)),
                 (
                     "missing_import_data",
-                    models.BooleanField(
-                        blank=True, default=False, editable=False, null=True
-                    ),
+                    models.BooleanField(blank=True, default=False, editable=False, null=True),
                 ),
                 (
                     "siccrf_id",
@@ -55,9 +53,7 @@ class Migration(migrations.Migration):
                     models.GeneratedField(
                         db_persist=True,
                         expression=django.db.models.functions.comparison.Coalesce(
-                            django.db.models.functions.comparison.NullIf(
-                                models.F("ca_name"), models.Value("")
-                            ),
+                            django.db.models.functions.comparison.NullIf(models.F("ca_name"), models.Value("")),
                             models.F("siccrf_name"),
                         ),
                         output_field=models.TextField(verbose_name="nom"),
@@ -73,9 +69,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "ca_is_obsolete",
-                    models.BooleanField(
-                        default=None, null=True, verbose_name="objet obsolète selon CA"
-                    ),
+                    models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
                 ),
                 (
                     "is_obsolete",
@@ -98,17 +92,13 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.BigIntegerField(
-                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
-                    ),
+                    models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID"),
                 ),
                 ("creation_date", models.DateTimeField(blank=True, editable=False)),
                 ("modification_date", models.DateTimeField(blank=True, editable=False)),
                 (
                     "missing_import_data",
-                    models.BooleanField(
-                        blank=True, default=False, editable=False, null=True
-                    ),
+                    models.BooleanField(blank=True, default=False, editable=False, null=True),
                 ),
                 (
                     "siccrf_id",
@@ -135,9 +125,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "ca_is_obsolete",
-                    models.BooleanField(
-                        default=None, null=True, verbose_name="objet obsolète selon CA"
-                    ),
+                    models.BooleanField(default=None, null=True, verbose_name="objet obsolète selon CA"),
                 ),
                 ("siccrf_name_en", models.TextField(blank=True)),
                 ("history_id", models.AutoField(primary_key=True, serialize=False)),
