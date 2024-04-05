@@ -16,10 +16,9 @@ from api.permissions import IsLoggedUser
 
 from api.exception_handling import ProjectAPIException
 from api.serializers import (
+    UserSerializer,
     ChangePasswordSerializer,
     CreateUserSerializer,
-    EditUserSerializer,
-    LoggedUserSerializer,
 )
 from tokens.models import MagicLinkToken, MagicLinkUsage
 
@@ -45,7 +44,7 @@ class LoggedUserView(APIView):
 
         user = request.user
         if user.is_active:
-            return Response(LoggedUserSerializer(user).data)
+            return Response(UserSerializer(user).data)
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -68,7 +67,7 @@ class UserUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     """
 
     permission_classes = [IsLoggedUser]
-    serializer_class = EditUserSerializer
+    serializer_class = UserSerializer
     queryset = get_user_model().objects.active()
 
     @transaction.atomic
