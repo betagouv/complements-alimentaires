@@ -16,12 +16,20 @@ class BlogPostAuthor(serializers.ModelSerializer):
         )
 
 
-class LoggedUserSerializer(serializers.ModelSerializer):
+class BaseUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ("username", "email", "last_name", "first_name")
+
+
+class LoggedUserSerializer(BaseUserSerializer):
     roles = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ("id", "email", "username", "first_name", "last_name", "roles")
+        fields = BaseUserSerializer.Meta.fields + (
+            "id",
+            "roles",
+        )
         read_only_fields = fields
 
     def get_roles(self, obj):
@@ -46,12 +54,18 @@ class LoggedUserSerializer(serializers.ModelSerializer):
         return roles_data
 
 
-class UserInputSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True)  # empêche le retour du hash du mdp dans la réponse
-
+class CreateUserSerializer(BaseUserSerializer):
     class Meta:
         model = User
-        fields = ("username", "email", "last_name", "first_name", "password")
+        fields = BaseUserSerializer.Meta.fields + (
+            "id",
+            "password",
+        )
+
+    id = serializers.IntegerField(read_only=True)
+    password = serializers.CharField(
+        write_only=True, required=True
+    )  # empêche le retour du hash du mdp dans la réponse
 
     def validate_password(self, value):
         """Validate the password against settings-defined rules"""
@@ -61,3 +75,31 @@ class UserInputSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
+
+
+class EditUserSerializer(BaseUserSerializer):
+    class Meta:
+        model = User
+        fields = BaseUserSerializer.Meta.fields
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_new_password = serializers.CharField(required=True)
+
+    def validate_old_password(self, value):
+        user = self.context["request"].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("L'ancien mot de passe est incorrect")
+        return value
+
+    def validate(self, data):
+        if data["new_password"] != data["confirm_new_password"]:
+            raise serializers.ValidationError(
+                {"confirm_new_password": "La confirmation ne correspond pas au mot de passe entré"}
+            )
+        if data["old_password"] == data["new_password"]:
+            raise serializers.ValidationError({"new_password": "Le nouveau mot de passe est identique à l'actuel"})
+        django_validate_password(data["new_password"])
+        return data

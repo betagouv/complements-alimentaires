@@ -1,40 +1,36 @@
 from urllib.parse import urljoin
+
 from django.conf import settings
-from django.contrib.auth import login
-from django.middleware.csrf import get_token
+from django.contrib.auth import get_user_model, login
 from django.core.mail import send_mail
+from django.db import transaction
+from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
-from rest_framework.generics import RetrieveAPIView
+from rest_framework import permissions, status
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework import permissions
-from rest_framework import status
-from api.serializers import LoggedUserSerializer, UserInputSerializer
+from rest_framework.views import APIView
+from rest_framework.exceptions import MethodNotAllowed
+from api.permissions import IsLoggedUser
+
 from api.exception_handling import ProjectAPIException
-from django.contrib.auth import get_user_model
+from api.serializers import (
+    ChangePasswordSerializer,
+    CreateUserSerializer,
+    EditUserSerializer,
+    LoggedUserSerializer,
+)
 from tokens.models import MagicLinkToken, MagicLinkUsage
+
 from ..utils.urls import get_base_url
 
 User = get_user_model()
 
 
-class LoggedUserView(RetrieveAPIView):
-    model = User
-    serializer_class = LoggedUserSerializer
-    queryset = get_user_model().objects.active()
-
-    def get(self, request, *args, **kwargs):
-        if permissions.IsAuthenticated().has_permission(self.request, self):
-            return super().get(request, *args, **kwargs)
-        return Response(None, status=status.HTTP_204_NO_CONTENT)
-
-    def get_object(self):
-        return self.request.user
-
-
-def _send_verification_mail(request, user):
+def _send_verification_mail(user):
     new_token = MagicLinkToken.objects.create(user=user, usage=MagicLinkUsage.VERIFY_EMAIL_ADDRESS)
-    verification_url = urljoin(get_base_url(request), new_token.as_url(key=new_token.key))
+    verification_url = urljoin(get_base_url(), new_token.as_url(key=new_token.key))
     send_mail(
         subject="Vérifiez votre adresse e-mail",
         message=f"Cliquez sur le lien suivant pour vérifier votre adresse e-mail : {verification_url}",
@@ -43,19 +39,76 @@ def _send_verification_mail(request, user):
     )
 
 
-class SignupView(APIView):
+class LoggedUserView(APIView):
+    def get(self, request, *args, **kwargs):
+        """Retourne les données d'un utilisateur connecté"""
+
+        user = request.user
+        if user.is_active:
+            return Response(LoggedUserSerializer(user).data)
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+
+class UserCreateView(CreateAPIView):
+    """Inscription d'un utilisateur connecté"""
+
+    permission_classes = [AllowAny]
+    serializer_class = CreateUserSerializer
+
+    def perform_create(self, serializer):
+        new_user = serializer.save()
+        _send_verification_mail(new_user)
+        return new_user
+
+
+class UserUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+    """
+    - Modification d'un utilisateur connecté (hors mot de passe)
+    - Désactivation d'un utilisateur
+    """
+
+    permission_classes = [IsLoggedUser]
+    serializer_class = EditUserSerializer
+    queryset = get_user_model().objects.active()
+
+    @transaction.atomic
+    def perform_update(self, serializer):
+        user = serializer.instance
+        old_email = user.email
+        serializer.save()
+        if user.email != old_email:
+            user.unverify()
+            _send_verification_mail(user)
+
+    def perform_destroy(self, user):
+        user.deactivate()
+        send_mail(
+            subject="Nouvelle demande de suppression de compte",
+            message=f"{user.name} (id: {user.id}) a demandé la suppression de son compte.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.CONTACT_EMAIL],
+        )
+
+    def get(self, request, *args, **kwargs):
+        raise MethodNotAllowed("Retrieve feature should not be used here")
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
-        serializer = UserInputSerializer(data=request.data)
+        serializer = ChangePasswordSerializer(data=request.data, context={"request": request})
         if serializer.is_valid(raise_exception=True):
-            new_user = serializer.save()
-            _send_verification_mail(request, new_user)
-            return Response({"user_id": new_user.id}, status=status.HTTP_201_CREATED)
+            user = request.user
+            user.set_password(serializer.validated_data["new_password"])
+            user.save()
+            return Response({}, status=status.HTTP_200_OK)
 
 
 class SendNewSignupVerificationEmailView(APIView):
     def get(self, request, user_id, *args, **kwargs):
         user = get_object_or_404(User, id=user_id)
-        _send_verification_mail(request, user)
+        _send_verification_mail(user)
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
