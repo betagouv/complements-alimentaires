@@ -4,6 +4,7 @@ import os
 import pathlib
 
 from functools import cached_property
+
 from django.db.models import (
     ForeignKey,
     ManyToManyField,
@@ -51,85 +52,75 @@ RELATION_CSV = [
     "REF_ICA_PLANTE_SUBSTANCE.csv",
 ]
 
-# Établi le préfix des champs du csv
-CSV_TO_TABLE_PREFIX_MAPPING = {
-    "REF_ICA_INGREDIENT_AUTRE.csv": "INGA",
-    "REF_ICA_MICRO_ORGANISME.csv": "MORG",
-    "REF_ICA_PARTIE_PLANTE.csv": "PPLAN",
-    "REF_ICA_PLANTE.csv": "PLTE",
-    "REF_ICA_SUBSTANCE_ACTIVE.csv": "SBSACT",
-    "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": "SYNAO",
-    "REF_ICA_PLANTE_SYNONYME.csv": "SYNPLA",
-    "REF_ICA_SUBSTANCE_ACTIVE_SYNONYME.csv": "SYNSBSTA",
-    # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
-    "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
-    "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
-    "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": "",
-    "REF_ICA_PARTIE_UTILE.csv": "",
-    "POPULATION.csv": "",
-    # "FAMPL"
-}
-
-PREFIX_TO_MODEL_MAPPING = {
-    "INGA": Ingredient,
-    "MORG": Microorganism,
-    "PPLAN": PlantPart,
-    "PLTE": Plant,
-    "SBSACT": Substance,
-    "SYNAO": IngredientSynonym,
-    "SYNPLA": PlantSynonym,
-    "SYNSBSTA": SubstanceSynonym,
-    "FAMPL": PlantFamily,
-    "UNT": SubstanceUnit,
-}
-
-# Établi les suffix des champ des csv correspondant aux champs des modèles Django
-DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
-    # Les champs simples
-    "name": ["LIBELLE"],  # Pour les Model *Synonym, le champ `name` n'est pas préfixé par `siccrf_`
-    "siccrf_name": ["LIBELLE"],
-    "siccrf_name_en": ["LIBELLE_EN"],
-    "siccrf_is_obsolete": ["OBSOLET"],
-    "siccrf_public_comments": ["COMMENTAIRE_PUBLIC"],
-    "siccrf_public_comments_en": ["COMMENTAIRE_PUBLIC_EN"],
-    "siccrf_private_comments": ["COMMENTAIRE_PRIVE"],
-    "siccrf_private_comments_en": ["COMMENTAIRE_PRIVE_EN"],
-    "siccrf_observation": ["OBSERVATION"],
-    "siccrf_description": ["DESCRIPTION"],
-    "siccrf_cas_number": ["NUMERO_CAS"],
-    "siccrf_einec_number": ["NUM_EINECS"],
-    "siccrf_source": ["SOURCE"],
-    "siccrf_must_specify_quantity": ["QUANTITE_ARENSEIGNER"],
-    "siccrf_max_quantity": ["QTE_MAX"],
-    "siccrf_nutritional_reference": ["APPORT_REF"],
-    "unit": ["UNT_IDENT"],
-    "siccrf_genus": ["GENRE"],
-    "siccrf_species": ["ESPECE"],
-    "min_age": ["AGE_MIN"],
-    "max_age": ["AGE_MAX"],
-    "is_defined_by_anses": ["CATEGORIE_ANSES"],
-    # Les champs ForeignKey (synonymes)
-    "standard_name": ["SBSACT_IDENT", "PLTE_IDENT", "INGA_IDENT", "MORG_IDENT"],
-    "siccrf_family": ["FAMPL_IDENT"],
-    "plant": ["PLTE_IDENT"],
-    "plantpart": ["PPLAN_IDENT"],
-    # Les champs ManyToMany
-    "substances": ["SBSACT_IDENT"],
-    "plant_parts": ["PPLAN_IDENT"],
-}
-
-# Ces champs sont remplis automatiquement et ne sont pas recherchés dans les fichiers csv
-AUTOMATICALLY_FILLED = [
-    "id",
-    "siccrf_id",
-    "creation_date",
-    "modification_date",
-    "missing_import_data",
-]
-
 
 class CSVImporter:
+    PREFIX_TO_MODEL_MAPPING = {
+        "INGA": Ingredient,
+        "MORG": Microorganism,
+        "PPLAN": PlantPart,
+        "PLTE": Plant,
+        "SBSACT": Substance,
+        "SYNAO": IngredientSynonym,
+        "SYNPLA": PlantSynonym,
+        "SYNSBSTA": SubstanceSynonym,
+        "FAMPL": PlantFamily,
+        "UNT": SubstanceUnit,
+        # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
+        # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
+        # "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
+        # "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": "",
+        # "REF_ICA_PARTIE_UTILE.csv": "",
+        # "POPULATION.csv": "",
+    }
+
+    # Établi les suffix des champ des csv correspondant aux champs des modèles Django
+    DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING = {
+        # Les champs simples
+        "name": ["LIBELLE"],  # Pour les Model *Synonym, le champ `name` n'est pas préfixé par `siccrf_`
+        "siccrf_name": ["LIBELLE"],
+        "siccrf_name_en": ["LIBELLE_EN"],
+        "siccrf_is_obsolete": ["OBSOLET"],
+        "siccrf_public_comments": ["COMMENTAIRE_PUBLIC"],
+        "siccrf_public_comments_en": ["COMMENTAIRE_PUBLIC_EN"],
+        "siccrf_private_comments": ["COMMENTAIRE_PRIVE"],
+        "siccrf_private_comments_en": ["COMMENTAIRE_PRIVE_EN"],
+        "siccrf_observation": ["OBSERVATION"],
+        "siccrf_description": ["DESCRIPTION"],
+        "siccrf_cas_number": ["NUMERO_CAS"],
+        "siccrf_einec_number": ["NUM_EINECS"],
+        "siccrf_source": ["SOURCE"],
+        "siccrf_must_specify_quantity": ["QUANTITE_ARENSEIGNER"],
+        "siccrf_max_quantity": ["QTE_MAX"],
+        "siccrf_nutritional_reference": ["APPORT_REF"],
+        "unit": ["UNT_IDENT"],
+        "siccrf_genus": ["GENRE"],
+        "siccrf_species": ["ESPECE"],
+        "min_age": ["AGE_MIN"],
+        "max_age": ["AGE_MAX"],
+        "is_defined_by_anses": ["CATEGORIE_ANSES"],
+        # Les champs ForeignKey (synonymes)
+        "standard_name": ["SBSACT_IDENT", "PLTE_IDENT", "INGA_IDENT", "MORG_IDENT"],
+        "siccrf_family": ["FAMPL_IDENT"],
+        "plant": ["PLTE_IDENT"],
+        "plantpart": ["PPLAN_IDENT"],
+        # Les champs ManyToMany
+        "substances": ["SBSACT_IDENT"],
+        "plant_parts": ["PPLAN_IDENT"],
+    }
+
+    # Ces champs sont remplis automatiquement et ne sont pas recherchés dans les fichiers csv
+    AUTOMATICALLY_FILLED = [
+        "id",
+        "siccrf_id",
+        "creation_date",
+        "modification_date",
+        "missing_import_data",
+    ]
+
     def __init__(self, file, model, is_relation=False, mapping=None):
+        """Initialise un CSVImporter avec le fichier source, le modèle de destination, etc
+        :param file: peut être de type InMemoryUploadedFile ou _io.BufferedReader
+        """
         self.file = file
         self.filename = self._check_file_format()
         self.lines, self.dialect = self._check_file_encoding()
@@ -149,10 +140,17 @@ class CSVImporter:
         return path.name
 
     def _check_file_encoding(self):
+        """
+        2 encoding sont possibles : UTF-8 et UTF-16
+        """
         try:
-            csv_string = self.file.read().decode("utf-8-sig")
-        except UnicodeDecodeError as e:
-            raise CSVFileError(f"'{self.filename}' n'est pas un fichier unicode.", e)
+            raw_file = self.file.read()
+            csv_string = raw_file.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            try:
+                csv_string = raw_file.decode("utf-16")
+            except UnicodeDecodeError as e:
+                raise CSVFileError(f"'{self.filename}' n'est pas un fichier unicode.", e)
         try:
             csv_lines = csv_string.splitlines()
             dialect = csv.Sniffer().sniff(csv_lines[0])
@@ -169,7 +167,7 @@ class CSVImporter:
             field
             for field in model_fields
             if field.concrete
-            and field.name not in AUTOMATICALLY_FILLED
+            and field.name not in self.AUTOMATICALLY_FILLED
             and not field.__class__ == GeneratedField
             and not field.name.startswith("ca_")
         ]
@@ -182,12 +180,14 @@ class CSVImporter:
         column_to_linked_model = {}
         for field, column_name in self.django_fields_to_csv_column_mapping.items():
             if isinstance(field, ForeignKey) or isinstance(field, ManyToManyField):
-                column_to_linked_model[column_name] = PREFIX_TO_MODEL_MAPPING[column_name.split("_")[0]]
+                column_to_linked_model[column_name] = self.PREFIX_TO_MODEL_MAPPING[column_name.split("_")[0]]
         return column_to_linked_model
 
     @cached_property
     def prefix(self):
-        return CSV_TO_TABLE_PREFIX_MAPPING[self.filename]
+        for a_prefix, a_model in self.PREFIX_TO_MODEL_MAPPING.items():
+            if self.model == a_model:
+                return a_prefix
 
     @cached_property
     def primary_key_label(self):
@@ -216,7 +216,7 @@ class CSVImporter:
         return django_fields_to_column_names
 
     def _get_column_name(self, field_name, prefixed=True):
-        csv_field_names = DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING[field_name]
+        csv_field_names = self.DJANGO_FIELD_NAME_TO_CSV_FIELD_NAME_MAPPING[field_name]
         if prefixed:
             csv_field_names = [f"{self.prefix}_{csv_field_name}" for csv_field_name in csv_field_names]
             csv_field_names = [name.removeprefix("_") for name in csv_field_names]
