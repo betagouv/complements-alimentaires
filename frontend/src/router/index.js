@@ -11,6 +11,7 @@ import PrivacyPolicyPage from "@/views/PrivacyPolicyPage.vue"
 import LegalNoticesPage from "@/views/LegalNoticesPage"
 import CookiesInfoPage from "@/views/CookiesInfoPage"
 import ProducerFormPage from "@/views/ProducerFormPage"
+import CompanyFormPage from "@/views/CompanyFormPage"
 import NotFound from "@/views/NotFound"
 import LoginPage from "@/views/LoginPage"
 import SignupPage from "@/views/SignupPage"
@@ -115,6 +116,15 @@ const routes = [
       title: "Nouvelle démarche",
       authenticationRequired: true,
       requiredRole: "Declarant",
+    },
+  },
+  {
+    path: "/nouvelle-entreprise",
+    name: "CompanyFormPage",
+    component: CompanyFormPage,
+    meta: {
+      title: "Nouvelle entreprise",
+      authenticationRequired: true,
     },
   },
   {
