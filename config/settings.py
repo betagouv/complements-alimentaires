@@ -10,12 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from pathlib import Path
-import sys
 import os
+import sys
+from pathlib import Path
+
+import environ
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
-import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 CONFIG_DIR = Path(__file__).resolve().parent

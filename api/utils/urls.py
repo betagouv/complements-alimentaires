@@ -1,5 +1,6 @@
-from django.http import HttpRequest
+from django.conf import settings
 
 
-def get_base_url(request: HttpRequest) -> str:
-    return f"{request.scheme}://{request.get_host()}/"
+def get_base_url() -> str:
+    scheme = "https" if settings.SECURE else "http"
+    return f"{scheme}://{settings.HOSTNAME}/"
