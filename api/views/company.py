@@ -5,5 +5,5 @@ from data.choices import CountryChoices
 
 class CountryListView(APIView):
     def get(self, request):
-        countries = [{"code": country[0], "name": country[1]} for country in CountryChoices.choices]
+        countries = [{"value": country[0], "text": country[1]} for country in CountryChoices.choices]
         return Response(countries)
