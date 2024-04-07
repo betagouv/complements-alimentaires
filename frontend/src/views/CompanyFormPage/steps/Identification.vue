@@ -6,7 +6,7 @@
       </DsfrInputGroup>
       <template v-if="state.country === 'FR'">
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'siret')">
-          <DsfrInput v-model="state.siret" label="Numéro de SIRET" required labelVisible />
+          <DsfrInput v-model="state.siret" label="Numéro de SIRET" required labelVisible @input="removeSpaces" />
           <div class="mt-2">
             <a class="fr-link" target="_blank" rel="noopener" href="https://annuaire-entreprises.data.gouv.fr/">
               Annuaire des entreprises
@@ -56,4 +56,6 @@ const validateSiret = () => {
   if (state.value.siret == "A") emit("exist")
   if (state.value.siret == "B") emit("unexist")
 }
+
+const removeSpaces = (event) => (event.target.value = event.target.value.replace(/\s/g, ""))
 </script>
