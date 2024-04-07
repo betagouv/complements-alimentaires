@@ -21,18 +21,8 @@
             </a>
           </div>
         </DsfrInputGroup>
-        <DsfrButton
-          label="Vérifier le SIRET (existe en base)"
-          icon="ri-arrow-right-line"
-          iconRight
-          @click="validateSiretExist"
-        />
-        <DsfrButton
-          label="Vérifier le SIRET (n'existe pas)"
-          icon="ri-arrow-right-line"
-          iconRight
-          @click="validateSiretUnexist"
-        />
+        <DsfrButton @click="nextStep" v-if="step == 0" label="Démarrer !" size="lg" />
+        <DsfrButton label="Vérifier le SIRET" icon="ri-arrow-right-line" iconRight @click="validateSiret" />
       </template>
 
       <template v-if="state.country && state.country !== 'FR'">
@@ -46,12 +36,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
 import { useFetch } from "@vueuse/core"
-import { useVuelidate } from "@vuelidate/core"
+import { onMounted, ref } from "vue"
 import FormWrapper from "@/components/FormWrapper"
 import { handleError } from "@/utils/error-handling"
 import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
+import { useVuelidate } from "@vuelidate/core"
 
 // Form state & rules
 const state = ref({
@@ -83,11 +73,8 @@ onMounted(async () => {
 // todo: replace by result from backend
 const emit = defineEmits(["unexist", "exist"])
 
-const validateSiretExist = () => {
-  emit("exist")
-}
-
-const validateSiretUnexist = () => {
-  emit("unexist")
+const validateSiret = () => {
+  if (state.value.siret == "A") emit("exist")
+  if (state.value.siret == "B") emit("unexist")
 }
 </script>
