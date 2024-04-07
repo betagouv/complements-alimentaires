@@ -1,24 +1,16 @@
-<!-- TODO: isoler ce composant car la logique est déliée du reste - voir nuxt mason -->
-
-<!-- <template>
-  <div></div>
+<template>
+  <DsfrSelect defaultUnselectedText="Choisissez un pays" :options="data" label="Pays" required labelVisible />
 </template>
 
 <script setup>
-// Initial request for gettings countries (TODO: isolate in a component?)
-
 import { onMounted } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 
-const {
-  data: countryChoices,
-  response: countryResponse,
-  execute: executeGetCountries,
-} = useFetch("/api/v1/countries/", { immediate: false }).json()
+const { data, response, execute } = useFetch("/api/v1/countries/", { immediate: false }).json()
 
 onMounted(async () => {
-  await executeGetCountries()
-  await handleError(countryResponse)
+  await execute()
+  await handleError(response)
 })
-</script> -->
+</script>

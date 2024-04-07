@@ -2,15 +2,7 @@
   <div>
     <FormWrapper class="max-w-xl mx-auto">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'country')">
-        <DsfrSelect
-          defaultUnselectedText="Choisissez un pays"
-          :options="countryChoices"
-          v-model="state.country"
-          label="Pays"
-          description="Dans quel pays l'entreprise est-elle immatriculée ?"
-          required
-          labelVisible
-        />
+        <CountryField v-model="state.country" description="Dans quel pays l'entreprise est-elle immatriculée ?" />
       </DsfrInputGroup>
       <template v-if="state.country === 'FR'">
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'siret')">
@@ -36,10 +28,9 @@
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
-import { onMounted, ref } from "vue"
+import { ref } from "vue"
 import FormWrapper from "@/components/FormWrapper"
-import { handleError } from "@/utils/error-handling"
+import CountryField from "@/components/fields/CountryField"
 import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
 import { useVuelidate } from "@vuelidate/core"
 
@@ -57,18 +48,6 @@ const rules = {
 }
 
 const v$ = useVuelidate(rules, state)
-
-// Initial request for gettings countries (TODO: isolate in a component?)
-const {
-  data: countryChoices,
-  response: countryResponse,
-  execute: executeGetCountries,
-} = useFetch("/api/v1/countries/", { immediate: false }).json()
-
-onMounted(async () => {
-  await executeGetCountries()
-  await handleError(countryResponse)
-})
 
 // todo: replace by result from backend
 const emit = defineEmits(["unexist", "exist"])
