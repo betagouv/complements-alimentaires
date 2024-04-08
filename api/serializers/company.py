@@ -17,3 +17,5 @@ class CompanySerializer(serializers.ModelSerializer):
             "cedex",
             "country",
         )
+
+    id = serializers.IntegerField(read_only=True)

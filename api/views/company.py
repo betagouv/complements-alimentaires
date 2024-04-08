@@ -1,9 +1,11 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import CreateAPIView
 from data.choices import CountryChoices
 from data.models import Company
-from django.db import models
+from enum import StrEnum, auto
+from ..serializers import CompanySerializer
 
 
 class CountryListView(APIView):
@@ -12,19 +14,28 @@ class CountryListView(APIView):
         return Response(countries)
 
 
-class CompanyStatusChoices(models.TextChoices):
-    # 4 cas sont possibles après vérification d'un SIRET valide :
-    UNREGISTERED_COMPANY = "Entreprise non enregistrée"
-    REGISTERED_AND_SUPERVISED_BY_ME = "Entreprise enregistrée et supervisée par moi-même"
-    REGISTERED_AND_SUPERVISED_BY_OTHER = "Entreprise enregistrée et supervisée par quelqu'un d'autre"
-    REGISTERED_AND_UNSUPERVISED = "Entreprise enregistrée mais non supervisée"  # ex : suite à un import
+class CompanyStatusChoices(StrEnum):
+    """4 cas sont possibles après vérification d'un SIRET valide"""
+
+    # Entreprise non enregistrée
+    UNREGISTERED_COMPANY = auto()
+    # Entreprise enregistrée et supervisée par l'utilisateur lui-même
+    REGISTERED_AND_SUPERVISED_BY_ME = auto()
+    # Entreprise enregistrée et supervisée par un autre gestionnaire que l'utilisateur
+    REGISTERED_AND_SUPERVISED_BY_OTHER = auto()
+    # Entreprise enregistrée mais non supervisée, sans gestionnaire (ex: suite à un import)
+    REGISTERED_AND_UNSUPERVISED = auto()
 
 
 class CheckSiretView(APIView):
+    """
+    Vérifie le SIRET pour indiquer au front-end dans quel cas fonctionnel on se situe.
+    NOTE: cette méthode ne vérifie volontairement pas la validité du SIRET, car cette étape sera déléguée à l'API externe
+    """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request, siret):
-        """NOTE: cette méthode ne vérifie volontairement pas la validité du SIRET, car cette étape sera déléguée à l'API externe"""
         try:
             company = Company.objects.get(siret=siret)
         except Company.DoesNotExist:
@@ -40,3 +51,10 @@ class CheckSiretView(APIView):
                 company_status = CompanyStatusChoices.REGISTERED_AND_UNSUPERVISED
 
         return Response({"company_status": company_status})
+
+
+class CompanyCreateView(CreateAPIView):
+    """Création d'une entreprise"""
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = CompanySerializer

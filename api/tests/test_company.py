@@ -1,6 +1,7 @@
 from .utils import ProjectAPITestCase
 from data.factories import CompanyFactory, CompanySupervisorFactory
 from ..views.company import CompanyStatusChoices
+from data.models import Company
 from rest_framework import status
 
 
@@ -36,4 +37,28 @@ class TestCheckSiret(ProjectAPITestCase):
 
     def test_check_siret_ko_authenticated(self):
         response = self.get(self.url(siret=self.siret))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestCreateCompany(ProjectAPITestCase):
+    viewname = "company_create"
+
+    def test_create_company_ok(self):
+        self.login()
+        company = CompanyFactory.build(social_name="Too Good To Leave")  # créé en mémoire, pas en DB
+        companies_count = Company.objects.count()
+        for key in ["_state", "id"]:
+            company.__dict__.pop(key, None)
+        response = self.post(self.url(), company.__dict__)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Company.objects.count(), companies_count + 1)
+
+    def test_create_company_ko_missing_data(self):
+        self.login()
+        response = self.post(self.url(), {})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("address", response.data["field_errors"])
+
+    def test_create_company_ko_unauthenticated(self):
+        response = self.post(self.url(), {})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

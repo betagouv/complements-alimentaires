@@ -19,7 +19,7 @@ urlpatterns = {
     path("populations/", views.PopulationListView.as_view(), name="population_list"),
     path("conditions/", views.ConditionListView.as_view(), name="condition_list"),
     path("units/", views.UnitListView.as_view(), name="unit_list"),
-    path("countries/", views.CountryListView.as_view(), name="country_list"),
+    path("declarations/", views.DeclarationCreateApiView.as_view(), name="create_declaration"),
     # Authentication
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
@@ -36,8 +36,9 @@ urlpatterns = {
         name="send_new_signup_verification_email",
     ),
     # Company
+    path("countries/", views.CountryListView.as_view(), name="country_list"),
     path("check-siret/<str:siret>", views.CheckSiretView.as_view(), name="check_siret"),
-    path("declarations/", views.DeclarationCreateApiView.as_view(), name="create_declaration"),
+    path("companies/", views.CompanyCreateView.as_view(), name="company_create"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

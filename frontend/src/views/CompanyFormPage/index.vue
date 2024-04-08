@@ -6,11 +6,7 @@
     <!-- Page content -->
     <Introduction v-if="step == 0" />
     <KeepAlive>
-      <component
-        :is="components[step - 1]"
-        @exist="changeStep(1, 'Reprise d\'entreprise', TakeOverCompany, nextStep)"
-        @unexist="changeStep(1, 'Création d\'entreprise', CreateCompany, nextStep)"
-      />
+      <component :is="components[step - 1]" @changeStep="handleChangeStepEvent" />
     </KeepAlive>
 
     <!-- Navigation buttons -->
@@ -30,13 +26,9 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-// not considered as a step since not in the stepper
+import { ref, defineAsyncComponent } from "vue"
 import Introduction from "./Introduction" // 0
-// steps
 import Identification from "./steps/Identification" // 1
-import CreateCompany from "./steps/CreateCompany" // 2A
-import TakeOverCompany from "./steps/TakeOverCompany" // 2B
 import Summary from "./steps/Summary" // 3
 
 const step = ref(0) // 0 shows Introduction component, outside of DSFRStepper
@@ -44,13 +36,23 @@ const prevStep = () => (step.value -= 1)
 const nextStep = () => (step.value += 1)
 
 // Steps and components follow the same step order, from 1 to N
-const steps = ref(["Identification de l'entreprise", "Création ou reprise d'entreprise", "Récapitulatif"])
-const components = [Identification, undefined, Summary] // NOTE: may need to be reactive at some point
+const steps = ref(["Identification de l'entreprise", "Enregistrement ou reprise d'entreprise", "Récapitulatif"])
+const components = [Identification, undefined, Summary]
+
+// Utils
+const stepComponentFromName = (name) => defineAsyncComponent(() => import(`./steps/${name}`))
 
 // Steps are dynamic and can change according to events
-const changeStep = (index, name, component, callback) => {
-  steps.value[index] = name
-  components[index] = component
-  if (callback) callback()
+const handleChangeStepEvent = (event) => {
+  steps.value[event.index] = event.name
+  components[event.index] = stepComponentFromName(event.component)
+  if (event.goToNextStep) nextStep()
 }
+
+// WARN: casse la logique de précedent/suivant
+// Sinon un bouton "annuler et recommencer" à la place ? Il y aurait plus le récapitulatif ?
+// const removeStep = (index, callback) => {
+//   steps.value.splice(index, 1)
+//   if (callback) callback()
+// }
 </script>
