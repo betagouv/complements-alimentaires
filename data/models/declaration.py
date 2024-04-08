@@ -6,6 +6,7 @@ from data.models import (
     SubstanceUnit,
     Population,
     Condition,
+    Effect,
     Plant,
     Microorganism,
     Ingredient,
@@ -13,7 +14,6 @@ from data.models import (
     PlantPart,
     Company,
 )
-from django.contrib.postgres.fields import ArrayField
 
 
 class Declaration(Historisable, TimeStampable):
@@ -95,10 +95,7 @@ class Declaration(Historisable, TimeStampable):
     populations = models.ManyToManyField(Population, blank=True, verbose_name="populations cible")
     conditions_not_recommended = models.ManyToManyField(Condition, verbose_name="consommation déconseillée")
 
-    # TODO : à transformer dans un champ avec ForeignKey une fois qu'on aura les effets dans notre DB
-    effects = ArrayField(
-        base_field=models.TextField(), blank=True, null=True, size=None, verbose_name="objectifs ou effets"
-    )
+    effects = models.ManyToManyField(Effect, blank=True, null=True, verbose_name="objectifs ou effets")
     other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non-listés")
 
 
