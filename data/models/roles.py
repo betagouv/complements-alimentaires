@@ -44,11 +44,15 @@ class CompanySupervisor(BaseRole):
         verbose_name = "gestionnaire d'entreprises"
         verbose_name_plural = "gestionnaires d'entreprises"
 
-    companies = models.ManyToManyField(Company, verbose_name=Company._meta.verbose_name_plural)
+    companies = models.ManyToManyField(
+        Company, verbose_name=Company._meta.verbose_name_plural, related_name="supervisors"
+    )
 
 
 class Declarant(BaseRole):
     class Meta:
         verbose_name = "déclarant"
 
-    companies = models.ManyToManyField(Company, verbose_name=Company._meta.verbose_name_plural)
+    companies = models.ManyToManyField(
+        Company, verbose_name=Company._meta.verbose_name_plural, related_name="declarants"
+    )

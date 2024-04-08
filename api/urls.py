@@ -35,6 +35,8 @@ urlpatterns = {
         views.SendNewSignupVerificationEmailView.as_view(),
         name="send_new_signup_verification_email",
     ),
+    # Company
+    path("check-siret/<str:siret>", views.CheckSiretView.as_view(), name="check_siret"),
     path("declarations/", views.DeclarationCreateApiView.as_view(), name="create_declaration"),
 }
 
