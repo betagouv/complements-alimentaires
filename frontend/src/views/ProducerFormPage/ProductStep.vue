@@ -153,13 +153,14 @@
   </h2>
   <DsfrFieldset>
     <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
-      <div v-for="effect in effects" :key="`effect-${effect}`" class="flex col-span-6 sm:col-span-3 lg:col-span-2">
-        <input :id="`effect-${effect}`" type="checkbox" v-model="payload.effects" :value="effect" />
-        <label :for="`effect-${effect}`" class="fr-label ml-2">{{ effect }}</label>
+      <div v-for="effect in effects" :key="`effect-${effect.id}`" class="flex col-span-6 sm:col-span-3 lg:col-span-2">
+        <input :id="`effect-${effect.id}`" type="checkbox" v-model="payload.effects" :value="effect.id" />
+        <label :for="`effect-${effect.id}`" class="fr-label ml-2">{{ effect.name }}</label>
       </div>
     </div>
   </DsfrFieldset>
-  <DsfrInputGroup class="max-w-2xl mt-6" v-if="payload.effects && payload.effects.indexOf('Autre (à préciser)') > -1">
+
+  <DsfrInputGroup class="max-w-2xl mt-6" v-if="payload.effects && payload.effects.indexOf(otherEffectsId) > -1">
     <DsfrInput
       v-model="payload.otherEffects"
       label-visible
@@ -216,6 +217,8 @@ const payload = defineModel()
 
 const store = useRootStore()
 const { populations, conditions, effects, loggedUser } = storeToRefs(store)
+const otherEffectsId = computed(() => effects.value?.find((effect) => effect.name === "Autre (à préciser)").id)
+
 const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
 const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))
 const galenicFormulation = [

@@ -42,6 +42,13 @@ export const useRootStore = defineStore("root", () => {
   const fetchEffects = async () => {
     const { data } = await useFetch("/api/v1/effects/").json()
     effects.value = data.value
+    // met l'effet "Autre (à préciser)" en dernier dans la liste
+    const otherEffect = effects.value.find((effect) => effect.name === "Autre (à préciser)")
+    if (otherEffect) {
+      const otherEffectId = effects.value.indexOf(otherEffect)
+      effects.value.splice(otherEffectId, 1)
+    }
+    effects.value.push(otherEffect)
   }
   const fetchPlantParts = async () => {
     const { data } = await useFetch("/api/v1/plantParts/").json()
