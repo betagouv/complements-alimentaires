@@ -141,3 +141,13 @@ export const RiBriefcaseLine = remixIcon(
   "ri-briefcase-line",
   "M7 5V2a1 1 0 011-1h8a1 1 0 011 1v3h4a1 1 0 011 1v14a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1h4zM4 16v3h16v-3H4zm0-2h16V7H4v7zM9 3v2h6V3H9zm2 8h2v2h-2v-2z"
 )
+
+export const RiKey2Line = remixIcon(
+  "ri-key2-line",
+  "M10.758 11.828l7.849-7.849 1.414 1.414-1.414 1.415 2.474 2.474-1.414 1.415-2.475-2.475-1.414 1.414 2.121 2.121-1.414 1.415-2.121-2.122-2.192 2.192a5.002 5.002 0 01-7.708 6.294 5 5 0 016.294-7.708zm-.637 6.293A3 3 0 105.88 13.88a3 3 0 004.242 4.242z"
+)
+
+export const RiArrowGoBackFill = remixIcon(
+  "ri-arrow-go-back-fill",
+  "M8 7v4L2 6l6-5v4h5a8 8 0 110 16H4v-2h9a6 6 0 100-12H8z"
+)

@@ -38,6 +38,11 @@ urlpatterns = {
     # Company
     path("countries/", views.CountryListView.as_view(), name="country_list"),
     path("check-siret/<str:siret>", views.CheckSiretView.as_view(), name="check_siret"),
+    path(
+        "claim-company-supervision/<str:siret>",
+        views.ClaimCompanySupervisionView.as_view(),
+        name="claim_company_supervision",
+    ),
     path("companies/", views.CompanyCreateView.as_view(), name="company_create"),
 }
 

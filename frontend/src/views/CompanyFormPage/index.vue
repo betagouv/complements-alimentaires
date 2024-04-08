@@ -20,6 +20,7 @@
         icon="ri-arrow-right-line"
         iconRight
       /> -->
+      <DsfrButton label="Retour au tableau de bord" v-if="step > 0" tertiary icon="ri-arrow-go-back-fill" />
       <DsfrButton v-if="step == steps.length" label="C'est terminé !" />
     </div>
   </div>

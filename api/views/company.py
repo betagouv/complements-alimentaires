@@ -5,7 +5,11 @@ from rest_framework.generics import CreateAPIView
 from data.choices import CountryChoices
 from data.models import Company
 from enum import StrEnum, auto
+from django.shortcuts import get_object_or_404
 from ..serializers import CompanySerializer
+from api.exception_handling import ProjectAPIException
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 class CountryListView(APIView):
@@ -51,6 +55,28 @@ class CheckSiretView(APIView):
                 company_status = CompanyStatusChoices.REGISTERED_AND_UNSUPERVISED
 
         return Response({"company_status": company_status})
+
+
+class ClaimCompanySupervisionView(APIView):
+    """Envoi un e-mail pour revendiquer la gestion d'une entreprise existante, quand elle n'a aucun gestionnaire."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, siret):
+        company = get_object_or_404(Company, siret=siret)
+        if company.supervisors.exists():
+            # ne devrait pas arriver, sécurité supplémentaire
+            raise ProjectAPIException(
+                global_error="Cette entreprise a déjà un gestionnaire. Votre demande n'a pas été envoyée."
+            )
+        user = request.user
+        send_mail(
+            subject="Nouvelle demande d'accès à une entreprise (sans gestionnaire)",
+            message=f"{user.name} (id: {user.id}) a demandé à devenir gestionnaire de l'entreprise {company.social_name} dont le siret est {siret}.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.CONTACT_EMAIL],
+        )
+        return Response({})
 
 
 class CompanyCreateView(CreateAPIView):

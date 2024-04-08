@@ -92,24 +92,34 @@ const submitSiret = async () => {
       case "unregistered_company":
         emit("changeStep", {
           index: 1,
-          name: "Enregistrement d'entreprise",
+          name: "Enregistrement d'une nouvelle entreprise",
           component: "CreateCompany",
           goToNextStep: true,
         })
         break
       case "registered_and_supervised_by_me":
-        emit("changeStep", { index: 1, name: "Entreprise existante", component: "NothingToDo", goToNextStep: true })
+        emit("changeStep", {
+          index: 1,
+          name: "L'entreprise existe déjà !",
+          component: "NothingToDo",
+          goToNextStep: true,
+        })
         break
       case "registered_and_supervised_by_other":
         emit("changeStep", {
           index: 1,
-          name: "Demande d'accès à une entreprise",
+          name: "Demande d'accès à une entreprise existante",
           component: "RequestAccess",
           goToNextStep: true,
         })
         break
       case "registered_and_unsupervised":
-        emit("changeStep", { index: 1, name: "Revendication", component: "ClaimOwnership", goToNextStep: true })
+        emit("changeStep", {
+          index: 1,
+          name: "Revendication d'une entreprise existante",
+          component: "ClaimSupervision",
+          goToNextStep: true,
+        })
         break
     }
   }
