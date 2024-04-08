@@ -39,8 +39,8 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         conditions = [ConditionFactory.create() for _ in range(3)]
-        effect1 = EffectFactory.create(name="Artères et cholestérol")
-        effect2 = EffectFactory.create(name="Autre (à préciser)")
+        effect1 = EffectFactory.create(ca_name="Artères et cholestérol")
+        effect2 = EffectFactory.create(ca_name="Autre (à préciser)")
         populations = [PopulationFactory.create() for _ in range(3)]
         company = CompanyFactory.create()
         unit = SubstanceUnitFactory.create()
@@ -113,8 +113,8 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(declaration.warning, "Ne pas prendre plus de 20")
         self.assertEqual(declaration.other_effects, "Moduler les défenses naturelles")
 
-        self.assertIn("Artères et cholestérol", declaration.effects.name)
-        self.assertIn("Autre (à préciser)", declaration.effects.name)
+        self.assertIn(effect1, declaration.effects.all())
+        self.assertIn(effect2, declaration.effects.all())
 
         self.assertEqual(declaration.author, authenticate.user)
 
