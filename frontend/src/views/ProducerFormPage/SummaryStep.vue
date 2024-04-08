@@ -23,7 +23,7 @@
     <SummaryInfoSegment label="Mise en garde et avertissement" :value="payload.warnings" />
     <SummaryInfoSegment label="Populations cible" :value="populationNames" />
     <SummaryInfoSegment label="Consommation déconseillée" :value="conditionNames" />
-    <SummaryInfoSegment label="Objectifs / effets" :value="effects" />
+    <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
   </div>
 
   <h3 class="fr-h6 !mt-8">
@@ -68,16 +68,24 @@ import FilePreview from "./FilePreview"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 
-const { populations, conditions } = storeToRefs(useRootStore())
+const { populations, conditions, effects } = storeToRefs(useRootStore())
 
 const payload = defineModel()
 const unitInfo = computed(() => {
   if (!payload.value.unitQuantity) return null
   return `${payload.value.unitQuantity} ${payload.value.unitMeasurement || "-"}`
 })
-const effects = computed(() => {
+const effectsNames = computed(() => {
+  const findName = (id) => effects.value.find((y) => y.id === id)?.name
   const otherEffects = payload.value.otherEffects
-  const allEffects = otherEffects ? payload.value.effects.concat([otherEffects]) : payload.value.effects
+  const allEffects = otherEffects
+    ? payload.value.effects.map(findName).concat("Autre (à préciser) : ".concat(otherEffects))
+    : payload.value.effects.map(findName)
+
+  const indexOtherEffectLabel = allEffects.indexOf("Autre (à préciser)")
+  if (indexOtherEffectLabel !== -1) {
+    allEffects.splice(indexOtherEffectLabel, 1)
+  }
   return allEffects.join(", ")
 })
 const files = computed(() => {
