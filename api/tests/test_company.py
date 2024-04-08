@@ -10,30 +10,34 @@ class TestCheckSiret(ProjectAPITestCase):
 
     def setUp(self):
         self.siret = "12345671234567"
-        self.company = CompanyFactory(siret=self.siret)
+        self.company = CompanyFactory(siret=self.siret, social_name="Appeul")
 
     def test_check_siret_ok_unregistered_company(self):
         self.login()
         unexisting_siret = "99999999999999"
         response = self.get(self.url(siret=unexisting_siret))
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.UNREGISTERED_COMPANY)
+        self.assertIsNone(response.data["social_name"])
 
     def test_check_siret_ok_registered_and_supervised_by_me(self):
         me = self.login()
         CompanySupervisorFactory(user=me, companies=[self.company])
         response = self.get(self.url(siret=self.siret))
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_ME)
+        self.assertEqual(response.data["social_name"], "Appeul")
 
     def test_check_siret_ok_registered_and_supervised_by_other(self):
         self.login()
         CompanySupervisorFactory(companies=[self.company])
         response = self.get(self.url(siret=self.siret))
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_OTHER)
+        self.assertEqual(response.data["social_name"], "Appeul")
 
     def test_check_siret_ok_registered_and_unsupervised(self):
         self.login()
         response = self.get(self.url(siret=self.siret))
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_UNSUPERVISED)
+        self.assertEqual(response.data["social_name"], "Appeul")
 
     def test_check_siret_ko_authenticated(self):
         response = self.get(self.url(siret=self.siret))

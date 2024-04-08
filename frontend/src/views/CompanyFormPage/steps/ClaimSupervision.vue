@@ -1,7 +1,9 @@
 <template>
   <div>
     <DsfrAlert size="sm">
-      L'entreprise dont le SIRET est
+      L'entreprise
+      <strong>{{ storedSocialName }}</strong>
+      avec le SIRET
       <strong>{{ storedSiret }}</strong>
       est présente dans notre base de données, mais ne dispose actuellement d'aucun gestionnaire. Si vous souhaitez
       revendiquer la gestion de cette entreprise, veuillez nous envoyer une demande :
@@ -28,7 +30,7 @@ import { useVuelidate } from "@vuelidate/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 
-const { storedSiret } = useCreateCompanyStore()
+const { storedSiret, storedSocialName } = useCreateCompanyStore()
 
 // Form state & rules
 const message = ref("")

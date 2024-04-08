@@ -44,6 +44,7 @@ class CheckSiretView(APIView):
             company = Company.objects.get(siret=siret)
         except Company.DoesNotExist:
             company_status = CompanyStatusChoices.UNREGISTERED_COMPANY
+            social_name = None
         else:
             if company.supervisors.exists():
                 supervisor = request.user.role("companysupervisor")
@@ -53,8 +54,9 @@ class CheckSiretView(APIView):
                     company_status = CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_OTHER
             else:
                 company_status = CompanyStatusChoices.REGISTERED_AND_UNSUPERVISED
+            social_name = company.social_name
 
-        return Response({"company_status": company_status})
+        return Response({"company_status": company_status, "social_name": social_name})
 
 
 class ClaimCompanySupervisionView(APIView):

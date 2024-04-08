@@ -86,7 +86,7 @@ const submitSiret = async () => {
   await handleError(response)
   if (response.value.ok) {
     const { setCreateCompanyStore } = useCreateCompanyStore()
-    setCreateCompanyStore(state.value.country, state.value.siret) // stored data to be use in another component later
+    setCreateCompanyStore(state.value.country, state.value.siret, data.value.socialName) // stored data to be use in another component later
 
     switch (data.value.companyStatus) {
       case "unregistered_company":
