@@ -13,7 +13,6 @@
             </a>
           </div>
         </DsfrInputGroup>
-        <DsfrButton @click="nextStep" v-if="step == 0" label="Démarrer !" size="lg" />
         <DsfrButton label="Vérifier le SIRET" icon="ri-arrow-right-line" iconRight @click="validateSiret" />
       </template>
 
@@ -33,6 +32,7 @@ import FormWrapper from "@/components/FormWrapper"
 import CountryField from "@/components/fields/CountryField"
 import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
 import { useVuelidate } from "@vuelidate/core"
+import { required, minLength, maxLength, helpers } from "@vuelidate/validators"
 
 // Form state & rules
 const state = ref({
@@ -43,7 +43,11 @@ const state = ref({
 
 const rules = {
   country: errorRequiredField,
-  siret: errorRequiredField,
+  siret: {
+    required: helpers.withMessage("Ce champ doit être rempli", required),
+    minLength: helpers.withMessage("Un SIRET doit contenir exactement 14 chiffres", minLength(14)),
+    maxLength: helpers.withMessage("Un SIRET doit contenir exactement 14 chiffres", maxLength(14)),
+  },
   vatIdNumber: errorRequiredField,
 }
 
@@ -53,6 +57,7 @@ const v$ = useVuelidate(rules, state)
 const emit = defineEmits(["unexist", "exist"])
 
 const validateSiret = () => {
+  v$.value.$validate()
   if (state.value.siret == "A") emit("exist")
   if (state.value.siret == "B") emit("unexist")
 }
