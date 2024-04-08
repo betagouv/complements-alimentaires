@@ -34,3 +34,5 @@ ELEMENT_MODELS = [
     Substance,
     SubstanceSynonym,
 ]
+
+DECLARATION_MODELS = [Effect, Condition, Population, SubstanceUnit]
