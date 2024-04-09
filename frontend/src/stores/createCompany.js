@@ -8,11 +8,13 @@ export const useCreateCompanyStore = defineStore("createCompany", () => {
   const identifierType = ref(undefined)
   const socialName = ref(undefined) // fourni par le back-end, uniquement quand l'entreprise existe déjà
 
-  const setCompanyCountry = (newCountry) => (country.value = newCountry)
-
-  const setCompanyIdentifierAndName = (newIdentifier, newIdentifierType, newSocialName) => {
-    identifier.value = newIdentifier
+  const setCompanyCountryAndIdentifierType = (newCountry, newIdentifierType) => {
+    country.value = newCountry
     identifierType.value = newIdentifierType
+  }
+
+  const setCompanyIdentifierAndName = (newIdentifier, newSocialName) => {
+    identifier.value = newIdentifier
     socialName.value = newSocialName
   }
 
@@ -26,7 +28,7 @@ export const useCreateCompanyStore = defineStore("createCompany", () => {
     storedCountry: country,
     storedIdentifier: identifier,
     storedIdentifierType: identifierType, // `siret` ou `vat`
-    setCompanyCountry,
+    setCompanyCountryAndIdentifierType,
     setCompanyIdentifierAndName,
     resetCompany,
   }

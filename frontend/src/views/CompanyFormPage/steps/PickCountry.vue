@@ -24,17 +24,18 @@ const emit = defineEmits(["changeStep"])
 const country = ref(undefined)
 
 const onCountrySelected = (selectedOption) => {
-  useCreateCompanyStore().setCompanyCountry(selectedOption) // pour créer l'entreprise plus tard en ayant l'information
+  const identifierType = selectedOption == "FR" ? "siret" : "vat"
+  useCreateCompanyStore().setCompanyCountryAndIdentifierType(selectedOption, identifierType) // pour créer l'entreprise plus tard en ayant l'information
   emit("changeStep", {
     index: 1,
-    name: selectedOption == "FR" ? "Identification par SIRET" : "Identification par n° de TVA intracommunautaire",
-    component: selectedOption == "FR" ? "IdentificationBySiret" : "IdentificationByVat",
+    name: `Identification par n° ${identifierType.toUpperCase()}`,
+    component: "Identification",
     goToNextStep: true,
   })
 }
 
 onActivated(() => {
-  // remet à 0 le pays choisi pour qu'en fassant précédent, le choix du pays déclenche de nouveau le passage à l'étape suivante
+  // remet à 0 le pays choisi pour qu'en cliquant précédent, le choix du pays déclenche de nouveau le passage à l'étape suivante
   country.value = undefined
 })
 </script>

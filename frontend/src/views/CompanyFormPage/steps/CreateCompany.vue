@@ -1,8 +1,10 @@
 <template>
   <div>
     <DsfrAlert size="sm">
-      L'entreprise dont le SIRET est
-      <strong>{{ state.siret }}</strong>
+      L'entreprise dont le
+      {{ storedIdentifierType.toUpperCase() + " " }}
+      est
+      <strong>{{ storedIdentifier }}</strong>
       n'est pas encore enregistrée dans notre base de données. Pour ce faire, veuillez vérifier ou compléter les
       informations ci-dessous. À l'issue, vous en deviendrez automatiquement son gestionnaire.
       <FormWrapper class="mx-auto">
@@ -52,7 +54,7 @@ import { useCreateCompanyStore } from "@/stores/createCompany"
 
 // Form state & rules
 
-const { storedCountry, storedSiret } = useCreateCompanyStore()
+const { storedCountry, storedIdentifier, storedIdentifierType } = useCreateCompanyStore()
 
 const state = ref({
   socialName: "",
@@ -63,7 +65,7 @@ const state = ref({
   city: "",
   cedex: "",
   country: storedCountry,
-  siret: storedSiret,
+  [storedIdentifierType]: storedIdentifier, // on passe soit un numéro de SIRET, soit de VAT dans le payload
 })
 
 const rules = {
@@ -74,7 +76,7 @@ const rules = {
   postalCode: errorRequiredField,
   city: errorRequiredField,
   cedex: {},
-  // `country` et `siret` ne sont pas affichés dans le formulaire car déjà entrés plus tôt
+  // `country` et `siret/vat` ne sont pas affichés dans le formulaire car déjà entrés plus tôt
 }
 
 const $externalResults = ref({})

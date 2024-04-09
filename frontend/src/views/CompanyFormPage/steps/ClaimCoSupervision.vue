@@ -3,8 +3,7 @@
     <DsfrAlert size="sm">
       L'entreprise
       <strong>{{ storedSocialName }}</strong>
-      avec le n°
-      <span class="uppercase">{{ storedIdentifierType + " " }}</span>
+      avec le n° {{ storedIdentifierType.toUpperCase() + " " }}
       <strong>{{ storedIdentifier }}</strong>
       est présente dans notre base de données, et dispose déjà d'un gestionnaire. Vous pouvez cependant demander à
       devenir vous-même gestionnaire en envoyant une demande à l'ensemble des gestionnaires actuels.

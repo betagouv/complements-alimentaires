@@ -3,8 +3,7 @@
     <DsfrAlert size="sm">
       L'entreprise
       <strong>{{ storedSocialName }}</strong>
-      avec le n°
-      <span class="uppercase">{{ storedIdentifierType + " " }}</span>
+      avec le n° {{ storedIdentifierType.toUpperCase() + " " }}
       <strong>{{ storedIdentifier }}</strong>
       fait déjà partie des entreprises dont vous êtes le gestionnaire.
 
