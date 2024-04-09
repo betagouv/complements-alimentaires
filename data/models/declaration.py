@@ -95,7 +95,7 @@ class Declaration(Historisable, TimeStampable):
     populations = models.ManyToManyField(Population, blank=True, verbose_name="populations cible")
     conditions_not_recommended = models.ManyToManyField(Condition, verbose_name="consommation déconseillée")
 
-    effects = models.ManyToManyField(Effect, blank=True, null=True, verbose_name="objectifs ou effets")
+    effects = models.ManyToManyField(Effect, blank=True, verbose_name="objectifs ou effets")
     other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non-listés")
 
 
