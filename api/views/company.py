@@ -31,7 +31,7 @@ class CompanyStatusChoices(StrEnum):
     REGISTERED_AND_UNSUPERVISED = auto()
 
 
-class CheckSiretView(APIView):
+class CheckCompanySiretView(APIView):
     """
     Vérifie le SIRET pour indiquer au front-end dans quel cas fonctionnel on se situe.
     NOTE: cette méthode ne vérifie volontairement pas la validité du SIRET, car cette étape sera déléguée à l'API externe

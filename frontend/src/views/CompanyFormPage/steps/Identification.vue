@@ -67,7 +67,7 @@ const rules = {
 const v$ = useVuelidate(rules, state)
 
 // Request definition
-const url = computed(() => `/api/v1/check-siret/${state.value.siret}`)
+const url = computed(() => `/api/v1/companies/${state.value.siret}/check-siret`)
 const { data, response, execute, isFetching } = useFetch(
   url,
   {

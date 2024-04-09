@@ -40,7 +40,7 @@ const v$ = useVuelidate({}, { message: message }, { $externalResults })
 
 // Request definition
 const { response, execute, isFetching } = useFetch(
-  `/api/v1/request-company-access/${storedSiret}`,
+  `/api/v1/companies/${storedSiret}/request-access`,
   {
     headers: headers(),
   },

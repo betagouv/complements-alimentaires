@@ -37,16 +37,18 @@ urlpatterns = {
     ),
     # Company
     path("countries/", views.CountryListView.as_view(), name="country_list"),
-    path("check-siret/<str:siret>", views.CheckSiretView.as_view(), name="check_siret"),
+    path("companies/", views.CompanyCreateView.as_view(), name="company_create"),
+    path("companies/<str:siret>/check-siret/", views.CheckCompanySiretView.as_view(), name="check_company_siret"),
     path(
-        "claim-company-supervision/<str:siret>",
+        "companies/<str:siret>/claim-supervision/",
         views.ClaimCompanySupervisionView.as_view(),
         name="claim_company_supervision",
     ),
     path(
-        "request-company-access/<str:siret>", views.RequestCompanyAccessView.as_view(), name="request_company_access"
+        "companies/<str:siret>/request-access/",
+        views.RequestCompanyAccessView.as_view(),
+        name="request_company_access",
     ),
-    path("companies/", views.CompanyCreateView.as_view(), name="company_create"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

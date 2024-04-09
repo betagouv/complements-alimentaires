@@ -41,7 +41,7 @@ const v$ = useVuelidate({}, { message: message }, { $externalResults })
 // Request definition
 
 const { response, execute, isFetching } = useFetch(
-  `/api/v1/claim-company-supervision/${storedSiret}`,
+  `/api/v1/companies/${storedSiret}/claim-supervision`,
   {
     headers: headers(),
   },
