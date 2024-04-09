@@ -6,7 +6,7 @@ from data.models import Population
 class PopulationForm(forms.ModelForm):
     class Meta:
         widgets = {
-            "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
         }
 
 

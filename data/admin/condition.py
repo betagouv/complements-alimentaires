@@ -6,8 +6,7 @@ from data.models import Condition
 class ConditionForm(forms.ModelForm):
     class Meta:
         widgets = {
-            "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
         }
 
 
