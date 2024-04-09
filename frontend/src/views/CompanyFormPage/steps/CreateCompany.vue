@@ -1,42 +1,42 @@
 <template>
   <div>
-    <FormWrapper class="max-w-xl mx-auto">
-      <DsfrAlert size="sm">
-        L'entreprise dont le SIRET est
-        <strong>{{ state.siret }}</strong>
-        n'est pas encore enregistrée dans notre base de données. Pour ce faire, veuillez vérifier ou compléter les
-        informations ci-dessous.
-      </DsfrAlert>
-      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'socialName')">
-        <DsfrInput v-model="state.socialName" label="Dénomination sociale" labelVisible />
-      </DsfrInputGroup>
-      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'commercialName')">
-        <DsfrInput v-model="state.commercialName" label="Nom commercial" labelVisible />
-      </DsfrInputGroup>
-      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'address')">
-        <DsfrInput v-model="state.address" label="Adresse" labelVisible hint="Numéro et voie" />
-      </DsfrInputGroup>
-      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'additionalDetails')">
-        <DsfrInput
-          v-model="state.additionalDetails"
-          label="Complément d’adresse (optionnel)"
-          labelVisible
-          hint="Bâtiment, immeuble, escalier et numéro d’appartement"
-        />
-      </DsfrInputGroup>
-      <div class="flex gap-x-4 justify-between">
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'postalCode')">
-          <DsfrInput v-model="state.postalCode" label="Code postal" labelVisible />
+    <DsfrAlert size="sm">
+      L'entreprise dont le SIRET est
+      <strong>{{ state.siret }}</strong>
+      n'est pas encore enregistrée dans notre base de données. Pour ce faire, veuillez vérifier ou compléter les
+      informations ci-dessous. À l'issue, vous en deviendrez automatiquement son gestionnaire.
+      <FormWrapper class="mx-auto">
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'socialName')">
+          <DsfrInput v-model="state.socialName" label="Dénomination sociale" labelVisible />
         </DsfrInputGroup>
-        <DsfrInputGroup class="grow" :error-message="firstErrorMsg(v$, 'city')">
-          <DsfrInput v-model="state.city" label="Ville" labelVisible />
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'commercialName')">
+          <DsfrInput v-model="state.commercialName" label="Nom commercial" labelVisible />
         </DsfrInputGroup>
-      </div>
-      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'cedex')">
-        <DsfrInput v-model="state.cedex" label="Cedex (optionnel)" labelVisible />
-      </DsfrInputGroup>
-      <DsfrButton label="Enregistrer l'entreprise" @click="submitCompany" :disabled="isFetching" />
-    </FormWrapper>
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'address')">
+          <DsfrInput v-model="state.address" label="Adresse" labelVisible hint="Numéro et voie" />
+        </DsfrInputGroup>
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'additionalDetails')">
+          <DsfrInput
+            v-model="state.additionalDetails"
+            label="Complément d’adresse (optionnel)"
+            labelVisible
+            hint="Bâtiment, immeuble, escalier et numéro d’appartement"
+          />
+        </DsfrInputGroup>
+        <div class="flex gap-x-4 justify-between">
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'postalCode')">
+            <DsfrInput v-model="state.postalCode" label="Code postal" labelVisible />
+          </DsfrInputGroup>
+          <DsfrInputGroup class="grow" :error-message="firstErrorMsg(v$, 'city')">
+            <DsfrInput v-model="state.city" label="Ville" labelVisible />
+          </DsfrInputGroup>
+        </div>
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'cedex')">
+          <DsfrInput v-model="state.cedex" label="Cedex (optionnel)" labelVisible />
+        </DsfrInputGroup>
+        <DsfrButton label="Enregistrer l'entreprise" @click="submitCompany" :disabled="isFetching" />
+      </FormWrapper>
+    </DsfrAlert>
   </div>
 </template>
 

@@ -27,5 +27,5 @@ from .company import (  # noqa
     CheckCompanySiretView,
     CompanyCreateView,
     ClaimCompanySupervisionView,
-    RequestCompanyAccessView,
+    ClaimCompanyCoSupervisionView,
 )

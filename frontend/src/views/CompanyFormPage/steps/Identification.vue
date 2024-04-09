@@ -108,8 +108,8 @@ const submitSiret = async () => {
       case "registered_and_supervised_by_other":
         emit("changeStep", {
           index: 1,
-          name: "Demande d'accès à une entreprise existante",
-          component: "RequestAccess",
+          name: "Demande de co-gestion d'une entreprise existante",
+          component: "ClaimCoSupervision",
           goToNextStep: true,
         })
         break

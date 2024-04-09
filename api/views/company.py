@@ -81,7 +81,7 @@ class ClaimCompanySupervisionView(APIView):
         return Response({})
 
 
-class RequestCompanyAccessView(APIView):
+class ClaimCompanyCoSupervisionView(APIView):
     """Envoi un e-mail aux gestionnaires d'une entreprise pour demander à devenir co-gestionnaire."""
 
     permission_classes = [IsAuthenticated]

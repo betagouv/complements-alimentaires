@@ -14,7 +14,7 @@
         <DsfrButton
           label="Demander la co-gestion"
           icon="ri-key2-line"
-          @click="submitRequestAccess"
+          @click="submitClaimCoSupervision"
           :disabled="isFetching"
         />
       </div>
@@ -40,7 +40,7 @@ const v$ = useVuelidate({}, { message: message }, { $externalResults })
 
 // Request definition
 const { response, execute, isFetching } = useFetch(
-  `/api/v1/companies/${storedSiret}/request-access`,
+  `/api/v1/companies/${storedSiret}/claim-co-supervision`,
   {
     headers: headers(),
   },
@@ -48,7 +48,7 @@ const { response, execute, isFetching } = useFetch(
 ).json()
 
 // Request execution
-const submitRequestAccess = async () => {
+const submitClaimCoSupervision = async () => {
   v$.value.$validate()
   // pas besoin de vérifier les erreurs fronts, car pas possible sur le seul champ message
   await execute()
