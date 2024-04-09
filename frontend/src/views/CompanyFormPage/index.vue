@@ -29,18 +29,25 @@
 <script setup>
 import { ref, defineAsyncComponent } from "vue"
 import Introduction from "./Introduction" // 0
-import Identification from "./steps/Identification" // 1
-import Summary from "./steps/Summary" // 3
+import PickCountry from "./steps/PickCountry" // 1
+import Summary from "./steps/Summary" // 4
 
 const step = ref(0) // 0 shows Introduction component, outside of DSFRStepper
 const prevStep = () => (step.value -= 1)
 const nextStep = () => (step.value += 1)
 
 // Steps and components follow the same step order, from 1 to N
-const steps = ref(["Identification de l'entreprise", "Enregistrement ou reprise d'entreprise", "Récapitulatif"])
-const components = [Identification, undefined, Summary]
+const steps = ref([
+  "Pays de l'entreprise",
+  "Identification de l'entreprise",
+  "Enregistrement ou reprise d'entreprise",
+  "Récapitulatif",
+])
 
-// Utils
+// Les `undefined` correspondent à des étapes pas encore définies
+const components = [PickCountry, undefined, undefined, Summary]
+
+// Récupère le component d'une étape à partir de son nom
 const stepComponentFromName = (name) => defineAsyncComponent(() => import(`./steps/${name}`))
 
 // Steps are dynamic and can change according to events

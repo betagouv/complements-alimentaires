@@ -7,11 +7,18 @@ export const useCreateCompanyStore = defineStore("createCompany", () => {
   const siret = ref(undefined)
   const socialName = ref(undefined) // fourni par le back-end quand l'entreprise existe
 
-  const setCreateCompanyStore = (newCountry, newSiret, newSocialName) => {
-    country.value = newCountry
+  const setCompanyCountry = (newCountry) => (country.value = newCountry)
+
+  const setCompanySiretAndName = (newSiret, newSocialName) => {
     siret.value = newSiret
     socialName.value = newSocialName
   }
 
-  return { storedCountry: country, storedSiret: siret, storedSocialName: socialName, setCreateCompanyStore }
+  return {
+    storedCountry: country,
+    storedSiret: siret,
+    storedSocialName: socialName,
+    setCompanyCountry,
+    setCompanySiretAndName,
+  }
 })
