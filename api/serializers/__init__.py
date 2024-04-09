@@ -1,8 +1,7 @@
 from .blogpost import BlogPostSerializer  # noqa: F401
 from .user import (  # noqa: F401
-    LoggedUserSerializer,
+    UserSerializer,
     CreateUserSerializer,
-    EditUserSerializer,
     ChangePasswordSerializer,
 )
 from .webinar import WebinarSerializer  # noqa
