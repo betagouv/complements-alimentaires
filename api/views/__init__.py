@@ -23,4 +23,4 @@ from .user import (  # noqa: F401
     VerifyEmailView,
 )
 from .webinar import WebinarView  # noqa
-from .company import CheckSiretView, CompanyCreateView, ClaimCompanySupervisionView  # noqa
+from .company import CheckSiretView, CompanyCreateView, ClaimCompanySupervisionView, RequestCompanyAccessView  # noqa

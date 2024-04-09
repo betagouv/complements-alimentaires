@@ -60,7 +60,7 @@ class CheckSiretView(APIView):
 
 
 class ClaimCompanySupervisionView(APIView):
-    """Envoi un e-mail pour revendiquer la gestion d'une entreprise existante, quand elle n'a aucun gestionnaire."""
+    """Envoi un e-mail aux administrateurs complalim pour revendiquer la gestion d'une entreprise existante, quand elle n'a aucun gestionnaire."""
 
     permission_classes = [IsAuthenticated]
 
@@ -77,6 +77,28 @@ class ClaimCompanySupervisionView(APIView):
             message=f"{user.name} (id: {user.id}) a demandé à devenir gestionnaire de l'entreprise {company.social_name} dont le siret est {siret}.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[settings.CONTACT_EMAIL],
+        )
+        return Response({})
+
+
+class RequestCompanyAccessView(APIView):
+    """Envoi un e-mail aux gestionnaires d'une entreprise pour demander à devenir co-gestionnaire."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, siret):
+        company = get_object_or_404(Company, siret=siret)
+        if not company.supervisors.exists():
+            # ne devrait pas arriver, sécurité supplémentaire
+            raise ProjectAPIException(
+                global_error="Cette entreprise n'a pas de gestionnaire. Votre demande n'a pas été envoyée."
+            )
+        user = request.user
+        send_mail(
+            subject=f"{user.name} souhaite devenir gestionnaire Compl'Alim de {company.social_name}",
+            message=f"{user.name} a demandé à devenir co-gestionnaire de l'entreprise {company.social_name}. Veuillez vous rendre sur la plateforme pour accéder ou refuser cette demande.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=company.supervisors.values_list("user__email"),
         )
         return Response({})
 

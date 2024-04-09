@@ -43,6 +43,9 @@ urlpatterns = {
         views.ClaimCompanySupervisionView.as_view(),
         name="claim_company_supervision",
     ),
+    path(
+        "request-company-access/<str:siret>", views.RequestCompanyAccessView.as_view(), name="request_company_access"
+    ),
     path("companies/", views.CompanyCreateView.as_view(), name="company_create"),
 }
 
