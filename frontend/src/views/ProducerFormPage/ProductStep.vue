@@ -215,19 +215,9 @@ import { countries } from "@/utils/mappings"
 const payload = defineModel()
 
 const store = useRootStore()
-const { populations, conditions, loggedUser } = storeToRefs(store)
+const { populations, conditions, galenicFormulation, loggedUser } = storeToRefs(store)
 const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
 const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))
-const galenicFormulation = [
-  {
-    text: "Ampoule",
-    value: "ampoule",
-  },
-  {
-    text: "Comprimé",
-    value: "comprime",
-  },
-]
 const effects = [
   "Non défini",
   "Antioxydant",
