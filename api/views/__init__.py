@@ -3,6 +3,7 @@ from .autocomplete import AutocompleteView  # noqa: F401
 from .blog import BlogPostsView, BlogPostView  # noqa: F401
 from .company import CountryListView  # noqa: F401
 from .condition import ConditionListView  # noqa: F401
+from .effect import EffectListView  # noqa: F401
 from .galenic_formulation import GalenicFormulationListView  # noqa: F401
 from .declaration import DeclarationCreateApiView  # noqa: F401
 from .ingredient import IngredientRetrieveView  # noqa: F401

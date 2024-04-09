@@ -7,6 +7,7 @@ export const useRootStore = defineStore("root", () => {
   const initialDataLoaded = ref(false)
   const populations = ref(null)
   const conditions = ref(null)
+  const effects = ref(null)
   const galenicFormulation = ref(null)
   const plantParts = ref(null)
   const units = ref(null)
@@ -39,6 +40,17 @@ export const useRootStore = defineStore("root", () => {
     const { data } = await useFetch("/api/v1/conditions/").json()
     conditions.value = data.value
   }
+  const fetchEffects = async () => {
+    const { data } = await useFetch("/api/v1/effects/").json()
+    effects.value = data.value
+    // met l'effet "Autre (à préciser)" en dernier dans la liste
+    const otherEffect = effects.value.find((effect) => effect.name === "Autre (à préciser)")
+    if (otherEffect) {
+      const otherEffectId = effects.value.indexOf(otherEffect)
+      effects.value.splice(otherEffectId, 1)
+    }
+    effects.value.push(otherEffect)
+  }
   const fetchGalenicFormulation = async () => {
     const { data } = await useFetch("/api/v1/galenic-formulation/").json()
     conditions.value = data.value
@@ -60,12 +72,15 @@ export const useRootStore = defineStore("root", () => {
     fetchLoggedUser,
     fetchPopulations,
     fetchConditions,
+    fetchEffects,
     fetchGalenicFormulation,
+
     fetchPlantParts,
     fetchUnits,
     plantParts,
     populations,
     conditions,
+    effects,
     galenicFormulation,
     units,
   }

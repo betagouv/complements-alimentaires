@@ -27,7 +27,10 @@ from .models import (
     SubstanceSynonym,
 )
 
-from .models import Population, SubstanceUnit, GalenicFormulation
+from .models import Effect, GalenicFormulation, Population, SubstanceUnit
+
+# from .models.condition import Condition
+
 from .utils.importer_utils import clean_value, update_or_create_object, get_update_or_create_related_object
 
 logger = logging.getLogger(__name__)
@@ -52,6 +55,7 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_MOORG_SUBSTANCE.csv": "à récuperer",
     "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": Part,
     "REF_ICA_PARTIE_UTILE.csv": Part,
+    "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
     "REF_ICA_FORME_GALENIQUE.csv": GalenicFormulation,
 }
 
@@ -74,6 +78,7 @@ class CSVImporter:
         "SYNSBSTA": SubstanceSynonym,
         "FAMPL": PlantFamily,
         "UNT": SubstanceUnit,
+        "OBJEFF": Effect,
         "FRMGAL": GalenicFormulation,
         # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
         # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",

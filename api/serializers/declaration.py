@@ -10,6 +10,7 @@ from data.models import (
     ComputedSubstance,
     Attachment,
     Condition,
+    Effect,
     Population,
     Company,
     PlantPart,
@@ -244,6 +245,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         many=True, queryset=Condition.objects.all(), required=False
     )
     populations = serializers.PrimaryKeyRelatedField(many=True, queryset=Population.objects.all(), required=False)
+    effects = serializers.PrimaryKeyRelatedField(many=True, queryset=Effect.objects.all(), required=False)
 
     declared_plants = DeclaredListSerializer(child=DeclaredPlantSerializer(), required=False)
     declared_microorganisms = DeclaredListSerializer(child=DeclaredMicroorganismSerializer(), required=False)
