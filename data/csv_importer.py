@@ -131,6 +131,7 @@ class CSVImporter:
         "modification_date",
         "missing_import_data",
     ]
+    NEW_FIELDS = ["is_liquid"]
 
     def __init__(self, file, model, is_relation=False, mapping=None):
         """Initialise un CSVImporter avec le fichier source, le modèle de destination, etc
@@ -183,6 +184,7 @@ class CSVImporter:
             for field in model_fields
             if field.concrete
             and field.name not in self.AUTOMATICALLY_FILLED
+            and field.name not in self.NEW_FIELDS
             and not field.__class__ == GeneratedField
             and not field.name.startswith("ca_")
         ]

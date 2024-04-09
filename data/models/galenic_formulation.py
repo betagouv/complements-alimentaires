@@ -10,6 +10,7 @@ class GalenicFormulation(CommonModel):
         verbose_name_plural = "Formes galéniques"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais selon la base SICCRF")
+    is_liquid = models.BooleanField(default=False, verbose_name="la forme galénique est-elle une forme liquide ?")
     history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete"])
 
     @property
