@@ -1,7 +1,7 @@
 <template>
   <div>
     <DsfrAlert size="sm">
-      L'entreprise dont le
+      L'entreprise dont le n°
       {{ storedIdentifierType.toUpperCase() + " " }}
       est
       <strong>{{ storedIdentifier }}</strong>

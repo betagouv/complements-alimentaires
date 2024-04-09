@@ -4,25 +4,22 @@
     <DsfrStepper :steps="steps" :currentStep="step" v-if="step > 0" />
 
     <!-- Page content -->
-    <Introduction v-if="step == 0" />
+    <Introduction v-if="step == 0" @nextStep="nextStep" />
     <KeepAlive>
       <component :is="components[step - 1]" @changeStep="handleChangeStepEvent" />
     </KeepAlive>
 
-    <!-- Navigation buttons -->
-    <div class="mt-4 md:mt-8 flex justify-center gap-x-4">
-      <DsfrButton @click="nextStep" v-if="step == 0" label="Démarrer !" size="lg" />
-      <DsfrButton @click="prevStep" v-if="step > 0" label="Étape précédente" icon="ri-arrow-left-line" tertiary />
-      <!-- <DsfrButton
-        @click="nextStep"
-        v-if="step > 0 && step < steps.length"
-        label="Étape suivante"
-        icon="ri-arrow-right-line"
-        iconRight
-      /> -->
-      <DsfrButton label="Retour au tableau de bord" v-if="step > 0" tertiary icon="ri-arrow-go-back-fill" />
-      <DsfrButton v-if="step == steps.length" label="C'est terminé !" />
-    </div>
+    <!-- Previous Navigation Button -->
+    <DsfrButton
+      v-if="step > 0"
+      class="mt-4"
+      @click="prevStep"
+      iconOnly
+      icon="ri-arrow-left-line"
+      tertiary
+      noOutline
+      size="sm"
+    />
   </div>
 </template>
 
@@ -60,11 +57,4 @@ const handleChangeStepEvent = (event) => {
 
 // Puisqu'un store est utilisé pour le process, on pense à le réinitialiser si la démarche (re)démarre
 useCreateCompanyStore().resetCompany()
-
-// WARN: casse la logique de précedent/suivant
-// Sinon un bouton "annuler et recommencer" à la place ? Il y aurait plus le récapitulatif ?
-// const removeStep = (index, callback) => {
-//   steps.value.splice(index, 1)
-//   if (callback) callback()
-// }
 </script>
