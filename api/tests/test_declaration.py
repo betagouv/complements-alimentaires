@@ -135,7 +135,7 @@ class TestDeclarationApi(APITestCase):
             "company": CompanyFactory.create().id,
             "declaredPlants": [
                 {
-                    "plant": {
+                    "element": {
                         "id": plant.id,
                         "name": plant.name,
                     },
@@ -195,7 +195,7 @@ class TestDeclarationApi(APITestCase):
             "company": CompanyFactory.create().id,
             "declaredPlants": [
                 {
-                    "plant": {
+                    "element": {
                         "id": 999999,
                     },
                 }
@@ -221,7 +221,7 @@ class TestDeclarationApi(APITestCase):
             "company": CompanyFactory.create().id,
             "declaredMicroorganisms": [
                 {
-                    "microorganism": {
+                    "element": {
                         "id": microorganism.id,
                         "name": microorganism.name,
                     },
@@ -275,7 +275,7 @@ class TestDeclarationApi(APITestCase):
             "company": CompanyFactory.create().id,
             "declaredMicroorganisms": [
                 {
-                    "microorganism": {
+                    "element": {
                         "id": 999999,
                     },
                 }
@@ -301,7 +301,7 @@ class TestDeclarationApi(APITestCase):
             "company": CompanyFactory.create().id,
             "declaredIngredients": [
                 {
-                    "ingredient": {
+                    "element": {
                         "id": ingredient.id,
                         "name": ingredient.name,
                     },
@@ -345,7 +345,7 @@ class TestDeclarationApi(APITestCase):
             "company": CompanyFactory.create().id,
             "declaredIngredients": [
                 {
-                    "ingredient": {
+                    "element": {
                         "id": 999999,
                     },
                 }
@@ -372,7 +372,7 @@ class TestDeclarationApi(APITestCase):
             "company": CompanyFactory.create().id,
             "declaredSubstances": [
                 {
-                    "substance": {
+                    "element": {
                         "id": substance.id,
                         "name": substance.name,
                     },
@@ -403,7 +403,7 @@ class TestDeclarationApi(APITestCase):
             "company": CompanyFactory.create().id,
             "declaredSubstances": [
                 {
-                    "substance": {
+                    "element": {
                         "id": 999999,
                     },
                 }
