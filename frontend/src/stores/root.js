@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
 import { useFetch } from "@vueuse/core"
 import { ref } from "vue"
+import { otherFieldsAtTheEnd } from "@/utils/forms"
 
 export const useRootStore = defineStore("root", () => {
   const loggedUser = ref(null)
@@ -42,18 +43,11 @@ export const useRootStore = defineStore("root", () => {
   }
   const fetchEffects = async () => {
     const { data } = await useFetch("/api/v1/effects/").json()
-    effects.value = data.value
-    // met l'effet "Autre (à préciser)" en dernier dans la liste
-    const otherEffect = effects.value.find((effect) => effect.name === "Autre (à préciser)")
-    if (otherEffect) {
-      const otherEffectId = effects.value.indexOf(otherEffect)
-      effects.value.splice(otherEffectId, 1)
-    }
-    effects.value.push(otherEffect)
+    effects.value = otherFieldsAtTheEnd(data.value)
   }
   const fetchGalenicFormulation = async () => {
     const { data } = await useFetch("/api/v1/galenic-formulation/").json()
-    conditions.value = data.value
+    galenicFormulation.value = otherFieldsAtTheEnd(data.value)
   }
   const fetchPlantParts = async () => {
     const { data } = await useFetch("/api/v1/plantParts/").json()

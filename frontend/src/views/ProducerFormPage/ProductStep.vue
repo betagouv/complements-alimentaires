@@ -58,7 +58,7 @@
     <DsfrSelect
       label="Forme galénique"
       v-model="payload.galenicFormulation"
-      :options="galenicFormulation"
+      :options="galenicFormulation?.map((formulation) => formulation.name)"
       :required="true"
     />
   </DsfrInputGroup>
