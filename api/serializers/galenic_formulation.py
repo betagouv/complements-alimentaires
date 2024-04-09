@@ -10,5 +10,6 @@ class GalenicFormulationSerializer(serializers.ModelSerializer):
             "name",
             "id",
             "name_en",
+            "is_liquid",
         ]
         read_only_fields = fields

@@ -17,6 +17,7 @@ class GalenicFormulationAdmin(admin.ModelAdmin):
         "name",
         "ca_name",
         "siccrf_name_en",
+        "is_liquid",
         "is_obsolete",
         "ca_is_obsolete",
         "creation_date",
@@ -33,4 +34,7 @@ class GalenicFormulationAdmin(admin.ModelAdmin):
         "name",
         "modification_date",
     ]
-    list_filter = ("is_obsolete",)
+    list_filter = (
+        "is_obsolete",
+        "is_liquid",
+    )
