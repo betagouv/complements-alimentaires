@@ -4,9 +4,9 @@ from simple_history.models import HistoricalRecords
 from .abstract_models import CommonModel
 
 
-class Condition(CommonModel):
+class Effect(CommonModel):
     class Meta:
-        verbose_name = "condition de santé / facteurs de risque"
+        verbose_name = "Objectifs et effets des compléments alimentaires"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais selon la base SICCRF")
     history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete"])

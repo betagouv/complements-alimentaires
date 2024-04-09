@@ -6,6 +6,7 @@ from rest_framework import status
 from data.models import Declaration, Attachment
 from data.factories import (
     ConditionFactory,
+    EffectFactory,
     PopulationFactory,
     PlantPartFactory,
     PlantFactory,
@@ -38,6 +39,8 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         conditions = [ConditionFactory.create() for _ in range(3)]
+        effect1 = EffectFactory.create(ca_name="Artères et cholestérol")
+        effect2 = EffectFactory.create(ca_name="Autre (à préciser)")
         populations = [PopulationFactory.create() for _ in range(3)]
         company = CompanyFactory.create()
         unit = SubstanceUnitFactory.create()
@@ -50,7 +53,7 @@ class TestDeclarationApi(APITestCase):
             "city": "Lyon",
             "cedex": "Lyon 4",
             "country": "FR",
-            "effects": ["Artères et cholestérol", "Autre (à préciser)"],
+            "effects": [effect1.id, effect2.id],
             "otherEffects": "Moduler les défenses naturelles",
             "conditionsNotRecommended": [conditions[0].id, conditions[1].id],
             "populations": [populations[0].id, populations[1].id],
@@ -70,6 +73,7 @@ class TestDeclarationApi(APITestCase):
         }
 
         response = self.client.post(reverse("api:create_declaration"), payload, format="json")
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         declaration = Declaration.objects.get(pk=response.json()["id"])
@@ -109,8 +113,8 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(declaration.warning, "Ne pas prendre plus de 20")
         self.assertEqual(declaration.other_effects, "Moduler les défenses naturelles")
 
-        self.assertIn("Artères et cholestérol", declaration.effects)
-        self.assertIn("Autre (à préciser)", declaration.effects)
+        self.assertIn(effect1, declaration.effects.all())
+        self.assertIn(effect2, declaration.effects.all())
 
         self.assertEqual(declaration.author, authenticate.user)
 
