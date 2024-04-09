@@ -24,7 +24,7 @@ from .user import (  # noqa: F401
 )
 from .webinar import WebinarView  # noqa
 from .company import (  # noqa
-    CheckCompanySiretView,
+    CheckCompanyIdentifierView,
     CompanyCreateView,
     ClaimCompanySupervisionView,
     ClaimCompanyCoSupervisionView,

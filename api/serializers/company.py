@@ -10,6 +10,7 @@ class CompanySerializer(serializers.ModelSerializer):
             "social_name",
             "commercial_name",
             "siret",
+            "vat",
             "address",
             "additional_details",
             "postal_code",

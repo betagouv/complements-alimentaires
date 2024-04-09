@@ -4,21 +4,30 @@ import { ref } from "vue"
 export const useCreateCompanyStore = defineStore("createCompany", () => {
   // Ce store est utilisé temporairement lors de la création d'une entreprise pour faciliter le transit des informations entre des composants "frères"
   const country = ref(undefined)
-  const siret = ref(undefined)
-  const socialName = ref(undefined) // fourni par le back-end quand l'entreprise existe
+  const identifier = ref(undefined)
+  const identifierType = ref(undefined)
+  const socialName = ref(undefined) // fourni par le back-end, uniquement quand l'entreprise existe déjà
 
   const setCompanyCountry = (newCountry) => (country.value = newCountry)
 
-  const setCompanySiretAndName = (newSiret, newSocialName) => {
-    siret.value = newSiret
+  const setCompanyIdentifierAndName = (newIdentifier, newIdentifierType, newSocialName) => {
+    identifier.value = newIdentifier
+    identifierType.value = newIdentifierType
     socialName.value = newSocialName
+  }
+
+  const resetCompany = () => {
+    identifier.value = undefined
+    identifierType.value = undefined
+    socialName.value = undefined
   }
 
   return {
     storedCountry: country,
-    storedSiret: siret,
-    storedSocialName: socialName,
+    storedIdentifier: identifier,
+    storedIdentifierType: identifierType, // `siret` ou `vat`
     setCompanyCountry,
-    setCompanySiretAndName,
+    setCompanyIdentifierAndName,
+    resetCompany,
   }
 })

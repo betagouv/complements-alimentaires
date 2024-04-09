@@ -28,6 +28,7 @@
 
 <script setup>
 import { ref, defineAsyncComponent } from "vue"
+import { useCreateCompanyStore } from "@/stores/createCompany"
 import Introduction from "./Introduction" // 0
 import PickCountry from "./steps/PickCountry" // 1
 import Summary from "./steps/Summary" // 4
@@ -44,18 +45,21 @@ const steps = ref([
   "Récapitulatif",
 ])
 
-// Les `undefined` correspondent à des étapes pas encore définies
+// Les `undefined` correspondent à des étapes dynamiques, qui seront définies plus tard en fonction des réponses
 const components = [PickCountry, undefined, undefined, Summary]
 
-// Récupère le component d'une étape à partir de son nom
+// Helper qui récupère le component d'une étape à partir de son nom
 const stepComponentFromName = (name) => defineAsyncComponent(() => import(`./steps/${name}`))
 
-// Steps are dynamic and can change according to events
+// Helper pour changer le contenu d'une étape
 const handleChangeStepEvent = (event) => {
   steps.value[event.index] = event.name
   components[event.index] = stepComponentFromName(event.component)
   if (event.goToNextStep) nextStep()
 }
+
+// Puisqu'un store est utilisé pour le process, on pense à le réinitialiser si la démarche (re)démarre
+useCreateCompanyStore().resetCompany()
 
 // WARN: casse la logique de précedent/suivant
 // Sinon un bouton "annuler et recommencer" à la place ? Il y aurait plus le récapitulatif ?

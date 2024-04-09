@@ -28,7 +28,7 @@ const onCountrySelected = (selectedOption) => {
   emit("changeStep", {
     index: 1,
     name: selectedOption == "FR" ? "Identification par SIRET" : "Identification par n° de TVA intracommunautaire",
-    component: "Identification",
+    component: selectedOption == "FR" ? "IdentificationBySiret" : "IdentificationByVat",
     goToNextStep: true,
   })
 }

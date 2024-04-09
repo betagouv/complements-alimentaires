@@ -10,6 +10,10 @@ def _make_siret() -> str:
     return make_random_str(size=14, chars=string.digits)
 
 
+def _make_vat() -> str:
+    return make_random_str(size=11, chars=string.digits)  # pas le vrai format
+
+
 def _make_country_code() -> str:
     return random.choice(list(CountryChoices))
 
@@ -25,3 +29,11 @@ class CompanyFactory(factory.django.DjangoModelFactory):
     postal_code = factory.Faker("postcode")
     city = factory.Faker("city")
     country = factory.LazyFunction(_make_country_code)
+
+
+class CompanyWithSiretFactory(CompanyFactory):
+    pass
+
+
+class CompanyWithVatFactory(CompanyFactory):
+    vat = factory.LazyFunction(_make_vat)

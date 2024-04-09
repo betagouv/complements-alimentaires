@@ -3,8 +3,9 @@
     <DsfrAlert size="sm">
       L'entreprise
       <strong>{{ storedSocialName }}</strong>
-      avec le SIRET
-      <strong>{{ storedSiret }}</strong>
+      avec le n°
+      <span class="uppercase">{{ storedIdentifierType + " " }}</span>
+      <strong>{{ storedIdentifier }}</strong>
       fait déjà partie des entreprises dont vous êtes le gestionnaire.
 
       <!-- TODO: changer la redirection quand la page d'entreprise particulière existe -->
@@ -18,5 +19,5 @@
 <script setup>
 import { useCreateCompanyStore } from "@/stores/createCompany"
 
-const { storedSiret, storedSocialName } = useCreateCompanyStore()
+const { storedIdentifier, storedIdentifierType, storedSocialName } = useCreateCompanyStore()
 </script>

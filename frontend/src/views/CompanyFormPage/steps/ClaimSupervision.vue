@@ -3,8 +3,9 @@
     <DsfrAlert size="sm">
       L'entreprise
       <strong>{{ storedSocialName }}</strong>
-      avec le SIRET
-      <strong>{{ storedSiret }}</strong>
+      avec le n°
+      <span class="uppercase">{{ storedIdentifierType + " " }}</span>
+      <strong>{{ storedIdentifier }}</strong>
       est présente dans notre base de données, mais ne dispose actuellement d'aucun gestionnaire. Si vous souhaitez
       revendiquer la gestion de cette entreprise, veuillez nous envoyer une demande :
       <DsfrInputGroup>
@@ -30,7 +31,7 @@ import { useVuelidate } from "@vuelidate/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 
-const { storedSiret, storedSocialName } = useCreateCompanyStore()
+const { storedIdentifier, storedIdentifierType, storedSocialName } = useCreateCompanyStore()
 
 // Form state & rules
 const message = ref("")
@@ -41,7 +42,7 @@ const v$ = useVuelidate({}, { message: message }, { $externalResults })
 // Request definition
 
 const { response, execute, isFetching } = useFetch(
-  `/api/v1/companies/${storedSiret}/claim-supervision`,
+  `/api/v1/companies/${storedIdentifier}/claim-supervision?identifierType=${storedIdentifierType}`,
   {
     headers: headers(),
   },

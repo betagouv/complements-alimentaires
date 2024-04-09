@@ -19,7 +19,7 @@ class CountryListView(APIView):
 
 
 class CompanyStatusChoices(StrEnum):
-    """4 cas sont possibles après vérification d'un SIRET valide"""
+    """4 cas sont possibles après vérification d'un numéro d'identification valide"""
 
     # Entreprise non enregistrée
     UNREGISTERED_COMPANY = auto()
@@ -31,17 +31,26 @@ class CompanyStatusChoices(StrEnum):
     REGISTERED_AND_UNSUPERVISED = auto()
 
 
-class CheckCompanySiretView(APIView):
+def _get_identifier_type(request) -> str:
+    """Helper pour récupérer le type de numéro d'identification (vat ou siret) depuis la requête."""
+
+    identifier_type = request.query_params.get("identifierType", None)
+    if identifier_type not in ["siret", "vat"]:
+        raise ValueError("Please provide an identifierType whose value is either `siret` or `vat`")
+    return identifier_type
+
+
+class CheckCompanyIdentifierView(APIView):
     """
-    Vérifie le SIRET pour indiquer au front-end dans quel cas fonctionnel on se situe.
-    NOTE: cette méthode ne vérifie volontairement pas la validité du SIRET, car cette étape sera déléguée à l'API externe
+    Vérifie le numéro d'identification pour indiquer au front-end dans quel cas fonctionnel on se situe.
+    NOTE: cette méthode ne vérifie volontairement pas la validité du numéro d'identification, car cette étape sera déléguée à une API externe
     """
 
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, siret):
+    def get(self, request, identifier):
         try:
-            company = Company.objects.get(siret=siret)
+            company = Company.objects.get(**{_get_identifier_type(request): identifier})
         except Company.DoesNotExist:
             company_status = CompanyStatusChoices.UNREGISTERED_COMPANY
             social_name = None
@@ -64,17 +73,16 @@ class ClaimCompanySupervisionView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, siret):
-        company = get_object_or_404(Company, siret=siret)
-        if company.supervisors.exists():
-            # ne devrait pas arriver, sécurité supplémentaire
+    def get(self, request, identifier):
+        company = get_object_or_404(Company, **{_get_identifier_type(request): identifier})
+        if company.supervisors.exists():  # ne devrait pas arriver, sécurité supplémentaire
             raise ProjectAPIException(
                 global_error="Cette entreprise a déjà un gestionnaire. Votre demande n'a pas été envoyée."
             )
         user = request.user
         send_mail(
             subject="Nouvelle demande d'accès à une entreprise (sans gestionnaire)",
-            message=f"{user.name} (id: {user.id}) a demandé à devenir gestionnaire de l'entreprise {company.social_name} dont le siret est {siret}.",
+            message=f"{user.name} (id: {user.id}) a demandé à devenir gestionnaire de l'entreprise {company.social_name} dont le N° de {_get_identifier_type(request)} est {identifier}.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[settings.CONTACT_EMAIL],
         )
@@ -86,10 +94,9 @@ class ClaimCompanyCoSupervisionView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, siret):
-        company = get_object_or_404(Company, siret=siret)
-        if not company.supervisors.exists():
-            # ne devrait pas arriver, sécurité supplémentaire
+    def get(self, request, identifier):
+        company = get_object_or_404(Company, **{_get_identifier_type(request): identifier})
+        if not company.supervisors.exists():  # ne devrait pas arriver, sécurité supplémentaire
             raise ProjectAPIException(
                 global_error="Cette entreprise n'a pas de gestionnaire. Votre demande n'a pas été envoyée."
             )

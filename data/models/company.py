@@ -38,9 +38,21 @@ class Company(Address, models.Model):
 
     social_name = models.CharField("dénomination sociale")
     commercial_name = models.CharField("enseigne", help_text="nom commercial")
+    # null=True permet de gérer en parralèle le unique=True
     siret = models.CharField(
-        "n° SIRET", help_text="14 chiffres", unique=True, validators=[MinLengthValidator(14), MaxLengthValidator(14)]
+        "n° SIRET",
+        help_text="14 chiffres",
+        unique=True,
+        blank=True,
+        null=True,
+        validators=[MinLengthValidator(14), MaxLengthValidator(14)],
     )
+    vat = models.CharField("n° TVA intracommunautaire", unique=True, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not (self.siret or self.vat):
+            raise ValueError("A company must have a SIRET or a VAT number (or both).")
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.social_name
