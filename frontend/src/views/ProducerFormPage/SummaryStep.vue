@@ -1,4 +1,9 @@
 <template>
+  <DsfrAlert class="mb-8">
+    <p class="mb-2">Vous pouvez sauvegarder cette démarche pour la reprendre plus tard</p>
+    <DsfrButton @click="saveDraft" label="Sauvegarder en tant que brouillon" />
+  </DsfrAlert>
+
   <h2 class="fr-h6">
     <v-icon class="mr-1" name="ri-file-text-line" />
     Votre démarche
@@ -30,19 +35,13 @@
     Composition
     <router-link class="fr-btn fr-btn--secondary fr-btn--sm ml-4" :to="editLink(2)">Modifier</router-link>
   </h3>
-  <template v-if="payload.elements.length">
-    <ul>
-      <SummaryElementItem
-        class="mb-2 last:mb-0"
-        v-for="(element, index) in payload.elements"
-        :key="`element-${index}`"
-        :element="element"
-      />
-    </ul>
 
-    <h4 class="fr-text--md !mt-6">Détail sur les substances actives :</h4>
-    <SubstancesTable v-model="payload" readonly />
-  </template>
+  <SummaryElementList objectType="plant" :elements="payload.declaredPlants" />
+  <SummaryElementList objectType="microorganism" :elements="payload.declaredMicroorganisms" />
+  <SummaryElementList objectType="ingredient" :elements="payload.declaredIngredients" />
+  <SummaryElementList objectType="substance" :elements="payload.declaredSubstances" />
+
+  <SubstancesTable v-model="payload" readonly />
 
   <h3 class="fr-h6 !mt-8">
     Pièces jointes
@@ -51,7 +50,7 @@
   <div class="grid grid-cols-12 gap-3">
     <FilePreview
       class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
-      v-for="(file, index) in files"
+      v-for="(file, index) in payload.attachments"
       :key="`file-${index}`"
       :file="file"
       readonly
@@ -62,7 +61,7 @@
 <script setup>
 import { computed } from "vue"
 import SummaryInfoSegment from "./SummaryInfoSegment"
-import SummaryElementItem from "./SummaryElementItem"
+import SummaryElementList from "./SummaryElementList"
 import SubstancesTable from "./SubstancesTable"
 import FilePreview from "./FilePreview"
 import { useRootStore } from "@/stores/root"
@@ -88,11 +87,7 @@ const effectsNames = computed(() => {
   }
   return allEffects.join(", ")
 })
-const files = computed(() => {
-  const labelFiles = payload.value.files.labels
-  const otherFiles = payload.value.files.others
-  return labelFiles.concat(otherFiles)
-})
+
 const populationNames = computed(() => {
   const findName = (id) => populations.value.find((y) => y.id === id)?.name
   return payload.value.populations.map(findName).join(", ")
@@ -103,6 +98,8 @@ const conditionNames = computed(() => {
 })
 
 const editLink = (step) => ({ name: "ProducerFormPage", query: { step } })
+
+const saveDraft = () => console.log("save")
 </script>
 
 <style scoped>

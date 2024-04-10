@@ -228,9 +228,9 @@ const galenicFormulation = [
 
 watch(selectedCompany, () => {
   const addressFields = ["address", "additionalDetails", "postalCode", "city", "cedex", "country"]
-  const addressEmpty = addressFields.every((field) => !payload.value.labelAddress[field])
+  const addressEmpty = addressFields.every((field) => !payload.value[field])
   if (addressEmpty && selectedCompany.value)
-    addressFields.forEach((field) => (payload.value.labelAddress[field] = selectedCompany.value[field]))
+    addressFields.forEach((field) => (payload.value[field] = selectedCompany.value[field]))
 })
 
 // S'il n'y a qu'une entreprise on l'assigne par défaut

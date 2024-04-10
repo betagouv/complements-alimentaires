@@ -1,8 +1,7 @@
 <template>
   <li>
-    <div class="capitalize font-bold">{{ props.element.element.name }}</div>
+    <div class="capitalize">{{ name.toLowerCase() }}</div>
     <div class="mt-1">
-      <v-icon class="self-center" :name="getTypeIcon(element.element.objectType)" />
       {{ elementInfo }}
     </div>
   </li>
@@ -10,17 +9,19 @@
 
 <script setup>
 import { computed } from "vue"
-import { getTypeIcon, getType } from "@/utils/mappings"
 
-const props = defineProps({ element: Object })
+const model = defineModel()
+const props = defineProps({ objectType: { type: String } })
+
+const name = computed(
+  () => model.value.element?.name || model.value.newName || `${model.value.newGenre} ${model.value.newSpecies}`
+)
 
 const elementInfo = computed(() => {
-  const objectType = props.element.element.objectType
-  const type = getType(objectType)
-  if (objectType === "microorganism")
-    return `${type} | Souche : « ${props.element.strain} » | Qté par DJR (en CFU) : ${props.element.cfu_quantity}`
-  if (objectType === "plant")
-    return `${type} | Partie utilisée : « ${props.element.plantPart} » | Qté par DJR : ${props.element.quantity} ${props.element.unit || ""} | Préparation : ${props.element.preparation}`
-  return type
+  if (props.objectType === "microorganism")
+    return `Souche : « ${model.value.strain} » | Qté par DJR (en CFU) : ${model.value.cfu_quantity}`
+  if (props.objectType === "plant")
+    return `Partie utilisée : « ${model.value.plantPart} » | Qté par DJR : ${model.value.quantity} ${model.value.unit || ""} | Préparation : ${model.value.preparation}`
+  return ""
 })
 </script>

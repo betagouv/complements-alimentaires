@@ -31,7 +31,7 @@
     Vous n'avez pas encore saisi d'ingrédients pour votre complément alimentaire
   </div>
 
-  <div :class="{ hidden: !hasActiveElements }">
+  <div :class="{ hidden: !hasActiveSubstances }">
     <h3 class="fr-h6 !mb-4 !mt-6">Substances</h3>
     <p>
       Les substances contenues dans les ingrédients actifs renseignés sont affichées ci-dessous. Veuillez compléter leur
@@ -66,7 +66,9 @@ const containers = {
 // Ce tableau nous sert à afficher les éléments dans une seule liste par type
 // et par ordre alphabétique
 const allElements = computed(() => [].concat(...Object.values(containers)))
-const hasActiveElements = computed(() => allElements.value.some((x) => x.active && !x.new))
+const hasActiveSubstances = computed(() =>
+  allElements.value.some((x) => x.active && !x.new && x.element?.substances?.length)
+)
 
 const selectOption = async (result) => {
   searchTerm.value = ""
