@@ -32,6 +32,9 @@ import { handleError } from "@/utils/error-handling"
 
 const { storedIdentifier, storedIdentifierType, storedSocialName } = useCreateCompanyStore()
 
+// Props & emits
+const emit = defineEmits(["changeStep"])
+
 // Form state & rules
 const message = ref("")
 
@@ -56,5 +59,11 @@ const submitClaimCoSupervision = async () => {
   // pas besoin de vérifier les erreurs fronts, car pas possible sur le seul champ message
   await execute()
   $externalResults.value = await handleError(response)
+  if (response.value.ok) {
+    emit("changeStep", {
+      name: `Demande de co-gestion effectuée`,
+      component: "EndClaimDone",
+    })
+  }
 }
 </script>

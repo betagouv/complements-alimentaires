@@ -50,7 +50,7 @@ urlpatterns = {
         name="claim_company_supervision",
     ),
     path(
-        "companies/<str:siret>/claim-co-supervision/",
+        "companies/<str:identifier>/claim-co-supervision/",
         views.ClaimCompanyCoSupervisionView.as_view(),
         name="claim_company_co_supervision",
     ),
