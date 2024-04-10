@@ -1,7 +1,6 @@
 import os
 import base64
 from django.urls import reverse
-from django.test.utils import tag
 from rest_framework.test import APITestCase
 from rest_framework import status
 from data.models import Declaration, Attachment
@@ -300,7 +299,6 @@ class TestDeclarationApi(APITestCase):
         self.assertIn("declaredMicroorganisms", body.get("fieldErrors"))
 
     @authenticate
-    @tag("DEBUG")
     def test_create_declaration_declared_ingredients(self):
         """
         Création de l'objet « déclaration » avec les données de la composition,

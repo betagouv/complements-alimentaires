@@ -63,8 +63,6 @@ const containers = {
   ingredient: payload.value.declaredIngredients,
   substance: payload.value.declaredSubstances,
 }
-// Ce tableau nous sert à afficher les éléments dans une seule liste par type
-// et par ordre alphabétique
 const allElements = computed(() => [].concat(...Object.values(containers)))
 const hasActiveSubstances = computed(() =>
   allElements.value.some((x) => x.active && !x.new && x.element?.substances?.length)
