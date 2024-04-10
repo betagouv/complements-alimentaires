@@ -54,15 +54,27 @@
     <v-icon class="mr-1" name="ri-capsule-fill" />
     Format
   </h2>
-  <DsfrInputGroup class="mt-6 max-w-md">
-    <DsfrSelect
-      label="Forme galénique"
-      v-model="payload.galenicFormulation"
-      :options="galenicFormulation?.map((formulation) => formulation.name)"
-      :required="true"
-    />
-  </DsfrInputGroup>
   <div class="grid grid-cols-2 gap-4">
+    <DsfrFieldset legend="Forme galénique" legendClass="fr-label !font-normal !pb-0">
+      <div class="flex">
+        <div class="max-w-32">
+          <DsfrSelect :options="fomulationStates" v-model="chosenFormulationState" defaultUnselectedText="État" />
+        </div>
+        <div class="max-w-64 ml-4">
+          <DsfrSelect v-model="payload.galenicFormulation" :options="galenicFormulationList" />
+        </div>
+      </div>
+    </DsfrFieldset>
+    <div class="max-w-2xl mt-6">
+      <DsfrInput
+        v-if="payload.galenicFormulation"
+        v-model="payload.otherGalenicFormulation"
+        label="Merci de préciser la forme galénique"
+      />
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4 mt-6">
     <div class="col-span-2 md:col-span-1 max-w-md">
       <DsfrFieldset legend="Poids ou volume d'une unité de consommation" legendClass="fr-label !font-normal !pb-0">
         <div class="flex">
@@ -207,20 +219,42 @@
   </div>
 </template>
 <script setup>
-import { computed, watch } from "vue"
+import { computed, watch, ref } from "vue"
 import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { countries } from "@/utils/mappings"
+import { otherFieldsAtTheEnd } from "@/utils/forms"
 
 const payload = defineModel()
 
 const store = useRootStore()
 const { populations, conditions, effects, galenicFormulation, loggedUser } = storeToRefs(store)
 const otherEffectsId = computed(() => effects.value?.find((effect) => effect.name === "Autre (à préciser)").id)
-
+const chosenFormulationState = ref(null)
+const galenicFormulationList = computed(() => {
+  if (!chosenFormulationState.value) return galenicFormulation.value?.map((formulation) => formulation.name)
+  else {
+    const isLiquid = chosenFormulationState.value === "liquid" ? true : false
+    return otherFieldsAtTheEnd(
+      galenicFormulation.value
+        ?.filter((formulation) => formulation.isLiquid === isLiquid) // le filter perd l'ordre alphabétique d'origine
+        .sort((a, b) => a.name.localeCompare(b.name))
+    ).map((formulation) => formulation.name)
+  }
+})
 const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
 const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))
+const fomulationStates = [
+  {
+    text: "Liquide",
+    value: "liquid",
+  },
+  {
+    text: "Solide",
+    value: "solid",
+  },
+]
 
 watch(selectedCompany, () => {
   const addressFields = ["address", "additionalDetails", "postalCode", "city", "cedex", "country"]
