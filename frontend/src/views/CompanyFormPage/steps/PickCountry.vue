@@ -23,9 +23,12 @@ const emit = defineEmits(["changeStep"])
 
 const country = ref(undefined)
 
+const { setCompanyCountry, setCompanyIdentifierType } = useCreateCompanyStore()
+
 const onCountrySelected = (selectedOption) => {
   const identifierType = selectedOption == "FR" ? "siret" : "vat"
-  useCreateCompanyStore().setCompanyCountryAndIdentifierType(selectedOption, identifierType) // pour créer l'entreprise plus tard en ayant l'information
+  setCompanyCountry(selectedOption)
+  setCompanyIdentifierType(identifierType)
   emit("changeStep", {
     name: `Identification par n° ${identifierType.toUpperCase()}`,
     component: "Identification",

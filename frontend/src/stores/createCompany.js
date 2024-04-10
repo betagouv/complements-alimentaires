@@ -9,23 +9,24 @@ export const useCreateCompanyStore = defineStore("createCompany", () => {
   const socialName = ref(undefined) // fourni par le back-end, uniquement quand l'entreprise existe déjà
   const id = ref(undefined) // fourni par le back-end, quand l'entreprise existe déjà ou est créée
 
-  const setCompanyCountryAndIdentifierType = (newCountry, newIdentifierType) => {
+  const setCompanyCountry = (newCountry) => {
     country.value = newCountry
+  }
+
+  const setCompanyIdentifierType = (newIdentifierType) => {
     identifierType.value = newIdentifierType
   }
 
-  const setCompanyIdentifierAndName = (newIdentifier, newSocialName) => {
+  const setCompanyIdentifier = (newIdentifier) => {
     identifier.value = newIdentifier
+  }
+
+  const setCompanySocialName = (newSocialName) => {
     socialName.value = newSocialName
   }
 
   const setCompanyId = (newId) => {
     id.value = newId
-  }
-
-  // TODO: rationnaliser, et peut être faire qu'une action à la fois même si c'est verbeux
-  const setCompanySocialName = (newSocialName) => {
-    socialName.value = newSocialName
   }
 
   const resetCompany = () => {
@@ -37,15 +38,19 @@ export const useCreateCompanyStore = defineStore("createCompany", () => {
   }
 
   return {
+    // getters
     storedCountry: country,
     storedIdentifier: identifier,
     storedIdentifierType: identifierType,
     storedSocialName: socialName,
     storedId: id,
-    setCompanyCountryAndIdentifierType,
-    setCompanyIdentifierAndName,
-    setCompanyId,
+    // setters
+    setCompanyCountry,
+    setCompanyIdentifierType,
+    setCompanyIdentifier,
     setCompanySocialName,
+    setCompanyId,
+    // resetter
     resetCompany,
   }
 })

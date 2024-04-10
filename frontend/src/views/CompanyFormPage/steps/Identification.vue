@@ -34,7 +34,7 @@ import { handleError } from "@/utils/error-handling"
 import { useCreateCompanyStore } from "@/stores/createCompany"
 
 const emit = defineEmits(["changeStep"])
-const { storedIdentifierType } = useCreateCompanyStore()
+const { storedIdentifierType, setCompanyIdentifier, setCompanySocialName } = useCreateCompanyStore()
 
 // Form state & rules
 const identifier = ref("")
@@ -75,7 +75,8 @@ const submitIdentifier = async () => {
   await execute()
   await handleError(response)
   if (response.value.ok) {
-    useCreateCompanyStore().setCompanyIdentifierAndName(identifier.value, data.value.socialName)
+    setCompanyIdentifier(identifier.value)
+    setCompanySocialName(data.value.socialName)
 
     switch (data.value.companyStatus) {
       case "unregistered_company":
