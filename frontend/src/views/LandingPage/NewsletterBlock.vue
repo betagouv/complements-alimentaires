@@ -45,7 +45,7 @@ const v$ = useVuelidate(rules, state)
 
 // Request definition
 const { response, execute, isFetching } = useFetch(
-  "/api/v1/subscribeNewsletter/",
+  "/api/v1/subscribe-newsletter/",
   {
     headers: headers(),
   },

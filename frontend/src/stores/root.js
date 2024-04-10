@@ -51,7 +51,7 @@ export const useRootStore = defineStore("root", () => {
     effects.value.push(otherEffect)
   }
   const fetchPlantParts = async () => {
-    const { data } = await useFetch("/api/v1/plantParts/").json()
+    const { data } = await useFetch("/api/v1/plant-parts/").json()
     plantParts.value = data.value
   }
   const fetchUnits = async () => {

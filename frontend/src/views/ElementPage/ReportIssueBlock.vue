@@ -63,7 +63,7 @@ const v$ = useVuelidate(rules, state)
 
 // Request definition
 const { response, execute, isFetching } = useFetch(
-  "/api/v1/reportIssue/",
+  "/api/v1/report-issue/",
   {
     headers: headers(),
   },
