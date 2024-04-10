@@ -235,7 +235,7 @@
   </div>
 </template>
 <script setup>
-import { computed, watch, ref } from "vue"
+import { computed, watch } from "vue"
 import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
