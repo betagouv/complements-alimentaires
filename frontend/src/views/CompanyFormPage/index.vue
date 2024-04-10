@@ -1,18 +1,21 @@
 <template>
   <div class="fr-container my-8 flex flex-col">
     <!-- Stepper -->
-    <DsfrStepper :steps="steps" :currentStep="step" v-if="step >= 0" />
+    <DsfrStepper :steps="mapping.map((x) => x.name)" :currentStep="step" />
 
-    <!-- Page content -->
+    <!-- Contenu dynamique - le KeepAlive permet de garder le contenu des réponses en naviguant -->
     <KeepAlive>
-      <component :is="components[step - 1]" @changeStep="handleChangeStepEvent" />
+      <component
+        :is="stepComponentFromName(mapping.map((x) => x.component)[step - 1])"
+        @changeStep="handleChangeStepEvent"
+      />
     </KeepAlive>
 
-    <!-- Previous Navigation Button -->
+    <!-- Bouton de retour en arrière - non affiché à la 1ère et la dernière étape qui correspond à la confirmation -->
     <DsfrButton
-      v-if="step > 1 && step < steps.length"
+      v-if="step > 1 && step < mapping.length"
       class="mt-4"
-      @click="prevStep"
+      @click="step.value -= 1"
       iconOnly
       icon="ri-arrow-left-line"
       tertiary
@@ -25,47 +28,39 @@
 <script setup>
 import { ref, defineAsyncComponent } from "vue"
 import { useCreateCompanyStore } from "@/stores/createCompany"
-import Introduction from "./Introduction" // 0
-import PickCountry from "./steps/PickCountry" // 1
 
-const step = ref(1) // 0 montre un composant en dehors du DSFRStepper
+const step = ref(1)
 
-// Puisqu'un store est utilisé pendant le process, on pense à le réinitialiser quand la démarche (re)démarre
+// Puisqu'un store est utilisé pendant le process, on le réinitialise quand la démarche (re)démarre
 useCreateCompanyStore().resetCompany()
 
-// Steps et components suivent le même ordre, de 1 à N
-// Le nom des étapes peut changer en cours de route
-const steps = ref([
-  "Créer ou rejoindre une entreprise",
-  "Pays de l'entreprise",
-  "Identification de l'entreprise",
-  "Enregistrement ou reprise d'entreprise",
-  "Fin",
+// Mapping entre le nom des étapes (utilisé par le DsfrStepper) et leur component associé.
+// L'index est déterminé par la position dans l'array.
+// Le nom/composant des étapes peuvent changer en cours de route en fonction des réponses.
+// Les `undefined` seront changés en cours de route.
+const mapping = ref([
+  { name: "Créer ou rejoindre une entreprise", component: "Introduction" },
+  { name: "Pays de l'entreprise", component: "PickCountry" },
+  { name: "Identification de l'entreprise", component: undefined },
+  { name: "Enregistrement ou reprise d'entreprise", component: undefined },
+  { name: "Fin", component: undefined },
 ])
-
-// Les `undefined` correspondent à des étapes dynamiques, qui seront définies plus tard en fonction des réponses
-// Le fait de les inclure permet de rester cohérent par rapport à la la variable `steps`
-const components = [Introduction, PickCountry, undefined, undefined, undefined]
 
 // Helpers -----------------------------------------------------------------------------------------------------------
 
-const prevStep = () => (step.value -= 1)
-const nextStep = () => (step.value += 1)
-
-// Récupère le component d'une étape à partir de son nom
-const stepComponentFromName = (name) => defineAsyncComponent(() => import(`./steps/${name}`))
+// Récupère un component à partir de son nom
+const stepComponentFromName = (name) => defineAsyncComponent(() => import(`./${name}`))
 
 // Passe à la prochaine étape, en changeant (ou pas) son contenu (nom de l'étape et composant affiché dynamiquement)
 const handleChangeStepEvent = (event) => {
-  if (event && event.name) steps.value[step.value] = event.name
-  if (event && event.component) components[step.value] = stepComponentFromName(event.component)
-  nextStep()
-
-  // supprime l'étape d'après totalement - attention, ne doit pas être utilisé si le retour en
-  // arrière est en encore possible, car l'étape supprimée ne reviendrait pas.
+  if (event && event.name && event.component) {
+    mapping.value[step.value] = { name: event.name, component: event.component }
+  }
+  step.value += 1
   if (event && event.deleteStepAfter) {
-    steps.value.splice(step.value, 1)
-    components.splice(step.value, 1)
+    // supprime l'étape d'après totalement - attention, ne doit être utilisé que pour une étape de confirmation.
+    // car si le retour en arrière est en encore possible, alors l'étape supprimée ne reviendrait pas.
+    mapping.value.splice(step.value, 1)
   }
 }
 </script>
