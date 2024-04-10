@@ -3,13 +3,8 @@
     <DsfrAlert type="success">
       <div>L'entreprise « {{ storedSocialName }} » a bien été créée et vous en êtes son gestionnaire.</div>
       <div class="mt-4 flex gap-x-4">
-        <DsfrButton :label="`Accéder à « ${storedSocialName} »`" @click="goToCompany" size="sm" />
-        <DsfrButton
-          label="Retour au tableau de bord"
-          tertiary
-          size="sm"
-          @click="$router.push({ name: 'DashboardPage' })"
-        />
+        <DsfrButton :label="`Accéder à « ${storedSocialName} »`" @click="goToCompany" />
+        <DsfrButton label="Retour au tableau de bord" tertiary @click="$router.push({ name: 'DashboardPage' })" />
       </div>
     </DsfrAlert>
   </div>

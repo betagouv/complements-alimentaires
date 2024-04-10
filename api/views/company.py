@@ -54,8 +54,8 @@ class CheckCompanyIdentifierView(APIView):
         try:
             company = Company.objects.get(**{_get_identifier_type(request): identifier})
         except Company.DoesNotExist:
+            company = None
             company_status = CompanyStatusChoices.UNREGISTERED_COMPANY
-            social_name = None
         else:
             if company.supervisors.exists():
                 supervisor = request.user.role("companysupervisor")
@@ -65,9 +65,13 @@ class CheckCompanyIdentifierView(APIView):
                     company_status = CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_OTHER
             else:
                 company_status = CompanyStatusChoices.REGISTERED_AND_UNSUPERVISED
-            social_name = company.social_name
 
-        return Response({"company_status": company_status, "social_name": social_name})
+        return Response(
+            {
+                "company_status": company_status,  # pour déterminer les étapes suivantes côté front
+                "company": (CompanySerializer(company).data if company else None),  # ex : pour set l'ID dans le state
+            }
+        )
 
 
 class ClaimCompanySupervisionView(APIView):

@@ -110,7 +110,7 @@ const submitCompany = async () => {
     setCompanySocialName(data.value.socialName)
     emit("changeStep", {
       name: "L'entreprise a bien été créée",
-      component: "Fin",
+      component: "EndCompanyCreated",
     })
   }
 }

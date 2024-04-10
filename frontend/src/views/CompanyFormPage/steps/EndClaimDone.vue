@@ -8,7 +8,6 @@
         class="mt-4"
         label="Retour au tableau de bord"
         tertiary
-        size="sm"
         @click="$router.push({ name: 'DashboardPage' })"
       />
     </DsfrAlert>
