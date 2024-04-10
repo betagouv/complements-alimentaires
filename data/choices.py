@@ -38,3 +38,20 @@ class CountryChoices(models.TextChoices):
     SLOVENIA = "SI", "Slovénie"
     SWEDEN = "SE", "Suède"
     CZECH_REPUBLIC = "CZ", "République Tchèque"
+
+
+class FrAuthorizationReasons(models.TextChoices):
+    TRADITIONAL_USAGE = (
+        "TRADITIONAL_USAGE",
+        "Ingrédient bénéficiant d'un historique de consommation selon le catalogue Novel Food ou dont l'utilisation en alimentation humaine est bien établie (directive 2004/24/CE)",
+    )
+    NOVEL_FOOD = (
+        "NOVEL_FOOD",
+        "L'ingrédient figure sur la liste de l'Union des nouveaux aliments conformément au règlement (UE) 2017/2470",
+    )
+    MISSING = "MISSING", "L'ingrédient est autorisé en France mais ne figure pas dans la base de données"
+
+
+class AuthorizationModes(models.TextChoices):
+    FR = "FR", "Utilisable en France"
+    EU = "EU", "Autorisé dans un État membre de l'UE ou EEE"

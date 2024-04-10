@@ -83,6 +83,18 @@ class DeclaredListSerializer(serializers.ListSerializer):
         return declared_items
 
 
+ADDABLE_ELEMENT_FIELDS = (
+    "authorization_mode",
+    "fr_reason",
+    "fr_details",
+    "eu_reference_country",
+    "eu_legal_source",
+    "eu_details",
+    "new_description",
+    "new",
+)
+
+
 class DeclaredPlantSerializer(serializers.ModelSerializer):
     element = PassthroughPlantSerializer(required=False, source="plant")
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False)
@@ -90,12 +102,10 @@ class DeclaredPlantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DeclaredPlant
-        fields = (
+        fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
             "element",
             "new_name",
-            "new_description",
-            "new",
             "active",
             "used_part",
             "unit",
@@ -121,13 +131,11 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DeclaredMicroorganism
-        fields = (
+        fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
             "element",
             "new_species",
             "new_genre",
-            "new_description",
-            "new",
             "active",
             "souche",
             "quantity",
@@ -153,12 +161,10 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DeclaredIngredient
-        fields = (
+        fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
             "element",
             "new_name",
-            "new_description",
-            "new",
             "active",
         )
 

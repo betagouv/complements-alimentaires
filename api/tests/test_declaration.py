@@ -1,9 +1,11 @@
 import os
 import base64
 from django.urls import reverse
+from django.test.utils import tag
 from rest_framework.test import APITestCase
 from rest_framework import status
 from data.models import Declaration, Attachment
+from data.choices import CountryChoices, AuthorizationModes, FrAuthorizationReasons
 from data.factories import (
     ConditionFactory,
     EffectFactory,
@@ -238,6 +240,10 @@ class TestDeclarationApi(APITestCase):
                     "active": True,
                     "souche": "Nouvelle souche",
                     "quantity": "345",
+                    "authorizationMode": "EU",
+                    "euReferenceCountry": "IT",
+                    "euLegalSource": "Voici le doc",
+                    "euDetails": "Voici les détails",
                 },
             ],
         }
@@ -264,6 +270,11 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(new_declared_microorganism.quantity, 345)
         self.assertEqual(new_declared_microorganism.souche, "Nouvelle souche")
 
+        self.assertEqual(new_declared_microorganism.authorization_mode, AuthorizationModes.EU)
+        self.assertEqual(new_declared_microorganism.eu_reference_country, CountryChoices.ITALY)
+        self.assertEqual(new_declared_microorganism.eu_legal_source, "Voici le doc")
+        self.assertEqual(new_declared_microorganism.eu_details, "Voici les détails")
+
     @authenticate
     def test_create_declaration_unknown_microorganism(self):
         """
@@ -289,6 +300,7 @@ class TestDeclarationApi(APITestCase):
         self.assertIn("declaredMicroorganisms", body.get("fieldErrors"))
 
     @authenticate
+    @tag("DEBUG")
     def test_create_declaration_declared_ingredients(self):
         """
         Création de l'objet « déclaration » avec les données de la composition,
@@ -313,6 +325,9 @@ class TestDeclarationApi(APITestCase):
                     "newDescription": "New ingredient description",
                     "new": True,
                     "active": True,
+                    "authorizationMode": "FR",
+                    "frReason": "NOVEL_FOOD",
+                    "frDetails": "Je le veux",
                 },
             ],
         }
@@ -333,6 +348,9 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(new_declared_ingredient.new_name, "New ingredient name")
         self.assertEqual(new_declared_ingredient.new_description, "New ingredient description")
         self.assertEqual(new_declared_ingredient.active, True)
+        self.assertEqual(new_declared_ingredient.authorization_mode, AuthorizationModes.FR)
+        self.assertEqual(new_declared_ingredient.fr_reason, FrAuthorizationReasons.NOVEL_FOOD)
+        self.assertEqual(new_declared_ingredient.fr_details, "Je le veux")
 
     @authenticate
     def test_create_declaration_unknown_ingredient(self):

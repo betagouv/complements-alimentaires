@@ -53,7 +53,16 @@ const payload = ref({
   attachments: [],
 })
 
-const hasNewElements = computed(() => payload.value.elements.some((x) => x.element.new))
+const hasNewElements = computed(() => {
+  return []
+    .concat(
+      payload.value.declaredPlants,
+      payload.value.declaredMicroorganisms,
+      payload.value.declaredIngredients,
+      payload.value.declaredSubstances
+    )
+    .some((x) => x.new)
+})
 
 const currentStep = ref(null)
 const steps = computed(() => {
