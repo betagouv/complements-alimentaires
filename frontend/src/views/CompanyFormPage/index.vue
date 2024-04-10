@@ -35,6 +35,7 @@ const step = ref(0) // 0 montre un composant en dehors du DSFRStepper
 useCreateCompanyStore().resetCompany()
 
 // Steps et components suivent le même ordre, de 1 à N
+// Le nom des étapes peut changer en cours de route
 const steps = ref([
   "Pays de l'entreprise",
   "Identification de l'entreprise",
@@ -43,7 +44,7 @@ const steps = ref([
 ])
 
 // Les `undefined` correspondent à des étapes dynamiques, qui seront définies plus tard en fonction des réponses
-// Le fait de les inclure permet de montrer à l'utilisateur un nombre d'étapes prévues (ici, 4)
+// Le fait de les inclure permet de rester cohérent par rapport à la la variable `steps`
 const components = [PickCountry, undefined, undefined, undefined]
 
 // Helpers -----------------------------------------------------------------------------------------------------------
@@ -59,5 +60,12 @@ const handleChangeStepEvent = (event) => {
   if (event && event.name) steps.value[step.value] = event.name
   if (event && event.component) components[step.value] = stepComponentFromName(event.component)
   nextStep()
+
+  // supprime l'étape d'après totalement - attention, ne doit pas être utilisé si le retour en
+  // arrière est en encore possible, car l'étape supprimée ne reviendrait pas.
+  if (event && event.deleteStepAfter) {
+    steps.value.splice(step.value, 1)
+    components.splice(step.value, 1)
+  }
 }
 </script>

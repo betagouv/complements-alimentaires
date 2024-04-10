@@ -90,6 +90,7 @@ const submitIdentifier = async () => {
         emit("changeStep", {
           name: "L'entreprise existe déjà",
           component: "NothingToDo",
+          deleteStepAfter: true,
         })
         break
       case "registered_and_supervised_by_other":
