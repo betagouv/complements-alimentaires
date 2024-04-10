@@ -15,7 +15,7 @@
     <DsfrButton
       v-if="step > 1 && step < mapping.length"
       class="mt-4"
-      @click="step.value -= 1"
+      @click="step -= 1"
       iconOnly
       icon="ri-arrow-left-line"
       tertiary
@@ -51,11 +51,11 @@ const mapping = ref([
 // Récupère un component à partir de son nom
 const stepComponentFromName = (name) => defineAsyncComponent(() => import(`./${name}`))
 
-// Passe à la prochaine étape, en changeant (ou pas) son contenu (nom de l'étape et composant affiché dynamiquement)
+// Passe à la prochaine étape, en changeant (ou pas) son contenu (nom de l'étape et/ou composant affiché dynamiquement)
 const handleChangeStepEvent = (event) => {
-  if (event && event.name && event.component) {
-    mapping.value[step.value] = { name: event.name, component: event.component }
-  }
+  if (event && event.name) mapping.value[step.value].name = event.name
+  if (event && event.component) mapping.value[step.value].component = event.component
+
   step.value += 1
   if (event && event.deleteStepAfter) {
     // supprime l'étape d'après totalement - attention, ne doit être utilisé que pour une étape de confirmation.
