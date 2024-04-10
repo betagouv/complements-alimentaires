@@ -40,8 +40,7 @@ const payload = defineModel()
 const selectedLabelFile = ref(null)
 const selectedOtherFile = ref(null)
 
-const addLabelFiles = async (files) =>
-  addFiles(files, payload.value.attachments, selectedLabelFile, { type: "Étiquetage" })
+const addLabelFiles = async (files) => addFiles(files, payload.value.attachments, selectedLabelFile, { type: "LABEL" })
 const addOtherFiles = async (files) => addFiles(files, payload.value.attachments, selectedOtherFile)
 const addFiles = async (files, container, resetModel, defaultData) => {
   for (let i = 0; i < files.length; i++) {
@@ -62,8 +61,8 @@ const removeFile = (file) => {
   payload.value.attachments.splice(index, 1)
 }
 
-const labelFiles = computed(() => payload.value.attachments.filter((x) => x.type === "Étiquetage"))
-const otherFiles = computed(() => payload.value.attachments.filter((x) => x.type !== "Étiquetage"))
+const labelFiles = computed(() => payload.value.attachments.filter((x) => x.type === "LABEL"))
+const otherFiles = computed(() => payload.value.attachments.filter((x) => x.type !== "LABEL"))
 
 const toBase64 = (file) => {
   return new Promise((resolve, reject) => {

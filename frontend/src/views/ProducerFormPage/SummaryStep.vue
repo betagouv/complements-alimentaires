@@ -60,6 +60,8 @@
 
 <script setup>
 import { computed } from "vue"
+import { useFetch } from "@vueuse/core"
+import { headers } from "@/utils/data-fetching"
 import SummaryInfoSegment from "./SummaryInfoSegment"
 import SummaryElementList from "./SummaryElementList"
 import SubstancesTable from "./SubstancesTable"
@@ -99,7 +101,10 @@ const conditionNames = computed(() => {
 
 const editLink = (step) => ({ name: "ProducerFormPage", query: { step } })
 
-const saveDraft = () => console.log("save")
+const saveDraft = async () => {
+  const { response } = await useFetch("/api/v1/declarations/", { headers: headers() }).post(payload)
+  console.log(response)
+}
 </script>
 
 <style scoped>

@@ -19,7 +19,7 @@ const name = computed(
 
 const elementInfo = computed(() => {
   if (props.objectType === "microorganism")
-    return `Souche : « ${model.value.strain} » | Qté par DJR (en CFU) : ${model.value.cfu_quantity}`
+    return `Souche : « ${model.value.strain} » | Qté par DJR (en CFU) : ${model.value.quantity}`
   if (props.objectType === "plant")
     return `Partie utilisée : « ${model.value.plantPart} » | Qté par DJR : ${model.value.quantity} ${model.value.unit || ""} | Préparation : ${model.value.preparation}`
   return ""
