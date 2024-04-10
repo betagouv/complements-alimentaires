@@ -143,8 +143,7 @@ class DeclaredMicroorganism(Historisable):
 
     new = models.BooleanField(default=False)
 
-    # TODO : Update fields after merging of #339
-    new_name = models.TextField(blank=True, verbose_name="nom du micro-organisme ajoutée manuellement")
+    new_species = models.TextField(blank=True, verbose_name="espèce du micro-organisme ajoutée manuellement")
     new_genre = models.TextField(blank=True, verbose_name="genre du micro-organisme ajoutée manuellement")
     new_description = models.TextField(blank=True, verbose_name="description du micro-organisme ajoutée manuellement")
 

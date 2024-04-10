@@ -19,12 +19,11 @@
       </div>
 
       <div v-else-if="model.objectType === 'microorganism'">
-        <!-- Note: Sur téléicare on a « Genre » et « Espèce ». Par contre je n'ai pas trouvé l'espèce dans notre modèle -->
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'newName')">
-          <DsfrInput label="Nom" v-model="model.newName" label-visible :required="true" />
-        </DsfrInputGroup>
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'newName')">
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'newGenre')">
           <DsfrInput label="Genre" v-model="model.newGenre" label-visible :required="true" />
+        </DsfrInputGroup>
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'newSpecies')">
+          <DsfrInput label="Espèce" v-model="model.newSpecies" label-visible :required="true" />
         </DsfrInputGroup>
       </div>
 
@@ -97,12 +96,17 @@ const close = () => {
 const rules = computed(() => {
   const formRules = {
     objectType: { required: helpers.withMessage("Veuillez remplir le type d'ingrédient", required) },
-    newName: { required: helpers.withMessage("Veuillez renseigner le nom de l'ingrédient", required) },
   }
-  if (model.value.objectType === "microorganism")
+  if (model.value.objectType === "microorganism") {
     formRules.newGenre = {
       required: helpers.withMessage("Veuillez renseigner le genre du micro-organisme à ajouter", required),
     }
+    formRules.newSpecies = {
+      required: helpers.withMessage("Veuillez renseigner l'espèce du micro-organisme à ajouter", required),
+    }
+  } else {
+    formRules.newName = { required: helpers.withMessage("Veuillez renseigner le nom de l'ingrédient", required) }
+  }
   return formRules
 })
 

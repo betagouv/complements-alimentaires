@@ -76,7 +76,9 @@ const store = useRootStore()
 
 defineEmits(["remove"])
 const props = defineProps({ objectType: { type: String } })
-const name = computed(() => model.value.element?.name || model.value.newName)
+const name = computed(
+  () => model.value.element?.name || model.value.newName || `${model.value.newGenre} ${model.value.newSpecies}`
+)
 const synonyms = computed(() => model.value.element?.synonyms?.map((x) => x.name)?.join(", "))
 
 const plantParts = computed(() => {

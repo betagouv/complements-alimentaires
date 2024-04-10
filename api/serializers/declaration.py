@@ -124,7 +124,7 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "element",
-            "new_name",
+            "new_species",
             "new_genre",
             "new_description",
             "new",
