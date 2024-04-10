@@ -25,54 +25,54 @@ class TestCheckCompanyIdentifier(ProjectAPITestCase):
         unexisting_siret = "99999999999999"
         response = self.get(self.url(identifier=unexisting_siret) + "?identifierType=siret")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.UNREGISTERED_COMPANY)
-        self.assertIsNone(response.data["social_name"])
+        self.assertIsNone(response.data["company"])
 
     def test_check_company_vat_ok_unregistered_company(self):
         self.login()
         unexisting_vat = "99999999999999"
         response = self.get(self.url(identifier=unexisting_vat) + "?identifierType=vat")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.UNREGISTERED_COMPANY)
-        self.assertIsNone(response.data["social_name"])
+        self.assertIsNone(response.data["company"])
 
     def test_check_company_siret_ok_registered_and_supervised_by_me(self):
         me = self.login()
         CompanySupervisorFactory(user=me, companies=[self.company])
         response = self.get(self.url(identifier=self.siret) + "?identifierType=siret")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_ME)
-        self.assertEqual(response.data["social_name"], "Appeul")
+        self.assertEqual(response.data["company"]["social_name"], "Appeul")
 
     def test_check_company_vat_ok_registered_and_supervised_by_me(self):
         me = self.login()
         CompanySupervisorFactory(user=me, companies=[self.company2])
         response = self.get(self.url(identifier=self.vat) + "?identifierType=vat")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_ME)
-        self.assertEqual(response.data["social_name"], "Grosoft")
+        self.assertEqual(response.data["company"]["social_name"], "Grosoft")
 
     def test_check_company_siret_ok_registered_and_supervised_by_other(self):
         self.login()
         CompanySupervisorFactory(companies=[self.company])
         response = self.get(self.url(identifier=self.siret) + "?identifierType=siret")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_OTHER)
-        self.assertEqual(response.data["social_name"], "Appeul")
+        self.assertEqual(response.data["company"]["social_name"], "Appeul")
 
     def test_check_company_vat_ok_registered_and_supervised_by_other(self):
         self.login()
         CompanySupervisorFactory(companies=[self.company2])
         response = self.get(self.url(identifier=self.vat) + "?identifierType=vat")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_OTHER)
-        self.assertEqual(response.data["social_name"], "Grosoft")
+        self.assertEqual(response.data["company"]["social_name"], "Grosoft")
 
     def test_check_company_siret_ok_registered_and_unsupervised(self):
         self.login()
         response = self.get(self.url(identifier=self.siret) + "?identifierType=siret")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_UNSUPERVISED)
-        self.assertEqual(response.data["social_name"], "Appeul")
+        self.assertEqual(response.data["company"]["social_name"], "Appeul")
 
     def test_check_company_vat_ok_registered_and_unsupervised(self):
         self.login()
         response = self.get(self.url(identifier=self.vat) + "?identifierType=vat")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_UNSUPERVISED)
-        self.assertEqual(response.data["social_name"], "Grosoft")
+        self.assertEqual(response.data["company"]["social_name"], "Grosoft")
 
     def test_check_company_identifier_ko_unauthenticated(self):
         response = self.get(self.url(identifier=self.siret) + "?identifierType=siret")
