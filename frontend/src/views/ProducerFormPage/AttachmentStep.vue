@@ -13,7 +13,7 @@
     />
   </DsfrInputGroup>
 
-  <FileGrid :files="payload.files.labels" @remove="removeLabelFile" hideTypeSelection />
+  <FileGrid :files="labelFiles" @remove="removeFile" hideTypeSelection />
 
   <h3 class="fr-h6 !mt-8">
     <v-icon class="mr-1" name="ri-attachment-2" />
@@ -29,11 +29,11 @@
     />
   </DsfrInputGroup>
 
-  <FileGrid :files="payload.files.others" @remove="removeOtherFile" />
+  <FileGrid :files="otherFiles" @remove="removeFile" />
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import FileGrid from "./FileGrid"
 
 const payload = defineModel()
@@ -41,12 +41,8 @@ const selectedLabelFile = ref(null)
 const selectedOtherFile = ref(null)
 
 const addLabelFiles = async (files) =>
-  addFiles(files, payload.value.files.labels, selectedLabelFile, { type: "Étiquetage" })
-const addOtherFiles = async (files) => addFiles(files, payload.value.files.others, selectedOtherFile)
-
-const removeLabelFile = (file) => removeFile(file, payload.value.files.labels)
-const removeOtherFile = (file) => removeFile(file, payload.value.files.others)
-
+  addFiles(files, payload.value.attachments, selectedLabelFile, { type: "Étiquetage" })
+const addOtherFiles = async (files) => addFiles(files, payload.value.attachments, selectedOtherFile)
 const addFiles = async (files, container, resetModel, defaultData) => {
   for (let i = 0; i < files.length; i++) {
     const base64 = await toBase64(files[i])
@@ -61,10 +57,13 @@ const addFiles = async (files, container, resetModel, defaultData) => {
   resetModel.value = null
 }
 
-const removeFile = (file, container) => {
-  const index = container.indexOf(file)
-  container.splice(index, 1)
+const removeFile = (file) => {
+  const index = payload.value.attachments.indexOf(file)
+  payload.value.attachments.splice(index, 1)
 }
+
+const labelFiles = computed(() => payload.value.attachments.filter((x) => x.type === "Étiquetage"))
+const otherFiles = computed(() => payload.value.attachments.filter((x) => x.type !== "Étiquetage"))
 
 const toBase64 = (file) => {
   return new Promise((resolve, reject) => {

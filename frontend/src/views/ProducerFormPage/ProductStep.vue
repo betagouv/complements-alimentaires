@@ -174,17 +174,11 @@
   </h2>
   <div class="max-w-2xl mb-8 address-form">
     <DsfrInputGroup>
-      <DsfrInput
-        v-model="payload.labelAddress.address"
-        label-visible
-        label="Adresse"
-        hint="Numéro et voie"
-        :required="true"
-      />
+      <DsfrInput v-model="payload.address" label-visible label="Adresse" hint="Numéro et voie" :required="true" />
     </DsfrInputGroup>
     <DsfrInputGroup>
       <DsfrInput
-        v-model="payload.labelAddress.additionalDetails"
+        v-model="payload.additionalDetails"
         label-visible
         label="Complément d'adresse"
         hint="Bâtiment, immeuble, escalier et numéro d’appartement"
@@ -192,17 +186,17 @@
     </DsfrInputGroup>
     <div class="grid grid-cols-7 gap-6">
       <DsfrInputGroup class="col-span-12 md:col-span-3">
-        <DsfrInput v-model="payload.labelAddress.postalCode" label-visible label="Code Postal" :required="true" />
+        <DsfrInput v-model="payload.postalCode" label-visible label="Code Postal" :required="true" />
       </DsfrInputGroup>
       <DsfrInputGroup class="col-span-12 md:col-span-4">
-        <DsfrInput v-model="payload.labelAddress.city" label-visible label="Ville ou commune" :required="true" />
+        <DsfrInput v-model="payload.city" label-visible label="Ville ou commune" :required="true" />
       </DsfrInputGroup>
     </div>
     <DsfrInputGroup>
-      <DsfrInput v-model="payload.labelAddress.cedex" label-visible label="Cedex" />
+      <DsfrInput v-model="payload.cedex" label-visible label="Cedex" />
     </DsfrInputGroup>
     <DsfrInputGroup>
-      <DsfrSelect label="Pays" v-model="payload.labelAddress.country" :options="countries" :required="true" />
+      <DsfrSelect label="Pays" v-model="payload.country" :options="countries" :required="true" />
     </DsfrInputGroup>
   </div>
 </template>
@@ -217,7 +211,7 @@ const payload = defineModel()
 
 const store = useRootStore()
 const { populations, conditions, effects, loggedUser } = storeToRefs(store)
-const otherEffectsId = computed(() => effects.value?.find((effect) => effect.name === "Autre (à préciser)").id)
+const otherEffectsId = computed(() => effects.value?.find((effect) => effect.name === "Autre (à préciser)")?.id)
 
 const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
 const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))

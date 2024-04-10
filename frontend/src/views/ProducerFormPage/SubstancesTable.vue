@@ -32,15 +32,19 @@
         <!-- Cells des inputs (communes à toutes les substances) -->
         <div class="sm:table-cell ca-cell">
           <div class="sm:hidden ca-xs-title">
-            Quantité par DJR (en {{ payload.substances[rowIndex].substance.unit }})
+            Quantité par DJR (en {{ payload.computedSubstances[rowIndex].substance.unit }})
           </div>
           <DsfrInputGroup class="max-w-28" v-if="!props.readonly">
-            <DsfrInput v-model="payload.substances[rowIndex].quantity" label="Quantité par DJR" :required="true" />
+            <DsfrInput
+              v-model="payload.computedSubstances[rowIndex].quantity"
+              label="Quantité par DJR"
+              :required="true"
+            />
           </DsfrInputGroup>
-          <div v-else>{{ payload.substances[rowIndex].quantity }}</div>
+          <div v-else>{{ payload.computedSubstances[rowIndex].quantity }}</div>
         </div>
         <div class="hidden sm:table-cell fr-text-alt ca-cell font-italic">
-          {{ payload.substances[rowIndex].substance.unit }}
+          {{ payload.computedSubstances[rowIndex].substance.unit }}
         </div>
       </div>
     </div>
@@ -55,7 +59,7 @@ const props = defineProps({ readonly: Boolean })
 
 const headers = ["Nom", "Num CAS", "Num EINEC", "Ingrédient(s) source", "Qté par DJR", "Unité"]
 const rows = computed(() =>
-  payload.value.substances.map((x) => [
+  payload.value.computedSubstances.map((x) => [
     x.substance.name.toLowerCase(),
     x.substance.casNumber || "-",
     x.substance.einecNumber || "-",
@@ -63,8 +67,15 @@ const rows = computed(() =>
   ])
 )
 
-const elements = computed(() => payload.value.elements)
-const activeElements = computed(() => payload.value.elements.filter((x) => x.element.active))
+const elements = computed(() =>
+  [].concat(
+    payload.value.declaredPlants,
+    payload.value.declaredMicroorganisms,
+    payload.value.declaredIngredients,
+    payload.value.declaredSubstances
+  )
+)
+const activeElements = computed(() => elements.value.filter((x) => x.active && !x.new))
 
 const sourceElements = (substance) => {
   const sources = activeElements.value.filter(
@@ -85,12 +96,12 @@ watch(
 
     // Ajouter les nouvelles substances
     newSubstances.forEach((newSubstance) => {
-      if (!payload.value.substances.find((x) => x.substance.id === newSubstance.id))
-        payload.value.substances.push({ substance: newSubstance })
+      if (!payload.value.computedSubstances.find((x) => x.substance.id === newSubstance.id))
+        payload.value.computedSubstances.push({ substance: newSubstance })
     })
 
     // Enlever les substances disparues
-    payload.value.substances = payload.value.substances.filter((item) =>
+    payload.value.computedSubstances = payload.value.computedSubstances.filter((item) =>
       newSubstances.find((x) => x.id === item.substance.id)
     )
   },

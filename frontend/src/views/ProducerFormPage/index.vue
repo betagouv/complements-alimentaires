@@ -45,12 +45,12 @@ const payload = ref({
   conditionsNotRecommended: [],
   populations: [],
   elements: [],
-  substances: [],
-  files: {
-    labels: [],
-    others: [],
-  },
-  labelAddress: {},
+  declaredPlants: [],
+  declaredMicroorganisms: [],
+  declaredIngredients: [],
+  declaredSubstances: [],
+  computedSubstances: [],
+  attachments: [],
 })
 
 const hasNewElements = computed(() => payload.value.elements.some((x) => x.element.new))
