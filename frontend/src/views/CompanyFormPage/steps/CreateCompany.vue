@@ -52,9 +52,13 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import { useCreateCompanyStore } from "@/stores/createCompany"
 
+// Props & emits
+const emit = defineEmits(["changeStep"])
+
 // Form state & rules
 
-const { storedCountry, storedIdentifier, storedIdentifierType } = useCreateCompanyStore()
+const { storedCountry, storedIdentifier, storedIdentifierType, setCompanyId, setCompanySocialName } =
+  useCreateCompanyStore()
 
 const state = ref({
   socialName: "",
@@ -83,7 +87,7 @@ const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Request definition
-const { response, execute, isFetching } = useFetch(
+const { data, response, execute, isFetching } = useFetch(
   `/api/v1/companies/`,
   {
     headers: headers(),
@@ -102,7 +106,12 @@ const submitCompany = async () => {
   await execute()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
-    // ??
+    setCompanyId(data.value.id)
+    setCompanySocialName(data.value.socialName)
+    emit("changeStep", {
+      name: "L'entreprise a bien été créée",
+      component: "Fin",
+    })
   }
 }
 </script>

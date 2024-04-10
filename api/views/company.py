@@ -1,15 +1,17 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import RetrieveAPIView, CreateAPIView
 from data.choices import CountryChoices
-from data.models import Company
+from api.permissions import IsSupervisorOfThisCompany
+from data.models import Company, CompanySupervisor
 from enum import StrEnum, auto
 from django.shortcuts import get_object_or_404
 from ..serializers import CompanySerializer
 from api.exception_handling import ProjectAPIException
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db import transaction
 
 
 class CountryListView(APIView):
@@ -111,7 +113,22 @@ class ClaimCompanyCoSupervisionView(APIView):
 
 
 class CompanyCreateView(CreateAPIView):
-    """Création d'une entreprise"""
+    """Création d'une entreprise, et attribution d'un rôle de gestionnaire à son créateur"""
 
     permission_classes = [IsAuthenticated]
+    serializer_class = CompanySerializer
+
+    @transaction.atomic
+    def perform_create(self, serializer):
+        new_company = serializer.save()
+        supervisor, _ = CompanySupervisor.objects.get_or_create(user=self.request.user)
+        supervisor.companies.add(new_company)  # NOTE: on suppose que `new_company` n'est pas déjà dedans
+        return new_company
+
+
+class CompanyRetrieveView(RetrieveAPIView):
+    """Récupération d'une entreprise dont l'utilisateur est gestionnaire"""
+
+    queryset = Company.objects.all()
+    permission_classes = [IsSupervisorOfThisCompany]
     serializer_class = CompanySerializer

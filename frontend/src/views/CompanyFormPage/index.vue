@@ -4,14 +4,14 @@
     <DsfrStepper :steps="steps" :currentStep="step" v-if="step > 0" />
 
     <!-- Page content -->
-    <Introduction v-if="step == 0" @nextStep="nextStep" />
+    <Introduction v-if="step == 0" @changeStep="handleChangeStepEvent" />
     <KeepAlive>
       <component :is="components[step - 1]" @changeStep="handleChangeStepEvent" />
     </KeepAlive>
 
     <!-- Previous Navigation Button -->
     <DsfrButton
-      v-if="step > 0"
+      v-if="step > 0 && step < steps.length"
       class="mt-4"
       @click="prevStep"
       iconOnly
@@ -28,33 +28,36 @@ import { ref, defineAsyncComponent } from "vue"
 import { useCreateCompanyStore } from "@/stores/createCompany"
 import Introduction from "./Introduction" // 0
 import PickCountry from "./steps/PickCountry" // 1
-import Summary from "./steps/Summary" // 4
 
-const step = ref(0) // 0 shows Introduction component, outside of DSFRStepper
-const prevStep = () => (step.value -= 1)
-const nextStep = () => (step.value += 1)
+const step = ref(0) // 0 montre un composant en dehors du DSFRStepper
 
-// Steps and components follow the same step order, from 1 to N
+// Puisqu'un store est utilisé pendant le process, on pense à le réinitialiser quand la démarche (re)démarre
+useCreateCompanyStore().resetCompany()
+
+// Steps et components suivent le même ordre, de 1 à N
 const steps = ref([
   "Pays de l'entreprise",
   "Identification de l'entreprise",
   "Enregistrement ou reprise d'entreprise",
-  "Récapitulatif",
+  "Fin",
 ])
 
 // Les `undefined` correspondent à des étapes dynamiques, qui seront définies plus tard en fonction des réponses
-const components = [PickCountry, undefined, undefined, Summary]
+// Le fait de les inclure permet de montrer à l'utilisateur un nombre d'étapes prévues (ici, 4)
+const components = [PickCountry, undefined, undefined, undefined]
 
-// Helper qui récupère le component d'une étape à partir de son nom
+// Helpers -----------------------------------------------------------------------------------------------------------
+
+const prevStep = () => (step.value -= 1)
+const nextStep = () => (step.value += 1)
+
+// Récupère le component d'une étape à partir de son nom
 const stepComponentFromName = (name) => defineAsyncComponent(() => import(`./steps/${name}`))
 
-// Helper pour changer le contenu d'une étape
+// Passe à la prochaine étape, en changeant (ou pas) son contenu (nom de l'étape et composant affiché dynamiquement)
 const handleChangeStepEvent = (event) => {
-  steps.value[event.index] = event.name
-  components[event.index] = stepComponentFromName(event.component)
-  if (event.goToNextStep) nextStep()
+  if (event && event.name) steps.value[step.value] = event.name
+  if (event && event.component) components[step.value] = stepComponentFromName(event.component)
+  nextStep()
 }
-
-// Puisqu'un store est utilisé pour le process, on pense à le réinitialiser si la démarche (re)démarre
-useCreateCompanyStore().resetCompany()
 </script>

@@ -84,6 +84,35 @@ class TestCheckCompanyIdentifier(ProjectAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+class TestRetrieveCompany(ProjectAPITestCase):
+    viewname = "company_retrieve"
+
+    def setUp(self):
+        self.company = CompanyFactory(social_name="Too Good")
+        self.supervisor = CompanySupervisorFactory(companies=[self.company])
+        self.supervisor_user = self.supervisor.user
+
+    def test_retrieve_company_ok(self):
+        self.login(self.supervisor_user)
+        response = self.get(self.url(pk=self.company.id))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["social_name"], "Too Good")
+
+    def test_retrieve_ko_unexising_company(self):
+        self.login(self.supervisor_user)
+        response = self.get(self.url(pk=99999999))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_retrieve_ko_not_a_supervisor(self):
+        self.login()  # logged user is not a supervisor here
+        response = self.get(self.url(pk=self.company.id))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_retrieve_ko_unauthenticated(self):
+        response = self.get(self.url(pk=self.company.id))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
 class TestCreateCompany(ProjectAPITestCase):
     viewname = "company_create"
 
@@ -96,6 +125,7 @@ class TestCreateCompany(ProjectAPITestCase):
         response = self.post(self.url(), company.__dict__)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Company.objects.count(), companies_count + 1)
+        self.assertEqual(response.data["social_name"], "Too Good To Leave")
 
     def test_create_company_with_vat_ok(self):
         self.login()

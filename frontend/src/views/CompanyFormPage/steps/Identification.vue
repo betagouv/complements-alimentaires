@@ -80,34 +80,26 @@ const submitIdentifier = async () => {
     switch (data.value.companyStatus) {
       case "unregistered_company":
         emit("changeStep", {
-          index: 2,
           name: "Enregistrement d'une nouvelle entreprise",
           component: "CreateCompany",
-          goToNextStep: true,
         })
         break
       case "registered_and_supervised_by_me":
         emit("changeStep", {
-          index: 2,
           name: "L'entreprise existe déjà",
           component: "NothingToDo",
-          goToNextStep: true,
         })
         break
       case "registered_and_supervised_by_other":
         emit("changeStep", {
-          index: 2,
           name: "Demande de co-gestion d'une entreprise existante",
           component: "ClaimCoSupervision",
-          goToNextStep: true,
         })
         break
       case "registered_and_unsupervised":
         emit("changeStep", {
-          index: 2,
           name: "Revendication d'une entreprise existante",
           component: "ClaimSupervision",
-          goToNextStep: true,
         })
     }
   }

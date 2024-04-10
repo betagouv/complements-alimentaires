@@ -27,10 +27,8 @@ const onCountrySelected = (selectedOption) => {
   const identifierType = selectedOption == "FR" ? "siret" : "vat"
   useCreateCompanyStore().setCompanyCountryAndIdentifierType(selectedOption, identifierType) // pour créer l'entreprise plus tard en ayant l'information
   emit("changeStep", {
-    index: 1,
     name: `Identification par n° ${identifierType.toUpperCase()}`,
     component: "Identification",
-    goToNextStep: true,
   })
 }
 
