@@ -59,7 +59,7 @@
       <div class="flex">
         <div class="max-w-32">
           <DsfrSelect
-            :options="fomulationStates"
+            :options="formulationStates"
             v-model="payload.galenicFormulationState"
             defaultUnselectedText="État"
           />
@@ -261,7 +261,7 @@ const galenicFormulationList = computed(() => {
 })
 const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
 const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))
-const fomulationStates = [
+const formulationStates = [
   {
     text: "Liquide",
     value: "liquid",
