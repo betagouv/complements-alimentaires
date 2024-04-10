@@ -71,7 +71,7 @@ const types = [
   { value: "plant", text: "Plante" },
   { value: "microorganism", text: "Micro-organisme" },
   { value: "ingredient", text: "Ingredient" },
-  // TODO : these items will be added once we have their equivalent in the DB
+  // TODO : ces éléments seront proposés lors qu'on aura leur table dans la DB
   // { value: "nutrient", text: "Nutriment" },
   // { value: "additive", text: "Additif" },
   // { value: "aroma", text: "Arôme" },
