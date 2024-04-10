@@ -58,17 +58,33 @@
     <DsfrFieldset legend="Forme galénique" legendClass="fr-label !font-normal !pb-0">
       <div class="flex">
         <div class="max-w-32">
-          <DsfrSelect :options="fomulationStates" v-model="chosenFormulationState" defaultUnselectedText="État" />
+          <DsfrSelect
+            :options="fomulationStates"
+            v-model="payload.galenicFormulationState"
+            defaultUnselectedText="État"
+          />
         </div>
-        <div class="max-w-64 ml-4">
-          <DsfrSelect v-model="payload.galenicFormulation" :options="galenicFormulationList" />
+        <div class="max-w-md ml-4">
+          <DsfrSelect
+            v-model="payload.galenicFormulation"
+            :options="
+              galenicFormulationList?.map((formulation) => ({
+                text: formulation.name,
+                value: formulation.id,
+              }))
+            "
+          />
         </div>
       </div>
     </DsfrFieldset>
     <div class="max-w-2xl mt-6">
       <DsfrInput
-        v-if="payload.galenicFormulation"
+        v-if="
+          payload.galenicFormulation &&
+          getAllIndexesOfRegex(galenicFormulation, /Autre.*(à préciser)/).includes(parseInt(payload.galenicFormulation))
+        "
         v-model="payload.otherGalenicFormulation"
+        label-visible
         label="Merci de préciser la forme galénique"
       />
     </div>
@@ -83,7 +99,7 @@
           </div>
           <div class="max-w-32 ml-4">
             <DsfrSelect
-              :options="store.units?.map((unit) => unit.name)"
+              :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
               v-model="payload.unitMeasurement"
               defaultUnselectedText="Unité"
             />
@@ -224,23 +240,23 @@ import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { countries } from "@/utils/mappings"
-import { otherFieldsAtTheEnd } from "@/utils/forms"
+import { otherFieldsAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
 
 const payload = defineModel()
 
 const store = useRootStore()
 const { populations, conditions, effects, galenicFormulation, loggedUser } = storeToRefs(store)
 const otherEffectsId = computed(() => effects.value?.find((effect) => effect.name === "Autre (à préciser)").id)
-const chosenFormulationState = ref(null)
+
 const galenicFormulationList = computed(() => {
-  if (!chosenFormulationState.value) return galenicFormulation.value?.map((formulation) => formulation.name)
+  if (!payload.value.galenicFormulationState) return galenicFormulation.value
   else {
-    const isLiquid = chosenFormulationState.value === "liquid" ? true : false
+    const isLiquid = payload.value.galenicFormulationState === "liquid" ? true : false
     return otherFieldsAtTheEnd(
       galenicFormulation.value
         ?.filter((formulation) => formulation.isLiquid === isLiquid) // le filter perd l'ordre alphabétique d'origine
         .sort((a, b) => a.name.localeCompare(b.name))
-    ).map((formulation) => formulation.name)
+    )
   }
 })
 const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
@@ -255,7 +271,6 @@ const fomulationStates = [
     value: "solid",
   },
 ]
-
 watch(selectedCompany, () => {
   const addressFields = ["address", "additionalDetails", "postalCode", "city", "cedex", "country"]
   const addressEmpty = addressFields.every((field) => !payload.value.labelAddress[field])

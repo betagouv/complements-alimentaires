@@ -10,12 +10,16 @@ export const errorRequiredEmail = {
   email: helpers.withMessage("Ce champ doit contenir un e-mail valide", email),
 }
 
+export const getAllIndexesOfRegex = (array, regex) => {
+  return array.map((obj) => (regex.test(obj.name) ? obj.id : -1)).filter((i) => i != -1)
+}
+
 // met les choix "Autre % (à préciser)" en dernier dans la liste
 export const otherFieldsAtTheEnd = (choices) => {
-  const otherObjsIds = choices.map((obj, i) => (/Autre.*(à préciser)/.test(obj.name) ? i : -1)).filter((i) => i != -1)
+  const otherObjsIds = getAllIndexesOfRegex(choices, /Autre.*(à préciser)/)
   if (otherObjsIds) {
-    const otherObjs = choices.filter((obj, i) => otherObjsIds.includes(i))
-    choices = choices.filter((obj, i) => !otherObjsIds.includes(i))
+    const otherObjs = choices.filter((obj) => otherObjsIds.includes(obj.id))
+    choices = choices.filter((obj) => !otherObjsIds.includes(obj.id))
     choices.push(...otherObjs)
   }
   return choices
