@@ -76,8 +76,10 @@ const submitIdentifier = async () => {
   await handleError(response)
   if (response.value.ok) {
     setCompanyIdentifier(identifier.value)
-    setCompanySocialName(data.value.company.socialName)
-    setCompanyId(data.value.company.id)
+    if (data.value.company) {
+      setCompanySocialName(data.value.company.socialName)
+      setCompanyId(data.value.company.id)
+    }
 
     switch (data.value.companyStatus) {
       case "unregistered_company":

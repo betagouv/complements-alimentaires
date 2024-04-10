@@ -1,17 +1,16 @@
 <template>
   <div class="fr-container my-8 flex flex-col">
     <!-- Stepper -->
-    <DsfrStepper :steps="steps" :currentStep="step" v-if="step > 0" />
+    <DsfrStepper :steps="steps" :currentStep="step" v-if="step >= 0" />
 
     <!-- Page content -->
-    <Introduction v-if="step == 0" @changeStep="handleChangeStepEvent" />
     <KeepAlive>
       <component :is="components[step - 1]" @changeStep="handleChangeStepEvent" />
     </KeepAlive>
 
     <!-- Previous Navigation Button -->
     <DsfrButton
-      v-if="step > 0 && step < steps.length"
+      v-if="step > 1 && step < steps.length"
       class="mt-4"
       @click="prevStep"
       iconOnly
@@ -29,7 +28,7 @@ import { useCreateCompanyStore } from "@/stores/createCompany"
 import Introduction from "./Introduction" // 0
 import PickCountry from "./steps/PickCountry" // 1
 
-const step = ref(0) // 0 montre un composant en dehors du DSFRStepper
+const step = ref(1) // 0 montre un composant en dehors du DSFRStepper
 
 // Puisqu'un store est utilisé pendant le process, on pense à le réinitialiser quand la démarche (re)démarre
 useCreateCompanyStore().resetCompany()
@@ -37,6 +36,7 @@ useCreateCompanyStore().resetCompany()
 // Steps et components suivent le même ordre, de 1 à N
 // Le nom des étapes peut changer en cours de route
 const steps = ref([
+  "Créer ou rejoindre une entreprise",
   "Pays de l'entreprise",
   "Identification de l'entreprise",
   "Enregistrement ou reprise d'entreprise",
@@ -45,7 +45,7 @@ const steps = ref([
 
 // Les `undefined` correspondent à des étapes dynamiques, qui seront définies plus tard en fonction des réponses
 // Le fait de les inclure permet de rester cohérent par rapport à la la variable `steps`
-const components = [PickCountry, undefined, undefined, undefined]
+const components = [Introduction, PickCountry, undefined, undefined, undefined]
 
 // Helpers -----------------------------------------------------------------------------------------------------------
 
