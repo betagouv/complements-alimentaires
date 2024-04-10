@@ -68,7 +68,10 @@ import SubstancesTable from "./SubstancesTable"
 import FilePreview from "./FilePreview"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
+import { useRouter } from "vue-router"
+import useToaster from "@/composables/use-toaster"
 
+const router = useRouter()
 const { populations, conditions, effects } = storeToRefs(useRootStore())
 
 const payload = defineModel()
@@ -103,7 +106,12 @@ const editLink = (step) => ({ name: "ProducerFormPage", query: { step } })
 
 const saveDraft = async () => {
   const { response } = await useFetch("/api/v1/declarations/", { headers: headers() }).post(payload)
-  console.log(response)
+  if (response.value.ok) {
+    await router.replace({ name: "DashboardPage" })
+    useToaster().addSuccessMessage("Votre démarche a été sauvegardée")
+  } else {
+    console.log(response)
+  }
 }
 </script>
 
