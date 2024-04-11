@@ -68,7 +68,7 @@ const updateRoute = () => {
 watch(page, updateRoute)
 
 // Blog posts
-const url = computed(() => `/api/v1/blogPosts/?limit=${limit}&offset=${offset.value}`)
+const url = computed(() => `/api/v1/blog-post/?limit=${limit}&offset=${offset.value}`)
 const { data, response, execute, isFetching } = useFetch(url, { immediate: false }).json()
 
 const fetchCurrentPage = async () => {
