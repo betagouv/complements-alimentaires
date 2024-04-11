@@ -25,9 +25,8 @@
 <script setup>
 import { computed, ref } from "vue"
 import FormWrapper from "@/components/FormWrapper"
-import { firstErrorMsg } from "@/utils/forms"
+import { firstErrorMsg, errorRequiredField } from "@/utils/forms"
 import { useVuelidate } from "@vuelidate/core"
-import { required, minLength, maxLength, helpers } from "@vuelidate/validators"
 import { headers } from "@/utils/data-fetching"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
@@ -39,21 +38,10 @@ const { storedIdentifierType, setCompanyIdentifier, setCompanySocialName, setCom
 // Form state & rules
 const identifier = ref("")
 
-const rules = {
-  identifier: {
-    // règle de base
-    required: helpers.withMessage("Ce champ doit être rempli", required),
-    // règles uniquement pour le siret
-    ...(storedIdentifierType == "siret"
-      ? {
-          minLength: helpers.withMessage("Un SIRET doit contenir exactement 14 chiffres", minLength(14)),
-          maxLength: helpers.withMessage("Un SIRET doit contenir exactement 14 chiffres", maxLength(14)),
-        }
-      : {}),
-  },
-}
+const rules = { identifier: errorRequiredField } // la plupart des règles sont laissées côté back
 
-const v$ = useVuelidate(rules, { identifier: identifier })
+const $externalResults = ref({})
+const v$ = useVuelidate(rules, { identifier: identifier }, { $externalResults })
 
 // Request definition
 const url = computed(
@@ -68,12 +56,13 @@ const { data, response, execute, isFetching } = useFetch(
 ).json()
 
 const submitIdentifier = async () => {
+  v$.value.$clearExternalResults()
   v$.value.$validate()
   if (v$.value.$error) {
     return // prevent API call if there is a front-end error
   }
   await execute()
-  await handleError(response)
+  $externalResults.value = await handleError(response)
   if (response.value.ok) {
     setCompanyIdentifier(identifier.value)
     if (data.value.company) {
@@ -103,7 +92,7 @@ const submitIdentifier = async () => {
         break
       case "registered_and_unsupervised":
         emit("changeStep", {
-          name: "Revendication d'une entreprise existante",
+          name: "Demande de gestion d'une entreprise existante",
           component: "ClaimSupervision",
         })
     }

@@ -2,9 +2,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import RetrieveAPIView, CreateAPIView
+from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError as DjangoValidationError
 from data.choices import CountryChoices
 from api.permissions import IsSupervisorOfThisCompany
 from data.models import Company, CompanySupervisor
+from data.validators import validate_siret, validate_vat  # noqa
 from enum import StrEnum, auto
 from django.shortcuts import get_object_or_404
 from ..serializers import CompanySerializer
@@ -38,7 +41,7 @@ def _get_identifier_type(request) -> str:
 
     identifier_type = request.query_params.get("identifierType", None)
     if identifier_type not in ["siret", "vat"]:
-        raise ValueError("Please provide an identifierType whose value is either `siret` or `vat`")
+        raise ValidationError("Le paramètre `identifierType` doit être `siret` ou `vat`")
     return identifier_type
 
 
@@ -51,8 +54,19 @@ class CheckCompanyIdentifierView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, identifier):
+        identifier_type = _get_identifier_type(request)
+
+        # Utilise les validateurs siret/vat pour réinjecter les potentielles erreurs
+        # On n'utilise pas un model serializer car ça testerait d'autres contraintes (ex : unicité du champ)
+        validation_fuction = globals()[f"validate_{identifier_type}"]
         try:
-            company = Company.objects.get(**{_get_identifier_type(request): identifier})
+            validation_fuction(identifier)
+        except DjangoValidationError as e:
+            raise ProjectAPIException(field_errors={"identifier": e.messages})
+
+        # Si le numéro d'identification est valide, alors on essaie de trouver l'entreprise liée
+        try:
+            company = Company.objects.get(**{identifier_type: identifier})
         except Company.DoesNotExist:
             company = None
             company_status = CompanyStatusChoices.UNREGISTERED_COMPANY
