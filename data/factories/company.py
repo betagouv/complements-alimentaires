@@ -11,7 +11,7 @@ def _make_siret() -> str:
 
 
 def _make_vat() -> str:
-    return make_random_str(size=11, chars=string.digits)  # pas le vrai format
+    return random.choice(CountryChoices.values) + make_random_str(size=12, chars=string.digits)
 
 
 def _make_country_code() -> str:

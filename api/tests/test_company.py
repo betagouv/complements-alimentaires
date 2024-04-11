@@ -17,7 +17,7 @@ class TestCheckCompanyIdentifier(ProjectAPITestCase):
         self.siret = "12345671234567"
         self.company = CompanyFactory(siret=self.siret, social_name="Appeul")
 
-        self.vat = "9876123489"
+        self.vat = "FR986745237856"
         self.company2 = CompanyFactory(vat=self.vat, social_name="Grosoft")
 
     def test_check_company_siret_ok_unregistered_company(self):
@@ -29,7 +29,7 @@ class TestCheckCompanyIdentifier(ProjectAPITestCase):
 
     def test_check_company_vat_ok_unregistered_company(self):
         self.login()
-        unexisting_vat = "99999999999999"
+        unexisting_vat = "DE999999999999"
         response = self.get(self.url(identifier=unexisting_vat) + "?identifierType=vat")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.UNREGISTERED_COMPANY)
         self.assertIsNone(response.data["company"])
@@ -81,7 +81,7 @@ class TestCheckCompanyIdentifier(ProjectAPITestCase):
     def test_check_company_identifier_ko_with_wrong_identifier_type(self):
         self.login()
         response = self.get(self.url(identifier=self.siret) + "?identifierType=wrong")
-        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class TestRetrieveCompany(ProjectAPITestCase):

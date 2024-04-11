@@ -2,7 +2,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import RetrieveAPIView, CreateAPIView
-from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ValidationError as DjangoValidationError
 from data.choices import CountryChoices
 from api.permissions import IsSupervisorOfThisCompany
@@ -41,7 +40,7 @@ def _get_identifier_type(request) -> str:
 
     identifier_type = request.query_params.get("identifierType", None)
     if identifier_type not in ["siret", "vat"]:
-        raise ValidationError("Le paramètre `identifierType` doit être `siret` ou `vat`")
+        raise ProjectAPIException(global_error="Le paramètre `identifierType` doit être `siret` ou `vat`")
     return identifier_type
 
 
