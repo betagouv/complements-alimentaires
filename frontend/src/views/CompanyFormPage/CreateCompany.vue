@@ -51,6 +51,9 @@ import { headers } from "@/utils/data-fetching"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import { useCreateCompanyStore } from "@/stores/createCompany"
+import { useRootStore } from "@/stores/root"
+
+const rootStore = useRootStore()
 
 // Props & emits
 const emit = defineEmits(["changeStep"])
@@ -108,6 +111,7 @@ const submitCompany = async () => {
   if (response.value.ok) {
     setCompanyId(data.value.id)
     setCompanySocialName(data.value.socialName)
+    rootStore.fetchInitialData()
     emit("changeStep", {
       name: "L'entreprise a bien été créée",
       component: "EndCompanyCreated",
