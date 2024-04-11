@@ -16,21 +16,13 @@ class BlogPostAuthor(serializers.ModelSerializer):
         )
 
 
-class BaseUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = ("username", "email", "last_name", "first_name")
-
-
-class LoggedUserSerializer(BaseUserSerializer):
-    roles = serializers.SerializerMethodField()
-
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = BaseUserSerializer.Meta.fields + (
-            "id",
-            "roles",
-        )
-        read_only_fields = fields
+        fields = ("id", "username", "email", "last_name", "first_name", "roles")
+
+    id = serializers.IntegerField(read_only=True)
+    roles = serializers.SerializerMethodField(read_only=True)
 
     def get_roles(self, obj):
         roles_data = []
@@ -54,15 +46,11 @@ class LoggedUserSerializer(BaseUserSerializer):
         return roles_data
 
 
-class CreateUserSerializer(BaseUserSerializer):
+class CreateUserSerializer(UserSerializer):
     class Meta:
         model = User
-        fields = BaseUserSerializer.Meta.fields + (
-            "id",
-            "password",
-        )
+        fields = UserSerializer.Meta.fields + ("password",)
 
-    id = serializers.IntegerField(read_only=True)
     password = serializers.CharField(
         write_only=True, required=True
     )  # empêche le retour du hash du mdp dans la réponse
@@ -75,12 +63,6 @@ class CreateUserSerializer(BaseUserSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
-
-
-class EditUserSerializer(BaseUserSerializer):
-    class Meta:
-        model = User
-        fields = BaseUserSerializer.Meta.fields
 
 
 class ChangePasswordSerializer(serializers.Serializer):

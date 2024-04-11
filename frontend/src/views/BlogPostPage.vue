@@ -26,7 +26,7 @@ const props = defineProps({
   id: String,
 })
 
-const { data: blogPost, response, execute } = useFetch(`/api/v1/blogPosts/${props.id}`, { immediate: false }).json()
+const { data: blogPost, response, execute } = useFetch(`/api/v1/blog-post/${props.id}`, { immediate: false }).json()
 const fetchBlogPost = async () => {
   await execute()
   await handleError(response)

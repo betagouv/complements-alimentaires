@@ -1,8 +1,7 @@
 from .blogpost import BlogPostSerializer  # noqa: F401
 from .user import (  # noqa: F401
-    LoggedUserSerializer,
+    UserSerializer,
     CreateUserSerializer,
-    EditUserSerializer,
     ChangePasswordSerializer,
 )
 from .webinar import WebinarSerializer  # noqa
@@ -13,6 +12,7 @@ from .microorganism import MicroorganismSerializer  # noqa: F401
 from .substance import SubstanceSerializer, SubstanceShortSerializer  # noqa: F401
 from .population import PopulationSerializer  # noqa: F401
 from .condition import ConditionSerializer  # noqa: F401
+from .effect import EffectSerializer  # noqa: F401
 from .unit import SubstanceUnitSerializer  # noqa: F401
 from .autocomplete_item import AutocompleteItemSerializer  # noqa: F401
 from .declaration import DeclarationSerializer  # noqa: F401
