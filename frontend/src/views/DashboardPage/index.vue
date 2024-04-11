@@ -39,6 +39,7 @@ const supervisorActions = [
   {
     title: "Nouvelle entreprise",
     description: "Créez ou rejoignez une nouvelle entreprise",
+    link: { name: "CompanyFormPage" },
   },
 ]
 
