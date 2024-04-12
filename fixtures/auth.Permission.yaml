@@ -1078,3 +1078,891 @@
     name: Can view magic link token
     content_type: 45
     codename: view_magiclinktoken
+- model: auth.permission
+  pk: 181
+  fields:
+    name: Can add utilisateur
+    content_type: 9
+    codename: add_user
+- model: auth.permission
+  pk: 182
+  fields:
+    name: Can change utilisateur
+    content_type: 9
+    codename: change_user
+- model: auth.permission
+  pk: 183
+  fields:
+    name: Can delete utilisateur
+    content_type: 9
+    codename: delete_user
+- model: auth.permission
+  pk: 184
+  fields:
+    name: Can view utilisateur
+    content_type: 9
+    codename: view_user
+- model: auth.permission
+  pk: 185
+  fields:
+    name: Can add article de blog
+    content_type: 41
+    codename: add_blogpost
+- model: auth.permission
+  pk: 186
+  fields:
+    name: Can change article de blog
+    content_type: 41
+    codename: change_blogpost
+- model: auth.permission
+  pk: 187
+  fields:
+    name: Can delete article de blog
+    content_type: 41
+    codename: delete_blogpost
+- model: auth.permission
+  pk: 188
+  fields:
+    name: Can view article de blog
+    content_type: 41
+    codename: view_blogpost
+- model: auth.permission
+  pk: 189
+  fields:
+    name: Can add condition de santé / facteurs de risque
+    content_type: 44
+    codename: add_condition
+- model: auth.permission
+  pk: 190
+  fields:
+    name: Can change condition de santé / facteurs de risque
+    content_type: 44
+    codename: change_condition
+- model: auth.permission
+  pk: 191
+  fields:
+    name: Can delete condition de santé / facteurs de risque
+    content_type: 44
+    codename: delete_condition
+- model: auth.permission
+  pk: 192
+  fields:
+    name: Can view condition de santé / facteurs de risque
+    content_type: 44
+    codename: view_condition
+- model: auth.permission
+  pk: 193
+  fields:
+    name: Can add Population cible / à risque
+    content_type: 40
+    codename: add_population
+- model: auth.permission
+  pk: 194
+  fields:
+    name: Can change Population cible / à risque
+    content_type: 40
+    codename: change_population
+- model: auth.permission
+  pk: 195
+  fields:
+    name: Can delete Population cible / à risque
+    content_type: 40
+    codename: delete_population
+- model: auth.permission
+  pk: 196
+  fields:
+    name: Can view Population cible / à risque
+    content_type: 40
+    codename: view_population
+- model: auth.permission
+  pk: 197
+  fields:
+    name: Can add autre ingrédient
+    content_type: 16
+    codename: add_ingredient
+- model: auth.permission
+  pk: 198
+  fields:
+    name: Can change autre ingrédient
+    content_type: 16
+    codename: change_ingredient
+- model: auth.permission
+  pk: 199
+  fields:
+    name: Can delete autre ingrédient
+    content_type: 16
+    codename: delete_ingredient
+- model: auth.permission
+  pk: 200
+  fields:
+    name: Can view autre ingrédient
+    content_type: 16
+    codename: view_ingredient
+- model: auth.permission
+  pk: 201
+  fields:
+    name: Can add micro-organisme
+    content_type: 22
+    codename: add_microorganism
+- model: auth.permission
+  pk: 202
+  fields:
+    name: Can change micro-organisme
+    content_type: 22
+    codename: change_microorganism
+- model: auth.permission
+  pk: 203
+  fields:
+    name: Can delete micro-organisme
+    content_type: 22
+    codename: delete_microorganism
+- model: auth.permission
+  pk: 204
+  fields:
+    name: Can view micro-organisme
+    content_type: 22
+    codename: view_microorganism
+- model: auth.permission
+  pk: 205
+  fields:
+    name: Can add plante
+    content_type: 32
+    codename: add_plant
+- model: auth.permission
+  pk: 206
+  fields:
+    name: Can change plante
+    content_type: 32
+    codename: change_plant
+- model: auth.permission
+  pk: 207
+  fields:
+    name: Can delete plante
+    content_type: 32
+    codename: delete_plant
+- model: auth.permission
+  pk: 208
+  fields:
+    name: Can view plante
+    content_type: 32
+    codename: view_plant
+- model: auth.permission
+  pk: 209
+  fields:
+    name: Can add partie de plante
+    content_type: 30
+    codename: add_plantpart
+- model: auth.permission
+  pk: 210
+  fields:
+    name: Can change partie de plante
+    content_type: 30
+    codename: change_plantpart
+- model: auth.permission
+  pk: 211
+  fields:
+    name: Can delete partie de plante
+    content_type: 30
+    codename: delete_plantpart
+- model: auth.permission
+  pk: 212
+  fields:
+    name: Can view partie de plante
+    content_type: 30
+    codename: view_plantpart
+- model: auth.permission
+  pk: 213
+  fields:
+    name: Can add substance active
+    content_type: 12
+    codename: add_substance
+- model: auth.permission
+  pk: 214
+  fields:
+    name: Can change substance active
+    content_type: 12
+    codename: change_substance
+- model: auth.permission
+  pk: 215
+  fields:
+    name: Can delete substance active
+    content_type: 12
+    codename: delete_substance
+- model: auth.permission
+  pk: 216
+  fields:
+    name: Can view substance active
+    content_type: 12
+    codename: view_substance
+- model: auth.permission
+  pk: 217
+  fields:
+    name: Can add synonyme substance active
+    content_type: 14
+    codename: add_substancesynonym
+- model: auth.permission
+  pk: 218
+  fields:
+    name: Can change synonyme substance active
+    content_type: 14
+    codename: change_substancesynonym
+- model: auth.permission
+  pk: 219
+  fields:
+    name: Can delete synonyme substance active
+    content_type: 14
+    codename: delete_substancesynonym
+- model: auth.permission
+  pk: 220
+  fields:
+    name: Can view synonyme substance active
+    content_type: 14
+    codename: view_substancesynonym
+- model: auth.permission
+  pk: 221
+  fields:
+    name: Can add synonyme de plante
+    content_type: 38
+    codename: add_plantsynonym
+- model: auth.permission
+  pk: 222
+  fields:
+    name: Can change synonyme de plante
+    content_type: 38
+    codename: change_plantsynonym
+- model: auth.permission
+  pk: 223
+  fields:
+    name: Can delete synonyme de plante
+    content_type: 38
+    codename: delete_plantsynonym
+- model: auth.permission
+  pk: 224
+  fields:
+    name: Can view synonyme de plante
+    content_type: 38
+    codename: view_plantsynonym
+- model: auth.permission
+  pk: 225
+  fields:
+    name: Can add synonyme de micro-organisme
+    content_type: 26
+    codename: add_microorganismsynonym
+- model: auth.permission
+  pk: 226
+  fields:
+    name: Can change synonyme de micro-organisme
+    content_type: 26
+    codename: change_microorganismsynonym
+- model: auth.permission
+  pk: 227
+  fields:
+    name: Can delete synonyme de micro-organisme
+    content_type: 26
+    codename: delete_microorganismsynonym
+- model: auth.permission
+  pk: 228
+  fields:
+    name: Can view synonyme de micro-organisme
+    content_type: 26
+    codename: view_microorganismsynonym
+- model: auth.permission
+  pk: 229
+  fields:
+    name: Can add synonyme d'ingrédient
+    content_type: 20
+    codename: add_ingredientsynonym
+- model: auth.permission
+  pk: 230
+  fields:
+    name: Can change synonyme d'ingrédient
+    content_type: 20
+    codename: change_ingredientsynonym
+- model: auth.permission
+  pk: 231
+  fields:
+    name: Can delete synonyme d'ingrédient
+    content_type: 20
+    codename: delete_ingredientsynonym
+- model: auth.permission
+  pk: 232
+  fields:
+    name: Can view synonyme d'ingrédient
+    content_type: 20
+    codename: view_ingredientsynonym
+- model: auth.permission
+  pk: 233
+  fields:
+    name: Can add famille de plantes
+    content_type: 28
+    codename: add_plantfamily
+- model: auth.permission
+  pk: 234
+  fields:
+    name: Can change famille de plantes
+    content_type: 28
+    codename: change_plantfamily
+- model: auth.permission
+  pk: 235
+  fields:
+    name: Can delete famille de plantes
+    content_type: 28
+    codename: delete_plantfamily
+- model: auth.permission
+  pk: 236
+  fields:
+    name: Can view famille de plantes
+    content_type: 28
+    codename: view_plantfamily
+- model: auth.permission
+  pk: 237
+  fields:
+    name: Can add historical synonyme substance active
+    content_type: 13
+    codename: add_historicalsubstancesynonym
+- model: auth.permission
+  pk: 238
+  fields:
+    name: Can change historical synonyme substance active
+    content_type: 13
+    codename: change_historicalsubstancesynonym
+- model: auth.permission
+  pk: 239
+  fields:
+    name: Can delete historical synonyme substance active
+    content_type: 13
+    codename: delete_historicalsubstancesynonym
+- model: auth.permission
+  pk: 240
+  fields:
+    name: Can view historical synonyme substance active
+    content_type: 13
+    codename: view_historicalsubstancesynonym
+- model: auth.permission
+  pk: 241
+  fields:
+    name: Can add historical substance active
+    content_type: 11
+    codename: add_historicalsubstance
+- model: auth.permission
+  pk: 242
+  fields:
+    name: Can change historical substance active
+    content_type: 11
+    codename: change_historicalsubstance
+- model: auth.permission
+  pk: 243
+  fields:
+    name: Can delete historical substance active
+    content_type: 11
+    codename: delete_historicalsubstance
+- model: auth.permission
+  pk: 244
+  fields:
+    name: Can view historical substance active
+    content_type: 11
+    codename: view_historicalsubstance
+- model: auth.permission
+  pk: 245
+  fields:
+    name: Can add historical Population cible / à risque
+    content_type: 39
+    codename: add_historicalpopulation
+- model: auth.permission
+  pk: 246
+  fields:
+    name: Can change historical Population cible / à risque
+    content_type: 39
+    codename: change_historicalpopulation
+- model: auth.permission
+  pk: 247
+  fields:
+    name: Can delete historical Population cible / à risque
+    content_type: 39
+    codename: delete_historicalpopulation
+- model: auth.permission
+  pk: 248
+  fields:
+    name: Can view historical Population cible / à risque
+    content_type: 39
+    codename: view_historicalpopulation
+- model: auth.permission
+  pk: 249
+  fields:
+    name: Can add historical synonyme de plante
+    content_type: 37
+    codename: add_historicalplantsynonym
+- model: auth.permission
+  pk: 250
+  fields:
+    name: Can change historical synonyme de plante
+    content_type: 37
+    codename: change_historicalplantsynonym
+- model: auth.permission
+  pk: 251
+  fields:
+    name: Can delete historical synonyme de plante
+    content_type: 37
+    codename: delete_historicalplantsynonym
+- model: auth.permission
+  pk: 252
+  fields:
+    name: Can view historical synonyme de plante
+    content_type: 37
+    codename: view_historicalplantsynonym
+- model: auth.permission
+  pk: 253
+  fields:
+    name: Can add historical partie de plante
+    content_type: 29
+    codename: add_historicalplantpart
+- model: auth.permission
+  pk: 254
+  fields:
+    name: Can change historical partie de plante
+    content_type: 29
+    codename: change_historicalplantpart
+- model: auth.permission
+  pk: 255
+  fields:
+    name: Can delete historical partie de plante
+    content_type: 29
+    codename: delete_historicalplantpart
+- model: auth.permission
+  pk: 256
+  fields:
+    name: Can view historical partie de plante
+    content_type: 29
+    codename: view_historicalplantpart
+- model: auth.permission
+  pk: 257
+  fields:
+    name: Can add historical famille de plantes
+    content_type: 27
+    codename: add_historicalplantfamily
+- model: auth.permission
+  pk: 258
+  fields:
+    name: Can change historical famille de plantes
+    content_type: 27
+    codename: change_historicalplantfamily
+- model: auth.permission
+  pk: 259
+  fields:
+    name: Can delete historical famille de plantes
+    content_type: 27
+    codename: delete_historicalplantfamily
+- model: auth.permission
+  pk: 260
+  fields:
+    name: Can view historical famille de plantes
+    content_type: 27
+    codename: view_historicalplantfamily
+- model: auth.permission
+  pk: 261
+  fields:
+    name: Can add historical plante
+    content_type: 31
+    codename: add_historicalplant
+- model: auth.permission
+  pk: 262
+  fields:
+    name: Can change historical plante
+    content_type: 31
+    codename: change_historicalplant
+- model: auth.permission
+  pk: 263
+  fields:
+    name: Can delete historical plante
+    content_type: 31
+    codename: delete_historicalplant
+- model: auth.permission
+  pk: 264
+  fields:
+    name: Can view historical plante
+    content_type: 31
+    codename: view_historicalplant
+- model: auth.permission
+  pk: 265
+  fields:
+    name: Can add historical synonyme de micro-organisme
+    content_type: 25
+    codename: add_historicalmicroorganismsynonym
+- model: auth.permission
+  pk: 266
+  fields:
+    name: Can change historical synonyme de micro-organisme
+    content_type: 25
+    codename: change_historicalmicroorganismsynonym
+- model: auth.permission
+  pk: 267
+  fields:
+    name: Can delete historical synonyme de micro-organisme
+    content_type: 25
+    codename: delete_historicalmicroorganismsynonym
+- model: auth.permission
+  pk: 268
+  fields:
+    name: Can view historical synonyme de micro-organisme
+    content_type: 25
+    codename: view_historicalmicroorganismsynonym
+- model: auth.permission
+  pk: 269
+  fields:
+    name: Can add historical micro-organisme
+    content_type: 21
+    codename: add_historicalmicroorganism
+- model: auth.permission
+  pk: 270
+  fields:
+    name: Can change historical micro-organisme
+    content_type: 21
+    codename: change_historicalmicroorganism
+- model: auth.permission
+  pk: 271
+  fields:
+    name: Can delete historical micro-organisme
+    content_type: 21
+    codename: delete_historicalmicroorganism
+- model: auth.permission
+  pk: 272
+  fields:
+    name: Can view historical micro-organisme
+    content_type: 21
+    codename: view_historicalmicroorganism
+- model: auth.permission
+  pk: 273
+  fields:
+    name: Can add historical synonyme d'ingrédient
+    content_type: 19
+    codename: add_historicalingredientsynonym
+- model: auth.permission
+  pk: 274
+  fields:
+    name: Can change historical synonyme d'ingrédient
+    content_type: 19
+    codename: change_historicalingredientsynonym
+- model: auth.permission
+  pk: 275
+  fields:
+    name: Can delete historical synonyme d'ingrédient
+    content_type: 19
+    codename: delete_historicalingredientsynonym
+- model: auth.permission
+  pk: 276
+  fields:
+    name: Can view historical synonyme d'ingrédient
+    content_type: 19
+    codename: view_historicalingredientsynonym
+- model: auth.permission
+  pk: 277
+  fields:
+    name: Can add historical autre ingrédient
+    content_type: 15
+    codename: add_historicalingredient
+- model: auth.permission
+  pk: 278
+  fields:
+    name: Can change historical autre ingrédient
+    content_type: 15
+    codename: change_historicalingredient
+- model: auth.permission
+  pk: 279
+  fields:
+    name: Can delete historical autre ingrédient
+    content_type: 15
+    codename: delete_historicalingredient
+- model: auth.permission
+  pk: 280
+  fields:
+    name: Can view historical autre ingrédient
+    content_type: 15
+    codename: view_historicalingredient
+- model: auth.permission
+  pk: 281
+  fields:
+    name: Can add historical condition de santé / facteurs de risque
+    content_type: 43
+    codename: add_historicalcondition
+- model: auth.permission
+  pk: 282
+  fields:
+    name: Can change historical condition de santé / facteurs de risque
+    content_type: 43
+    codename: change_historicalcondition
+- model: auth.permission
+  pk: 283
+  fields:
+    name: Can delete historical condition de santé / facteurs de risque
+    content_type: 43
+    codename: delete_historicalcondition
+- model: auth.permission
+  pk: 284
+  fields:
+    name: Can view historical condition de santé / facteurs de risque
+    content_type: 43
+    codename: view_historicalcondition
+- model: auth.permission
+  pk: 285
+  fields:
+    name: Can add webinaire
+    content_type: 42
+    codename: add_webinar
+- model: auth.permission
+  pk: 286
+  fields:
+    name: Can change webinaire
+    content_type: 42
+    codename: change_webinar
+- model: auth.permission
+  pk: 287
+  fields:
+    name: Can delete webinaire
+    content_type: 42
+    codename: delete_webinar
+- model: auth.permission
+  pk: 288
+  fields:
+    name: Can view webinaire
+    content_type: 42
+    codename: view_webinar
+- model: auth.permission
+  pk: 289
+  fields:
+    name: Can add ingredient substance relation
+    content_type: 18
+    codename: add_ingredientsubstancerelation
+- model: auth.permission
+  pk: 290
+  fields:
+    name: Can change ingredient substance relation
+    content_type: 18
+    codename: change_ingredientsubstancerelation
+- model: auth.permission
+  pk: 291
+  fields:
+    name: Can delete ingredient substance relation
+    content_type: 18
+    codename: delete_ingredientsubstancerelation
+- model: auth.permission
+  pk: 292
+  fields:
+    name: Can view ingredient substance relation
+    content_type: 18
+    codename: view_ingredientsubstancerelation
+- model: auth.permission
+  pk: 293
+  fields:
+    name: Can add microorganism substance relation
+    content_type: 24
+    codename: add_microorganismsubstancerelation
+- model: auth.permission
+  pk: 294
+  fields:
+    name: Can change microorganism substance relation
+    content_type: 24
+    codename: change_microorganismsubstancerelation
+- model: auth.permission
+  pk: 295
+  fields:
+    name: Can delete microorganism substance relation
+    content_type: 24
+    codename: delete_microorganismsubstancerelation
+- model: auth.permission
+  pk: 296
+  fields:
+    name: Can view microorganism substance relation
+    content_type: 24
+    codename: view_microorganismsubstancerelation
+- model: auth.permission
+  pk: 297
+  fields:
+    name: Can add plant substance relation
+    content_type: 36
+    codename: add_plantsubstancerelation
+- model: auth.permission
+  pk: 298
+  fields:
+    name: Can change plant substance relation
+    content_type: 36
+    codename: change_plantsubstancerelation
+- model: auth.permission
+  pk: 299
+  fields:
+    name: Can delete plant substance relation
+    content_type: 36
+    codename: delete_plantsubstancerelation
+- model: auth.permission
+  pk: 300
+  fields:
+    name: Can view plant substance relation
+    content_type: 36
+    codename: view_plantsubstancerelation
+- model: auth.permission
+  pk: 301
+  fields:
+    name: Can add historical ingredient substance relation
+    content_type: 17
+    codename: add_historicalingredientsubstancerelation
+- model: auth.permission
+  pk: 302
+  fields:
+    name: Can change historical ingredient substance relation
+    content_type: 17
+    codename: change_historicalingredientsubstancerelation
+- model: auth.permission
+  pk: 303
+  fields:
+    name: Can delete historical ingredient substance relation
+    content_type: 17
+    codename: delete_historicalingredientsubstancerelation
+- model: auth.permission
+  pk: 304
+  fields:
+    name: Can view historical ingredient substance relation
+    content_type: 17
+    codename: view_historicalingredientsubstancerelation
+- model: auth.permission
+  pk: 305
+  fields:
+    name: Can add historical microorganism substance relation
+    content_type: 23
+    codename: add_historicalmicroorganismsubstancerelation
+- model: auth.permission
+  pk: 306
+  fields:
+    name: Can change historical microorganism substance relation
+    content_type: 23
+    codename: change_historicalmicroorganismsubstancerelation
+- model: auth.permission
+  pk: 307
+  fields:
+    name: Can delete historical microorganism substance relation
+    content_type: 23
+    codename: delete_historicalmicroorganismsubstancerelation
+- model: auth.permission
+  pk: 308
+  fields:
+    name: Can view historical microorganism substance relation
+    content_type: 23
+    codename: view_historicalmicroorganismsubstancerelation
+- model: auth.permission
+  pk: 309
+  fields:
+    name: Can add historical plant substance relation
+    content_type: 35
+    codename: add_historicalplantsubstancerelation
+- model: auth.permission
+  pk: 310
+  fields:
+    name: Can change historical plant substance relation
+    content_type: 35
+    codename: change_historicalplantsubstancerelation
+- model: auth.permission
+  pk: 311
+  fields:
+    name: Can delete historical plant substance relation
+    content_type: 35
+    codename: delete_historicalplantsubstancerelation
+- model: auth.permission
+  pk: 312
+  fields:
+    name: Can view historical plant substance relation
+    content_type: 35
+    codename: view_historicalplantsubstancerelation
+- model: auth.permission
+  pk: 313
+  fields:
+    name: Can add gestionnaire d'entreprises
+    content_type: 7
+    codename: add_companysupervisor
+- model: auth.permission
+  pk: 314
+  fields:
+    name: Can change gestionnaire d'entreprises
+    content_type: 7
+    codename: change_companysupervisor
+- model: auth.permission
+  pk: 315
+  fields:
+    name: Can delete gestionnaire d'entreprises
+    content_type: 7
+    codename: delete_companysupervisor
+- model: auth.permission
+  pk: 316
+  fields:
+    name: Can view gestionnaire d'entreprises
+    content_type: 7
+    codename: view_companysupervisor
+- model: auth.permission
+  pk: 317
+  fields:
+    name: Can add entreprise
+    content_type: 6
+    codename: add_company
+- model: auth.permission
+  pk: 318
+  fields:
+    name: Can change entreprise
+    content_type: 6
+    codename: change_company
+- model: auth.permission
+  pk: 319
+  fields:
+    name: Can delete entreprise
+    content_type: 6
+    codename: delete_company
+- model: auth.permission
+  pk: 320
+  fields:
+    name: Can view entreprise
+    content_type: 6
+    codename: view_company
+- model: auth.permission
+  pk: 321
+  fields:
+    name: Can add déclarant
+    content_type: 8
+    codename: add_declarant
+- model: auth.permission
+  pk: 322
+  fields:
+    name: Can change déclarant
+    content_type: 8
+    codename: change_declarant
+- model: auth.permission
+  pk: 323
+  fields:
+    name: Can delete déclarant
+    content_type: 8
+    codename: delete_declarant
+- model: auth.permission
+  pk: 324
+  fields:
+    name: Can view déclarant
+    content_type: 8
+    codename: view_declarant
+- model: auth.permission
+  pk: 325
+  fields:
+    name: Can add substance unit
+    content_type: 10
+    codename: add_substanceunit
+- model: auth.permission
+  pk: 326
+  fields:
+    name: Can change substance unit
+    content_type: 10
+    codename: change_substanceunit
+- model: auth.permission
+  pk: 327
+  fields:
+    name: Can delete substance unit
+    content_type: 10
+    codename: delete_substanceunit
+- model: auth.permission
+  pk: 328
+  fields:
+    name: Can view substance unit
+    content_type: 10
+    codename: view_substanceunit

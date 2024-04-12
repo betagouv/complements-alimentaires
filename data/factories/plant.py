@@ -12,7 +12,7 @@ class PlantPartFactory(factory.django.DjangoModelFactory):
     siccrf_name = factory.Faker("text", max_nb_chars=10)
     ca_name = factory.Faker("text", max_nb_chars=10)
     siccrf_name_en = factory.Faker("text", max_nb_chars=10)
-    siccrf_id = factory.Faker("random_int", min=1, max=20)
+    siccrf_id = factory.Sequence(lambda n: n + 1)
 
 
 class PlantFamilyFactory(factory.django.DjangoModelFactory):
@@ -23,7 +23,7 @@ class PlantFamilyFactory(factory.django.DjangoModelFactory):
     siccrf_name = factory.Faker("text", max_nb_chars=25)
     ca_name = factory.Faker("text", max_nb_chars=25)
     siccrf_name_en = factory.Faker("text", max_nb_chars=25)
-    siccrf_id = factory.Faker("random_int", min=1, max=20)
+    siccrf_id = factory.Sequence(lambda n: n + 1)
 
 
 class PlantFactory(factory.django.DjangoModelFactory):
@@ -33,7 +33,7 @@ class PlantFactory(factory.django.DjangoModelFactory):
 
     siccrf_name = factory.Faker("text", max_nb_chars=20)
     ca_name = factory.Faker("text", max_nb_chars=20)
-    siccrf_id = factory.Faker("random_int", min=1, max=2000)
+    siccrf_id = factory.Sequence(lambda n: n + 1)
     siccrf_family = factory.SubFactory(PlantFamilyFactory)
     ca_family = factory.SubFactory(PlantFamilyFactory)
 

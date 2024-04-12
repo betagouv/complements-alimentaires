@@ -3,7 +3,7 @@ import os
 
 from django.core.management.base import BaseCommand
 
-from data.csv_importer import import_csv
+from data.csv_importer import import_csv_from_filepath
 from data.exceptions import CSVFileError
 from data.models.plant import Part
 
@@ -35,7 +35,7 @@ class Command(BaseCommand):
         models_to_check = set()
         for file in files:
             try:
-                updated_models = import_csv(os.path.join(directory_relative_path, file))
+                updated_models = import_csv_from_filepath(os.path.join(directory_relative_path, file))
                 models_to_check = models_to_check.union(updated_models)
             except CSVFileError as e:
                 logger.error(e.message)

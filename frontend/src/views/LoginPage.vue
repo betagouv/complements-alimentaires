@@ -4,21 +4,14 @@
     <FormWrapper :externalResults="$externalResults">
       <SendNewSignupVerificationEmail v-if="showSendNewConfirmationMail" :userId="userIdForNewConfirmationMail" />
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'username')">
-        <DsfrInput v-model="state.username" label="Identifiant" labelVisible autofocus />
+        <DsfrInput v-model="state.username" label="Identifiant" labelVisible />
       </DsfrInputGroup>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'password')">
         <DsfrInput :type="showPassword ? 'text' : 'password'" v-model="state.password" labelVisible>
           <template #label>
             <div class="flex items-center justify-between">
               <div>Mot de passe</div>
-              <DsfrButton
-                @click="showPassword = !showPassword"
-                :label="showPassword ? 'Cacher' : 'Afficher'"
-                :icon="showPassword ? 'ri-eye-off-line' : 'ri-eye-line'"
-                size="sm"
-                tertiary
-                noOutline
-              />
+              <PasswordDisplayToggle :showPassword="showPassword" @update:showPassword="showPassword = $event" />
             </div>
           </template>
         </DsfrInput>
@@ -29,7 +22,7 @@
       <DsfrButton class="!block !w-full" :disabled="isFetching" label="Se connecter" @click="submit" />
       <hr class="mt-8" />
       <h4>Vous n'avez pas de compte ?</h4>
-      <DsfrButton class="!block !w-full" secondary label="S'enregistrer" @click="router.push('/inscription')" />
+      <DsfrButton class="!block !w-full" secondary label="S'enregistrer" @click="router.push({ name: 'SignupPage' })" />
     </FormWrapper>
   </SingleItemWrapper>
 </template>
@@ -47,6 +40,7 @@ import { useRootStore } from "@/stores/root"
 import FormWrapper from "@/components/FormWrapper"
 import SingleItemWrapper from "@/components/SingleItemWrapper"
 import SendNewSignupVerificationEmail from "@/components/SendNewSignupVerificationEmail"
+import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
 
 const router = useRouter()
 const rootStore = useRootStore()
@@ -94,7 +88,7 @@ const submit = async () => {
   // ⛔️ TODO: change this dirty hack: we use error message until having appropriate error codes in responses
   if ($externalResults.value?.nonFieldErrors?.[0]?.includes("vérifié")) {
     showSendNewConfirmationMail.value = true
-    userIdForNewConfirmationMail.value = $externalResults.value.extra.userId
+    userIdForNewConfirmationMail.value = $externalResults.value.extra.id
   }
 
   if (response.value.ok) {

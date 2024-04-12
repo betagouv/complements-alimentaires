@@ -7,6 +7,7 @@ export const useRootStore = defineStore("root", () => {
   const initialDataLoaded = ref(false)
   const populations = ref(null)
   const conditions = ref(null)
+  const effects = ref(null)
   const plantParts = ref(null)
   const units = ref(null)
 
@@ -15,9 +16,13 @@ export const useRootStore = defineStore("root", () => {
     initialDataLoaded.value = true
   }
 
+  const setLoggedUser = (userData) => {
+    loggedUser.value = userData ? userData : null
+  }
+
   const fetchLoggedUser = async () => {
-    const { data } = await useFetch("/api/v1/loggedUser/").json()
-    loggedUser.value = data.value ? data.value : null
+    const { data } = await useFetch("/api/v1/get-logged-user/").json()
+    setLoggedUser(data.value)
     // TODO: add error handling here, but weird bug with await and response
   }
 
@@ -34,8 +39,19 @@ export const useRootStore = defineStore("root", () => {
     const { data } = await useFetch("/api/v1/conditions/").json()
     conditions.value = data.value
   }
+  const fetchEffects = async () => {
+    const { data } = await useFetch("/api/v1/effects/").json()
+    effects.value = data.value
+    // met l'effet "Autre (à préciser)" en dernier dans la liste
+    const otherEffect = effects.value.find((effect) => effect.name === "Autre (à préciser)")
+    if (otherEffect) {
+      const otherEffectId = effects.value.indexOf(otherEffect)
+      effects.value.splice(otherEffectId, 1)
+    }
+    effects.value.push(otherEffect)
+  }
   const fetchPlantParts = async () => {
-    const { data } = await useFetch("/api/v1/plantParts/").json()
+    const { data } = await useFetch("/api/v1/plant-parts/").json()
     plantParts.value = data.value
   }
   const fetchUnits = async () => {
@@ -47,14 +63,17 @@ export const useRootStore = defineStore("root", () => {
     initialDataLoaded,
     fetchInitialData,
     resetInitialData,
+    setLoggedUser,
     fetchLoggedUser,
     fetchPopulations,
     fetchConditions,
+    fetchEffects,
     fetchPlantParts,
     fetchUnits,
     plantParts,
     populations,
     conditions,
+    effects,
     units,
   }
 })

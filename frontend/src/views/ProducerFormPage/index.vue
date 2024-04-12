@@ -35,13 +35,14 @@ import { useRoute, useRouter } from "vue-router"
 
 const store = useRootStore()
 store.fetchConditions()
+store.fetchEffects()
 store.fetchPopulations()
 store.fetchPlantParts()
 store.fetchUnits()
 
 const payload = ref({
   effects: [],
-  conditions: [],
+  conditionsNotRecommended: [],
   populations: [],
   elements: [],
   substances: [],

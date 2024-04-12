@@ -1,10 +1,11 @@
 <template>
+  <RoleBarBlock :name="loggedUser.firstName" :roles="loggedUser.roles" />
   <div class="fr-container my-8 flex flex-col gap-8">
     <ActionGrid
       v-if="isCompanySupervisor"
       :actions="supervisorActions"
       title="Gestion d'entreprise"
-      icon="ri-home-2-fill"
+      icon="ri-home-4-line"
     />
     <ActionGrid v-if="isDeclarant" :actions="declarantActions" title="Mes déclarations" icon="ri-capsule-fill" />
     <ActionGrid v-if="emptyRoles" :actions="onboardingActions" title="Démarrez chez Compl-Alim !" />
@@ -17,6 +18,7 @@ import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import ActionGrid from "./ActionGrid"
+import RoleBarBlock from "./RoleBarBlock"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -67,6 +69,7 @@ const userActions = [
   {
     title: "Mes informations personnelles",
     description: "Consultez et mettez à jour vos informations personnelles",
+    link: "/informations-personnelles",
   },
 ]
 </script>

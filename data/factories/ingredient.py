@@ -12,7 +12,7 @@ class IngredientFactory(factory.django.DjangoModelFactory):
     siccrf_name = factory.Faker("text", max_nb_chars=15)
     ca_name = factory.Faker("text", max_nb_chars=15)
     siccrf_name_en = factory.Faker("text", max_nb_chars=15)
-    siccrf_id = factory.Faker("random_int", min=1, max=2000)
+    siccrf_id = factory.Sequence(lambda n: n + 1)
     siccrf_description = factory.Faker("text", max_nb_chars=160)
 
     @factory.post_generation

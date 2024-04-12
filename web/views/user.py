@@ -1,14 +1,6 @@
-from django.views.generic import TemplateView, FormView
+from django.views.generic import FormView
 from django.http import HttpResponseRedirect
-from .forms import RegisterUserForm
-
-
-class VueAppDisplayView(TemplateView):
-    """
-    This template contains the VueJS app in /frontend
-    """
-
-    template_name = "vue-app.html"
+from ..forms import RegisterUserForm
 
 
 class RegisterUserView(FormView):

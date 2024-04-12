@@ -1,0 +1,136 @@
+PPLAN_IDENT,PPLAN_LIBELLE,PPLAN_LIBELLE_EN,PPLAN_ORDRE,PPLAN_OBSOLET
+1,Aiguille,Needle,NULL,0
+2,Amande du noyau,Kernel almond,NULL,0
+3,Arille,Aril,NULL,0
+4,Aubier,Sapwood,NULL,0
+5,Baie,Berry,NULL,0
+6,Barbe,Beard,NULL,0
+7,Baume,Balm,NULL,0
+8,Bois,Wood,NULL,0
+9,Bourgeon,Bud,NULL,0
+10,Bourgeon végétatif,Vegetative bud,NULL,0
+11,Bouton floral,Flower bud,NULL,0
+12,Branche,Branch,NULL,0
+13,Brindille,Twig,NULL,0
+14,Bulbe,Bulb,NULL,0
+15,Calice,Chalice,NULL,0
+16,Capitule,Flower head,NULL,0
+17,Carpophore,Carpophore,NULL,0
+18,Cerneaux,Kernels,NULL,0
+19,Cône,Cone,NULL,0
+20,Cône femelle,Female cone,NULL,0
+21,Corail,Coral,NULL,0
+22,Cosse,Pod,NULL,0
+23,Ecorce,Bark,NULL,0
+24,Ecorce (exsudat),Bark (exudate),NULL,0
+25,Epine,Thorns,NULL,0
+26,Exsudat,Exudate,NULL,0
+27,Faux fruit,Pseudo-fruit,NULL,0
+28,Fécule,Starch,NULL,0
+29,Feuille,Leaf,NULL,0
+30,Feuille (bourgeon),Leaf (bud),NULL,0
+31,Feuille (gel),Leaf (gel),NULL,0
+32,Fève,Bean,NULL,0
+33,Fibres,Fiber,NULL,0
+34,Fleur,Flower,NULL,0
+35,Fleur (bourgeon),Flower (bud),NULL,0
+36,Foliole,Leaflet,NULL,0
+37,Fruit,Fruit,NULL,0
+38,Fruit (écorce),Fruit (bark),NULL,0
+39,Fruit (huile),Fruit (oil),NULL,0
+40,Fruit (pulpe),Fruit pulp,NULL,0
+41,Fruit immature,Immature fruit,NULL,0
+42,Galle,Gall,NULL,0
+43,Germe,Germ,NULL,0
+44,Germe fermenté,Fermented germ,NULL,0
+45,Gomme,Gum,NULL,0
+46,Gomme résine,Gum-resin,NULL,0
+47,Graine,Seed,NULL,0
+48,Graine (endosperme),Seed (endosperm),NULL,0
+49,Graine (gomme),Seed (gum),NULL,0
+50,Graine (huile),Seed (oil),NULL,0
+51,Huile essentielle,Essential oil,NULL,1
+52,Huile essentielle (épicarpe),Essential oil (epicarp),NULL,1
+53,Huile essentielle (feuille),Essential oil (leaf),NULL,1
+54,Huile essentielle (fleur),Essential oil (flower),NULL,1
+55,Huile essentielle (fruit),Essential oil (fruit),NULL,1
+56,Inflorescence,Infloresence,NULL,0
+57,Jeune pousse,Young shoot,NULL,0
+58,Larmes,Tears,NULL,0
+59,Latex,Latex,NULL,0
+60,Légume,Vegetable,NULL,0
+61,Lichen,Lichen,NULL,0
+62,Marc,Marc,NULL,0
+63,Mucilage,Mucilage,NULL,0
+64,Mycélium,Spawn,NULL,0
+65,Noix,Nuts,NULL,0
+66,Oléorésine,Oleo-resin,NULL,0
+67,Organes souterrains,Underground parts,NULL,0
+68,Parties aériennes,Aerial parts,NULL,0
+69,Parties aériennes fleurie,Flowering parts,NULL,0
+70,Parties aériennes stérile,Sterile aerial parts,NULL,0
+71,Pédoncule,Peduncle,NULL,0
+72,Pépin,Seed,NULL,0
+73,Péricarpe,Pericarp,NULL,0
+74,Pétales,Petals,NULL,0
+75,Pistil,Pistil,NULL,0
+76,Plante entière,Whole plant,NULL,0
+77,Poil,Pile,NULL,0
+78,Pollen,Pollen,NULL,0
+79,Pousse,Shoot,NULL,0
+80,Pseudo-fruit,Pseudo-fruit,NULL,0
+81,Queue,Tail,NULL,0
+82,Racine,Root,NULL,0
+83,Racine (écorce),Root (bark),NULL,0
+84,Racine tubérisée,Tuberous root,NULL,0
+85,Radicelle,Lateral root,NULL,0
+86,Rameau,Branch,NULL,0
+87,Raquette,Pad,NULL,0
+88,Résine,Resin,NULL,0
+89,Rhizome,Rhizome,NULL,0
+90,Sclérote,Sclerotia,NULL,0
+91,Semence,Seed,NULL,0
+92,Sépales,Sepals,NULL,0
+93,Sève,Sap,NULL,0
+94,Sommités,Top,NULL,0
+95,Sommités fleuries,Flowering top,NULL,0
+96,Son,Bran,NULL,0
+97,Souche,Strain,NULL,0
+98,Spore,Spore,NULL,0
+99,Squame,Squama,NULL,0
+100,Stigmates,Stigmata,NULL,0
+101,Stolon,Stolon,NULL,0
+102,Suc,Juice,NULL,0
+103,Suc concret,Concrete juice,NULL,0
+104,Suc desséché,Dried juice,NULL,0
+105,Suc épaissi,Thickened juice,NULL,0
+106,Tégument,Integument,NULL,0
+107,Térébenthine,Turpentine,NULL,0
+108,Thalle,Thallus,NULL,0
+109,Tige,Stem,NULL,0
+110,Tige (écorce),Stem (bark),NULL,0
+111,Tige avec épines,Stem with thorns,NULL,0
+112,Tige feuillée,Stems with leaves,NULL,0
+113,Tige fleurie,Flowering stem,NULL,0
+114,Tubercule,Tuber,NULL,0
+115,Zeste,Zest,NULL,0
+116,Huile essentielle (parties aériennes),Essential oil (aerial parts),NULL,1
+118,Huile essentielle (racine),Essential oil (root),NULL,1
+120,Liber,Liber,NULL,0
+122,Essence (parties aériennes),Essence (aerial parts),NULL,0
+123,"Essence (bois, écorce)","Essence (wood, bark)",NULL,0
+124,Essence (rameaux),"Essence (shoots, twigs)",NULL,0
+125,Essence (feuille),Essence (leaf),NULL,0
+126,Essence (tige),Essence (stem),NULL,0
+127,Essence (sommités fleuries),Essence (flowering tops),NULL,0
+128,Essence (fleur),Essence (flower),NULL,0
+129,Essence (fruit),Essence (fruit),NULL,0
+130,"Essence (épicarpe, zeste)","Essence (epicarp, zest)",NULL,0
+131,Essence (graine) ,Essence (seed),NULL,0
+132,Essence (racine),Essence (root),NULL,0
+133,Essence (rhizome),Essence (rhizome),NULL,0
+134,Essence (bulbe),Essence (bulb),NULL,0
+135,Essence (bouton floral),Essence (flower bud),NULL,0
+136,Essence (gomme résine),Essence (gum resin),NULL,0
+137,Essence (cône),Essence (cone),NULL,0
+138,Bractée,Bract,NULL,0

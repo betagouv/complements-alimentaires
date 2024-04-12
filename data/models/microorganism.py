@@ -54,7 +54,10 @@ class Microorganism(CommonModel, WithComments):
     )
 
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
-    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete", "genus", "species"])
+    history = HistoricalRecords(
+        inherit=True,
+        excluded_fields=["name", "is_obsolete", "private_comments", "public_comments", "genus", "species"],
+    )
 
 
 class MicroorganismSubstanceRelation(TimeStampable, Historisable):

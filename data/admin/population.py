@@ -6,7 +6,7 @@ from data.models import Population
 class PopulationForm(forms.ModelForm):
     class Meta:
         widgets = {
-            "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
         }
 
 
@@ -15,13 +15,17 @@ class PopulationAdmin(admin.ModelAdmin):
     form = PopulationForm
     fields = [
         "name",
+        "ca_name",
         "is_obsolete",
+        "ca_is_obsolete",
         "min_age",
         "max_age",
         "creation_date",
         "modification_date",
     ]
     readonly_fields = [
+        "name",
+        "is_obsolete",
         "creation_date",
         "modification_date",
     ]

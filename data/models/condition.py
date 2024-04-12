@@ -8,7 +8,7 @@ class Condition(CommonModel):
     class Meta:
         verbose_name = "condition de santé / facteurs de risque"
 
-    siccrf_name_en = models.TextField(blank=True)
+    siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais selon la base SICCRF")
     history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete"])
 
     @property
