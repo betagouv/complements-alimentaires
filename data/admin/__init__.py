@@ -1,19 +1,19 @@
 from django.contrib import admin
 
-from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
-from data.models import Ingredient, PlantFamily, PlantPart
-
-from .blogpost import BlogPostAdmin
+from .user import UserAdmin
+from .roles import CompanySupervisorAdmin, DeclarantAdmin
 from .company import CompanyAdmin
+from .blogpost import BlogPostAdmin
+from .webinar import WebinarAdmin
+from .substance import SubstanceAdmin
+from .plant import PlantAdmin
+from .microorganism import MicroorganismAdmin
+from .population import Population
 from .condition import Condition
 from .effect import Effect
-from .microorganism import MicroorganismAdmin
-from .plant import PlantAdmin
-from .population import Population
-from .roles import CompanySupervisorAdmin, DeclarantAdmin
-from .substance import SubstanceAdmin
-from .user import UserAdmin
-from .webinar import WebinarAdmin
+
+from data.models import Ingredient, PlantPart, PlantFamily
+from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
 
 
 @admin.register(Ingredient)

@@ -3,8 +3,8 @@ from .autocomplete import AutocompleteView
 from .blog import BlogPostsView, BlogPostView
 from .company import CountryListView
 from .condition import ConditionListView
-from .declaration import DeclarationCreateApiView
 from .effect import EffectListView
+from .declaration import DeclarationCreateApiView
 from .ingredient import IngredientRetrieveView
 from .microorganism import MicroorganismRetrieveView
 from .newsletter import SubscribeNewsletter
@@ -17,10 +17,10 @@ from .unit import UnitListView
 from .user import (
     ChangePasswordView,
     GenerateUsernameView,
-    LoggedUserView,
     SendNewSignupVerificationEmailView,
-    UserCreateView,
     UserUpdateDestroyView,
+    UserCreateView,
+    LoggedUserView,
     VerifyEmailView,
 )
 from .webinar import WebinarView

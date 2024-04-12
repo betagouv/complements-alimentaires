@@ -111,7 +111,8 @@ extend-exclude = [
 ignore = ["E501"]
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
+# pas d'auto sorting sur ces fichiers pour éviter les imports circulaires
+"__init__.py" = ["I", "F401"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10

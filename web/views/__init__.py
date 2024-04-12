@@ -1,7 +1,6 @@
 from django.views.generic import TemplateView
-
-from .file_upload import FileUploadView
 from .user import RegisterUserView
+from .file_upload import FileUploadView
 
 
 class VueAppDisplayView(TemplateView):
