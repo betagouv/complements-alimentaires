@@ -1,6 +1,7 @@
 from django.views.generic import TemplateView
-from .user import RegisterUserView  # noqa: F401
-from .file_upload import FileUploadView  # noqa: F401
+
+from .file_upload import FileUploadView
+from .user import RegisterUserView
 
 
 class VueAppDisplayView(TemplateView):

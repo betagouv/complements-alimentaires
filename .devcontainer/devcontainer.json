@@ -8,8 +8,7 @@
       "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "ms-python.black-formatter",
-        "ms-python.pylint",
+        "charliermarsh.ruff",
         "ms-toolsai.jupyter",
         "ms-toolsai.jupyter-keymap",
         "esbenp.prettier-vscode",
