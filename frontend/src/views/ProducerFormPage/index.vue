@@ -4,7 +4,8 @@
       <DsfrStepper class="!mb-0" :currentStep="currentStep" :steps="steps" />
     </div>
   </div>
-  <div class="fr-container">
+
+  <div class="fr-container" v-if="!isFetching">
     <StepButtons
       class="mb-6 mt-3"
       @next="goForward"
@@ -31,7 +32,9 @@ import SummaryStep from "./SummaryStep"
 import AttachmentStep from "./AttachmentStep"
 import NewElementStep from "./NewElementStep"
 import StepButtons from "./StepButtons"
+import { useFetch } from "@vueuse/core"
 import { useRoute, useRouter } from "vue-router"
+import { handleError } from "@/utils/error-handling"
 
 const store = useRootStore()
 store.fetchConditions()
@@ -39,6 +42,11 @@ store.fetchEffects()
 store.fetchPopulations()
 store.fetchPlantParts()
 store.fetchUnits()
+
+const props = defineProps({
+  id: String,
+})
+const isNewDeclaration = computed(() => !props.id)
 
 const payload = ref({
   effects: [],
@@ -52,6 +60,14 @@ const payload = ref({
   computedSubstances: [],
   attachments: [],
 })
+const { response, data, isFetching, execute } = useFetch(`/api/v1/declarations/${props.id}`, { immediate: false })
+  .get()
+  .json()
+
+if (!isNewDeclaration.value) execute()
+
+watch(response, () => handleError(response))
+watch(data, () => (payload.value = data.value))
 
 const hasNewElements = computed(() => {
   return []

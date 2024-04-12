@@ -1,5 +1,5 @@
 <template>
-  <DsfrAlert class="mb-8">
+  <DsfrAlert class="mb-8" v-if="!payload.id">
     <p class="mb-2">Vous pouvez sauvegarder cette démarche pour la reprendre plus tard</p>
     <DsfrButton @click="saveDraft" label="Sauvegarder en tant que brouillon" />
   </DsfrAlert>
@@ -105,7 +105,10 @@ const conditionNames = computed(() => {
 const editLink = (step) => ({ name: "ProducerFormPage", query: { step } })
 
 const saveDraft = async () => {
-  const { response } = await useFetch("/api/v1/declarations/", { headers: headers() }).post(payload)
+  const isNew = !payload.value.id
+  const url = isNew ? "/api/v1/declarations/" : `/api/v1/declarations/${payload.value.id}`
+  const httpMethod = isNew ? "post" : "put"
+  const { response } = await useFetch(url, { headers: headers() })[httpMethod](payload)
   if (response.value.ok) {
     await router.replace({ name: "DashboardPage" })
     useToaster().addSuccessMessage("Votre démarche a été sauvegardée")

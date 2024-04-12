@@ -18,7 +18,7 @@ import VerifyEmailPage from "@/views/VerifyEmailPage"
 import DashboardPage from "@/views/DashboardPage"
 import UserAccountPage from "@/views/UserAccountPage"
 import VerificationSentPage from "@/views/VerificationSentPage"
-import DeclarationsPage from "@/views/DeclarationsPage"
+import DeclarationsHomePage from "@/views/DeclarationsHomePage"
 
 const routes = [
   {
@@ -161,10 +161,19 @@ const routes = [
   },
   {
     path: "/mes-declarations",
-    name: "DeclarationsPage",
-    component: DeclarationsPage,
+    name: "DeclarationsHomePage",
+    component: DeclarationsHomePage,
     meta: {
       title: "Mes déclarations",
+    },
+  },
+  {
+    path: "/mes-declarations/:id",
+    name: "DeclarationPage",
+    component: ProducerFormPage,
+    props: true,
+    meta: {
+      title: "Ma déclaration",
     },
   },
   {

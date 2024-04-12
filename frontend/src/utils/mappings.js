@@ -57,27 +57,22 @@ export const countries = [
 
 export const statusProps = {
   DRAFT: {
-    background: "blue-france-925",
     icon: "ri-pencil-fill",
     label: "Brouillon",
   },
   AWAITING_INSTRUCTION: {
-    background: "gray-200",
     icon: "ri-time-fill",
     label: "En attente",
   },
   AWAITING_PRODUCER: {
-    background: "amber-100",
     icon: "ri-error-warning-fill",
     label: "Action requise",
   },
   REJECTED: {
-    background: "red-marianne-925",
     icon: "ri-close-fill",
     label: "Rejetée",
   },
   APPROVED: {
-    background: "success-950",
     icon: "ri-check-fill",
     label: "Validée",
   },
