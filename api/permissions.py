@@ -12,3 +12,10 @@ class IsDeclarant(permissions.BasePermission):
 
     def has_permission(self, request, _):
         return request.user.is_authenticated and bool(request.user.role("declarant"))
+
+
+class IsDeclarationAuthor(permissions.BasePermission):
+    message = "Vous devez être l'auteur de cette déclaration pour effectuer cette action"
+
+    def has_object_permission(self, request, view, obj):
+        return request.user.is_authenticated and obj.author == request.user

@@ -15,4 +15,4 @@ from .condition import ConditionSerializer  # noqa: F401
 from .effect import EffectSerializer  # noqa: F401
 from .unit import SubstanceUnitSerializer  # noqa: F401
 from .autocomplete_item import AutocompleteItemSerializer  # noqa: F401
-from .declaration import DeclarationSerializer  # noqa: F401
+from .declaration import DeclarationSerializer, DeclarationShortSerializer  # noqa: F401

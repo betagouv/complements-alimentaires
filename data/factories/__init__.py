@@ -11,3 +11,4 @@ from .effect import EffectFactory  # noqa
 from .company import CompanyFactory  # noqa
 from .roles import DeclarantFactory, CompanySupervisorFactory  # noqa
 from .unit import SubstanceUnitFactory  # noqa
+from .declaration import DeclarationFactory  # noqa

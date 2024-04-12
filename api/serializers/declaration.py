@@ -344,3 +344,20 @@ class DeclarationSerializer(serializers.ModelSerializer):
                     serializer.create(declared_elements)
 
         return declaration
+
+
+class DeclarationShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Declaration
+        fields = (
+            "id",
+            "status",
+            "author",
+            "company",
+            "name",
+            "brand",
+            "gamme",
+            "flavor",
+            "description",
+        )
+        read_only_fields = fields

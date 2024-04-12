@@ -17,6 +17,7 @@ from data.factories import (
     CompanyFactory,
     SubstanceUnitFactory,
     DeclarantFactory,
+    DeclarationFactory,
 )
 from .utils import authenticate
 
@@ -29,7 +30,7 @@ class TestDeclarationApi(APITestCase):
         La création des déclaration est possible seulement pour les users avec
         rôle « declarant »
         """
-        response = self.client.post(reverse("api:create_declaration"), {}, format="json")
+        response = self.client.post(reverse("api:list_create_declaration"), {}, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
@@ -73,7 +74,7 @@ class TestDeclarationApi(APITestCase):
             "warning": "Ne pas prendre plus de 20",
         }
 
-        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -160,7 +161,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
@@ -203,7 +204,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         body = response.json()
@@ -247,7 +248,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
@@ -292,7 +293,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         body = response.json()
@@ -330,7 +331,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
@@ -368,7 +369,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         body = response.json()
@@ -397,7 +398,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
@@ -426,7 +427,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         body = response.json()
@@ -457,7 +458,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
@@ -501,7 +502,7 @@ class TestDeclarationApi(APITestCase):
             ],
         }
 
-        response = self.client.post(reverse("api:create_declaration"), payload, format="json")
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
@@ -518,3 +519,39 @@ class TestDeclarationApi(APITestCase):
             "utf-8"
         )
         self.assertEqual(saved_certificate_authority_image, green_image_base_64)
+
+    @authenticate
+    def test_retrieve_declaration_list(self):
+        """
+        Un user peut récupérer ses propres déclarations
+        """
+        DeclarantFactory(user=authenticate.user)
+        user_declaration_1 = DeclarationFactory.create(author=authenticate.user)
+        user_declaration_2 = DeclarationFactory.create(author=authenticate.user)
+
+        other_declaration = DeclarationFactory.create()
+
+        response = self.client.get(reverse("api:list_create_declaration"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        declarations = response.json()
+
+        self.assertEqual(len(declarations), 2)
+        ids = map(lambda x: x["id"], declarations)
+        self.assertIn(user_declaration_1.id, ids)
+        self.assertIn(user_declaration_2.id, ids)
+        self.assertNotIn(other_declaration.id, ids)
+
+    @authenticate
+    def test_retrieve_single_declaration(self):
+        """
+        Un user peut récupérer les informations complètes d'une de leurs déclarations
+        """
+        DeclarantFactory(user=authenticate.user)
+        user_declaration = DeclarationFactory.create(author=authenticate.user)
+        other_declaration = DeclarationFactory.create()
+
+        response = self.client.get(reverse("api:retrieve_declaration", kwargs={"pk": user_declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(reverse("api:retrieve_declaration", kwargs={"pk": other_declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

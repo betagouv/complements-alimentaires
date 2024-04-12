@@ -21,7 +21,7 @@ class Declaration(Historisable, TimeStampable):
     class Meta:
         verbose_name = "déclaration"
 
-    class DiagnosticStatus(models.TextChoices):
+    class DeclarationStatus(models.TextChoices):
         DRAFT = "DRAFT", "Brouillon"
         AWAITING_INSTRUCTION = "AWAITING_INSTRUCTION", "En attente de retour instruction"
         AWAITING_PRODUCER = "AWAITING_PRODUCER", "En attente de retour du déclarant"
@@ -35,8 +35,8 @@ class Declaration(Historisable, TimeStampable):
 
     status = models.CharField(
         max_length=50,
-        choices=DiagnosticStatus.choices,
-        default=DiagnosticStatus.DRAFT,
+        choices=DeclarationStatus.choices,
+        default=DeclarationStatus.DRAFT,
         verbose_name="Status",
     )
     author = models.ForeignKey(

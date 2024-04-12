@@ -39,7 +39,8 @@ urlpatterns = {
         views.SendNewSignupVerificationEmailView.as_view(),
         name="send_new_signup_verification_email",
     ),
-    path("declarations/", views.DeclarationCreateApiView.as_view(), name="create_declaration"),
+    path("declarations/", views.DeclarationListCreateApiView.as_view(), name="list_create_declaration"),
+    path("declarations/<int:pk>", views.DeclarationRetrieveView.as_view(), name="retrieve_declaration"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
