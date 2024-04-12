@@ -22,7 +22,7 @@ class Declaration(Historisable, TimeStampable):
         verbose_name = "déclaration"
 
     class DiagnosticStatus(models.TextChoices):
-        DRAFT = "DRAFT", "Déclaration"
+        DRAFT = "DRAFT", "Brouillon"
         AWAITING_INSTRUCTION = "AWAITING_INSTRUCTION", "En attente de retour instruction"
         AWAITING_PRODUCER = "AWAITING_PRODUCER", "En attente de retour du déclarant"
         REJECTED = "REJECTED", "Rejeté"
