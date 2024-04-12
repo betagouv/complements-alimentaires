@@ -6,8 +6,8 @@ from .abstract_models import CommonModel
 
 class GalenicFormulation(CommonModel):
     class Meta:
-        verbose_name = "Forme galénique"
-        verbose_name_plural = "Formes galéniques"
+        verbose_name = "forme galénique"
+        verbose_name_plural = "formes galéniques"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais selon la base SICCRF")
     is_liquid = models.BooleanField(default=False, verbose_name="la forme galénique est-elle une forme liquide ?")
