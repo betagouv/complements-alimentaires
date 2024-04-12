@@ -18,6 +18,7 @@ import VerifyEmailPage from "@/views/VerifyEmailPage"
 import DashboardPage from "@/views/DashboardPage"
 import UserAccountPage from "@/views/UserAccountPage"
 import VerificationSentPage from "@/views/VerificationSentPage"
+import DeclarationsPage from "@/views/DeclarationsPage"
 
 const routes = [
   {
@@ -156,6 +157,14 @@ const routes = [
     component: VerifyEmailPage,
     meta: {
       title: "Vérifier son adresse e-mail",
+    },
+  },
+  {
+    path: "/mes-declarations",
+    name: "DeclarationsPage",
+    component: DeclarationsPage,
+    meta: {
+      title: "Mes déclarations",
     },
   },
   {

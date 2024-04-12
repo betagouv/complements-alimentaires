@@ -51,6 +51,7 @@ const declarantActions = [
   {
     title: "Toutes mes déclarations",
     description: "Consultez, modifiez ou dupliquez une déclaration que vous avez effectuée",
+    link: { name: "DeclarationsPage" },
   },
 ]
 

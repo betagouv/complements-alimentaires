@@ -359,5 +359,7 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
             "gamme",
             "flavor",
             "description",
+            "creation_date",
+            "modification_date",
         )
         read_only_fields = fields
