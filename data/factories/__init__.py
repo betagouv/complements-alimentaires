@@ -1,13 +1,13 @@
-from .user import UserFactory  # noqa
-from .blogpost import BlogPostFactory  # noqa
-from .substance import SubstanceFactory, SubstanceSynonymFactory  # noqa
-from .ingredient import IngredientFactory, IngredientSynonymFactory  # noqa
-from .microorganism import MicroorganismFactory, MicroorganismSynonymFactory  # noqa
-from .plant import PlantFactory, PlantPartFactory, PlantSynonymFactory, PlantFamilyFactory  # noqa
-from .webinar import WebinarFactory  # noqa
-from .population import PopulationFactory  # noqa
-from .condition import ConditionFactory  # noqa
-from .effect import EffectFactory  # noqa
-from .company import CompanyFactory  # noqa
-from .roles import DeclarantFactory, CompanySupervisorFactory  # noqa
-from .unit import SubstanceUnitFactory  # noqa
+from .blogpost import BlogPostFactory
+from .company import CompanyFactory
+from .condition import ConditionFactory
+from .effect import EffectFactory
+from .ingredient import IngredientFactory, IngredientSynonymFactory
+from .microorganism import MicroorganismFactory, MicroorganismSynonymFactory
+from .plant import PlantFactory, PlantFamilyFactory, PlantPartFactory, PlantSynonymFactory
+from .population import PopulationFactory
+from .roles import CompanySupervisorFactory, DeclarantFactory
+from .substance import SubstanceFactory, SubstanceSynonymFactory
+from .unit import SubstanceUnitFactory
+from .user import UserFactory
+from .webinar import WebinarFactory

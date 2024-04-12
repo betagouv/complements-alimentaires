@@ -58,6 +58,11 @@
       "name": "django",
       "depth": 10,
       "includeAllSymbols": true
+    },
+    {
+      "name": "rest_framework",
+      "depth": 10,
+      "includeAllSymbols": true
     }
   ],
   "python.analysis.extraPaths": [], // use if auto-import seems off with some folders
