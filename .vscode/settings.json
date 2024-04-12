@@ -46,8 +46,8 @@
   // python
   "python.languageServer": "Pylance", // used for import suggestions only
   "python.analysis.ignore": [
-    "*"
-  ], // disable linting as it would be redundant with Ruff 
+    "*" // disable linting as it would be redundant with Ruff 
+  ],
   "python.envFile": "${workspaceFolder}/.env",
   "python.analysis.autoImportCompletions": true,
   "python.analysis.importFormat": "relative",
