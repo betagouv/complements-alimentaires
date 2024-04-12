@@ -58,11 +58,7 @@
     <DsfrFieldset legend="Forme galénique" legendClass="fr-label !font-normal !pb-0">
       <div class="flex">
         <div class="max-w-32">
-          <DsfrSelect
-            :options="formulationStates"
-            v-model="payload.galenicFormulationState"
-            defaultUnselectedText="État"
-          />
+          <DsfrSelect :options="formulationStates" v-model="galenicFormulationState" defaultUnselectedText="État" />
         </div>
         <div class="max-w-md ml-4">
           <DsfrSelect
@@ -235,7 +231,7 @@
   </div>
 </template>
 <script setup>
-import { computed, watch } from "vue"
+import { computed, watch, ref } from "vue"
 import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
@@ -243,15 +239,14 @@ import { countries } from "@/utils/mappings"
 import { otherFieldsAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
 
 const payload = defineModel()
-
 const store = useRootStore()
 const { populations, conditions, effects, galenicFormulation, loggedUser } = storeToRefs(store)
+const galenicFormulationState = ref(null)
 const otherEffectsId = computed(() => effects.value?.find((effect) => effect.name === "Autre (à préciser)").id)
-
 const galenicFormulationList = computed(() => {
-  if (!payload.value.galenicFormulationState) return galenicFormulation.value
+  if (!galenicFormulationState.value) return galenicFormulation.value
   else {
-    const isLiquid = payload.value.galenicFormulationState === "liquid" ? true : false
+    const isLiquid = galenicFormulationState.value === "liquid" ? true : false
     return otherFieldsAtTheEnd(
       galenicFormulation.value
         ?.filter((formulation) => formulation.isLiquid === isLiquid) // le filter perd l'ordre alphabétique d'origine
