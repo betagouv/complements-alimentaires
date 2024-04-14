@@ -28,7 +28,7 @@ factory-boy==3.3.0 ; python_version >= "3.11.dev0" and python_version < "3.12.de
 faker==23.2.1 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 filelock==3.13.1 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 identify==2.5.35 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
-idna==3.6 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
+idna==3.7 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 ipdb==0.13.13 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 ipython==8.21.0 ; python_version >= "3.11" and python_version < "3.12.dev0"
 jedi==0.19.1 ; python_version >= "3.11" and python_version < "3.12.dev0"
