@@ -24,7 +24,7 @@ urlpatterns = {
     path("effects/", views.EffectListView.as_view(), name="effect_list"),
     path("galenic-formulation/", views.GalenicFormulationListView.as_view(), name="galenic_formulation_list"),
     path("units/", views.UnitListView.as_view(), name="unit_list"),
-    path("countries/", views.CountryListView.as_view(), name="country_list"),
+    path("declarations/", views.DeclarationCreateApiView.as_view(), name="create_declaration"),
     # Authentication
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
@@ -40,7 +40,25 @@ urlpatterns = {
         views.SendNewSignupVerificationEmailView.as_view(),
         name="send_new_signup_verification_email",
     ),
-    path("declarations/", views.DeclarationCreateApiView.as_view(), name="create_declaration"),
+    # Company
+    path("countries/", views.CountryListView.as_view(), name="country_list"),
+    path("companies/", views.CompanyCreateView.as_view(), name="company_create"),
+    path("companies/<int:pk>", views.CompanyRetrieveView.as_view(), name="company_retrieve"),
+    path(
+        "companies/<str:identifier>/check-identifier/",
+        views.CheckCompanyIdentifierView.as_view(),
+        name="check_company_identifier",
+    ),
+    path(
+        "companies/<str:identifier>/claim-supervision/",
+        views.ClaimCompanySupervisionView.as_view(),
+        name="claim_company_supervision",
+    ),
+    path(
+        "companies/<str:identifier>/claim-co-supervision/",
+        views.ClaimCompanyCoSupervisionView.as_view(),
+        name="claim_company_co_supervision",
+    ),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
