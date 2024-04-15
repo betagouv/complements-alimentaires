@@ -39,12 +39,12 @@ class TestDeclarationApi(APITestCase):
         """
         DeclarantFactory(user=authenticate.user)
 
-        conditions = [ConditionFactory.create() for _ in range(3)]
-        effect1 = EffectFactory.create(ca_name="Artères et cholestérol")
-        effect2 = EffectFactory.create(ca_name="Autre (à préciser)")
-        populations = [PopulationFactory.create() for _ in range(3)]
-        company = CompanyFactory.create()
-        unit = SubstanceUnitFactory.create()
+        conditions = [ConditionFactory() for _ in range(3)]
+        effect1 = EffectFactory(ca_name="Artères et cholestérol")
+        effect2 = EffectFactory(ca_name="Autre (à préciser)")
+        populations = [PopulationFactory() for _ in range(3)]
+        company = CompanyFactory()
+        unit = SubstanceUnitFactory()
 
         payload = {
             "company": company.id,
@@ -127,13 +127,13 @@ class TestDeclarationApi(APITestCase):
         """
         DeclarantFactory(user=authenticate.user)
 
-        plant = PlantFactory.create()
-        plant_part = PlantPartFactory.create()
+        plant = PlantFactory()
+        plant_part = PlantPartFactory()
         plant.plant_parts.add(plant_part)
-        unit = SubstanceUnitFactory.create()
+        unit = SubstanceUnitFactory()
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredPlants": [
                 {
                     "element": {
@@ -193,7 +193,7 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredPlants": [
                 {
                     "element": {
@@ -216,10 +216,10 @@ class TestDeclarationApi(APITestCase):
         focus sur les micro-organismes
         """
         DeclarantFactory(user=authenticate.user)
-        microorganism = MicroorganismFactory.create()
+        microorganism = MicroorganismFactory()
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredMicroorganisms": [
                 {
                     "element": {
@@ -282,7 +282,7 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredMicroorganisms": [
                 {
                     "element": {
@@ -305,10 +305,10 @@ class TestDeclarationApi(APITestCase):
         focus sur les ingrédients
         """
         DeclarantFactory(user=authenticate.user)
-        ingredient = IngredientFactory.create()
+        ingredient = IngredientFactory()
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredIngredients": [
                 {
                     "element": {
@@ -358,7 +358,7 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredIngredients": [
                 {
                     "element": {
@@ -382,10 +382,10 @@ class TestDeclarationApi(APITestCase):
         """
         DeclarantFactory(user=authenticate.user)
 
-        substance = SubstanceFactory.create()
+        substance = SubstanceFactory()
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredSubstances": [
                 {
                     "element": {
@@ -416,7 +416,7 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredSubstances": [
                 {
                     "element": {
@@ -440,11 +440,11 @@ class TestDeclarationApi(APITestCase):
         """
         DeclarantFactory(user=authenticate.user)
 
-        substance = SubstanceFactory.create()
-        unit = SubstanceUnitFactory.create()
+        substance = SubstanceFactory()
+        unit = SubstanceUnitFactory()
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "computedSubstances": [
                 {
                     "substance": {
@@ -488,7 +488,7 @@ class TestDeclarationApi(APITestCase):
             green_image_base_64 = base64.b64encode(image.read()).decode("utf-8")
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "attachments": [
                 {
                     "file": f"data:image/jpeg;base64,{blue_image_base_64}",
