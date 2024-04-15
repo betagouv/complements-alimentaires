@@ -31,7 +31,7 @@
     Vous n'avez pas encore saisi d'ingrédients pour votre complément alimentaire
   </div>
 
-  <div :class="{ hidden: !hasActiveSubstances }">
+  <div v-show="hasActiveSubstances">
     <h3 class="fr-h6 !mb-4 !mt-6">Substances</h3>
     <p>
       Les substances contenues dans les ingrédients actifs renseignés sont affichées ci-dessous. Veuillez compléter leur
