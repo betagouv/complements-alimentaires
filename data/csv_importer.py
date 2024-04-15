@@ -27,10 +27,10 @@ from .models import (
     SubstanceSynonym,
 )
 
+from .models import Effect, GalenicFormulation, Population, SubstanceUnit
+
 # from .models.condition import Condition
-from .models.effect import Effect
-from .models.population import Population
-from .models.unit import SubstanceUnit
+
 from .utils.importer_utils import clean_value, update_or_create_object, get_update_or_create_related_object
 
 logger = logging.getLogger(__name__)
@@ -56,6 +56,7 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": Part,
     "REF_ICA_PARTIE_UTILE.csv": Part,
     "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
+    "REF_ICA_FORME_GALENIQUE.csv": GalenicFormulation,
 }
 
 # Le fichier REF_ICA_PARTIE_PL_A_SURVEILLER n'est pas traité comme une relation car il correspond à un model à part entière
@@ -78,6 +79,7 @@ class CSVImporter:
         "FAMPL": PlantFamily,
         "UNT": SubstanceUnit,
         "OBJEFF": Effect,
+        "FRMGAL": GalenicFormulation,
         # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
         # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
         # "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
@@ -129,6 +131,7 @@ class CSVImporter:
         "modification_date",
         "missing_import_data",
     ]
+    NEW_FIELDS = ["is_liquid"]
 
     def __init__(self, file, model, is_relation=False, mapping=None):
         """Initialise un CSVImporter avec le fichier source, le modèle de destination, etc
@@ -181,6 +184,7 @@ class CSVImporter:
             for field in model_fields
             if field.concrete
             and field.name not in self.AUTOMATICALLY_FILLED
+            and field.name not in self.NEW_FIELDS
             and not field.__class__ == GeneratedField
             and not field.name.startswith("ca_")
         ]

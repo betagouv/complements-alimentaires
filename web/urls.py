@@ -1,10 +1,12 @@
 from django.urls import path
+from django.views.generic.base import TemplateView
 from django.contrib.auth import views as auth_views
 
 from web.views import VueAppDisplayView, RegisterUserView, FileUploadView
 
 urlpatterns = [
     path("", VueAppDisplayView.as_view(), name="app"),
+    path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain"), name="robots"),
     # https://docs.djangoproject.com/en/5.0/topics/auth/default/#django.contrib.auth.views.LoginView
     path(
         "s-identifier",

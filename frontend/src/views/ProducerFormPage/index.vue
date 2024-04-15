@@ -38,6 +38,7 @@ store.fetchConditions()
 store.fetchEffects()
 store.fetchPopulations()
 store.fetchPlantParts()
+store.fetchGalenicFormulation()
 store.fetchUnits()
 
 const payload = ref({

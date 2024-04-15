@@ -54,16 +54,40 @@
     <v-icon class="mr-1" name="ri-capsule-fill" />
     Format
   </h2>
-  <DsfrInputGroup class="mt-6 max-w-md">
-    <DsfrSelect
-      label="Forme galénique"
-      v-model="payload.galenicFormulation"
-      :options="galenicFormulation"
-      :required="true"
-    />
-  </DsfrInputGroup>
   <div class="grid grid-cols-2 gap-4">
-    <div class="col-span-2 md:col-span-1 max-w-md">
+    <DsfrFieldset legend="Forme galénique" legendClass="fr-label !font-normal !pb-0">
+      <div class="flex">
+        <div class="max-w-32">
+          <DsfrSelect :options="formulationStates" v-model="galenicFormulationState" defaultUnselectedText="État" />
+        </div>
+        <div class="max-w-md ml-4">
+          <DsfrSelect
+            v-model="payload.galenicFormulation"
+            :options="
+              galenicFormulationList?.map((formulation) => ({
+                text: formulation.name,
+                value: formulation.id,
+              }))
+            "
+          />
+        </div>
+      </div>
+    </DsfrFieldset>
+    <div class="max-w-2xl">
+      <DsfrInput
+        v-if="
+          payload.galenicFormulation &&
+          getAllIndexesOfRegex(galenicFormulation, /Autre.*(à préciser)/).includes(parseInt(payload.galenicFormulation))
+        "
+        v-model="payload.otherGalenicFormulation"
+        label-visible
+        label="Merci de préciser la forme galénique"
+      />
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="col-span-2 md:col-span-1 max-w-md mt-6">
       <DsfrFieldset legend="Poids ou volume d'une unité de consommation" legendClass="fr-label !font-normal !pb-0">
         <div class="flex">
           <div class="max-w-64">
@@ -71,7 +95,7 @@
           </div>
           <div class="max-w-32 ml-4">
             <DsfrSelect
-              :options="store.units?.map((unit) => unit.name)"
+              :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
               v-model="payload.unitMeasurement"
               defaultUnselectedText="Unité"
             />
@@ -201,31 +225,41 @@
   </div>
 </template>
 <script setup>
-import { computed, watch } from "vue"
+import { computed, watch, ref } from "vue"
 import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { countries } from "@/utils/mappings"
+import { otherFieldsAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
 
 const payload = defineModel()
-
 const store = useRootStore()
-const { populations, conditions, effects, loggedUser } = storeToRefs(store)
+const { populations, conditions, effects, galenicFormulation, loggedUser } = storeToRefs(store)
+const galenicFormulationState = ref(null)
 const otherEffectsId = computed(() => effects.value?.find((effect) => effect.name === "Autre (à préciser)")?.id)
-
+const galenicFormulationList = computed(() => {
+  if (!galenicFormulationState.value) return galenicFormulation.value
+  else {
+    const isLiquid = galenicFormulationState.value === "liquid"
+    return otherFieldsAtTheEnd(
+      galenicFormulation.value
+        ?.filter((formulation) => formulation.isLiquid === isLiquid) // le filter perd l'ordre alphabétique d'origine
+        .sort((a, b) => a.name.localeCompare(b.name))
+    )
+  }
+})
 const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
 const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))
-const galenicFormulation = [
+const formulationStates = [
   {
-    text: "Ampoule",
-    value: "ampoule",
+    text: "Liquide",
+    value: "liquid",
   },
   {
-    text: "Comprimé",
-    value: "comprime",
+    text: "Solide",
+    value: "solid",
   },
 ]
-
 watch(selectedCompany, () => {
   const addressFields = ["address", "additionalDetails", "postalCode", "city", "cedex", "country"]
   const addressEmpty = addressFields.every((field) => !payload.value[field])
