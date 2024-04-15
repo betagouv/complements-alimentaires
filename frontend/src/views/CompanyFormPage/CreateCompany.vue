@@ -2,9 +2,9 @@
   <div>
     <DsfrAlert size="sm">
       L'entreprise dont le n°
-      {{ storedIdentifierType.toUpperCase() + " " }}
+      {{ modelValue.identifierType.toUpperCase() + " " }}
       est
-      <strong>{{ storedIdentifier }}</strong>
+      <strong>{{ modelValue.identifier }}</strong>
       n'est pas encore enregistrée dans notre base de données. Pour ce faire, veuillez vérifier ou compléter les
       informations ci-dessous. À l'issue, vous en deviendrez automatiquement son gestionnaire.
       <FormWrapper class="mx-auto">
@@ -50,18 +50,15 @@ import { useVuelidate } from "@vuelidate/core"
 import { headers } from "@/utils/data-fetching"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
-import { useCreateCompanyStore } from "@/stores/createCompany"
 import { useRootStore } from "@/stores/root"
 
 const rootStore = useRootStore()
 
 // Props & emits
+const props = defineProps({ modelValue: Object })
 const emit = defineEmits(["changeStep"])
 
 // Form state & rules
-
-const { storedCountry, storedIdentifier, storedIdentifierType, setCompanyId, setCompanySocialName } =
-  useCreateCompanyStore()
 
 const state = ref({
   socialName: "",
@@ -71,8 +68,9 @@ const state = ref({
   postalCode: "",
   city: "",
   cedex: "",
-  country: storedCountry,
-  [storedIdentifierType]: storedIdentifier, // on passe soit un numéro de SIRET, soit de VAT dans le payload
+  country: props.modelValue.country,
+  // on passe soit un numéro de SIRET, soit de VAT dans le payload
+  [props.modelValue.identifierType]: props.modelValue.identifier,
 })
 
 const rules = {
@@ -109,8 +107,8 @@ const submitCompany = async () => {
   await execute()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
-    setCompanyId(data.value.id)
-    setCompanySocialName(data.value.socialName)
+    props.modelValue.id = data.value.id
+    props.modelValue.socialName = data.value.socialName
     rootStore.fetchInitialData()
     emit("changeStep", {
       name: "L'entreprise a bien été créée",

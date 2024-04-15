@@ -2,9 +2,9 @@
   <div>
     <DsfrAlert size="sm">
       L'entreprise
-      <strong>{{ storedSocialName }}</strong>
-      avec le n° {{ storedIdentifierType.toUpperCase() + " " }}
-      <strong>{{ storedIdentifier }}</strong>
+      <strong>{{ modelValue.socialName }}</strong>
+      avec le n° {{ modelValue.identifierType.toUpperCase() + " " }}
+      <strong>{{ modelValue.identifier }}</strong>
       est présente dans notre base de données, mais ne dispose actuellement d'aucun gestionnaire. Si vous souhaitez
       revendiquer la gestion de cette entreprise, veuillez nous envoyer une demande :
       <DsfrInputGroup>
@@ -24,15 +24,13 @@
 
 <script setup>
 import { ref } from "vue"
-import { useCreateCompanyStore } from "@/stores/createCompany"
 import { useFetch } from "@vueuse/core"
 import { useVuelidate } from "@vuelidate/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 
-const { storedIdentifier, storedIdentifierType, storedSocialName } = useCreateCompanyStore()
-
 // Props & emits
+const props = defineProps({ modelValue: Object })
 const emit = defineEmits(["changeStep"])
 
 // Form state & rules
@@ -44,7 +42,7 @@ const v$ = useVuelidate({}, { message: message }, { $externalResults })
 // Request definition
 
 const { response, execute, isFetching } = useFetch(
-  `/api/v1/companies/${storedIdentifier}/claim-supervision?identifierType=${storedIdentifierType}`,
+  `/api/v1/companies/${props.modelValue.identifier}/claim-supervision?identifierType=${props.modelValue.identifierType}`,
   {
     headers: headers(),
   },

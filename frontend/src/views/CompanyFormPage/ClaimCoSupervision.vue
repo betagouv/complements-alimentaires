@@ -2,9 +2,9 @@
   <div>
     <DsfrAlert size="sm">
       L'entreprise
-      <strong>{{ storedSocialName }}</strong>
-      avec le n° {{ storedIdentifierType.toUpperCase() + " " }}
-      <strong>{{ storedIdentifier }}</strong>
+      <strong>{{ modelValue.socialName }}</strong>
+      avec le n° {{ modelValue.identifierType.toUpperCase() + " " }}
+      <strong>{{ modelValue.identifier }}</strong>
       est présente dans notre base de données, et dispose déjà d'un gestionnaire. Vous pouvez cependant demander à
       devenir vous-même gestionnaire en envoyant une demande à l'ensemble des gestionnaires actuels.
       <DsfrInputGroup>
@@ -24,15 +24,13 @@
 
 <script setup>
 import { ref, computed } from "vue"
-import { useCreateCompanyStore } from "@/stores/createCompany"
 import { useFetch } from "@vueuse/core"
 import { useVuelidate } from "@vuelidate/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 
-const { storedIdentifier, storedIdentifierType, storedSocialName } = useCreateCompanyStore()
-
 // Props & emits
+const props = defineProps({ modelValue: Object })
 const emit = defineEmits(["changeStep"])
 
 // Form state & rules
@@ -43,7 +41,8 @@ const v$ = useVuelidate({}, { message: message }, { $externalResults })
 
 // Request definition
 const url = computed(
-  () => `/api/v1/companies/${storedIdentifier}/claim-co-supervision?identifierType=${storedIdentifierType}`
+  () =>
+    `/api/v1/companies/${props.modelValue.identifier}/claim-co-supervision?identifierType=${props.modelValue.identifierType}`
 )
 const { response, execute, isFetching } = useFetch(
   url,

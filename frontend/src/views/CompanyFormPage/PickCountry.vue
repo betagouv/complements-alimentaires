@@ -16,19 +16,17 @@
 import { ref, onActivated } from "vue"
 import FormWrapper from "@/components/FormWrapper"
 import CountryField from "@/components/fields/CountryField"
-import { useCreateCompanyStore } from "@/stores/createCompany"
 
 // Props & emits
+const props = defineProps({ modelValue: Object })
 const emit = defineEmits(["changeStep"])
 
 const country = ref(undefined)
 
-const { setCompanyCountry, setCompanyIdentifierType } = useCreateCompanyStore()
-
 const onCountrySelected = (selectedOption) => {
   const identifierType = selectedOption == "FR" ? "siret" : "vat"
-  setCompanyCountry(selectedOption)
-  setCompanyIdentifierType(identifierType)
+  props.modelValue.country = selectedOption
+  props.modelValue.identifierType = identifierType
   emit("changeStep", {
     name: `Identification par n° ${identifierType.toUpperCase()}`,
     component: "Identification",

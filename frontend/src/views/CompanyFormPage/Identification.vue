@@ -3,20 +3,20 @@
     <FormWrapper class="max-w-xl mx-auto">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'identifier')">
         <DsfrInput
-          :label="`Numéro de ${storedIdentifierType.toUpperCase()}`"
+          :label="`Numéro de ${modelValue.identifierType.toUpperCase()}`"
           v-model="identifier"
           required
           labelVisible
           @input="removeSpaces"
         />
-        <div v-if="storedIdentifierType == 'siret'" class="mt-2">
+        <div v-if="modelValue.identifierType == 'siret'" class="mt-2">
           <a class="fr-link" target="_blank" rel="noopener" href="https://annuaire-entreprises.data.gouv.fr/">
             Annuaire des entreprises
           </a>
         </div>
       </DsfrInputGroup>
       <DsfrButton icon="ri-arrow-right-line" iconRight @click="submitIdentifier" :disabled="isFetching">
-        Vérifier le n° de {{ storedIdentifierType.toUpperCase() }}
+        Vérifier le n° de {{ modelValue.identifierType.toUpperCase() }}
       </DsfrButton>
     </FormWrapper>
   </div>
@@ -30,10 +30,10 @@ import { useVuelidate } from "@vuelidate/core"
 import { headers } from "@/utils/data-fetching"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
-import { useCreateCompanyStore } from "@/stores/createCompany"
 
+// Props & emits
+const props = defineProps({ modelValue: Object })
 const emit = defineEmits(["changeStep"])
-const { storedIdentifierType, setCompanyIdentifier, setCompanySocialName, setCompanyId } = useCreateCompanyStore()
 
 // Form state & rules
 const identifier = ref("")
@@ -45,7 +45,7 @@ const v$ = useVuelidate(rules, { identifier: identifier }, { $externalResults })
 
 // Request definition
 const url = computed(
-  () => `/api/v1/companies/${identifier.value}/check-identifier?identifierType=${storedIdentifierType}`
+  () => `/api/v1/companies/${identifier.value}/check-identifier?identifierType=${props.modelValue.identifierType}`
 )
 const { data, response, execute, isFetching } = useFetch(
   url,
@@ -64,10 +64,10 @@ const submitIdentifier = async () => {
   await execute()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
-    setCompanyIdentifier(identifier.value)
+    props.modelValue.identifier = identifier.value
     if (data.value.company) {
-      setCompanySocialName(data.value.company.socialName)
-      setCompanyId(data.value.company.id)
+      props.modelValue.socialName = data.value.company.socialName
+      props.modelValue.id = data.value.company.id
     }
 
     switch (data.value.companyStatus) {

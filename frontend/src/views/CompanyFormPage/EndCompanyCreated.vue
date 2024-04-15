@@ -1,9 +1,9 @@
 <template>
   <div>
     <DsfrAlert type="success">
-      <div>L'entreprise « {{ storedSocialName }} » a bien été créée et vous en avez les droits de gestion.</div>
+      <div>L'entreprise « {{ modelValue.socialName }} » a bien été créée et vous en avez les droits de gestion.</div>
       <div class="mt-4 flex gap-x-4">
-        <DsfrButton :label="`Accéder à « ${storedSocialName} »`" @click="goToCompany" />
+        <DsfrButton :label="`Accéder à « ${modelValue.socialName} »`" @click="goToCompany" />
         <DsfrButton label="Retour au tableau de bord" tertiary @click="$router.push({ name: 'DashboardPage' })" />
       </div>
     </DsfrAlert>
@@ -11,11 +11,10 @@
 </template>
 
 <script setup>
-import { useCreateCompanyStore } from "@/stores/createCompany"
-
-const { storedId, storedSocialName } = useCreateCompanyStore()
+// Props & emits
+const props = defineProps({ modelValue: Object })
 
 const goToCompany = () => {
-  console.log("TODO: go to company ", storedId)
+  console.log("TODO: go to company ", props.modelValue.id)
 }
 </script>

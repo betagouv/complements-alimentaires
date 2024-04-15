@@ -2,14 +2,14 @@
   <div>
     <DsfrAlert size="sm">
       L'entreprise
-      <strong>{{ storedSocialName }}</strong>
-      avec le n° {{ storedIdentifierType.toUpperCase() + " " }}
-      <strong>{{ storedIdentifier }}</strong>
+      <strong>{{ modelValue.socialName }}</strong>
+      avec le n° {{ modelValue.identifierType.toUpperCase() + " " }}
+      <strong>{{ modelValue.identifier }}</strong>
       fait déjà partie des entreprises dont vous êtes le gestionnaire.
 
       <!-- TODO: changer la redirection quand la page d'entreprise particulière existe -->
       <div class="mt-4 flex gap-x-4">
-        <DsfrButton :label="`Accéder à « ${storedSocialName} »`" @click="goToCompany" />
+        <DsfrButton :label="`Accéder à « ${modelValue.socialName} »`" @click="goToCompany" />
         <DsfrButton label="Retour au tableau de bord" tertiary @click="$router.push({ name: 'DashboardPage' })" />
       </div>
     </DsfrAlert>
@@ -17,11 +17,9 @@
 </template>
 
 <script setup>
-import { useCreateCompanyStore } from "@/stores/createCompany"
-
-const { storedIdentifier, storedIdentifierType, storedId, storedSocialName } = useCreateCompanyStore()
+const props = defineProps({ modelValue: Object })
 
 const goToCompany = () => {
-  console.log("TODO: go to company ", storedId)
+  console.log("TODO: go to company ", props.modelValue.id)
 }
 </script>

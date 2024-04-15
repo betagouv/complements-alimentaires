@@ -8,6 +8,7 @@
       <component
         :is="stepComponentFromName(mapping.map((x) => x.component)[step - 1])"
         @changeStep="handleChangeStepEvent"
+        v-model="company"
       />
     </KeepAlive>
 
@@ -27,12 +28,11 @@
 
 <script setup>
 import { ref, defineAsyncComponent } from "vue"
-import { useCreateCompanyStore } from "@/stores/createCompany"
 
 const step = ref(1)
 
-// Puisqu'un store est utilisé pendant le process, on le réinitialise quand la démarche (re)démarre
-useCreateCompanyStore().resetCompany()
+// Cet object agit comme un store disponible au sein de tous les différents composants qui affichent les étapes
+const company = ref({})
 
 // Mapping entre le nom des étapes (utilisé par le DsfrStepper) et leur component associé.
 // L'index est déterminé par la position dans l'array.
