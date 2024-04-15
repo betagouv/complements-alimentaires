@@ -1,4 +1,5 @@
 import factory
+import faker
 from data.models.company import Company
 from data.utils.string_utils import make_random_str
 from data.choices import CountryChoices
@@ -7,7 +8,7 @@ import random
 
 
 def _make_siret() -> str:
-    return make_random_str(size=14, chars=string.digits)
+    return faker.Faker("fr_FR").siret().replace(" ", "")
 
 
 def _make_vat() -> str:

@@ -45,10 +45,7 @@ def _get_identifier_type(request) -> str:
 
 
 class CheckCompanyIdentifierView(APIView):
-    """
-    Vérifie le numéro d'identification pour indiquer au front-end dans quel cas fonctionnel on se situe.
-    NOTE: cette méthode ne vérifie volontairement pas la validité du numéro d'identification, car cette étape sera déléguée à une API externe
-    """
+    """Vérifie le numéro d'identification pour indiquer au front-end dans quel cas fonctionnel on se situe."""
 
     permission_classes = [IsAuthenticated]
 

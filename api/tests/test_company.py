@@ -14,7 +14,7 @@ class TestCheckCompanyIdentifier(ProjectAPITestCase):
     viewname = "check_company_identifier"
 
     def setUp(self):
-        self.siret = "12345671234567"
+        self.siret = "80273782500611"  # SIRET luhn-valide
         self.company = CompanyFactory(siret=self.siret, social_name="Appeul")
 
         self.vat = "FR986745237856"
@@ -22,7 +22,7 @@ class TestCheckCompanyIdentifier(ProjectAPITestCase):
 
     def test_check_company_siret_ok_unregistered_company(self):
         self.login()
-        unexisting_siret = "99999999999999"
+        unexisting_siret = "53786462100207"  # SIRET luhn-valide
         response = self.get(self.url(identifier=unexisting_siret) + "?identifierType=siret")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.UNREGISTERED_COMPANY)
         self.assertIsNone(response.data["company"])
