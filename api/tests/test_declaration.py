@@ -17,6 +17,7 @@ from data.factories import (
     CompanyFactory,
     SubstanceUnitFactory,
     DeclarantFactory,
+    GalenicFormulationFactory,
 )
 from .utils import authenticate
 
@@ -45,6 +46,7 @@ class TestDeclarationApi(APITestCase):
         populations = [PopulationFactory() for _ in range(3)]
         company = CompanyFactory()
         unit = SubstanceUnitFactory()
+        galenic_formulation = GalenicFormulationFactory()
 
         payload = {
             "company": company.id,
@@ -63,7 +65,7 @@ class TestDeclarationApi(APITestCase):
             "gamme": "Vegan",
             "flavor": "Myrtille",
             "description": "Ce complément alimentaire naturel est composé d'un extrait de Chaga BIO concentré à 30% polysaccharides hautement dosé pour une efficacité optimale",
-            "galenicFormulation": "gélule",
+            "galenicFormulation": galenic_formulation.id,
             "unitQuantity": "500",
             "unitMeasurement": unit.id,
             "conditioning": "Sans chitine, pour une bonne absorption et tolérance digestive",
@@ -104,7 +106,7 @@ class TestDeclarationApi(APITestCase):
             declaration.description,
             "Ce complément alimentaire naturel est composé d'un extrait de Chaga BIO concentré à 30% polysaccharides hautement dosé pour une efficacité optimale",
         )
-        self.assertEqual(declaration.galenic_formulation, "gélule")
+        self.assertEqual(declaration.galenic_formulation, galenic_formulation)
         self.assertEqual(declaration.unit_quantity, 500.0)
         self.assertEqual(declaration.unit_measurement, unit)
         self.assertEqual(declaration.conditioning, "Sans chitine, pour une bonne absorption et tolérance digestive")

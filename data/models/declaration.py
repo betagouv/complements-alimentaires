@@ -13,6 +13,7 @@ from data.models import (
     Substance,
     PlantPart,
     Company,
+    GalenicFormulation,
 )
 
 
@@ -69,11 +70,11 @@ class Declaration(Historisable, TimeStampable):
     gamme = models.TextField(blank=True, verbose_name="gamme")
     flavor = models.TextField(blank=True, verbose_name="arôme")
     description = models.TextField(blank=True, verbose_name="description")
-    #########
 
-    galenic_formulation = models.TextField(
-        blank=True, verbose_name="forme galénique"
-    )  # TODO : à terme mettre des valeurs de la DB
+    galenic_formulation = models.ForeignKey(
+        GalenicFormulation, verbose_name="forme galénique", null=True, blank=True, on_delete=models.RESTRICT
+    )
+
     unit_quantity = models.FloatField(
         null=True, blank=True, verbose_name="poids ou volume d'une unité de consommation"
     )
