@@ -9,5 +9,6 @@ from .population import PopulationFactory  # noqa
 from .condition import ConditionFactory  # noqa
 from .company import CompanyFactory, CompanyWithSiretFactory, CompanyWithVatFactory  # noqa
 from .effect import EffectFactory  # noqa
+from .galenic_formulation import GalenicFormulationFactory  # noqa
 from .roles import DeclarantFactory, CompanySupervisorFactory  # noqa
 from .unit import SubstanceUnitFactory  # noqa
