@@ -2,9 +2,9 @@
   <div>
     <DsfrAlert size="sm">
       L'entreprise dont le n°
-      {{ modelValue.identifierType.toUpperCase() + " " }}
+      {{ company.identifierType.toUpperCase() + " " }}
       est
-      <strong>{{ modelValue.identifier }}</strong>
+      <strong>{{ company.identifier }}</strong>
       n'est pas encore enregistrée dans notre base de données. Pour ce faire, veuillez vérifier ou compléter les
       informations ci-dessous. À l'issue, vous en deviendrez automatiquement son gestionnaire.
       <FormWrapper class="mx-auto">
@@ -55,7 +55,7 @@ import { useRootStore } from "@/stores/root"
 const rootStore = useRootStore()
 
 // Props & emits
-const props = defineProps({ modelValue: Object })
+const company = defineModel()
 const emit = defineEmits(["changeStep"])
 
 // Form state & rules
@@ -68,9 +68,9 @@ const state = ref({
   postalCode: "",
   city: "",
   cedex: "",
-  country: props.modelValue.country,
+  country: company.value.country,
   // on passe soit un numéro de SIRET, soit de VAT dans le payload
-  [props.modelValue.identifierType]: props.modelValue.identifier,
+  [company.value.identifierType]: company.value.identifier,
 })
 
 const rules = {
@@ -107,8 +107,8 @@ const submitCompany = async () => {
   await execute()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
-    props.modelValue.id = data.value.id
-    props.modelValue.socialName = data.value.socialName
+    company.value.id = data.value.id
+    company.value.socialName = data.value.socialName
     rootStore.fetchInitialData()
     emit("changeStep", {
       name: "L'entreprise a bien été créée",

@@ -2,9 +2,9 @@
   <div>
     <DsfrAlert size="sm">
       L'entreprise
-      <strong>{{ modelValue.socialName }}</strong>
-      avec le n° {{ modelValue.identifierType.toUpperCase() + " " }}
-      <strong>{{ modelValue.identifier }}</strong>
+      <strong>{{ company.socialName }}</strong>
+      avec le n° {{ company.identifierType.toUpperCase() + " " }}
+      <strong>{{ company.identifier }}</strong>
       est présente dans notre base de données, mais ne dispose actuellement d'aucun gestionnaire. Si vous souhaitez
       revendiquer la gestion de cette entreprise, veuillez nous envoyer une demande :
       <DsfrInputGroup>
@@ -30,7 +30,7 @@ import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 
 // Props & emits
-const props = defineProps({ modelValue: Object })
+const company = defineModel()
 const emit = defineEmits(["changeStep"])
 
 // Form state & rules
@@ -42,7 +42,7 @@ const v$ = useVuelidate({}, { message: message }, { $externalResults })
 // Request definition
 
 const { response, execute, isFetching } = useFetch(
-  `/api/v1/companies/${props.modelValue.identifier}/claim-supervision?identifierType=${props.modelValue.identifierType}`,
+  `/api/v1/companies/${company.value.identifier}/claim-supervision?identifierType=${company.value.identifierType}`,
   {
     headers: headers(),
   },

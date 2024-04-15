@@ -18,15 +18,15 @@ import FormWrapper from "@/components/FormWrapper"
 import CountryField from "@/components/fields/CountryField"
 
 // Props & emits
-const props = defineProps({ modelValue: Object })
+const company = defineModel()
 const emit = defineEmits(["changeStep"])
 
 const country = ref(undefined)
 
 const onCountrySelected = (selectedOption) => {
   const identifierType = selectedOption == "FR" ? "siret" : "vat"
-  props.modelValue.country = selectedOption
-  props.modelValue.identifierType = identifierType
+  company.value.country = selectedOption
+  company.value.identifierType = identifierType
   emit("changeStep", {
     name: `Identification par n° ${identifierType.toUpperCase()}`,
     component: "Identification",

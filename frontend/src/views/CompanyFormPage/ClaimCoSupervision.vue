@@ -2,9 +2,9 @@
   <div>
     <DsfrAlert size="sm">
       L'entreprise
-      <strong>{{ modelValue.socialName }}</strong>
-      avec le n° {{ modelValue.identifierType.toUpperCase() + " " }}
-      <strong>{{ modelValue.identifier }}</strong>
+      <strong>{{ company.socialName }}</strong>
+      avec le n° {{ company.identifierType.toUpperCase() + " " }}
+      <strong>{{ company.identifier }}</strong>
       est présente dans notre base de données, et dispose déjà d'un gestionnaire. Vous pouvez cependant demander à
       devenir vous-même gestionnaire en envoyant une demande à l'ensemble des gestionnaires actuels.
       <DsfrInputGroup>
@@ -30,7 +30,7 @@ import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 
 // Props & emits
-const props = defineProps({ modelValue: Object })
+const company = defineModel()
 const emit = defineEmits(["changeStep"])
 
 // Form state & rules
@@ -42,7 +42,7 @@ const v$ = useVuelidate({}, { message: message }, { $externalResults })
 // Request definition
 const url = computed(
   () =>
-    `/api/v1/companies/${props.modelValue.identifier}/claim-co-supervision?identifierType=${props.modelValue.identifierType}`
+    `/api/v1/companies/${company.value.identifier}/claim-co-supervision?identifierType=${company.value.identifierType}`
 )
 const { response, execute, isFetching } = useFetch(
   url,

@@ -3,20 +3,20 @@
     <FormWrapper class="max-w-xl mx-auto">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'identifier')">
         <DsfrInput
-          :label="`Numéro de ${modelValue.identifierType.toUpperCase()}`"
+          :label="`Numéro de ${company.identifierType.toUpperCase()}`"
           v-model="identifier"
           required
           labelVisible
           @input="removeSpaces"
         />
-        <div v-if="modelValue.identifierType == 'siret'" class="mt-2">
+        <div v-if="company.identifierType == 'siret'" class="mt-2">
           <a class="fr-link" target="_blank" rel="noopener" href="https://annuaire-entreprises.data.gouv.fr/">
             Annuaire des entreprises
           </a>
         </div>
       </DsfrInputGroup>
       <DsfrButton icon="ri-arrow-right-line" iconRight @click="submitIdentifier" :disabled="isFetching">
-        Vérifier le n° de {{ modelValue.identifierType.toUpperCase() }}
+        Vérifier le n° de {{ company.identifierType.toUpperCase() }}
       </DsfrButton>
     </FormWrapper>
   </div>
@@ -32,7 +32,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 
 // Props & emits
-const props = defineProps({ modelValue: Object })
+const company = defineModel()
 const emit = defineEmits(["changeStep"])
 
 // Form state & rules
@@ -45,7 +45,7 @@ const v$ = useVuelidate(rules, { identifier: identifier }, { $externalResults })
 
 // Request definition
 const url = computed(
-  () => `/api/v1/companies/${identifier.value}/check-identifier?identifierType=${props.modelValue.identifierType}`
+  () => `/api/v1/companies/${identifier.value}/check-identifier?identifierType=${company.value.identifierType}`
 )
 const { data, response, execute, isFetching } = useFetch(
   url,
@@ -64,10 +64,10 @@ const submitIdentifier = async () => {
   await execute()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
-    props.modelValue.identifier = identifier.value
+    company.value.identifier = identifier.value
     if (data.value.company) {
-      props.modelValue.socialName = data.value.company.socialName
-      props.modelValue.id = data.value.company.id
+      company.value.socialName = data.value.company.socialName
+      company.value.id = data.value.company.id
     }
 
     switch (data.value.companyStatus) {
