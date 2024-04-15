@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'text-sm': true, 'sm:table': true, 'w-full': true, '!hidden': !rows?.length }">
+  <div class="text-sm sm:table w-full" v-show="rows?.length">
     <div class="hidden sm:table-header-group bg-gray-100">
       <div class="table-row">
         <div
