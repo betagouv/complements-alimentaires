@@ -124,7 +124,9 @@ class Addable(models.Model):
         verbose_name="raison de l'ajout manuel",
     )
     fr_details = models.CharField("information additionnelle sur l'autorisation en France", blank=True)
-    eu_reference_country = models.CharField("pays de source réglementaire", blank=True, choices=CountryChoices)
+    eu_reference_country = models.CharField(
+        "pays de source réglementaire", blank=True, choices=CountryChoices, default=CountryChoices.FRANCE
+    )
     eu_legal_source = models.TextField("référence du texte réglementaire d'un autre pays européen", blank=True)
     eu_details = models.TextField(
         "information additionnelle sur l'autorisation dans un autre pays européen", blank=True
