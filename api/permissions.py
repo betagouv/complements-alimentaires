@@ -1,10 +1,11 @@
 from rest_framework import permissions
-from django.contrib.auth import get_user_model
 
 
 class IsLoggedUser(permissions.BasePermission):
+    message = "Vous devez être connecté et être l'utilisateur en question pour effectuer cette action"
+
     def has_object_permission(self, request, view, obj):
-        return isinstance(obj, get_user_model()) and request.user.is_authenticated and request.user == obj
+        return request.user.is_authenticated and request.user == obj
 
 
 class IsDeclarant(permissions.BasePermission):
@@ -12,3 +13,11 @@ class IsDeclarant(permissions.BasePermission):
 
     def has_permission(self, request, _):
         return request.user.is_authenticated and bool(request.user.role("declarant"))
+
+
+class IsSupervisorOfThisCompany(permissions.BasePermission):
+    message = "Vous devez être gestionnaire de cette entreprise pour effectuer cette action"
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        return user.is_authenticated and obj.supervisors.filter(user=user).exists()

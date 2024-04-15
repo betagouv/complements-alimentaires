@@ -17,3 +17,4 @@ from .galenic_formulation import GalenicFormulationSerializer  # noqa: F401
 from .unit import SubstanceUnitSerializer  # noqa: F401
 from .autocomplete_item import AutocompleteItemSerializer  # noqa: F401
 from .declaration import DeclarationSerializer  # noqa: F401
+from .company import CompanySerializer  # noqa: F401
