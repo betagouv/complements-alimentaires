@@ -126,7 +126,7 @@ class Addable(models.Model):
     eu_reference_country = models.CharField("pays de source réglementaire", blank=True, choices=CountryChoices)
     eu_legal_source = models.TextField("référence du texte réglementaire d'un autre pays européen", blank=True)
     eu_details = models.TextField(
-        "information additionnelle sur l'autorisation dans un aure pays européen", blank=True
+        "information additionnelle sur l'autorisation dans un autre pays européen", blank=True
     )
 
 
@@ -138,7 +138,7 @@ class DeclaredPlant(Historisable, Addable):
         on_delete=models.CASCADE,
     )
     plant = models.ForeignKey(
-        Plant, null=True, blank=True, verbose_name="plante ajoutée par l'user", on_delete=models.RESTRICT
+        Plant, null=True, blank=True, verbose_name="plante ajoutée par l'utilisateur", on_delete=models.RESTRICT
     )
     active = models.BooleanField("élément actif", default=True)
     new_name = models.TextField(blank=True, verbose_name="nom de la plante ajoutée manuellement")
@@ -163,7 +163,7 @@ class DeclaredMicroorganism(Historisable, Addable):
         on_delete=models.RESTRICT,
     )
     active = models.BooleanField("élément actif", default=True)
-    new_species = models.TextField(blank=True, verbose_name="espèce du micro-organisme ajoutée manuellement")
+    new_species = models.TextField(blank=True, verbose_name="espèce du micro-organisme ajouté manuellement")
     new_genre = models.TextField(blank=True, verbose_name="genre du micro-organisme ajoutée manuellement")
 
     souche = models.TextField(blank=True, verbose_name="souche")
