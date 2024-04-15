@@ -8,6 +8,7 @@ from .webinar import WebinarFactory  # noqa
 from .population import PopulationFactory  # noqa
 from .condition import ConditionFactory  # noqa
 from .effect import EffectFactory  # noqa
+from .galenic_formulation import GalenicFormulationFactory  # noqa
 from .company import CompanyFactory  # noqa
 from .roles import DeclarantFactory, CompanySupervisorFactory  # noqa
 from .unit import SubstanceUnitFactory  # noqa

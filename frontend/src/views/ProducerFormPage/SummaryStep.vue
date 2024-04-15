@@ -14,7 +14,7 @@
     <SummaryInfoSegment label="Gamme" :value="payload.gamme" />
     <SummaryInfoSegment label="Arôme" :value="payload.flavor" />
     <SummaryInfoSegment label="Description" :value="payload.description" />
-    <SummaryInfoSegment label="Forme galénique" :value="payload.galenicFormulation" />
+    <SummaryInfoSegment label="Forme galénique" :value="galenicFormulationsNames" />
     <SummaryInfoSegment label="Unité de consommation" :value="unitInfo" />
     <SummaryInfoSegment label="Conditionnements" :value="payload.conditioning" />
     <SummaryInfoSegment label="Dose journalière recommandée" :value="payload.dailyRecommendedDose" />
@@ -68,13 +68,19 @@ import FilePreview from "./FilePreview"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 
-const { populations, conditions, effects } = storeToRefs(useRootStore())
+const { populations, conditions, effects, galenicFormulation } = storeToRefs(useRootStore())
 
 const payload = defineModel()
 const unitInfo = computed(() => {
   if (!payload.value.unitQuantity) return null
   return `${payload.value.unitQuantity} ${payload.value.unitMeasurement || "-"}`
 })
+
+const galenicFormulationsNames = computed(() => {
+  if (!payload.value.galenicFormulation) return null
+  return galenicFormulation.value.find((y) => y.id === parseInt(payload.value.galenicFormulation))?.name
+})
+
 const effectsNames = computed(() => {
   const findName = (id) => effects.value.find((y) => y.id === id)?.name
   const otherEffects = payload.value.otherEffects
