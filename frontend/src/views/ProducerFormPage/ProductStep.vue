@@ -73,7 +73,7 @@
         </div>
       </div>
     </DsfrFieldset>
-    <div class="max-w-2xl mt-6">
+    <div class="max-w-2xl">
       <DsfrInput
         v-if="
           payload.galenicFormulation &&
@@ -86,8 +86,8 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-2 gap-4 mt-6">
-    <div class="col-span-2 md:col-span-1 max-w-md">
+  <div class="grid grid-cols-2 gap-4">
+    <div class="col-span-2 md:col-span-1 max-w-md mt-6">
       <DsfrFieldset legend="Poids ou volume d'une unité de consommation" legendClass="fr-label !font-normal !pb-0">
         <div class="flex">
           <div class="max-w-64">
@@ -246,7 +246,7 @@ const otherEffectsId = computed(() => effects.value?.find((effect) => effect.nam
 const galenicFormulationList = computed(() => {
   if (!galenicFormulationState.value) return galenicFormulation.value
   else {
-    const isLiquid = galenicFormulationState.value === "liquid" ? true : false
+    const isLiquid = galenicFormulationState.value === "liquid"
     return otherFieldsAtTheEnd(
       galenicFormulation.value
         ?.filter((formulation) => formulation.isLiquid === isLiquid) // le filter perd l'ordre alphabétique d'origine
