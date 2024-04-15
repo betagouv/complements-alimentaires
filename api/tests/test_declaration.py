@@ -4,6 +4,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from data.models import Declaration, Attachment
+from data.choices import CountryChoices, AuthorizationModes, FrAuthorizationReasons
 from data.factories import (
     ConditionFactory,
     EffectFactory,
@@ -16,6 +17,7 @@ from data.factories import (
     CompanyFactory,
     SubstanceUnitFactory,
     DeclarantFactory,
+    GalenicFormulationFactory,
 )
 from .utils import authenticate
 
@@ -38,12 +40,13 @@ class TestDeclarationApi(APITestCase):
         """
         DeclarantFactory(user=authenticate.user)
 
-        conditions = [ConditionFactory.create() for _ in range(3)]
-        effect1 = EffectFactory.create(ca_name="Artères et cholestérol")
-        effect2 = EffectFactory.create(ca_name="Autre (à préciser)")
-        populations = [PopulationFactory.create() for _ in range(3)]
-        company = CompanyFactory.create()
-        unit = SubstanceUnitFactory.create()
+        conditions = [ConditionFactory() for _ in range(3)]
+        effect1 = EffectFactory(ca_name="Artères et cholestérol")
+        effect2 = EffectFactory(ca_name="Autre (à préciser)")
+        populations = [PopulationFactory() for _ in range(3)]
+        company = CompanyFactory()
+        unit = SubstanceUnitFactory()
+        galenic_formulation = GalenicFormulationFactory()
 
         payload = {
             "company": company.id,
@@ -62,7 +65,7 @@ class TestDeclarationApi(APITestCase):
             "gamme": "Vegan",
             "flavor": "Myrtille",
             "description": "Ce complément alimentaire naturel est composé d'un extrait de Chaga BIO concentré à 30% polysaccharides hautement dosé pour une efficacité optimale",
-            "galenicFormulation": "gélule",
+            "galenicFormulation": galenic_formulation.id,
             "unitQuantity": "500",
             "unitMeasurement": unit.id,
             "conditioning": "Sans chitine, pour une bonne absorption et tolérance digestive",
@@ -103,7 +106,7 @@ class TestDeclarationApi(APITestCase):
             declaration.description,
             "Ce complément alimentaire naturel est composé d'un extrait de Chaga BIO concentré à 30% polysaccharides hautement dosé pour une efficacité optimale",
         )
-        self.assertEqual(declaration.galenic_formulation, "gélule")
+        self.assertEqual(declaration.galenic_formulation, galenic_formulation)
         self.assertEqual(declaration.unit_quantity, 500.0)
         self.assertEqual(declaration.unit_measurement, unit)
         self.assertEqual(declaration.conditioning, "Sans chitine, pour une bonne absorption et tolérance digestive")
@@ -126,16 +129,16 @@ class TestDeclarationApi(APITestCase):
         """
         DeclarantFactory(user=authenticate.user)
 
-        plant = PlantFactory.create()
-        plant_part = PlantPartFactory.create()
+        plant = PlantFactory()
+        plant_part = PlantPartFactory()
         plant.plant_parts.add(plant_part)
-        unit = SubstanceUnitFactory.create()
+        unit = SubstanceUnitFactory()
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredPlants": [
                 {
-                    "plant": {
+                    "element": {
                         "id": plant.id,
                         "name": plant.name,
                     },
@@ -192,10 +195,10 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredPlants": [
                 {
-                    "plant": {
+                    "element": {
                         "id": 999999,
                     },
                 }
@@ -215,13 +218,13 @@ class TestDeclarationApi(APITestCase):
         focus sur les micro-organismes
         """
         DeclarantFactory(user=authenticate.user)
-        microorganism = MicroorganismFactory.create()
+        microorganism = MicroorganismFactory()
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredMicroorganisms": [
                 {
-                    "microorganism": {
+                    "element": {
                         "id": microorganism.id,
                         "name": microorganism.name,
                     },
@@ -231,13 +234,17 @@ class TestDeclarationApi(APITestCase):
                     "quantity": "123",
                 },
                 {
-                    "newName": "New microorganism name",
                     "newGenre": "New microorganism genre",
+                    "newSpecies": "New microorganism species",
                     "newDescription": "New microorganism description",
                     "new": True,
                     "active": True,
                     "souche": "Nouvelle souche",
                     "quantity": "345",
+                    "authorizationMode": "EU",
+                    "euReferenceCountry": "IT",
+                    "euLegalSource": "Voici le doc",
+                    "euDetails": "Voici les détails",
                 },
             ],
         }
@@ -257,12 +264,17 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(existing_declared_microorganism.souche, "souche")
 
         self.assertIsNone(new_declared_microorganism.microorganism)
-        self.assertEqual(new_declared_microorganism.new_name, "New microorganism name")
+        self.assertEqual(new_declared_microorganism.new_species, "New microorganism species")
         self.assertEqual(new_declared_microorganism.new_genre, "New microorganism genre")
         self.assertEqual(new_declared_microorganism.new_description, "New microorganism description")
         self.assertEqual(new_declared_microorganism.active, True)
         self.assertEqual(new_declared_microorganism.quantity, 345)
         self.assertEqual(new_declared_microorganism.souche, "Nouvelle souche")
+
+        self.assertEqual(new_declared_microorganism.authorization_mode, AuthorizationModes.EU)
+        self.assertEqual(new_declared_microorganism.eu_reference_country, CountryChoices.ITALY)
+        self.assertEqual(new_declared_microorganism.eu_legal_source, "Voici le doc")
+        self.assertEqual(new_declared_microorganism.eu_details, "Voici les détails")
 
     @authenticate
     def test_create_declaration_unknown_microorganism(self):
@@ -272,10 +284,10 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredMicroorganisms": [
                 {
-                    "microorganism": {
+                    "element": {
                         "id": 999999,
                     },
                 }
@@ -295,13 +307,13 @@ class TestDeclarationApi(APITestCase):
         focus sur les ingrédients
         """
         DeclarantFactory(user=authenticate.user)
-        ingredient = IngredientFactory.create()
+        ingredient = IngredientFactory()
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredIngredients": [
                 {
-                    "ingredient": {
+                    "element": {
                         "id": ingredient.id,
                         "name": ingredient.name,
                     },
@@ -313,6 +325,9 @@ class TestDeclarationApi(APITestCase):
                     "newDescription": "New ingredient description",
                     "new": True,
                     "active": True,
+                    "authorizationMode": "FR",
+                    "frReason": "NOVEL_FOOD",
+                    "frDetails": "Je le veux",
                 },
             ],
         }
@@ -333,6 +348,9 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(new_declared_ingredient.new_name, "New ingredient name")
         self.assertEqual(new_declared_ingredient.new_description, "New ingredient description")
         self.assertEqual(new_declared_ingredient.active, True)
+        self.assertEqual(new_declared_ingredient.authorization_mode, AuthorizationModes.FR)
+        self.assertEqual(new_declared_ingredient.fr_reason, FrAuthorizationReasons.NOVEL_FOOD)
+        self.assertEqual(new_declared_ingredient.fr_details, "Je le veux")
 
     @authenticate
     def test_create_declaration_unknown_ingredient(self):
@@ -342,10 +360,10 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredIngredients": [
                 {
-                    "ingredient": {
+                    "element": {
                         "id": 999999,
                     },
                 }
@@ -366,13 +384,13 @@ class TestDeclarationApi(APITestCase):
         """
         DeclarantFactory(user=authenticate.user)
 
-        substance = SubstanceFactory.create()
+        substance = SubstanceFactory()
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredSubstances": [
                 {
-                    "substance": {
+                    "element": {
                         "id": substance.id,
                         "name": substance.name,
                     },
@@ -400,10 +418,10 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "declaredSubstances": [
                 {
-                    "substance": {
+                    "element": {
                         "id": 999999,
                     },
                 }
@@ -424,11 +442,11 @@ class TestDeclarationApi(APITestCase):
         """
         DeclarantFactory(user=authenticate.user)
 
-        substance = SubstanceFactory.create()
-        unit = SubstanceUnitFactory.create()
+        substance = SubstanceFactory()
+        unit = SubstanceUnitFactory()
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "computedSubstances": [
                 {
                     "substance": {
@@ -472,7 +490,7 @@ class TestDeclarationApi(APITestCase):
             green_image_base_64 = base64.b64encode(image.read()).decode("utf-8")
 
         payload = {
-            "company": CompanyFactory.create().id,
+            "company": CompanyFactory().id,
             "attachments": [
                 {
                     "file": f"data:image/jpeg;base64,{blue_image_base_64}",

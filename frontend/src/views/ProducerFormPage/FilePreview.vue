@@ -14,7 +14,7 @@
         :required="true"
       />
     </DsfrInputGroup>
-    <div v-else>{{ file.type }}</div>
+    <div v-else>{{ documentTypes.find((x) => x.value === file.type)?.text }}</div>
     <div v-if="!props.readonly">
       <DsfrButton @click="$emit('remove', file)" label="Supprimer" secondary size="sm" />
     </div>
@@ -27,15 +27,17 @@ import { computed } from "vue"
 const props = defineProps({ file: Object, hideTypeSelection: Boolean, readonly: Boolean })
 const isPDF = computed(() => props.file.name.endsWith("pdf"))
 
-// TODO: À voir si on peut le mettre dans la base de données aussi
+// TODO: Une fois qu'on aura confirmé les types de document, on peut les exposer via l'API pour ne pas
+// les avoir hard-codés ici
 const documentTypes = [
-  "Attestation d'une autorité compétente",
-  "Compléments info professionnel",
-  "Observations professionnel",
-  "Autre courrier du professionnel",
-  "Brouillon",
-  "Autre professionnel",
-  "Preuve règlementaire",
-  "Bulletin d'analyse",
+  { value: "LABEL", text: "Étiquetage" },
+  { value: "REGULATORY_PROOF", text: "Preuve règlementaire" },
+  { value: "CERTIFICATE_AUTHORITY", text: "Attestation d'une autorité compétente" },
+  { value: "ADDITIONAL_INFO", text: "Compléments info professionnel" },
+  { value: "OBSERVATIONS", text: "Observations professionnel" },
+  { value: "PROFESSIONAL_MAIL", text: "Autre courrier du professionnel" },
+  { value: "DRAFT", text: "Brouillon" },
+  { value: "OTHER", text: "Autre professionnel" },
+  { value: "ANALYSIS_REPORT", text: "Bulletin d'analyse" },
 ]
 </script>

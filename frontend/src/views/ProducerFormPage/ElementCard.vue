@@ -2,36 +2,28 @@
   <div class="p-4 border shadow-md">
     <div class="sm:flex">
       <div class="flex">
-        <div :class="`mr-4 self-center justify-center rounded-full icon icon-${model.element.objectType} size-8 flex`">
-          <v-icon class="self-center" fill="white" :name="getTypeIcon(model.element.objectType)" />
-        </div>
         <div class="self-center">
           <div class="font-bold capitalize">
-            {{ model.element.name.toLowerCase() }}
-            <span class="uppercase text-gray-400 text-sm ml-2">{{ getType(model.element.objectType) }}</span>
+            {{ getElementName(model).toLowerCase() }}
           </div>
-          <div v-if="model.element.synonyms?.length">
-            {{ model.element.synonyms.map((x) => x.name).join(", ") }}
+          <div v-if="synonyms">
+            {{ synonyms }}
           </div>
-          <div v-if="model.element.new" class="self-center mt-1">
+          <div v-if="model.new" class="self-center mt-1">
             <DsfrBadge label="Nouvel ingrédient" type="info" />
           </div>
         </div>
       </div>
       <div class="flex grow">
         <div class="grow pl-4 ml-6 sm:border-l self-center">
-          <DsfrCheckbox
-            class="!my-2"
-            v-model="model.element.active"
-            :label="model.element.active ? 'Actif' : 'Non actif'"
-          />
+          <DsfrCheckbox class="!my-2" v-model="model.active" :label="model.active ? 'Actif' : 'Non actif'" />
         </div>
-        <div><DsfrButton secondary @click="$emit('remove', element)">Enlever</DsfrButton></div>
+        <div><DsfrButton secondary @click="$emit('remove', model)">Enlever</DsfrButton></div>
       </div>
     </div>
     <div v-if="showFields">
       <hr class="mt-2" />
-      <div v-if="model.element.objectType === 'plant'" class="md:ml-12 block sm:flex gap-2 md:gap-4">
+      <div v-if="objectType === 'plant'" class="md:ml-12 block sm:flex gap-2 md:gap-4">
         <DsfrInputGroup class="max-w-sm" v-if="plantParts.length > 0">
           <DsfrSelect
             label="Partie utilisée"
@@ -63,12 +55,12 @@
           />
         </DsfrInputGroup>
       </div>
-      <div v-else-if="model.element.objectType === 'microorganism'" class="ml-12 flex gap-4">
+      <div v-else-if="objectType === 'microorganism'" class="ml-12 flex gap-4">
         <DsfrInputGroup class="max-w-sm">
           <DsfrInput label-visible label="Souche" v-model="model.strain" :required="true" />
         </DsfrInputGroup>
         <DsfrInputGroup>
-          <DsfrInput label-visible v-model="model.cfu_quantity" label="Qté par DJR (en CFU)" :required="true" />
+          <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR (en CFU)" :required="true" />
         </DsfrInputGroup>
       </div>
     </div>
@@ -78,20 +70,21 @@
 <script setup>
 import { useRootStore } from "@/stores/root"
 import { computed, defineModel } from "vue"
-import { getTypeIcon, getType } from "@/utils/mappings"
+import { getElementName } from "@/utils/elements"
 
 const model = defineModel()
 const store = useRootStore()
+
 defineEmits(["remove"])
+const props = defineProps({ objectType: { type: String } })
+const synonyms = computed(() => model.value.element?.synonyms?.map((x) => x.name)?.join(", "))
 
 const plantParts = computed(() => {
-  const parts = model.value.element.plantParts || store.plantParts
+  const parts = model.value.element?.plantParts || store.plantParts
   return parts.map((x) => ({ text: x.name, value: x.id }))
 })
 const showFields = computed(
-  () =>
-    model.value.element.active &&
-    (model.value.element.objectType === "plant" || model.value.element.objectType === "microorganism")
+  () => model.value.active && (props.objectType === "plant" || props.objectType === "microorganism")
 )
 
 // TODO: vérifier qu'on ait ces infos en base ou accepter de les avoir en front only

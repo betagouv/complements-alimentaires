@@ -83,19 +83,29 @@ class DeclaredListSerializer(serializers.ListSerializer):
         return declared_items
 
 
+ADDABLE_ELEMENT_FIELDS = (
+    "authorization_mode",
+    "fr_reason",
+    "fr_details",
+    "eu_reference_country",
+    "eu_legal_source",
+    "eu_details",
+    "new_description",
+    "new",
+)
+
+
 class DeclaredPlantSerializer(serializers.ModelSerializer):
-    plant = PassthroughPlantSerializer(required=False)
+    element = PassthroughPlantSerializer(required=False, source="plant")
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False)
     used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False)
 
     class Meta:
         model = DeclaredPlant
-        fields = (
+        fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
-            "plant",
+            "element",
             "new_name",
-            "new_description",
-            "new",
             "active",
             "used_part",
             "unit",
@@ -117,17 +127,15 @@ class DeclaredPlantSerializer(serializers.ModelSerializer):
 
 
 class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
-    microorganism = PassthroughMicroorganismSerializer(required=False)
+    element = PassthroughMicroorganismSerializer(required=False, source="microorganism")
 
     class Meta:
         model = DeclaredMicroorganism
-        fields = (
+        fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
-            "microorganism",
-            "new_name",
+            "element",
+            "new_species",
             "new_genre",
-            "new_description",
-            "new",
             "active",
             "souche",
             "quantity",
@@ -149,16 +157,14 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
 
 
 class DeclaredIngredientSerializer(serializers.ModelSerializer):
-    ingredient = PassthroughIngredientSerializer(required=False)
+    element = PassthroughIngredientSerializer(required=False, source="ingredient")
 
     class Meta:
         model = DeclaredIngredient
-        fields = (
+        fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
-            "ingredient",
+            "element",
             "new_name",
-            "new_description",
-            "new",
             "active",
         )
 
@@ -176,13 +182,13 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
 
 
 class DeclaredSubstanceSerializer(serializers.ModelSerializer):
-    substance = PassthroughSubstanceSerializer(required=False)
+    element = PassthroughSubstanceSerializer(required=False, source="substance")
 
     class Meta:
         model = DeclaredSubstance
         fields = (
             "id",
-            "substance",
+            "element",
             "active",
         )
 

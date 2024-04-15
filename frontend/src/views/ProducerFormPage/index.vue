@@ -46,15 +46,24 @@ const payload = ref({
   conditionsNotRecommended: [],
   populations: [],
   elements: [],
-  substances: [],
-  files: {
-    labels: [],
-    others: [],
-  },
-  labelAddress: {},
+  declaredPlants: [],
+  declaredMicroorganisms: [],
+  declaredIngredients: [],
+  declaredSubstances: [],
+  computedSubstances: [],
+  attachments: [],
 })
 
-const hasNewElements = computed(() => payload.value.elements.some((x) => x.element.new))
+const hasNewElements = computed(() => {
+  return []
+    .concat(
+      payload.value.declaredPlants,
+      payload.value.declaredMicroorganisms,
+      payload.value.declaredIngredients,
+      payload.value.declaredSubstances
+    )
+    .some((x) => x.new)
+})
 
 const currentStep = ref(null)
 const steps = computed(() => {
