@@ -1,6 +1,6 @@
 <template>
   <li>
-    <div class="capitalize">{{ name.toLowerCase() }}</div>
+    <div class="capitalize">{{ getElementName(model).toLowerCase() }}</div>
     <div class="mt-1">
       {{ elementInfo }}
     </div>
@@ -9,13 +9,10 @@
 
 <script setup>
 import { computed } from "vue"
+import { getElementName } from "@/utils/elements"
 
 const model = defineModel()
 const props = defineProps({ objectType: { type: String } })
-
-const name = computed(
-  () => model.value.element?.name || model.value.newName || `${model.value.newGenre} ${model.value.newSpecies}`
-)
 
 const elementInfo = computed(() => {
   if (props.objectType === "microorganism")

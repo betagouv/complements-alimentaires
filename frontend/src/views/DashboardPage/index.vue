@@ -39,6 +39,7 @@ const supervisorActions = [
   {
     title: "Nouvelle entreprise",
     description: "Créez ou rejoignez une nouvelle entreprise",
+    link: { name: "CompanyFormPage" },
   },
 ]
 
@@ -59,6 +60,7 @@ const onboardingActions = [
   {
     title: "Créez ou rejoignez une entreprise",
     description: "Renseignez les données de votre entreprise pour effectuer vos déclarations",
+    link: { name: "CompanyFormPage" },
   },
   {
     title: "Contactez notre équipe",
@@ -70,7 +72,7 @@ const userActions = [
   {
     title: "Mes informations personnelles",
     description: "Consultez et mettez à jour vos informations personnelles",
-    link: "/informations-personnelles",
+    link: { name: "UserAccountPage" },
   },
 ]
 </script>

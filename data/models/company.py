@@ -1,6 +1,8 @@
 from django.db import models
-from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.core.exceptions import ValidationError
+from data.behaviours import AutoValidable
 from data.choices import CountryChoices
+from data.validators import validate_siret, validate_vat
 
 
 class Address(models.Model):
@@ -32,15 +34,28 @@ class Address(models.Model):
         return "\n".join(filter(None, lines))
 
 
-class Company(Address, models.Model):
+class Company(AutoValidable, Address, models.Model):
     class Meta:
         verbose_name = "entreprise"
 
     social_name = models.CharField("dénomination sociale")
     commercial_name = models.CharField("enseigne", help_text="nom commercial")
+    # null=True permet de gérer en parralèle le unique=True
     siret = models.CharField(
-        "n° SIRET", help_text="14 chiffres", unique=True, validators=[MinLengthValidator(14), MaxLengthValidator(14)]
+        "n° SIRET",
+        help_text="14 chiffres",
+        unique=True,
+        blank=True,
+        null=True,
+        validators=[validate_siret],
     )
+    vat = models.CharField("n° TVA intracommunautaire", unique=True, blank=True, null=True, validators=[validate_vat])
+
+    def clean(self):
+        if not (self.siret or self.vat):
+            raise ValidationError(
+                "Une entreprise doit avoir un n° de SIRET ou un n°de TVA intracommunautaire (ou les deux)."
+            )
 
     def __str__(self):
         return self.social_name

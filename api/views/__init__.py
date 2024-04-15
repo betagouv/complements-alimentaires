@@ -4,6 +4,7 @@ from .blog import BlogPostsView, BlogPostView  # noqa: F401
 from .company import CountryListView  # noqa: F401
 from .condition import ConditionListView  # noqa: F401
 from .effect import EffectListView  # noqa: F401
+from .galenic_formulation import GalenicFormulationListView  # noqa: F401
 from .declaration import DeclarationListCreateApiView, DeclarationRetrieveView  # noqa: F401
 from .ingredient import IngredientRetrieveView  # noqa: F401
 from .microorganism import MicroorganismRetrieveView  # noqa: F401
@@ -24,3 +25,10 @@ from .user import (  # noqa: F401
     VerifyEmailView,
 )
 from .webinar import WebinarView  # noqa
+from .company import (  # noqa
+    CompanyCreateView,
+    CompanyRetrieveView,
+    CheckCompanyIdentifierView,
+    ClaimCompanySupervisionView,
+    ClaimCompanyCoSupervisionView,
+)

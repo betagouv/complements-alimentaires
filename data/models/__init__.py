@@ -12,6 +12,7 @@ from .substance import Substance, SubstanceSynonym  # noqa: F401
 from .population import Population  # noqa: F401
 from .condition import Condition  # noqa: F401
 from .effect import Effect  # noqa: F401
+from .galenic_formulation import GalenicFormulation  # noqa: F401
 from .unit import SubstanceUnit  # noqa: F401
 from .declaration import (  # noqa: F401
     Declaration,  # noqa: F401
@@ -35,4 +36,4 @@ ELEMENT_MODELS = [
     SubstanceSynonym,
 ]
 
-DECLARATION_MODELS = [Effect, Condition, Population, SubstanceUnit]
+DECLARATION_MODELS = [Condition, Effect, GalenicFormulation, Population, SubstanceUnit]

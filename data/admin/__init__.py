@@ -11,6 +11,7 @@ from .microorganism import MicroorganismAdmin  # noqa
 from .population import Population  # noqa
 from .condition import Condition  # noqa
 from .effect import Effect  # noqa
+from .galenic_formulation import GalenicFormulation  # noqa
 from .declaration import DeclarationAdmin  # noqa
 
 from data.models import Ingredient, PlantPart, PlantFamily

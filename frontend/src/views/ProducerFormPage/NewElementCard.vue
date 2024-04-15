@@ -2,7 +2,7 @@
   <div class="p-4 border shadow-md">
     <div class="flex">
       <div class="self-center font-bold capitalize">
-        {{ name.toLowerCase() }}
+        {{ getElementName(model).toLowerCase() }}
       </div>
     </div>
     <hr class="mt-4 pb-1" />
@@ -96,10 +96,10 @@
 </template>
 
 <script setup>
-import { computed } from "vue"
 import { countries } from "@/utils/mappings"
+import { getElementName } from "@/utils/elements"
+
 const model = defineModel()
-const name = computed(() => model.value.newName || `${model.value.newGenre} ${model.value.newSpecies}`)
 const additionReasons = [
   {
     label: "Usage établi",

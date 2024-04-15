@@ -4,7 +4,7 @@
       <div class="flex">
         <div class="self-center">
           <div class="font-bold capitalize">
-            {{ name.toLowerCase() }}
+            {{ getElementName(model).toLowerCase() }}
           </div>
           <div v-if="synonyms">
             {{ synonyms }}
@@ -70,15 +70,13 @@
 <script setup>
 import { useRootStore } from "@/stores/root"
 import { computed, defineModel } from "vue"
+import { getElementName } from "@/utils/elements"
 
 const model = defineModel()
 const store = useRootStore()
 
 defineEmits(["remove"])
 const props = defineProps({ objectType: { type: String } })
-const name = computed(
-  () => model.value.element?.name || model.value.newName || `${model.value.newGenre} ${model.value.newSpecies}`
-)
 const synonyms = computed(() => model.value.element?.synonyms?.map((x) => x.name)?.join(", "))
 
 const plantParts = computed(() => {
