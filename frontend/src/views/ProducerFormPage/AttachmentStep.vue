@@ -1,9 +1,5 @@
 <template>
-  <h3 class="fr-h6">
-    <v-icon class="mr-1" name="ri-price-tag-2-fill"></v-icon>
-    Étiquetage
-  </h3>
-
+  <SectionTitle title="Étiquetage" sizeTag="h6" icon="ri-price-tag-2-fill" />
   <DsfrInputGroup>
     <DsfrFileUpload
       label="Merci d'ajouter au moins un fichier image ou PDF correspondant à l'étiquetage."
@@ -15,10 +11,7 @@
 
   <FileGrid :files="labelFiles" @remove="removeFile" hideTypeSelection />
 
-  <h3 class="fr-h6 !mt-8">
-    <v-icon class="mr-1" name="ri-attachment-2" />
-    Autres
-  </h3>
+  <SectionTitle title="Autres" class="!mt-10" sizeTag="h6" icon="ri-attachment-2" />
 
   <DsfrInputGroup>
     <DsfrFileUpload
@@ -35,6 +28,7 @@
 <script setup>
 import { ref, computed } from "vue"
 import FileGrid from "./FileGrid"
+import SectionTitle from "@/components/SectionTitle"
 
 const payload = defineModel()
 const selectedLabelFile = ref(null)

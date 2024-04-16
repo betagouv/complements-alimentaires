@@ -4,10 +4,7 @@
     <DsfrButton @click="saveDraft" label="Sauvegarder en tant que brouillon" />
   </DsfrAlert>
 
-  <h2 class="fr-h6">
-    <v-icon class="mr-1" name="ri-file-text-line" />
-    Votre démarche
-  </h2>
+  <SectionTitle title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" />
 
   <h3 class="fr-h6">
     Informations sur le produit
@@ -70,6 +67,7 @@ import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRouter } from "vue-router"
 import useToaster from "@/composables/use-toaster"
+import SectionTitle from "@/components/SectionTitle"
 
 const router = useRouter()
 const { populations, conditions, effects, galenicFormulation } = storeToRefs(useRootStore())
