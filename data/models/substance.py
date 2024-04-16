@@ -4,7 +4,8 @@ from django.db.models import F, Value
 from simple_history.models import HistoricalRecords
 
 from data.behaviours import TimeStampable, Historisable
-from .mixins import WithMissingImportBoolean, WithComments, WithStatus
+from .mixins import WithMissingImportBoolean, WithComments
+from .status import WithStatus
 from .abstract_models import CommonModel
 from .unit import SubstanceUnit
 
@@ -109,6 +110,7 @@ class Substance(CommonModel, WithComments, WithStatus):
             "must_specify_quantity",
             "max_quantity",
             "nutritional_reference",
+            "status",
         ],
     )
 

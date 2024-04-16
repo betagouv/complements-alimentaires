@@ -123,6 +123,7 @@ class CSVImporter:
         # Les champs ManyToMany
         "substances": ["SBSACT_IDENT"],
         "plant_parts": ["PPLAN_IDENT"],
+        "status": ["STINGSBS_IDENT"],
     }
 
     # Ces champs sont remplis automatiquement et ne sont pas recherchés dans les fichiers csv

@@ -2,7 +2,8 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 from data.behaviours import TimeStampable, Historisable
-from .mixins import WithMissingImportBoolean, WithComments, WithStatus
+from .mixins import WithMissingImportBoolean, WithComments
+from .status import WithStatus
 from .abstract_models import CommonModel
 from .substance import Substance
 
@@ -16,7 +17,7 @@ class Ingredient(CommonModel, WithComments, WithStatus):
     siccrf_description = models.TextField(blank=True)
     substances = models.ManyToManyField(Substance, through="IngredientSubstanceRelation")
     history = HistoricalRecords(
-        inherit=True, excluded_fields=["name", "is_obsolete", "private_comments", "public_comments"]
+        inherit=True, excluded_fields=["name", "is_obsolete", "private_comments", "public_comments", "status"]
     )
 
     @property

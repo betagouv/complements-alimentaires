@@ -5,7 +5,8 @@ from django.db.models import F
 from simple_history.models import HistoricalRecords
 
 from data.behaviours import TimeStampable, Historisable
-from .mixins import WithMissingImportBoolean, WithComments, WithStatus
+from .mixins import WithMissingImportBoolean, WithComments
+from .status import WithStatus
 from .abstract_models import CommonModel
 from .substance import Substance
 
@@ -62,7 +63,15 @@ class Plant(CommonModel, WithComments, WithStatus):
     plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
     substances = models.ManyToManyField(Substance, through="PlantSubstanceRelation")
     history = HistoricalRecords(
-        inherit=True, excluded_fields=["name", "is_obsolete", "family", "private_comments", "public_comments"]
+        inherit=True,
+        excluded_fields=[
+            "name",
+            "is_obsolete",
+            "family",
+            "private_comments",
+            "public_comments",
+            "status",
+        ],
     )
 
 

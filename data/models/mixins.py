@@ -2,8 +2,6 @@ from django.db import models
 from django.db.models.functions import Coalesce, NullIf
 from django.db.models import F, Value
 
-from status import IngredientStatus
-
 
 class WithMissingImportBoolean(models.Model):
     """
@@ -42,23 +40,6 @@ class WithDefaultFields(models.Model):
     is_obsolete = models.GeneratedField(
         expression=Coalesce(F("ca_is_obsolete"), F("siccrf_is_obsolete")),
         output_field=models.BooleanField(verbose_name="objet obsolète"),
-        db_persist=True,
-    )
-
-
-class WithStatus(models.Model):
-    """Les ingrédients "(plantes, micro-organismes, substances et ingrédients de la SICCRF)" portent un statut.
-    C'est le statut de leur autorisation dans les compléments alimentaires
-    """
-
-    class Meta:
-        abstract = True
-
-    siccrf_status = models.ForeignKey(IngredientStatus, on_delete=models.CASCADE)
-    ca_status = models.ForeignKey(IngredientStatus, on_delete=models.CASCADE)
-    status = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_status"), Value("")), F("siccrf_status")),
-        output_field=models.TextField(verbose_name="statut de l'ingrédient ou substance"),
         db_persist=True,
     )
 
