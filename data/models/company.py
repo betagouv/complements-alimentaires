@@ -5,6 +5,7 @@ from data.behaviours import AutoValidable
 from data.choices import CountryChoices
 from data.validators import validate_siret, validate_vat
 from enum import auto
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Address(models.Model):
@@ -36,6 +37,15 @@ class Address(models.Model):
         return "\n".join(filter(None, lines))
 
 
+class CompanyContact(models.Model):
+    class Meta:
+        abstract = True
+
+    phone_number = PhoneNumberField("numéro de téléphone de contact")
+    email = models.EmailField("adresse e-mail de contact")
+    website = models.CharField("site web de l'entreprise", blank=True)
+
+
 class ActivityChoices(models.TextChoices):
     FABRICANT = auto()
     FAÇONNIER = auto()
@@ -45,7 +55,7 @@ class ActivityChoices(models.TextChoices):
     DISTRIBUTEUR = auto()
 
 
-class Company(AutoValidable, Address, models.Model):
+class Company(AutoValidable, Address, CompanyContact, models.Model):
     class Meta:
         verbose_name = "entreprise"
 

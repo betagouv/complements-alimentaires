@@ -10,13 +10,13 @@
       <FormWrapper class="mx-auto mt-8">
         <DsfrFieldset legend="Informations administratives de l'entreprise">
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'socialName')">
-            <DsfrInput v-model="state.socialName" label="Dénomination sociale" labelVisible />
+            <DsfrInput v-model="state.socialName" label="Dénomination sociale" required labelVisible />
           </DsfrInputGroup>
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'commercialName')">
-            <DsfrInput v-model="state.commercialName" label="Nom commercial" labelVisible />
+            <DsfrInput v-model="state.commercialName" label="Nom commercial" required labelVisible />
           </DsfrInputGroup>
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'address')">
-            <DsfrInput v-model="state.address" label="Adresse" labelVisible hint="Numéro et voie" />
+            <DsfrInput v-model="state.address" label="Adresse" required labelVisible hint="Numéro et voie" />
           </DsfrInputGroup>
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'additionalDetails')">
             <DsfrInput
@@ -28,10 +28,10 @@
           </DsfrInputGroup>
           <div class="flex gap-x-4 justify-between">
             <DsfrInputGroup :error-message="firstErrorMsg(v$, 'postalCode')">
-              <DsfrInput v-model="state.postalCode" label="Code postal" labelVisible />
+              <DsfrInput v-model="state.postalCode" label="Code postal" required labelVisible />
             </DsfrInputGroup>
             <DsfrInputGroup class="grow" :error-message="firstErrorMsg(v$, 'city')">
-              <DsfrInput v-model="state.city" label="Ville" labelVisible />
+              <DsfrInput v-model="state.city" label="Ville" required labelVisible />
             </DsfrInputGroup>
           </div>
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'cedex')">
@@ -40,7 +40,28 @@
         </DsfrFieldset>
 
         <DsfrFieldset legend="Activités de l'entreprise">
-          <DsfrCheckboxSet v-model="state.activities" :options="allActivities" />
+          <DsfrCheckboxSet
+            v-model="state.activities"
+            :options="allActivities"
+            :error-message="firstErrorMsg(v$, 'activities')"
+          />
+        </DsfrFieldset>
+        <DsfrFieldset legend="Informations de contact">
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'phoneNumber')">
+            <DsfrInput
+              required
+              type="tel"
+              v-model="state.phoneNumber"
+              label="N° de téléphone de contact"
+              labelVisible
+            />
+          </DsfrInputGroup>
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
+            <DsfrInput required v-model="state.email" label="Adresse e-mail de contact" labelVisible />
+          </DsfrInputGroup>
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'website')">
+            <DsfrInput v-model="state.website" label="Site web de l'entreprise (optionnel)" labelVisible />
+          </DsfrInputGroup>
         </DsfrFieldset>
         <DsfrButton label="Enregistrer l'entreprise" @click="submitCompany" :disabled="isFetching" />
       </FormWrapper>
@@ -69,7 +90,7 @@ const emit = defineEmits(["changeStep"])
 const hint = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
 const allActivities = [
   { label: "Fabricant", name: "FABRICANT", hint: hint },
-  { label: "Façonnier", name: "FACONNIER", hint: hint },
+  { label: "Façonnier", name: "FAÇONNIER", hint: hint },
   { label: "Importateur", name: "IMPORTATEUR", hint: hint },
   { label: "Introducteur", name: "INTRODUCTEUR", hint: hint },
   { label: "Conseil", name: "CONSEIL", hint: hint },
@@ -89,6 +110,10 @@ const state = ref({
   [company.value.identifierType]: company.value.identifier,
   // activities
   activities: [],
+  // contact
+  phone_number: "",
+  email: "",
+  website: "",
 })
 
 const rules = {
@@ -100,6 +125,10 @@ const rules = {
   city: errorRequiredField,
   cedex: {},
   // `country` et `siret/vat` ne sont pas affichés dans le formulaire car déjà entrés plus tôt
+  activities: errorRequiredField,
+  phoneNumber: errorRequiredField,
+  email: errorRequiredField,
+  website: {},
 }
 
 const $externalResults = ref({})
@@ -118,6 +147,7 @@ const { data, response, execute, isFetching } = useFetch(
 
 // Request execution
 const submitCompany = async () => {
+  v$.value.$clearExternalResults()
   v$.value.$validate()
   if (v$.value.$error) {
     return // prevent API call if there is a front-end error
