@@ -60,7 +60,7 @@ urlpatterns = {
         name="claim_company_co_supervision",
     ),
     path("declarations/", views.DeclarationListCreateApiView.as_view(), name="list_create_declaration"),
-    path("declarations/<int:pk>", views.DeclarationRetrieveView.as_view(), name="retrieve_declaration"),
+    path("declarations/<int:pk>", views.DeclarationRetrieveUpdateView.as_view(), name="retrieve_update_declaration"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

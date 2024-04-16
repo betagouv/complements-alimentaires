@@ -523,7 +523,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(saved_certificate_authority_image, green_image_base_64)
 
     @authenticate
-    def test_retrieve_declaration_list(self):
+    def test_retrieve_update_declaration_list(self):
         """
         Un user peut récupérer ses propres déclarations
         """
@@ -552,8 +552,8 @@ class TestDeclarationApi(APITestCase):
         user_declaration = DeclarationFactory.create(author=authenticate.user)
         other_declaration = DeclarationFactory.create()
 
-        response = self.client.get(reverse("api:retrieve_declaration", kwargs={"pk": user_declaration.id}))
+        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": user_declaration.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        response = self.client.get(reverse("api:retrieve_declaration", kwargs={"pk": other_declaration.id}))
+        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": other_declaration.id}))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

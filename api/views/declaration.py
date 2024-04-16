@@ -17,7 +17,7 @@ class DeclarationListCreateApiView(ListCreateAPIView):
         return DeclarationShortSerializer
 
 
-class DeclarationRetrieveView(RetrieveUpdateAPIView):
+class DeclarationRetrieveUpdateView(RetrieveUpdateAPIView):
     model = Declaration
     serializer_class = DeclarationSerializer
     permission_classes = [IsDeclarationAuthor]
