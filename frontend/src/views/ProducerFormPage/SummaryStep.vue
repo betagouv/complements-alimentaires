@@ -8,7 +8,7 @@
 
   <h3 class="fr-h6">
     Informations sur le produit
-    <router-link class="fr-btn fr-btn--secondary fr-btn--sm ml-4" :to="editLink(1)">Modifier</router-link>
+    <DsfrButton secondary class="ml-4" label="Modifier" size="small" @click="router.push(editLink(1))" />
   </h3>
   <div>
     <SummaryInfoSegment label="Nom du produit" :value="payload.name" />
@@ -30,7 +30,7 @@
 
   <h3 class="fr-h6 !mt-8">
     Composition
-    <router-link class="fr-btn fr-btn--secondary fr-btn--sm ml-4" :to="editLink(2)">Modifier</router-link>
+    <DsfrButton secondary class="ml-4" label="Modifier" size="small" @click="router.push(editLink(2))" />
   </h3>
 
   <SummaryElementList objectType="plant" :elements="payload.declaredPlants" />
@@ -42,7 +42,7 @@
 
   <h3 class="fr-h6 !mt-8">
     Pièces jointes
-    <router-link class="fr-btn fr-btn--secondary fr-btn--sm ml-4" :to="editLink(3)">Modifier</router-link>
+    <DsfrButton secondary class="ml-4" label="Modifier" size="small" @click="router.push(editLink(3))" />
   </h3>
   <div class="grid grid-cols-12 gap-3">
     <FilePreview
