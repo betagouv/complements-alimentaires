@@ -9,7 +9,10 @@
 
       <!-- TODO: changer la redirection quand la page d'entreprise particulière existe -->
       <div class="mt-4 flex gap-x-4">
-        <DsfrButton :label="`Accéder à « ${company.socialName} »`" @click="goToCompany" />
+        <DsfrButton
+          :label="`Accéder à « ${company.socialName} »`"
+          @click="$router.push({ name: 'Company', params: { id: company.id } })"
+        />
         <DsfrButton label="Retour au tableau de bord" tertiary @click="$router.push({ name: 'DashboardPage' })" />
       </div>
     </DsfrAlert>
@@ -18,8 +21,4 @@
 
 <script setup>
 const company = defineModel()
-
-const goToCompany = () => {
-  console.log("TODO: go to company ", company.value.id)
-}
 </script>
