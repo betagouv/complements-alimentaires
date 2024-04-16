@@ -16,6 +16,7 @@ class MicroorganismSynonymSerializer(serializers.ModelSerializer):
 class MicroorganismSerializer(serializers.ModelSerializer):
     synonyms = MicroorganismSynonymSerializer(many=True, read_only=True, source="microorganismsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
+    status = serializers.CharField(read_only=True, source="status.name")
 
     class Meta:
         model = Microorganism
@@ -27,5 +28,6 @@ class MicroorganismSerializer(serializers.ModelSerializer):
             "synonyms",
             "substances",
             "public_comments",
+            "status",
         )
         read_only_fields = fields

@@ -50,6 +50,7 @@ class PlantSerializer(serializers.ModelSerializer):
     plant_parts = PartRelationSerializer(source="part_set", many=True, read_only=True)
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
+    status = serializers.CharField(read_only=True, source="status.name")
 
     class Meta:
         model = Plant
@@ -61,5 +62,6 @@ class PlantSerializer(serializers.ModelSerializer):
             "synonyms",
             "substances",
             "public_comments",
+            "status",
         )
         read_only_fields = fields

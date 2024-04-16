@@ -16,6 +16,7 @@ class IngredientSynonymSerializer(serializers.ModelSerializer):
 class IngredientSerializer(serializers.ModelSerializer):
     synonyms = IngredientSynonymSerializer(many=True, read_only=True, source="ingredientsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
+    status = serializers.CharField(read_only=True, source="status.name")
 
     class Meta:
         model = Ingredient
@@ -27,5 +28,6 @@ class IngredientSerializer(serializers.ModelSerializer):
             "synonyms",
             "substances",
             "public_comments",
+            "status",
         )
         read_only_fields = fields
