@@ -7,35 +7,41 @@
       <strong>{{ company.identifier }}</strong>
       n'est pas encore enregistrée dans notre base de données. Pour ce faire, veuillez vérifier ou compléter les
       informations ci-dessous. À l'issue, vous en deviendrez automatiquement son gestionnaire.
-      <FormWrapper class="mx-auto">
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'socialName')">
-          <DsfrInput v-model="state.socialName" label="Dénomination sociale" labelVisible />
-        </DsfrInputGroup>
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'commercialName')">
-          <DsfrInput v-model="state.commercialName" label="Nom commercial" labelVisible />
-        </DsfrInputGroup>
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'address')">
-          <DsfrInput v-model="state.address" label="Adresse" labelVisible hint="Numéro et voie" />
-        </DsfrInputGroup>
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'additionalDetails')">
-          <DsfrInput
-            v-model="state.additionalDetails"
-            label="Complément d’adresse (optionnel)"
-            labelVisible
-            hint="Bâtiment, immeuble, escalier et numéro d’appartement"
-          />
-        </DsfrInputGroup>
-        <div class="flex gap-x-4 justify-between">
-          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'postalCode')">
-            <DsfrInput v-model="state.postalCode" label="Code postal" labelVisible />
+      <FormWrapper class="mx-auto mt-8">
+        <DsfrFieldset legend="Informations administratives de l'entreprise">
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'socialName')">
+            <DsfrInput v-model="state.socialName" label="Dénomination sociale" labelVisible />
           </DsfrInputGroup>
-          <DsfrInputGroup class="grow" :error-message="firstErrorMsg(v$, 'city')">
-            <DsfrInput v-model="state.city" label="Ville" labelVisible />
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'commercialName')">
+            <DsfrInput v-model="state.commercialName" label="Nom commercial" labelVisible />
           </DsfrInputGroup>
-        </div>
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'cedex')">
-          <DsfrInput v-model="state.cedex" label="Cedex (optionnel)" labelVisible />
-        </DsfrInputGroup>
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'address')">
+            <DsfrInput v-model="state.address" label="Adresse" labelVisible hint="Numéro et voie" />
+          </DsfrInputGroup>
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'additionalDetails')">
+            <DsfrInput
+              v-model="state.additionalDetails"
+              label="Complément d’adresse (optionnel)"
+              labelVisible
+              hint="Bâtiment, immeuble, escalier et numéro d’appartement"
+            />
+          </DsfrInputGroup>
+          <div class="flex gap-x-4 justify-between">
+            <DsfrInputGroup :error-message="firstErrorMsg(v$, 'postalCode')">
+              <DsfrInput v-model="state.postalCode" label="Code postal" labelVisible />
+            </DsfrInputGroup>
+            <DsfrInputGroup class="grow" :error-message="firstErrorMsg(v$, 'city')">
+              <DsfrInput v-model="state.city" label="Ville" labelVisible />
+            </DsfrInputGroup>
+          </div>
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'cedex')">
+            <DsfrInput v-model="state.cedex" label="Cedex (optionnel)" labelVisible />
+          </DsfrInputGroup>
+        </DsfrFieldset>
+
+        <DsfrFieldset legend="Activités de l'entreprise">
+          <DsfrCheckboxSet v-model="state.activities" :options="allActivities" />
+        </DsfrFieldset>
         <DsfrButton label="Enregistrer l'entreprise" @click="submitCompany" :disabled="isFetching" />
       </FormWrapper>
     </DsfrAlert>
@@ -60,6 +66,16 @@ const emit = defineEmits(["changeStep"])
 
 // Form state & rules
 
+const hint = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+const allActivities = [
+  { label: "Fabricant", name: "FABRICANT", hint: hint },
+  { label: "Façonnier", name: "FACONNIER", hint: hint },
+  { label: "Importateur", name: "IMPORTATEUR", hint: hint },
+  { label: "Introducteur", name: "INTRODUCTEUR", hint: hint },
+  { label: "Conseil", name: "CONSEIL", hint: hint },
+  { label: "Distributeur", name: "DISTRIBUTEUR", hint: hint },
+]
+
 const state = ref({
   socialName: "",
   commercialName: "",
@@ -71,6 +87,8 @@ const state = ref({
   country: company.value.country,
   // on passe soit un numéro de SIRET, soit de VAT dans le payload
   [company.value.identifierType]: company.value.identifier,
+  // activities
+  activities: [],
 })
 
 const rules = {
