@@ -1,4 +1,4 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
 from api.serializers import DeclarationSerializer, DeclarationShortSerializer
 from data.models import Declaration
 from api.permissions import IsDeclarant, IsDeclarationAuthor
@@ -17,7 +17,7 @@ class DeclarationListCreateApiView(ListCreateAPIView):
         return DeclarationShortSerializer
 
 
-class DeclarationRetrieveView(RetrieveAPIView):
+class DeclarationRetrieveView(RetrieveUpdateAPIView):
     model = Declaration
     serializer_class = DeclarationSerializer
     permission_classes = [IsDeclarationAuthor]

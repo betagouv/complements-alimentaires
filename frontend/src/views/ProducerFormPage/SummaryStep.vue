@@ -1,5 +1,5 @@
 <template>
-  <DsfrAlert class="mb-8" v-if="!payload.id">
+  <DsfrAlert class="mb-8">
     <p class="mb-2">Vous pouvez sauvegarder cette démarche pour la reprendre plus tard</p>
     <DsfrButton @click="saveDraft" label="Sauvegarder en tant que brouillon" />
   </DsfrAlert>
