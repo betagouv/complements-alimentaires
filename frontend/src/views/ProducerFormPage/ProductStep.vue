@@ -220,7 +220,7 @@
       <DsfrInput v-model="payload.cedex" label-visible label="Cedex" />
     </DsfrInputGroup>
     <DsfrInputGroup>
-      <DsfrSelect label="Pays" v-model="payload.country" :options="countries" :required="true" />
+      <CountryField v-model="payload.country" />
     </DsfrInputGroup>
   </div>
 </template>
@@ -229,8 +229,8 @@ import { computed, watch, ref } from "vue"
 import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { countries } from "@/utils/mappings"
 import { otherFieldsAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
+import CountryField from "@/components/fields/CountryField.vue"
 
 const payload = defineModel()
 const store = useRootStore()

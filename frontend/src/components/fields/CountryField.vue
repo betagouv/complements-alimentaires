@@ -1,13 +1,15 @@
 <template>
-  <DsfrSelect defaultUnselectedText="Choisissez un pays" :options="data" label="Pays" required labelVisible />
+  <DsfrSelect defaultUnselectedText="Choisissez un pays" :options="countries" label="Pays" required labelVisible />
 </template>
 
 <script setup>
-import { onMounted } from "vue"
+import { onMounted, computed } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 
 const { data, response, execute } = useFetch("/api/v1/countries/", { immediate: false }).json()
+const props = defineProps({ exclude: { default: Array() } })
+const countries = computed(() => data.value?.filter((x) => props.exclude.indexOf(x.value) === -1))
 
 onMounted(async () => {
   await execute()
