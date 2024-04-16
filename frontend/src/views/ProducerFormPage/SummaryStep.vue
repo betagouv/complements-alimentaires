@@ -116,7 +116,7 @@ const saveDraft = async () => {
   const httpMethod = isNew ? "post" : "put"
   const { response } = await useFetch(url, { headers: headers() })[httpMethod](payload)
   if (response.value.ok) {
-    await router.replace({ name: "DashboardPage" })
+    await router.replace({ name: "DeclarationsHomePage" })
     useToaster().addSuccessMessage("Votre démarche a été sauvegardée")
   } else {
     console.log(response)
