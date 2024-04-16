@@ -2,12 +2,12 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 from data.behaviours import TimeStampable, Historisable
-from .mixins import WithMissingImportBoolean, WithComments
+from .mixins import WithMissingImportBoolean, WithComments, WithStatus
 from .abstract_models import CommonModel
 from .substance import Substance
 
 
-class Ingredient(CommonModel, WithComments):
+class Ingredient(CommonModel, WithComments, WithStatus):
     class Meta:
         verbose_name = "autre ingrédient"
         verbose_name_plural = "autres ingrédients"

@@ -14,6 +14,7 @@ from .condition import Condition  # noqa: F401
 from .effect import Effect  # noqa: F401
 from .galenic_formulation import GalenicFormulation  # noqa: F401
 from .unit import SubstanceUnit  # noqa: F401
+from .status import IngredientStatus  # noqa: F401
 from .declaration import (  # noqa: F401
     Declaration,  # noqa: F401
     DeclaredPlant,  # noqa: F401
@@ -34,6 +35,8 @@ ELEMENT_MODELS = [
     MicroorganismSynonym,
     Substance,
     SubstanceSynonym,
+    IngredientStatus,
+    SubstanceUnit,
 ]
 
-DECLARATION_MODELS = [Condition, Effect, GalenicFormulation, Population, SubstanceUnit]
+DECLARATION_MODELS = [Condition, Effect, GalenicFormulation, Population]

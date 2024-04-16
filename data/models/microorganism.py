@@ -5,7 +5,7 @@ from django.db.models import F, Value
 from simple_history.models import HistoricalRecords
 
 from data.behaviours import TimeStampable, Historisable
-from .mixins import WithMissingImportBoolean, WithComments
+from .mixins import WithMissingImportBoolean, WithComments, WithStatus
 from .abstract_models import CommonModel
 from .substance import Substance
 
@@ -20,7 +20,7 @@ class ConcatOp(models.Func):
     template = "%(expressions)s"
 
 
-class Microorganism(CommonModel, WithComments):
+class Microorganism(CommonModel, WithComments, WithStatus):
     class Meta:
         verbose_name = "micro-organisme"
 

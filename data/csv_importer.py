@@ -27,7 +27,7 @@ from .models import (
     SubstanceSynonym,
 )
 
-from .models import Effect, GalenicFormulation, Population, SubstanceUnit
+from .models import Effect, GalenicFormulation, IngredientStatus, Population, SubstanceUnit
 
 # from .models.condition import Condition
 
@@ -57,6 +57,7 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_PARTIE_UTILE.csv": Part,
     "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
     "REF_ICA_FORME_GALENIQUE.csv": GalenicFormulation,
+    "REF_ICA_STATUT_INGR_SUBST.csv": IngredientStatus,
 }
 
 # Le fichier REF_ICA_PARTIE_PL_A_SURVEILLER n'est pas traité comme une relation car il correspond à un model à part entière
@@ -80,6 +81,7 @@ class CSVImporter:
         "UNT": SubstanceUnit,
         "OBJEFF": Effect,
         "FRMGAL": GalenicFormulation,
+        "STINGSBS": IngredientStatus,
         # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
         # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
         # "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",

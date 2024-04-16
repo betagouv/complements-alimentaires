@@ -5,7 +5,7 @@ from django.db.models import F
 from simple_history.models import HistoricalRecords
 
 from data.behaviours import TimeStampable, Historisable
-from .mixins import WithMissingImportBoolean, WithComments
+from .mixins import WithMissingImportBoolean, WithComments, WithStatus
 from .abstract_models import CommonModel
 from .substance import Substance
 
@@ -35,7 +35,7 @@ class PlantPart(CommonModel):
         return self.siccrf_name_en
 
 
-class Plant(CommonModel, WithComments):
+class Plant(CommonModel, WithComments, WithStatus):
     class Meta:
         verbose_name = "plante"
 
