@@ -4,14 +4,11 @@
     <DsfrButton @click="saveDraft" label="Sauvegarder en tant que brouillon" />
   </DsfrAlert>
 
-  <h2 class="fr-h6">
-    <v-icon class="mr-1" name="ri-file-text-line" />
-    Votre démarche
-  </h2>
+  <SectionTitle title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" />
 
   <h3 class="fr-h6">
     Informations sur le produit
-    <router-link class="fr-btn fr-btn--secondary fr-btn--sm ml-4" :to="editLink(1)">Modifier</router-link>
+    <DsfrButton secondary class="ml-4" label="Modifier" size="small" @click="router.push(editLink(1))" />
   </h3>
   <div>
     <SummaryInfoSegment label="Nom du produit" :value="payload.name" />
@@ -33,7 +30,7 @@
 
   <h3 class="fr-h6 !mt-8">
     Composition
-    <router-link class="fr-btn fr-btn--secondary fr-btn--sm ml-4" :to="editLink(2)">Modifier</router-link>
+    <DsfrButton secondary class="ml-4" label="Modifier" size="small" @click="router.push(editLink(2))" />
   </h3>
 
   <SummaryElementList objectType="plant" :elements="payload.declaredPlants" />
@@ -45,7 +42,7 @@
 
   <h3 class="fr-h6 !mt-8">
     Pièces jointes
-    <router-link class="fr-btn fr-btn--secondary fr-btn--sm ml-4" :to="editLink(3)">Modifier</router-link>
+    <DsfrButton secondary class="ml-4" label="Modifier" size="small" @click="router.push(editLink(3))" />
   </h3>
   <div class="grid grid-cols-12 gap-3">
     <FilePreview
@@ -70,6 +67,7 @@ import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRouter } from "vue-router"
 import useToaster from "@/composables/use-toaster"
+import SectionTitle from "@/components/SectionTitle"
 
 const router = useRouter()
 const { populations, conditions, effects, galenicFormulation } = storeToRefs(useRootStore())
@@ -111,9 +109,12 @@ const conditionNames = computed(() => {
 const editLink = (step) => ({ name: "ProducerFormPage", query: { step } })
 
 const saveDraft = async () => {
-  const { response } = await useFetch("/api/v1/declarations/", { headers: headers() }).post(payload)
+  const isNewDeclaration = !payload.value.id
+  const url = isNewDeclaration ? "/api/v1/declarations/" : `/api/v1/declarations/${payload.value.id}`
+  const httpMethod = isNewDeclaration ? "post" : "put"
+  const { response } = await useFetch(url, { headers: headers() })[httpMethod](payload)
   if (response.value.ok) {
-    await router.replace({ name: "DashboardPage" })
+    await router.replace({ name: "DeclarationsHomePage" })
     useToaster().addSuccessMessage("Votre démarche a été sauvegardée")
   } else {
     console.log(response)

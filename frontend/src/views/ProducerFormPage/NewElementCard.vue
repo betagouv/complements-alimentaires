@@ -61,12 +61,11 @@
       <hr class="pb-1 -mt-3" />
       <div class="grid grid-cols-12 gap-4">
         <DsfrInputGroup class="col-span-12 md:col-span-3">
-          <DsfrSelect
+          <CountryField
             label="Pays de référence"
+            :exclude="['FR']"
             defaultUnselectedText=""
             v-model="model.euReferenceCountry"
-            :options="countries.filter((x) => x.value !== 'FR')"
-            :required="true"
           />
         </DsfrInputGroup>
         <div class="col-span-12 md:col-span-9">
@@ -96,7 +95,7 @@
 </template>
 
 <script setup>
-import { countries } from "@/utils/mappings"
+import CountryField from "@/components/fields/CountryField"
 import { getElementName } from "@/utils/elements"
 
 const model = defineModel()

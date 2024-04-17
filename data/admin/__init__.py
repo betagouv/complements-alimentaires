@@ -14,6 +14,7 @@ from .condition import Condition  # noqa
 from .effect import Effect  # noqa
 from .galenic_formulation import GalenicFormulation  # noqa
 from .status import IngredientStatus  # noqa
+from .declaration import DeclarationAdmin  # noqa
 
 from data.models import PlantPart, PlantFamily
 from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields

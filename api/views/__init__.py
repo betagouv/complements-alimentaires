@@ -5,7 +5,7 @@ from .company import CountryListView  # noqa: F401
 from .condition import ConditionListView  # noqa: F401
 from .effect import EffectListView  # noqa: F401
 from .galenic_formulation import GalenicFormulationListView  # noqa: F401
-from .declaration import DeclarationCreateApiView  # noqa: F401
+from .declaration import DeclarationListCreateApiView, DeclarationRetrieveUpdateView  # noqa: F401
 from .ingredient import IngredientRetrieveView  # noqa: F401
 from .microorganism import MicroorganismRetrieveView  # noqa: F401
 from .newsletter import SubscribeNewsletter  # noqa: F401
