@@ -19,6 +19,7 @@ from data.factories import (
     DeclarantFactory,
     GalenicFormulationFactory,
     DeclarationFactory,
+    InstructionReadyDeclarationFactory,
 )
 from .utils import authenticate
 
@@ -136,6 +137,7 @@ class TestDeclarationApi(APITestCase):
         unit = SubstanceUnitFactory()
 
         payload = {
+            "name": "Name",
             "company": CompanyFactory().id,
             "declaredPlants": [
                 {
@@ -196,6 +198,7 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         payload = {
+            "name": "Name",
             "company": CompanyFactory().id,
             "declaredPlants": [
                 {
@@ -222,6 +225,7 @@ class TestDeclarationApi(APITestCase):
         microorganism = MicroorganismFactory()
 
         payload = {
+            "name": "Name",
             "company": CompanyFactory().id,
             "declaredMicroorganisms": [
                 {
@@ -285,6 +289,7 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         payload = {
+            "name": "Name",
             "company": CompanyFactory().id,
             "declaredMicroorganisms": [
                 {
@@ -311,6 +316,7 @@ class TestDeclarationApi(APITestCase):
         ingredient = IngredientFactory()
 
         payload = {
+            "name": "Name",
             "company": CompanyFactory().id,
             "declaredIngredients": [
                 {
@@ -361,6 +367,7 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         payload = {
+            "name": "Name",
             "company": CompanyFactory().id,
             "declaredIngredients": [
                 {
@@ -388,6 +395,7 @@ class TestDeclarationApi(APITestCase):
         substance = SubstanceFactory()
 
         payload = {
+            "name": "Name",
             "company": CompanyFactory().id,
             "declaredSubstances": [
                 {
@@ -419,6 +427,7 @@ class TestDeclarationApi(APITestCase):
         DeclarantFactory(user=authenticate.user)
 
         payload = {
+            "name": "Name",
             "company": CompanyFactory().id,
             "declaredSubstances": [
                 {
@@ -447,6 +456,7 @@ class TestDeclarationApi(APITestCase):
         unit = SubstanceUnitFactory()
 
         payload = {
+            "name": "Name",
             "company": CompanyFactory().id,
             "computedSubstances": [
                 {
@@ -491,6 +501,7 @@ class TestDeclarationApi(APITestCase):
             green_image_base_64 = base64.b64encode(image.read()).decode("utf-8")
 
         payload = {
+            "name": "Name",
             "company": CompanyFactory().id,
             "attachments": [
                 {
@@ -574,3 +585,34 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         user_declaration.refresh_from_db()
         self.assertEqual(user_declaration.name, "New name")
+
+    @authenticate
+    def test_submit_declaration(self):
+        DeclarantFactory(user=authenticate.user)
+
+        # Une déclaration avec toutes les conditions nécessaires pour l'instruction
+        declaration = InstructionReadyDeclarationFactory(author=authenticate.user)
+        response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Si un champ obligatoire pour l'instruction manque, on le spécifie
+        missing_field_declaration = InstructionReadyDeclarationFactory(
+            author=authenticate.user, daily_recommended_dose=""
+        )
+        response = self.client.post(
+            reverse("api:submit_declaration", kwargs={"pk": missing_field_declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        json_errors = response.json()
+        self.assertEqual(len(json_errors["fieldErrors"]), 1)
+        self.assertIn("dailyRecommendedDose", json_errors["fieldErrors"][0])
+
+        # S'il n'y a pas d'éléments dans la déclaration, on ne peut pas la soumettre pour instruction
+        missing_elements_declaration = InstructionReadyDeclarationFactory(author=authenticate.user, declared_plants=[])
+        response = self.client.post(
+            reverse("api:submit_declaration", kwargs={"pk": missing_elements_declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        json_errors = response.json()
+        self.assertEqual(len(json_errors["nonFieldErrors"]), 1)
+        self.assertEqual("Le complément doit comporter au moins un ingrédient", json_errors["nonFieldErrors"][0])

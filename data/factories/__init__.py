@@ -12,4 +12,4 @@ from .effect import EffectFactory  # noqa
 from .galenic_formulation import GalenicFormulationFactory  # noqa
 from .roles import DeclarantFactory, CompanySupervisorFactory  # noqa
 from .unit import SubstanceUnitFactory  # noqa
-from .declaration import DeclarationFactory  # noqa
+from .declaration import DeclarationFactory, InstructionReadyDeclarationFactory  # noqa

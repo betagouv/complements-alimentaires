@@ -265,6 +265,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
     declared_substances = DeclaredListSerializer(child=DeclaredSubstanceSerializer(), required=False)
     computed_substances = DeclaredListSerializer(child=ComputedSubstanceSerializer(), required=False)
     attachments = DeclaredListSerializer(child=AttachmentSerializer(), required=False)
+    name = serializers.CharField(allow_blank=False, required=True)
 
     class Meta:
         model = Declaration

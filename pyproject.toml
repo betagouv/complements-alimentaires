@@ -78,6 +78,7 @@ django-ckeditor-5 = "*"   # https://github.com/hvlads/django-ckeditor-5
 
 
 # Dev dependencies (not installed on remote environments)
+django-viewflow = "^2.0.0"
 [tool.poetry.group.dev.dependencies]
 
 ######################################################################################################################
