@@ -26,42 +26,54 @@
               hint="Bâtiment, immeuble, escalier et numéro d’appartement"
             />
           </DsfrInputGroup>
-          <div class="flex gap-x-4 justify-between">
+          <div class="flex gap-x-4">
             <DsfrInputGroup :error-message="firstErrorMsg(v$, 'postalCode')">
               <DsfrInput v-model="state.postalCode" label="Code postal" required labelVisible />
             </DsfrInputGroup>
-            <DsfrInputGroup class="grow" :error-message="firstErrorMsg(v$, 'city')">
-              <DsfrInput v-model="state.city" label="Ville" required labelVisible />
-            </DsfrInputGroup>
+            <div class="grow">
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'city')">
+                <DsfrInput v-model="state.city" label="Ville" required labelVisible />
+              </DsfrInputGroup>
+            </div>
           </div>
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'cedex')">
             <DsfrInput v-model="state.cedex" label="Cedex (optionnel)" labelVisible />
           </DsfrInputGroup>
         </DsfrFieldset>
 
-        <DsfrFieldset legend="Activités de l'entreprise">
+        <DsfrFieldset
+          legend="Activités de l'entreprise"
+          hint="Veuillez cocher obligatoirement une ou plusieurs des six cases proposées correspondant au
+type d’activité exercée par le déclarant."
+        >
           <DsfrCheckboxSet
+            class="max-w-3xl"
             v-model="state.activities"
             :options="allActivities"
             :error-message="firstErrorMsg(v$, 'activities')"
           />
         </DsfrFieldset>
-        <DsfrFieldset legend="Informations de contact">
-          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'phoneNumber')">
-            <DsfrInput
-              required
-              type="tel"
-              v-model="state.phoneNumber"
-              label="N° de téléphone de contact"
-              labelVisible
-            />
-          </DsfrInputGroup>
-          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
-            <DsfrInput required v-model="state.email" label="Adresse e-mail de contact" labelVisible />
-          </DsfrInputGroup>
-          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'website')">
-            <DsfrInput v-model="state.website" label="Site web de l'entreprise (optionnel)" labelVisible />
-          </DsfrInputGroup>
+        <DsfrFieldset
+          legend="Informations de contact"
+          hint="Veuillez transmettre les coordonnées d’une personne au sein de la société que la DGAL pourra être amenée à contacter en cas de nécessité ou pour des informations complémentaires."
+        >
+          <div class="grid gap-4 grid-cols-2">
+            <DsfrInputGroup :error-message="firstErrorMsg(v$, 'phoneNumber')">
+              <DsfrInput
+                required
+                type="tel"
+                v-model="state.phoneNumber"
+                label="N° de téléphone de contact"
+                labelVisible
+              />
+            </DsfrInputGroup>
+            <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
+              <DsfrInput required v-model="state.email" label="Adresse e-mail de contact" labelVisible />
+            </DsfrInputGroup>
+            <DsfrInputGroup :error-message="firstErrorMsg(v$, 'website')">
+              <DsfrInput v-model="state.website" label="Site web de l'entreprise (optionnel)" labelVisible />
+            </DsfrInputGroup>
+          </div>
         </DsfrFieldset>
         <DsfrButton label="Enregistrer l'entreprise" @click="submitCompany" :disabled="isFetching" />
       </FormWrapper>
@@ -86,16 +98,6 @@ const company = defineModel()
 const emit = defineEmits(["changeStep"])
 
 // Form state & rules
-
-const hint = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-const allActivities = [
-  { label: "Fabricant", name: "FABRICANT", hint: hint },
-  { label: "Façonnier", name: "FAÇONNIER", hint: hint },
-  { label: "Importateur", name: "IMPORTATEUR", hint: hint },
-  { label: "Introducteur", name: "INTRODUCTEUR", hint: hint },
-  { label: "Conseil", name: "CONSEIL", hint: hint },
-  { label: "Distributeur", name: "DISTRIBUTEUR", hint: hint },
-]
 
 const state = ref({
   socialName: "",
@@ -164,4 +166,38 @@ const submitCompany = async () => {
     })
   }
 }
+
+// Data
+const allActivities = [
+  {
+    label: "Fabricant",
+    name: "FABRICANT",
+    hint: "Le fabricant est responsable de la production des compléments alimentaires.",
+  },
+  {
+    label: "Façonnier",
+    name: "FAÇONNIER",
+    hint: " Un façonnier, ou sous-traitant, est une entreprise qui produit des compléments alimentaires pour le compte d'autres marques.",
+  },
+  {
+    label: "Importateur",
+    name: "IMPORTATEUR",
+    hint: "L'importateur est responsable de l'introduction de compléments alimentaires provenant de l'étranger sur le marché français.",
+  },
+  {
+    label: "Introducteur",
+    name: "INTRODUCTEUR",
+    hint: "L'introducteur, souvent utilisé de manière interchangeable avec l'importateur, est spécifiquement chargé de mettre sur le marché français des produits qui n'étaient pas auparavant disponibles.",
+  },
+  {
+    label: "Conseil",
+    name: "CONSEIL",
+    hint: "Ce rôle peut être tenu par des consultants ou des organismes spécialisés qui fournissent des expertises et des conseils aux autres acteurs de la chaîne (fabricants, distributeurs, etc.).",
+  },
+  {
+    label: "Distributeur",
+    name: "DISTRIBUTEUR",
+    hint: "Le distributeur achète des compléments alimentaires pour les revendre aux détaillants ou directement aux consommateurs.",
+  },
+]
 </script>
