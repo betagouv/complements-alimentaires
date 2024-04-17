@@ -1,10 +1,7 @@
 <template>
   <!-- Si on a une seule entreprise, pas besoin d'afficher ce champ -->
   <template v-if="!companies || companies.length !== 1">
-    <h2 class="fr-h6">
-      <v-icon class="mr-1" name="ri-home-2-fill" />
-      Entreprise
-    </h2>
+    <SectionTitle title="Entreprise" sizeTag="h6" icon="ri-home-2-fill" />
     <DsfrAlert type="warning" v-if="!companies || companies.length === 0">
       <p>
         Vous n'avez pas d'entreprise assignée. Contacter l'administrateur de votre entreprise ou
@@ -22,10 +19,7 @@
     </DsfrInputGroup>
   </template>
 
-  <h2 class="fr-h6 !mt-8">
-    <v-icon class="mr-1" name="ri-price-tag-2-fill" />
-    Dénomination commerciale
-  </h2>
+  <SectionTitle title="Dénomination commerciale" class="!mt-10" sizeTag="h6" icon="ri-price-tag-2-fill" />
   <div class="grid grid-cols-2 gap-4">
     <div class="col-span-2 md:col-span-1 max-w-md">
       <DsfrInputGroup>
@@ -50,10 +44,7 @@
       <DsfrInput is-textarea v-model="payload.description" label-visible label="Description" :required="true" />
     </DsfrInputGroup>
   </div>
-  <h2 class="fr-h6 !mt-8">
-    <v-icon class="mr-1" name="ri-capsule-fill" />
-    Format
-  </h2>
+  <SectionTitle title="Format" class="!mt-10" sizeTag="h6" icon="ri-capsule-fill" />
   <div class="grid grid-cols-2 gap-4">
     <DsfrFieldset legend="Forme galénique" legendClass="fr-label !font-normal !pb-0">
       <div class="flex">
@@ -132,10 +123,7 @@
   <DsfrInputGroup class="max-w-2xl mt-6">
     <DsfrInput is-textarea v-model="payload.warning" label-visible label="Mise en garde et avertissement" />
   </DsfrInputGroup>
-  <h2 class="fr-h6 !mt-8">
-    <v-icon class="mr-1" name="ri-file-user-fill" />
-    Populations cible
-  </h2>
+  <SectionTitle title="Populations cible" class="!mt-10" sizeTag="h6" icon="ri-file-user-fill" />
   <DsfrFieldset legend="Population cible" legendClass="fr-label">
     <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
       <div
@@ -171,10 +159,7 @@
       </div>
     </div>
   </DsfrFieldset>
-  <h2 class="fr-h6 !mt-8">
-    <v-icon class="mr-1" name="ri-focus-2-fill" />
-    Objectifs / effets
-  </h2>
+  <SectionTitle title="Objectifs / effets" class="!mt-10" sizeTag="h6" icon="ri-focus-2-fill" />
   <DsfrFieldset>
     <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
       <div v-for="effect in effects" :key="`effect-${effect.id}`" class="flex col-span-6 sm:col-span-3 lg:col-span-2">
@@ -192,10 +177,7 @@
       :required="true"
     />
   </DsfrInputGroup>
-  <h2 class="fr-h6 !mt-8">
-    <v-icon class="mr-1" name="ri-home-2-fill" />
-    Adresse sur l'étiquetage
-  </h2>
+  <SectionTitle title="Adresse sur l'étiquetage" class="!mt-10" sizeTag="h6" icon="ri-home-2-fill" />
   <div class="max-w-2xl mb-8 address-form">
     <DsfrInputGroup>
       <DsfrInput v-model="payload.address" label-visible label="Adresse" hint="Numéro et voie" :required="true" />
@@ -220,7 +202,7 @@
       <DsfrInput v-model="payload.cedex" label-visible label="Cedex" />
     </DsfrInputGroup>
     <DsfrInputGroup>
-      <DsfrSelect label="Pays" v-model="payload.country" :options="countries" :required="true" />
+      <CountryField v-model="payload.country" />
     </DsfrInputGroup>
   </div>
 </template>
@@ -229,8 +211,9 @@ import { computed, watch, ref } from "vue"
 import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { countries } from "@/utils/mappings"
 import { otherFieldsAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
+import CountryField from "@/components/fields/CountryField.vue"
+import SectionTitle from "@/components/SectionTitle"
 
 const payload = defineModel()
 const store = useRootStore()

@@ -21,3 +21,10 @@ class IsSupervisorOfThisCompany(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         user = request.user
         return user.is_authenticated and obj.supervisors.filter(user=user).exists()
+
+
+class IsDeclarationAuthor(permissions.BasePermission):
+    message = "Vous devez être l'auteur de cette déclaration pour effectuer cette action"
+
+    def has_object_permission(self, request, view, obj):
+        return request.user.is_authenticated and obj.author == request.user
