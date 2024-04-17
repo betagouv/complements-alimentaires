@@ -7,7 +7,7 @@ from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
 @admin.register(Ingredient)
 class IngredientAdmin(IngredientAdminHistorisableChangedFields):
     list_display = ("name", "get_status")
-    list_filter = ("is_obsolete",)
+    list_filter = ("is_obsolete", "status__name")
     readonly_fields = (
         "name",
         "is_obsolete",

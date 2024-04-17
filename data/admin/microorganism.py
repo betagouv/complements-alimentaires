@@ -54,7 +54,7 @@ class MicroorganismAdmin(IngredientAdminHistorisableChangedFields):
     ]
 
     list_display = ("name", "get_status")
-    list_filter = ("is_obsolete",)
+    list_filter = ("is_obsolete", "status__name")
     history_list_display = ["changed_fields"]
     readonly_fields = (
         "name",
