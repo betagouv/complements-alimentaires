@@ -19,6 +19,9 @@ class IngredientStatus(WithMissingImportBoolean):
     )
     name = models.TextField(verbose_name="statut")
 
+    def __str__(self):
+        return self.name
+
 
 class WithStatus(models.Model):
     """Mixins pour les ingrédients "(plantes, micro-organismes, substances et ingrédients de la SICCRF)" qui portent un statut.

@@ -47,6 +47,7 @@ class PlantAdmin(IngredientAdminHistorisableChangedFields):
                     "ca_name",
                     "name",
                     "is_obsolete",
+                    "status",
                     "ca_is_obsolete",
                 ],
             },
@@ -75,10 +76,7 @@ class PlantAdmin(IngredientAdminHistorisableChangedFields):
         SubstanceInlineAdmin,
         PlantSynonymInline,
     )
-    list_display = (
-        "name",
-        "siccrf_family",
-    )
+    list_display = ("name", "siccrf_family", "get_status")
     list_filter = ("is_obsolete", "siccrf_family")
     history_list_display = ["changed_fields"]
     readonly_fields = (
@@ -90,9 +88,3 @@ class PlantAdmin(IngredientAdminHistorisableChangedFields):
         "siccrf_family",
         "family",
     )
-
-    def changed_fields(self, obj):
-        if obj.prev_record:
-            delta = obj.diff_against(obj.prev_record)
-            return delta.changed_fields
-        return None

@@ -1,3 +1,4 @@
+from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
 
@@ -9,3 +10,10 @@ class IngredientAdminHistorisableChangedFields(SimpleHistoryAdmin):
             delta = obj.diff_against(obj.prev_record)
             return delta.changed_fields
         return None
+
+    @admin.display(ordering="status__name", description="statut")
+    def get_status(self, obj):
+        if obj.status:
+            return obj.status.name
+        else:
+            return None
