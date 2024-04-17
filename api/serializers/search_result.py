@@ -8,6 +8,7 @@ class SearchResultSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(read_only=True)
     name_en = serializers.CharField(read_only=True)
+    status = serializers.CharField(read_only=True, source="status.name")
 
     # Ingredient
     description = serializers.CharField(read_only=True)

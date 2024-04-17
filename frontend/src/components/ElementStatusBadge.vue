@@ -11,6 +11,6 @@ const badgeTypes = [
   { text: "Autorisé", type: "success" },
   { text: "Non autorisé", type: "error" },
   { text: "À inscrire", type: "new" }, // TODO: trouver un wording plus user friendly et compréhensible
-  { text: "Sans objet", type: "warning" }, // TODO: vérifier que ce statut est utilisé dans les données
+  { text: "Sans objet", type: "warning" }, // TODO: ne pas afficher ce statut lorsqu'il est présent
 ]
 </script>
