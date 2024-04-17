@@ -6,8 +6,10 @@ from data.factories import (
     PlantSynonymFactory,
     IngredientFactory,
     SubstanceFactory,
+    SubstanceSynonymFactory,
     MicroorganismFactory,
     MicroorganismSynonymFactory,
+    StatusFactory,
 )
 
 
@@ -23,8 +25,11 @@ class TestAutocomplete(APITestCase):
         """
         A autocomplete term of less than three chars is considered a bad request
         """
-        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"search": "ab"})
+        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": "ab"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.json()["globalError"], "Le terme de recherche doit être supérieur ou égal à 3 caractères"
+        )
 
     def test_autocomplete_name(self):
         """
@@ -91,3 +96,30 @@ class TestAutocomplete(APITestCase):
         self.assertEqual(results[0]["objectType"], "substance")
         self.assertEqual(results[1]["objectType"], "plant")
         self.assertEqual(results[2]["objectType"], "microorganism")
+
+    def test_status_of_autocomplete_result(self):
+        """
+        Elements with status "Non autorisé" should not be returned by autocomplete
+        """
+        autocomplete_term = "ephedra"
+
+        # Devrait apparaître en première position à cause de son score SequenceMatcher
+        authorized = StatusFactory.create(name="Autorisé")
+        authorized_substance = SubstanceFactory.create(ca_name="Vitamine C", status=authorized)
+        SubstanceSynonymFactory.create(name="Ephedra", standard_name=authorized_substance)
+
+        forbidden = StatusFactory.create(name="Non autorisé")
+        forbidden_plant = PlantFactory.create(ca_name="Ephedra", status=forbidden)
+
+        to_be_authorized = StatusFactory.create(name="A inscrire")
+        to_be_authorized_plant = PlantFactory.create(ca_name="Ephedralite", status=to_be_authorized)
+
+        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()
+        returned_names = [result.get("name") for result in results]
+
+        self.assertFalse(forbidden_plant.name in returned_names)
+        self.assertTrue(authorized_substance.name in returned_names)
+        self.assertTrue(to_be_authorized_plant.name in returned_names)
+        self.assertEqual(len(returned_names), 2)

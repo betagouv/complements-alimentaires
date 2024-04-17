@@ -195,3 +195,18 @@ class CSVImporterTestCase(TestCase):
             self.assertTrue(must_be_monitored_parts.issubset(all_parts))
             self.assertFalse(useful_parts.issubset(must_be_monitored_parts))
             self.assertFalse(useful_parts.issuperset(must_be_monitored_parts))
+
+    def test_status_import(self):
+        """
+        Les ingrédients (plante, microorganism, autre ingrédients) et substance peuvent avoir différent status.
+        Ce test vérifie que le modèle Status est bien rempli et que les ForeignKey des différents ingrédients/substances
+        pointent bien comme convenu vers le bon objet du modèle Status.
+        """
+        test_path = f"{self.TEST_DIR_PATH}/element_models_creation/"
+        call_command("load_ingredients", directory=test_path)
+
+        self.assertEqual(len(Plant.objects.filter(status__name="Autorisé")), 2)
+
+        self.assertEqual(len(Microorganism.objects.filter(status__name="A inscrire")), 2)
+        self.assertEqual(len(Ingredient.objects.filter(status__name="Sans objet")), 2)
+        self.assertEqual(len(Substance.objects.filter(status__name="Non autorisé")), 2)
