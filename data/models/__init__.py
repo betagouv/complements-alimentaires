@@ -29,6 +29,7 @@ ELEMENT_MODELS = [
     Ingredient,
     IngredientSynonym,
     Plant,
+    PlantFamily,
     PlantSynonym,
     Microorganism,
     MicroorganismSynonym,
