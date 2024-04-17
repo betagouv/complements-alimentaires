@@ -42,37 +42,57 @@ class AutocompleteView(APIView):
         return results
 
     def get_plants(self, query):
-        plant_qs = Plant.objects.filter(name__unaccent__icontains=query).annotate(autocomplete_match=F("name"))
-        plant_synonym_qs = Plant.objects.filter(plantsynonym__name__unaccent__icontains=query).annotate(
-            autocomplete_match=F("plantsynonym__name")
+        plant_qs = (
+            Plant.objects.exclude(status__name="Non autorisé")
+            .filter(name__unaccent__icontains=query)
+            .annotate(autocomplete_match=F("name"))
+        )
+        plant_synonym_qs = (
+            Plant.objects.exclude(status__name="Non autorisé")
+            .filter(plantsynonym__name__unaccent__icontains=query)
+            .annotate(autocomplete_match=F("plantsynonym__name"))
         )
 
         return list(plant_qs.union(plant_synonym_qs))
 
     def get_microorganisms(self, query):
-        microorganism_qs = Microorganism.objects.filter(name__unaccent__icontains=query).annotate(
-            autocomplete_match=F("name")
+        microorganism_qs = (
+            Microorganism.objects.exclude(status__name="Non autorisé")
+            .filter(name__unaccent__icontains=query)
+            .annotate(autocomplete_match=F("name"))
         )
-        microorganism_synonym_qs = Microorganism.objects.filter(
-            microorganismsynonym__name__unaccent__icontains=query
-        ).annotate(autocomplete_match=F("microorganismsynonym__name"))
+        microorganism_synonym_qs = (
+            Microorganism.objects.exclude(status__name="Non autorisé")
+            .filter(microorganismsynonym__name__unaccent__icontains=query)
+            .annotate(autocomplete_match=F("microorganismsynonym__name"))
+        )
 
         return list(microorganism_qs.union(microorganism_synonym_qs))
 
     def get_ingredients(self, query):
-        ingredient_qs = Ingredient.objects.filter(name__unaccent__icontains=query).annotate(
-            autocomplete_match=F("name")
+        ingredient_qs = (
+            Ingredient.objects.exclude(status__name="Non autorisé")
+            .filter(name__unaccent__icontains=query)
+            .annotate(autocomplete_match=F("name"))
         )
-        ingredient_synonym_qs = Ingredient.objects.filter(ingredientsynonym__name__unaccent__icontains=query).annotate(
-            autocomplete_match=F("ingredientsynonym__name")
+        ingredient_synonym_qs = (
+            Ingredient.objects.exclude(status__name="Non autorisé")
+            .filter(ingredientsynonym__name__unaccent__icontains=query)
+            .annotate(autocomplete_match=F("ingredientsynonym__name"))
         )
 
         return list(ingredient_qs.union(ingredient_synonym_qs))
 
     def get_substances(self, query):
-        substance_qs = Substance.objects.filter(name__unaccent__icontains=query).annotate(autocomplete_match=F("name"))
-        substance_synonym_qs = Substance.objects.filter(substancesynonym__name__unaccent__icontains=query).annotate(
-            autocomplete_match=F("substancesynonym__name")
+        substance_qs = (
+            Substance.objects.exclude(status__name="Non autorisé")
+            .filter(name__unaccent__icontains=query)
+            .annotate(autocomplete_match=F("name"))
+        )
+        substance_synonym_qs = (
+            Substance.objects.exclude(status__name="Non autorisé")
+            .filter(substancesynonym__name__unaccent__icontains=query)
+            .annotate(autocomplete_match=F("substancesynonym__name"))
         )
 
         return list(substance_qs.union(substance_synonym_qs))
