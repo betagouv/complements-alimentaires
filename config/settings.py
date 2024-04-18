@@ -368,6 +368,13 @@ if SENTRY_DSN:
         send_client_reports=False,
     )
 
+# API INSEE
+INSEE_API_KEY = env("INSEE_API_KEY", default=None)
+INSEE_API_SECRET = env("INSEE_API_SECRET", default=None)
+INSEE_API_URL = "https://api.insee.fr/"
+INSEE_TOKEN_API_URL = INSEE_API_URL + "token"
+INSEE_SIRET_API_URL = INSEE_API_URL + "entreprises/sirene/V3/siret"
+
 # Custom settings (used by our apps)
 
 # Models to be used with myloaddata/mydumpdata commands
