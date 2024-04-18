@@ -98,15 +98,14 @@ const company = defineModel()
 const emit = defineEmits(["changeStep"])
 
 // Form state & rules
-
 const state = ref({
-  socialName: "",
+  socialName: company.value.siretData?.socialName || "",
   commercialName: "",
-  address: "",
+  address: company.value.siretData?.address || "",
   additionalDetails: "",
-  postalCode: "",
-  city: "",
-  cedex: "",
+  postalCode: company.value.siretData?.postalCode || "",
+  city: company.value.siretData?.city || "",
+  cedex: company.value.siretData?.cedex || "",
   country: company.value.country,
   // on passe soit un numéro de SIRET, soit de VAT dans le payload
   [company.value.identifierType]: company.value.identifier,
