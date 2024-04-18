@@ -15,6 +15,7 @@ class InseeToken(models.Model):
     Token (objet unique) permettant les requêtes aux APIs INSEE.
     Il est automatiquement mis à jour en cas d'invalidité.
     L'objet retourné peut ne pas être utilisable en cas d'échec du call API.
+    Utilisation : `InseeToken.load()`
     """
 
     class Meta:
@@ -50,7 +51,7 @@ class InseeToken(models.Model):
         else:
             logger.info("existing INSEE token has been found")
             if not obj.usable:
-                logger.info("existing INSEE token is invadid, a new one will try to be fetched")
+                logger.info("existing INSEE token is not usable, a new one will try to be fetched")
                 obj = cls(**_kwargs())
                 obj.save()
 
@@ -79,37 +80,61 @@ class InseeToken(models.Model):
 
 
 class SiretData:
-    """Classe servant de conteneur pour les données d'une entreprise récupérées à partir de l'API INSEE."""
+    """Classe servant de conteneur pour les données d'une entreprise récupérées à partir de l'API INSEE.
+    Ex d'utilisation : `SiretData.fetch("82073111500037")`
+    """
 
-    # TODO: gérer le VAT aussi
-    # TODO: manque des champs ! address, additional_details, cedex, etc.
-    # TODO: retirer le self.ok, trouver une autre méthode plus smart pour pas mélanger données et meta données
-
-    def __init__(self, siret: str):
-        """En plus des attributs de données, set un booléen `ok` pour savoir si le fetch s'est bien déroulé."""
-        self.siret = siret
+    @staticmethod
+    def fetch(siret: str) -> dict | None:
+        """Interroge l'API SIRET, et retourne un dict contenant les attributs de l'entreprise à notre format, ou None en cas d'échec."""
 
         insee_token = InseeToken.load()  # créé ou récupère (et met à jour si besoin) un token de connexion
         if not insee_token.usable:
             logger.warn("SIRET API won't be used as no INSEE token can't be used")
-            self.ok = False
-            return
+            return None
+
         url = settings.INSEE_SIRET_API_URL + siret
         response = requests.get(url, headers={"Authorization": f"Bearer {insee_token.key}"})
         if not response.ok:
             logger.warn(f"SIRET API call has failed, code {response.status_code} : {response}")
-            self.ok = False
-            return
-
-        siret_data = response.json()
+            return None
         try:
-            etablissement = siret_data["etablissement"]
-            self.social_name = etablissement["uniteLegale"]["denominationUniteLegale"]
-            self.postal_code = etablissement["adresseEtablissement"]["codePostalEtablissement"]
-            self.city = etablissement["adresseEtablissement"]["libelleCommuneEtablissement"]
+            formatted_company_data = SiretData.format_company_data(response.json())
         except KeyError as e:
             logger.warn(f"unexpected siret response format : {response}. Unknown key : {e}")
-            self.ok = False
-            return
+            return None
 
-        self.ok = True
+        return formatted_company_data
+
+    @staticmethod
+    def format_company_data(raw_data: dict) -> dict:
+        """
+        Transforme une réponse brute de l'API SIRET en dictionnaire d'attributs utilisables pour instancier une `Company`.
+        Exemple de retour :
+        {'social_name': 'TOO GOOD TO GO FRANCE',
+        'address': '12 RUE DUHESME',
+        'city': 'PARIS',
+        'postal_code': '75018',
+        'cedex': ''}
+        """
+
+        etablissement = raw_data["etablissement"]
+        adresse = etablissement["adresseEtablissement"]
+        cedex_items = ["codeCedexEtablissement", "libelleCedexEtablissement"]
+        address_items = [
+            "complementAdresseEtablissement",
+            "numeroVoieEtablissement",
+            "indiceRepetitionEtablissement",
+            "dernierNumeroVoieEtablissement",
+            "indiceRepetitionDernierNumeroVoieEtablissement",
+            "typeVoieEtablissement",
+            "libelleVoieEtablissement",
+        ]
+
+        return {
+            "social_name": etablissement["uniteLegale"]["denominationUniteLegale"],
+            "address": " ".join(filter(None, [adresse[item] for item in address_items])),
+            "city": adresse["libelleCommuneEtablissement"],
+            "postal_code": etablissement["adresseEtablissement"]["codePostalEtablissement"],
+            "cedex": " ".join(filter(None, [adresse[item] for item in cedex_items])),
+        }
