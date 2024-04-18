@@ -177,22 +177,22 @@ const allActivities = [
   {
     label: "Façonnier",
     name: "FAÇONNIER",
-    hint: " Un façonnier, ou sous-traitant, est une entreprise qui produit des compléments alimentaires pour le compte d'autres marques.",
+    hint: "Le façonnier (ou sous-traitant) produit des compléments alimentaires pour le compte d'autres marques.",
   },
   {
     label: "Importateur",
     name: "IMPORTATEUR",
-    hint: "L'importateur est responsable de l'introduction de compléments alimentaires provenant de l'étranger sur le marché français.",
+    hint: "L'importateur est responsable de l'introduction de compléments alimentaires provenant d'un pays hors UE, sur le marché français.",
   },
   {
     label: "Introducteur",
     name: "INTRODUCTEUR",
-    hint: "L'introducteur, souvent utilisé de manière interchangeable avec l'importateur, est spécifiquement chargé de mettre sur le marché français des produits qui n'étaient pas auparavant disponibles.",
+    hint: "L'introducteur est responsable de l'introduction de compléments alimentaires provenant d'un pays de l'UE, sur le marché français.",
   },
   {
     label: "Conseil",
     name: "CONSEIL",
-    hint: "Ce rôle peut être tenu par des consultants ou des organismes spécialisés qui fournissent des expertises et des conseils aux autres acteurs de la chaîne (fabricants, distributeurs, etc.).",
+    hint: "Ce rôle peut être tenu par des organismes spécialisés (type cabinet de conseil) qui fournissent des expertises et des conseils aux autres acteurs de la chaîne.",
   },
   {
     label: "Distributeur",
