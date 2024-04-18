@@ -28,6 +28,5 @@ const {
 onMounted(async () => {
   await execute()
   await handleError(response)
-  console.log(company)
 })
 </script>
