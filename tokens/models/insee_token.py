@@ -76,3 +76,40 @@ class InseeToken(models.Model):
         else:
             logger.warning(f"INSEE token fetching failed, code {response.status_code} : {response}")
             return None
+
+
+class SiretData:
+    """Classe servant de conteneur pour les données d'une entreprise récupérées à partir de l'API INSEE."""
+
+    # TODO: gérer le VAT aussi
+    # TODO: manque des champs ! address, additional_details, cedex, etc.
+    # TODO: retirer le self.ok, trouver une autre méthode plus smart pour pas mélanger données et meta données
+
+    def __init__(self, siret: str):
+        """En plus des attributs de données, set un booléen `ok` pour savoir si le fetch s'est bien déroulé."""
+        self.siret = siret
+
+        insee_token = InseeToken.load()  # créé ou récupère (et met à jour si besoin) un token de connexion
+        if not insee_token.usable:
+            logger.warn("SIRET API won't be used as no INSEE token can't be used")
+            self.ok = False
+            return
+        url = settings.INSEE_SIRET_API_URL + siret
+        response = requests.get(url, headers={"Authorization": f"Bearer {insee_token.key}"})
+        if not response.ok:
+            logger.warn(f"SIRET API call has failed, code {response.status_code} : {response}")
+            self.ok = False
+            return
+
+        siret_data = response.json()
+        try:
+            etablissement = siret_data["etablissement"]
+            self.social_name = etablissement["uniteLegale"]["denominationUniteLegale"]
+            self.postal_code = etablissement["adresseEtablissement"]["codePostalEtablissement"]
+            self.city = etablissement["adresseEtablissement"]["libelleCommuneEtablissement"]
+        except KeyError as e:
+            logger.warn(f"unexpected siret response format : {response}. Unknown key : {e}")
+            self.ok = False
+            return
+
+        self.ok = True
