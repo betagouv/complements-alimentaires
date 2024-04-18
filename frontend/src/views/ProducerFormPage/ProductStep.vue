@@ -9,7 +9,7 @@
         .
       </p>
     </DsfrAlert>
-    <DsfrInputGroup class="max-w-md" v-else>
+    <DsfrInputGroup class="max-w-md" :error-message="externalResults?.company?.[0]" v-else>
       <DsfrSelect
         label="Entreprise qui produit le complément"
         v-model.number="payload.company"
@@ -22,7 +22,7 @@
   <SectionTitle title="Dénomination commerciale" class="!mt-10" sizeTag="h6" icon="ri-price-tag-2-fill" />
   <div class="grid grid-cols-2 gap-4">
     <div class="col-span-2 md:col-span-1 max-w-md">
-      <DsfrInputGroup>
+      <DsfrInputGroup :error-message="externalResults?.name?.[0]">
         <DsfrInput v-model="payload.name" label-visible label="Nom du produit" :required="true" />
       </DsfrInputGroup>
       <DsfrInputGroup>
@@ -113,7 +113,12 @@
     </div>
     <div class="col-span-2 md:col-span-1 max-w-md">
       <DsfrInputGroup>
-        <DsfrInput v-model="payload.minimumDuration" label-visible label="Durabilité minimale / DLUO (en mois)" />
+        <DsfrInput
+          :required="true"
+          v-model="payload.minimumDuration"
+          label-visible
+          label="Durabilité minimale / DLUO (en mois)"
+        />
       </DsfrInputGroup>
     </div>
   </div>
@@ -216,6 +221,8 @@ import CountryField from "@/components/fields/CountryField.vue"
 import SectionTitle from "@/components/SectionTitle"
 
 const payload = defineModel()
+defineProps(["externalResults"])
+
 const store = useRootStore()
 const { populations, conditions, effects, galenicFormulation, loggedUser } = storeToRefs(store)
 const galenicFormulationState = ref(null)

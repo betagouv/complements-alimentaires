@@ -13,7 +13,14 @@
       :disablePrevious="disablePrevious"
       :disableNext="disableNext"
     />
-    <component :is="components[currentStep - 1]" v-model="payload"></component>
+    <FormWrapper :externalResults="$externalResults">
+      <component
+        :is="components[currentStep - 1]"
+        v-model="payload"
+        @submit="submitPayload"
+        :externalResults="$externalResults"
+      ></component>
+    </FormWrapper>
     <StepButtons
       class="mb-3 mt-6"
       @next="goForward"
@@ -35,6 +42,11 @@ import StepButtons from "./StepButtons"
 import { useFetch } from "@vueuse/core"
 import { useRoute, useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
+import FormWrapper from "@/components/FormWrapper"
+import { headers } from "@/utils/data-fetching"
+import useToaster from "@/composables/use-toaster"
+
+const $externalResults = ref({})
 
 const store = useRootStore()
 store.fetchConditions()
@@ -94,8 +106,63 @@ const components = computed(() => {
   return baseComponents
 })
 
-const goForward = () => router.push({ query: { step: currentStep.value + 1 } })
-const goBackward = () => router.push({ query: { step: currentStep.value - 1 } })
+const savePayload = async () => {
+  const isNewDeclaration = !payload.value.id
+  const url = isNewDeclaration ? "/api/v1/declarations/" : `/api/v1/declarations/${payload.value.id}`
+  const httpMethod = isNewDeclaration ? "post" : "put"
+  const { response, data } = await useFetch(url, { headers: headers() })[httpMethod](payload).json()
+  $externalResults.value = await handleError(response)
+  if ($externalResults.value) {
+    useToaster().addErrorMessage("Merci de vérifier les champs en rouge")
+    window.scrollTo(0, 0)
+  } else {
+    payload.value = data.value
+    // Une fois sauvegardé on change l'URL pour indiquer qu'on est en train de modifier une déclaration
+    // existante. Ça permet aussi de faire un refresh ou back sans problème.
+    if (route.name === "NewDeclaration") {
+      await router.replace({
+        name: "DeclarationPage",
+        params: { id: data.value.id },
+        query: route.query,
+      })
+    }
+    // L'ID permet de ne pas montrer plusieurs messages de succès lors qu'on passe par
+    // les étapes un peu rapidement
+    useToaster().addMessage({
+      type: "success",
+      id: "declaration-success",
+      description: "Votre démarche a été sauvegardée",
+    })
+  }
+}
+
+const submitPayload = async () => {
+  const url = `/api/v1/declarations/${payload.value.id}/submit/`
+  const { response } = await useFetch(url, { headers: headers() }).post().json()
+  $externalResults.value = await handleError(response)
+
+  if ($externalResults.value) {
+    // Temporairement, on montrera les messages des champs en haut du formulaire car
+    // ils peuvent être présents dans plusierus steps. Cette UI/UX pourra être amélioré
+    // par la suite.
+    const fieldErrors = $externalResults.value.fieldErrors.map((x) => Object.values(x)?.[0])
+    $externalResults.value.nonFieldErrors.push(...fieldErrors)
+    //
+    window.scrollTo(0, 0)
+  } else {
+    useToaster().addSuccessMessage("Votre déclaration a été envoyée")
+    router.replace({ name: "DeclarationsHomePage" })
+  }
+}
+
+const goForward = async () => {
+  await savePayload()
+  if (!$externalResults.value) router.push({ query: { step: currentStep.value + 1 } })
+}
+const goBackward = async () => {
+  await savePayload()
+  if (!$externalResults.value) router.push({ query: { step: currentStep.value - 1 } })
+}
 
 const disablePrevious = computed(() => currentStep.value === 1)
 const disableNext = computed(() => currentStep.value === steps.value.length)
@@ -104,6 +171,9 @@ const route = useRoute()
 const router = useRouter()
 
 const ensureStepInUrl = () => {
+  // Si c'est une nouvelle déclaration, on doit obligatoirement commencer avec le step 1
+  if (isNewDeclaration.value) router.replace({ query: { step: 1 } })
+
   if (route.query.step && parseInt(route.query.step) >= 1 && parseInt(route.query.step) <= steps.value.length)
     currentStep.value = parseInt(route.query.step)
   else router.replace({ query: { step: 1 } })

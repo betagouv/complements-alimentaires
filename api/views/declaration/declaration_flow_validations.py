@@ -1,3 +1,6 @@
+from data.models import Declaration
+
+
 def has_mandatory_fields_for_submission(declaration):
     field_errors = []
     non_field_errors = []
@@ -21,7 +24,7 @@ def has_mandatory_fields_for_submission(declaration):
     ]
     missing_product_fields = [field for field in mandatory_product_fields if not getattr(declaration, field)]
     field_errors += [
-        {field: "Ce champ est nécessaire pour passer la déclaration à l'étape d'instruction"}
+        {field: f"« {Declaration._meta.get_field(field).verbose_name} » ne peut pas être vide"}
         for field in missing_product_fields
     ]
     return (field_errors, non_field_errors)
