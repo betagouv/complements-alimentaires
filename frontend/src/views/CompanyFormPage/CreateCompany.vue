@@ -27,7 +27,7 @@
             hint="Bâtiment, immeuble, escalier et numéro d’appartement"
           />
         </DsfrInputGroup>
-        <div class="flex gap-x-4">
+        <div class="block md:flex md:gap-x-4">
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'postalCode')">
             <DsfrInput v-model="state.postalCode" label="Code postal" required labelVisible />
           </DsfrInputGroup>
@@ -58,7 +58,7 @@ type d’activité exercée par le déclarant."
         legend="Informations de contact"
         hint="Veuillez transmettre les coordonnées d’une personne au sein de la société que la DGAL pourra être amenée à contacter en cas de nécessité ou pour des informations complémentaires."
       >
-        <div class="grid gap-4 grid-cols-2">
+        <div class="grid gap-4 grid-cols-1 md:grid-cols-2">
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'phoneNumber')">
             <DsfrInput
               required
