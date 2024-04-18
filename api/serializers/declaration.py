@@ -96,9 +96,9 @@ ADDABLE_ELEMENT_FIELDS = (
 
 
 class DeclaredPlantSerializer(serializers.ModelSerializer):
-    element = PassthroughPlantSerializer(required=False, source="plant")
-    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False)
-    used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False)
+    element = PassthroughPlantSerializer(required=False, source="plant", allow_null=True)
+    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
+    used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False, allow_null=True)
 
     class Meta:
         model = DeclaredPlant
@@ -127,7 +127,7 @@ class DeclaredPlantSerializer(serializers.ModelSerializer):
 
 
 class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
-    element = PassthroughMicroorganismSerializer(required=False, source="microorganism")
+    element = PassthroughMicroorganismSerializer(required=False, source="microorganism", allow_null=True)
 
     class Meta:
         model = DeclaredMicroorganism
@@ -157,7 +157,7 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
 
 
 class DeclaredIngredientSerializer(serializers.ModelSerializer):
-    element = PassthroughIngredientSerializer(required=False, source="ingredient")
+    element = PassthroughIngredientSerializer(required=False, source="ingredient", allow_null=True)
 
     class Meta:
         model = DeclaredIngredient
@@ -182,7 +182,7 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
 
 
 class DeclaredSubstanceSerializer(serializers.ModelSerializer):
-    element = PassthroughSubstanceSerializer(required=False, source="substance")
+    element = PassthroughSubstanceSerializer(required=False, source="substance", allow_null=True)
 
     class Meta:
         model = DeclaredSubstance
@@ -207,7 +207,7 @@ class DeclaredSubstanceSerializer(serializers.ModelSerializer):
 
 class ComputedSubstanceSerializer(serializers.ModelSerializer):
     substance = PassthroughSubstanceSerializer()
-    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False)
+    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
 
     class Meta:
         model = ComputedSubstance
@@ -244,14 +244,20 @@ class AttachmentSerializer(serializers.ModelSerializer):
 
 
 class DeclarationSerializer(serializers.ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(read_only=True)
-    company = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all())
-    unit_measurement = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False)
-    conditions_not_recommended = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Condition.objects.all(), required=False
+    author = serializers.PrimaryKeyRelatedField(read_only=True, allow_null=True)
+    company = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all(), allow_null=True)
+    unit_measurement = serializers.PrimaryKeyRelatedField(
+        queryset=SubstanceUnit.objects.all(), required=False, allow_null=True
     )
-    populations = serializers.PrimaryKeyRelatedField(many=True, queryset=Population.objects.all(), required=False)
-    effects = serializers.PrimaryKeyRelatedField(many=True, queryset=Effect.objects.all(), required=False)
+    conditions_not_recommended = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Condition.objects.all(), required=False, allow_null=True
+    )
+    populations = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Population.objects.all(), required=False, allow_null=True
+    )
+    effects = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Effect.objects.all(), required=False, allow_null=True
+    )
 
     declared_plants = DeclaredListSerializer(child=DeclaredPlantSerializer(), required=False)
     declared_microorganisms = DeclaredListSerializer(child=DeclaredMicroorganismSerializer(), required=False)
@@ -339,8 +345,27 @@ class DeclarationSerializer(serializers.ModelSerializer):
                 for item in declared_elements:
                     item["declaration"] = declaration
                 if instance:
-                    serializer.update(getattr(declaration, field_name), declared_elements)
+                    serializer.update(getattr(declaration, field_name).all(), declared_elements)
                 else:
                     serializer.create(declared_elements)
 
         return declaration
+
+
+class DeclarationShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Declaration
+        fields = (
+            "id",
+            "status",
+            "author",
+            "company",
+            "name",
+            "brand",
+            "gamme",
+            "flavor",
+            "description",
+            "creation_date",
+            "modification_date",
+        )
+        read_only_fields = fields

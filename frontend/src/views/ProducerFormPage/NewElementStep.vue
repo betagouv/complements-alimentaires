@@ -1,8 +1,5 @@
 <template>
-  <h2 class="fr-h6">
-    <v-icon class="mr-1" name="ri-flask-line" />
-    Nouveaux ingrédients
-  </h2>
+  <SectionTitle title="Nouveaux ingrédients" sizeTag="h6" icon="ri-flask-line" />
   <p>
     Vous avez ajouté les nouveaux ingrédients affichés ci-dessous. Des informations supplémentaires les concernant sont
     requises.
@@ -15,6 +12,8 @@
 <script setup>
 import { computed } from "vue"
 import NewElementList from "./NewElementList"
+import SectionTitle from "@/components/SectionTitle"
+
 const payload = defineModel()
 
 const newPlants = computed(() => payload.value.declaredPlants.filter((x) => x.new))

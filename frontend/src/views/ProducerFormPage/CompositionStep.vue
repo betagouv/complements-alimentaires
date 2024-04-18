@@ -1,8 +1,5 @@
 <template>
-  <h2 class="fr-h6">
-    <v-icon class="mr-1" name="ri-flask-line" />
-    Ma composition
-  </h2>
+  <SectionTitle title="Ma composition" sizeTag="h6" icon="ri-flask-line" />
   <div class="sm:flex gap-10 items-center">
     <ElementAutocomplete
       v-model="searchTerm"
@@ -51,6 +48,7 @@ import SubstancesTable from "./SubstancesTable.vue"
 import NewElementModal from "./NewElementModal.vue"
 import useToaster from "@/composables/use-toaster"
 import { handleError } from "@/utils/error-handling"
+import SectionTitle from "@/components/SectionTitle"
 
 const payload = defineModel()
 

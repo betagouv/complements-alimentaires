@@ -24,7 +24,6 @@ urlpatterns = {
     path("effects/", views.EffectListView.as_view(), name="effect_list"),
     path("galenic-formulation/", views.GalenicFormulationListView.as_view(), name="galenic_formulation_list"),
     path("units/", views.UnitListView.as_view(), name="unit_list"),
-    path("declarations/", views.DeclarationCreateApiView.as_view(), name="create_declaration"),
     # Authentication
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
@@ -59,6 +58,8 @@ urlpatterns = {
         views.ClaimCompanyCoSupervisionView.as_view(),
         name="claim_company_co_supervision",
     ),
+    path("declarations/", views.DeclarationListCreateApiView.as_view(), name="list_create_declaration"),
+    path("declarations/<int:pk>", views.DeclarationRetrieveUpdateView.as_view(), name="retrieve_update_declaration"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
