@@ -53,6 +53,7 @@ class Plant(CommonModel, WithComments):
         verbose_name="famille de plante",
         related_name="ca_plant_set",
     )
+    # TODO: ce champ n'est pas utile en tant que tel, il serait possible de l'éviter en créant un Field custom ForeignGeneratedField(ForeigObject)
     family_by_id = models.GeneratedField(
         expression=Coalesce(F("ca_family"), F("siccrf_family")),
         output_field=models.BigIntegerField(verbose_name="famille de plante"),
