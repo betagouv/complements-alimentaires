@@ -7,11 +7,6 @@
       <div class="col-span-12 md:col-span-8 lg:col-span-5">
         <h1>Tester ma composition de compléments alimentaires</h1>
         <p>Vérifier la conformité de vos ingrédients en amont de vos développements produits.</p>
-        <!-- <DsfrSearchBar
-          placeholder="Rechercher par ingrédient, plante, substance..."
-          v-model="searchTerm"
-          @search="search"
-        /> -->
         <ElementAutocomplete
           :options="autocompleteResults"
           autocomplete="nothing"
@@ -35,12 +30,10 @@
 </template>
 
 <script setup>
-// import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { getType } from "@/utils/mappings"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 
-// const searchTerm = ref(null)
 const router = useRouter()
 
 const search = (term) => {
