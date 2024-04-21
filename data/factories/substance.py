@@ -1,7 +1,7 @@
 import factory
 from data.models import Substance, SubstanceSynonym
 from data.factories.unit import SubstanceUnitFactory
-from data.factories.status import StatusFactory
+from data.models.status import IngredientStatus
 
 
 class SubstanceFactory(factory.django.DjangoModelFactory):
@@ -20,7 +20,7 @@ class SubstanceFactory(factory.django.DjangoModelFactory):
     ca_max_quantity = factory.Faker("random_int", min=0, max=20)
     ca_nutritional_reference = factory.Faker("random_int", min=0, max=20)
     unit = factory.SubFactory(SubstanceUnitFactory)
-    status = factory.SubFactory(StatusFactory, name="Autorisé")
+    status = IngredientStatus.AUTHORIZED
 
 
 class SubstanceSynonymFactory(factory.django.DjangoModelFactory):

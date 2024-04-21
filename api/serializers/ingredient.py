@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from data.models import Ingredient, IngredientSynonym
+from data.models import Ingredient, IngredientSynonym, IngredientStatus
+from api.utils.choice_field import GoodReprChoiceField
+
 from .substance import SubstanceShortSerializer
 
 
@@ -16,7 +18,7 @@ class IngredientSynonymSerializer(serializers.ModelSerializer):
 class IngredientSerializer(serializers.ModelSerializer):
     synonyms = IngredientSynonymSerializer(many=True, read_only=True, source="ingredientsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
-    status = serializers.CharField(read_only=True, source="status.name")
+    status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
 
     class Meta:
         model = Ingredient

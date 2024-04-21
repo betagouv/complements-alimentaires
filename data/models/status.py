@@ -1,26 +1,13 @@
 from django.db import models
 
-from .mixins import WithMissingImportBoolean
 
+class IngredientStatus(models.IntegerChoices):
+    AUTHORIZED = 1, "autorisé"
+    NOT_AUTHORIZED = 2, "non autorisé"
+    PENDING_REGISTRATION = 3, "à inscrire"
+    NA = 4, "sans objet"
 
-class IngredientStatus(WithMissingImportBoolean):
-    class Meta:
-        verbose_name = (
-            "statut de l'élément selon le décret 2006-352 du 20 mars 2006 relatif aux compléments alimentaires."
-        )
-
-    siccrf_id = models.IntegerField(
-        blank=True,
-        null=True,
-        editable=False,
-        db_index=True,
-        unique=True,
-        verbose_name="id dans les tables et tables relationnelles SICCRF",
-    )
-    name = models.TextField(verbose_name="statut")
-
-    def __str__(self):
-        return self.name
+    __empty__ = "inconnu"  # TODO: devrait-on merger "sans objet" et "inconnu" ?
 
 
 class WithStatus(models.Model):
@@ -33,11 +20,8 @@ class WithStatus(models.Model):
     class Meta:
         abstract = True
 
-    status = models.ForeignKey(
-        IngredientStatus,
-        default=None,
+    status = models.IntegerField(
+        choices=IngredientStatus.choices,
         null=True,
-        on_delete=models.CASCADE,
         verbose_name="statut de l'ingrédient ou substance",
-        related_name="%(class)s_siccrf_status",
     )

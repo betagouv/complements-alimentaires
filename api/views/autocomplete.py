@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from api.exception_handling import ProjectAPIException
 from django.db.models import F
 from api.serializers import AutocompleteItemSerializer
-from data.models import Plant, Microorganism, Ingredient, Substance
+from data.models import Plant, Microorganism, Ingredient, Substance, IngredientStatus
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 
 logger = logging.getLogger(__name__)
@@ -43,12 +43,12 @@ class AutocompleteView(APIView):
 
     def get_plants(self, query):
         plant_qs = (
-            Plant.objects.exclude(status__name="Non autorisé")
+            Plant.objects.exclude(status=IngredientStatus.NOT_AUTHORIZED)
             .filter(name__unaccent__icontains=query)
             .annotate(autocomplete_match=F("name"))
         )
         plant_synonym_qs = (
-            Plant.objects.exclude(status__name="Non autorisé")
+            Plant.objects.exclude(status=IngredientStatus.NOT_AUTHORIZED)
             .filter(plantsynonym__name__unaccent__icontains=query)
             .annotate(autocomplete_match=F("plantsynonym__name"))
         )
@@ -57,12 +57,12 @@ class AutocompleteView(APIView):
 
     def get_microorganisms(self, query):
         microorganism_qs = (
-            Microorganism.objects.exclude(status__name="Non autorisé")
+            Microorganism.objects.exclude(status=IngredientStatus.NOT_AUTHORIZED)
             .filter(name__unaccent__icontains=query)
             .annotate(autocomplete_match=F("name"))
         )
         microorganism_synonym_qs = (
-            Microorganism.objects.exclude(status__name="Non autorisé")
+            Microorganism.objects.exclude(status=IngredientStatus.NOT_AUTHORIZED)
             .filter(microorganismsynonym__name__unaccent__icontains=query)
             .annotate(autocomplete_match=F("microorganismsynonym__name"))
         )
@@ -71,12 +71,12 @@ class AutocompleteView(APIView):
 
     def get_ingredients(self, query):
         ingredient_qs = (
-            Ingredient.objects.exclude(status__name="Non autorisé")
+            Ingredient.objects.exclude(status=IngredientStatus.NOT_AUTHORIZED)
             .filter(name__unaccent__icontains=query)
             .annotate(autocomplete_match=F("name"))
         )
         ingredient_synonym_qs = (
-            Ingredient.objects.exclude(status__name="Non autorisé")
+            Ingredient.objects.exclude(status=IngredientStatus.NOT_AUTHORIZED)
             .filter(ingredientsynonym__name__unaccent__icontains=query)
             .annotate(autocomplete_match=F("ingredientsynonym__name"))
         )
@@ -85,12 +85,12 @@ class AutocompleteView(APIView):
 
     def get_substances(self, query):
         substance_qs = (
-            Substance.objects.exclude(status__name="Non autorisé")
+            Substance.objects.exclude(status=IngredientStatus.NOT_AUTHORIZED)
             .filter(name__unaccent__icontains=query)
             .annotate(autocomplete_match=F("name"))
         )
         substance_synonym_qs = (
-            Substance.objects.exclude(status__name="Non autorisé")
+            Substance.objects.exclude(status=IngredientStatus.NOT_AUTHORIZED)
             .filter(substancesynonym__name__unaccent__icontains=query)
             .annotate(autocomplete_match=F("substancesynonym__name"))
         )

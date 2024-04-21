@@ -1,6 +1,7 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
+from data.models.status import IngredientStatus
 from data.factories import (
     PlantFactory,
     PlantSynonymFactory,
@@ -9,7 +10,6 @@ from data.factories import (
     SubstanceSynonymFactory,
     MicroorganismFactory,
     MicroorganismSynonymFactory,
-    StatusFactory,
 )
 
 
@@ -104,15 +104,14 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "ephedra"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        authorized = StatusFactory.create(name="Autorisé")
-        authorized_substance = SubstanceFactory.create(ca_name="Vitamine C", status=authorized)
+        authorized_substance = SubstanceFactory.create(ca_name="Vitamine C", status=IngredientStatus.AUTHORIZED)
         SubstanceSynonymFactory.create(name="Ephedra", standard_name=authorized_substance)
 
-        forbidden = StatusFactory.create(name="Non autorisé")
-        forbidden_plant = PlantFactory.create(ca_name="Ephedra", status=forbidden)
+        forbidden_plant = PlantFactory.create(ca_name="Ephedra", status=IngredientStatus.NOT_AUTHORIZED)
 
-        to_be_authorized = StatusFactory.create(name="A inscrire")
-        to_be_authorized_plant = PlantFactory.create(ca_name="Ephedralite", status=to_be_authorized)
+        to_be_authorized_plant = PlantFactory.create(
+            ca_name="Ephedralite", status=IngredientStatus.PENDING_REGISTRATION
+        )
 
         response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})
         self.assertEqual(response.status_code, status.HTTP_200_OK)

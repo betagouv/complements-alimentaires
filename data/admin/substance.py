@@ -116,5 +116,5 @@ class SubstanceAdmin(IngredientAdminHistorisableChangedFields):
         "get_microorganisms",
         "get_ingredients",
     ]
-    list_display = ("name", "get_plants", "get_microorganisms", "get_ingredients", "get_status")
-    list_filter = ("is_obsolete", "status__name")
+    list_display = ("name", "get_plants", "get_microorganisms", "get_ingredients", "status")
+    list_filter = ("is_obsolete", "status")

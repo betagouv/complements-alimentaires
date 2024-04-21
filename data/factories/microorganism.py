@@ -2,7 +2,7 @@ import random
 import factory
 from data.models import Microorganism, MicroorganismSynonym
 from data.factories.substance import SubstanceFactory
-from data.factories.status import StatusFactory
+from data.models.status import IngredientStatus
 
 
 class MicroorganismFactory(factory.django.DjangoModelFactory):
@@ -16,7 +16,7 @@ class MicroorganismFactory(factory.django.DjangoModelFactory):
     ca_genus = factory.Faker("text", max_nb_chars=20)
     siccrf_species = factory.Faker("text", max_nb_chars=20)
     ca_species = factory.Faker("text", max_nb_chars=20)
-    status = factory.SubFactory(StatusFactory, name="Autorisé")
+    status = IngredientStatus.AUTHORIZED
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):

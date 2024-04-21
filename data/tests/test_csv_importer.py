@@ -17,6 +17,7 @@ from data.models import (
     Substance,
     Effect,
     GalenicFormulation,
+    IngredientStatus,
 )
 
 
@@ -205,8 +206,8 @@ class CSVImporterTestCase(TestCase):
         test_path = f"{self.TEST_DIR_PATH}/element_models_creation/"
         call_command("load_ingredients", directory=test_path)
 
-        self.assertEqual(len(Plant.objects.filter(status__name="Autorisé")), 2)
+        self.assertEqual(len(Plant.objects.filter(status=IngredientStatus.AUTHORIZED)), 2)
 
-        self.assertEqual(len(Microorganism.objects.filter(status__name="A inscrire")), 2)
-        self.assertEqual(len(Ingredient.objects.filter(status__name="Sans objet")), 2)
-        self.assertEqual(len(Substance.objects.filter(status__name="Non autorisé")), 2)
+        self.assertEqual(len(Microorganism.objects.filter(status=IngredientStatus.PENDING_REGISTRATION)), 2)
+        self.assertEqual(len(Ingredient.objects.filter(status=IngredientStatus.NA)), 2)
+        self.assertEqual(len(Substance.objects.filter(status=IngredientStatus.NOT_AUTHORIZED)), 2)

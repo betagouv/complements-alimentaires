@@ -76,8 +76,8 @@ class PlantAdmin(IngredientAdminHistorisableChangedFields):
         SubstanceInlineAdmin,
         PlantSynonymInline,
     )
-    list_display = ("name", "siccrf_family", "get_status")
-    list_filter = ("is_obsolete", "siccrf_family", "status__name")
+    list_display = ("name", "siccrf_family", "status")
+    list_filter = ("is_obsolete", "siccrf_family", "status")
     history_list_display = ["changed_fields"]
     readonly_fields = (
         "siccrf_name",

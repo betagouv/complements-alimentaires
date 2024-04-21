@@ -57,7 +57,6 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_PARTIE_UTILE.csv": Part,
     "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
     "REF_ICA_FORME_GALENIQUE.csv": GalenicFormulation,
-    "REF_ICA_STATUT_INGR_SUBST.csv": IngredientStatus,
 }
 
 # Le fichier REF_ICA_PARTIE_PL_A_SURVEILLER n'est pas traité comme une relation car il correspond à un model à part entière
@@ -222,10 +221,15 @@ class CSVImporter:
         for field in self.fields_to_complete:
             # cas particulier des champs `siccrf_must_be_monitored` et `siccrf_is_useful`
             # qui n'existent pas en tant que tel dans les csv SICCRF
+            # TODO : ces champs devraient juste être ajoutés à la liste des champs remplis automatiquement ?
             if self.model == Part and field.name in ["siccrf_must_be_monitored", "siccrf_is_useful"]:
                 continue
             # le nom des colonnes contenant les clés étrangères ne sont pas préfixées par le nom de la table
-            prefixed = False if isinstance(field, ForeignKey) or isinstance(field, ManyToManyField) else True
+            prefixed = (
+                False
+                if isinstance(field, ForeignKey) or isinstance(field, ManyToManyField) or field.name in ["status"]
+                else True
+            )
             try:
                 column_name = self._get_column_name(field.name, prefixed=prefixed)
                 django_fields_to_column_names[field] = column_name
