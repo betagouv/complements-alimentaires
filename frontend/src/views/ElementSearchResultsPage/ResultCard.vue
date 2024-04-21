@@ -1,7 +1,7 @@
 <template>
   <DsfrCard :link="route" :title="result.name">
     <template #start-details>
-      <ElementStatusBadge :text="result.status" />
+      <ElementStatusBadge v-if="result.status" :text="result.status" />
       <div class="mt-2 flex gap-x-1">
         <div><v-icon scale="0.85" :name="icon" /></div>
         <div class="mt-[1px]">{{ type }}</div>
