@@ -41,10 +41,11 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_MICRO_ORGANISME.csv": Microorganism,
     "REF_ICA_PARTIE_PLANTE.csv": PlantPart,
     "REF_ICA_PLANTE.csv": Plant,
+    "REF_ICA_FAMILLE_PLANTE.csv": PlantFamily,
     "REF_ICA_SUBSTANCE_ACTIVE.csv": Substance,
     "POPULATION.csv": Population,
-    # 'OBJECTIF.CSV': Objectif,
-    # 'FICHIERA_RECUPERER.CSV': PlantFamily,
+    "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
+    "REF_ICA_FORME_GALENIQUE.csv": GalenicFormulation,
     # Les fichiers csv avec les Foreign Keys
     "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": IngredientSynonym,
     "REF_ICA_PLANTE_SYNONYME.csv": PlantSynonym,
@@ -55,8 +56,6 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_MOORG_SUBSTANCE.csv": "à récuperer",
     "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": Part,
     "REF_ICA_PARTIE_UTILE.csv": Part,
-    "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
-    "REF_ICA_FORME_GALENIQUE.csv": GalenicFormulation,
 }
 
 # Le fichier REF_ICA_PARTIE_PL_A_SURVEILLER n'est pas traité comme une relation car il correspond à un model à part entière
