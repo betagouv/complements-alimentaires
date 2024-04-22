@@ -81,7 +81,7 @@ const synonyms = computed(() => model.value.element?.synonyms?.map((x) => x.name
 
 const plantParts = computed(() => {
   const parts = model.value.element?.plantParts || store.plantParts
-  return parts.map((x) => ({ text: x.name, value: x.id }))
+  return parts?.map((x) => ({ text: x.name, value: x.id }))
 })
 const showFields = computed(
   () => model.value.active && (props.objectType === "plant" || props.objectType === "microorganism")

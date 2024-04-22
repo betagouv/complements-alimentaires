@@ -21,6 +21,7 @@ class SearchResultSerializer(serializers.Serializer):
 
     # Microorganism
     genre = serializers.CharField(read_only=True)
+    match = serializers.CharField(read_only=True, source="autocomplete_match")
 
     def get_synonyms(self, instance):
         if isinstance(instance, Plant):

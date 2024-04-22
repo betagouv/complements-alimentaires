@@ -6,6 +6,9 @@
         <div><v-icon scale="0.85" :name="icon" /></div>
         <div class="mt-[1px]">{{ type }}</div>
       </div>
+      <div class="italic" v-if="result.match && result.match !== result.name">
+        {{ result.match }}
+      </div>
     </template>
   </DsfrCard>
 </template>

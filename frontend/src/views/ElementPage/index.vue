@@ -152,7 +152,6 @@ const nutritionalReference = computed(() => {
   else return null
 })
 const maxQuantity = computed(() => {
-  console.log(element.value?.maxQuantity + element.value?.unit)
   if (element.value?.unit && element.value?.maxQuantity) return element.value?.maxQuantity + " " + element.value?.unit
   else return null
 })

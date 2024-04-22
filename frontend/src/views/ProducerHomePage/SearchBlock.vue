@@ -7,10 +7,14 @@
       <div class="col-span-12 md:col-span-8 lg:col-span-5">
         <h1>Tester ma composition de compléments alimentaires</h1>
         <p>Vérifier la conformité de vos ingrédients en amont de vos développements produits.</p>
-        <DsfrSearchBar
-          placeholder="Rechercher par ingrédient, plante, substance..."
-          v-model="searchTerm"
+        <ElementAutocomplete
+          :options="autocompleteResults"
+          autocomplete="nothing"
+          class="max-w-md grow"
+          hint="Tapez au moins trois caractères pour démarrer la recherche"
+          @selected="goToSelectedOption"
           @search="search"
+          :chooseFirstAsDefault="false"
         />
         <p class="mt-6">
           Examples :
@@ -26,17 +30,22 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
 import { useRouter } from "vue-router"
+import { getType } from "@/utils/mappings"
+import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 
-const searchTerm = ref(null)
 const router = useRouter()
 
-const search = () => {
-  if (searchTerm.value.length < 3) window.alert("Veuillez saisir au moins trois caractères")
-  else router.push(getRouteForTerm(searchTerm.value))
+const search = (term) => {
+  if (term.length < 3) window.alert("Veuillez saisir au moins trois caractères")
+  else router.push(getRouteForTerm(term))
 }
 const getRouteForTerm = (term) => {
   return { name: "ElementSearchResultsPage", query: { q: term } }
+}
+const goToSelectedOption = (option) => {
+  const type = getType(option.objectType)
+  const urlComponent = `${option?.id}--${type?.toLowerCase()}--${option?.name}`
+  return router.push({ name: "ElementPage", params: { urlComponent } })
 }
 </script>
