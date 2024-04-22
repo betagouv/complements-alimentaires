@@ -46,6 +46,7 @@ CSV_TO_MODEL_MAPPING = {
     "POPULATION.csv": Population,
     "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
     "REF_ICA_FORME_GALENIQUE.csv": GalenicFormulation,
+    "REF_ICA_UNITE.csv": SubstanceUnit,
     # Les fichiers csv avec les Foreign Keys
     "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": IngredientSynonym,
     "REF_ICA_PLANTE_SYNONYME.csv": PlantSynonym,
