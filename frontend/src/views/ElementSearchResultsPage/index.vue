@@ -57,7 +57,6 @@ import { headers } from "@/utils/data-fetching"
 import ResultCard from "./ResultCard"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import { handleError } from "@/utils/error-handling"
-import { DsfrCallout } from "@gouvminint/vue-dsfr"
 
 const router = useRouter()
 const route = useRoute()

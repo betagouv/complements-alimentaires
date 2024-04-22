@@ -22,7 +22,7 @@ class AutocompleteView(APIView):
                 global_error=f"Le terme de recherche doit être supérieur ou égal à {self.min_query_length} caractères"
             )
 
-        results = search_elements(query)[: self.max_autocomplete_items]
+        results = search_elements(query, deduplicate=False, exclude_not_authorized=True)[: self.max_autocomplete_items]
         return JsonResponse(self.serialize_results(results), safe=False)
 
     def serialize_results(self, results):
