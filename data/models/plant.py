@@ -54,12 +54,21 @@ class Plant(CommonModel, WithComments, WithStatus):
         verbose_name="famille de plante",
         related_name="ca_plant_set",
     )
-    # TODO: output_field should be a ForeignKey
-    family = models.GeneratedField(
+    # TODO: ce champ n'est pas utile en tant que tel, il serait possible de l'éviter en créant un Field custom ForeignGeneratedField(ForeigObject)
+    family_by_id = models.GeneratedField(
         expression=Coalesce(F("ca_family"), F("siccrf_family")),
         output_field=models.BigIntegerField(verbose_name="famille de plante"),
         db_persist=True,
     )
+    family = models.ForeignObject(
+        PlantFamily,
+        on_delete=models.SET_NULL,
+        from_fields=["family_by_id"],
+        to_fields=["id"],
+        related_name="plant_set",
+        null=True,
+    )
+
     plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
     substances = models.ManyToManyField(Substance, through="PlantSubstanceRelation")
     history = HistoricalRecords(
@@ -71,6 +80,8 @@ class Plant(CommonModel, WithComments, WithStatus):
             "private_comments",
             "public_comments",
             "status",
+            "family_by_id",
+            "family",
         ],
     )
 
