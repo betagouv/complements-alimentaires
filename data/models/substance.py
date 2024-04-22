@@ -74,8 +74,8 @@ class Substance(CommonModel, WithComments):
     )
     ca_max_quantity = models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée")
     max_quantity = models.GeneratedField(
-        expression=Coalesce(F("ca_nutritional_reference"), F("siccrf_nutritional_reference")),
-        output_field=models.FloatField(null=True, blank=True, verbose_name="spécification de quantité obligatoire"),
+        expression=Coalesce(F("ca_max_quantity"), F("siccrf_max_quantity")),
+        output_field=models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée"),
         db_persist=True,
     )
 
