@@ -50,6 +50,10 @@
           <ElementText :text="nutritionalReference" :lowercase="true" />
         </ElementColumn>
 
+        <ElementColumn title="Quantité maximale autorisée" v-if="maxQuantity">
+          <ElementText :text="maxQuantity" :lowercase="true" />
+        </ElementColumn>
+
         <ElementColumn title="Parties utiles" v-if="plantParts?.length">
           <ElementTag :label="part" v-for="part in plantParts" :key="part" />
         </ElementColumn>
@@ -143,8 +147,14 @@ const casNumber = computed(() => element.value?.casNumber)
 const einecNumber = computed(() => element.value?.einecNumber)
 const status = computed(() => element.value?.status)
 const nutritionalReference = computed(() => {
-  if (!element.value?.unit) return element.value?.nutritionalReference
-  else return element.value?.nutritionalReference + " " + element.value?.unit
+  if (element.value?.unit && element.value?.nutritionalReference)
+    return element.value?.nutritionalReference + " " + element.value?.unit
+  else return null
+})
+const maxQuantity = computed(() => {
+  console.log(element.value?.maxQuantity + element.value?.unit)
+  if (element.value?.unit && element.value?.maxQuantity) return element.value?.maxQuantity + " " + element.value?.unit
+  else return null
 })
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)

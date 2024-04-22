@@ -18,6 +18,7 @@ from data.models import (
     Effect,
     GalenicFormulation,
     IngredientStatus,
+    SubstanceUnit,
 )
 
 
@@ -94,6 +95,8 @@ class CSVImporterTestCase(TestCase):
         self.assertTrue(Substance.objects.filter(siccrf_id=10).exists())
         self.assertTrue(Substance.objects.filter(siccrf_id=11).exists())
         self.assertEqual(len(Substance.objects.all()), 2)
+
+        self.assertEqual(len(SubstanceUnit.objects.all()), 5)
 
     def test_ingredient_models_created(self):
         test_path = f"{self.TEST_DIR_PATH}/declaration_models_creation/"
