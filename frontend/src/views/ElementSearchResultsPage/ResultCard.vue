@@ -1,5 +1,5 @@
 <template>
-  <DsfrCard :link="route" :title="result.name">
+  <DsfrCard class="capitalize" :link="route" :title="result.name">
     <template #start-details>
       <ElementStatusBadge v-if="result.status" :text="result.status" />
       <div class="mt-2 flex gap-x-1">
