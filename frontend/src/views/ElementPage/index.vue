@@ -46,7 +46,7 @@
           <ElementText :text="einecNumber" />
         </ElementColumn>
 
-        <ElementColumn title="Apport nutritionnel conseillé" v-if="nutritionalReference">
+        <ElementColumn title="Apport nutritionnel de référence" v-if="nutritionalReference">
           <ElementText :text="nutritionalReference" :lowercase="true" />
         </ElementColumn>
 
