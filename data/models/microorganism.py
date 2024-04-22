@@ -6,6 +6,7 @@ from simple_history.models import HistoricalRecords
 
 from data.behaviours import TimeStampable, Historisable
 from .mixins import WithMissingImportBoolean, WithComments
+from .status import WithStatus
 from .abstract_models import CommonModel
 from .substance import Substance
 
@@ -20,7 +21,7 @@ class ConcatOp(models.Func):
     template = "%(expressions)s"
 
 
-class Microorganism(CommonModel, WithComments):
+class Microorganism(CommonModel, WithComments, WithStatus):
     class Meta:
         verbose_name = "micro-organisme"
 
@@ -56,7 +57,15 @@ class Microorganism(CommonModel, WithComments):
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
     history = HistoricalRecords(
         inherit=True,
-        excluded_fields=["name", "is_obsolete", "private_comments", "public_comments", "genus", "species"],
+        excluded_fields=[
+            "name",
+            "is_obsolete",
+            "private_comments",
+            "public_comments",
+            "genus",
+            "species",
+            "status",
+        ],
     )
 
 

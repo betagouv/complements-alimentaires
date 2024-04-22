@@ -11,5 +11,5 @@ class SubstanceUnit(WithMissingImportBoolean):
         unique=True,
         verbose_name="id dans les tables et tables relationnelles SICCRF",
     )
-    name = models.CharField(max_length=2, verbose_name="unité")
+    name = models.CharField(max_length=3, verbose_name="unité")
     long_name = models.TextField(verbose_name="unité détaillée")

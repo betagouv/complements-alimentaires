@@ -5,6 +5,7 @@ from .roles import CompanySupervisorAdmin, DeclarantAdmin  # noqa
 from .company import CompanyAdmin  # noqa
 from .blogpost import BlogPostAdmin  # noqa
 from .webinar import WebinarAdmin  # noqa
+from .ingredient import IngredientAdmin  # noqa
 from .substance import SubstanceAdmin  # noqa
 from .plant import PlantAdmin  # noqa
 from .microorganism import MicroorganismAdmin  # noqa
@@ -14,13 +15,8 @@ from .effect import Effect  # noqa
 from .galenic_formulation import GalenicFormulation  # noqa
 from .declaration import DeclarationAdmin  # noqa
 
-from data.models import Ingredient, PlantPart, PlantFamily
+from data.models import PlantPart, PlantFamily
 from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
-
-
-@admin.register(Ingredient)
-class IngredientAdmin(IngredientAdminHistorisableChangedFields):
-    pass
 
 
 @admin.register(PlantPart)
