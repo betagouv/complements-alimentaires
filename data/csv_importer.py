@@ -27,7 +27,7 @@ from .models import (
     SubstanceSynonym,
 )
 
-from .models import Effect, GalenicFormulation, Population, SubstanceUnit
+from .models import Effect, GalenicFormulation, IngredientStatus, Population, SubstanceUnit
 
 # from .models.condition import Condition
 
@@ -80,6 +80,7 @@ class CSVImporter:
         "UNT": SubstanceUnit,
         "OBJEFF": Effect,
         "FRMGAL": GalenicFormulation,
+        "STINGSBS": IngredientStatus,
         # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
         # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
         # "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
@@ -121,6 +122,7 @@ class CSVImporter:
         # Les champs ManyToMany
         "substances": ["SBSACT_IDENT"],
         "plant_parts": ["PPLAN_IDENT"],
+        "status": ["STINGSBS_IDENT"],
     }
 
     # Ces champs sont remplis automatiquement et ne sont pas recherchés dans les fichiers csv
@@ -219,10 +221,11 @@ class CSVImporter:
         for field in self.fields_to_complete:
             # cas particulier des champs `siccrf_must_be_monitored` et `siccrf_is_useful`
             # qui n'existent pas en tant que tel dans les csv SICCRF
+            # TODO : ces champs devraient juste être ajoutés à la liste des champs remplis automatiquement ?
             if self.model == Part and field.name in ["siccrf_must_be_monitored", "siccrf_is_useful"]:
                 continue
             # le nom des colonnes contenant les clés étrangères ne sont pas préfixées par le nom de la table
-            prefixed = False if isinstance(field, ForeignKey) or isinstance(field, ManyToManyField) else True
+            prefixed = not (isinstance(field, (ForeignKey, ManyToManyField)) or field.name == "status")
             try:
                 column_name = self._get_column_name(field.name, prefixed=prefixed)
                 django_fields_to_column_names[field] = column_name

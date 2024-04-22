@@ -52,6 +52,7 @@ class SubstanceAdmin(IngredientAdminHistorisableChangedFields):
                     "siccrf_name_en",
                     "is_obsolete",
                     "ca_is_obsolete",
+                    "status",
                     "siccrf_source",
                     "ca_source",
                 ],
@@ -115,10 +116,5 @@ class SubstanceAdmin(IngredientAdminHistorisableChangedFields):
         "get_microorganisms",
         "get_ingredients",
     ]
-    list_display = (
-        "name",
-        "get_plants",
-        "get_microorganisms",
-        "get_ingredients",
-    )
-    list_filter = ("is_obsolete",)
+    list_display = ("name", "get_plants", "get_microorganisms", "get_ingredients", "status")
+    list_filter = ("is_obsolete", "status")

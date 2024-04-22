@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from data.models import Plant, Microorganism, Ingredient, Substance
+from data.models import Plant, Microorganism, Ingredient, Substance, IngredientStatus
+from api.utils.choice_field import GoodReprChoiceField
 
 
 class SearchResultSerializer(serializers.Serializer):
@@ -8,6 +9,7 @@ class SearchResultSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(read_only=True)
     name_en = serializers.CharField(read_only=True)
+    status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
 
     # Ingredient
     description = serializers.CharField(read_only=True)

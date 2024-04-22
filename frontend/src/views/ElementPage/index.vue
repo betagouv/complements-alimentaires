@@ -78,6 +78,10 @@
             :key="`substance-${substance.id}`"
           />
         </ElementColumn>
+
+        <ElementColumn title="Statut" v-if="status">
+          <ElementStatusBadge :text="status" />
+        </ElementColumn>
       </div>
 
       <ElementTextSection title="Description" :text="description" />
@@ -101,6 +105,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ElementColumn from "./ElementColumn.vue"
 import ElementTag from "./ElementTag.vue"
+import ElementStatusBadge from "@/components/ElementStatusBadge.vue"
 import ElementText from "./ElementText.vue"
 import ElementTextSection from "./ElementTextSection.vue"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
@@ -140,6 +145,7 @@ const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))
 const casNumber = computed(() => element.value?.casNumber)
 const einecNumber = computed(() => element.value?.einecNumber)
+const status = computed(() => element.value?.status)
 const nutritionalReference = computed(() => {
   if (element.value?.unit && element.value?.nutritionalReference)
     return element.value?.nutritionalReference + " " + element.value?.unit
