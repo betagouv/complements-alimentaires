@@ -68,6 +68,7 @@
       <DsfrInput
         v-if="
           payload.galenicFormulation &&
+          galenicFormulation &&
           getAllIndexesOfRegex(galenicFormulation, /Autre.*(à préciser)/).includes(parseInt(payload.galenicFormulation))
         "
         v-model="payload.otherGalenicFormulation"

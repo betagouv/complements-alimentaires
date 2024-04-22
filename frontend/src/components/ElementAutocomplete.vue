@@ -1,8 +1,10 @@
 <template>
   <div ref="container" class="relative">
     <DsfrInput
-      :model-value="modelValue"
-      @update:model-value="$emit('update:modelValue', $event)"
+      v-model="searchTerm"
+      :options="autocompleteResults"
+      autocomplete="nothing"
+      @update:searchTerm="$emit('update:searchTerm', $event)"
       v-bind="$attrs"
       :required="true"
       @focus="hasFocus = true"
@@ -19,7 +21,7 @@
       }"
     >
       <li
-        v-for="(option, i) of options"
+        v-for="(option, i) of autocompleteResults"
         :key="option"
         class="list-item"
         :class="{ 'active-option': activeOption === i }"
@@ -44,15 +46,25 @@
 
 <script setup>
 import { computed, nextTick, ref, watch } from "vue"
+import { headers } from "@/utils/data-fetching"
 import { getTypeIcon, getType } from "@/utils/mappings"
+import { useFetch, useDebounceFn } from "@vueuse/core"
+import useToaster from "@/composables/use-toaster"
 
 const container = ref(undefined)
 const optionsList = ref(undefined)
+const autocompleteResults = ref([])
+const searchTerm = ref("")
+const debounceDelay = 350
 
 const props = defineProps({
   options: {
     type: Array,
     default: () => [],
+  },
+  chooseFirstAsDefault: {
+    type: Boolean,
+    default: true,
   },
 })
 
@@ -61,9 +73,9 @@ defineModel({
   default: "",
 })
 
-const emit = defineEmits(["selected"])
+const emit = defineEmits(["selected", "search"])
 const hasFocus = ref(false)
-const displayOptions = computed(() => hasFocus.value && !!props.options.length)
+const displayOptions = computed(() => hasFocus.value && !!autocompleteResults.value.length)
 
 function convertRemToPixels(rem) {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
@@ -71,6 +83,15 @@ function convertRemToPixels(rem) {
 
 function selectOption(option) {
   emit("selected", option)
+}
+
+function search() {
+  emit("search", searchTerm.value)
+}
+
+function clear() {
+  searchTerm.value = ""
+  autocompleteResults.value = []
 }
 
 const displayAtTheTop = ref(false)
@@ -107,12 +128,12 @@ function checkIfActiveOptionIsVisible() {
 
 function moveToPreviousOption() {
   const isFirst = activeOption.value <= 0
-  activeOption.value = isFirst ? props.options.length - 1 : activeOption.value - 1
+  activeOption.value = isFirst ? autocompleteResults.value.length - 1 : activeOption.value - 1
   nextTick().then(checkIfActiveOptionIsVisible)
 }
 
 function moveToNextOption() {
-  const isLast = activeOption.value >= props.options.length - 1
+  const isLast = activeOption.value >= autocompleteResults.value.length - 1
   activeOption.value = isLast ? 0 : activeOption.value + 1
   nextTick().then(checkIfActiveOptionIsVisible)
 }
@@ -120,18 +141,43 @@ function moveToNextOption() {
 function checkKeyboardNav($event) {
   if (["ArrowUp", "ArrowDown", "Enter"].includes($event.key)) {
     $event.preventDefault()
-    if (!props.options.length) return
+    if (!autocompleteResults.value.length) return
   }
   if ($event.key === "Enter") {
     // Prendre le premier élément si on n'a pas explicitement sélectionné un autre
-    const option = activeOption.value < 0 ? 0 : activeOption.value
-    selectOption(props.options[option])
+    const option = props.chooseFirstAsDefault && activeOption.value < 0 ? 0 : activeOption.value
+    if (option > -1) selectOption(autocompleteResults.value[option])
+    else search()
+    clear()
   } else if ($event.key === "ArrowUp") {
     moveToPreviousOption()
   } else if ($event.key === "ArrowDown") {
     moveToNextOption()
   }
 }
+
+const fetchAutocompleteResults = useDebounceFn(async () => {
+  if (searchTerm.value.length < 3) {
+    autocompleteResults.value = []
+    return
+  }
+
+  const body = { term: searchTerm.value }
+  const { error, data } = await useFetch("/api/v1/elements/autocomplete/", { headers: headers() }).post(body).json()
+
+  if (error.value) {
+    useToaster().addMessage({
+      type: "error",
+      title: "Erreur",
+      description: "Une erreur avec la recherche est survenue, veuillez réessayer plus tard.",
+      id: "autocomplete-error",
+    })
+    return
+  }
+  autocompleteResults.value = data.value
+}, debounceDelay)
+
+watch(searchTerm, fetchAutocompleteResults)
 </script>
 
 <style scoped>

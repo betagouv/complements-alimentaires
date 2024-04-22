@@ -34,7 +34,7 @@ class TestApiErrorMessages(APITestCase):
         self.assertEqual(
             response.data,
             {
-                "global_error": "Une erreur innatendue est survenue, veuillez réessayer plus tard.",
+                "global_error": "Une erreur inatendue est survenue, veuillez réessayer plus tard.",
                 "non_field_errors": [],
                 "field_errors": {},
             },

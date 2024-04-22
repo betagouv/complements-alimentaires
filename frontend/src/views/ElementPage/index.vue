@@ -50,6 +50,10 @@
           <ElementText :text="nutritionalReference" :lowercase="true" />
         </ElementColumn>
 
+        <ElementColumn title="Quantité maximale autorisée" v-if="maxQuantity">
+          <ElementText :text="maxQuantity" :lowercase="true" />
+        </ElementColumn>
+
         <ElementColumn title="Parties utiles" v-if="plantParts?.length">
           <ElementTag :label="part" v-for="part in plantParts" :key="part" />
         </ElementColumn>
@@ -74,6 +78,10 @@
             :key="`substance-${substance.id}`"
           />
         </ElementColumn>
+
+        <ElementColumn title="Statut" v-if="status">
+          <ElementStatusBadge :text="status" />
+        </ElementColumn>
       </div>
 
       <ElementTextSection title="Description" :text="description" />
@@ -97,6 +105,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ElementColumn from "./ElementColumn.vue"
 import ElementTag from "./ElementTag.vue"
+import ElementStatusBadge from "@/components/ElementStatusBadge.vue"
 import ElementText from "./ElementText.vue"
 import ElementTextSection from "./ElementTextSection.vue"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
@@ -136,9 +145,15 @@ const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))
 const casNumber = computed(() => element.value?.casNumber)
 const einecNumber = computed(() => element.value?.einecNumber)
+const status = computed(() => element.value?.status)
 const nutritionalReference = computed(() => {
-  if (!element.value?.unit) return element.value?.nutritionalReference
-  else return element.value?.nutritionalReference + " " + element.value?.unit
+  if (element.value?.unit && element.value?.nutritionalReference)
+    return element.value?.nutritionalReference + " " + element.value?.unit
+  else return null
+})
+const maxQuantity = computed(() => {
+  if (element.value?.unit && element.value?.maxQuantity) return element.value?.maxQuantity + " " + element.value?.unit
+  else return null
 })
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)

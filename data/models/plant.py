@@ -6,6 +6,7 @@ from simple_history.models import HistoricalRecords
 
 from data.behaviours import TimeStampable, Historisable
 from .mixins import WithMissingImportBoolean, WithComments
+from .status import WithStatus
 from .abstract_models import CommonModel
 from .substance import Substance
 
@@ -35,7 +36,7 @@ class PlantPart(CommonModel):
         return self.siccrf_name_en
 
 
-class Plant(CommonModel, WithComments):
+class Plant(CommonModel, WithComments, WithStatus):
     class Meta:
         verbose_name = "plante"
 
@@ -53,16 +54,35 @@ class Plant(CommonModel, WithComments):
         verbose_name="famille de plante",
         related_name="ca_plant_set",
     )
-    # TODO: output_field should be a ForeignKey
-    family = models.GeneratedField(
+    # TODO: ce champ n'est pas utile en tant que tel, il serait possible de l'éviter en créant un Field custom ForeignGeneratedField(ForeigObject)
+    family_by_id = models.GeneratedField(
         expression=Coalesce(F("ca_family"), F("siccrf_family")),
         output_field=models.BigIntegerField(verbose_name="famille de plante"),
         db_persist=True,
     )
+    family = models.ForeignObject(
+        PlantFamily,
+        on_delete=models.SET_NULL,
+        from_fields=["family_by_id"],
+        to_fields=["id"],
+        related_name="plant_set",
+        null=True,
+    )
+
     plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
     substances = models.ManyToManyField(Substance, through="PlantSubstanceRelation")
     history = HistoricalRecords(
-        inherit=True, excluded_fields=["name", "is_obsolete", "family", "private_comments", "public_comments"]
+        inherit=True,
+        excluded_fields=[
+            "name",
+            "is_obsolete",
+            "family",
+            "private_comments",
+            "public_comments",
+            "status",
+            "family_by_id",
+            "family",
+        ],
     )
 
 

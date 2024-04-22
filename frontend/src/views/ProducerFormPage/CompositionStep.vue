@@ -2,8 +2,6 @@
   <SectionTitle title="Ma composition" sizeTag="h6" icon="ri-flask-line" />
   <div class="sm:flex gap-10 items-center">
     <ElementAutocomplete
-      v-model="searchTerm"
-      :options="autocompleteResults"
       autocomplete="nothing"
       label="Cherchez un ingrédient"
       label-visible
@@ -39,22 +37,16 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, defineModel } from "vue"
-import { useFetch, useDebounceFn } from "@vueuse/core"
-import { headers } from "@/utils/data-fetching"
+import { computed, defineModel } from "vue"
+import { useFetch } from "@vueuse/core"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import ElementList from "./ElementList.vue"
 import SubstancesTable from "./SubstancesTable.vue"
 import NewElementModal from "./NewElementModal.vue"
-import useToaster from "@/composables/use-toaster"
 import { handleError } from "@/utils/error-handling"
 import SectionTitle from "@/components/SectionTitle"
 
 const payload = defineModel()
-
-const autocompleteResults = ref([])
-const searchTerm = ref("")
-const debounceDelay = 350
 const containers = {
   plant: payload.value.declaredPlants,
   microorganism: payload.value.declaredMicroorganisms,
@@ -67,8 +59,6 @@ const hasActiveSubstances = computed(() =>
 )
 
 const selectOption = async (result) => {
-  searchTerm.value = ""
-  autocompleteResults.value = []
   const item = await fetchElement(result.objectType, result.id)
   addElement(item, result.objectType)
 }
@@ -87,35 +77,12 @@ const addElement = (item, objectType, newlyAdded = false) => {
   containers[objectType].unshift(toAdd)
 }
 
-const fetchAutocompleteResults = useDebounceFn(async () => {
-  if (searchTerm.value.length < 3) {
-    autocompleteResults.value = []
-    return
-  }
-
-  const body = { term: searchTerm.value }
-  const { error, data } = await useFetch("/api/v1/elements/autocomplete/", { headers: headers() }).post(body).json()
-
-  if (error.value) {
-    useToaster().addMessage({
-      type: "error",
-      title: "Erreur",
-      description: "Une erreur avec la recherche est survenue, veuillez réessayer plus tard.",
-      id: "autocomplete-error",
-    })
-    return
-  }
-  autocompleteResults.value = data.value
-}, debounceDelay)
-
 const fetchElement = async (type, id) => {
   const { data, response } = await useFetch(`/api/v1/${type}s/${id}`).get().json()
   await handleError(response)
   if (!response.value.ok) return null
   return { ...data.value, ...{ objectType: type } }
 }
-
-watch(searchTerm, fetchAutocompleteResults)
 </script>
 
 <style scoped>
