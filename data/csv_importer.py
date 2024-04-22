@@ -130,7 +130,7 @@ class CSVImporter:
         "modification_date",
         "missing_import_data",
     ]
-    NEW_FIELDS = ["is_liquid"]
+    NEW_FIELDS = ["is_liquid", "long_name"]
 
     def __init__(self, file, model, is_relation=False, mapping=None):
         """Initialise un CSVImporter avec le fichier source, le modèle de destination, etc
