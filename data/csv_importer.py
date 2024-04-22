@@ -225,11 +225,7 @@ class CSVImporter:
             if self.model == Part and field.name in ["siccrf_must_be_monitored", "siccrf_is_useful"]:
                 continue
             # le nom des colonnes contenant les clés étrangères ne sont pas préfixées par le nom de la table
-            prefixed = (
-                False
-                if isinstance(field, ForeignKey) or isinstance(field, ManyToManyField) or field.name in ["status"]
-                else True
-            )
+            prefixed = not (isinstance(field, (ForeignKey, ManyToManyField)) or field.name == "status")
             try:
                 column_name = self._get_column_name(field.name, prefixed=prefixed)
                 django_fields_to_column_names[field] = column_name
