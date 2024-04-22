@@ -2,7 +2,7 @@ from __future__ import annotations
 import logging
 import requests
 from base64 import b64encode
-from datetime import timedelta
+from datetime import timedelta as td
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -41,7 +41,7 @@ class InseeToken(models.Model):
 
         def _kwargs():
             # Durée de validité : 7 jours (moins 1h de délai par marge de sécurité)
-            return dict(key=cls.try_fetch_insee_token(), expiration=timezone.now() + timedelta(seconds=604800 - 3600))
+            return dict(key=cls.try_fetch_insee_token(), expiration=timezone.now() + td(seconds=604800 - 3600))
 
         try:
             obj = cls.objects.get(pk=1)

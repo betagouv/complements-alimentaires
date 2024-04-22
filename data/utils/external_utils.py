@@ -27,6 +27,7 @@ class SiretData:
         if not response.ok:
             logger.warn(f"SIRET API call has failed, code {response.status_code} : {response}")
             return None
+
         try:
             formatted_company_data = SiretData.get_formatted_company_data(response.json())
         except KeyError as e:
