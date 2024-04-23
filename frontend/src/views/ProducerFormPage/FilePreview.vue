@@ -25,7 +25,7 @@
 import { computed } from "vue"
 
 const props = defineProps({ file: Object, hideTypeSelection: Boolean, readonly: Boolean })
-const isPDF = computed(() => props.file.name.endsWith("pdf"))
+const isPDF = computed(() => props.file?.name?.endsWith("pdf"))
 
 // TODO: Une fois qu'on aura confirmé les types de document, on peut les exposer via l'API pour ne pas
 // les avoir hard-codés ici

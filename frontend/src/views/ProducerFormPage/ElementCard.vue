@@ -28,7 +28,7 @@
           <DsfrSelect
             label="Partie utilisée"
             defaultUnselectedText=""
-            v-model="model.plantPart"
+            v-model="model.usedPart"
             :options="plantParts"
             :required="true"
           />
@@ -39,7 +39,7 @@
         <DsfrInputGroup class="min-w-20 max-w-24">
           <DsfrSelect
             label="Unité"
-            :options="store.units?.map((unit) => unit.name)"
+            :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
             v-model="model.unit"
             defaultUnselectedText=""
             :required="true"
