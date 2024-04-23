@@ -27,10 +27,10 @@ from .models import (
     SubstanceSynonym,
 )
 
+from .models import Effect, GalenicFormulation, IngredientStatus, Population, SubstanceUnit
+
 # from .models.condition import Condition
-from .models.effect import Effect
-from .models.population import Population
-from .models.unit import SubstanceUnit
+
 from .utils.importer_utils import clean_value, update_or_create_object, get_update_or_create_related_object
 
 logger = logging.getLogger(__name__)
@@ -41,10 +41,12 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_MICRO_ORGANISME.csv": Microorganism,
     "REF_ICA_PARTIE_PLANTE.csv": PlantPart,
     "REF_ICA_PLANTE.csv": Plant,
+    "REF_ICA_FAMILLE_PLANTE.csv": PlantFamily,
     "REF_ICA_SUBSTANCE_ACTIVE.csv": Substance,
     "POPULATION.csv": Population,
-    # 'OBJECTIF.CSV': Objectif,
-    # 'FICHIERA_RECUPERER.CSV': PlantFamily,
+    "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
+    "REF_ICA_FORME_GALENIQUE.csv": GalenicFormulation,
+    "REF_ICA_UNITE.csv": SubstanceUnit,
     # Les fichiers csv avec les Foreign Keys
     "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": IngredientSynonym,
     "REF_ICA_PLANTE_SYNONYME.csv": PlantSynonym,
@@ -55,7 +57,6 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_MOORG_SUBSTANCE.csv": "à récuperer",
     "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": Part,
     "REF_ICA_PARTIE_UTILE.csv": Part,
-    "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
 }
 
 # Le fichier REF_ICA_PARTIE_PL_A_SURVEILLER n'est pas traité comme une relation car il correspond à un model à part entière
@@ -78,6 +79,8 @@ class CSVImporter:
         "FAMPL": PlantFamily,
         "UNT": SubstanceUnit,
         "OBJEFF": Effect,
+        "FRMGAL": GalenicFormulation,
+        "STINGSBS": IngredientStatus,
         # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
         # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
         # "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
@@ -119,6 +122,7 @@ class CSVImporter:
         # Les champs ManyToMany
         "substances": ["SBSACT_IDENT"],
         "plant_parts": ["PPLAN_IDENT"],
+        "status": ["STINGSBS_IDENT"],
     }
 
     # Ces champs sont remplis automatiquement et ne sont pas recherchés dans les fichiers csv
@@ -129,6 +133,7 @@ class CSVImporter:
         "modification_date",
         "missing_import_data",
     ]
+    NEW_FIELDS = ["is_liquid", "long_name"]
 
     def __init__(self, file, model, is_relation=False, mapping=None):
         """Initialise un CSVImporter avec le fichier source, le modèle de destination, etc
@@ -181,6 +186,7 @@ class CSVImporter:
             for field in model_fields
             if field.concrete
             and field.name not in self.AUTOMATICALLY_FILLED
+            and field.name not in self.NEW_FIELDS
             and not field.__class__ == GeneratedField
             and not field.name.startswith("ca_")
         ]
@@ -215,10 +221,11 @@ class CSVImporter:
         for field in self.fields_to_complete:
             # cas particulier des champs `siccrf_must_be_monitored` et `siccrf_is_useful`
             # qui n'existent pas en tant que tel dans les csv SICCRF
+            # TODO : ces champs devraient juste être ajoutés à la liste des champs remplis automatiquement ?
             if self.model == Part and field.name in ["siccrf_must_be_monitored", "siccrf_is_useful"]:
                 continue
             # le nom des colonnes contenant les clés étrangères ne sont pas préfixées par le nom de la table
-            prefixed = False if isinstance(field, ForeignKey) or isinstance(field, ManyToManyField) else True
+            prefixed = not (isinstance(field, (ForeignKey, ManyToManyField)) or field.name == "status")
             try:
                 column_name = self._get_column_name(field.name, prefixed=prefixed)
                 django_fields_to_column_names[field] = column_name

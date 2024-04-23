@@ -13,6 +13,8 @@ from .substance import SubstanceSerializer, SubstanceShortSerializer
 from .population import PopulationSerializer
 from .condition import ConditionSerializer
 from .effect import EffectSerializer
+from .galenic_formulation import GalenicFormulationSerializer
 from .unit import SubstanceUnitSerializer
 from .autocomplete_item import AutocompleteItemSerializer
-from .declaration import DeclarationSerializer
+from .declaration import DeclarationSerializer, DeclarationShortSerializer
+from .company import CompanySerializer

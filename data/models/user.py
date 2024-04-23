@@ -107,7 +107,7 @@ class User(PermissionsMixin, AutoValidable, Verifiable, Deactivable, AbstractBas
         """Get the given role or None if it does not exist."""
         try:
             return getattr(self, name)
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, AttributeError):  # TODO: unit test!
             return None
 
     def get_full_name(self) -> str:

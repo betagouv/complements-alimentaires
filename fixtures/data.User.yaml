@@ -2,17 +2,17 @@
   pk: 1
   fields:
     password: pbkdf2_sha256$720000$j8erHrBDtih9Gh2WcLaR33$xyaaly4Ed/ufvROyGC+o4nO2ekkcPWNrIcDj1KETOxk=
-    last_login: 2024-03-25 16:30:32.234612+00:00
+    last_login: 2024-04-05 09:40:27.905519+00:00
     is_superuser: true
     is_active: true
     is_verified: true
     username: admin
-    first_name: ""
-    last_name: ""
+    first_name: Armine
+    last_name: LADMIN
     email: admin@example.com
     phone_number: null
     is_staff: true
-    date_joined: 2024-03-25 16:21:08.827286+00:00
+    date_joined: 2024-03-25 16:21:08+00:00
     groups: []
     user_permissions: []
 - model: data.user

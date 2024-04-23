@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from data.behaviours import Historisable, TimeStampable
-from data.choices import CountryChoices
+from data.choices import CountryChoices, FrAuthorizationReasons, AuthorizationModes
 from data.models import (
     SubstanceUnit,
     Population,
@@ -13,6 +13,7 @@ from data.models import (
     Substance,
     PlantPart,
     Company,
+    GalenicFormulation,
 )
 
 
@@ -21,8 +22,8 @@ class Declaration(Historisable, TimeStampable):
     class Meta:
         verbose_name = "déclaration"
 
-    class DiagnosticStatus(models.TextChoices):
-        DRAFT = "DRAFT", "Déclaration"
+    class DeclarationStatus(models.TextChoices):
+        DRAFT = "DRAFT", "Brouillon"
         AWAITING_INSTRUCTION = "AWAITING_INSTRUCTION", "En attente de retour instruction"
         AWAITING_PRODUCER = "AWAITING_PRODUCER", "En attente de retour du déclarant"
         REJECTED = "REJECTED", "Rejeté"
@@ -35,8 +36,8 @@ class Declaration(Historisable, TimeStampable):
 
     status = models.CharField(
         max_length=50,
-        choices=DiagnosticStatus.choices,
-        default=DiagnosticStatus.DRAFT,
+        choices=DeclarationStatus.choices,
+        default=DeclarationStatus.DRAFT,
         verbose_name="Status",
     )
     author = models.ForeignKey(
@@ -69,11 +70,11 @@ class Declaration(Historisable, TimeStampable):
     gamme = models.TextField(blank=True, verbose_name="gamme")
     flavor = models.TextField(blank=True, verbose_name="arôme")
     description = models.TextField(blank=True, verbose_name="description")
-    #########
 
-    galenic_formulation = models.TextField(
-        blank=True, verbose_name="forme galénique"
-    )  # TODO : à terme mettre des valeurs de la DB
+    galenic_formulation = models.ForeignKey(
+        GalenicFormulation, verbose_name="forme galénique", null=True, blank=True, on_delete=models.RESTRICT
+    )
+
     unit_quantity = models.FloatField(
         null=True, blank=True, verbose_name="poids ou volume d'une unité de consommation"
     )
@@ -105,7 +106,34 @@ class Declaration(Historisable, TimeStampable):
 # et les champs de l'utilisateur.ice seront présents.
 
 
-class DeclaredPlant(Historisable):
+class Addable(models.Model):
+    class Meta:
+        abstract = True
+
+    new = models.BooleanField(default=False)
+    new_description = models.TextField(blank=True, verbose_name="description")
+
+    authorization_mode = models.CharField(
+        choices=AuthorizationModes.choices,
+        blank=True,
+        verbose_name="modalité d'autorisation pour un élément ajouté manuellement",
+    )
+    fr_reason = models.CharField(
+        choices=FrAuthorizationReasons.choices,
+        blank=True,
+        verbose_name="raison de l'ajout manuel",
+    )
+    fr_details = models.CharField("information additionnelle sur l'autorisation en France", blank=True)
+    eu_reference_country = models.CharField(
+        "pays de source réglementaire", blank=True, choices=CountryChoices, default=CountryChoices.FRANCE
+    )
+    eu_legal_source = models.TextField("référence du texte réglementaire d'un autre pays européen", blank=True)
+    eu_details = models.TextField(
+        "information additionnelle sur l'autorisation dans un autre pays européen", blank=True
+    )
+
+
+class DeclaredPlant(Historisable, Addable):
     declaration = models.ForeignKey(
         Declaration,
         related_name="declared_plants",
@@ -113,14 +141,11 @@ class DeclaredPlant(Historisable):
         on_delete=models.CASCADE,
     )
     plant = models.ForeignKey(
-        Plant, null=True, blank=True, verbose_name="plante ajoutée par l'user", on_delete=models.RESTRICT
+        Plant, null=True, blank=True, verbose_name="plante ajoutée par l'utilisateur", on_delete=models.RESTRICT
     )
-
-    new = models.BooleanField(default=False)
+    active = models.BooleanField("élément actif", default=True)
     new_name = models.TextField(blank=True, verbose_name="nom de la plante ajoutée manuellement")
-    new_description = models.TextField(blank=True, verbose_name="description de la plante ajoutée manuellement")
 
-    active = models.BooleanField(default=True)
     used_part = models.ForeignKey(
         PlantPart, null=True, blank=True, verbose_name="partie utilisée", on_delete=models.RESTRICT
     )
@@ -129,7 +154,7 @@ class DeclaredPlant(Historisable):
     preparation = models.TextField(blank=True, verbose_name="préparation")
 
 
-class DeclaredMicroorganism(Historisable):
+class DeclaredMicroorganism(Historisable, Addable):
     declaration = models.ForeignKey(
         Declaration, related_name="declared_microorganisms", verbose_name="déclaration", on_delete=models.CASCADE
     )
@@ -140,20 +165,15 @@ class DeclaredMicroorganism(Historisable):
         verbose_name="microorganisme ajouté par l'user",
         on_delete=models.RESTRICT,
     )
-
-    new = models.BooleanField(default=False)
-
-    # TODO : Update fields after merging of #339
-    new_name = models.TextField(blank=True, verbose_name="nom du micro-organisme ajoutée manuellement")
+    active = models.BooleanField("élément actif", default=True)
+    new_species = models.TextField(blank=True, verbose_name="espèce du micro-organisme ajouté manuellement")
     new_genre = models.TextField(blank=True, verbose_name="genre du micro-organisme ajoutée manuellement")
-    new_description = models.TextField(blank=True, verbose_name="description du micro-organisme ajoutée manuellement")
 
-    active = models.BooleanField(default=True)
     souche = models.TextField(blank=True, verbose_name="souche")
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR (en CFU)")
 
 
-class DeclaredIngredient(Historisable):
+class DeclaredIngredient(Historisable, Addable):
     declaration = models.ForeignKey(
         Declaration,
         related_name="declared_ingredients",
@@ -163,12 +183,8 @@ class DeclaredIngredient(Historisable):
     ingredient = models.ForeignKey(
         Ingredient, null=True, blank=True, verbose_name="ingrédient ajouté par l'user", on_delete=models.RESTRICT
     )
-
-    new = models.BooleanField(default=False)
+    active = models.BooleanField("élément actif", default=True)
     new_name = models.TextField(blank=True, verbose_name="libellé")
-    new_description = models.TextField(blank=True, verbose_name="description")
-
-    active = models.BooleanField(default=True)
 
 
 class DeclaredSubstance(Historisable):
@@ -178,10 +194,10 @@ class DeclaredSubstance(Historisable):
         verbose_name=Declaration._meta.verbose_name,
         on_delete=models.CASCADE,
     )
+    active = models.BooleanField("élément actif", default=True)
     substance = models.ForeignKey(
         Substance, null=True, blank=True, verbose_name="substance ajoutée par l'user", on_delete=models.RESTRICT
     )
-    active = models.BooleanField(default=True)
 
 
 # Les substances détectées au moment de faire la déclaration seront ici, avec la valeur de la quantité

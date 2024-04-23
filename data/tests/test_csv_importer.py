@@ -8,7 +8,18 @@ from django.db.models import TextField, CharField, FloatField, IntegerField
 from data.csv_importer import import_csv_from_filepath, CSVImporter
 from data.utils.importer_utils import clean_value
 from data.exceptions import CSVFileError
-from data.models import Plant, PlantFamily, PlantPart, Ingredient, Microorganism, Substance
+from data.models import (
+    Plant,
+    PlantFamily,
+    PlantPart,
+    Ingredient,
+    Microorganism,
+    Substance,
+    Effect,
+    GalenicFormulation,
+    IngredientStatus,
+    SubstanceUnit,
+)
 
 
 class CSVImporterTestCase(TestCase):
@@ -61,8 +72,8 @@ class CSVImporterTestCase(TestCase):
         self.assertEqual("", clean_value("NULL", CharField()))
         self.assertEqual("Eloides rhamnosus trulul", clean_value(" Eloides rhamnosus trulul ", CharField()))
 
-    def test_models_created(self):
-        test_path = f"{self.TEST_DIR_PATH}/test_model_creation/"
+    def test_element_models_created(self):
+        test_path = f"{self.TEST_DIR_PATH}/element_models_creation/"
         call_command("load_ingredients", directory=test_path)
 
         self.assertTrue(Plant.objects.filter(siccrf_id=10).exists())
@@ -85,8 +96,25 @@ class CSVImporterTestCase(TestCase):
         self.assertTrue(Substance.objects.filter(siccrf_id=11).exists())
         self.assertEqual(len(Substance.objects.all()), 2)
 
+        self.assertEqual(len(SubstanceUnit.objects.all()), 5)
+
+    def test_ingredient_models_created(self):
+        test_path = f"{self.TEST_DIR_PATH}/declaration_models_creation/"
+        call_command("load_ingredients", directory=test_path)
+
+        self.assertTrue(Effect.objects.filter(siccrf_id=1).exists())
+        self.assertTrue(Effect.objects.filter(siccrf_id=2).exists())
+        self.assertTrue(Effect.objects.filter(siccrf_id=3).exists())
+        self.assertTrue(Effect.objects.filter(siccrf_id=35).exists())
+        self.assertEqual(len(Effect.objects.all()), 4)
+
+        self.assertTrue(GalenicFormulation.objects.filter(siccrf_id=1).exists())
+        self.assertTrue(GalenicFormulation.objects.filter(siccrf_id=5).exists())
+        self.assertTrue(GalenicFormulation.objects.filter(siccrf_id=6).exists())
+        self.assertEqual(len(GalenicFormulation.objects.all()), 3)
+
     def test_linked_models_created_even_if_no_corresponding_file(self):
-        test_path = f"{self.TEST_DIR_PATH}/test_model_creation/"
+        test_path = f"{self.TEST_DIR_PATH}/element_models_creation/"
         call_command("load_ingredients", directory=test_path)
         self.assertTrue(PlantFamily.objects.filter(siccrf_id=6).exists())
         self.assertEqual(PlantFamily.objects.get(siccrf_id=6).missing_import_data, True)
@@ -171,3 +199,18 @@ class CSVImporterTestCase(TestCase):
             self.assertTrue(must_be_monitored_parts.issubset(all_parts))
             self.assertFalse(useful_parts.issubset(must_be_monitored_parts))
             self.assertFalse(useful_parts.issuperset(must_be_monitored_parts))
+
+    def test_status_import(self):
+        """
+        Les ingrédients (plante, microorganism, autre ingrédients) et substance peuvent avoir différent status.
+        Ce test vérifie que le modèle Status est bien rempli et que les ForeignKey des différents ingrédients/substances
+        pointent bien comme convenu vers le bon objet du modèle Status.
+        """
+        test_path = f"{self.TEST_DIR_PATH}/element_models_creation/"
+        call_command("load_ingredients", directory=test_path)
+
+        self.assertEqual(len(Plant.objects.filter(status=IngredientStatus.AUTHORIZED)), 2)
+
+        self.assertEqual(len(Microorganism.objects.filter(status=IngredientStatus.PENDING_REGISTRATION)), 2)
+        self.assertEqual(len(Ingredient.objects.filter(status=IngredientStatus.NA)), 2)
+        self.assertEqual(len(Substance.objects.filter(status=IngredientStatus.NOT_AUTHORIZED)), 2)

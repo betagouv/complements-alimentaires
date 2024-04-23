@@ -11,6 +11,7 @@ import PrivacyPolicyPage from "@/views/PrivacyPolicyPage.vue"
 import LegalNoticesPage from "@/views/LegalNoticesPage"
 import CookiesInfoPage from "@/views/CookiesInfoPage"
 import ProducerFormPage from "@/views/ProducerFormPage"
+import CompanyFormPage from "@/views/CompanyFormPage"
 import NotFound from "@/views/NotFound"
 import LoginPage from "@/views/LoginPage"
 import SignupPage from "@/views/SignupPage"
@@ -18,6 +19,7 @@ import VerifyEmailPage from "@/views/VerifyEmailPage"
 import DashboardPage from "@/views/DashboardPage"
 import UserAccountPage from "@/views/UserAccountPage"
 import VerificationSentPage from "@/views/VerificationSentPage"
+import DeclarationsHomePage from "@/views/DeclarationsHomePage"
 
 const routes = [
   {
@@ -118,6 +120,15 @@ const routes = [
     },
   },
   {
+    path: "/nouvelle-entreprise",
+    name: "CompanyFormPage",
+    component: CompanyFormPage,
+    meta: {
+      title: "Nouvelle entreprise",
+      authenticationRequired: true,
+    },
+  },
+  {
     path: "/informations-personnelles",
     name: "UserAccountPage",
     component: UserAccountPage,
@@ -156,6 +167,23 @@ const routes = [
     component: VerifyEmailPage,
     meta: {
       title: "Vérifier son adresse e-mail",
+    },
+  },
+  {
+    path: "/mes-declarations",
+    name: "DeclarationsHomePage",
+    component: DeclarationsHomePage,
+    meta: {
+      title: "Mes déclarations",
+    },
+  },
+  {
+    path: "/mes-declarations/:id",
+    name: "DeclarationPage",
+    component: ProducerFormPage,
+    props: true,
+    meta: {
+      title: "Ma déclaration",
     },
   },
   {

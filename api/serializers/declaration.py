@@ -83,19 +83,29 @@ class DeclaredListSerializer(serializers.ListSerializer):
         return declared_items
 
 
+ADDABLE_ELEMENT_FIELDS = (
+    "authorization_mode",
+    "fr_reason",
+    "fr_details",
+    "eu_reference_country",
+    "eu_legal_source",
+    "eu_details",
+    "new_description",
+    "new",
+)
+
+
 class DeclaredPlantSerializer(serializers.ModelSerializer):
-    plant = PassthroughPlantSerializer(required=False)
-    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False)
-    used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False)
+    element = PassthroughPlantSerializer(required=False, source="plant", allow_null=True)
+    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
+    used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False, allow_null=True)
 
     class Meta:
         model = DeclaredPlant
-        fields = (
+        fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
-            "plant",
+            "element",
             "new_name",
-            "new_description",
-            "new",
             "active",
             "used_part",
             "unit",
@@ -117,17 +127,15 @@ class DeclaredPlantSerializer(serializers.ModelSerializer):
 
 
 class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
-    microorganism = PassthroughMicroorganismSerializer(required=False)
+    element = PassthroughMicroorganismSerializer(required=False, source="microorganism", allow_null=True)
 
     class Meta:
         model = DeclaredMicroorganism
-        fields = (
+        fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
-            "microorganism",
-            "new_name",
+            "element",
+            "new_species",
             "new_genre",
-            "new_description",
-            "new",
             "active",
             "souche",
             "quantity",
@@ -149,16 +157,14 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
 
 
 class DeclaredIngredientSerializer(serializers.ModelSerializer):
-    ingredient = PassthroughIngredientSerializer(required=False)
+    element = PassthroughIngredientSerializer(required=False, source="ingredient", allow_null=True)
 
     class Meta:
         model = DeclaredIngredient
-        fields = (
+        fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
-            "ingredient",
+            "element",
             "new_name",
-            "new_description",
-            "new",
             "active",
         )
 
@@ -176,13 +182,13 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
 
 
 class DeclaredSubstanceSerializer(serializers.ModelSerializer):
-    substance = PassthroughSubstanceSerializer(required=False)
+    element = PassthroughSubstanceSerializer(required=False, source="substance", allow_null=True)
 
     class Meta:
         model = DeclaredSubstance
         fields = (
             "id",
-            "substance",
+            "element",
             "active",
         )
 
@@ -201,7 +207,7 @@ class DeclaredSubstanceSerializer(serializers.ModelSerializer):
 
 class ComputedSubstanceSerializer(serializers.ModelSerializer):
     substance = PassthroughSubstanceSerializer()
-    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False)
+    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
 
     class Meta:
         model = ComputedSubstance
@@ -238,14 +244,20 @@ class AttachmentSerializer(serializers.ModelSerializer):
 
 
 class DeclarationSerializer(serializers.ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(read_only=True)
-    company = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all())
-    unit_measurement = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False)
-    conditions_not_recommended = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Condition.objects.all(), required=False
+    author = serializers.PrimaryKeyRelatedField(read_only=True, allow_null=True)
+    company = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all(), allow_null=True)
+    unit_measurement = serializers.PrimaryKeyRelatedField(
+        queryset=SubstanceUnit.objects.all(), required=False, allow_null=True
     )
-    populations = serializers.PrimaryKeyRelatedField(many=True, queryset=Population.objects.all(), required=False)
-    effects = serializers.PrimaryKeyRelatedField(many=True, queryset=Effect.objects.all(), required=False)
+    conditions_not_recommended = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Condition.objects.all(), required=False, allow_null=True
+    )
+    populations = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Population.objects.all(), required=False, allow_null=True
+    )
+    effects = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Effect.objects.all(), required=False, allow_null=True
+    )
 
     declared_plants = DeclaredListSerializer(child=DeclaredPlantSerializer(), required=False)
     declared_microorganisms = DeclaredListSerializer(child=DeclaredMicroorganismSerializer(), required=False)
@@ -333,8 +345,27 @@ class DeclarationSerializer(serializers.ModelSerializer):
                 for item in declared_elements:
                     item["declaration"] = declaration
                 if instance:
-                    serializer.update(getattr(declaration, field_name), declared_elements)
+                    serializer.update(getattr(declaration, field_name).all(), declared_elements)
                 else:
                     serializer.create(declared_elements)
 
         return declaration
+
+
+class DeclarationShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Declaration
+        fields = (
+            "id",
+            "status",
+            "author",
+            "company",
+            "name",
+            "brand",
+            "gamme",
+            "flavor",
+            "description",
+            "creation_date",
+            "modification_date",
+        )
+        read_only_fields = fields

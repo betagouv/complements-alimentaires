@@ -12,7 +12,9 @@ from .substance import Substance, SubstanceSynonym
 from .population import Population
 from .condition import Condition
 from .effect import Effect
+from .galenic_formulation import GalenicFormulation
 from .unit import SubstanceUnit
+from .status import IngredientStatus
 from .declaration import (
     Declaration,
     DeclaredPlant,
@@ -23,16 +25,18 @@ from .declaration import (
     Attachment,
 )
 
-
 ELEMENT_MODELS = [
     Ingredient,
     IngredientSynonym,
     Plant,
+    PlantFamily,
     PlantSynonym,
     Microorganism,
     MicroorganismSynonym,
     Substance,
     SubstanceSynonym,
+    IngredientStatus,
+    SubstanceUnit,
 ]
 
-DECLARATION_MODELS = [Effect, Condition, Population, SubstanceUnit]
+DECLARATION_MODELS = [Condition, Effect, GalenicFormulation, Population]

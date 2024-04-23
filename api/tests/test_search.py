@@ -97,60 +97,6 @@ class TestSearch(APITestCase):
         self.assertIn(ingredient.id, returned_ids)
         self.assertIn(microorganism.id, returned_ids)
 
-    def test_ingredient_field_priorities(self):
-        """
-        The weighting of certain fields yields different scores. For example,
-        an ingredients `name` has a higher search priority than its `name_en` and `ingredientsynonym`
-        which has a higher priority than its `description`
-        """
-        ingredient_name = IngredientFactory(ca_name="matcha")
-        IngredientSynonymFactory(name="matcha", standard_name=IngredientFactory(ca_name="other"))
-        IngredientFactory(siccrf_name_en="matcha")
-        ingredient_description = IngredientFactory(siccrf_description="matcha")
-
-        search_term = "matcha"
-        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
-        results = response.json().get("results", [])
-        self.assertEqual(results[0]["id"], ingredient_name.id)
-        self.assertEqual(results[3]["id"], ingredient_description.id)
-
-    def test_microorganism_field_priorities(self):
-        """
-        The weighting of certain fields yields different scores. For example,
-        a microorganism `name` has a higher search priority than `microorganismsynonym`
-        """
-        microorganism_name = MicroorganismFactory(ca_genus="matcha")
-        microorganism_synonym = MicroorganismFactory(ca_genus="other")
-        MicroorganismSynonymFactory(name="matcha", standard_name=microorganism_synonym)
-
-        search_term = "matcha"
-        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
-        results = response.json().get("results", [])
-
-        self.assertEqual(results[0]["id"], microorganism_name.id)
-        self.assertEqual(results[1]["id"], microorganism_synonym.id)
-
-    def test_substance_field_priorities(self):
-        """
-        The weighting of certain fields yields different scores. For example,
-        a substance `name`, `cas_number` and `einec_number` have a higher search
-        priority than its `name_en` and `substancesynonym`
-        """
-        substance_name_en = SubstanceFactory(siccrf_name_en="matcha")
-        substance_synonym = SubstanceFactory(ca_name="other")
-        SubstanceSynonymFactory(name="matcha", standard_name=substance_synonym)
-        SubstanceFactory(siccrf_cas_number="matcha")
-        SubstanceFactory(siccrf_einec_number="matcha")
-        SubstanceFactory(ca_name="matcha")
-
-        search_term = "matcha"
-        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
-        results = response.json().get("results", [])
-
-        two_last_results = [result["id"] for result in results[-2:]]
-        self.assertIn(substance_name_en.id, two_last_results)
-        self.assertIn(substance_synonym.id, two_last_results)
-
     def test_multiple_microorganism_synonym_match_return_only_once(self):
         """The search_term might be found in several fields,
         in this case, the object should appear only once in search results

@@ -1,21 +1,22 @@
 <template>
-  <h2 class="fr-h6">
-    <v-icon class="mr-1" name="ri-flask-line" />
-    Nouveaux ingrédients
-  </h2>
+  <SectionTitle title="Nouveaux ingrédients" sizeTag="h6" icon="ri-flask-line" />
   <p>
     Vous avez ajouté les nouveaux ingrédients affichés ci-dessous. Des informations supplémentaires les concernant sont
     requises.
   </p>
-  <div>
-    <NewElementCard :key="index" v-for="(element, index) in newElements" v-model="newElements[index]" />
-  </div>
+  <NewElementList objectType="plant" :elements="newPlants" />
+  <NewElementList objectType="microorganism" :elements="newMicroorganisms" />
+  <NewElementList objectType="ingredient" :elements="newIngredients" />
 </template>
 
 <script setup>
 import { computed } from "vue"
-import NewElementCard from "./NewElementCard"
+import NewElementList from "./NewElementList"
+import SectionTitle from "@/components/SectionTitle"
+
 const payload = defineModel()
 
-const newElements = computed(() => payload.value.elements.filter((x) => x.element.new))
+const newPlants = computed(() => payload.value.declaredPlants.filter((x) => x.new))
+const newMicroorganisms = computed(() => payload.value.declaredMicroorganisms.filter((x) => x.new))
+const newIngredients = computed(() => payload.value.declaredIngredients.filter((x) => x.new))
 </script>

@@ -1,10 +1,7 @@
 <template>
   <!-- Si on a une seule entreprise, pas besoin d'afficher ce champ -->
   <template v-if="!companies || companies.length !== 1">
-    <h2 class="fr-h6">
-      <v-icon class="mr-1" name="ri-home-2-fill" />
-      Entreprise
-    </h2>
+    <SectionTitle title="Entreprise" sizeTag="h6" icon="ri-home-2-fill" />
     <DsfrAlert type="warning" v-if="!companies || companies.length === 0">
       <p>
         Vous n'avez pas d'entreprise assignée. Contacter l'administrateur de votre entreprise ou
@@ -22,10 +19,7 @@
     </DsfrInputGroup>
   </template>
 
-  <h2 class="fr-h6 !mt-8">
-    <v-icon class="mr-1" name="ri-price-tag-2-fill" />
-    Dénomination commerciale
-  </h2>
+  <SectionTitle title="Dénomination commerciale" class="!mt-10" sizeTag="h6" icon="ri-price-tag-2-fill" />
   <div class="grid grid-cols-2 gap-4">
     <div class="col-span-2 md:col-span-1 max-w-md">
       <DsfrInputGroup>
@@ -50,20 +44,42 @@
       <DsfrInput is-textarea v-model="payload.description" label-visible label="Description" :required="true" />
     </DsfrInputGroup>
   </div>
-  <h2 class="fr-h6 !mt-8">
-    <v-icon class="mr-1" name="ri-capsule-fill" />
-    Format
-  </h2>
-  <DsfrInputGroup class="mt-6 max-w-md">
-    <DsfrSelect
-      label="Forme galénique"
-      v-model="payload.galenicFormulation"
-      :options="galenicFormulation"
-      :required="true"
-    />
-  </DsfrInputGroup>
+  <SectionTitle title="Format" class="!mt-10" sizeTag="h6" icon="ri-capsule-fill" />
   <div class="grid grid-cols-2 gap-4">
-    <div class="col-span-2 md:col-span-1 max-w-md">
+    <DsfrFieldset legend="Forme galénique" legendClass="fr-label !font-normal !pb-0">
+      <div class="flex">
+        <div class="max-w-32">
+          <DsfrSelect :options="formulationStates" v-model="galenicFormulationState" defaultUnselectedText="État" />
+        </div>
+        <div class="max-w-md ml-4">
+          <DsfrSelect
+            v-model="payload.galenicFormulation"
+            :options="
+              galenicFormulationList?.map((formulation) => ({
+                text: formulation.name,
+                value: formulation.id,
+              }))
+            "
+          />
+        </div>
+      </div>
+    </DsfrFieldset>
+    <div class="max-w-2xl">
+      <DsfrInput
+        v-if="
+          payload.galenicFormulation &&
+          galenicFormulation &&
+          getAllIndexesOfRegex(galenicFormulation, /Autre.*(à préciser)/).includes(parseInt(payload.galenicFormulation))
+        "
+        v-model="payload.otherGalenicFormulation"
+        label-visible
+        label="Merci de préciser la forme galénique"
+      />
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="col-span-2 md:col-span-1 max-w-md mt-6">
       <DsfrFieldset legend="Poids ou volume d'une unité de consommation" legendClass="fr-label !font-normal !pb-0">
         <div class="flex">
           <div class="max-w-64">
@@ -71,7 +87,7 @@
           </div>
           <div class="max-w-32 ml-4">
             <DsfrSelect
-              :options="store.units?.map((unit) => unit.name)"
+              :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
               v-model="payload.unitMeasurement"
               defaultUnselectedText="Unité"
             />
@@ -108,10 +124,7 @@
   <DsfrInputGroup class="max-w-2xl mt-6">
     <DsfrInput is-textarea v-model="payload.warning" label-visible label="Mise en garde et avertissement" />
   </DsfrInputGroup>
-  <h2 class="fr-h6 !mt-8">
-    <v-icon class="mr-1" name="ri-file-user-fill" />
-    Populations cible
-  </h2>
+  <SectionTitle title="Populations cible" class="!mt-10" sizeTag="h6" icon="ri-file-user-fill" />
   <DsfrFieldset legend="Population cible" legendClass="fr-label">
     <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
       <div
@@ -147,10 +160,7 @@
       </div>
     </div>
   </DsfrFieldset>
-  <h2 class="fr-h6 !mt-8">
-    <v-icon class="mr-1" name="ri-focus-2-fill" />
-    Objectifs / effets
-  </h2>
+  <SectionTitle title="Objectifs / effets" class="!mt-10" sizeTag="h6" icon="ri-focus-2-fill" />
   <DsfrFieldset>
     <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
       <div v-for="effect in effects" :key="`effect-${effect.id}`" class="flex col-span-6 sm:col-span-3 lg:col-span-2">
@@ -168,23 +178,14 @@
       :required="true"
     />
   </DsfrInputGroup>
-  <h2 class="fr-h6 !mt-8">
-    <v-icon class="mr-1" name="ri-home-2-fill" />
-    Adresse sur l'étiquetage
-  </h2>
+  <SectionTitle title="Adresse sur l'étiquetage" class="!mt-10" sizeTag="h6" icon="ri-home-2-fill" />
   <div class="max-w-2xl mb-8 address-form">
     <DsfrInputGroup>
-      <DsfrInput
-        v-model="payload.labelAddress.address"
-        label-visible
-        label="Adresse"
-        hint="Numéro et voie"
-        :required="true"
-      />
+      <DsfrInput v-model="payload.address" label-visible label="Adresse" hint="Numéro et voie" :required="true" />
     </DsfrInputGroup>
     <DsfrInputGroup>
       <DsfrInput
-        v-model="payload.labelAddress.additionalDetails"
+        v-model="payload.additionalDetails"
         label-visible
         label="Complément d'adresse"
         hint="Bâtiment, immeuble, escalier et numéro d’appartement"
@@ -192,51 +193,62 @@
     </DsfrInputGroup>
     <div class="grid grid-cols-7 gap-6">
       <DsfrInputGroup class="col-span-12 md:col-span-3">
-        <DsfrInput v-model="payload.labelAddress.postalCode" label-visible label="Code Postal" :required="true" />
+        <DsfrInput v-model="payload.postalCode" label-visible label="Code Postal" :required="true" />
       </DsfrInputGroup>
       <DsfrInputGroup class="col-span-12 md:col-span-4">
-        <DsfrInput v-model="payload.labelAddress.city" label-visible label="Ville ou commune" :required="true" />
+        <DsfrInput v-model="payload.city" label-visible label="Ville ou commune" :required="true" />
       </DsfrInputGroup>
     </div>
     <DsfrInputGroup>
-      <DsfrInput v-model="payload.labelAddress.cedex" label-visible label="Cedex" />
+      <DsfrInput v-model="payload.cedex" label-visible label="Cedex" />
     </DsfrInputGroup>
     <DsfrInputGroup>
-      <DsfrSelect label="Pays" v-model="payload.labelAddress.country" :options="countries" :required="true" />
+      <CountryField v-model="payload.country" />
     </DsfrInputGroup>
   </div>
 </template>
 <script setup>
-import { computed, watch } from "vue"
+import { computed, watch, ref } from "vue"
 import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { countries } from "@/utils/mappings"
+import { otherFieldsAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
+import CountryField from "@/components/fields/CountryField.vue"
+import SectionTitle from "@/components/SectionTitle"
 
 const payload = defineModel()
-
 const store = useRootStore()
-const { populations, conditions, effects, loggedUser } = storeToRefs(store)
-const otherEffectsId = computed(() => effects.value?.find((effect) => effect.name === "Autre (à préciser)").id)
-
+const { populations, conditions, effects, galenicFormulation, loggedUser } = storeToRefs(store)
+const galenicFormulationState = ref(null)
+const otherEffectsId = computed(() => effects.value?.find((effect) => effect.name === "Autre (à préciser)")?.id)
+const galenicFormulationList = computed(() => {
+  if (!galenicFormulationState.value) return galenicFormulation.value
+  else {
+    const isLiquid = galenicFormulationState.value === "liquid"
+    return otherFieldsAtTheEnd(
+      galenicFormulation.value
+        ?.filter((formulation) => formulation.isLiquid === isLiquid) // le filter perd l'ordre alphabétique d'origine
+        .sort((a, b) => a.name.localeCompare(b.name))
+    )
+  }
+})
 const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
 const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))
-const galenicFormulation = [
+const formulationStates = [
   {
-    text: "Ampoule",
-    value: "ampoule",
+    text: "Liquide",
+    value: "liquid",
   },
   {
-    text: "Comprimé",
-    value: "comprime",
+    text: "Solide",
+    value: "solid",
   },
 ]
-
 watch(selectedCompany, () => {
   const addressFields = ["address", "additionalDetails", "postalCode", "city", "cedex", "country"]
-  const addressEmpty = addressFields.every((field) => !payload.value.labelAddress[field])
+  const addressEmpty = addressFields.every((field) => !payload.value[field])
   if (addressEmpty && selectedCompany.value)
-    addressFields.forEach((field) => (payload.value.labelAddress[field] = selectedCompany.value[field]))
+    addressFields.forEach((field) => (payload.value[field] = selectedCompany.value[field]))
 })
 
 // S'il n'y a qu'une entreprise on l'assigne par défaut

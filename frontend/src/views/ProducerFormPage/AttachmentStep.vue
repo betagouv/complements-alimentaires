@@ -1,9 +1,5 @@
 <template>
-  <h3 class="fr-h6">
-    <v-icon class="mr-1" name="ri-price-tag-2-fill"></v-icon>
-    Étiquetage
-  </h3>
-
+  <SectionTitle title="Étiquetage" sizeTag="h6" icon="ri-price-tag-2-fill" />
   <DsfrInputGroup>
     <DsfrFileUpload
       label="Merci d'ajouter au moins un fichier image ou PDF correspondant à l'étiquetage."
@@ -13,12 +9,9 @@
     />
   </DsfrInputGroup>
 
-  <FileGrid :files="payload.files.labels" @remove="removeLabelFile" hideTypeSelection />
+  <FileGrid :files="labelFiles" @remove="removeFile" hideTypeSelection />
 
-  <h3 class="fr-h6 !mt-8">
-    <v-icon class="mr-1" name="ri-attachment-2" />
-    Autres
-  </h3>
+  <SectionTitle title="Autres" class="!mt-10" sizeTag="h6" icon="ri-attachment-2" />
 
   <DsfrInputGroup>
     <DsfrFileUpload
@@ -29,24 +22,20 @@
     />
   </DsfrInputGroup>
 
-  <FileGrid :files="payload.files.others" @remove="removeOtherFile" />
+  <FileGrid :files="otherFiles" @remove="removeFile" />
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import FileGrid from "./FileGrid"
+import SectionTitle from "@/components/SectionTitle"
 
 const payload = defineModel()
 const selectedLabelFile = ref(null)
 const selectedOtherFile = ref(null)
 
-const addLabelFiles = async (files) =>
-  addFiles(files, payload.value.files.labels, selectedLabelFile, { type: "Étiquetage" })
-const addOtherFiles = async (files) => addFiles(files, payload.value.files.others, selectedOtherFile)
-
-const removeLabelFile = (file) => removeFile(file, payload.value.files.labels)
-const removeOtherFile = (file) => removeFile(file, payload.value.files.others)
-
+const addLabelFiles = async (files) => addFiles(files, payload.value.attachments, selectedLabelFile, { type: "LABEL" })
+const addOtherFiles = async (files) => addFiles(files, payload.value.attachments, selectedOtherFile)
 const addFiles = async (files, container, resetModel, defaultData) => {
   for (let i = 0; i < files.length; i++) {
     const base64 = await toBase64(files[i])
@@ -61,10 +50,13 @@ const addFiles = async (files, container, resetModel, defaultData) => {
   resetModel.value = null
 }
 
-const removeFile = (file, container) => {
-  const index = container.indexOf(file)
-  container.splice(index, 1)
+const removeFile = (file) => {
+  const index = payload.value.attachments.indexOf(file)
+  payload.value.attachments.splice(index, 1)
 }
+
+const labelFiles = computed(() => payload.value.attachments.filter((x) => x.type === "LABEL"))
+const otherFiles = computed(() => payload.value.attachments.filter((x) => x.type !== "LABEL"))
 
 const toBase64 = (file) => {
   return new Promise((resolve, reject) => {

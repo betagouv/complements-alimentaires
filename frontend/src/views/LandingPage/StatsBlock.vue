@@ -21,7 +21,8 @@ const stats = [
   },
   {
     number: "50%",
-    label: "de produits circulant dans la distribution mais non déclarés",
+    label:
+      "de produits circulant dans la distribution mais non déclarés (chiffre estimé par une enquête-mystère sur 30 produits choisis au hasard en GMS, pharmacies, internet)",
   },
 ]
 </script>

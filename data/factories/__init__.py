@@ -7,7 +7,9 @@ from .plant import PlantFactory, PlantPartFactory, PlantSynonymFactory, PlantFam
 from .webinar import WebinarFactory
 from .population import PopulationFactory
 from .condition import ConditionFactory
+from .company import CompanyFactory, CompanyWithSiretFactory, CompanyWithVatFactory
 from .effect import EffectFactory
-from .company import CompanyFactory
+from .galenic_formulation import GalenicFormulationFactory
 from .roles import DeclarantFactory, CompanySupervisorFactory
 from .unit import SubstanceUnitFactory
+from .declaration import DeclarationFactory

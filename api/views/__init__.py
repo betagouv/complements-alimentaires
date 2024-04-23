@@ -1,10 +1,10 @@
 from .authentication import LoginView, LogoutView
 from .autocomplete import AutocompleteView
 from .blog import BlogPostsView, BlogPostView
-from .company import CountryListView
 from .condition import ConditionListView
 from .effect import EffectListView
-from .declaration import DeclarationCreateApiView
+from .galenic_formulation import GalenicFormulationListView
+from .declaration import DeclarationListCreateApiView, DeclarationRetrieveUpdateView
 from .ingredient import IngredientRetrieveView
 from .microorganism import MicroorganismRetrieveView
 from .newsletter import SubscribeNewsletter
@@ -24,3 +24,11 @@ from .user import (
     VerifyEmailView,
 )
 from .webinar import WebinarView
+from .company import (
+    CountryListView,
+    CompanyCreateView,
+    CompanyRetrieveView,
+    CheckCompanyIdentifierView,
+    ClaimCompanySupervisionView,
+    ClaimCompanyCoSupervisionView,
+)
