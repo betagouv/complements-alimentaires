@@ -1,19 +1,19 @@
 from django.contrib import admin
 
-from .user import UserAdmin  # noqa
-from .roles import CompanySupervisorAdmin, DeclarantAdmin  # noqa
-from .company import CompanyAdmin  # noqa
-from .blogpost import BlogPostAdmin  # noqa
-from .webinar import WebinarAdmin  # noqa
-from .ingredient import IngredientAdmin  # noqa
-from .substance import SubstanceAdmin  # noqa
-from .plant import PlantAdmin  # noqa
-from .microorganism import MicroorganismAdmin  # noqa
-from .population import Population  # noqa
-from .condition import Condition  # noqa
-from .effect import Effect  # noqa
-from .galenic_formulation import GalenicFormulation  # noqa
-from .declaration import DeclarationAdmin  # noqa
+from .user import UserAdmin
+from .roles import CompanySupervisorAdmin, DeclarantAdmin
+from .company import CompanyAdmin
+from .blogpost import BlogPostAdmin
+from .webinar import WebinarAdmin
+from .ingredient import IngredientAdmin
+from .substance import SubstanceAdmin
+from .plant import PlantAdmin
+from .microorganism import MicroorganismAdmin
+from .population import Population
+from .condition import Condition
+from .effect import Effect
+from .galenic_formulation import GalenicFormulation
+from .declaration import DeclarationAdmin
 
 from data.models import PlantPart, PlantFamily
 from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
