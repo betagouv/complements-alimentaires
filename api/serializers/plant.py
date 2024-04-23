@@ -28,6 +28,7 @@ class PartRelationSerializer(serializers.ModelSerializer):
     name_en = serializers.CharField(source="plantpart.name_en")
     is_obsolete = serializers.BooleanField(source="plantpart.is_obsolete")
     siccrf_id = serializers.IntegerField(source="plantpart.siccrf_id")
+    id = serializers.IntegerField(source="plantpart.id")
 
     class Meta:
         model = Part
