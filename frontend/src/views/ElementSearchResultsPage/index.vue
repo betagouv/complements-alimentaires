@@ -18,9 +18,12 @@
     </div>
     <div v-else-if="data.count === 0">
       <h1 class="fr-h3">Nous n'avons pas trouvé de résultats pour « {{ currentSearch }} »</h1>
+      <DsfrAlert :title="calloutTitle" :description="calloutContent" type="info"></DsfrAlert>
     </div>
     <div v-else class="mb-4">
       <h1 class="fr-h3">Résultats de recherche</h1>
+      <DsfrAlert :title="calloutTitle" :description="calloutContent" type="info" class="mb-5"></DsfrAlert>
+
       <div v-if="data.results" class="grid grid-cols-12 gap-4">
         <ResultCard
           v-for="result in data.results"
@@ -54,6 +57,10 @@ const router = useRouter()
 const route = useRoute()
 const searchTerm = ref(route.query.q || "")
 const currentSearch = ref(route.query.q || "")
+const calloutTitle = "Risque de non exhaustivité des données"
+const calloutContent = `La base de données des ingrédients et substances constitue un guide sur lequel les opérateurs désireux de commercialiser des compléments alimentaires peuvent s’appuyer.
+Cette base est en amélioration continue, l'équipe du BEPIAS et Compl'Alim font leur possible pour mettre à jour régulièrement et suivre la législation au plus proche.
+Cependant et même si nous avons vocation à l'exhaustivité, il s’agit d’un outil administratif qui n'a pas force de loi.`
 
 // Search
 const search = () => {

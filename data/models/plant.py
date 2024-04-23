@@ -6,6 +6,7 @@ from simple_history.models import HistoricalRecords
 
 from data.behaviours import TimeStampable, Historisable
 from .mixins import WithMissingImportBoolean, WithComments
+from .status import WithStatus
 from .abstract_models import CommonModel
 from .substance import Substance
 
@@ -35,7 +36,7 @@ class PlantPart(CommonModel):
         return self.siccrf_name_en
 
 
-class Plant(CommonModel, WithComments):
+class Plant(CommonModel, WithComments, WithStatus):
     class Meta:
         verbose_name = "plante"
 
@@ -78,6 +79,7 @@ class Plant(CommonModel, WithComments):
             "family",
             "private_comments",
             "public_comments",
+            "status",
             "family_by_id",
             "family",
         ],

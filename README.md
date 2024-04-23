@@ -24,7 +24,7 @@ Il existe 2 méthodes distinctes d'installation pour ce projet :
 Pour installer les dépendances du backend :
 
 ```
-poetry install --no-root
+poetry install
 ```
 
 Cette action créera aussi un environnement virtuel automatiquement. Il n'est donc pas nécessaire d'utiliser un autre outil.

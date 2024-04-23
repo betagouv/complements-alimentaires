@@ -1,7 +1,8 @@
 import random
 import factory
 from data.models import Ingredient, IngredientSynonym
-from data.factories import SubstanceFactory
+from data.factories.substance import SubstanceFactory
+from data.models.status import IngredientStatus
 
 
 class IngredientFactory(factory.django.DjangoModelFactory):
@@ -14,6 +15,7 @@ class IngredientFactory(factory.django.DjangoModelFactory):
     siccrf_name_en = factory.Faker("text", max_nb_chars=15)
     siccrf_id = factory.Sequence(lambda n: n + 1)
     siccrf_description = factory.Faker("text", max_nb_chars=160)
+    status = IngredientStatus.AUTHORIZED
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):

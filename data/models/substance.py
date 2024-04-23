@@ -5,11 +5,12 @@ from simple_history.models import HistoricalRecords
 
 from data.behaviours import TimeStampable, Historisable
 from .mixins import WithMissingImportBoolean, WithComments
+from .status import WithStatus
 from .abstract_models import CommonModel
 from .unit import SubstanceUnit
 
 
-class Substance(CommonModel, WithComments):
+class Substance(CommonModel, WithComments, WithStatus):
     """
     siccrf_min_quantity présente dans les tables SICCRF n'est strictement jamais remplie, donc pas transformée en champ du modèle
     siccrf_source_en présente dans les tables SICCRF est très peu remplie, donc pas transformée en champ du modèle
@@ -74,8 +75,8 @@ class Substance(CommonModel, WithComments):
     )
     ca_max_quantity = models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée")
     max_quantity = models.GeneratedField(
-        expression=Coalesce(F("ca_nutritional_reference"), F("siccrf_nutritional_reference")),
-        output_field=models.FloatField(null=True, blank=True, verbose_name="spécification de quantité obligatoire"),
+        expression=Coalesce(F("ca_max_quantity"), F("siccrf_max_quantity")),
+        output_field=models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée"),
         db_persist=True,
     )
 
@@ -109,6 +110,7 @@ class Substance(CommonModel, WithComments):
             "must_specify_quantity",
             "max_quantity",
             "nutritional_reference",
+            "status",
         ],
     )
 

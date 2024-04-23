@@ -1,7 +1,8 @@
 import random
 import factory
 from data.models import Plant, PlantSynonym, PlantPart, PlantFamily
-from data.factories import SubstanceFactory
+from data.factories.substance import SubstanceFactory
+from data.models.status import IngredientStatus
 
 
 class PlantPartFactory(factory.django.DjangoModelFactory):
@@ -36,6 +37,7 @@ class PlantFactory(factory.django.DjangoModelFactory):
     siccrf_id = factory.Sequence(lambda n: n + 1)
     siccrf_family = factory.SubFactory(PlantFamilyFactory)
     ca_family = factory.SubFactory(PlantFamilyFactory)
+    status = IngredientStatus.AUTHORIZED
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):

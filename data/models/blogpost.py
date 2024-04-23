@@ -1,6 +1,7 @@
-from django.utils import timezone
+from django.conf import settings
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.utils import timezone
+
 from django_ckeditor_5.fields import CKEditor5Field
 
 
@@ -19,7 +20,7 @@ class BlogPost(models.Model):
     body = CKEditor5Field(null=True, blank=True, verbose_name="contenu")
     published = models.BooleanField(default=False, verbose_name="publié")
     author = models.ForeignKey(
-        get_user_model(),
+        settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
