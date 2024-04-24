@@ -13,7 +13,7 @@
       <div class="flex gap-x-4">
         <DsfrButton
           label="Demander la co-gestion"
-          icon="ri-key2-line"
+          icon="ri-key-2-line"
           @click="submitClaimCoSupervision"
           :disabled="isFetching"
         />

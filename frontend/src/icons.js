@@ -143,7 +143,7 @@ export const RiBriefcaseLine = remixIcon(
 )
 
 export const RiKey2Line = remixIcon(
-  "ri-key2-line",
+  "ri-key-2-line",
   "M10.758 11.828l7.849-7.849 1.414 1.414-1.414 1.415 2.474 2.474-1.414 1.415-2.475-2.475-1.414 1.414 2.121 2.121-1.414 1.415-2.121-2.122-2.192 2.192a5.002 5.002 0 01-7.708 6.294 5 5 0 016.294-7.708zm-.637 6.293A3 3 0 105.88 13.88a3 3 0 004.242 4.242z"
 )
 
@@ -178,4 +178,12 @@ export const RiMailCheckFill = remixIcon(
 export const RiHome2Fill = remixIcon(
   "ri-home-2-fill",
   "M20 20a1 1 0 01-1 1H5a1 1 0 01-1-1v-9H1l10.327-9.388a1 1 0 011.346 0L23 11h-3v9z"
+)
+export const RiMailAddLine = remixIcon(
+  "ri-mail-add-line",
+  "M22 13h-2V7.238l-7.928 7.1L4 7.216V19h10v2H3a1 1 0 01-1-1V4a1 1 0 011-1h18a1 1 0 011 1v9zM4.511 5l7.55 6.662L19.502 5H4.511zM21 18h3v2h-3v3h-2v-3h-3v-2h3v-3h2v3z"
+)
+export const RiUser3Line = remixIcon(
+  "ri-user-3-line",
+  "M20 22h-2v-2a3 3 0 00-3-3H9a3 3 0 00-3 3v2H4v-2a5 5 0 015-5h6a5 5 0 015 5v2zm-8-9a6 6 0 110-12 6 6 0 010 12zm0-2a4 4 0 100-8 4 4 0 000 8z"
 )
