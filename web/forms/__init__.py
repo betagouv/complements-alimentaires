@@ -1,2 +1,2 @@
-from .user import RegisterUserForm  # noqa: F401
-from .file_upload import FileUploadForm  # noqa: F401
+from .user import RegisterUserForm
+from .file_upload import FileUploadForm

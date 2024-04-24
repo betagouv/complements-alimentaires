@@ -3,6 +3,7 @@
   "files.eol": "\n",
   "files.exclude": {
     "**/__pycache__": true,
+    "**/.ruff_cache": true,
     "**/node_modules": true
   },
   "editor.formatOnSave": true,
@@ -42,15 +43,33 @@
   "prettier.enable": true,
   "prettier.prettierPath": "",
   "prettier.configPath": "./frontend/.prettierrc",
+  // python
+  "python.languageServer": "Pylance", // used for import suggestions only
+  "python.analysis.ignore": [
+    "*" // disable linting as it would be redundant with Ruff 
+  ],
+  "python.envFile": "${workspaceFolder}/.env",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.importFormat": "relative",
+  "python.analysis.indexing": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.packageIndexDepths": [
+    {
+      "name": "django",
+      "depth": 10,
+      "includeAllSymbols": true
+    },
+    {
+      "name": "rest_framework",
+      "depth": 10,
+      "includeAllSymbols": true
+    }
+  ],
+  "python.analysis.extraPaths": [], // use if auto-import seems off with some folders
   "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
-  },
-  "pylint.args": [
-    "--load-plugins=pylint_django",
-    "--rcfile",
-    "${workspaceFolder}/.pylintrc"
-  ],
-  "black-formatter.args": [
-    "--line-length=119"
-  ],
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  }
 }

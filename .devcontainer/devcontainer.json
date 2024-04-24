@@ -8,8 +8,7 @@
       "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "ms-python.black-formatter",
-        "ms-python.pylint",
+        "charliermarsh.ruff",
         "ms-toolsai.jupyter",
         "ms-toolsai.jupyter-keymap",
         "esbenp.prettier-vscode",
@@ -25,7 +24,7 @@
   "features": {
     "ghcr.io/ddahan/feature-starter/custom_bashrc": {},
     "ghcr.io/ddahan/feature-starter/poetry:latest": {
-      "version": "1.7.1"
+      "version": "1.8.2"
     },
     "ghcr.io/devcontainers/features/node": {
       "version": "lts"
@@ -36,7 +35,7 @@
     5432
   ],
   "name": "💊 compl'alim",
-  "onCreateCommand": "poetry config virtualenvs.create false && poetry install --no-root && cd frontend && npm install",
+  "onCreateCommand": "poetry config virtualenvs.create false && poetry install && cd frontend && npm install",
   "portsAttributes": {
     "5432": {
       "label": "PostgreSQL",
