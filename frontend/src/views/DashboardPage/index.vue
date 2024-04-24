@@ -33,6 +33,11 @@ const supervisorActions = [
     description: "Visualisez et gérez les déclarations de votre entreprise",
   },
   {
+    title: "Gérer le personnel",
+    description: "Visualisez les différents employés, modifiez leurs rôles et invitez-en des nouveaux",
+    link: { name: "StaffManagementPage" },
+  },
+  {
     title: "Modifier mes coordonnées",
     description: "Consultez et mettez à jour les données de votre entreprise",
   },

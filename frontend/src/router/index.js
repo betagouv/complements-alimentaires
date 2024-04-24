@@ -21,6 +21,7 @@ import DashboardPage from "@/views/DashboardPage"
 import UserAccountPage from "@/views/UserAccountPage"
 import VerificationSentPage from "@/views/VerificationSentPage"
 import DeclarationsHomePage from "@/views/DeclarationsHomePage"
+import StaffManagementPage from "@/views/StaffManagementPage"
 
 const routes = [
   {
@@ -194,6 +195,16 @@ const routes = [
     props: true,
     meta: {
       title: "Ma déclaration",
+    },
+  },
+  {
+    path: "/gestion-du-personnel",
+    name: "StaffManagementPage",
+    component: StaffManagementPage,
+    meta: {
+      title: "Gestion du personnel",
+      authenticationRequired: true,
+      requiredRole: "CompanySupervisor",
     },
   },
   {
