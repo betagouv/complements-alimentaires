@@ -1,20 +1,24 @@
+from enum import StrEnum, auto
+
+from django.conf import settings
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.mail import send_mail
+from django.db import transaction
+from django.shortcuts import get_object_or_404
+
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import RetrieveAPIView, CreateAPIView
-from django.core.exceptions import ValidationError as DjangoValidationError
+
 from data.choices import CountryChoices
-from api.permissions import IsSupervisorOfThisCompany
 from data.models import Company, CompanySupervisor
-from data.validators import validate_siret, validate_vat  # noqa
-from enum import StrEnum, auto
-from django.shortcuts import get_object_or_404
-from ..serializers import CompanySerializer
-from api.exception_handling import ProjectAPIException
-from django.core.mail import send_mail
-from django.conf import settings
-from django.db import transaction
 from data.utils.external_utils import SiretData
+from data.validators import validate_siret, validate_vat  # noqa
+
+from ..exception_handling import ProjectAPIException
+from ..permissions import IsSupervisorOfThisCompany
+from ..serializers import CompanySerializer, StaffUserSerializer
 
 
 class CountryListView(APIView):
@@ -151,3 +155,12 @@ class CompanyRetrieveView(RetrieveAPIView):
     queryset = Company.objects.all()
     permission_classes = [IsSupervisorOfThisCompany]
     serializer_class = CompanySerializer
+
+
+class GetCompanyStaffView(APIView):
+    """Récupération des utilisateurs ayant au moins un rôle dans cette entreprise"""
+
+    def get(self, request, pk, *args, **kwargs):
+        company = get_object_or_404(Company.objects.supervised_by(request.user), pk=pk)
+        serializer = StaffUserSerializer(company.staff, many=True, context={"company_id": pk})
+        return Response(serializer.data)

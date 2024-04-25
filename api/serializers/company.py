@@ -1,6 +1,16 @@
-from rest_framework import serializers
 from phonenumber_field.serializerfields import PhoneNumberField
+from rest_framework import serializers
+
 from data.models import Company
+
+
+class SimpleCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = (
+            "id",
+            "social_name",
+        )
 
 
 class CompanySerializer(serializers.ModelSerializer):

@@ -1,8 +1,9 @@
-from django.db import models, transaction
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db import models, transaction
+
 from data.behaviours import Deactivable, DeactivableQuerySet
+
 from .company import Company
 
 
@@ -41,8 +42,7 @@ class BaseRole(Deactivable, models.Model):
 
 class CompanySupervisor(BaseRole):
     class Meta:
-        verbose_name = "gestionnaire d'entreprises"
-        verbose_name_plural = "gestionnaires d'entreprises"
+        verbose_name = "gestionnaire"
 
     companies = models.ManyToManyField(
         Company, verbose_name=Company._meta.verbose_name_plural, related_name="supervisors"

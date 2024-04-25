@@ -1,6 +1,6 @@
 from rest_framework import serializers
+
 from data.models import CompanySupervisor, Declarant
-from .company import CompanySerializer
 
 
 class BaseRoleSerializer(serializers.ModelSerializer):
@@ -8,7 +8,6 @@ class BaseRoleSerializer(serializers.ModelSerializer):
     display_name = serializers.SerializerMethodField()
 
     class Meta:
-        abstract = True
         fields = ("id", "name", "display_name")
 
     def get_name(self, obj):
@@ -18,21 +17,22 @@ class BaseRoleSerializer(serializers.ModelSerializer):
         return obj._meta.verbose_name.capitalize()
 
 
-class CompanyRoleSerializer(BaseRoleSerializer):
-    companies = CompanySerializer(many=True, read_only=True)
+# Pour l'instant, pas besoin de CompanyRoleSerializer car on ne veut pas injecter la donnée
+# class CompanyRoleSerializer(BaseRoleSerializer):
+#     companies = CompanySerializer(many=True, read_only=True)
 
-    class Meta:
-        abstract = True
-        fields = BaseRoleSerializer.Meta.fields + ("companies",)
+#     class Meta:
+#         abstract = True
+#         fields = BaseRoleSerializer.Meta.fields + ("companies",)
 
 
-class CompanySupervisorSerializer(CompanyRoleSerializer):
+class CompanySupervisorSerializer(BaseRoleSerializer):
     class Meta:
         model = CompanySupervisor
-        fields = CompanyRoleSerializer.Meta.fields
+        fields = BaseRoleSerializer.Meta.fields
 
 
-class DeclarantSerializer(CompanyRoleSerializer):
+class DeclarantSerializer(BaseRoleSerializer):
     class Meta:
         model = Declarant
-        fields = CompanyRoleSerializer.Meta.fields
+        fields = BaseRoleSerializer.Meta.fields

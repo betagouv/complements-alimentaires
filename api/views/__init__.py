@@ -31,4 +31,5 @@ from .company import (
     CheckCompanyIdentifierView,
     ClaimCompanySupervisionView,
     ClaimCompanyCoSupervisionView,
+    GetCompanyStaffView,
 )

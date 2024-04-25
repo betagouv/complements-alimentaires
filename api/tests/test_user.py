@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
+
 from rest_framework import status
 
-from data.factories import CompanySupervisorFactory, DeclarantFactory
+from data.factories import CompanyFactory, CompanySupervisorFactory, DeclarantFactory
 from data.factories.user import UserFactory
 
 from .utils import ProjectAPITestCase
@@ -33,27 +34,45 @@ class TestGetLoggedUser(ProjectAPITestCase):
         self.assertEqual(response.data.get("email"), user.email)
         self.assertEqual(response.data.get("first_name"), user.first_name)
         self.assertEqual(response.data.get("last_name"), user.last_name)
-        self.assertEqual(response.data.get("roles"), [])
+        self.assertEqual(response.data.get("companies"), [])
         self.assertIn("id", response.data)
 
     def test_authenticated_logged_user_call_with_roles(self):
         """Ensure that roles are added to the JSON representation of the user"""
 
-        def _get_role_names(resp):
-            return {role["name"] for role in resp.data["roles"]}
+        company_1 = CompanyFactory()
+        company_2 = CompanyFactory()
+        CompanyFactory()  # une autre entreprise qui ne sera liée à personne
 
         user = self.login()
 
-        # Without role
+        # Without role in any company
         response = self.get(self.url())
-        self.assertEqual(_get_role_names(response), set())
+        self.assertEqual(response.data["companies"], [])
 
-        # With two roles
-        DeclarantFactory(user=user)
-        CompanySupervisorFactory(user=user)
+        # With 3 roles in 2 companies
+        declarant_role = DeclarantFactory(user=user, companies=[company_1])
+        supervisor_role = CompanySupervisorFactory(user=user, companies=[company_1, company_2])
 
         response = self.get(self.url())
-        self.assertEqual(_get_role_names(response), {"Declarant", "CompanySupervisor"})
+        self.assertCountEqual(
+            response.data["companies"],
+            [
+                {
+                    "id": company_1.id,
+                    "social_name": company_1.social_name,
+                    "roles": [
+                        {"id": supervisor_role.id, "name": "CompanySupervisor", "display_name": "Gestionnaire"},
+                        {"id": declarant_role.id, "name": "Declarant", "display_name": "Déclarant"},
+                    ],
+                },
+                {
+                    "id": company_2.id,
+                    "social_name": company_2.social_name,
+                    "roles": [{"id": supervisor_role.id, "name": "CompanySupervisor", "display_name": "Gestionnaire"}],
+                },
+            ],
+        )
 
 
 class TestCreateUser(ProjectAPITestCase):

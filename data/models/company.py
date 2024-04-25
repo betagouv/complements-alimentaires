@@ -1,11 +1,22 @@
-from django.db import models
-from data.fields import MultipleChoiceField
+from enum import auto
+
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.db import models
+
+from phonenumber_field.modelfields import PhoneNumberField
+
 from data.behaviours import AutoValidable
 from data.choices import CountryChoices
+from data.fields import MultipleChoiceField
 from data.validators import validate_siret, validate_vat
-from enum import auto
-from phonenumber_field.modelfields import PhoneNumberField
+
+
+class CompanyQuerySet(models.QuerySet):
+    def supervised_by(self, user):
+        """Retourne les entreprises gérées par l'utilisateur passé en paramètre"""
+        # TODO: unit test + use in permission: IsSupervisorOfThisCompany
+        return self.filter(supervisors__user=user)
 
 
 class Address(models.Model):
@@ -59,6 +70,8 @@ class Company(AutoValidable, Address, CompanyContact, models.Model):
     class Meta:
         verbose_name = "entreprise"
 
+    objects = models.Manager.from_queryset(CompanyQuerySet)()
+
     social_name = models.CharField("dénomination sociale")
     commercial_name = models.CharField("enseigne", help_text="nom commercial")
     # null=True permet de gérer en parralèle le unique=True
@@ -83,6 +96,15 @@ class Company(AutoValidable, Address, CompanyContact, models.Model):
         # Pas de duplication possible des activités
         if len(self.activities) != len(set(self.activities)):
             raise ValidationError("Une entreprise ne peut avoir plusieurs fois la même activité")
+
+    @property
+    def staff(self):
+        """Retourne l'ensemble des objets `User` ayant au moins un rôle dans cette entreprise"""
+        # TODO: unit test
+
+        supervisors_users = list(self.supervisors.values_list("user", flat=True))
+        declarants_users = list(self.declarants.values_list("user", flat=True))
+        return get_user_model().objects.filter(pk__in=supervisors_users + declarants_users).distinct()
 
     def __str__(self):
         return self.social_name

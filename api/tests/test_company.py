@@ -1,13 +1,16 @@
-from .utils import ProjectAPITestCase
+from rest_framework import status
+
 from data.factories import (
     CompanyFactory,
+    CompanySupervisorFactory,
     CompanyWithSiretFactory,
     CompanyWithVatFactory,
-    CompanySupervisorFactory,
+    DeclarantFactory,
 )
-from ..views.company import CompanyStatusChoices
 from data.models import Company
-from rest_framework import status
+
+from ..views.company import CompanyStatusChoices
+from .utils import ProjectAPITestCase
 
 
 class TestCheckCompanyIdentifier(ProjectAPITestCase):
@@ -146,3 +149,23 @@ class TestCreateCompany(ProjectAPITestCase):
     def test_create_company_ko_unauthenticated(self):
         response = self.post(self.url(), {})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestGetCompanyStaff(ProjectAPITestCase):
+    viewname = "get_company_staff"
+
+    def setUp(self):
+        self.company = CompanyFactory()
+
+    def test_get_company_staff_ok(self):
+        supervisor = CompanySupervisorFactory(companies=[self.company])
+        DeclarantFactory(companies=[self.company])
+        self.login(supervisor.user)
+        response = self.get(self.url(pk=self.company.pk))
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_company_staff_ko_unauthorized(self):
+        self.login()
+        response = self.get(self.url(pk=self.company.pk))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
