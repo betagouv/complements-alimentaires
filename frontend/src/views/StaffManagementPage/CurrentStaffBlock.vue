@@ -27,7 +27,7 @@
               v-for="role in user.roles"
               :key="role.name"
               :role="role"
-              show-actions
+              :show-actions="!(role.name == 'CompanySupervisor' && user.id == loggedUser.id)"
               @remove="changeRole(role.name, user, 'remove')"
             />
           </div>
@@ -81,9 +81,7 @@ onMounted(async () => {
 
 // Requête pour modifier les rôles d'un utilisateur pour une entreprise donnée
 const changeRole = async (roleName, user, action) => {
-  const mappingRoleNameUrl = { Declarant: "declarant-role", CompanySupervisor: "supervisor-role" }
-
-  const url = `${staffUrl.value}/${user.id}/${mappingRoleNameUrl[roleName]}/${action}/`
+  const url = `${staffUrl.value}/${user.id}/${roleName}/${action}/`
   const { response, data: staffUpdatedLine } = await useFetch(url, { headers: headers() }).patch().json()
   await handleError(response)
   if (response.value.ok) {

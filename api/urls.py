@@ -42,9 +42,9 @@ urlpatterns = {
     ),
     # Roles
     path(
-        "companies/<int:company_pk>/staff/<int:collaborator_pk>/declarant-role/<str:action>/",
-        views.DeclarantRoleView.as_view(),
-        name="declarant_role",
+        "companies/<int:company_pk>/staff/<int:collaborator_pk>/<str:role_class_name>/<str:action>/",
+        views.CompanyRoleView.as_view(),
+        name="company_role",
     ),
     # Company
     path("countries/", views.CountryListView.as_view(), name="country_list"),
