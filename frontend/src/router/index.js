@@ -198,11 +198,11 @@ const routes = [
     },
   },
   {
-    path: "/gestion-du-personnel",
+    path: "/gestion-des-collaborateurs",
     name: "StaffManagementPage",
     component: StaffManagementPage,
     meta: {
-      title: "Gestion du personnel",
+      title: "Gestion des collaborateurs",
       authenticationRequired: true,
       requiredRole: "CompanySupervisor",
     },

@@ -5,6 +5,7 @@
     <div class="ml-0.5">{{ role.displayName }}</div>
     <v-icon
       v-if="props.showActions"
+      @click="$emit('remove')"
       class="size-4 ml-1 hover:text-red-marianne-425 hover:cursor-pointer"
       name="ri-close-circle-line"
     />
@@ -13,4 +14,5 @@
 
 <script setup>
 const props = defineProps({ role: Object, showActions: { type: Boolean, default: false } })
+defineEmits(["remove"])
 </script>

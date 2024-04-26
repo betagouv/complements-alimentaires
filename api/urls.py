@@ -40,6 +40,12 @@ urlpatterns = {
         views.SendNewSignupVerificationEmailView.as_view(),
         name="send_new_signup_verification_email",
     ),
+    # Roles
+    path(
+        "companies/<int:company_pk>/staff/<int:collaborator_pk>/declarant-role/<str:action>/",
+        views.DeclarantRoleView.as_view(),
+        name="declarant_role",
+    ),
     # Company
     path("countries/", views.CountryListView.as_view(), name="country_list"),
     path("companies/", views.CompanyCreateView.as_view(), name="company_create"),

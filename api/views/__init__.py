@@ -33,3 +33,4 @@ from .company import (
     ClaimCompanyCoSupervisionView,
     GetCompanyStaffView,
 )
+from .roles import DeclarantRoleView
