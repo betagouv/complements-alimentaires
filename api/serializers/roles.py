@@ -5,16 +5,12 @@ from data.models import CompanySupervisor, Declarant
 
 class BaseRoleSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
-    display_name = serializers.SerializerMethodField()
 
     class Meta:
-        fields = ("id", "name", "display_name")
+        fields = ("id", "name")
 
     def get_name(self, obj):
         return obj.__class__.__name__
-
-    def get_display_name(self, obj):
-        return obj._meta.verbose_name.capitalize()
 
 
 # Pour l'instant, pas besoin de CompanyRoleSerializer car on ne veut pas injecter la donnée

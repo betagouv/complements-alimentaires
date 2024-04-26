@@ -62,14 +62,14 @@ class TestGetLoggedUser(ProjectAPITestCase):
                     "id": company_1.id,
                     "social_name": company_1.social_name,
                     "roles": [
-                        {"id": declarant_role.id, "name": "Declarant", "display_name": "Déclarant"},
-                        {"id": supervisor_role.id, "name": "CompanySupervisor", "display_name": "Gestionnaire"},
+                        {"id": declarant_role.id, "name": "Declarant"},
+                        {"id": supervisor_role.id, "name": "CompanySupervisor"},
                     ],
                 },
                 {
                     "id": company_2.id,
                     "social_name": company_2.social_name,
-                    "roles": [{"id": supervisor_role.id, "name": "CompanySupervisor", "display_name": "Gestionnaire"}],
+                    "roles": [{"id": supervisor_role.id, "name": "CompanySupervisor"}],
                 },
             ],
         )

@@ -60,13 +60,10 @@ import { handleError } from "@/utils/error-handling"
 import SectionTitle from "@/components/SectionTitle"
 import RoleTag from "@/components/RoleTag.vue"
 import { headers } from "@/utils/data-fetching"
+import { roleNameDisplayNameMapping } from "@/utils/mappings"
 
 const store = useRootStore()
 const { loggedUser, company } = storeToRefs(store)
-
-// Tous les rôles ajoutables pour une entreprise donnée
-// TODO: unifier en retirant le displayName du back
-const roleNameDisplayNameMapping = { Declarant: "déclarant", CompanySupervisor: "gestionnaire" }
 
 const canRoleBeAddedTo = (roleName, user) => !user.roles.some((role) => role.name === roleName)
 

@@ -43,3 +43,5 @@ export const statusProps = {
     label: "Validée",
   },
 }
+
+export const roleNameDisplayNameMapping = { Declarant: "déclarant", CompanySupervisor: "gestionnaire" }
