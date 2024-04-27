@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from data.factories import CompanyFactory, CompanySupervisorFactory, DeclarantFactory
+from data.factories import CompanyFactory, DeclarantFactory, SupervisorFactory
 from data.factories.user import UserFactory
 
 from .utils import ProjectAPITestCase
@@ -52,7 +52,7 @@ class TestGetLoggedUser(ProjectAPITestCase):
 
         # With 3 roles in 2 companies
         declarant_role = DeclarantFactory(user=user, companies=[company_1])
-        supervisor_role = CompanySupervisorFactory(user=user, companies=[company_1, company_2])
+        supervisor_role = SupervisorFactory(user=user, companies=[company_1, company_2])
 
         response = self.get(self.url())
         self.assertCountEqual(
@@ -63,13 +63,13 @@ class TestGetLoggedUser(ProjectAPITestCase):
                     "social_name": company_1.social_name,
                     "roles": [
                         {"id": declarant_role.id, "name": "Declarant"},
-                        {"id": supervisor_role.id, "name": "CompanySupervisor"},
+                        {"id": supervisor_role.id, "name": "Supervisor"},
                     ],
                 },
                 {
                     "id": company_2.id,
                     "social_name": company_2.social_name,
-                    "roles": [{"id": supervisor_role.id, "name": "CompanySupervisor"}],
+                    "roles": [{"id": supervisor_role.id, "name": "Supervisor"}],
                 },
             ],
         )

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .user import UserAdmin
-from .roles import CompanySupervisorAdmin, DeclarantAdmin
+from .roles import SupervisorAdmin, DeclarantAdmin
 from .company import CompanyAdmin
 from .blogpost import BlogPostAdmin
 from .webinar import WebinarAdmin

@@ -109,9 +109,9 @@ class User(PermissionsMixin, AutoValidable, Verifiable, Deactivable, AbstractBas
     def roles_for_company(self, company_id) -> list[BaseRole]:
         """Retourne les différents rôles d'un utilisateur pour une entreprise donnée"""
         # TODO: unit test
-        from .roles import CompanySupervisor, Declarant
+        from .roles import Declarant, Supervisor
 
-        company_role_classes = [Declarant, CompanySupervisor]
+        company_role_classes = [Declarant, Supervisor]
         roles = []
         for role_class in company_role_classes:
             queryset = role_class.objects.filter(user=self, companies=company_id)
@@ -122,12 +122,10 @@ class User(PermissionsMixin, AutoValidable, Verifiable, Deactivable, AbstractBas
     def all_company_roles(self) -> dict:
         """Retourne les différents rôles d'un utilisateur pour chacune des entreprises à laquelle il est lié"""
         # TODO: unit test
-        from .roles import CompanySupervisor, Declarant
+        from .roles import Declarant, Supervisor
 
         user_company_ids_for_declaration = Declarant.objects.filter(user=self).values_list("companies", flat=True)
-        user_company_ids_for_supervision = CompanySupervisor.objects.filter(user=self).values_list(
-            "companies", flat=True
-        )
+        user_company_ids_for_supervision = Supervisor.objects.filter(user=self).values_list("companies", flat=True)
         all_company_ids = user_company_ids_for_declaration.union(user_company_ids_for_supervision)
         return {company_id: self.roles_for_company(company_id) for company_id in all_company_ids}
 

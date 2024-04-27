@@ -27,7 +27,7 @@
               v-for="role in user.roles"
               :key="role.name"
               :role="role"
-              :show-actions="!(role.name == 'CompanySupervisor' && user.id == loggedUser.id)"
+              :show-actions="!(role.name == 'Supervisor' && user.id == loggedUser.id)"
               @remove="changeRole(role.name, user, 'remove')"
             />
           </div>

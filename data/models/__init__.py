@@ -1,5 +1,5 @@
 from .user import User
-from .roles import BaseRole, Declarant, CompanySupervisor
+from .roles import BaseRole, Declarant, Supervisor
 from .blogpost import BlogPost
 from .webinar import Webinar
 from .company import Company

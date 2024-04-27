@@ -40,7 +40,7 @@ class BaseRole(Deactivable, models.Model):
         return self.name
 
 
-class CompanySupervisor(BaseRole):
+class Supervisor(BaseRole):
     class Meta:
         verbose_name = "gestionnaire"
 

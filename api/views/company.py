@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from data.choices import CountryChoices
-from data.models import Company, CompanySupervisor
+from data.models import Company, Supervisor
 from data.utils.external_utils import SiretData
 from data.validators import validate_siret, validate_vat  # noqa
 
@@ -76,7 +76,7 @@ class CheckCompanyIdentifierView(APIView):
                 company_siret_data = SiretData.fetch(identifier)  # None en cas d'échec du fetch
         else:
             if company.supervisors.exists():
-                supervisor = request.user.role("companysupervisor")
+                supervisor = request.user.role("supervisor")
                 if supervisor and company in supervisor.companies.all():
                     company_status = CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_ME
                 else:
@@ -144,7 +144,7 @@ class CompanyCreateView(CreateAPIView):
     @transaction.atomic
     def perform_create(self, serializer):
         new_company = serializer.save()
-        supervisor, _ = CompanySupervisor.objects.get_or_create(user=self.request.user)
+        supervisor, _ = Supervisor.objects.get_or_create(user=self.request.user)
         supervisor.companies.add(new_company)  # NOTE: on suppose que `new_company` n'est pas déjà dedans
         return new_company
 

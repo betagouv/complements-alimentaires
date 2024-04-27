@@ -3,10 +3,10 @@ from django.contrib.auth.password_validation import validate_password as django_
 
 from rest_framework import serializers
 
-from data.models.roles import CompanySupervisor, Declarant
+from data.models.roles import Declarant, Supervisor
 
 from .company import SimpleCompanySerializer
-from .roles import CompanySupervisorSerializer, DeclarantSerializer
+from .roles import DeclarantSerializer, SupervisorSerializer
 
 User = get_user_model()
 
@@ -20,7 +20,7 @@ class BlogPostAuthor(serializers.ModelSerializer):
         )
 
 
-role_serializer_mapping = {CompanySupervisor: CompanySupervisorSerializer, Declarant: DeclarantSerializer}
+role_serializer_mapping = {Supervisor: SupervisorSerializer, Declarant: DeclarantSerializer}
 
 
 class StaffUserSerializer(serializers.ModelSerializer):

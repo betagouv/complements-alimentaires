@@ -1,6 +1,6 @@
 import factory
 
-from data.models.roles import BaseRole, CompanySupervisor, Declarant
+from data.models.roles import BaseRole, Declarant, Supervisor
 
 from .user import UserFactory
 
@@ -27,9 +27,9 @@ class DeclarantFactory(BaseRoleFactory):
         self.companies.add(*extracted)
 
 
-class CompanySupervisorFactory(BaseRoleFactory):
+class SupervisorFactory(BaseRoleFactory):
     class Meta:
-        model = CompanySupervisor
+        model = Supervisor
 
     @factory.post_generation
     def companies(self, create, extracted, **kwargs):

@@ -2,7 +2,7 @@
   <RoleBarBlock :name="loggedUser.firstName" :company="company" />
   <div class="fr-container my-8 flex flex-col gap-8">
     <ActionGrid
-      v-if="isCompanySupervisor"
+      v-if="isSupervisor"
       :actions="supervisorActions"
       :title="`Gestion de l'entreprise ${company.socialName}`"
       icon="ri-home-4-line"
@@ -24,7 +24,7 @@ const store = useRootStore()
 const { loggedUser, company } = storeToRefs(store)
 
 const emptyRoles = computed(() => !company.value || !company.value.roles || company.value.roles.length === 0)
-const isCompanySupervisor = computed(() => company.value?.roles.some((x) => x.name === "CompanySupervisor"))
+const isSupervisor = computed(() => company.value?.roles.some((x) => x.name === "Supervisor"))
 const isDeclarant = computed(() => company.value?.roles.some((x) => x.name === "Declarant"))
 
 const supervisorActions = [

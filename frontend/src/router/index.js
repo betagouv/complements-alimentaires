@@ -204,7 +204,7 @@ const routes = [
     meta: {
       title: "Gestion des collaborateurs",
       authenticationRequired: true,
-      requiredRole: "CompanySupervisor",
+      requiredRole: "Supervisor",
     },
   },
   {

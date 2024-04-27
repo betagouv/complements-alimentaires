@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from data.models import CompanySupervisor, Declarant
+from data.models import Declarant, Supervisor
 
 
 class BaseRoleSerializer(serializers.ModelSerializer):
@@ -22,9 +22,9 @@ class BaseRoleSerializer(serializers.ModelSerializer):
 #         fields = BaseRoleSerializer.Meta.fields + ("companies",)
 
 
-class CompanySupervisorSerializer(BaseRoleSerializer):
+class SupervisorSerializer(BaseRoleSerializer):
     class Meta:
-        model = CompanySupervisor
+        model = Supervisor
         fields = BaseRoleSerializer.Meta.fields
 
 

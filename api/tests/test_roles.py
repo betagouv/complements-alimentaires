@@ -7,9 +7,9 @@ La logique dans ces tests peut sembler redondante (et elle l'est), mais :
 from rest_framework import status
 
 from data.factories.company import CompanyFactory
-from data.factories.roles import CompanySupervisorFactory, DeclarantFactory
+from data.factories.roles import DeclarantFactory, SupervisorFactory
 from data.factories.user import UserFactory
-from data.models.roles import CompanySupervisor, Declarant
+from data.models.roles import Declarant, Supervisor
 
 from ..serializers.user import StaffUserSerializer
 from .utils import ProjectAPITestCase
@@ -20,10 +20,10 @@ class TestAddDeclarantRole(ProjectAPITestCase):
 
     def setUp(self):
         self.company = CompanyFactory()
-        self.supervisor = CompanySupervisorFactory(companies=[self.company])
+        self.supervisor = SupervisorFactory(companies=[self.company])
         self.user = self.supervisor.user
 
-        self.other_collaborator_role = CompanySupervisorFactory(companies=[self.company])
+        self.other_collaborator_role = SupervisorFactory(companies=[self.company])
         self.collaborator = self.other_collaborator_role.user
 
         # sugar
@@ -85,7 +85,7 @@ class TestRemoveDeclarantRole(ProjectAPITestCase):
 
     def setUp(self):
         self.company = CompanyFactory()
-        self.supervisor = CompanySupervisorFactory(companies=[self.company])
+        self.supervisor = SupervisorFactory(companies=[self.company])
         self.user = self.supervisor.user
 
         self.declarant_collaborator_role = DeclarantFactory(companies=[self.company])
@@ -158,18 +158,18 @@ class TestAddSupervisorRole(ProjectAPITestCase):
 
     def setUp(self):
         self.company = CompanyFactory()
-        self.supervisor = CompanySupervisorFactory(companies=[self.company])
+        self.supervisor = SupervisorFactory(companies=[self.company])
         self.user = self.supervisor.user
 
         self.other_collaborator_role = DeclarantFactory(companies=[self.company])
         self.collaborator = self.other_collaborator_role.user
 
         # sugar
-        self.kwargs = dict(role_class_name="CompanySupervisor", action="add")
+        self.kwargs = dict(role_class_name="Supervisor", action="add")
 
     def test_add_supervisor_role_ok(self):
         self.login(self.user)
-        self.assertFalse(CompanySupervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
+        self.assertFalse(Supervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
         response = self.patch(
             self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
         )
@@ -177,7 +177,7 @@ class TestAddSupervisorRole(ProjectAPITestCase):
         self.assertEqual(
             response.data, StaffUserSerializer(self.collaborator, context={"company_id": self.company.pk}).data
         )
-        self.assertTrue(CompanySupervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
+        self.assertTrue(Supervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
 
         # test de l'idempotence (ajouter un objet qui existe déjà ne provoque pas d'erreur)
         response = self.patch(
@@ -223,18 +223,18 @@ class TestRemoveSupervisorRole(ProjectAPITestCase):
 
     def setUp(self):
         self.company = CompanyFactory()
-        self.supervisor = CompanySupervisorFactory(companies=[self.company])
+        self.supervisor = SupervisorFactory(companies=[self.company])
         self.user = self.supervisor.user
 
-        self.supervisor_collaborator_role = CompanySupervisorFactory(companies=[self.company])
+        self.supervisor_collaborator_role = SupervisorFactory(companies=[self.company])
         self.collaborator = self.supervisor_collaborator_role.user
 
         # sugar
-        self.kwargs = dict(role_class_name="CompanySupervisor", action="remove")
+        self.kwargs = dict(role_class_name="Supervisor", action="remove")
 
     def test_remove_supervisor_role_ok(self):
         self.login(self.user)
-        self.assertTrue(CompanySupervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
+        self.assertTrue(Supervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
         response = self.patch(
             self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
         )
@@ -242,7 +242,7 @@ class TestRemoveSupervisorRole(ProjectAPITestCase):
         self.assertEqual(
             response.data, StaffUserSerializer(self.collaborator, context={"company_id": self.company.pk}).data
         )
-        self.assertFalse(CompanySupervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
+        self.assertFalse(Supervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
 
         # test de la non idempotence (retirer un objet qui n'est plus n'est pas possible)
         response = self.patch(

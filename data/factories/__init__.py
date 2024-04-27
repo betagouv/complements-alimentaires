@@ -10,6 +10,6 @@ from .condition import ConditionFactory
 from .company import CompanyFactory, CompanyWithSiretFactory, CompanyWithVatFactory
 from .effect import EffectFactory
 from .galenic_formulation import GalenicFormulationFactory
-from .roles import DeclarantFactory, CompanySupervisorFactory
+from .roles import DeclarantFactory, SupervisorFactory
 from .unit import SubstanceUnitFactory
 from .declaration import DeclarationFactory
