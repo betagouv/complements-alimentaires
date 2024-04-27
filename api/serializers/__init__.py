@@ -1,7 +1,7 @@
 from .blogpost import BlogPostSerializer
 from .user import (
     UserSerializer,
-    StaffUserSerializer,
+    CollaboratorSerializer,
     CreateUserSerializer,
     ChangePasswordSerializer,
 )

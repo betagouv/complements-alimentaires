@@ -151,13 +151,13 @@ class TestCreateCompany(ProjectAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
-class TestGetCompanyStaff(ProjectAPITestCase):
-    viewname = "get_company_staff"
+class TestGetCompanyCollaborators(ProjectAPITestCase):
+    viewname = "get_company_collaborators"
 
     def setUp(self):
         self.company = CompanyFactory()
 
-    def test_get_company_staff_ok(self):
+    def test_get_company_collaborators_ok(self):
         supervisor = SupervisorFactory(companies=[self.company])
         DeclarantFactory(companies=[self.company])
         self.login(supervisor.user)
@@ -165,7 +165,7 @@ class TestGetCompanyStaff(ProjectAPITestCase):
         self.assertEqual(len(response.data), 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_get_company_staff_ko_unauthorized(self):
+    def test_get_company_collaborators_ko_unauthorized(self):
         self.login()
         response = self.get(self.url(pk=self.company.pk))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

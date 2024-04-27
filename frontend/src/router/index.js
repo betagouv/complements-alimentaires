@@ -21,7 +21,7 @@ import DashboardPage from "@/views/DashboardPage"
 import UserAccountPage from "@/views/UserAccountPage"
 import VerificationSentPage from "@/views/VerificationSentPage"
 import DeclarationsHomePage from "@/views/DeclarationsHomePage"
-import StaffManagementPage from "@/views/StaffManagementPage"
+import CollaboratorsPage from "@/views/CollaboratorsPage"
 
 const routes = [
   {
@@ -199,8 +199,8 @@ const routes = [
   },
   {
     path: "/gestion-des-collaborateurs",
-    name: "StaffManagementPage",
-    component: StaffManagementPage,
+    name: "CollaboratorsPage",
+    component: CollaboratorsPage,
     meta: {
       title: "Gestion des collaborateurs",
       authenticationRequired: true,

@@ -42,7 +42,7 @@ urlpatterns = {
     ),
     # Roles
     path(
-        "companies/<int:company_pk>/staff/<int:collaborator_pk>/<str:role_class_name>/<str:action>/",
+        "companies/<int:company_pk>/collaborators/<int:collaborator_pk>/<str:role_class_name>/<str:action>/",
         views.CompanyRoleView.as_view(),
         name="company_role",
     ),
@@ -50,7 +50,11 @@ urlpatterns = {
     path("countries/", views.CountryListView.as_view(), name="country_list"),
     path("companies/", views.CompanyCreateView.as_view(), name="company_create"),
     path("companies/<int:pk>", views.CompanyRetrieveView.as_view(), name="company_retrieve"),
-    path("companies/<int:pk>/staff", views.GetCompanyStaffView.as_view(), name="get_company_staff"),
+    path(
+        "companies/<int:pk>/collaborators",
+        views.GetCompanyCollaboratorsView.as_view(),
+        name="get_company_collaborators",
+    ),
     path(
         "companies/<str:identifier>/check-identifier/",
         views.CheckCompanyIdentifierView.as_view(),

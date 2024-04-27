@@ -11,7 +11,7 @@ from data.factories.roles import DeclarantFactory, SupervisorFactory
 from data.factories.user import UserFactory
 from data.models.roles import Declarant, Supervisor
 
-from ..serializers.user import StaffUserSerializer
+from ..serializers.user import CollaboratorSerializer
 from .utils import ProjectAPITestCase
 
 
@@ -37,7 +37,7 @@ class TestAddDeclarantRole(ProjectAPITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data, StaffUserSerializer(self.collaborator, context={"company_id": self.company.pk}).data
+            response.data, CollaboratorSerializer(self.collaborator, context={"company_id": self.company.pk}).data
         )
         self.assertTrue(Declarant.objects.filter(user=self.collaborator, companies=self.company).exists())
 
@@ -73,7 +73,7 @@ class TestAddDeclarantRole(ProjectAPITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_add_declarant_role_to_not_staff_user_ko(self):
+    def test_add_declarant_role_to_not_collaborator_user_ko(self):
         self.login(self.user)
         not_collaborator = UserFactory()
         response = self.patch(self.url(company_pk=self.company.pk, collaborator_pk=not_collaborator.pk, **self.kwargs))
@@ -102,7 +102,7 @@ class TestRemoveDeclarantRole(ProjectAPITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data, StaffUserSerializer(self.collaborator, context={"company_id": self.company.pk}).data
+            response.data, CollaboratorSerializer(self.collaborator, context={"company_id": self.company.pk}).data
         )
         self.assertFalse(Declarant.objects.filter(user=self.collaborator, companies=self.company).exists())
 
@@ -138,7 +138,7 @@ class TestRemoveDeclarantRole(ProjectAPITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_remove_declarant_role_to_not_staff_user_ko(self):
+    def test_remove_declarant_role_to_not_collaborator_user_ko(self):
         self.login(self.user)
         not_collaborator = UserFactory()
         response = self.patch(self.url(company_pk=self.company.pk, collaborator_pk=not_collaborator.pk, **self.kwargs))
@@ -175,7 +175,7 @@ class TestAddSupervisorRole(ProjectAPITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data, StaffUserSerializer(self.collaborator, context={"company_id": self.company.pk}).data
+            response.data, CollaboratorSerializer(self.collaborator, context={"company_id": self.company.pk}).data
         )
         self.assertTrue(Supervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
 
@@ -211,7 +211,7 @@ class TestAddSupervisorRole(ProjectAPITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_add_supervisor_role_to_not_staff_user_ko(self):
+    def test_add_supervisor_role_to_not_collaborator_user_ko(self):
         self.login(self.user)
         not_collaborator = UserFactory()
         response = self.patch(self.url(company_pk=self.company.pk, collaborator_pk=not_collaborator.pk, **self.kwargs))
@@ -240,7 +240,7 @@ class TestRemoveSupervisorRole(ProjectAPITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data, StaffUserSerializer(self.collaborator, context={"company_id": self.company.pk}).data
+            response.data, CollaboratorSerializer(self.collaborator, context={"company_id": self.company.pk}).data
         )
         self.assertFalse(Supervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
 
@@ -276,7 +276,7 @@ class TestRemoveSupervisorRole(ProjectAPITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_remove_supervisor_role_to_not_staff_user_ko(self):
+    def test_remove_supervisor_role_to_not_collaborator_user_ko(self):
         self.login(self.user)
         not_collaborator = UserFactory()
         response = self.patch(self.url(company_pk=self.company.pk, collaborator_pk=not_collaborator.pk, **self.kwargs))

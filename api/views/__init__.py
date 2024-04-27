@@ -31,6 +31,6 @@ from .company import (
     CheckCompanyIdentifierView,
     ClaimCompanySupervisionView,
     ClaimCompanyCoSupervisionView,
-    GetCompanyStaffView,
+    GetCompanyCollaboratorsView,
 )
 from .roles import CompanyRoleView

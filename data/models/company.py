@@ -98,7 +98,7 @@ class Company(AutoValidable, Address, CompanyContact, models.Model):
             raise ValidationError("Une entreprise ne peut avoir plusieurs fois la même activité")
 
     @property
-    def staff(self):
+    def collaborators(self):
         """Retourne l'ensemble des objets `User` ayant au moins un rôle dans cette entreprise"""
         # TODO: unit test
 

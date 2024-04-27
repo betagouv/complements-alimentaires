@@ -1,7 +1,7 @@
 <template>
   <!-- on n'utilise pas directement le composant DsfrTag car il n'est pas assez personnalisable -->
   <div class="flex items-center fr-badge fr-badge--new fr-badge--no-icon fr-badge--sm">
-    <v-icon class="size-3" name="ri-user-3-line" />
+    <v-icon class="size-3.5" name="ri-user-settings-line" />
     <div class="ml-0.5">{{ roleNameDisplayNameMapping[role.name] }}</div>
     <v-icon
       v-if="showActions"

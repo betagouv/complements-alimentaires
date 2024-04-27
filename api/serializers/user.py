@@ -23,7 +23,7 @@ class BlogPostAuthor(serializers.ModelSerializer):
 role_serializer_mapping = {Supervisor: SupervisorSerializer, Declarant: DeclarantSerializer}
 
 
-class StaffUserSerializer(serializers.ModelSerializer):
+class CollaboratorSerializer(serializers.ModelSerializer):
     """Retourne un utilisateur d'une entreprise donnée.
     Utilisé actuellement pour afficher la liste des collaborateurs d'une entreprise spécifique"""
 

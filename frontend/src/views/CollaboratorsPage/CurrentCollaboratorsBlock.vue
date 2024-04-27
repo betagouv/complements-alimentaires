@@ -2,7 +2,7 @@
   <div>
     <div class="flex justify-between">
       <div>
-        <SectionTitle :title="`Collaborateurs actuels de ${company.socialName}`" icon="ri-user-3-line" />
+        <SectionTitle :title="`Collaborateurs actuels de ${company.socialName}`" icon="ri-user-line" />
         <div class="flex flex-col"></div>
         <p>Gérez ici l'ensemble des collaborateurs et leurs rôles.</p>
       </div>
@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <div v-for="user in staff" :key="user.id">
+    <div v-for="user in collaborators" :key="user.id">
       <div class="flex items-center">
         <v-icon class="size-5" name="ri-user-follow-line" />
         <div class="ml-2">
@@ -68,27 +68,31 @@ const { loggedUser, company } = storeToRefs(store)
 const canRoleBeAddedTo = (roleName, user) => !user.roles.some((role) => role.name === roleName)
 
 // Requête initiale pour récupérer les collaborateurs de l'entreprise
-const staffUrl = computed(() => `/api/v1/companies/${company.value.id}/staff`)
-const { data: staff, response: staffResponse, execute: staffExecute } = useFetch(staffUrl, { immediate: false }).json()
+const collaboratorsUrl = computed(() => `/api/v1/companies/${company.value.id}/collaborators`)
+const {
+  data: collaborators,
+  response: collaboratorsResponse,
+  execute: collaboratorsExecute,
+} = useFetch(collaboratorsUrl, { immediate: false }).json()
 
 onMounted(async () => {
-  await staffExecute()
-  await handleError(staffResponse)
+  await collaboratorsExecute()
+  await handleError(collaboratorsResponse)
 })
 
 // Requête pour modifier les rôles d'un utilisateur pour une entreprise donnée
 const changeRole = async (roleName, user, action) => {
-  const url = `${staffUrl.value}/${user.id}/${roleName}/${action}/`
-  const { response, data: staffUpdatedLine } = await useFetch(url, { headers: headers() }).patch().json()
+  const url = `${collaboratorsUrl.value}/${user.id}/${roleName}/${action}/`
+  const { response, data: collaboratorUpdatedLine } = await useFetch(url, { headers: headers() }).patch().json()
   await handleError(response)
   if (response.value.ok) {
-    // mise à jour de l'UI sur la ligne concernée
-    // si l'utilisateur n'a plus aucun rôle, il n'est plus considéré comme un collaborateur, et doit disparaitre
-    staff.value = staff.value
+    // mise à jour de l'UI sur la ligne concernée. si l'utilisateur n'a plus aucun rôle,
+    // il n'est plus considéré comme un collaborateur, et doit disparaitre
+    collaborators.value = collaborators.value
       .map((obj) => {
         if (obj.id === user.id) {
-          if (staffUpdatedLine.value.roles.length > 0) {
-            return staffUpdatedLine.value
+          if (collaboratorUpdatedLine.value.roles.length > 0) {
+            return collaboratorUpdatedLine.value
           }
           return null
         }

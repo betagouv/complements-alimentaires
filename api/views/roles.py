@@ -12,7 +12,7 @@ from data.models.company import Company
 from data.models.roles import Declarant
 
 from ..permissions import IsSupervisorOfThisCompany
-from ..serializers.user import StaffUserSerializer
+from ..serializers.user import CollaboratorSerializer
 
 User = get_user_model()
 
@@ -34,7 +34,7 @@ class CompanyRoleView(APIView):
 
         self.check_object_permissions(request, company)
 
-        if collaborator not in company.staff:
+        if collaborator not in company.collaborators:
             raise NotFound()  # pas une permission car lié à 2 objets et non lié à l'utilisateur lui-même
 
         role_class = apps.get_model("data", role_class_name)
@@ -47,4 +47,4 @@ class CompanyRoleView(APIView):
         else:
             raise APIException("Wrong provided action")
 
-        return Response(StaffUserSerializer(collaborator, context={"company_id": company_pk}).data)
+        return Response(CollaboratorSerializer(collaborator, context={"company_id": company_pk}).data)

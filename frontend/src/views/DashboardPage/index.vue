@@ -35,7 +35,7 @@ const supervisorActions = [
   {
     title: "Les collaborateurs de mon entreprise",
     description: "Gérez les différents collaborateurs, leurs rôles, les demandes, et invitez-en des nouveaux",
-    link: { name: "StaffManagementPage" },
+    link: { name: "CollaboratorsPage" },
   },
   {
     title: "Les coordonnées de l'entreprise",

@@ -18,7 +18,7 @@ from data.validators import validate_siret, validate_vat  # noqa
 
 from ..exception_handling import ProjectAPIException
 from ..permissions import IsSupervisorOfThisCompany
-from ..serializers import CompanySerializer, StaffUserSerializer
+from ..serializers import CollaboratorSerializer, CompanySerializer
 
 
 class CountryListView(APIView):
@@ -157,10 +157,10 @@ class CompanyRetrieveView(RetrieveAPIView):
     serializer_class = CompanySerializer
 
 
-class GetCompanyStaffView(APIView):
+class GetCompanyCollaboratorsView(APIView):
     """Récupération des utilisateurs ayant au moins un rôle dans cette entreprise"""
 
     def get(self, request, pk, *args, **kwargs):
         company = get_object_or_404(Company.objects.supervised_by(request.user), pk=pk)
-        serializer = StaffUserSerializer(company.staff, many=True, context={"company_id": pk})
+        serializer = CollaboratorSerializer(company.collaborators, many=True, context={"company_id": pk})
         return Response(serializer.data)
