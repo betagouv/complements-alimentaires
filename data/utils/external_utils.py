@@ -1,7 +1,10 @@
 import logging
-import requests
-from tokens.models import InseeToken
+
 from django.conf import settings
+
+import requests
+
+from tokens.models import InseeToken
 
 logger = logging.getLogger(__name__)
 

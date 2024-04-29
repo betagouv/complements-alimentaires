@@ -46,7 +46,7 @@ const v$ = useVuelidate(rules, { identifier: identifier }, { $externalResults })
 
 // Request definition
 const url = computed(
-  () => `/api/v1/companies/${identifier.value}/check-identifier?identifierType=${company.value.identifierType}`
+  () => `/api/v1/companies/${identifier.value}/check-identifier/?identifierType=${company.value.identifierType}`
 )
 const { data, response, execute, isFetching } = useFetch(
   url,
