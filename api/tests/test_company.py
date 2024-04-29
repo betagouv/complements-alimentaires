@@ -139,7 +139,7 @@ class TestCreateCompany(ProjectAPITestCase):
 
     def test_create_company_ko_missing_data(self):
         self.login()
-        response = self.post(self.url(), {})
+        response = self.post(self.url(), {"country": "FR"})  # si country non fourni, erreur liée à to_internal_value
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("address", response.data["field_errors"])
 

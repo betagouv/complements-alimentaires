@@ -12,6 +12,7 @@ import LegalNoticesPage from "@/views/LegalNoticesPage"
 import CookiesInfoPage from "@/views/CookiesInfoPage"
 import ProducerFormPage from "@/views/ProducerFormPage"
 import CompanyFormPage from "@/views/CompanyFormPage"
+import CompanyPage from "@/views/CompanyPage"
 import NotFound from "@/views/NotFound"
 import LoginPage from "@/views/LoginPage"
 import SignupPage from "@/views/SignupPage"
@@ -134,6 +135,15 @@ const routes = [
     component: UserAccountPage,
     meta: {
       title: "Mes informations personnelles",
+      authenticationRequired: true,
+    },
+  },
+  {
+    path: "/entreprise/:id",
+    name: "Company",
+    component: CompanyPage,
+    meta: {
+      title: "Mon entreprise", // TODO: titre plus dynamique ?
       authenticationRequired: true,
     },
   },
