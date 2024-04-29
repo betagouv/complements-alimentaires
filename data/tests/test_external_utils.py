@@ -1,13 +1,10 @@
 from django.test import TestCase
+
 from data.utils.external_utils import SiretData
 
 
 class SiretDataTestCase(TestCase):
-    def test_fetch(self):
-        pass  # peu utile à tester réellement car tout serait mocker
-
     def test_get_formatted_company_data(self):
-
         # https://api.insee.fr/entreprises/sirene/V3.11/siret/82073111500037
         raw_siret_data = {
             "header": {"statut": 200, "message": "ok"},
