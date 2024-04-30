@@ -9,7 +9,7 @@
         .
       </p>
     </DsfrAlert>
-    <DsfrInputGroup class="max-w-md" :error-message="externalResults?.company?.[0]" v-else>
+    <DsfrInputGroup class="max-w-md" :error-message="firstErrorMsg(v$, 'company')" v-else>
       <DsfrSelect
         label="Entreprise qui produit le complément"
         v-model.number="payload.company"
@@ -22,7 +22,7 @@
   <SectionTitle title="Dénomination commerciale" class="!mt-10" sizeTag="h6" icon="ri-price-tag-2-fill" />
   <div class="grid grid-cols-2 gap-4">
     <div class="col-span-2 md:col-span-1 max-w-md">
-      <DsfrInputGroup :error-message="externalResults?.name?.[0]">
+      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'name')">
         <DsfrInput v-model="payload.name" label-visible label="Nom du produit" :required="true" />
       </DsfrInputGroup>
       <DsfrInputGroup>
@@ -217,12 +217,26 @@ import { computed, watch, ref } from "vue"
 import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
+import { useVuelidate } from "@vuelidate/core"
+import { firstErrorMsg } from "@/utils/forms"
 import { otherFieldsAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
 import CountryField from "@/components/fields/CountryField.vue"
 import SectionTitle from "@/components/SectionTitle"
 
 const payload = defineModel()
-defineProps(["externalResults"])
+const props = defineProps(["externalResults"])
+
+// Règle placebo pour ce bug vuelidate :https://github.com/vuelidate/vuelidate/issues/1209
+// Il est également nécessaire de mettre l'$autovalidate et le $watch avec le $touch pour faire
+// ressortir les erreurs du `silentErrors`
+const externalServerValidation = () => true
+const rules = {
+  company: { externalServerValidation, $autovalidate: true },
+  name: { externalServerValidation, $autovalidate: true },
+}
+const $externalResults = computed(() => props.externalResults)
+const v$ = useVuelidate(rules, payload, { $externalResults })
+watch($externalResults, () => v$.value.$touch())
 
 const store = useRootStore()
 const { populations, conditions, effects, galenicFormulation, loggedUser } = storeToRefs(store)
