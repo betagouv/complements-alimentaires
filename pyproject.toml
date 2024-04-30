@@ -75,10 +75,9 @@ sib-api-v3-sdk = "*" # https://github.com/sendinblue/APIv3-python-library
 pillow = "*"              # https://github.com/python-pillow/Pillow
 django-ckeditor = "6.7.0" # https://github.com/django-ckeditor/django-ckeditor # we keep it temporarily for migrations
 django-ckeditor-5 = "*"   # https://github.com/hvlads/django-ckeditor-5
-
+django-viewflow = "*"
 
 # Dev dependencies (not installed on remote environments)
-django-viewflow = "^2.0.0"
 [tool.poetry.group.dev.dependencies]
 
 ######################################################################################################################
