@@ -1,14 +1,18 @@
 from .authentication import LoginView, LogoutView
 from .autocomplete import AutocompleteView
 from .blog import BlogPostsView, BlogPostView
+from .company import (
+    CheckCompanyIdentifierView,
+    ClaimCompanyCoSupervisionView,
+    ClaimCompanySupervisionView,
+    CompanyCreateView,
+    CompanyRetrieveView,
+    CountryListView,
+)
 from .condition import ConditionListView
+from .declaration import DeclarationListCreateApiView, DeclarationRetrieveUpdateView, DeclarationSubmitView
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
-from .declaration import (  # noqa: F401
-    DeclarationListCreateApiView,
-    DeclarationRetrieveUpdateView,
-    DeclarationSubmitView,
-)
 from .ingredient import IngredientRetrieveView
 from .microorganism import MicroorganismRetrieveView
 from .newsletter import SubscribeNewsletter
@@ -21,18 +25,10 @@ from .unit import UnitListView
 from .user import (
     ChangePasswordView,
     GenerateUsernameView,
-    SendNewSignupVerificationEmailView,
-    UserUpdateDestroyView,
-    UserCreateView,
     LoggedUserView,
+    SendNewSignupVerificationEmailView,
+    UserCreateView,
+    UserUpdateDestroyView,
     VerifyEmailView,
 )
 from .webinar import WebinarView
-from .company import (
-    CountryListView,
-    CompanyCreateView,
-    CompanyRetrieveView,
-    CheckCompanyIdentifierView,
-    ClaimCompanySupervisionView,
-    ClaimCompanyCoSupervisionView,
-)
