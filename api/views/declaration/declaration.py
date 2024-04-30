@@ -1,18 +1,31 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView, GenericAPIView
+from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied
+
+from api.permissions import IsDeclarantOfThisCompany, IsDeclarationAuthor
 from api.serializers import DeclarationSerializer, DeclarationShortSerializer
-from data.models import Declaration
-from api.permissions import IsDeclarant, IsDeclarationAuthor
 from api.views.declaration.declaration_flow import DeclarationFlow
+from data.models import Company, Declaration
 
 
 class DeclarationListCreateApiView(ListCreateAPIView):
     model = Declaration
-    permission_classes = [IsDeclarant]
+    permission_classes = [IsDeclarantOfThisCompany]
 
     def get_queryset(self):
         return self.request.user.declarations
+
+    def perform_create(self, serializer):
+        # Lors de la création, des validations concernant l'objet créé doivent être faits ici
+        # https://www.django-rest-framework.org/api-guide/permissions/#limitations-of-object-level-permissions
+        company_id = self.request.data.get("company")
+        try:
+            company = Company.objects.get(pk=company_id)
+        except Company.DoesNotExist as _:
+            raise NotFound("Company not found")
+        if not company.declarants.filter(user=self.request.user).exists():
+            raise PermissionDenied()
+        return super().perform_create(serializer)
 
     def get_serializer_class(self):
         if self.request.method == "POST":
@@ -23,7 +36,7 @@ class DeclarationListCreateApiView(ListCreateAPIView):
 class DeclarationRetrieveUpdateView(RetrieveUpdateAPIView):
     model = Declaration
     serializer_class = DeclarationSerializer
-    permission_classes = [IsDeclarationAuthor]
+    permission_classes = [IsDeclarationAuthor, IsDeclarantOfThisCompany]
     queryset = Declaration.objects.all()
 
 
@@ -38,7 +51,7 @@ class DeclarationFlowView(GenericAPIView):
         transition_method = getattr(flow, self.transition)
         flow_permission_method = getattr(transition_method, "has_permission", None)
         if flow_permission_method and not flow_permission_method(request.user):
-            raise PermissionDenied
+            raise PermissionDenied()
         transition_method()
         declaration.save()
         serializer = self.get_serializer(declaration)
@@ -46,7 +59,7 @@ class DeclarationFlowView(GenericAPIView):
 
 
 class DeclarationSubmitView(DeclarationFlowView):
-    permission_classes = [IsDeclarationAuthor]
+    permission_classes = [IsDeclarationAuthor, IsDeclarantOfThisCompany]
     transition = "submit_for_instruction"
 
 

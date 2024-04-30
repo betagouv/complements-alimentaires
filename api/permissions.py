@@ -8,11 +8,15 @@ class IsLoggedUser(permissions.BasePermission):
         return request.user.is_authenticated and request.user == obj
 
 
-class IsDeclarant(permissions.BasePermission):
+class IsDeclarantOfThisCompany(permissions.BasePermission):
     message = "Vous devez être déclarant pour effectuer cette action"
 
     def has_permission(self, request, _):
         return request.user.is_authenticated and bool(request.user.role("declarant"))
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        return self.has_permission(request, view) and obj.company.declarants.filter(user=user).exists()
 
 
 class IsSupervisorOfThisCompany(permissions.BasePermission):
