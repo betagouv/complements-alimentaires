@@ -1,12 +1,14 @@
 import factory
-from .company import CompanyFactory
-from .unit import SubstanceUnitFactory
-from .condition import ConditionFactory
-from .galenic_formulation import GalenicFormulationFactory
-from .population import PopulationFactory
-from .effect import EffectFactory
-from .plant import PlantFactory
+
 from data.models import Declaration, DeclaredPlant
+
+from .company import CompanyFactory
+from .condition import ConditionFactory
+from .effect import EffectFactory
+from .galenic_formulation import GalenicFormulationFactory
+from .plant import PlantFactory
+from .population import PopulationFactory
+from .unit import SubstanceUnitFactory
 
 
 class DeclarationFactory(factory.django.DjangoModelFactory):
@@ -40,9 +42,9 @@ class InstructionReadyDeclarationFactory(DeclarationFactory):
     unit_quantity = factory.Faker("pyfloat")
     unit_measurement = factory.SubFactory(SubstanceUnitFactory)
     galenic_formulation = factory.SubFactory(GalenicFormulationFactory)
-    address = factory.Faker("street_address")
-    postal_code = factory.Faker("postcode")
-    city = factory.Faker("city")
+    address = factory.Faker("street_address", locale="FR")
+    postal_code = factory.Faker("postcode", locale="FR")
+    city = factory.Faker("city", locale="FR")
     country = "FR"
 
     @factory.post_generation
