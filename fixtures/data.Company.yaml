@@ -7,10 +7,14 @@
     city: Chaville
     cedex: ""
     country: FR
+    phone_number: "+33132894398"
+    email: contact@tntl.com
+    website: ""
     social_name: TNTL Corp
     commercial_name: Too Nice to Leave
-    siret: "08670192700799"
+    siret: 08670192700799
     vat: null
+    activities: '["FABRICANT"]'
 - model: data.company
   pk: 2
   fields:
@@ -20,10 +24,14 @@
     city: Paris
     cedex: "92100"
     country: FR
+    phone_number: "+33612324312"
+    email: contact@toogood.com
+    website: ""
     social_name: Too Good Corp
     commercial_name: Too Good
     siret: "41737108500412"
     vat: null
+    activities: '["CONSEIL", "DISTRIBUTEUR"]'
 - model: data.company
   pk: 3
   fields:
@@ -33,7 +41,11 @@
     city: Saint-Maur-des-Fossés
     cedex: ""
     country: FR
-    social_name: Deque a Long
-    commercial_name: Deque a Long
+    phone_number: "+33143422323"
+    email: contact@dequecatlong.fr
+    website: ""
+    social_name: Deque cat Long
+    commercial_name: Deque cat Long
     siret: "78797317100244"
     vat: null
+    activities: '["IMPORTATEUR", "INTRODUCTEUR"]'

@@ -14,6 +14,7 @@ from api.exception_handling import ProjectAPIException
 from django.core.mail import send_mail
 from django.conf import settings
 from django.db import transaction
+from data.utils.external_utils import SiretData
 
 
 class CountryListView(APIView):
@@ -60,12 +61,15 @@ class CheckCompanyIdentifierView(APIView):
         except DjangoValidationError as e:
             raise ProjectAPIException(field_errors={"identifier": e.messages})
 
+        company, company_siret_data = None, None
         # Si le numéro d'identification est valide, alors on essaie de trouver l'entreprise liée
         try:
             company = Company.objects.get(**{identifier_type: identifier})
         except Company.DoesNotExist:
-            company = None
             company_status = CompanyStatusChoices.UNREGISTERED_COMPANY
+            # Essaie de récupérer les données entreprise depuis l'API SIRET pour faciliser la saisie
+            if identifier_type == "siret":
+                company_siret_data = SiretData.fetch(identifier)  # None en cas d'échec du fetch
         else:
             if company.supervisors.exists():
                 supervisor = request.user.role("companysupervisor")
@@ -80,6 +84,7 @@ class CheckCompanyIdentifierView(APIView):
             {
                 "company_status": company_status,  # pour déterminer les étapes suivantes côté front
                 "company": (CompanySerializer(company).data if company else None),  # ex : pour set l'ID dans le state
+                "company_siret_data": company_siret_data,
             }
         )
 

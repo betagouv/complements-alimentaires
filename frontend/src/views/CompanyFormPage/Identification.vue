@@ -33,6 +33,7 @@ import { handleError } from "@/utils/error-handling"
 
 // Props & emits
 const company = defineModel()
+company.value.siretData = null // RAZ du state si l'utilisateur a cliqué sur précédent
 const emit = defineEmits(["changeStep"])
 
 // Form state & rules
@@ -45,7 +46,7 @@ const v$ = useVuelidate(rules, { identifier: identifier }, { $externalResults })
 
 // Request definition
 const url = computed(
-  () => `/api/v1/companies/${identifier.value}/check-identifier?identifierType=${company.value.identifierType}`
+  () => `/api/v1/companies/${identifier.value}/check-identifier/?identifierType=${company.value.identifierType}`
 )
 const { data, response, execute, isFetching } = useFetch(
   url,
@@ -68,6 +69,9 @@ const submitIdentifier = async () => {
     if (data.value.company) {
       company.value.socialName = data.value.company.socialName
       company.value.id = data.value.company.id
+    }
+    if (data.value.companySiretData) {
+      company.value.siretData = data.value.companySiretData
     }
 
     switch (data.value.companyStatus) {
