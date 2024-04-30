@@ -231,7 +231,7 @@ class ComputedSubstanceSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class AttachmentSerializer(serializers.ModelSerializer):
+class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
     file = Base64FileField(required=False, allow_null=True)
 
     class Meta:
@@ -240,7 +240,9 @@ class AttachmentSerializer(serializers.ModelSerializer):
             "id",
             "file",
             "type",
+            "name",
         )
+        read_only_fields = ("file",)
 
 
 class DeclarationSerializer(serializers.ModelSerializer):
@@ -265,6 +267,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
     declared_substances = DeclaredListSerializer(child=DeclaredSubstanceSerializer(), required=False)
     computed_substances = DeclaredListSerializer(child=ComputedSubstanceSerializer(), required=False)
     attachments = DeclaredListSerializer(child=AttachmentSerializer(), required=False)
+    name = serializers.CharField(allow_blank=False, required=True)
 
     class Meta:
         model = Declaration

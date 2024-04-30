@@ -112,7 +112,7 @@ const routes = [
   },
   {
     path: "/nouvelle-demarche",
-    name: "ProducerFormPage",
+    name: "NewDeclaration",
     component: ProducerFormPage,
     meta: {
       title: "Nouvelle démarche",

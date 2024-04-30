@@ -34,7 +34,7 @@
       </div>
 
       <DsfrInputGroup>
-        <DsfrInput is-textarea v-model="model.newDescription" label-visible label="newDescription" />
+        <DsfrInput is-textarea v-model="model.newDescription" label-visible label="Description" />
       </DsfrInputGroup>
     </template>
   </DsfrModal>

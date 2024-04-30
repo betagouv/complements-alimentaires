@@ -1,7 +1,7 @@
 <template>
   <DsfrAlert class="mb-8">
-    <p class="mb-2">Vous pouvez sauvegarder cette démarche pour la reprendre plus tard</p>
-    <DsfrButton @click="saveDraft" label="Sauvegarder en tant que brouillon" />
+    <p class="mb-2">Veuillez vérifier les données ci-dessous avant de procéder à la validation de votre démarche</p>
+    <DsfrButton @click="emit('submit')" label="Soumettre ma démarche" />
   </DsfrAlert>
 
   <SectionTitle title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" />
@@ -57,8 +57,6 @@
 
 <script setup>
 import { computed } from "vue"
-import { useFetch } from "@vueuse/core"
-import { headers } from "@/utils/data-fetching"
 import SummaryInfoSegment from "./SummaryInfoSegment"
 import SummaryElementList from "./SummaryElementList"
 import SubstancesTable from "./SubstancesTable"
@@ -66,13 +64,13 @@ import FilePreview from "./FilePreview"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRouter } from "vue-router"
-import useToaster from "@/composables/use-toaster"
 import SectionTitle from "@/components/SectionTitle"
 
 const router = useRouter()
 const { populations, conditions, effects, galenicFormulation } = storeToRefs(useRootStore())
 
 const payload = defineModel()
+const emit = defineEmits(["submit"])
 const unitInfo = computed(() => {
   if (!payload.value.unitQuantity) return null
   return `${payload.value.unitQuantity} ${payload.value.unitMeasurement || "-"}`
@@ -106,20 +104,7 @@ const conditionNames = computed(() => {
   return payload.value.conditionsNotRecommended.map(findName).join(", ")
 })
 
-const editLink = (step) => ({ name: "ProducerFormPage", query: { step } })
-
-const saveDraft = async () => {
-  const isNewDeclaration = !payload.value.id
-  const url = isNewDeclaration ? "/api/v1/declarations/" : `/api/v1/declarations/${payload.value.id}`
-  const httpMethod = isNewDeclaration ? "post" : "put"
-  const { response } = await useFetch(url, { headers: headers() })[httpMethod](payload)
-  if (response.value.ok) {
-    await router.replace({ name: "DeclarationsHomePage" })
-    useToaster().addSuccessMessage("Votre démarche a été sauvegardée")
-  } else {
-    console.log(response)
-  }
-}
+const editLink = (step) => ({ query: { step } })
 </script>
 
 <style scoped>

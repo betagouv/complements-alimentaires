@@ -1,10 +1,11 @@
 # https://www.django-rest-framework.org/api-guide/exceptions/#custom-exception-handling
 
 import logging
+
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
-from rest_framework.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ class ProjectAPIException(Exception):
         field_errors: dict[str, list[str]] | None = None,
         log_level: int | None = logging.INFO,
         extra: dict = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
 

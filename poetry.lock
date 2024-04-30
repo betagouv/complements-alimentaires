@@ -617,6 +617,21 @@ s3 = ["boto3 (>=1.4.4)"]
 sftp = ["paramiko (>=1.15)"]
 
 [[package]]
+name = "django-viewflow"
+version = "2.0.2"
+description = "Reusable library to build business applications fast"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django-viewflow-2.0.2.tar.gz", hash = "sha256:56e6010c4c86bda9fcc99857cac335fe8c02f3381e0bb1917364410292da3984"},
+    {file = "django_viewflow-2.0.2-py3-none-any.whl", hash = "sha256:581f94424d969274c75c895ac92489e3e0c1b8148b5e46fa04b60d7f8cbdd88d"},
+]
+
+[package.dependencies]
+Django = ">=4.2"
+django-filter = ">=2.3.0"
+
+[[package]]
 name = "django-webpack-loader"
 version = "3.1.0"
 description = "Transparently use webpack with django"
@@ -2245,4 +2260,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.*"
-content-hash = "bfe95d9cb5620142f7fa8abae867c62f59ae1c68739d0bd0665c9a273ca21956"
+content-hash = "20aa13e5e34cd8c98ac0f73ebf161398e52be4818edfc68d2af52f09bec5fa7b"
