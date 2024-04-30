@@ -6,7 +6,7 @@ import faker
 from phonenumber_field.phonenumber import PhoneNumber
 
 from data.choices import CountryChoices
-from data.models.company import ActivityChoices, Company, CompanyRole
+from data.models.company import ActivityChoices, Company, DeclarantRole, SupervisorRole
 from data.utils.string_utils import make_random_str
 
 from .user import UserFactory
@@ -59,18 +59,17 @@ class CompanyWithVatFactory(CompanyFactory):
     vat = factory.LazyFunction(_make_vat)
 
 
-class CompanyRoleFactory(factory.django.DjangoModelFactory):
+class SupervisorRoleFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = CompanyRole
-        abstract = True
+        model = SupervisorRole
 
     user = factory.SubFactory(UserFactory)
     company = factory.SubFactory(CompanyFactory)
 
 
-class SupervisorRoleFactory(CompanyRoleFactory):
-    pass
+class DeclarantRoleFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = DeclarantRole
 
-
-class DeclarantRoleFactory(CompanyRoleFactory):
-    pass
+    user = factory.SubFactory(UserFactory)
+    company = factory.SubFactory(CompanyFactory)

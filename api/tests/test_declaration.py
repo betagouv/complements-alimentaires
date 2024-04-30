@@ -1,30 +1,33 @@
-import os
 import base64
+import os
+
 from django.urls import reverse
-from rest_framework.test import APITestCase
+
 from rest_framework import status
-from data.models import Declaration, Attachment
-from data.choices import CountryChoices, AuthorizationModes, FrAuthorizationReasons
+from rest_framework.test import APITestCase
+
+from data.choices import AuthorizationModes, CountryChoices, FrAuthorizationReasons
 from data.factories import (
-    ConditionFactory,
-    EffectFactory,
-    PopulationFactory,
-    PlantPartFactory,
-    PlantFactory,
-    MicroorganismFactory,
-    SubstanceFactory,
-    IngredientFactory,
     CompanyFactory,
-    SubstanceUnitFactory,
-    DeclarantFactory,
-    GalenicFormulationFactory,
+    ConditionFactory,
+    DeclarantRoleFactory,
     DeclarationFactory,
+    EffectFactory,
+    GalenicFormulationFactory,
+    IngredientFactory,
+    MicroorganismFactory,
+    PlantFactory,
+    PlantPartFactory,
+    PopulationFactory,
+    SubstanceFactory,
+    SubstanceUnitFactory,
 )
+from data.models import Attachment, Declaration
+
 from .utils import authenticate
 
 
 class TestDeclarationApi(APITestCase):
-
     @authenticate
     def test_create_not_allowed_without_role(self):
         """
@@ -39,7 +42,7 @@ class TestDeclarationApi(APITestCase):
         """
         Création de l'objet « déclaration » avec les données du produit
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
 
         conditions = [ConditionFactory() for _ in range(3)]
         effect1 = EffectFactory(ca_name="Artères et cholestérol")
@@ -128,7 +131,7 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les plantes
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
 
         plant = PlantFactory()
         plant_part = PlantPartFactory()
@@ -193,7 +196,7 @@ class TestDeclarationApi(APITestCase):
         """
         Si la plante spécifié n'existe pas, on doit lever une erreur
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
 
         payload = {
             "company": CompanyFactory().id,
@@ -218,7 +221,7 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les micro-organismes
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
         microorganism = MicroorganismFactory()
 
         payload = {
@@ -282,7 +285,7 @@ class TestDeclarationApi(APITestCase):
         """
         Si le micro-organisme spécifié n'existe pas, on doit lever une erreur
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
 
         payload = {
             "company": CompanyFactory().id,
@@ -307,7 +310,7 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les ingrédients
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
         ingredient = IngredientFactory()
 
         payload = {
@@ -358,7 +361,7 @@ class TestDeclarationApi(APITestCase):
         """
         Si l'ingrédient spécifié n'existe pas, on doit lever une erreur
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
 
         payload = {
             "company": CompanyFactory().id,
@@ -383,7 +386,7 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les substances
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
 
         substance = SubstanceFactory()
 
@@ -416,7 +419,7 @@ class TestDeclarationApi(APITestCase):
         """
         Si la substance spécifiée n'existe pas, on doit lever une erreur
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
 
         payload = {
             "company": CompanyFactory().id,
@@ -441,7 +444,7 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les substances générées à partir des autres éléments
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
 
         substance = SubstanceFactory()
         unit = SubstanceUnitFactory()
@@ -478,7 +481,7 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les pièces jointes
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
 
         current_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -527,7 +530,7 @@ class TestDeclarationApi(APITestCase):
         """
         Un user peut récupérer ses propres déclarations
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
         user_declaration_1 = DeclarationFactory.create(author=authenticate.user)
         user_declaration_2 = DeclarationFactory.create(author=authenticate.user)
 
@@ -548,7 +551,7 @@ class TestDeclarationApi(APITestCase):
         """
         Un user peut récupérer les informations complètes d'une de leurs déclarations
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
         user_declaration = DeclarationFactory(author=authenticate.user)
         other_declaration = DeclarationFactory()
 
@@ -563,7 +566,7 @@ class TestDeclarationApi(APITestCase):
         """
         Un user peut modifier les données de sa déclaration
         """
-        DeclarantFactory(user=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user)
         user_declaration = DeclarationFactory(author=authenticate.user, name="Old name")
 
         payload = {"name": "New name", "company": user_declaration.company.id}

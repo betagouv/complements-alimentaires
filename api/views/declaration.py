@@ -7,7 +7,7 @@ from data.models import Declaration
 
 class DeclarationListCreateApiView(ListCreateAPIView):
     model = Declaration
-    # permission_classes = [IsDeclarant] # TODO: remplacer par IsDeclarantOfThisCompany
+    permission_classes = []  # TODO: ajouter la bonne permission pour réparer le test unitaire
 
     def get_queryset(self):
         return self.request.user.declarations
