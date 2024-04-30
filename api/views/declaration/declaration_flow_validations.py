@@ -1,7 +1,10 @@
 from data.models import Declaration
 
+# Les validateurs dans ce fichier retournent une tuple avec les `field_errors` et les
+# `non_field_errors` pour une déclaration.
 
-def has_mandatory_fields_for_submission(declaration):
+
+def validate_mandatory_fields(declaration) -> tuple[list, list]:
     field_errors = []
     non_field_errors = []
 
@@ -30,7 +33,7 @@ def has_mandatory_fields_for_submission(declaration):
     return (field_errors, non_field_errors)
 
 
-def has_elements(declaration):
+def validate_number_of_elements(declaration) -> tuple[list, list]:
     non_field_errors = []
     has_elements = (
         declaration.declared_plants.exists()

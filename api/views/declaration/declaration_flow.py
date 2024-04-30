@@ -1,7 +1,9 @@
 from viewflow import fsm
-from data.models import Declaration
+
 from api.exception_handling import ProjectAPIException
-from .declaration_flow_validations import has_mandatory_fields_for_submission, has_elements
+from data.models import Declaration
+
+from .declaration_flow_validations import validate_mandatory_fields, validate_number_of_elements
 
 Status = Declaration.DeclarationStatus
 
@@ -22,7 +24,7 @@ class DeclarationFlow:
 
     @status.transition(source=Status.DRAFT, target=Status.AWAITING_INSTRUCTION)
     def submit_for_instruction(self):
-        self.ensure_validators([has_elements, has_mandatory_fields_for_submission])
+        self.ensure_validators([validate_number_of_elements, validate_mandatory_fields])
 
     @status.transition(source=Status.AWAITING_INSTRUCTION, target=Status.AWAITING_PRODUCER)
     def submit_for_remarks(self):
