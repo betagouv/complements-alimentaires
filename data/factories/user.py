@@ -1,6 +1,9 @@
-import factory
 import string
+
 from django.contrib.auth import get_user_model
+
+import factory
+
 from data.utils.string_utils import make_random_str
 
 

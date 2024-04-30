@@ -1,11 +1,15 @@
+import random
+import string
+
 import factory
 import faker
-from data.models.company import Company, ActivityChoices
-from data.utils.string_utils import make_random_str
-from data.choices import CountryChoices
-import string
-import random
 from phonenumber_field.phonenumber import PhoneNumber
+
+from data.choices import CountryChoices
+from data.models.company import ActivityChoices, Company, CompanyRole
+from data.utils.string_utils import make_random_str
+
+from .user import UserFactory
 
 
 def _make_siret() -> str:
@@ -53,3 +57,20 @@ class CompanyWithSiretFactory(CompanyFactory):
 
 class CompanyWithVatFactory(CompanyFactory):
     vat = factory.LazyFunction(_make_vat)
+
+
+class CompanyRoleFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = CompanyRole
+        abstract = True
+
+    user = factory.SubFactory(UserFactory)
+    company = factory.SubFactory(CompanyFactory)
+
+
+class SupervisorRoleFactory(CompanyRoleFactory):
+    pass
+
+
+class DeclarantRoleFactory(CompanyRoleFactory):
+    pass
