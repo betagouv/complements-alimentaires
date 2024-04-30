@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from data.choices import CountryChoices
-from data.models import Company, Supervisor
+from data.models import Company, SupervisorRole
 from data.utils.external_utils import SiretData
 from data.validators import validate_siret, validate_vat  # noqa
 
@@ -76,8 +76,7 @@ class CheckCompanyIdentifierView(APIView):
                 company_siret_data = SiretData.fetch(identifier)  # None en cas d'échec du fetch
         else:
             if company.supervisors.exists():
-                supervisor = request.user.role("supervisor")
-                if supervisor and company in supervisor.companies.all():
+                if company.supervisors.filter(id=request.user.id).exists():
                     company_status = CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_ME
                 else:
                     company_status = CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_OTHER
@@ -144,8 +143,7 @@ class CompanyCreateView(CreateAPIView):
     @transaction.atomic
     def perform_create(self, serializer):
         new_company = serializer.save()
-        supervisor, _ = Supervisor.objects.get_or_create(user=self.request.user)
-        supervisor.companies.add(new_company)  # NOTE: on suppose que `new_company` n'est pas déjà dedans
+        SupervisorRole.objects.create(company=new_company, user=self.request.user)
         return new_company
 
 
@@ -161,6 +159,6 @@ class GetCompanyCollaboratorsView(APIView):
     """Récupération des utilisateurs ayant au moins un rôle dans cette entreprise"""
 
     def get(self, request, pk, *args, **kwargs):
-        company = get_object_or_404(Company.objects.supervised_by(request.user), pk=pk)
+        company = get_object_or_404(Company.objects.filter(supervisors=request.user), pk=pk)
         serializer = CollaboratorSerializer(company.collaborators, many=True, context={"company_id": pk})
         return Response(serializer.data)

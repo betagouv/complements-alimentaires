@@ -2,25 +2,17 @@ from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
-from rest_framework import serializers
-from rest_framework.exceptions import APIException, NotFound
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from data.models.company import Company
-from data.models.roles import Declarant
 
 from ..permissions import IsSupervisorOfThisCompany
 from ..serializers.user import CollaboratorSerializer
 
 User = get_user_model()
-
-
-class DeclarantSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Declarant
-        fields = ("companies",)
 
 
 class CompanyRoleView(APIView):
@@ -39,12 +31,15 @@ class CompanyRoleView(APIView):
 
         role_class = apps.get_model("data", role_class_name)
 
-        role, _ = role_class.objects.get_or_create(user=collaborator)
-        if action == "add":
-            role.companies.add(company_pk)
-        elif action == "remove":
-            role.companies.remove(company_pk)
+        # Techniquement, l'utilisation de `action` est redondant car on pourrait le déduire, mais ça peut faire
+        # un garde-fou si côté front, le state de l'UI n'est pas le bon (ex: page non rafraichie.)
+        try:
+            role = role_class.objects.get(company=company, user=collaborator)
+        except role_class.DoesNotExist:
+            if action == "add":
+                role = role_class.objects.create(company=company, user=collaborator)
         else:
-            raise APIException("Wrong provided action")
+            if action == "remove":
+                role.delete()
 
         return Response(CollaboratorSerializer(collaborator, context={"company_id": company_pk}).data)

@@ -7,11 +7,11 @@
             <v-icon class="text-blue-france-sun-113" name="ri-account-circle-line" />
             <div class="shrink-0 fr-notice__title text-blue-france-sun-113">Bienvenue, {{ name }}</div>
           </div>
-          <div class="flex gap-x-1.5">
+          <div v-if="company" class="flex gap-x-1.5">
             <RoleTag v-for="role in company.roles" :key="role.name" :role="role" />
           </div>
         </div>
-        <CompanyTag :name="company.socialName" />
+        <CompanyTag v-if="company" :name="company.socialName" />
       </div>
     </div>
   </div>

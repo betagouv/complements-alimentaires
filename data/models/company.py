@@ -1,22 +1,19 @@
 from enum import auto
 
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
 from phonenumber_field.modelfields import PhoneNumberField
 
-from data.behaviours import AutoValidable
+from data.behaviours import AutoValidable, Deactivable
 from data.choices import CountryChoices
 from data.fields import MultipleChoiceField
 from data.validators import validate_siret, validate_vat
 
 
 class CompanyQuerySet(models.QuerySet):
-    def supervised_by(self, user):
-        """Retourne les entreprises gérées par l'utilisateur passé en paramètre"""
-        # TODO: unit test + use in permission: IsSupervisorOfThisCompany
-        return self.filter(supervisors__user=user)
+    pass
 
 
 class Address(models.Model):
@@ -86,6 +83,21 @@ class Company(AutoValidable, Address, CompanyContact, models.Model):
     vat = models.CharField("n° TVA intracommunautaire", unique=True, blank=True, null=True, validators=[validate_vat])
     activities = MultipleChoiceField(models.CharField(choices=ActivityChoices), verbose_name="activités", default=list)
 
+    supervisors = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through="SupervisorRole",
+        blank=True,
+        verbose_name="gestionnaires",
+        related_name="supervisable_companies",
+    )
+    declarants = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through="DeclarantRole",
+        blank=True,
+        verbose_name="déclarants",
+        related_name="declarable_companies",
+    )
+
     def clean(self):
         # SIRET ou VAT ou les deux
         if not (self.siret or self.vat):
@@ -100,11 +112,37 @@ class Company(AutoValidable, Address, CompanyContact, models.Model):
     @property
     def collaborators(self):
         """Retourne l'ensemble des objets `User` ayant au moins un rôle dans cette entreprise"""
-        # TODO: unit test
-
-        supervisors_users = list(self.supervisors.values_list("user", flat=True))
-        declarants_users = list(self.declarants.values_list("user", flat=True))
-        return get_user_model().objects.filter(pk__in=supervisors_users + declarants_users).distinct()
+        return self.supervisors.all().union(self.declarants.all())
 
     def __str__(self):
         return self.social_name
+
+
+class CompanyRole(Deactivable):
+    """Réprésente un rôle d'utilisateur qui n'a de sens que pour une entreprise donnée"""
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f"{self.activity_icon} {self.user} ➔ {self.company}"
+
+
+class SupervisorRole(CompanyRole, models.Model):
+    class Meta:
+        verbose_name = "rôle gestionnaire"
+        verbose_name_plural = "rôles gestionnaire"
+        unique_together = ("company", "user")
+
+    company = models.ForeignKey(Company, related_name="supervisor_roles", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="supervisor_roles", on_delete=models.CASCADE)
+
+
+class DeclarantRole(CompanyRole, models.Model):
+    class Meta:
+        verbose_name = "rôle déclarant"
+        verbose_name_plural = "rôles déclarant"
+        unique_together = ("company", "user")
+
+    company = models.ForeignKey(Company, related_name="declarant_roles", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="declarant_roles", on_delete=models.CASCADE)

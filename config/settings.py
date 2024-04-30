@@ -386,8 +386,8 @@ FIXTURE_MODELS = [
     # Our models (order matters because of model relations)
     ("data", "User"),
     ("data", "Company"),
-    ("data", "Supervisor"),
-    ("data", "Declarant"),
+    ("data", "SupervisorRole"),
+    ("data", "DeclarantRole"),
     ("data", "BlogPost"),
     ("data", "Webinar"),
 ]

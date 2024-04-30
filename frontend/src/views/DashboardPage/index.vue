@@ -24,8 +24,8 @@ const store = useRootStore()
 const { loggedUser, company } = storeToRefs(store)
 
 const emptyRoles = computed(() => !company.value || !company.value.roles || company.value.roles.length === 0)
-const isSupervisor = computed(() => company.value?.roles.some((x) => x.name === "Supervisor"))
-const isDeclarant = computed(() => company.value?.roles.some((x) => x.name === "Declarant"))
+const isSupervisor = computed(() => company.value?.roles.some((x) => x.name === "SupervisorRole"))
+const isDeclarant = computed(() => company.value?.roles.some((x) => x.name === "DeclarantRole"))
 
 const supervisorActions = [
   {

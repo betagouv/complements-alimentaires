@@ -3,10 +3,9 @@ from django.contrib.auth.password_validation import validate_password as django_
 
 from rest_framework import serializers
 
-from data.models.roles import Declarant, Supervisor
+from data.models.company import DeclarantRole, SupervisorRole
 
-from .company import SimpleCompanySerializer
-from .roles import DeclarantSerializer, SupervisorSerializer
+from .company import DeclarantRoleSerializer, SimpleCompanySerializer, SupervisorRoleSerializer
 
 User = get_user_model()
 
@@ -14,13 +13,10 @@ User = get_user_model()
 class BlogPostAuthor(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = (
-            "first_name",
-            "last_name",
-        )
+        fields = ("first_name", "last_name")
 
 
-role_serializer_mapping = {Supervisor: SupervisorSerializer, Declarant: DeclarantSerializer}
+role_serializer_mapping = {SupervisorRole: SupervisorRoleSerializer, DeclarantRole: DeclarantRoleSerializer}
 
 
 class CollaboratorSerializer(serializers.ModelSerializer):
@@ -36,8 +32,7 @@ class CollaboratorSerializer(serializers.ModelSerializer):
 
     def get_roles(self, obj):
         return [
-            role_serializer_mapping[type(role)](role).data
-            for role in obj.roles_for_company(self.context["company_id"])
+            role_serializer_mapping[type(role)](role).data for role in obj.company_roles(self.context["company_id"])
         ]
 
 

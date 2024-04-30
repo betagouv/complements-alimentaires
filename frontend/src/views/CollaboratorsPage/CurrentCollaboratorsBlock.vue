@@ -27,7 +27,7 @@
               v-for="role in user.roles"
               :key="role.name"
               :role="role"
-              :show-actions="!(role.name == 'Supervisor' && user.id == loggedUser.id)"
+              :show-actions="!(role.name == 'SupervisorRole' && user.id == loggedUser.id)"
               @remove="changeRole(role.name, user, 'remove')"
             />
           </div>
@@ -86,6 +86,7 @@ const changeRole = async (roleName, user, action) => {
   const { response, data: collaboratorUpdatedLine } = await useFetch(url, { headers: headers() }).patch().json()
   await handleError(response)
   if (response.value.ok) {
+    // TODO: devrait peut-être être automatique avec le loggedUser responsive! (une seule source de vérité)
     // mise à jour de l'UI sur la ligne concernée. si l'utilisateur n'a plus aucun rôle,
     // il n'est plus considéré comme un collaborateur, et doit disparaitre
     collaborators.value = collaborators.value

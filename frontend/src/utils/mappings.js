@@ -44,4 +44,4 @@ export const statusProps = {
   },
 }
 
-export const roleNameDisplayNameMapping = { Declarant: "déclarant", Supervisor: "gestionnaire" }
+export const roleNameDisplayNameMapping = { DeclarantRole: "déclarant", SupervisorRole: "gestionnaire" }

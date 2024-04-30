@@ -4,9 +4,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
-from django.db.models import OneToOneRel
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -14,8 +12,6 @@ from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
 from data.behaviours import AutoValidable, Deactivable, DeactivableQuerySet, Verifiable
-
-from .roles import BaseRole
 
 
 class UserQuerySet(DeactivableQuerySet):
@@ -95,46 +91,26 @@ class User(PermissionsMixin, AutoValidable, Verifiable, Deactivable, AbstractBas
         self.first_name = self.first_name.strip()
         self.last_name = self.last_name.strip()
 
-    def roles(self) -> list[BaseRole]:  # TODO: renommer "global_roles" ?
-        """Get the 0 -> N roles object from the user"""
-        roles = []
-        for f in User._meta.get_fields():
-            if isinstance(f, OneToOneRel) and issubclass(f.related_model, BaseRole):
-                try:
-                    roles.append(getattr(self, f.name))
-                except ObjectDoesNotExist:
-                    pass
-        return roles
+    def global_roles(self) -> list:
+        """Récupère les rôles globaux directement liés à cet utilisateur"""
+        return []  # NOTE: pour l'instant, ce type d'objet n'existe pas
 
-    def roles_for_company(self, company_id) -> list[BaseRole]:
-        """Retourne les différents rôles d'un utilisateur pour une entreprise donnée"""
-        # TODO: unit test
-        from .roles import Declarant, Supervisor
-
-        company_role_classes = [Declarant, Supervisor]
-        roles = []
-        for role_class in company_role_classes:
-            queryset = role_class.objects.filter(user=self, companies=company_id)
-            if queryset.exists():
-                roles.append(queryset.get())  # il ne devrait jamais y en avoir plus qu'un
-        return roles
+    def company_roles(self, company) -> list:
+        """Récupère les rôles d'une entreprise donnée pour cet utilisateur"""
+        qs1 = self.supervisor_roles.filter(company=company)
+        qs2 = self.declarant_roles.filter(company=company)
+        #  😯 L'union ne fonctionne pas car les objets ayant les même attributs,
+        # Django applique un distinct() dessus, même si ces derniers ne sont pas du même type.
+        return list(qs1) + list(qs2)
 
     def all_company_roles(self) -> dict:
         """Retourne les différents rôles d'un utilisateur pour chacune des entreprises à laquelle il est lié"""
-        # TODO: unit test
-        from .roles import Declarant, Supervisor
+        all_companies = self.declarable_companies.all().union(self.supervisable_companies.all())
+        return {company.id: self.company_roles(company) for company in all_companies}
 
-        user_company_ids_for_declaration = Declarant.objects.filter(user=self).values_list("companies", flat=True)
-        user_company_ids_for_supervision = Supervisor.objects.filter(user=self).values_list("companies", flat=True)
-        all_company_ids = user_company_ids_for_declaration.union(user_company_ids_for_supervision)
-        return {company_id: self.roles_for_company(company_id) for company_id in all_company_ids}
-
-    def role(self, name) -> BaseRole | None:
-        """Get the given role or None if it does not exist."""
-        try:
-            return getattr(self, name)
-        except (ObjectDoesNotExist, AttributeError):  # TODO: unit test!
-            return None
+    def all_roles(self, company) -> list:
+        """Récupère l'ensemble des rôles globaux et rôles liés à l'entreprise donnée pour cet utilisateur"""
+        return self.global_roles() + self.company_roles(company)
 
     def get_full_name(self) -> str:
         """Return the first_name plus the last_name, with a space in between."""

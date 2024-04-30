@@ -118,7 +118,7 @@ const routes = [
     meta: {
       title: "Nouvelle démarche",
       authenticationRequired: true,
-      requiredRole: "Declarant",
+      requiredRole: "DeclarantRole",
     },
   },
   {
@@ -204,7 +204,7 @@ const routes = [
     meta: {
       title: "Gestion des collaborateurs",
       authenticationRequired: true,
-      requiredRole: "Supervisor",
+      requiredRole: "SupervisorRole",
     },
   },
   {
