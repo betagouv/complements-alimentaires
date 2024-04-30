@@ -13,6 +13,9 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 from data.behaviours import AutoValidable, Deactivable, DeactivableQuerySet, Verifiable
 
+from .company import CompanyRole
+from .global_roles import BaseGlobalRole
+
 
 class UserQuerySet(DeactivableQuerySet):
     pass
@@ -91,26 +94,26 @@ class User(PermissionsMixin, AutoValidable, Verifiable, Deactivable, AbstractBas
         self.first_name = self.first_name.strip()
         self.last_name = self.last_name.strip()
 
-    def global_roles(self) -> list:
+    def get_global_roles(self) -> list[BaseGlobalRole]:
         """Récupère les rôles globaux directement liés à cet utilisateur"""
         return []  # NOTE: pour l'instant, ce type d'objet n'existe pas
 
-    def company_roles(self, company) -> list:
+    def get_company_roles(self, company) -> list[CompanyRole]:
         """Récupère les rôles d'une entreprise donnée pour cet utilisateur"""
         qs1 = self.supervisor_roles.filter(company=company)
         qs2 = self.declarant_roles.filter(company=company)
-        #  😯 L'union ne fonctionne pas car les objets ayant les même attributs,
+        # L'union ne fonctionne pas car les objets ayant les même attributs,
         # Django applique un distinct() dessus, même si ces derniers ne sont pas du même type.
         return list(qs1) + list(qs2)
 
-    def all_company_roles(self) -> dict:
+    def get_roles_mapped_to_companies(self) -> dict[int, list[CompanyRole]]:
         """Retourne les différents rôles d'un utilisateur pour chacune des entreprises à laquelle il est lié"""
         all_companies = self.declarable_companies.all().union(self.supervisable_companies.all())
-        return {company.id: self.company_roles(company) for company in all_companies}
+        return {company.id: self.get_company_roles(company) for company in all_companies}
 
-    def all_roles(self, company) -> list:
+    def all_roles(self, company) -> list[BaseGlobalRole | CompanyRole]:
         """Récupère l'ensemble des rôles globaux et rôles liés à l'entreprise donnée pour cet utilisateur"""
-        return self.global_roles() + self.company_roles(company)
+        return self.get_global_roles() + self.get_company_roles(company)
 
     def get_full_name(self) -> str:
         """Return the first_name plus the last_name, with a space in between."""

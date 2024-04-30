@@ -32,7 +32,8 @@ class CollaboratorSerializer(serializers.ModelSerializer):
 
     def get_roles(self, obj):
         return [
-            role_serializer_mapping[type(role)](role).data for role in obj.company_roles(self.context["company_id"])
+            role_serializer_mapping[type(role)](role).data
+            for role in obj.get_company_roles(self.context["company_id"])
         ]
 
 
@@ -52,7 +53,7 @@ class UserSerializer(serializers.ModelSerializer):
         from data.models import Company  # évite un import circulaire
 
         result = []
-        for company_id, roles in obj.all_company_roles().items():
+        for company_id, roles in obj.get_roles_mapped_to_companies().items():
             company_data_dict = SimpleCompanySerializer(Company.objects.get(id=company_id)).data
             role_data = [role_serializer_mapping[type(role)](role).data for role in roles]
             # Merge les deux types de données
