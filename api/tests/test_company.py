@@ -4,8 +4,8 @@ from data.factories import (
     CompanyFactory,
     CompanyWithSiretFactory,
     CompanyWithVatFactory,
-    DeclarantFactory,
-    SupervisorFactory,
+    DeclarantRoleFactory,
+    SupervisorRoleFactory,
 )
 from data.models import Company
 
@@ -39,28 +39,28 @@ class TestCheckCompanyIdentifier(ProjectAPITestCase):
 
     def test_check_company_siret_ok_registered_and_supervised_by_me(self):
         me = self.login()
-        SupervisorFactory(user=me, companies=[self.company])
+        SupervisorRoleFactory(user=me, company=self.company)
         response = self.get(self.url(identifier=self.siret) + "?identifierType=siret")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_ME)
         self.assertEqual(response.data["company"]["social_name"], "Appeul")
 
     def test_check_company_vat_ok_registered_and_supervised_by_me(self):
         me = self.login()
-        SupervisorFactory(user=me, companies=[self.company2])
+        SupervisorRoleFactory(user=me, company=self.company2)
         response = self.get(self.url(identifier=self.vat) + "?identifierType=vat")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_ME)
         self.assertEqual(response.data["company"]["social_name"], "Grosoft")
 
     def test_check_company_siret_ok_registered_and_supervised_by_other(self):
         self.login()
-        SupervisorFactory(companies=[self.company])
+        SupervisorRoleFactory(company=self.company)
         response = self.get(self.url(identifier=self.siret) + "?identifierType=siret")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_OTHER)
         self.assertEqual(response.data["company"]["social_name"], "Appeul")
 
     def test_check_company_vat_ok_registered_and_supervised_by_other(self):
         self.login()
-        SupervisorFactory(companies=[self.company2])
+        SupervisorRoleFactory(company=self.company2)
         response = self.get(self.url(identifier=self.vat) + "?identifierType=vat")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_OTHER)
         self.assertEqual(response.data["company"]["social_name"], "Grosoft")
@@ -92,7 +92,7 @@ class TestRetrieveCompany(ProjectAPITestCase):
 
     def setUp(self):
         self.company = CompanyFactory(social_name="Too Good")
-        self.supervisor = SupervisorFactory(companies=[self.company])
+        self.supervisor = SupervisorRoleFactory(company=self.company)
         self.supervisor_user = self.supervisor.user
 
     def test_retrieve_company_ok(self):
@@ -158,9 +158,9 @@ class TestGetCompanyCollaborators(ProjectAPITestCase):
         self.company = CompanyFactory()
 
     def test_get_company_collaborators_ok(self):
-        supervisor = SupervisorFactory(companies=[self.company])
-        DeclarantFactory(companies=[self.company])
-        self.login(supervisor.user)
+        supervisor_role = SupervisorRoleFactory(company=self.company)
+        DeclarantRoleFactory(company=self.company)
+        self.login(supervisor_role.user)
         response = self.get(self.url(pk=self.company.pk))
         self.assertEqual(len(response.data), 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
