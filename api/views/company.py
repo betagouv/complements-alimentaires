@@ -198,20 +198,3 @@ class CompanyRoleView(APIView):
                 role.delete()
 
         return Response(CollaboratorSerializer(collaborator, context={"company_id": company_pk}).data)
-
-
-# class CompanyRoleView(RetrieveDestroyAPIView):
-#     permission_classes = [IsAuthenticated, IsSupervisor]
-#     serializer_class = BaseRoleSerializer
-#     lookup_field = "company_id"
-
-#     def get_object(self):
-#         role_class = apps.get_model("data", self.kwargs["role_class_name"])  # TODO: clean
-#         return get_object_or_404(
-#             role_class, user_id=self.kwargs["collaborator_pk"], company_id=self.kwargs["company_id"]
-#         )
-
-#     def get_queryset(self):
-#         role_class = apps.get_model("data", self.kwargs["role_class_name"])
-#         self.serializer_class.Meta.model = role_class  # injecte le model dans le serializer
-#         return role_class.objects.all()

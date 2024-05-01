@@ -12,10 +12,6 @@ from data.fields import MultipleChoiceField
 from data.validators import validate_siret, validate_vat
 
 
-class CompanyQuerySet(models.QuerySet):
-    pass
-
-
 class Address(models.Model):
     # NOTE: à déplacer en dehors du modèle entreprise, si utilisable ailleurs
     class Meta:
@@ -66,8 +62,6 @@ class ActivityChoices(models.TextChoices):
 class Company(AutoValidable, Address, CompanyContact, models.Model):
     class Meta:
         verbose_name = "entreprise"
-
-    objects = models.Manager.from_queryset(CompanyQuerySet)()
 
     social_name = models.CharField("dénomination sociale")
     commercial_name = models.CharField("enseigne", help_text="nom commercial")
