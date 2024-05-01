@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from data.factories import CompanyFactory, DeclarantFactory, SupervisorFactory
+from data.factories import CompanyFactory, DeclarantRoleFactory, SupervisorRoleFactory
 from data.factories.user import UserFactory
 
 from .utils import ProjectAPITestCase
@@ -51,8 +51,9 @@ class TestGetLoggedUser(ProjectAPITestCase):
         self.assertEqual(response.data["companies"], [])
 
         # With 3 roles in 2 companies
-        declarant_role = DeclarantFactory(user=user, companies=[company_1])
-        supervisor_role = SupervisorFactory(user=user, companies=[company_1, company_2])
+        declarant_role = DeclarantRoleFactory(user=user, company=company_1)
+        supervisor_role_1 = SupervisorRoleFactory(user=user, company=company_1)
+        supervisor_role_2 = SupervisorRoleFactory(user=user, company=company_2)
 
         response = self.get(self.url())
         self.assertCountEqual(
@@ -62,14 +63,14 @@ class TestGetLoggedUser(ProjectAPITestCase):
                     "id": company_1.id,
                     "social_name": company_1.social_name,
                     "roles": [
-                        {"id": declarant_role.id, "name": "Declarant"},
-                        {"id": supervisor_role.id, "name": "Supervisor"},
+                        {"id": supervisor_role_1.id, "name": "SupervisorRole"},
+                        {"id": declarant_role.id, "name": "DeclarantRole"},
                     ],
                 },
                 {
                     "id": company_2.id,
                     "social_name": company_2.social_name,
-                    "roles": [{"id": supervisor_role.id, "name": "Supervisor"}],
+                    "roles": [{"id": supervisor_role_2.id, "name": "SupervisorRole"}],
                 },
             ],
         )
@@ -93,7 +94,7 @@ class TestCreateUser(ProjectAPITestCase):
         self.assertFalse(new_user.is_verified)
         self.assertFalse(new_user.is_superuser)
         self.assertFalse(new_user.is_staff)
-        self.assertEqual(new_user.roles(), [])
+        self.assertEqual(new_user.get_global_roles(), [])
 
     def test_create_user_with_existing_email(self):
         email = "eren@example.com"

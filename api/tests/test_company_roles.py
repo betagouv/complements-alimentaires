@@ -6,10 +6,9 @@ La logique dans ces tests peut sembler redondante (et elle l'est), mais :
 
 from rest_framework import status
 
-from data.factories.company import CompanyFactory
-from data.factories.roles import DeclarantFactory, SupervisorFactory
+from data.factories.company import CompanyFactory, DeclarantRoleFactory, SupervisorRoleFactory
 from data.factories.user import UserFactory
-from data.models.roles import Declarant, Supervisor
+from data.models import DeclarantRole, SupervisorRole
 
 from ..serializers.user import CollaboratorSerializer
 from .utils import ProjectAPITestCase
@@ -20,18 +19,18 @@ class TestAddDeclarantRole(ProjectAPITestCase):
 
     def setUp(self):
         self.company = CompanyFactory()
-        self.supervisor = SupervisorFactory(companies=[self.company])
-        self.user = self.supervisor.user
+        self.supervisor_role = SupervisorRoleFactory(company=self.company)
+        self.user = self.supervisor_role.user
 
-        self.other_collaborator_role = SupervisorFactory(companies=[self.company])
+        self.other_collaborator_role = SupervisorRoleFactory(company=self.company)
         self.collaborator = self.other_collaborator_role.user
 
         # sugar
-        self.kwargs = dict(role_class_name="Declarant", action="add")
+        self.kwargs = dict(role_class_name="DeclarantRole", action="add")
 
     def test_add_declarant_role_ok(self):
         self.login(self.user)
-        self.assertFalse(Declarant.objects.filter(user=self.collaborator, companies=self.company).exists())
+        self.assertFalse(DeclarantRole.objects.filter(user=self.collaborator, company=self.company).exists())
         response = self.patch(
             self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
         )
@@ -39,7 +38,7 @@ class TestAddDeclarantRole(ProjectAPITestCase):
         self.assertEqual(
             response.data, CollaboratorSerializer(self.collaborator, context={"company_id": self.company.pk}).data
         )
-        self.assertTrue(Declarant.objects.filter(user=self.collaborator, companies=self.company).exists())
+        self.assertTrue(DeclarantRole.objects.filter(user=self.collaborator, company=self.company).exists())
 
         # test de l'idempotence (ajouter un objet qui existe déjà ne provoque pas d'erreur)
         response = self.patch(
@@ -67,7 +66,7 @@ class TestAddDeclarantRole(ProjectAPITestCase):
         self.login(self.user)
         # On créé une autre entreprise dans laquelle le collaborateur a un rôle, mais notre utilisateur n'est pas gestionnaire
         other_company = CompanyFactory()
-        self.other_collaborator_role.companies.add(other_company)
+        self.collaborator.supervisable_companies.add(other_company)
         response = self.patch(
             self.url(company_pk=other_company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
         )
@@ -85,18 +84,18 @@ class TestRemoveDeclarantRole(ProjectAPITestCase):
 
     def setUp(self):
         self.company = CompanyFactory()
-        self.supervisor = SupervisorFactory(companies=[self.company])
+        self.supervisor = SupervisorRoleFactory(company=self.company)
         self.user = self.supervisor.user
 
-        self.declarant_collaborator_role = DeclarantFactory(companies=[self.company])
+        self.declarant_collaborator_role = DeclarantRoleFactory(company=self.company)
         self.collaborator = self.declarant_collaborator_role.user
 
         # sugar
-        self.kwargs = dict(role_class_name="Declarant", action="remove")
+        self.kwargs = dict(role_class_name="DeclarantRole", action="remove")
 
     def test_remove_declarant_role_ok(self):
         self.login(self.user)
-        self.assertTrue(Declarant.objects.filter(user=self.collaborator, companies=self.company).exists())
+        self.assertTrue(DeclarantRole.objects.filter(user=self.collaborator, company=self.company).exists())
         response = self.patch(
             self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
         )
@@ -104,7 +103,7 @@ class TestRemoveDeclarantRole(ProjectAPITestCase):
         self.assertEqual(
             response.data, CollaboratorSerializer(self.collaborator, context={"company_id": self.company.pk}).data
         )
-        self.assertFalse(Declarant.objects.filter(user=self.collaborator, companies=self.company).exists())
+        self.assertFalse(DeclarantRole.objects.filter(user=self.collaborator, company=self.company).exists())
 
         # test de la non idempotence (retirer un objet qui n'est plus n'est pas possible)
         response = self.patch(
@@ -132,7 +131,7 @@ class TestRemoveDeclarantRole(ProjectAPITestCase):
         self.login(self.user)
         # On créé une autre entreprise dans laquelle le collaborateur a un rôle, mais notre utilisateur n'est pas gestionnaire
         other_company = CompanyFactory()
-        self.declarant_collaborator_role.companies.add(other_company)
+        self.collaborator.declarable_companies.add(other_company)
         response = self.patch(
             self.url(company_pk=other_company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
         )
@@ -147,10 +146,10 @@ class TestRemoveDeclarantRole(ProjectAPITestCase):
     def test_remove_declarant_role_does_not_affect_role_in_other_company(self):
         self.login(self.user)
         other_company = CompanyFactory()
-        self.declarant_collaborator_role.companies.add(other_company)
-        self.assertEqual(self.declarant_collaborator_role.companies.count(), 2)
+        self.collaborator.declarable_companies.add(other_company)
+        self.assertEqual(self.collaborator.declarable_companies.count(), 2)
         self.patch(self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs))
-        self.assertEqual(self.declarant_collaborator_role.companies.count(), 1)  # pas 0
+        self.assertEqual(self.collaborator.declarable_companies.count(), 1)  # pas 0
 
 
 class TestAddSupervisorRole(ProjectAPITestCase):
@@ -158,18 +157,18 @@ class TestAddSupervisorRole(ProjectAPITestCase):
 
     def setUp(self):
         self.company = CompanyFactory()
-        self.supervisor = SupervisorFactory(companies=[self.company])
+        self.supervisor = SupervisorRoleFactory(company=self.company)
         self.user = self.supervisor.user
 
-        self.other_collaborator_role = DeclarantFactory(companies=[self.company])
+        self.other_collaborator_role = DeclarantRoleFactory(company=self.company)
         self.collaborator = self.other_collaborator_role.user
 
         # sugar
-        self.kwargs = dict(role_class_name="Supervisor", action="add")
+        self.kwargs = dict(role_class_name="SupervisorRole", action="add")
 
     def test_add_supervisor_role_ok(self):
         self.login(self.user)
-        self.assertFalse(Supervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
+        self.assertFalse(SupervisorRole.objects.filter(user=self.collaborator, company=self.company).exists())
         response = self.patch(
             self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
         )
@@ -177,7 +176,7 @@ class TestAddSupervisorRole(ProjectAPITestCase):
         self.assertEqual(
             response.data, CollaboratorSerializer(self.collaborator, context={"company_id": self.company.pk}).data
         )
-        self.assertTrue(Supervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
+        self.assertTrue(SupervisorRole.objects.filter(user=self.collaborator, company=self.company).exists())
 
         # test de l'idempotence (ajouter un objet qui existe déjà ne provoque pas d'erreur)
         response = self.patch(
@@ -205,7 +204,7 @@ class TestAddSupervisorRole(ProjectAPITestCase):
         self.login(self.user)
         # On créé une autre entreprise dans laquelle le collaborateur a un rôle, mais notre utilisateur n'est pas gestionnaire
         other_company = CompanyFactory()
-        self.other_collaborator_role.companies.add(other_company)
+        self.collaborator.declarable_companies.add(other_company)
         response = self.patch(
             self.url(company_pk=other_company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
         )
@@ -223,18 +222,18 @@ class TestRemoveSupervisorRole(ProjectAPITestCase):
 
     def setUp(self):
         self.company = CompanyFactory()
-        self.supervisor = SupervisorFactory(companies=[self.company])
+        self.supervisor = SupervisorRoleFactory(company=self.company)
         self.user = self.supervisor.user
 
-        self.supervisor_collaborator_role = SupervisorFactory(companies=[self.company])
+        self.supervisor_collaborator_role = SupervisorRoleFactory(company=self.company)
         self.collaborator = self.supervisor_collaborator_role.user
 
         # sugar
-        self.kwargs = dict(role_class_name="Supervisor", action="remove")
+        self.kwargs = dict(role_class_name="SupervisorRole", action="remove")
 
     def test_remove_supervisor_role_ok(self):
         self.login(self.user)
-        self.assertTrue(Supervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
+        self.assertTrue(SupervisorRole.objects.filter(user=self.collaborator, company=self.company).exists())
         response = self.patch(
             self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
         )
@@ -242,7 +241,7 @@ class TestRemoveSupervisorRole(ProjectAPITestCase):
         self.assertEqual(
             response.data, CollaboratorSerializer(self.collaborator, context={"company_id": self.company.pk}).data
         )
-        self.assertFalse(Supervisor.objects.filter(user=self.collaborator, companies=self.company).exists())
+        self.assertFalse(SupervisorRole.objects.filter(user=self.collaborator, company=self.company).exists())
 
         # test de la non idempotence (retirer un objet qui n'est plus n'est pas possible)
         response = self.patch(
@@ -270,7 +269,7 @@ class TestRemoveSupervisorRole(ProjectAPITestCase):
         self.login(self.user)
         # On créé une autre entreprise dans laquelle le collaborateur a un rôle, mais notre utilisateur n'est pas gestionnaire
         other_company = CompanyFactory()
-        self.supervisor_collaborator_role.companies.add(other_company)
+        self.collaborator.declarable_companies.add(other_company)
         response = self.patch(
             self.url(company_pk=other_company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
         )
@@ -285,7 +284,7 @@ class TestRemoveSupervisorRole(ProjectAPITestCase):
     def test_remove_supervisor_role_does_not_affect_role_in_other_company(self):
         self.login(self.user)
         other_company = CompanyFactory()
-        self.supervisor_collaborator_role.companies.add(other_company)
-        self.assertEqual(self.supervisor_collaborator_role.companies.count(), 2)
+        self.collaborator.supervisable_companies.add(other_company)
+        self.assertEqual(self.collaborator.supervisable_companies.count(), 2)
         self.patch(self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs))
-        self.assertEqual(self.supervisor_collaborator_role.companies.count(), 1)  # pas 0
+        self.assertEqual(self.collaborator.supervisable_companies.count(), 1)  # pas 0
