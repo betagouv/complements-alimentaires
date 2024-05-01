@@ -1,0 +1,12 @@
+- model: data.declarantrole
+  pk: 1
+  fields:
+    is_active: true
+    company: 1
+    user: 1
+- model: data.declarantrole
+  pk: 2
+  fields:
+    is_active: true
+    company: 1
+    user: 2
