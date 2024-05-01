@@ -20,7 +20,7 @@ from data.utils.external_utils import SiretData
 from data.validators import validate_siret, validate_vat  # noqa
 
 from ..exception_handling import ProjectAPIException
-from ..permissions import IsSupervisorOfThisCompany
+from ..permissions import IsSupervisor
 from ..serializers import CollaboratorSerializer, CompanySerializer
 
 
@@ -154,7 +154,7 @@ class CompanyRetrieveView(RetrieveAPIView):
     """Récupération d'une entreprise dont l'utilisateur est gestionnaire"""
 
     queryset = Company.objects.all()
-    permission_classes = [IsSupervisorOfThisCompany]
+    permission_classes = [IsSupervisor]
     serializer_class = CompanySerializer
 
 
@@ -173,7 +173,7 @@ User = get_user_model()
 class CompanyRoleView(APIView):
     """Endpoint unique permettant d'ajouter ou retirer un rôle lié à une entreprise (déclarant ou gestionnaire)"""
 
-    permission_classes = [IsAuthenticated, IsSupervisorOfThisCompany]
+    permission_classes = [IsAuthenticated, IsSupervisor]
 
     def patch(self, request, company_pk: int, collaborator_pk: int, role_class_name: str, action: str):
         company = get_object_or_404(Company, pk=company_pk)
@@ -201,7 +201,7 @@ class CompanyRoleView(APIView):
 
 
 # class CompanyRoleView(RetrieveDestroyAPIView):
-#     permission_classes = [IsAuthenticated, IsSupervisorOfThisCompany]
+#     permission_classes = [IsAuthenticated, IsSupervisor]
 #     serializer_class = BaseRoleSerializer
 #     lookup_field = "company_id"
 
