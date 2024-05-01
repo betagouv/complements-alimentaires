@@ -1,11 +1,14 @@
 from enum import StrEnum, auto
 
+from django.apps import apps
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -162,3 +165,53 @@ class GetCompanyCollaboratorsView(APIView):
         company = get_object_or_404(Company.objects.filter(supervisors=request.user), pk=pk)
         serializer = CollaboratorSerializer(company.collaborators, many=True, context={"company_id": pk})
         return Response(serializer.data)
+
+
+User = get_user_model()
+
+
+class CompanyRoleView(APIView):
+    """Endpoint unique permettant d'ajouter ou retirer un rôle lié à une entreprise (déclarant ou gestionnaire)"""
+
+    permission_classes = [IsAuthenticated, IsSupervisorOfThisCompany]
+
+    def patch(self, request, company_pk: int, collaborator_pk: int, role_class_name: str, action: str):
+        company = get_object_or_404(Company, pk=company_pk)
+        collaborator = get_object_or_404(User, pk=collaborator_pk)
+
+        self.check_object_permissions(request, company)
+
+        if collaborator not in company.collaborators:
+            raise NotFound()  # pas une permission car lié à 2 objets et non lié à l'utilisateur lui-même
+
+        role_class = apps.get_model("data", role_class_name)
+
+        # Techniquement, l'utilisation de `action` est redondant car on pourrait le déduire, mais ça peut faire
+        # un garde-fou si côté front, le state de l'UI n'est pas le bon (ex: page non rafraichie.)
+        try:
+            role = role_class.objects.get(company=company, user=collaborator)
+        except role_class.DoesNotExist:
+            if action == "add":
+                role = role_class.objects.create(company=company, user=collaborator)
+        else:
+            if action == "remove":
+                role.delete()
+
+        return Response(CollaboratorSerializer(collaborator, context={"company_id": company_pk}).data)
+
+
+# class CompanyRoleView(RetrieveDestroyAPIView):
+#     permission_classes = [IsAuthenticated, IsSupervisorOfThisCompany]
+#     serializer_class = BaseRoleSerializer
+#     lookup_field = "company_id"
+
+#     def get_object(self):
+#         role_class = apps.get_model("data", self.kwargs["role_class_name"])  # TODO: clean
+#         return get_object_or_404(
+#             role_class, user_id=self.kwargs["collaborator_pk"], company_id=self.kwargs["company_id"]
+#         )
+
+#     def get_queryset(self):
+#         role_class = apps.get_model("data", self.kwargs["role_class_name"])
+#         self.serializer_class.Meta.model = role_class  # injecte le model dans le serializer
+#         return role_class.objects.all()

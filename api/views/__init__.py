@@ -32,5 +32,5 @@ from .company import (
     ClaimCompanySupervisionView,
     ClaimCompanyCoSupervisionView,
     GetCompanyCollaboratorsView,
+    CompanyRoleView,
 )
-from .roles import CompanyRoleView
