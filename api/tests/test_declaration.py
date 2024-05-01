@@ -616,7 +616,6 @@ class TestDeclarationApi(APITestCase):
         response = self.client.put(
             reverse("api:retrieve_update_declaration", kwargs={"pk": user_declaration.id}), payload, format="json"
         )
-        print(response)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         user_declaration.refresh_from_db()
         self.assertEqual(user_declaration.name, "New name")
