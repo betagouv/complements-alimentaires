@@ -52,7 +52,7 @@ const declarantActions = [
   {
     title: "Créer une nouvelle déclaration",
     description: "Démarrez une nouvelle déclaration pour votre complément alimentaire",
-    link: { name: "ProducerFormPage" },
+    link: { name: "NewDeclaration" },
   },
   {
     title: "Toutes mes déclarations",

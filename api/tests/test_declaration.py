@@ -15,6 +15,7 @@ from data.factories import (
     EffectFactory,
     GalenicFormulationFactory,
     IngredientFactory,
+    InstructionReadyDeclarationFactory,
     MicroorganismFactory,
     PlantFactory,
     PlantPartFactory,
@@ -34,7 +35,22 @@ class TestDeclarationApi(APITestCase):
         La création des déclaration est possible seulement pour les users avec
         rôle « declarant »
         """
-        response = self.client.post(reverse("api:list_create_declaration"), {}, format="json")
+        payload = {
+            "company": CompanyFactory().id,
+            "name": "name",
+        }
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_create_wrong_company_declaration(self):
+        DeclarantRoleFactory(user=authenticate.user)
+        wrong_company = CompanyFactory()
+        payload = {
+            "company": wrong_company.id,
+            "name": "name",
+        }
+        response = self.client.post(reverse("api:list_create_declaration"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
@@ -42,13 +58,13 @@ class TestDeclarationApi(APITestCase):
         """
         Création de l'objet « déclaration » avec les données du produit
         """
-        DeclarantRoleFactory(user=authenticate.user)
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
 
         conditions = [ConditionFactory() for _ in range(3)]
         effect1 = EffectFactory(ca_name="Artères et cholestérol")
         effect2 = EffectFactory(ca_name="Autre (à préciser)")
         populations = [PopulationFactory() for _ in range(3)]
-        company = CompanyFactory()
         unit = SubstanceUnitFactory()
         galenic_formulation = GalenicFormulationFactory()
 
@@ -131,7 +147,8 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les plantes
         """
-        DeclarantRoleFactory(user=authenticate.user)
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
 
         plant = PlantFactory()
         plant_part = PlantPartFactory()
@@ -139,7 +156,8 @@ class TestDeclarationApi(APITestCase):
         unit = SubstanceUnitFactory()
 
         payload = {
-            "company": CompanyFactory().id,
+            "name": "Name",
+            "company": company.id,
             "declaredPlants": [
                 {
                     "element": {
@@ -196,10 +214,13 @@ class TestDeclarationApi(APITestCase):
         """
         Si la plante spécifié n'existe pas, on doit lever une erreur
         """
-        DeclarantRoleFactory(user=authenticate.user)
+
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
 
         payload = {
-            "company": CompanyFactory().id,
+            "name": "Name",
+            "company": company.id,
             "declaredPlants": [
                 {
                     "element": {
@@ -221,11 +242,14 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les micro-organismes
         """
-        DeclarantRoleFactory(user=authenticate.user)
+
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
         microorganism = MicroorganismFactory()
 
         payload = {
-            "company": CompanyFactory().id,
+            "name": "Name",
+            "company": company.id,
             "declaredMicroorganisms": [
                 {
                     "element": {
@@ -285,10 +309,12 @@ class TestDeclarationApi(APITestCase):
         """
         Si le micro-organisme spécifié n'existe pas, on doit lever une erreur
         """
-        DeclarantRoleFactory(user=authenticate.user)
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
 
         payload = {
-            "company": CompanyFactory().id,
+            "name": "Name",
+            "company": company.id,
             "declaredMicroorganisms": [
                 {
                     "element": {
@@ -310,11 +336,13 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les ingrédients
         """
-        DeclarantRoleFactory(user=authenticate.user)
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
         ingredient = IngredientFactory()
 
         payload = {
-            "company": CompanyFactory().id,
+            "name": "Name",
+            "company": company.id,
             "declaredIngredients": [
                 {
                     "element": {
@@ -361,10 +389,12 @@ class TestDeclarationApi(APITestCase):
         """
         Si l'ingrédient spécifié n'existe pas, on doit lever une erreur
         """
-        DeclarantRoleFactory(user=authenticate.user)
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
 
         payload = {
-            "company": CompanyFactory().id,
+            "name": "Name",
+            "company": company.id,
             "declaredIngredients": [
                 {
                     "element": {
@@ -386,12 +416,14 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les substances
         """
-        DeclarantRoleFactory(user=authenticate.user)
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
 
         substance = SubstanceFactory()
 
         payload = {
-            "company": CompanyFactory().id,
+            "name": "Name",
+            "company": company.id,
             "declaredSubstances": [
                 {
                     "element": {
@@ -419,10 +451,12 @@ class TestDeclarationApi(APITestCase):
         """
         Si la substance spécifiée n'existe pas, on doit lever une erreur
         """
-        DeclarantRoleFactory(user=authenticate.user)
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
 
         payload = {
-            "company": CompanyFactory().id,
+            "name": "Name",
+            "company": company.id,
             "declaredSubstances": [
                 {
                     "element": {
@@ -444,13 +478,15 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les substances générées à partir des autres éléments
         """
-        DeclarantRoleFactory(user=authenticate.user)
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
 
         substance = SubstanceFactory()
         unit = SubstanceUnitFactory()
 
         payload = {
-            "company": CompanyFactory().id,
+            "name": "Name",
+            "company": company.id,
             "computedSubstances": [
                 {
                     "substance": {
@@ -481,7 +517,8 @@ class TestDeclarationApi(APITestCase):
         Création de l'objet « déclaration » avec les données de la composition,
         focus sur les pièces jointes
         """
-        DeclarantRoleFactory(user=authenticate.user)
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
 
         current_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -494,7 +531,8 @@ class TestDeclarationApi(APITestCase):
             green_image_base_64 = base64.b64encode(image.read()).decode("utf-8")
 
         payload = {
-            "company": CompanyFactory().id,
+            "name": "Name",
+            "company": company.id,
             "attachments": [
                 {
                     "file": f"data:image/jpeg;base64,{blue_image_base_64}",
@@ -530,9 +568,11 @@ class TestDeclarationApi(APITestCase):
         """
         Un user peut récupérer ses propres déclarations
         """
-        DeclarantRoleFactory(user=authenticate.user)
-        user_declaration_1 = DeclarationFactory.create(author=authenticate.user)
-        user_declaration_2 = DeclarationFactory.create(author=authenticate.user)
+
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+        user_declaration_1 = DeclarationFactory.create(author=authenticate.user, company=company)
+        user_declaration_2 = DeclarationFactory.create(author=authenticate.user, company=company)
 
         other_declaration = DeclarationFactory.create()
 
@@ -551,8 +591,10 @@ class TestDeclarationApi(APITestCase):
         """
         Un user peut récupérer les informations complètes d'une de leurs déclarations
         """
-        DeclarantRoleFactory(user=authenticate.user)
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
         user_declaration = DeclarationFactory(author=authenticate.user)
+        company = declarant_role.company
+        user_declaration = DeclarationFactory(author=authenticate.user, company=company)
         other_declaration = DeclarationFactory()
 
         response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": user_declaration.id}))
@@ -566,8 +608,9 @@ class TestDeclarationApi(APITestCase):
         """
         Un user peut modifier les données de sa déclaration
         """
-        DeclarantRoleFactory(user=authenticate.user)
-        user_declaration = DeclarationFactory(author=authenticate.user, name="Old name")
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+        user_declaration = DeclarationFactory(author=authenticate.user, name="Old name", company=company)
 
         payload = {"name": "New name", "company": user_declaration.company.id}
         response = self.client.put(
@@ -577,3 +620,46 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         user_declaration.refresh_from_db()
         self.assertEqual(user_declaration.name, "New name")
+
+    @authenticate
+    def test_submit_declaration(self):
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        # Une déclaration avec toutes les conditions nécessaires pour l'instruction
+        declaration = InstructionReadyDeclarationFactory(author=authenticate.user, company=company)
+        response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Si un champ obligatoire pour l'instruction manque, on le spécifie
+        missing_field_declaration = InstructionReadyDeclarationFactory(
+            author=authenticate.user, daily_recommended_dose="", company=company
+        )
+        response = self.client.post(
+            reverse("api:submit_declaration", kwargs={"pk": missing_field_declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        json_errors = response.json()
+        self.assertEqual(len(json_errors["fieldErrors"]), 1)
+        self.assertIn("dailyRecommendedDose", json_errors["fieldErrors"][0])
+
+        # S'il n'y a pas d'éléments dans la déclaration, on ne peut pas la soumettre pour instruction
+        missing_elements_declaration = InstructionReadyDeclarationFactory(
+            author=authenticate.user, declared_plants=[], company=company
+        )
+        response = self.client.post(
+            reverse("api:submit_declaration", kwargs={"pk": missing_elements_declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        json_errors = response.json()
+        self.assertEqual(len(json_errors["nonFieldErrors"]), 1)
+        self.assertEqual("Le complément doit comporter au moins un ingrédient", json_errors["nonFieldErrors"][0])
+
+    @authenticate
+    def test_submit_declaration_wrong_company(self):
+        DeclarantRoleFactory(user=authenticate.user)
+        wrong_company = CompanyFactory()
+
+        declaration = InstructionReadyDeclarationFactory(author=authenticate.user, company=wrong_company)
+        response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

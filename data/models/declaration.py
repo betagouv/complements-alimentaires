@@ -265,3 +265,4 @@ class Attachment(Historisable):
     file = models.FileField(
         null=True, blank=True, upload_to="declaration-attachments/%Y/%m/%d/", verbose_name="pièce jointe"
     )
+    name = models.TextField("nom du fichier", blank=True)

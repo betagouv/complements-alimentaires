@@ -17,4 +17,4 @@ from .company import (
 from .effect import EffectFactory
 from .galenic_formulation import GalenicFormulationFactory
 from .unit import SubstanceUnitFactory
-from .declaration import DeclarationFactory
+from .declaration import DeclarationFactory, InstructionReadyDeclarationFactory

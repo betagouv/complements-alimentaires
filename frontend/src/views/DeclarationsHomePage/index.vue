@@ -34,6 +34,6 @@ watch(response, () => handleError(response))
 const hasDeclarations = computed(() => !!data.value?.length)
 
 const router = useRouter()
-const createNewDeclaration = () => router.push({ name: "ProducerFormPage" })
+const createNewDeclaration = () => router.push({ name: "NewDeclaration" })
 const openDeclaration = (id) => router.push({ name: "DeclarationPage", params: { id } })
 </script>
