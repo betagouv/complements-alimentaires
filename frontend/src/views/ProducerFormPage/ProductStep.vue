@@ -253,7 +253,7 @@ const galenicFormulationList = computed(() => {
     )
   }
 })
-const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "Declarant")?.companies)
+const companies = computed(() => loggedUser.value.roles.find((x) => x.name === "DeclarantRole")?.companies)
 const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))
 const formulationStates = [
   {
