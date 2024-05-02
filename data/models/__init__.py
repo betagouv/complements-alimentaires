@@ -14,7 +14,7 @@ from .condition import Condition
 from .effect import Effect
 from .galenic_formulation import GalenicFormulation
 from .unit import SubstanceUnit
-from .status import IngredientStatus
+from .ingredient_status import IngredientStatus
 from .declaration import (
     Declaration,
     DeclaredPlant,
