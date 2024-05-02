@@ -17,15 +17,15 @@ User = get_user_model()
 class SolicitationKindChoices(models.TextChoices):
     """Fait aussi office de mapping avec les classes contenant la logique spécifique à appeler"""
 
-    RequestSupervisionSolicitation = "RequestSupervisionSolicitation", "demande de gestion"
-    RequestCoSupervisionSolicitation = "RequestCoSupervisionSolicitation", "demande de co-gestion"
+    RequestSupervision = "RequestSupervision", "demande de gestion"
+    RequestCoSupervision = "RequestCoSupervision", "demande de co-gestion"
     InviteCoSupervision = "InviteCoSupervision", "invitation à une co-gestion"
 
 
 class CustomSolicitationManager(models.Manager):
     @transaction.atomic
     def create(self, *args, **kwargs) -> Solicitation:
-        """Délègue la création de l'objet à une sous-classe"""
+        """Délègue la création de l'objet à une sous-classe spécifique"""
         subclass = globals()[kwargs["kind"]]  # récupère la sous-classe à partir du type
         instance = subclass.create_hook(*args, **kwargs)
         if not isinstance(instance, Solicitation):
@@ -102,43 +102,79 @@ class Solicitation(AutoValidable, TimeStampable, models.Model):
             raise NotImplementedError(f"The action {action} does not exist on {self.subclass} class.")
 
     def accept(self, processor, *args, **kwargs):
-        """Sucre pour l'action `accept`"""
+        """Wrapper pour l'action `accept`"""
         return self.process(action="accept", processor=processor, *args, **kwargs)
 
     def refuse(self, processor, *args, **kwargs):
-        """Sucre pour l'action `refuse`"""
+        """Wrapper pour l'action `refuse`"""
         return self.process(action="refuse", processor=processor, *args, **kwargs)
 
 
-class RequestSupervisionSolicitation:
+class RequestSupervision:
     @staticmethod
     def create_hook(kind, sender, company_social_name, company_id, identifier_type, identifier) -> Solicitation:
         main_message = f"{sender.name} (id: {sender.id}) a demandé à devenir gestionnaire de l'entreprise {company_social_name} dont le N° de {identifier_type} est {identifier}."
         new_solicitation = Solicitation(kind=kind, sender=sender, description=main_message)
         new_solicitation.save()
-        new_solicitation.recipients.add(*User.objects.filter(is_staff=True))
+        recipients = User.objects.filter(is_staff=True)
+        new_solicitation.recipients.add(*recipients)
         send_mail(
-            subject="Nouvelle demande d'accès à une entreprise (sans gestionnaire)",
+            subject="[Compl'Alim] Nouvelle demande de gestion d'une entreprise",
             message=main_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.CONTACT_EMAIL],
+            recipient_list=recipients.values_list("email", flat=True),
         )
         return new_solicitation
 
     @staticmethod
-    def accept(solicitation, processor, company) -> None:
+    def accept(solicitation, processor, company):
         send_mail(
-            subject="Votre demande de gestion a été acceptée",
-            message=f"{solicitation.processor.name} de l'équipe Compl'Alim a accepté que vous deveniez gestionnaire de {company.social_name}",
+            subject="[Compl'Alim] Votre demande de gestion a été acceptée",
+            message=f"L'équipe Compl'Alim a accepté que vous deveniez gestionnaire de {company.social_name}. Vous pouvez vous connecter à la plateforme.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[solicitation.sender],
         )
 
     @staticmethod
-    def refuse(solicitation, processor, company) -> None:
+    def refuse(solicitation, processor, company):
         send_mail(
-            subject="Votre demande de gestion a été refusée",
-            message=f"{solicitation.processor.name} de l'équipe Compl'Alim a refusé que vous deveniez gestionnaire de {company.social_name}",
+            subject="[Compl'Alim] Votre demande de gestion a été refusée",
+            message=f"L'équipe Compl'Alim a refusé que vous deveniez gestionnaire de {company.social_name}. N'hésitez pas à nous contacter pour en savoir plus.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[solicitation.sender],
+        )
+
+
+class RequestCoSupervision:
+    @staticmethod
+    def create_hook(kind, sender, company) -> Solicitation:
+        main_message = f"{sender.name} a demandé à devenir co-gestionnaire de l'entreprise {company.social_name}."
+        recipients = company.supervisors.all()
+        new_solicitation = Solicitation(kind=kind, sender=sender, description=main_message)
+        new_solicitation.save()
+        new_solicitation.recipients.add(*recipients)
+        send_mail(
+            subject="[Compl'Alim] Nouvelle demande de co-gestion",
+            message=f"{main_message} Veuillez vous rendre sur la plateforme (section : gestion des collaborateurs) pour traiter cette demande.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=recipients.values_list("email", flat=True),
+        )
+        return new_solicitation
+
+    @staticmethod
+    def accept(solicitation, processor, company):
+        send_mail(
+            subject="[Compl'Alim] Votre demande de co-gestion a été acceptée",
+            message=f"{processor.name} a accepté que vous deveniez gestionnaire de {company.social_name}. Vous pouvez vous connecter à la plateforme.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[solicitation.sender],
+        )
+
+    @staticmethod
+    def refuse(solicitation, processor, company):
+        send_mail(
+            subject="[Compl'Alim] Votre demande de co-gestion a été refusée",
+            message=f"{processor.name} a refusé que vous deveniez gestionnaire de {company.social_name}. Contactez directement cette personne pour en savoir plus.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[solicitation.sender],
         )
