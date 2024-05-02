@@ -13,6 +13,7 @@ from .condition import Condition
 from .effect import Effect
 from .galenic_formulation import GalenicFormulation
 from .declaration import DeclarationAdmin
+from .solicitation import SolicitationAdmin
 
 from data.models import PlantPart, PlantFamily
 from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields

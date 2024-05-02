@@ -23,6 +23,7 @@ from .declaration import (
     ComputedSubstance,
     Attachment,
 )
+from .solicitation import Solicitation
 
 ELEMENT_MODELS = [
     Ingredient,
