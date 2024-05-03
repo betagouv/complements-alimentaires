@@ -1,10 +1,8 @@
 from enum import StrEnum, auto
 
 from django.apps import apps
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
@@ -16,6 +14,7 @@ from rest_framework.views import APIView
 
 from data.choices import CountryChoices
 from data.models import Company, SupervisorRole
+from data.models.solicitation import Solicitation, SolicitationKindChoices
 from data.utils.external_utils import SiretData
 from data.validators import validate_siret, validate_vat  # noqa
 
@@ -96,7 +95,7 @@ class CheckCompanyIdentifierView(APIView):
 
 
 class ClaimCompanySupervisionView(APIView):
-    """Envoi un e-mail aux administrateurs complalim pour revendiquer la gestion d'une entreprise existante, quand elle n'a aucun gestionnaire."""
+    """Envoi une solicitation au staff complalim pour revendiquer la gestion d'une entreprise existante, quand elle n'a aucun gestionnaire."""
 
     permission_classes = [IsAuthenticated]
 
@@ -106,18 +105,14 @@ class ClaimCompanySupervisionView(APIView):
             raise ProjectAPIException(
                 global_error="Cette entreprise a déjà un gestionnaire. Votre demande n'a pas été envoyée."
             )
-        user = request.user
-        send_mail(
-            subject="Nouvelle demande d'accès à une entreprise (sans gestionnaire)",
-            message=f"{user.name} (id: {user.id}) a demandé à devenir gestionnaire de l'entreprise {company.social_name} dont le N° de {_get_identifier_type(request)} est {identifier}.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.CONTACT_EMAIL],
+        Solicitation.objects.create(
+            kind=SolicitationKindChoices.ClaimSupervision, sender=request.user, company=company
         )
         return Response({})
 
 
 class ClaimCompanyCoSupervisionView(APIView):
-    """Envoi un e-mail aux gestionnaires d'une entreprise pour demander à devenir co-gestionnaire."""
+    """Envoi une solicitation aux gestionnaires d'une entreprise pour demander à devenir co-gestionnaire."""
 
     permission_classes = [IsAuthenticated]
 
@@ -127,12 +122,8 @@ class ClaimCompanyCoSupervisionView(APIView):
             raise ProjectAPIException(
                 global_error="Cette entreprise n'a pas de gestionnaire. Votre demande n'a pas été envoyée."
             )
-        user = request.user
-        send_mail(
-            subject=f"{user.name} souhaite devenir gestionnaire Compl'Alim de {company.social_name}",
-            message=f"{user.name} a demandé à devenir co-gestionnaire de l'entreprise {company.social_name}. Veuillez vous rendre sur la plateforme pour accéder ou refuser cette demande.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=company.supervisors.values_list("user__email"),
+        Solicitation.objects.create(
+            kind=SolicitationKindChoices.ClaimCoSupervision, sender=request.user, company=company
         )
         return Response({})
 

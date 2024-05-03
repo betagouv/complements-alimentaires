@@ -47,12 +47,12 @@ class BaseCompanyWithSupervisionFactory(SolicitationFactory):
                 self.recipients.add(supervisor_role.user)
 
 
-class RequestSupervisionFactory(BaseCompanyWithSupervisionFactory):
-    kind = SolicitationKindChoices.RequestSupervision
+class ClaimSupervisionFactory(BaseCompanyWithSupervisionFactory):
+    kind = SolicitationKindChoices.ClaimSupervision
 
 
-class RequestCoSupervisionFactory(BaseCompanyWithSupervisionFactory):
-    kind = SolicitationKindChoices.RequestCoSupervision
+class ClaimCoSupervisionFactory(BaseCompanyWithSupervisionFactory):
+    kind = SolicitationKindChoices.ClaimCoSupervision
 
 
 class InviteCoSupervision(BaseCompanyWithSupervisionFactory):

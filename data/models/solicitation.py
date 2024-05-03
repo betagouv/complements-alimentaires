@@ -18,8 +18,8 @@ User = get_user_model()
 class SolicitationKindChoices(models.TextChoices):
     """Fait aussi office de mapping avec les classes contenant la logique spécifique à appeler"""
 
-    RequestSupervision = "RequestSupervision", "demande de gestion"
-    RequestCoSupervision = "RequestCoSupervision", "demande de co-gestion"
+    ClaimSupervision = "ClaimSupervision", "demande de gestion"
+    ClaimCoSupervision = "ClaimCoSupervision", "demande de co-gestion"
     InviteCoSupervision = "InviteCoSupervision", "invitation à une co-gestion"
 
 
@@ -110,7 +110,7 @@ class Solicitation(AutoValidable, TimeStampable, models.Model):
             raise NotImplementedError(f"The action {action} does not exist on {self.subclass} class.")
 
 
-class RequestSupervision:
+class ClaimSupervision:
     @staticmethod
     def create_hook(kind, sender, company) -> Solicitation:
         main_message = f"{sender.name} (id: {sender.id}) a demandé à devenir gestionnaire de l'entreprise {company.social_name} (id: {company.id})"
@@ -128,6 +128,7 @@ class RequestSupervision:
 
     @staticmethod
     def accept(solicitation, processor):
+        solicitation.company.supervisors.add(solicitation.sender)
         send_mail(
             subject="[Compl'Alim] Votre demande de gestion a été acceptée",
             message=f"L'équipe Compl'Alim a accepté que vous deveniez gestionnaire de {solicitation.company.social_name}. Vous pouvez vous connecter à la plateforme.",
@@ -145,7 +146,7 @@ class RequestSupervision:
         )
 
 
-class RequestCoSupervision:
+class ClaimCoSupervision:
     @staticmethod
     def create_hook(kind, sender, company) -> Solicitation:
         main_message = f"{sender.name} a demandé à devenir co-gestionnaire de l'entreprise {company.social_name}."
@@ -163,6 +164,7 @@ class RequestCoSupervision:
 
     @staticmethod
     def accept(solicitation, processor):
+        solicitation.company.supervisors.add(solicitation.sender)
         send_mail(
             subject="[Compl'Alim] Votre demande de co-gestion a été acceptée",
             message=f"{processor.name} a accepté que vous deveniez gestionnaire de {solicitation.company.social_name}. Vous pouvez vous connecter à la plateforme.",
