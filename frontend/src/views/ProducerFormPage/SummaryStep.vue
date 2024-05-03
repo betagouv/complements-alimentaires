@@ -80,7 +80,7 @@ const unitInfo = computed(() => {
 
 const galenicFormulationsNames = computed(() => {
   if (!payload.value.galenicFormulation) return null
-  return galenicFormulation.value.find((y) => y.id === parseInt(payload.value.galenicFormulation))?.name
+  return galenicFormulation.value?.find((y) => y.id === parseInt(payload.value.galenicFormulation))?.name
 })
 
 const effectsNames = computed(() => {
