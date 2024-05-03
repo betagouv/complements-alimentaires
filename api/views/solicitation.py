@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from data.models.company import Company
 from data.models.solicitation import Solicitation
 
-from ..permissions import IsRecipient
+from ..permissions import IsSolicitationRecipient
 from ..serializers import UnprocessedSolicitationSerializer
 
 
@@ -25,7 +25,7 @@ class SolicitationListView(ListAPIView):
 class SolicitationProcessView(APIView):
     """Effectue une action de traitement sur une solicitation (RPC-style)"""
 
-    permission_classes = [IsRecipient]
+    permission_classes = [IsSolicitationRecipient]
 
     def post(self, request, pk: int, action: str, *args, **kwargs):
         solicitation = get_object_or_404(Solicitation, pk=pk)

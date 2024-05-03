@@ -33,9 +33,9 @@ class IsDeclarationAuthor(permissions.BasePermission):
         return user.is_authenticated and obj.author == user
 
 
-class IsRecipient(permissions.BasePermission):
+class IsSolicitationRecipient(permissions.BasePermission):
     message = "Vous devez être un des destinataires de cette demande pour effectuer cette action"
 
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request, view, obj):  # obj: Solicitation
         user = request.user
         return user.is_authenticated and user in obj.recipients.all()
