@@ -35,3 +35,4 @@ from .company import (
     GetCompanyCollaboratorsView,
     CompanyRoleView,
 )
+from .solicitation import SolicitationListView

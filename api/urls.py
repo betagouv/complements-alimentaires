@@ -73,6 +73,7 @@ urlpatterns = {
     path("declarations/", views.DeclarationListCreateApiView.as_view(), name="list_create_declaration"),
     path("declarations/<int:pk>", views.DeclarationRetrieveUpdateView.as_view(), name="retrieve_update_declaration"),
     path("declarations/<int:pk>/submit/", views.DeclarationSubmitView.as_view(), name="submit_declaration"),
+    path("solicitations/", views.SolicitationListView.as_view(), name="list_solicitation"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

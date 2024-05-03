@@ -27,6 +27,8 @@ class CustomSolicitationManager(models.Manager):
     def create(self, *args, **kwargs) -> Solicitation:
         """Délègue la création de l'objet à une sous-classe spécifique"""
         subclass = globals()[kwargs["kind"]]  # récupère la sous-classe à partir du type
+        if not hasattr(subclass, "create_hook"):
+            raise ValueError(f"`create_hook` method must be defined on {subclass}")
         instance = subclass.create_hook(*args, **kwargs)
         if not isinstance(instance, Solicitation):
             raise ValueError("`create_hook` method must return a new Solicitation instance")
@@ -37,6 +39,10 @@ class Solicitation(AutoValidable, TimeStampable, models.Model):
     """
     Objet permettant de définir les invitations ou demandes envoyées.
     Il gère aussi le traitement de ces demandes (ex : acceptation, refus)
+    On n'utilise que cette unique table en base, sans héritage, pour rester simple.
+    Cependant, pour bénéficier d'une logique orientée objet et éviter les `if` partout,
+    la logique spécifique de création et de traitement est déléguée à une sous-classe correspondant
+    au type de solicitation.
     """
 
     objects = CustomSolicitationManager()
@@ -67,23 +73,19 @@ class Solicitation(AutoValidable, TimeStampable, models.Model):
 
     @property
     def is_processed(self) -> bool:
+        # NOTE: on pourrait utiliser un GeneratedField à la place pour pouvoir filtrer avec
         return bool(self.processed_at)
 
     def clean(self):
         if not all_true_or_all_false(self.processed_at, self.processor, self.processed_action):
             raise ValidationError("Une demande traitée doit l'être par quelqu'un ET à une date spécifiée")
 
-    def save(self, *args, **kwargs):
-        # if not self._state.adding and self.is_processed:
-        #     raise ValidationError("Une demande traitée ne peut plus être modifiée")
-        return super().save(*args, **kwargs)
-
     def __str__(self):
         return f"{self._meta.verbose_name} {self.id}"
 
     @property
     def subclass(self):
-        """Récupère la classe permettant de gérer la logique de traitement spécifique"""
+        """Récupère la classe permettant de gérer la logique spécifique"""
         return globals().get(self.kind)
 
     @transaction.atomic
@@ -112,8 +114,8 @@ class Solicitation(AutoValidable, TimeStampable, models.Model):
 
 class RequestSupervision:
     @staticmethod
-    def create_hook(kind, sender, company_social_name, company_id, identifier_type, identifier) -> Solicitation:
-        main_message = f"{sender.name} (id: {sender.id}) a demandé à devenir gestionnaire de l'entreprise {company_social_name} dont le N° de {identifier_type} est {identifier}."
+    def create_hook(kind, sender, company) -> Solicitation:
+        main_message = f"{sender.name} (id: {sender.id}) a demandé à devenir gestionnaire de l'entreprise {company.social_name} (id: {company.id})"
         new_solicitation = Solicitation(kind=kind, sender=sender, description=main_message)
         new_solicitation.save()
         recipients = User.objects.filter(is_staff=True)
