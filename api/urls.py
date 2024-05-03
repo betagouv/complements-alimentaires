@@ -70,7 +70,10 @@ urlpatterns = {
         views.ClaimCompanyCoSupervisionView.as_view(),
         name="claim_company_co_supervision",
     ),
+    # Solicitations
     path("companies/<int:pk>/solicitations/", views.SolicitationListView.as_view(), name="list_solicitation"),
+    path("solicitations/<int:pk>/<str:action>/", views.SolicitationProcessView.as_view(), name="process_solicitation"),
+    # Declarations
     path("declarations/", views.DeclarationListCreateApiView.as_view(), name="list_create_declaration"),
     path("declarations/<int:pk>", views.DeclarationRetrieveUpdateView.as_view(), name="retrieve_update_declaration"),
     path("declarations/<int:pk>/submit/", views.DeclarationSubmitView.as_view(), name="submit_declaration"),

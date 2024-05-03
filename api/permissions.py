@@ -31,3 +31,11 @@ class IsDeclarationAuthor(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):  # obj: Declaration
         user = request.user
         return user.is_authenticated and obj.author == user
+
+
+class IsRecipient(permissions.BasePermission):
+    message = "Vous devez être un des destinataires de cette demande pour effectuer cette action"
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        return user.is_authenticated and user in obj.recipients.all()

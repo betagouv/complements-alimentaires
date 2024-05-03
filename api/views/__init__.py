@@ -35,4 +35,4 @@ from .company import (
     GetCompanyCollaboratorsView,
     CompanyRoleView,
 )
-from .solicitation import SolicitationListView
+from .solicitation import SolicitationListView, SolicitationProcessView

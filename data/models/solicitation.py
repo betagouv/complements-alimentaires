@@ -26,7 +26,8 @@ class SolicitationKindChoices(models.TextChoices):
 class CustomSolicitationManager(models.Manager):
     @transaction.atomic
     def create(self, *args, **kwargs) -> Solicitation:
-        """Délègue la création de l'objet à une sous-classe spécifique"""
+        """Délègue la création de l'objet à une sous-classe spécifique.
+        Cette sous-classe est déterminée grâce au paramètre `kind`."""
         subclass = globals()[kwargs["kind"]]  # récupère la sous-classe à partir du type
         if not hasattr(subclass, "create_hook"):
             raise ValueError(f"`create_hook` method must be defined on {subclass}")
@@ -101,20 +102,12 @@ class Solicitation(AutoValidable, TimeStampable, models.Model):
         self.processed_at = timezone.now()
         self.processed_action = action
         self.save()
-        # l'action de traitement est déléguée
+        # l'action de traitement est déléguée à la sous classe
         process_action_method = getattr(self.subclass, action, None)
         if process_action_method:
             process_action_method(solicitation=self, processor=processor, *args, **kwargs)
         else:
             raise NotImplementedError(f"The action {action} does not exist on {self.subclass} class.")
-
-    def accept(self, processor, *args, **kwargs):
-        """Wrapper pour l'action `accept`"""
-        return self.process(action="accept", processor=processor, *args, **kwargs)
-
-    def refuse(self, processor, *args, **kwargs):
-        """Wrapper pour l'action `refuse`"""
-        return self.process(action="refuse", processor=processor, *args, **kwargs)
 
 
 class RequestSupervision:
