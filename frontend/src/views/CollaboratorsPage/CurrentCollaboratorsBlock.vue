@@ -3,7 +3,6 @@
     <div class="flex justify-between">
       <div>
         <SectionTitle :title="`Collaborateurs actuels de ${company.socialName}`" icon="ri-user-line" />
-        <div class="flex flex-col"></div>
         <p>Gérez ici l'ensemble des collaborateurs et leurs rôles.</p>
       </div>
       <div>
