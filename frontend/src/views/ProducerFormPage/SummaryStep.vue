@@ -1,14 +1,14 @@
 <template>
-  <DsfrAlert class="mb-8">
+  <DsfrAlert v-if="!readonly">
     <p class="mb-2">Veuillez vérifier les données ci-dessous avant de procéder à la validation de votre démarche</p>
     <DsfrButton @click="emit('submit')" label="Soumettre ma démarche" />
   </DsfrAlert>
 
-  <SectionTitle title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" />
+  <SectionTitle class="!mt-8" title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" />
 
   <h3 class="fr-h6">
     Informations sur le produit
-    <DsfrButton secondary class="ml-4" label="Modifier" size="small" @click="router.push(editLink(1))" />
+    <SummaryModificationButton v-if="!readonly" @click="router.push(editLink(1))" />
   </h3>
   <div>
     <SummaryInfoSegment label="Nom du produit" :value="payload.name" />
@@ -30,7 +30,7 @@
 
   <h3 class="fr-h6 !mt-8">
     Composition
-    <DsfrButton secondary class="ml-4" label="Modifier" size="small" @click="router.push(editLink(2))" />
+    <SummaryModificationButton v-if="!readonly" @click="router.push(editLink(2))" />
   </h3>
 
   <SummaryElementList objectType="plant" :elements="payload.declaredPlants" />
@@ -42,9 +42,9 @@
 
   <h3 class="fr-h6 !mt-8">
     Pièces jointes
-    <DsfrButton secondary class="ml-4" label="Modifier" size="small" @click="router.push(editLink(3))" />
+    <SummaryModificationButton v-if="!readonly" @click="router.push(editLink(3))" />
   </h3>
-  <div class="grid grid-cols-12 gap-3">
+  <div class="grid grid-cols-12 gap-3 mb-8">
     <FilePreview
       class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
       v-for="(file, index) in payload.attachments"
@@ -65,12 +65,14 @@ import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRouter } from "vue-router"
 import SectionTitle from "@/components/SectionTitle"
+import SummaryModificationButton from "./SummaryModificationButton"
 
 const router = useRouter()
 const { populations, conditions, effects, galenicFormulation } = storeToRefs(useRootStore())
 
 const payload = defineModel()
 const emit = defineEmits(["submit"])
+defineProps(["readonly"])
 const unitInfo = computed(() => {
   if (!payload.value.unitQuantity) return null
   return `${payload.value.unitQuantity} ${payload.value.unitMeasurement || "-"}`
