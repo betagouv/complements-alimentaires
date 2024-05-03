@@ -35,6 +35,11 @@ import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 import { onMounted } from "vue"
 import { isoToPrettyDate, isoToPrettyTime } from "@/utils/date"
+import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
+
+const store = useRootStore()
+const { company } = storeToRefs(store)
 
 const dateOptions = {
   weekday: "short",
@@ -47,7 +52,7 @@ const {
   response,
   execute,
 } = useFetch(
-  "/api/v1/solicitations",
+  `/api/v1/companies/${company.value.id}/solicitations`,
   {
     headers: headers(),
   },

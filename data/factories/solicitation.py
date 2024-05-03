@@ -2,7 +2,7 @@ import factory
 
 from data.models.solicitation import Solicitation, SolicitationKindChoices
 
-from .company import CompanyFactory
+from .company import CompanyFactory, SupervisorRoleFactory
 from .user import UserFactory
 
 
@@ -33,21 +33,18 @@ class SolicitationFactory(factory.django.DjangoModelFactory):
 class BaseCompanyWithSupervisionFactory(SolicitationFactory):
     company = factory.SubFactory(CompanyFactory)
 
-    # TODO: fix cette erreur - on veut que les users aient les droits de Supervisor
-    # de la company utilisée - sauf que l'attribut n'existe pas sur l'objet créé
-
-    # @factory.post_generation
-    # def recipients(self, create, extracted, **kwargs):
-    #     """Surchargé pour gérer le fait que les destinataires ajoutés soient bien gestionnaires"""
-    #     if not create:
-    #         return
-    #     if extracted or isinstance(extracted, list):
-    #         for recipient in extracted:
-    #             self.recipients.add(recipient)
-    #     else:
-    #         for _ in range(3):
-    #             supervisor_role = SupervisorRoleFactory(company=self.company)
-    #             self.recipients.add(supervisor_role.user)
+    @factory.post_generation
+    def recipients(self, create, extracted, **kwargs):
+        """Surchargé pour gérer le fait que les destinataires ajoutés soient bien gestionnaires"""
+        if not create:
+            return
+        if extracted or isinstance(extracted, list):
+            for recipient in extracted:
+                self.recipients.add(recipient)
+        else:
+            for _ in range(3):
+                supervisor_role = SupervisorRoleFactory(company=self.company)
+                self.recipients.add(supervisor_role.user)
 
 
 class RequestSupervisionFactory(BaseCompanyWithSupervisionFactory):

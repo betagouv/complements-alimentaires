@@ -10,6 +10,7 @@ from django.utils import timezone
 from data.utils.type_utils import all_true_or_all_false
 
 from ..behaviours import AutoValidable, TimeStampable
+from .company import Company
 
 User = get_user_model()
 
@@ -71,6 +72,10 @@ class Solicitation(AutoValidable, TimeStampable, models.Model):
     )
     processed_action = models.CharField(blank=True, verbose_name="action de traitement")
 
+    # données fonctionnelles - liées à certains objets spécifiques - peuvent donc être vides
+    # pas idéal conceptuellement, mais compromis à faire pour n'avoir qu'un seule table Solicitation
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, blank=True, null=True)
+
     @property
     def is_processed(self) -> bool:
         # NOTE: on pourrait utiliser un GeneratedField à la place pour pouvoir filtrer avec
@@ -116,7 +121,7 @@ class RequestSupervision:
     @staticmethod
     def create_hook(kind, sender, company) -> Solicitation:
         main_message = f"{sender.name} (id: {sender.id}) a demandé à devenir gestionnaire de l'entreprise {company.social_name} (id: {company.id})"
-        new_solicitation = Solicitation(kind=kind, sender=sender, description=main_message)
+        new_solicitation = Solicitation(kind=kind, sender=sender, description=main_message, company=company)
         new_solicitation.save()
         recipients = User.objects.filter(is_staff=True)
         new_solicitation.recipients.add(*recipients)
@@ -129,19 +134,19 @@ class RequestSupervision:
         return new_solicitation
 
     @staticmethod
-    def accept(solicitation, processor, company):
+    def accept(solicitation, processor):
         send_mail(
             subject="[Compl'Alim] Votre demande de gestion a été acceptée",
-            message=f"L'équipe Compl'Alim a accepté que vous deveniez gestionnaire de {company.social_name}. Vous pouvez vous connecter à la plateforme.",
+            message=f"L'équipe Compl'Alim a accepté que vous deveniez gestionnaire de {solicitation.company.social_name}. Vous pouvez vous connecter à la plateforme.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[solicitation.sender],
         )
 
     @staticmethod
-    def refuse(solicitation, processor, company):
+    def refuse(solicitation, processor):
         send_mail(
             subject="[Compl'Alim] Votre demande de gestion a été refusée",
-            message=f"L'équipe Compl'Alim a refusé que vous deveniez gestionnaire de {company.social_name}. N'hésitez pas à nous contacter pour en savoir plus.",
+            message=f"L'équipe Compl'Alim a refusé que vous deveniez gestionnaire de {solicitation.company.social_name}. N'hésitez pas à nous contacter pour en savoir plus.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[solicitation.sender],
         )
@@ -152,7 +157,7 @@ class RequestCoSupervision:
     def create_hook(kind, sender, company) -> Solicitation:
         main_message = f"{sender.name} a demandé à devenir co-gestionnaire de l'entreprise {company.social_name}."
         recipients = company.supervisors.all()
-        new_solicitation = Solicitation(kind=kind, sender=sender, description=main_message)
+        new_solicitation = Solicitation(kind=kind, sender=sender, description=main_message, company=company)
         new_solicitation.save()
         new_solicitation.recipients.add(*recipients)
         send_mail(
@@ -164,19 +169,19 @@ class RequestCoSupervision:
         return new_solicitation
 
     @staticmethod
-    def accept(solicitation, processor, company):
+    def accept(solicitation, processor):
         send_mail(
             subject="[Compl'Alim] Votre demande de co-gestion a été acceptée",
-            message=f"{processor.name} a accepté que vous deveniez gestionnaire de {company.social_name}. Vous pouvez vous connecter à la plateforme.",
+            message=f"{processor.name} a accepté que vous deveniez gestionnaire de {solicitation.company.social_name}. Vous pouvez vous connecter à la plateforme.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[solicitation.sender],
         )
 
     @staticmethod
-    def refuse(solicitation, processor, company):
+    def refuse(solicitation, processor):
         send_mail(
             subject="[Compl'Alim] Votre demande de co-gestion a été refusée",
-            message=f"{processor.name} a refusé que vous deveniez gestionnaire de {company.social_name}. Contactez directement cette personne pour en savoir plus.",
+            message=f"{processor.name} a refusé que vous deveniez gestionnaire de {solicitation.company.social_name}. Contactez directement cette personne pour en savoir plus.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[solicitation.sender],
         )
