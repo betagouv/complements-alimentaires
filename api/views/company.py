@@ -99,14 +99,17 @@ class ClaimCompanySupervisionView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, identifier):
+    def post(self, request, identifier):
         company = get_object_or_404(Company, **{_get_identifier_type(request): identifier})
         if company.supervisors.exists():  # ne devrait pas arriver, sécurité supplémentaire
             raise ProjectAPIException(
                 global_error="Cette entreprise a déjà un gestionnaire. Votre demande n'a pas été envoyée."
             )
         Solicitation.objects.create(
-            kind=SolicitationKindChoices.ClaimSupervision, sender=request.user, company=company
+            kind=SolicitationKindChoices.ClaimSupervision,
+            sender=request.user,
+            company=company,
+            sender_msg=request.data.get("message"),
         )
         return Response({})
 
@@ -116,14 +119,17 @@ class ClaimCompanyCoSupervisionView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, identifier):
+    def post(self, request, identifier):
         company = get_object_or_404(Company, **{_get_identifier_type(request): identifier})
         if not company.supervisors.exists():  # ne devrait pas arriver, sécurité supplémentaire
             raise ProjectAPIException(
                 global_error="Cette entreprise n'a pas de gestionnaire. Votre demande n'a pas été envoyée."
             )
         Solicitation.objects.create(
-            kind=SolicitationKindChoices.ClaimCoSupervision, sender=request.user, company=company
+            kind=SolicitationKindChoices.ClaimCoSupervision,
+            sender=request.user,
+            company=company,
+            sender_msg=request.data.get("message"),
         )
         return Response({})
 

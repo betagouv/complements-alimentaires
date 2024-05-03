@@ -42,12 +42,16 @@ const v$ = useVuelidate({}, { message: message }, { $externalResults })
 // Request definition
 
 const { response, execute, isFetching } = useFetch(
-  `/api/v1/companies/${company.value.identifier}/claim-supervision?identifierType=${company.value.identifierType}`,
+  `/api/v1/companies/${company.value.identifier}/claim-supervision/?identifierType=${company.value.identifierType}`,
   {
     headers: headers(),
   },
   { immediate: false }
-).json()
+)
+  .post(() => ({
+    message: message.value,
+  }))
+  .json()
 
 // Request execution
 const submitClaimSupervision = async () => {

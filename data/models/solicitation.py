@@ -112,8 +112,10 @@ class Solicitation(AutoValidable, TimeStampable, models.Model):
 
 class ClaimSupervision:
     @staticmethod
-    def create_hook(kind, sender, company) -> Solicitation:
-        main_message = f"{sender.name} (id: {sender.id}) a demandé à devenir gestionnaire de l'entreprise {company.social_name} (id: {company.id})"
+    def create_hook(kind, sender, company, sender_msg) -> Solicitation:
+        main_message = f"{sender.name} (id: {sender.id}) a demandé à devenir gestionnaire de l'entreprise {company.social_name} (id: {company.id})."
+        if sender_msg:
+            main_message += f" Il a ajouté ce message : «{sender_msg}»."
         new_solicitation = Solicitation(kind=kind, sender=sender, description=main_message, company=company)
         new_solicitation.save()
         recipients = User.objects.filter(is_staff=True)
@@ -148,8 +150,10 @@ class ClaimSupervision:
 
 class ClaimCoSupervision:
     @staticmethod
-    def create_hook(kind, sender, company) -> Solicitation:
+    def create_hook(kind, sender, company, sender_msg) -> Solicitation:
         main_message = f"{sender.name} a demandé à devenir co-gestionnaire de l'entreprise {company.social_name}."
+        if sender_msg:
+            main_message += f" Il a ajouté ce message : «{sender_msg}»."
         recipients = company.supervisors.all()
         new_solicitation = Solicitation(kind=kind, sender=sender, description=main_message, company=company)
         new_solicitation.save()
