@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="solicitations">
     <SectionTitle title="Demandes en cours" icon="ri-chat-3-line" />
     <h6>Vos demandes reçues</h6>
 
@@ -24,6 +24,9 @@
         </div>
       </div>
       <hr class="mt-4 -mb-2 border" />
+    </div>
+    <div v-if="solicitations.length === 0">
+      <p>Vous n'avez actuellement aucune demande en cours.</p>
     </div>
   </div>
 </template>

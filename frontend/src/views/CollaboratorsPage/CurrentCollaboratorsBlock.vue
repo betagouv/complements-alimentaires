@@ -7,7 +7,8 @@
         <p>Gérez ici l'ensemble des collaborateurs et leurs rôles.</p>
       </div>
       <div>
-        <DsfrButton label="Aide sur les rôles" icon="ri-question-line" size="sm" tertiary />
+        <DsfrButton label="Inviter un nouveau collaborateur" icon="ri-mail-add-line" size="sm" />
+        <!-- <DsfrButton label="Aide sur les rôles" icon="ri-question-line" size="sm" tertiary /> -->
       </div>
     </div>
 
@@ -47,7 +48,6 @@
       </div>
       <hr class="mt-4 -mb-2 border" />
     </div>
-    <DsfrButton label="Inviter un nouveau collaborateur" icon="ri-mail-add-line" size="sm" />
   </div>
 </template>
 
