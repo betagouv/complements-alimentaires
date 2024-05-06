@@ -9,7 +9,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 
 from rest_framework.exceptions import NotFound
-from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -22,6 +22,8 @@ from data.validators import validate_siret, validate_vat  # noqa
 from ..exception_handling import ProjectAPIException
 from ..permissions import IsSupervisor
 from ..serializers import CollaboratorSerializer, CompanySerializer
+
+User = get_user_model()
 
 
 class CountryListView(APIView):
@@ -158,16 +160,31 @@ class CompanyRetrieveView(RetrieveAPIView):
     serializer_class = CompanySerializer
 
 
-class GetCompanyCollaboratorsView(APIView):
+# class GetCompanyCollaboratorsView(APIView):
+#     """Récupération des utilisateurs ayant au moins un rôle dans cette entreprise"""
+
+#     def get(self, request, pk, *args, **kwargs):
+#         company = get_object_or_404(Company.objects.filter(supervisors=request.user), pk=pk)
+#         serializer = CollaboratorSerializer(company.collaborators, many=True, context={"company_id": pk})
+#         return Response(serializer.data)
+
+
+class GetCompanyCollaboratorsView(ListAPIView):
     """Récupération des utilisateurs ayant au moins un rôle dans cette entreprise"""
 
-    def get(self, request, pk, *args, **kwargs):
-        company = get_object_or_404(Company.objects.filter(supervisors=request.user), pk=pk)
-        serializer = CollaboratorSerializer(company.collaborators, many=True, context={"company_id": pk})
-        return Response(serializer.data)
+    model = User
+    serializer_class = CollaboratorSerializer
 
+    def get_queryset(self):
+        company = get_object_or_404(
+            Company.objects.filter(supervisors=self.request.user), pk=self.kwargs[self.lookup_field]
+        )
+        return company.collaborators.all()
 
-User = get_user_model()
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"company_id": self.kwargs[self.lookup_field]})
+        return context
 
 
 class CompanyRoleView(APIView):

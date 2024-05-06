@@ -22,8 +22,8 @@ class TestAddDeclarantRole(ProjectAPITestCase):
         self.supervisor_role = SupervisorRoleFactory(company=self.company)
         self.user = self.supervisor_role.user
 
-        self.other_collaborator_role = SupervisorRoleFactory(company=self.company)
-        self.collaborator = self.other_collaborator_role.user
+        other_collaborator_role = SupervisorRoleFactory(company=self.company)
+        self.collaborator = other_collaborator_role.user
 
         # sugar
         self.kwargs = dict(role_class_name="DeclarantRole", action="add")
@@ -160,8 +160,8 @@ class TestAddSupervisorRole(ProjectAPITestCase):
         self.supervisor = SupervisorRoleFactory(company=self.company)
         self.user = self.supervisor.user
 
-        self.other_collaborator_role = DeclarantRoleFactory(company=self.company)
-        self.collaborator = self.other_collaborator_role.user
+        other_collaborator_role = DeclarantRoleFactory(company=self.company)
+        self.collaborator = other_collaborator_role.user
 
         # sugar
         self.kwargs = dict(role_class_name="SupervisorRole", action="add")
