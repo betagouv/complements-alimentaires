@@ -160,7 +160,7 @@ class CompanyRetrieveView(RetrieveAPIView):
     serializer_class = CompanySerializer
 
 
-class GetCompanyCollaboratorsView(ListAPIView):
+class CompanyCollaboratorsListView(ListAPIView):
     """Récupération des utilisateurs ayant au moins un rôle dans cette entreprise"""
 
     model = User

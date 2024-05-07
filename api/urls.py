@@ -49,7 +49,7 @@ urlpatterns = {
     path("companies/<int:pk>", views.CompanyRetrieveView.as_view(), name="company_retrieve"),
     path(
         "companies/<int:pk>/collaborators",
-        views.GetCompanyCollaboratorsView.as_view(),
+        views.CompanyCollaboratorsListView.as_view(),
         name="get_company_collaborators",
     ),
     path(
