@@ -33,5 +33,6 @@ from .company import (
     CompanyRetrieveView,
     CountryListView,
     GetCompanyCollaboratorsView,
-    CompanyRoleView,
+    AddCompanyRoleView,
+    RemoveCompanyRoleView,
 )

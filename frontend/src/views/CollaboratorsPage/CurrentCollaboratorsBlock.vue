@@ -82,8 +82,9 @@ onMounted(async () => {
 
 // Requête pour modifier les rôles d'un utilisateur pour une entreprise donnée
 const changeRole = async (roleName, user, action) => {
-  const url = `${collaboratorsUrl.value}/${user.id}/${roleName}/${action}/`
-  const { response, data: collaboratorUpdatedLine } = await useFetch(url, { headers: headers() }).patch().json()
+  const url = `/api/v1/users/${user.id}/${action}-role/`
+  const payload = { companyPk: company.value.id, roleName: roleName }
+  const { response, data: collaboratorUpdatedLine } = await useFetch(url, { headers: headers() }).post(payload).json()
   await handleError(response)
   if (response.value.ok) {
     // mise à jour de l'UI sur la ligne concernée

@@ -41,11 +41,8 @@ urlpatterns = {
         name="send_new_signup_verification_email",
     ),
     # Roles
-    path(
-        "companies/<int:company_pk>/collaborators/<int:collaborator_pk>/<str:role_class_name>/<str:action>/",
-        views.CompanyRoleView.as_view(),
-        name="company_role",
-    ),
+    path("users/<int:user_pk>/add-role/", views.AddCompanyRoleView.as_view(), name="add_role"),
+    path("users/<int:user_pk>/remove-role/", views.RemoveCompanyRoleView.as_view(), name="remove_role"),
     # Company
     path("countries/", views.CountryListView.as_view(), name="country_list"),
     path("companies/", views.CompanyCreateView.as_view(), name="company_create"),
