@@ -2,7 +2,7 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 
-from api.permissions import IsDeclarantOfThisCompany, IsDeclarationAuthor
+from api.permissions import IsDeclarant, IsDeclarationAuthor
 from api.serializers import DeclarationSerializer, DeclarationShortSerializer
 from api.views.declaration.declaration_flow import DeclarationFlow
 from data.models import Company, Declaration
@@ -10,7 +10,7 @@ from data.models import Company, Declaration
 
 class DeclarationListCreateApiView(ListCreateAPIView):
     model = Declaration
-    permission_classes = [IsDeclarantOfThisCompany]
+    permission_classes = [IsDeclarant]
 
     def get_queryset(self):
         return self.request.user.declarations
@@ -23,7 +23,7 @@ class DeclarationListCreateApiView(ListCreateAPIView):
             company = Company.objects.get(pk=company_id)
         except Company.DoesNotExist as _:
             raise NotFound("Company not found")
-        if not company.declarants.filter(user=self.request.user).exists():
+        if not company.declarants.filter(id=self.request.user.id).exists():
             raise PermissionDenied()
         return super().perform_create(serializer)
 
@@ -36,7 +36,7 @@ class DeclarationListCreateApiView(ListCreateAPIView):
 class DeclarationRetrieveUpdateView(RetrieveUpdateAPIView):
     model = Declaration
     serializer_class = DeclarationSerializer
-    permission_classes = [IsDeclarationAuthor, IsDeclarantOfThisCompany]
+    permission_classes = [IsDeclarationAuthor, IsDeclarant]
     queryset = Declaration.objects.all()
 
 
@@ -59,7 +59,7 @@ class DeclarationFlowView(GenericAPIView):
 
 
 class DeclarationSubmitView(DeclarationFlowView):
-    permission_classes = [IsDeclarationAuthor, IsDeclarantOfThisCompany]
+    permission_classes = [IsDeclarationAuthor, IsDeclarant]
     transition = "submit_for_instruction"
 
 

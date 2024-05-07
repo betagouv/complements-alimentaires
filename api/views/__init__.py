@@ -1,14 +1,6 @@
 from .authentication import LoginView, LogoutView
 from .autocomplete import AutocompleteView
 from .blog import BlogPostsView, BlogPostView
-from .company import (
-    CheckCompanyIdentifierView,
-    ClaimCompanyCoSupervisionView,
-    ClaimCompanySupervisionView,
-    CompanyCreateView,
-    CompanyRetrieveView,
-    CountryListView,
-)
 from .condition import ConditionListView
 from .declaration import DeclarationListCreateApiView, DeclarationRetrieveUpdateView, DeclarationSubmitView
 from .effect import EffectListView
@@ -32,3 +24,15 @@ from .user import (
     VerifyEmailView,
 )
 from .webinar import WebinarView
+
+from .company import (
+    CheckCompanyIdentifierView,
+    ClaimCompanyCoSupervisionView,
+    ClaimCompanySupervisionView,
+    CompanyCreateView,
+    CompanyRetrieveView,
+    CountryListView,
+    CompanyCollaboratorsListView,
+    AddCompanyRoleView,
+    RemoveCompanyRoleView,
+)

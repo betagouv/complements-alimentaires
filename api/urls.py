@@ -1,4 +1,5 @@
 from django.urls import path
+
 from rest_framework.urlpatterns import format_suffix_patterns
 
 import api.views as views
@@ -39,10 +40,18 @@ urlpatterns = {
         views.SendNewSignupVerificationEmailView.as_view(),
         name="send_new_signup_verification_email",
     ),
+    # Roles
+    path("users/<int:user_pk>/add-role/", views.AddCompanyRoleView.as_view(), name="add_role"),
+    path("users/<int:user_pk>/remove-role/", views.RemoveCompanyRoleView.as_view(), name="remove_role"),
     # Company
     path("countries/", views.CountryListView.as_view(), name="country_list"),
     path("companies/", views.CompanyCreateView.as_view(), name="company_create"),
     path("companies/<int:pk>", views.CompanyRetrieveView.as_view(), name="company_retrieve"),
+    path(
+        "companies/<int:pk>/collaborators",
+        views.CompanyCollaboratorsListView.as_view(),
+        name="get_company_collaborators",
+    ),
     path(
         "companies/<str:identifier>/check-identifier/",
         views.CheckCompanyIdentifierView.as_view(),

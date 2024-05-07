@@ -1,6 +1,16 @@
-from rest_framework import serializers
 from phonenumber_field.serializerfields import PhoneNumberField
-from data.models import Company
+from rest_framework import serializers
+
+from data.models import Company, DeclarantRole, SupervisorRole
+
+
+class SimpleCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = (
+            "id",
+            "social_name",
+        )
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -31,3 +41,25 @@ class CompanySerializer(serializers.ModelSerializer):
         # permet de définir dynamiquement la bonne région pour le numéro de téléphone entré
         self.fields["phone_number"] = PhoneNumberField(region=data["country"])
         return super().to_internal_value(data)
+
+
+class BaseRoleSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = ("id", "name")
+
+    def get_name(self, obj):
+        return obj.__class__.__name__
+
+
+class SupervisorRoleSerializer(BaseRoleSerializer):
+    class Meta:
+        model = SupervisorRole
+        fields = BaseRoleSerializer.Meta.fields
+
+
+class DeclarantRoleSerializer(BaseRoleSerializer):
+    class Meta:
+        model = DeclarantRole
+        fields = BaseRoleSerializer.Meta.fields

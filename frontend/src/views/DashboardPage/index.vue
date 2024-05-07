@@ -1,10 +1,10 @@
 <template>
-  <RoleBarBlock :name="loggedUser.firstName" :roles="loggedUser.roles" />
+  <RoleBarBlock :name="loggedUser.firstName" :company="company" />
   <div class="fr-container my-8 flex flex-col gap-8">
     <ActionGrid
-      v-if="isCompanySupervisor"
+      v-if="isSupervisor"
       :actions="supervisorActions"
-      title="Gestion d'entreprise"
+      :title="`Gestion de l'entreprise ${company.socialName}`"
       icon="ri-home-4-line"
     />
     <ActionGrid v-if="isDeclarant" :actions="declarantActions" title="Mes déclarations" icon="ri-capsule-fill" />
@@ -21,19 +21,24 @@ import ActionGrid from "./ActionGrid"
 import RoleBarBlock from "./RoleBarBlock"
 
 const store = useRootStore()
-const { loggedUser } = storeToRefs(store)
+const { loggedUser, company } = storeToRefs(store)
 
-const emptyRoles = computed(() => !loggedUser.value.roles || loggedUser.value.roles.length === 0)
-const isCompanySupervisor = computed(() => loggedUser.value.roles.some((x) => x.name === "CompanySupervisor"))
-const isDeclarant = computed(() => loggedUser.value.roles.some((x) => x.name === "Declarant"))
+const emptyRoles = computed(() => !company.value || !company.value.roles || company.value.roles.length === 0)
+const isSupervisor = computed(() => company.value?.roles.some((x) => x.name === "SupervisorRole"))
+const isDeclarant = computed(() => company.value?.roles.some((x) => x.name === "DeclarantRole"))
 
 const supervisorActions = [
   {
-    title: "Les déclarations de mes entreprises",
+    title: "Les déclarations de mon entreprise",
     description: "Visualisez et gérez les déclarations de votre entreprise",
   },
   {
-    title: "Modifier mes coordonnées",
+    title: "Les collaborateurs de mon entreprise",
+    description: "Gérez les différents collaborateurs, leurs rôles, les demandes, et invitez-en des nouveaux",
+    link: { name: "CollaboratorsPage" },
+  },
+  {
+    title: "Les coordonnées de l'entreprise",
     description: "Consultez et mettez à jour les données de votre entreprise",
   },
   {

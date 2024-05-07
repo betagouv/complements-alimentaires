@@ -963,25 +963,25 @@
   fields:
     name: Can add gestionnaire d'entreprises
     content_type: 41
-    codename: add_companysupervisor
+    codename: add_supervisor
 - model: auth.permission
   pk: 162
   fields:
     name: Can change gestionnaire d'entreprises
     content_type: 41
-    codename: change_companysupervisor
+    codename: change_supervisor
 - model: auth.permission
   pk: 163
   fields:
     name: Can delete gestionnaire d'entreprises
     content_type: 41
-    codename: delete_companysupervisor
+    codename: delete_supervisor
 - model: auth.permission
   pk: 164
   fields:
     name: Can view gestionnaire d'entreprises
     content_type: 41
-    codename: view_companysupervisor
+    codename: view_supervisor
 - model: auth.permission
   pk: 165
   fields:
@@ -1875,25 +1875,25 @@
   fields:
     name: Can add gestionnaire d'entreprises
     content_type: 7
-    codename: add_companysupervisor
+    codename: add_supervisor
 - model: auth.permission
   pk: 314
   fields:
     name: Can change gestionnaire d'entreprises
     content_type: 7
-    codename: change_companysupervisor
+    codename: change_supervisor
 - model: auth.permission
   pk: 315
   fields:
     name: Can delete gestionnaire d'entreprises
     content_type: 7
-    codename: delete_companysupervisor
+    codename: delete_supervisor
 - model: auth.permission
   pk: 316
   fields:
     name: Can view gestionnaire d'entreprises
     content_type: 7
-    codename: view_companysupervisor
+    codename: view_supervisor
 - model: auth.permission
   pk: 317
   fields:

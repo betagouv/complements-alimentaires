@@ -32,3 +32,7 @@ class Deactivable(models.Model):
     def deactivate(self):
         self.is_active = False
         self.save()
+
+    @property
+    def activity_icon(self):
+        return "✅" if self.is_active else "❌"
