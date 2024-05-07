@@ -8,7 +8,7 @@
 
   <h3 class="fr-h6">
     Informations sur le produit
-    <SummaryModificationButton v-if="!readonly" @click="router.push(editLink(1))" />
+    <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
   </h3>
   <div>
     <SummaryInfoSegment label="Nom du produit" :value="payload.name" />
@@ -30,7 +30,7 @@
 
   <h3 class="fr-h6 !mt-8">
     Composition
-    <SummaryModificationButton v-if="!readonly" @click="router.push(editLink(2))" />
+    <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
   </h3>
 
   <SummaryElementList objectType="plant" :elements="payload.declaredPlants" />
@@ -42,7 +42,7 @@
 
   <h3 class="fr-h6 !mt-8">
     Pièces jointes
-    <SummaryModificationButton v-if="!readonly" @click="router.push(editLink(3))" />
+    <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(3))" />
   </h3>
   <div class="grid grid-cols-12 gap-3 mb-8">
     <FilePreview
@@ -72,7 +72,7 @@ const { populations, conditions, effects, galenicFormulation } = storeToRefs(use
 
 const payload = defineModel()
 const emit = defineEmits(["submit"])
-defineProps(["readonly"])
+defineProps({ readonly: Boolean })
 const unitInfo = computed(() => {
   if (!payload.value.unitQuantity) return null
   return `${payload.value.unitQuantity} ${payload.value.unitMeasurement || "-"}`
