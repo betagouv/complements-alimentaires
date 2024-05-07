@@ -1,6 +1,6 @@
 <template>
   <div class="bg-blue-france-975 border border-slate-300">
-    <div class="fr-container pt-4 pb-6">
+    <div class="fr-container pt-4 pb-6" v-if="steps.length > 1">
       <DsfrStepper class="!mb-0" :currentStep="currentStep" :steps="steps" />
     </div>
   </div>
@@ -12,6 +12,7 @@
       @previous="goBackward"
       :disablePrevious="disablePrevious"
       :disableNext="disableNext"
+      v-if="steps.length > 1"
     />
     <FormWrapper :externalResults="$externalResults">
       <component
@@ -19,6 +20,7 @@
         v-model="payload"
         @submit="submitPayload"
         :externalResults="$externalResults"
+        :readonly="readonly"
       ></component>
     </FormWrapper>
     <StepButtons
@@ -27,6 +29,7 @@
       @previous="goBackward"
       :disablePrevious="disablePrevious"
       :disableNext="disableNext"
+      v-if="steps.length > 1"
     />
   </div>
 </template>
@@ -92,15 +95,17 @@ const hasNewElements = computed(() => {
     )
     .some((x) => x.new)
 })
-
+const readonly = computed(() => payload.value.status !== "DRAFT")
 const currentStep = ref(null)
 const steps = computed(() => {
+  if (readonly.value) return ["Résumé"]
   const baseSteps = ["Le produit", "La composition", "Pièces jointes", "Résumé"]
   if (hasNewElements.value) baseSteps.splice(2, 0, "Nouveaux éléments")
   return baseSteps
 })
 
 const components = computed(() => {
+  if (readonly.value) return [SummaryStep]
   const baseComponents = [ProductStep, CompositionStep, AttachmentStep, SummaryStep]
   if (hasNewElements.value) baseComponents.splice(2, 0, NewElementStep)
   return baseComponents
