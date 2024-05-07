@@ -9,14 +9,13 @@ from .company import DeclarantRoleSerializer, SimpleCompanySerializer, Superviso
 
 User = get_user_model()
 
+ROLE_SERIALIZER_MAPPING = {SupervisorRole: SupervisorRoleSerializer, DeclarantRole: DeclarantRoleSerializer}
+
 
 class BlogPostAuthor(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("first_name", "last_name")
-
-
-role_serializer_mapping = {SupervisorRole: SupervisorRoleSerializer, DeclarantRole: DeclarantRoleSerializer}
 
 
 class CollaboratorSerializer(serializers.ModelSerializer):
@@ -32,7 +31,7 @@ class CollaboratorSerializer(serializers.ModelSerializer):
 
     def get_roles(self, obj):
         return [
-            role_serializer_mapping[type(role)](role).data
+            ROLE_SERIALIZER_MAPPING[type(role)](role).data
             for role in obj.get_company_roles(self.context["company_id"])
         ]
 
@@ -55,7 +54,7 @@ class UserSerializer(serializers.ModelSerializer):
         result = []
         for company_id, roles in obj.get_roles_mapped_to_companies().items():
             company_data_dict = SimpleCompanySerializer(Company.objects.get(id=company_id)).data
-            role_data = [role_serializer_mapping[type(role)](role).data for role in roles]
+            role_data = [ROLE_SERIALIZER_MAPPING[type(role)](role).data for role in roles]
             # Merge les deux types de données
             result.append(company_data_dict | {"roles": role_data})
 

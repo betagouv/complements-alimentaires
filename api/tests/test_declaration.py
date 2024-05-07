@@ -592,7 +592,6 @@ class TestDeclarationApi(APITestCase):
         Un user peut récupérer les informations complètes d'une de leurs déclarations
         """
         declarant_role = DeclarantRoleFactory(user=authenticate.user)
-        user_declaration = DeclarationFactory(author=authenticate.user)
         company = declarant_role.company
         user_declaration = DeclarationFactory(author=authenticate.user, company=company)
         other_declaration = DeclarationFactory()

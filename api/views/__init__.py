@@ -32,7 +32,8 @@ from .company import (
     CompanyCreateView,
     CompanyRetrieveView,
     CountryListView,
-    GetCompanyCollaboratorsView,
-    CompanyRoleView,
+    CompanyCollaboratorsListView,
+    AddCompanyRoleView,
+    RemoveCompanyRoleView,
 )
 from .solicitation import SolicitationListView, SolicitationProcessView

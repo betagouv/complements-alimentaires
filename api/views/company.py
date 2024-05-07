@@ -7,7 +7,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 
 from rest_framework.exceptions import NotFound
-from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -21,6 +21,8 @@ from data.validators import validate_siret, validate_vat  # noqa
 from ..exception_handling import ProjectAPIException
 from ..permissions import IsSupervisor
 from ..serializers import CollaboratorSerializer, CompanySerializer
+
+User = get_user_model()
 
 
 class CountryListView(APIView):
@@ -155,43 +157,54 @@ class CompanyRetrieveView(RetrieveAPIView):
     serializer_class = CompanySerializer
 
 
-class GetCompanyCollaboratorsView(APIView):
+class CompanyCollaboratorsListView(ListAPIView):
     """Récupération des utilisateurs ayant au moins un rôle dans cette entreprise"""
 
-    def get(self, request, pk, *args, **kwargs):
-        company = get_object_or_404(Company.objects.filter(supervisors=request.user), pk=pk)
-        serializer = CollaboratorSerializer(company.collaborators, many=True, context={"company_id": pk})
-        return Response(serializer.data)
+    model = User
+    serializer_class = CollaboratorSerializer
+
+    def get_queryset(self):
+        company = get_object_or_404(
+            Company.objects.filter(supervisors=self.request.user), pk=self.kwargs[self.lookup_field]
+        )
+        return company.collaborators.all()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"company_id": self.kwargs[self.lookup_field]})
+        return context
 
 
-User = get_user_model()
-
-
-class CompanyRoleView(APIView):
-    """Endpoint unique permettant d'ajouter ou retirer un rôle lié à une entreprise (déclarant ou gestionnaire)"""
+class AddCompanyRoleView(APIView):
+    """Endpoint permettant d'ajouter un rôle lié à une entreprise (déclarant ou gestionnaire) à un utilisateur"""
 
     permission_classes = [IsAuthenticated, IsSupervisor]
 
-    def patch(self, request, company_pk: int, collaborator_pk: int, role_class_name: str, action: str):
-        company = get_object_or_404(Company, pk=company_pk)
-        collaborator = get_object_or_404(User, pk=collaborator_pk)
+    def post(self, request, user_pk):
+        user = get_object_or_404(User, pk=user_pk)
+        company = get_object_or_404(Company, pk=request.data["company_pk"])
 
         self.check_object_permissions(request, company)
+        role_class = apps.get_model("data", request.data["role_name"])
+        new_role, _ = role_class.objects.get_or_create(company=company, user=user)
+
+        return Response(CollaboratorSerializer(user, context={"company_id": request.data["company_pk"]}).data)
+
+
+class RemoveCompanyRoleView(APIView):
+    """Endpoint permettant de retirer un rôle lié à une entreprise (déclarant ou gestionnaire) à un collaborateur"""
+
+    permission_classes = [IsAuthenticated, IsSupervisor]
+
+    def post(self, request, user_pk):
+        collaborator = get_object_or_404(User, pk=user_pk)
+        company = get_object_or_404(Company, pk=request.data["company_pk"])
 
         if collaborator not in company.collaborators:
             raise NotFound()  # pas une permission car lié à 2 objets et non lié à l'utilisateur lui-même
 
-        role_class = apps.get_model("data", role_class_name)
+        self.check_object_permissions(request, company)
+        role_class = apps.get_model("data", request.data["role_name"])
+        role_class.objects.filter(company=company, user=collaborator).delete()  # évite le try/except
 
-        # Techniquement, l'utilisation de `action` est redondant car on pourrait le déduire, mais ça peut faire
-        # un garde-fou si côté front, le state de l'UI n'est pas le bon (ex: page non rafraichie.)
-        try:
-            role = role_class.objects.get(company=company, user=collaborator)
-        except role_class.DoesNotExist:
-            if action == "add":
-                role = role_class.objects.create(company=company, user=collaborator)
-        else:
-            if action == "remove":
-                role.delete()
-
-        return Response(CollaboratorSerializer(collaborator, context={"company_id": company_pk}).data)
+        return Response(CollaboratorSerializer(collaborator, context={"company_id": request.data["company_pk"]}).data)

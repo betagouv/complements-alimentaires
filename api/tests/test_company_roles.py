@@ -15,25 +15,22 @@ from .utils import ProjectAPITestCase
 
 
 class TestAddDeclarantRole(ProjectAPITestCase):
-    viewname = "company_role"
+    viewname = "add_role"
 
     def setUp(self):
         self.company = CompanyFactory()
         self.supervisor_role = SupervisorRoleFactory(company=self.company)
         self.user = self.supervisor_role.user
 
-        self.other_collaborator_role = SupervisorRoleFactory(company=self.company)
-        self.collaborator = self.other_collaborator_role.user
+        other_collaborator_role = SupervisorRoleFactory(company=self.company)
+        self.collaborator = other_collaborator_role.user
 
-        # sugar
-        self.kwargs = dict(role_class_name="DeclarantRole", action="add")
+        self.payload = dict(company_pk=self.company.pk, role_name="DeclarantRole")
 
     def test_add_declarant_role_ok(self):
         self.login(self.user)
         self.assertFalse(DeclarantRole.objects.filter(user=self.collaborator, company=self.company).exists())
-        response = self.patch(
-            self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        response = self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data, CollaboratorSerializer(self.collaborator, context={"company_id": self.company.pk}).data
@@ -41,25 +38,22 @@ class TestAddDeclarantRole(ProjectAPITestCase):
         self.assertTrue(DeclarantRole.objects.filter(user=self.collaborator, company=self.company).exists())
 
         # test de l'idempotence (ajouter un objet qui existe déjà ne provoque pas d'erreur)
-        response = self.patch(
-            self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        response = self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_add_declarant_role_unexisting_user_ko(self):
         self.login(self.user)
-        response = self.patch(self.url(company_pk=self.company.pk, collaborator_pk=99999, **self.kwargs))
+        response = self.post(self.url(user_pk=99999), self.payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_add_declarant_role_unexisting_company_ko(self):
         self.login(self.user)
-        response = self.patch(self.url(company_pk=99999, collaborator_pk=self.collaborator.pk, **self.kwargs))
+        payload = dict(company_pk=99999, role_name="DeclarantRole")
+        response = self.post(self.url(user_pk=self.collaborator.pk), payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_add_declarant_role_unauthenticated_ko(self):
-        response = self.patch(
-            self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        response = self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_add_declarant_role_to_unsupervised_company_ko(self):
@@ -67,20 +61,13 @@ class TestAddDeclarantRole(ProjectAPITestCase):
         # On créé une autre entreprise dans laquelle le collaborateur a un rôle, mais notre utilisateur n'est pas gestionnaire
         other_company = CompanyFactory()
         self.collaborator.supervisable_companies.add(other_company)
-        response = self.patch(
-            self.url(company_pk=other_company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        payload = dict(company_pk=other_company.pk, role_name="DeclarantRole")
+        response = self.post(self.url(user_pk=self.collaborator.pk), payload)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_add_declarant_role_to_not_collaborator_user_ko(self):
-        self.login(self.user)
-        not_collaborator = UserFactory()
-        response = self.patch(self.url(company_pk=self.company.pk, collaborator_pk=not_collaborator.pk, **self.kwargs))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class TestRemoveDeclarantRole(ProjectAPITestCase):
-    viewname = "company_role"
+    viewname = "remove_role"
 
     def setUp(self):
         self.company = CompanyFactory()
@@ -90,15 +77,12 @@ class TestRemoveDeclarantRole(ProjectAPITestCase):
         self.declarant_collaborator_role = DeclarantRoleFactory(company=self.company)
         self.collaborator = self.declarant_collaborator_role.user
 
-        # sugar
-        self.kwargs = dict(role_class_name="DeclarantRole", action="remove")
+        self.payload = dict(company_pk=self.company.pk, role_name="DeclarantRole")
 
     def test_remove_declarant_role_ok(self):
         self.login(self.user)
         self.assertTrue(DeclarantRole.objects.filter(user=self.collaborator, company=self.company).exists())
-        response = self.patch(
-            self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        response = self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data, CollaboratorSerializer(self.collaborator, context={"company_id": self.company.pk}).data
@@ -106,25 +90,22 @@ class TestRemoveDeclarantRole(ProjectAPITestCase):
         self.assertFalse(DeclarantRole.objects.filter(user=self.collaborator, company=self.company).exists())
 
         # test de la non idempotence (retirer un objet qui n'est plus n'est pas possible)
-        response = self.patch(
-            self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        response = self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_remove_declarant_role_unexisting_user_ko(self):
         self.login(self.user)
-        response = self.patch(self.url(company_pk=self.company.pk, collaborator_pk=99999, **self.kwargs))
+        response = self.post(self.url(user_pk=99999), self.payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_remove_declarant_role_unexisting_company_ko(self):
         self.login(self.user)
-        response = self.patch(self.url(company_pk=99999, collaborator_pk=self.collaborator.pk, **self.kwargs))
+        payload = dict(company_pk=99999, role_name="DeclarantRole")
+        response = self.post(self.url(user_pk=self.collaborator.pk), payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_remove_declarant_role_unauthenticated_ko(self):
-        response = self.patch(
-            self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        response = self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_remove_declarant_role_to_unsupervised_company_ko(self):
@@ -132,15 +113,14 @@ class TestRemoveDeclarantRole(ProjectAPITestCase):
         # On créé une autre entreprise dans laquelle le collaborateur a un rôle, mais notre utilisateur n'est pas gestionnaire
         other_company = CompanyFactory()
         self.collaborator.declarable_companies.add(other_company)
-        response = self.patch(
-            self.url(company_pk=other_company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        payload = dict(company_pk=other_company.pk, role_name="DeclarantRole")
+        response = self.post(self.url(user_pk=self.collaborator.pk), payload)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_remove_declarant_role_to_not_collaborator_user_ko(self):
         self.login(self.user)
         not_collaborator = UserFactory()
-        response = self.patch(self.url(company_pk=self.company.pk, collaborator_pk=not_collaborator.pk, **self.kwargs))
+        response = self.post(self.url(user_pk=not_collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_remove_declarant_role_does_not_affect_role_in_other_company(self):
@@ -148,30 +128,27 @@ class TestRemoveDeclarantRole(ProjectAPITestCase):
         other_company = CompanyFactory()
         self.collaborator.declarable_companies.add(other_company)
         self.assertEqual(self.collaborator.declarable_companies.count(), 2)
-        self.patch(self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs))
+        self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(self.collaborator.declarable_companies.count(), 1)  # pas 0
 
 
 class TestAddSupervisorRole(ProjectAPITestCase):
-    viewname = "company_role"
+    viewname = "add_role"
 
     def setUp(self):
         self.company = CompanyFactory()
         self.supervisor = SupervisorRoleFactory(company=self.company)
         self.user = self.supervisor.user
 
-        self.other_collaborator_role = DeclarantRoleFactory(company=self.company)
-        self.collaborator = self.other_collaborator_role.user
+        other_collaborator_role = DeclarantRoleFactory(company=self.company)
+        self.collaborator = other_collaborator_role.user
 
-        # sugar
-        self.kwargs = dict(role_class_name="SupervisorRole", action="add")
+        self.payload = dict(company_pk=self.company.pk, role_name="SupervisorRole")
 
     def test_add_supervisor_role_ok(self):
         self.login(self.user)
         self.assertFalse(SupervisorRole.objects.filter(user=self.collaborator, company=self.company).exists())
-        response = self.patch(
-            self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        response = self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data, CollaboratorSerializer(self.collaborator, context={"company_id": self.company.pk}).data
@@ -179,25 +156,22 @@ class TestAddSupervisorRole(ProjectAPITestCase):
         self.assertTrue(SupervisorRole.objects.filter(user=self.collaborator, company=self.company).exists())
 
         # test de l'idempotence (ajouter un objet qui existe déjà ne provoque pas d'erreur)
-        response = self.patch(
-            self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        response = self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_add_supervisor_role_unexisting_user_ko(self):
         self.login(self.user)
-        response = self.patch(self.url(company_pk=self.company.pk, collaborator_pk=99999, **self.kwargs))
+        response = self.post(self.url(user_pk=99999), self.payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_add_supervisor_role_unexisting_company_ko(self):
         self.login(self.user)
-        response = self.patch(self.url(company_pk=99999, collaborator_pk=self.collaborator.pk, **self.kwargs))
+        payload = dict(company_pk=99999, role_name="SupervisorRole")
+        response = self.post(self.url(user_pk=self.collaborator.pk), payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_add_supervisor_role_unauthenticated_ko(self):
-        response = self.patch(
-            self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        response = self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_add_supervisor_role_to_unsupervised_company_ko(self):
@@ -205,20 +179,13 @@ class TestAddSupervisorRole(ProjectAPITestCase):
         # On créé une autre entreprise dans laquelle le collaborateur a un rôle, mais notre utilisateur n'est pas gestionnaire
         other_company = CompanyFactory()
         self.collaborator.declarable_companies.add(other_company)
-        response = self.patch(
-            self.url(company_pk=other_company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        payload = dict(company_pk=other_company.pk, role_name="SupervisorRole")
+        response = self.post(self.url(user_pk=self.collaborator.pk), payload)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_add_supervisor_role_to_not_collaborator_user_ko(self):
-        self.login(self.user)
-        not_collaborator = UserFactory()
-        response = self.patch(self.url(company_pk=self.company.pk, collaborator_pk=not_collaborator.pk, **self.kwargs))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class TestRemoveSupervisorRole(ProjectAPITestCase):
-    viewname = "company_role"
+    viewname = "remove_role"
 
     def setUp(self):
         self.company = CompanyFactory()
@@ -229,14 +196,12 @@ class TestRemoveSupervisorRole(ProjectAPITestCase):
         self.collaborator = self.supervisor_collaborator_role.user
 
         # sugar
-        self.kwargs = dict(role_class_name="SupervisorRole", action="remove")
+        self.payload = dict(company_pk=self.company.pk, role_name="SupervisorRole")
 
     def test_remove_supervisor_role_ok(self):
         self.login(self.user)
         self.assertTrue(SupervisorRole.objects.filter(user=self.collaborator, company=self.company).exists())
-        response = self.patch(
-            self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        response = self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data, CollaboratorSerializer(self.collaborator, context={"company_id": self.company.pk}).data
@@ -244,25 +209,22 @@ class TestRemoveSupervisorRole(ProjectAPITestCase):
         self.assertFalse(SupervisorRole.objects.filter(user=self.collaborator, company=self.company).exists())
 
         # test de la non idempotence (retirer un objet qui n'est plus n'est pas possible)
-        response = self.patch(
-            self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        response = self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_remove_supervisor_role_unexisting_user_ko(self):
         self.login(self.user)
-        response = self.patch(self.url(company_pk=self.company.pk, collaborator_pk=99999, **self.kwargs))
+        response = self.post(self.url(user_pk=99999), self.payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_remove_supervisor_role_unexisting_company_ko(self):
         self.login(self.user)
-        response = self.patch(self.url(company_pk=99999, collaborator_pk=self.collaborator.pk, **self.kwargs))
+        payload = dict(company_pk=99999, role_name="SupervisorRole")
+        response = self.post(self.url(user_pk=self.collaborator.pk), payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_remove_supervisor_role_unauthenticated_ko(self):
-        response = self.patch(
-            self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        response = self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_remove_supervisor_role_to_unsupervised_company_ko(self):
@@ -270,15 +232,14 @@ class TestRemoveSupervisorRole(ProjectAPITestCase):
         # On créé une autre entreprise dans laquelle le collaborateur a un rôle, mais notre utilisateur n'est pas gestionnaire
         other_company = CompanyFactory()
         self.collaborator.declarable_companies.add(other_company)
-        response = self.patch(
-            self.url(company_pk=other_company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs)
-        )
+        payload = dict(company_pk=other_company.pk, role_name="SupervisorRole")
+        response = self.post(self.url(user_pk=self.collaborator.pk), payload)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_remove_supervisor_role_to_not_collaborator_user_ko(self):
         self.login(self.user)
         not_collaborator = UserFactory()
-        response = self.patch(self.url(company_pk=self.company.pk, collaborator_pk=not_collaborator.pk, **self.kwargs))
+        response = self.post(self.url(user_pk=not_collaborator.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_remove_supervisor_role_does_not_affect_role_in_other_company(self):
@@ -286,5 +247,5 @@ class TestRemoveSupervisorRole(ProjectAPITestCase):
         other_company = CompanyFactory()
         self.collaborator.supervisable_companies.add(other_company)
         self.assertEqual(self.collaborator.supervisable_companies.count(), 2)
-        self.patch(self.url(company_pk=self.company.pk, collaborator_pk=self.collaborator.pk, **self.kwargs))
+        self.post(self.url(user_pk=self.collaborator.pk), self.payload)
         self.assertEqual(self.collaborator.supervisable_companies.count(), 1)  # pas 0

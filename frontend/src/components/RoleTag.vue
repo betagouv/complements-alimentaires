@@ -5,6 +5,8 @@
     <div class="ml-0.5">{{ roleNameDisplayNameMapping[role.name] }}</div>
     <v-icon
       v-if="showActions"
+      role="button"
+      aria-label="Enlèver ce rôle"
       @click="$emit('remove')"
       class="size-4 ml-1 hover:text-red-marianne-425 hover:cursor-pointer"
       name="ri-close-circle-line"
