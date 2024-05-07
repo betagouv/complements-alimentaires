@@ -1,0 +1,12 @@
+- model: data.supervisorrole
+  pk: 1
+  fields:
+    is_active: true
+    company: 1
+    user: 1
+- model: data.supervisorrole
+  pk: 2
+  fields:
+    is_active: true
+    company: 1
+    user: 3

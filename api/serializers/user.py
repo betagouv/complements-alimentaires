@@ -1,49 +1,64 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password as django_validate_password
-from .roles import CompanySupervisorSerializer, DeclarantSerializer
-from data.models import CompanySupervisor, Declarant
+
+from rest_framework import serializers
+
+from data.models.company import DeclarantRole, SupervisorRole
+
+from .company import DeclarantRoleSerializer, SimpleCompanySerializer, SupervisorRoleSerializer
 
 User = get_user_model()
+
+ROLE_SERIALIZER_MAPPING = {SupervisorRole: SupervisorRoleSerializer, DeclarantRole: DeclarantRoleSerializer}
 
 
 class BlogPostAuthor(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = (
-            "first_name",
-            "last_name",
-        )
+        fields = ("first_name", "last_name")
 
 
-class UserSerializer(serializers.ModelSerializer):
+class CollaboratorSerializer(serializers.ModelSerializer):
+    """Retourne un utilisateur d'une entreprise donnée.
+    Utilisé actuellement pour afficher la liste des collaborateurs d'une entreprise spécifique"""
+
     class Meta:
         model = User
         fields = ("id", "username", "email", "last_name", "first_name", "roles")
 
     id = serializers.IntegerField(read_only=True)
-    roles = serializers.SerializerMethodField(read_only=True)
+    roles = serializers.SerializerMethodField(read_only=True)  # Roles d'une entreprise donnée
 
     def get_roles(self, obj):
-        roles_data = []
+        return [
+            ROLE_SERIALIZER_MAPPING[type(role)](role).data
+            for role in obj.get_company_roles(self.context["company_id"])
+        ]
 
-        # mapping of role models to their serializers
-        role_serializer_mapping = {
-            CompanySupervisor: CompanySupervisorSerializer,
-            Declarant: DeclarantSerializer,
-            # ... add new roles here
-        }
 
-        for model, serializer in role_serializer_mapping.items():
-            # querying for role instances associated with the user
-            role_instances = model.objects.filter(user=obj).active()
+class UserSerializer(serializers.ModelSerializer):
+    """Retourne un utilisateur avec toutes les entreprises dans lesquelles il a un rôle.
+    Utilisé actuellement pour l'utilisateur connecté (loggedUser)
+    """
 
-            # serializing role data
-            for instance in role_instances:
-                serializer_instance = serializer(instance)
-                roles_data.append(serializer_instance.data)
+    class Meta:
+        model = User
+        fields = ("id", "username", "email", "last_name", "first_name", "companies")
 
-        return roles_data
+    id = serializers.IntegerField(read_only=True)
+    companies = serializers.SerializerMethodField(read_only=True)  # entreprises + roles par entreprise
+
+    def get_companies(self, obj):
+        from data.models import Company  # évite un import circulaire
+
+        result = []
+        for company_id, roles in obj.get_roles_mapped_to_companies().items():
+            company_data_dict = SimpleCompanySerializer(Company.objects.get(id=company_id)).data
+            role_data = [ROLE_SERIALIZER_MAPPING[type(role)](role).data for role in roles]
+            # Merge les deux types de données
+            result.append(company_data_dict | {"roles": role_data})
+
+        return result
 
 
 class CreateUserSerializer(UserSerializer):

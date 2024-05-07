@@ -1,20 +1,29 @@
+from enum import StrEnum, auto
+
+from django.apps import apps
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.mail import send_mail
+from django.db import transaction
+from django.shortcuts import get_object_or_404
+
+from rest_framework.exceptions import NotFound
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import RetrieveAPIView, CreateAPIView
-from django.core.exceptions import ValidationError as DjangoValidationError
+
 from data.choices import CountryChoices
-from api.permissions import IsSupervisorOfThisCompany
-from data.models import Company, CompanySupervisor
-from data.validators import validate_siret, validate_vat  # noqa
-from enum import StrEnum, auto
-from django.shortcuts import get_object_or_404
-from ..serializers import CompanySerializer
-from api.exception_handling import ProjectAPIException
-from django.core.mail import send_mail
-from django.conf import settings
-from django.db import transaction
+from data.models import Company, SupervisorRole
 from data.utils.external_utils import SiretData
+from data.validators import validate_siret, validate_vat  # noqa
+
+from ..exception_handling import ProjectAPIException
+from ..permissions import IsSupervisor
+from ..serializers import CollaboratorSerializer, CompanySerializer
+
+User = get_user_model()
 
 
 class CountryListView(APIView):
@@ -72,8 +81,7 @@ class CheckCompanyIdentifierView(APIView):
                 company_siret_data = SiretData.fetch(identifier)  # None en cas d'échec du fetch
         else:
             if company.supervisors.exists():
-                supervisor = request.user.role("companysupervisor")
-                if supervisor and company in supervisor.companies.all():
+                if company.supervisors.filter(id=request.user.id).exists():
                     company_status = CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_ME
                 else:
                     company_status = CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_OTHER
@@ -140,8 +148,7 @@ class CompanyCreateView(CreateAPIView):
     @transaction.atomic
     def perform_create(self, serializer):
         new_company = serializer.save()
-        supervisor, _ = CompanySupervisor.objects.get_or_create(user=self.request.user)
-        supervisor.companies.add(new_company)  # NOTE: on suppose que `new_company` n'est pas déjà dedans
+        SupervisorRole.objects.create(company=new_company, user=self.request.user)
         return new_company
 
 
@@ -149,5 +156,58 @@ class CompanyRetrieveView(RetrieveAPIView):
     """Récupération d'une entreprise dont l'utilisateur est gestionnaire"""
 
     queryset = Company.objects.all()
-    permission_classes = [IsSupervisorOfThisCompany]
+    permission_classes = [IsSupervisor]
     serializer_class = CompanySerializer
+
+
+class CompanyCollaboratorsListView(ListAPIView):
+    """Récupération des utilisateurs ayant au moins un rôle dans cette entreprise"""
+
+    model = User
+    serializer_class = CollaboratorSerializer
+
+    def get_queryset(self):
+        company = get_object_or_404(
+            Company.objects.filter(supervisors=self.request.user), pk=self.kwargs[self.lookup_field]
+        )
+        return company.collaborators.all()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"company_id": self.kwargs[self.lookup_field]})
+        return context
+
+
+class AddCompanyRoleView(APIView):
+    """Endpoint permettant d'ajouter un rôle lié à une entreprise (déclarant ou gestionnaire) à un utilisateur"""
+
+    permission_classes = [IsAuthenticated, IsSupervisor]
+
+    def post(self, request, user_pk):
+        user = get_object_or_404(User, pk=user_pk)
+        company = get_object_or_404(Company, pk=request.data["company_pk"])
+
+        self.check_object_permissions(request, company)
+        role_class = apps.get_model("data", request.data["role_name"])
+        new_role, _ = role_class.objects.get_or_create(company=company, user=user)
+
+        return Response(CollaboratorSerializer(user, context={"company_id": request.data["company_pk"]}).data)
+
+
+class RemoveCompanyRoleView(APIView):
+    """Endpoint permettant de retirer un rôle lié à une entreprise (déclarant ou gestionnaire) à un collaborateur"""
+
+    permission_classes = [IsAuthenticated, IsSupervisor]
+
+    def post(self, request, user_pk):
+        collaborator = get_object_or_404(User, pk=user_pk)
+        company = get_object_or_404(Company, pk=request.data["company_pk"])
+
+        if collaborator not in company.collaborators:
+            raise NotFound()  # pas une permission car lié à 2 objets et non lié à l'utilisateur lui-même
+
+        self.check_object_permissions(request, company)
+        role_class = apps.get_model("data", request.data["role_name"])
+        role_class.objects.filter(company=company, user=collaborator).delete()  # évite le try/except
+
+        return Response(CollaboratorSerializer(collaborator, context={"company_id": request.data["company_pk"]}).data)

@@ -1,8 +1,7 @@
 from .user import User
-from .roles import BaseRole, Declarant, CompanySupervisor
 from .blogpost import BlogPost
 from .webinar import Webinar
-from .company import Company
+from .company import Company, SupervisorRole, DeclarantRole
 
 # Elements specific models
 from .ingredient import Ingredient, IngredientSynonym

@@ -21,6 +21,7 @@ import DashboardPage from "@/views/DashboardPage"
 import UserAccountPage from "@/views/UserAccountPage"
 import VerificationSentPage from "@/views/VerificationSentPage"
 import DeclarationsHomePage from "@/views/DeclarationsHomePage"
+import CollaboratorsPage from "@/views/CollaboratorsPage"
 
 const routes = [
   {
@@ -117,7 +118,7 @@ const routes = [
     meta: {
       title: "Nouvelle démarche",
       authenticationRequired: true,
-      requiredRole: "Declarant",
+      requiredRole: "DeclarantRole",
     },
   },
   {
@@ -197,6 +198,16 @@ const routes = [
     },
   },
   {
+    path: "/gestion-des-collaborateurs",
+    name: "CollaboratorsPage",
+    component: CollaboratorsPage,
+    meta: {
+      title: "Gestion des collaborateurs",
+      authenticationRequired: true,
+      requiredRole: "SupervisorRole",
+    },
+  },
+  {
     path: "/:catchAll(.*)*", // https://stackoverflow.com/a/70343919/2255491
     component: NotFound,
     name: "NotFound",
@@ -225,7 +236,7 @@ function chooseAuthorisedRoute(to, from, next, store) {
   } else {
     if (to.meta.home) next({ name: store.loggedUser ? "DashboardPage" : "LandingPage" })
     const authenticationCheck = !to.meta.authenticationRequired || store.loggedUser
-    const roleCheck = !to.meta.requiredRole || store.loggedUser.roles?.some((x) => x.name === to.meta.requiredRole)
+    const roleCheck = !to.meta.requiredRole || store.company?.roles?.some((x) => x.name === to.meta.requiredRole)
 
     authenticationCheck && roleCheck ? next() : next({ name: "LoginPage" })
   }

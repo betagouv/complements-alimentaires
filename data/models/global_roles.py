@@ -1,0 +1,36 @@
+from django.conf import settings
+from django.db import models
+
+from data.behaviours import Deactivable, DeactivableQuerySet
+
+
+class GlobalRoleManager(models.Manager):
+    pass
+
+
+class BaseGlobalRoleQuerySet(DeactivableQuerySet):
+    pass
+
+
+class BaseGlobalRole(Deactivable, models.Model):
+    """Un rôle global est un rôle uniquement lié à l'utilisateur.
+    NOTE: il n'y en a aucun pour le moment.
+    """
+
+    class Meta:
+        abstract = True
+
+    objects = GlobalRoleManager().from_queryset(BaseGlobalRoleQuerySet)()
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        verbose_name="utilisateur",
+        on_delete=models.CASCADE,
+    )
+
+    @property
+    def name(self) -> str:
+        return self.user.name
+
+    def __str__(self):
+        return self.name

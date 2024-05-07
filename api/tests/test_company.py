@@ -1,13 +1,16 @@
-from .utils import ProjectAPITestCase
+from rest_framework import status
+
 from data.factories import (
     CompanyFactory,
     CompanyWithSiretFactory,
     CompanyWithVatFactory,
-    CompanySupervisorFactory,
+    DeclarantRoleFactory,
+    SupervisorRoleFactory,
 )
-from ..views.company import CompanyStatusChoices
 from data.models import Company
-from rest_framework import status
+
+from ..views.company import CompanyStatusChoices
+from .utils import ProjectAPITestCase
 
 
 class TestCheckCompanyIdentifier(ProjectAPITestCase):
@@ -36,28 +39,28 @@ class TestCheckCompanyIdentifier(ProjectAPITestCase):
 
     def test_check_company_siret_ok_registered_and_supervised_by_me(self):
         me = self.login()
-        CompanySupervisorFactory(user=me, companies=[self.company])
+        SupervisorRoleFactory(user=me, company=self.company)
         response = self.get(self.url(identifier=self.siret) + "?identifierType=siret")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_ME)
         self.assertEqual(response.data["company"]["social_name"], "Appeul")
 
     def test_check_company_vat_ok_registered_and_supervised_by_me(self):
         me = self.login()
-        CompanySupervisorFactory(user=me, companies=[self.company2])
+        SupervisorRoleFactory(user=me, company=self.company2)
         response = self.get(self.url(identifier=self.vat) + "?identifierType=vat")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_ME)
         self.assertEqual(response.data["company"]["social_name"], "Grosoft")
 
     def test_check_company_siret_ok_registered_and_supervised_by_other(self):
         self.login()
-        CompanySupervisorFactory(companies=[self.company])
+        SupervisorRoleFactory(company=self.company)
         response = self.get(self.url(identifier=self.siret) + "?identifierType=siret")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_OTHER)
         self.assertEqual(response.data["company"]["social_name"], "Appeul")
 
     def test_check_company_vat_ok_registered_and_supervised_by_other(self):
         self.login()
-        CompanySupervisorFactory(companies=[self.company2])
+        SupervisorRoleFactory(company=self.company2)
         response = self.get(self.url(identifier=self.vat) + "?identifierType=vat")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.REGISTERED_AND_SUPERVISED_BY_OTHER)
         self.assertEqual(response.data["company"]["social_name"], "Grosoft")
@@ -89,7 +92,7 @@ class TestRetrieveCompany(ProjectAPITestCase):
 
     def setUp(self):
         self.company = CompanyFactory(social_name="Too Good")
-        self.supervisor = CompanySupervisorFactory(companies=[self.company])
+        self.supervisor = SupervisorRoleFactory(company=self.company)
         self.supervisor_user = self.supervisor.user
 
     def test_retrieve_company_ok(self):
@@ -146,3 +149,23 @@ class TestCreateCompany(ProjectAPITestCase):
     def test_create_company_ko_unauthenticated(self):
         response = self.post(self.url(), {})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestGetCompanyCollaborators(ProjectAPITestCase):
+    viewname = "get_company_collaborators"
+
+    def setUp(self):
+        self.company = CompanyFactory()
+
+    def test_get_company_collaborators_ok(self):
+        supervisor_role = SupervisorRoleFactory(company=self.company)
+        DeclarantRoleFactory(company=self.company)
+        self.login(supervisor_role.user)
+        response = self.get(self.url(pk=self.company.pk))
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_company_collaborators_ko_unauthorized(self):
+        self.login()
+        response = self.get(self.url(pk=self.company.pk))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
