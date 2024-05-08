@@ -10,6 +10,24 @@ from .mixins import WithComments, WithMissingImportBoolean
 from .substance import Substance
 
 
+class IngredientType(models.IntegerChoices):
+    """
+    Les types sont des IntegerChoices, car les Integer choisis pour chaque
+    choix sont utilisés comme id dans les tables SICCRF.
+    Ce sont des équivalents de siccrf_id, qu'il ne faut donc pas modifier si
+    on veut s'assurer de la cohérence des données.
+    """
+
+    FORM_OF_SUPPLY = (
+        1,
+        "Nutriment (Forme d'apport)",
+    )
+    ADDITIVE = 2, "Additif"
+    AROMA = 3, "Arôme"  # TODO ces ingrédients devraient peut-être disparaître
+    ACTIVE_INGREDIENT = 4, "Autre ingrédient actif"
+    INACTIVE_INGREDIENT = 5, "Autre ingrédient"
+
+
 class Ingredient(CommonModel, WithComments, WithStatus):
     class Meta:
         verbose_name = "autre ingrédient"
@@ -17,6 +35,11 @@ class Ingredient(CommonModel, WithComments, WithStatus):
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     siccrf_description = models.TextField(blank=True)
+    ingredient_type = models.IntegerField(
+        choices=IngredientType.choices,
+        null=True,
+        verbose_name="type de l'ingrédient",
+    )
     substances = models.ManyToManyField(Substance, through="IngredientSubstanceRelation")
     history = HistoricalRecords(
         inherit=True,
@@ -37,6 +60,13 @@ class Ingredient(CommonModel, WithComments, WithStatus):
     @property
     def description(self):
         return self.siccrf_description
+
+    @property
+    def object_type(self):
+        """
+        overwrites object_type from CommonModel
+        """
+        return self.ingredient_type.lower()
 
 
 class IngredientSubstanceRelation(TimeStampable, Historisable):
