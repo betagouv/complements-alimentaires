@@ -1,29 +1,33 @@
-from rest_framework import serializers
-from api.exceptions import ProjectAPIException
 from drf_base64.fields import Base64FileField
+from rest_framework import serializers
+
+from api.exceptions import ProjectAPIException
 from data.models import (
-    Declaration,
-    DeclaredPlant,
-    DeclaredMicroorganism,
-    DeclaredIngredient,
-    DeclaredSubstance,
-    ComputedSubstance,
     Attachment,
-    Condition,
-    Effect,
-    Population,
     Company,
-    PlantPart,
-    Plant,
+    ComputedSubstance,
+    Condition,
+    Declaration,
+    DeclaredIngredient,
+    DeclaredMicroorganism,
+    DeclaredPlant,
+    DeclaredSubstance,
+    Effect,
     Ingredient,
     Microorganism,
+    Plant,
+    PlantPart,
+    Population,
     Substance,
     SubstanceUnit,
 )
-from .plant import PlantSerializer
-from .microorganism import MicroorganismSerializer
+
+from .company import SimpleCompanySerializer
 from .ingredient import IngredientSerializer
+from .microorganism import MicroorganismSerializer
+from .plant import PlantSerializer
 from .substance import SubstanceSerializer
+from .user import SimpleUserSerializer
 
 
 class IdPassthrough:
@@ -243,6 +247,26 @@ class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
             "name",
         )
         read_only_fields = ("file",)
+
+
+class SimpleDeclarationSerializer(serializers.ModelSerializer):
+    author = SimpleUserSerializer(read_only=True)
+    company = SimpleCompanySerializer(read_only=True)
+
+    class Meta:
+        model = Declaration
+        fields = (
+            "id",
+            "status",
+            "author",
+            "company",
+            "name",
+            "brand",
+            "gamme",
+            "description",
+            "modification_date",
+        )
+        read_only_fields = fields
 
 
 class DeclarationSerializer(serializers.ModelSerializer):

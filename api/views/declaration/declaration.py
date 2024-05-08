@@ -5,7 +5,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
 from api.permissions import CanAccessUserDeclatarions, IsDeclarant, IsDeclarationAuthor, IsInstructor
-from api.serializers import DeclarationSerializer, DeclarationShortSerializer
+from api.serializers import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer
 from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
 from data.models import Company, Declaration
@@ -81,7 +81,7 @@ class DeclarationPagination(LimitOffsetPagination):
 
 class AllDeclarationsListView(ListAPIView):
     model = Declaration
-    serializer_class = DeclarationSerializer
+    serializer_class = SimpleDeclarationSerializer
     permission_classes = [IsInstructor]
     ordering_fields = ["creation_date", "modification_date", "name"]
     pagination_class = DeclarationPagination
