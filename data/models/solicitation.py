@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from urllib.parse import urljoin
+
+from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -7,60 +10,37 @@ from django.core.mail import send_mail
 from django.db import models, transaction
 from django.utils import timezone
 
+from api.utils.urls import get_base_url
 from data.utils.type_utils import all_true_or_all_false
 
 from ..behaviours import AutoValidable, TimeStampable
-from .company import Company
+from ..fields import MultipleChoiceField
+from .company import Company, CompanyRoleClassChoices
 
 User = get_user_model()
 
 
-class SolicitationKindChoices(models.TextChoices):
-    """Fait aussi office de mapping avec les classes contenant la logique spécifique à appeler"""
+def processable_action(func):
+    """Décorateur pour les méthodes d'action permettant d'appeler `mark_processed()` automatiquement"""
 
-    ClaimSupervision = "ClaimSupervision", "demande de gestion"
-    ClaimCoSupervision = "ClaimCoSupervision", "demande de co-gestion"
-    InviteCoSupervision = "InviteCoSupervision", "invitation à une co-gestion"
+    def wrapper(self, processor, *args, **kwargs):
+        with transaction.atomic():
+            action = func.__name__
+            self.mark_processed(action=action, processor=processor)
+            return func(self, processor, *args, **kwargs)
 
-
-class CustomSolicitationManager(models.Manager):
-    @transaction.atomic
-    def create(self, *args, **kwargs) -> Solicitation:
-        """Délègue la création de l'objet à une sous-classe spécifique.
-        Cette sous-classe est déterminée grâce au paramètre `kind`."""
-        subclass = globals()[kwargs["kind"]]  # récupère la sous-classe à partir du type
-        if not hasattr(subclass, "create_hook"):
-            raise ValueError(f"`create_hook` method must be defined on {subclass}")
-        instance = subclass.create_hook(*args, **kwargs)
-        if not isinstance(instance, Solicitation):
-            raise ValueError("`create_hook` method must return a new Solicitation instance")
-        return instance
+    return wrapper
 
 
-class Solicitation(AutoValidable, TimeStampable, models.Model):
-    """
-    Objet permettant de définir les invitations ou demandes envoyées.
-    Il gère aussi le traitement de ces demandes (ex : acceptation, refus)
-    On n'utilise que cette unique table en base, sans héritage, pour rester simple.
-    Cependant, pour bénéficier d'une logique orientée objet et éviter les `if` partout,
-    la logique spécifique de création et de traitement est déléguée à une sous-classe correspondant
-    au type de solicitation.
-    """
-
-    objects = CustomSolicitationManager()
-
+class BaseSolicitation(AutoValidable, TimeStampable):
     class Meta:
-        verbose_name = "solicitation"
-        ordering = ("-creation_date",)
+        abstract = True
 
-    kind = models.CharField(choices=SolicitationKindChoices, verbose_name="type")
     sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL, verbose_name="émetteur", on_delete=models.PROTECT, related_name="solicitations_sent"
+        settings.AUTH_USER_MODEL, verbose_name="émetteur", on_delete=models.PROTECT, related_name="%(class)s_sent"
     )
-    recipients = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, verbose_name="destinataires", related_name="solicitations_received"
-    )
-    description = models.TextField()
+    personal_msg = models.TextField(blank=True, null=False, verbose_name="message personnel de l'émetteur (optionnel)")
+    description = models.TextField(blank=True, null=False)  # auto-rempli
     processed_at = models.DateTimeField(blank=True, null=True, verbose_name="traité à")
     processor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -69,13 +49,9 @@ class Solicitation(AutoValidable, TimeStampable, models.Model):
         on_delete=models.PROTECT,
         blank=True,
         null=True,
-        related_name="solicitations_processed",
+        related_name="%(class)s_processed",
     )
     processed_action = models.CharField(blank=True, verbose_name="action de traitement")
-
-    # données fonctionnelles - liées à certains objets spécifiques - peuvent donc être vides
-    # pas idéal conceptuellement, mais compromis à faire pour n'avoir qu'un seule table Solicitation
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, blank=True, null=True)
 
     @property
     def is_processed(self) -> bool:
@@ -83,104 +59,174 @@ class Solicitation(AutoValidable, TimeStampable, models.Model):
         return bool(self.processed_at)
 
     def clean(self):
+        if self._state.adding:
+            if any([self.processed_at, self.processor, self.processed_action, self.description]):
+                raise ValidationError("Des champs innatendus ont été définis lors de la création de l'objet.")
+
         if not all_true_or_all_false(self.processed_at, self.processor, self.processed_action):
-            raise ValidationError("Une demande traitée doit l'être par quelqu'un ET à une date spécifiée")
+            raise ValidationError(
+                "Une demande traitée doit l'être par quelqu'un ET à une date spécifiée ET par une action spécifique."
+            )
 
-    def __str__(self):
-        return f"{self._meta.verbose_name} {self.id}"
-
-    @property
-    def subclass(self):
-        """Récupère la classe permettant de gérer la logique spécifique"""
-        return globals().get(self.kind)
-
-    @transaction.atomic
-    def process(self, action: str, processor, *args, **kwargs) -> None:
-        """Marque une demande comme traitée et appelle l'action de traitement spécifique"""
-
+    def mark_processed(self, action: str, processor) -> None:
+        """Marque une demande comme traitée"""
         self.processor = processor
         self.processed_at = timezone.now()
         self.processed_action = action
         self.save()
-        # l'action de traitement est déléguée à la sous classe
-        process_action_method = getattr(self.subclass, action, None)
-        if process_action_method:
-            process_action_method(solicitation=self, processor=processor, *args, **kwargs)
-        else:
-            raise NotImplementedError(f"The action {action} does not exist on {self.subclass} class.")
+
+    def save(self, *args, **kwargs):
+        """Surchargée pour appeler un hook optionnel à la création de l'objet, défini dans la classe enfant"""
+        is_adding = self._state.adding
+        super().save(*args, **kwargs)  # modifie self._state.adding, c'est pour ça qu'on l'a mis en variable avant
+        if is_adding and hasattr(self, "create_hook"):
+            self.create_hook()
+
+    def __str__(self):
+        return self.description
 
 
-class ClaimSupervision:
-    @staticmethod
-    def create_hook(kind, sender, company, sender_msg) -> Solicitation:
-        main_message = f"{sender.name} (id: {sender.id}) a demandé à devenir gestionnaire de l'entreprise {company.social_name} (id: {company.id})."
-        if sender_msg:
-            main_message += f" Il a ajouté ce message : «{sender_msg}»."
-        new_solicitation = Solicitation(kind=kind, sender=sender, description=main_message, company=company)
-        new_solicitation.save()
+class SupervisionClaim(BaseSolicitation, models.Model):
+    """Utilisateur existant qui demande les droits de gestionnaire pour une entreprise qui n'en a pas encore."""
+
+    class Meta:
+        verbose_name = "demande de gestion"
+        verbose_name_plural = "demandes de gestion"
+
+    recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, verbose_name="destinataires")
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+
+    def create_hook(self):
         recipients = User.objects.filter(is_staff=True)
-        new_solicitation.recipients.add(*recipients)
+        self.recipients.set(recipients)
+
+        self.description = f"{self.sender.name} (id: {self.sender.id}) a demandé à devenir gestionnaire de l'entreprise {self.company.social_name} (id: {self.company.id})."
+        self.save()
+        # TODO: isoler cette logique car répétée partout
+        if self.personal_msg:
+            mail_message = self.description + f" Il a ajouté ce message : «{self.personal_msg}»."
+        else:
+            mail_message = self.description
+
         send_mail(
             subject="[Compl'Alim] Nouvelle demande de gestion d'une entreprise",
-            message=main_message,
+            message=mail_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=recipients.values_list("email", flat=True),
+            recipient_list=self.recipients.values_list("email", flat=True),
         )
-        return new_solicitation
 
-    @staticmethod
-    def accept(solicitation, processor):
-        solicitation.company.supervisors.add(solicitation.sender)
+    @processable_action
+    def accept(self, processor):
+        self.company.supervisors.set(self.sender)
         send_mail(
             subject="[Compl'Alim] Votre demande de gestion a été acceptée",
-            message=f"L'équipe Compl'Alim a accepté que vous deveniez gestionnaire de {solicitation.company.social_name}. Vous pouvez vous connecter à la plateforme.",
+            message=f"L'équipe Compl'Alim a accepté que vous deveniez gestionnaire de {self.company.social_name}. Vous pouvez vous connecter à la plateforme.",
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[solicitation.sender],
+            recipient_list=[self.sender.email],
         )
 
-    @staticmethod
-    def refuse(solicitation, processor):
+    @processable_action
+    def refuse(self, processor):
         send_mail(
             subject="[Compl'Alim] Votre demande de gestion a été refusée",
-            message=f"L'équipe Compl'Alim a refusé que vous deveniez gestionnaire de {solicitation.company.social_name}. N'hésitez pas à nous contacter pour en savoir plus.",
+            message=f"L'équipe Compl'Alim a refusé que vous deveniez gestionnaire de {self.company.social_name}. N'hésitez pas à nous contacter pour en savoir plus.",
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[solicitation.sender],
+            recipient_list=[self.sender.email],
         )
 
 
-class ClaimCoSupervision:
-    @staticmethod
-    def create_hook(kind, sender, company, sender_msg) -> Solicitation:
-        main_message = f"{sender.name} a demandé à devenir co-gestionnaire de l'entreprise {company.social_name}."
-        if sender_msg:
-            main_message += f" Il a ajouté ce message : «{sender_msg}»."
-        recipients = company.supervisors.all()
-        new_solicitation = Solicitation(kind=kind, sender=sender, description=main_message, company=company)
-        new_solicitation.save()
-        new_solicitation.recipients.add(*recipients)
+class CoSupervisionClaim(BaseSolicitation, models.Model):
+    """Utilisateur existant qui demande les droits de gestionnaire pour une entreprise qui a déjà des gestionnaires."""
+
+    class Meta:
+        verbose_name = "demande de co-gestion"
+        verbose_name_plural = "demandes de co-gestion"
+
+    recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, verbose_name="destinataires")
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+
+    def create_hook(self):
+        recipients = self.company.supervisors.all()
+        self.recipients.set(recipients)
+
+        self.description = (
+            f"{self.sender.name} a demandé à devenir co-gestionnaire de l'entreprise {self.company.social_name}."
+        )
+        self.save()
+        # TODO: isoler cette logique car répétée partout
+        suffix_msg = " Veuillez vous rendre sur la plateforme (section : gestion des collaborateurs) pour traiter cette demande."
+        if self.personal_msg:
+            mail_message = self.description + f" Il a ajouté ce message : «{self.personal_msg}»" + suffix_msg
+        else:
+            mail_message = self.description + suffix_msg
+
         send_mail(
             subject="[Compl'Alim] Nouvelle demande de co-gestion",
-            message=f"{main_message} Veuillez vous rendre sur la plateforme (section : gestion des collaborateurs) pour traiter cette demande.",
+            message=mail_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=recipients.values_list("email", flat=True),
         )
-        return new_solicitation
 
-    @staticmethod
-    def accept(solicitation, processor):
-        solicitation.company.supervisors.add(solicitation.sender)
+    @processable_action
+    def accept(self, processor):
+        self.company.supervisors.add(self.sender)
+        login_page_url = urljoin(get_base_url(), "connexion")
         send_mail(
             subject="[Compl'Alim] Votre demande de co-gestion a été acceptée",
-            message=f"{processor.name} a accepté que vous deveniez gestionnaire de {solicitation.company.social_name}. Vous pouvez vous connecter à la plateforme.",
+            message=f"{processor.name} a accepté que vous deveniez gestionnaire de {self.company.social_name}. Vous pouvez <a href='{login_page_url}'>vous connecter</a> à la plateforme.",
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[solicitation.sender],
+            recipient_list=[self.sender.email],
         )
 
-    @staticmethod
-    def refuse(solicitation, processor):
+    @processable_action
+    def refuse(self, processor):
         send_mail(
             subject="[Compl'Alim] Votre demande de co-gestion a été refusée",
-            message=f"{processor.name} a refusé que vous deveniez gestionnaire de {solicitation.company.social_name}. Contactez directement cette personne pour en savoir plus.",
+            message=f"{processor.name} a refusé que vous deveniez gestionnaire de {self.company.social_name}. Contactez directement cette personne pour en savoir plus.",
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[solicitation.sender],
+            recipient_list=[self.sender.email],
+        )
+
+
+class CollaborationInvitation(BaseSolicitation, models.Model):
+    """Invite une personne à créer un compte utilisateur, qui aura d'ores et déjà les rôles d'entreprise fournis"""
+
+    class Meta:
+        verbose_name = "invitation à devenir collaborateur"
+        verbose_name_plural = "invitations à devenir collaborateur"
+        unique_together = ["company", "recipient_email"]
+
+    recipient_email = models.EmailField("adresse e-mail du destinataire")
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    roles = MultipleChoiceField(
+        models.CharField(choices=CompanyRoleClassChoices), verbose_name="classes de rôle", default=list
+    )
+
+    def create_hook(self):
+        self.description = f"{self.sender.name} vous invite à créer un compte Compl'Alim et rejoindre l'entreprise {self.company.social_name}."
+        self.save()
+        if self.personal_msg:
+            mail_message = self.description + f" Il a ajouté ce message : «{self.personal_msg}»."
+        else:
+            mail_message = self.description
+
+        create_account_page_url = urljoin(get_base_url(), "inscription")
+        send_mail(
+            subject="[Compl'Alim] Invitation à créer votre compte",
+            message=f"{mail_message} Veuillez vous rendre sur <a href='{create_account_page_url}'>la plateforme Compl'Alim</a> pour créer votre compte.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[self.recipient_email],
+        )
+
+    @processable_action
+    def account_created(self, processor):
+        """Action déclenchable par l'inscription de l'utilisateur"""
+        for role_classname in self.roles:
+            role_class = apps.get_model("data", role_classname)
+            role_class.objects.get_or_create(company=self.company, user=processor)
+        send_mail(
+            subject=f"[Compl'Alim] {processor.name} vous a rejoint en tant que collaborateur.",
+            message=f"Suite à votre invitation, {processor.name} est devenu colloborateur de votre entreprise {self.company.social_name}.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[self.sender.email],
         )

@@ -68,8 +68,16 @@ urlpatterns = {
         name="claim_company_co_supervision",
     ),
     # Solicitations
-    path("companies/<int:pk>/solicitations/", views.SolicitationListView.as_view(), name="list_solicitation"),
-    path("solicitations/<int:pk>/<str:action>/", views.SolicitationProcessView.as_view(), name="process_solicitation"),
+    path(
+        "companies/<int:pk>/co-supervision-claims/",
+        views.CoSupervisionClaimListView.as_view(),
+        name="list_co_supervision_claim",
+    ),
+    path(
+        "co-supervision-claims/<int:pk>/process/",
+        views.ProcessCoSupervisionClaim.as_view(),
+        name="process_co_supervision_claim",
+    ),
     # Declarations
     path("declarations/", views.DeclarationListCreateApiView.as_view(), name="list_create_declaration"),
     path("declarations/<int:pk>", views.DeclarationRetrieveUpdateView.as_view(), name="retrieve_update_declaration"),

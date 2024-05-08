@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 
 from data.choices import CountryChoices
 from data.models import Company, SupervisorRole
-from data.models.solicitation import Solicitation, SolicitationKindChoices
+from data.models.solicitation import CoSupervisionClaim, SupervisionClaim
 from data.utils.external_utils import SiretData
 from data.validators import validate_siret, validate_vat  # noqa
 
@@ -107,11 +107,10 @@ class ClaimCompanySupervisionView(APIView):
             raise ProjectAPIException(
                 global_error="Cette entreprise a déjà un gestionnaire. Votre demande n'a pas été envoyée."
             )
-        Solicitation.objects.create(
-            kind=SolicitationKindChoices.ClaimSupervision,
+        SupervisionClaim.objects.create(
             sender=request.user,
             company=company,
-            sender_msg=request.data.get("message"),
+            personal_msg=request.data.get("message"),
         )
         return Response({})
 
@@ -127,11 +126,10 @@ class ClaimCompanyCoSupervisionView(APIView):
             raise ProjectAPIException(
                 global_error="Cette entreprise n'a pas de gestionnaire. Votre demande n'a pas été envoyée."
             )
-        Solicitation.objects.create(
-            kind=SolicitationKindChoices.ClaimCoSupervision,
+        CoSupervisionClaim.objects.create(
             sender=request.user,
             company=company,
-            sender_msg=request.data.get("message"),
+            personal_msg=request.data.get("message"),
         )
         return Response({})
 

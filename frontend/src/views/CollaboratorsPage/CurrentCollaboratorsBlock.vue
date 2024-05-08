@@ -6,8 +6,7 @@
         <p>Gérez ici l'ensemble des collaborateurs et leurs rôles.</p>
       </div>
       <div>
-        <DsfrButton label="Inviter un nouveau collaborateur" icon="ri-mail-add-line" size="sm" />
-        <!-- <DsfrButton label="Aide sur les rôles" icon="ri-question-line" size="sm" tertiary /> -->
+        <DsfrButton @click="opened = true" label="Ajouter un nouveau collaborateur" icon="ri-user-add-line" size="sm" />
       </div>
     </div>
 
@@ -48,10 +47,38 @@
       <hr class="mt-4 -mb-2 border" />
     </div>
   </div>
+
+  <!-- Modale d'ajout d'un nouveau collaborateur -->
+  <DsfrModal
+    :actions="actions"
+    ref="modal"
+    :opened="opened"
+    @close="opened = false"
+    title="Ajouter un nouveau collaborateur"
+    icon="ri-user-add-line"
+  >
+    <DsfrInputGroup>
+      <DsfrInput
+        v-model="email"
+        label="Entrez l'adresse e-mail de votre collaborateur :"
+        labelVisible
+        type="email"
+        autocomplete="email"
+        spellcheck="false"
+        class="max-w-md"
+      />
+    </DsfrInputGroup>
+    <DsfrCheckboxSet
+      v-model="selectedRoles"
+      :options="selectableRoles"
+      small
+      legend="Sélectionnez un ou plusieurs rôles qui lui seront attribués :"
+    />
+  </DsfrModal>
 </template>
 
 <script setup>
-import { onMounted, computed } from "vue"
+import { onMounted, computed, ref } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useFetch } from "@vueuse/core"
@@ -102,4 +129,36 @@ const changeRole = async (roleName, user, action) => {
     store.fetchInitialData()
   }
 }
+
+// Modal d'ajout d'un nouvel utilisateur
+const opened = ref(false)
+const submitAddNewCollaborator = () => {}
+const actions = [
+  {
+    label: "Valider",
+    onClick: submitAddNewCollaborator,
+  },
+  {
+    label: "Annuler",
+    onClick: () => {
+      opened.value = false
+    },
+    secondary: true,
+  },
+]
+// TODO: isoler l'ajout d'un colab dans un component à part ?
+const email = ref("")
+const selectedRoles = ref([])
+const selectableRoles = [
+  {
+    label: roleNameDisplayNameMapping.DeclarantRole,
+    name: "DeclarantRole",
+    hint: "permet au collaborateur de créer et gérer ses propres déclarations.",
+  },
+  {
+    label: roleNameDisplayNameMapping.SupervisorRole,
+    name: "SupervisorRole",
+    hint: "permet au collaborateur de gérer l'ensemble de l'entreprise (les déclarations existantes, les collaborateurs, et l'entreprise elle-même).",
+  },
+]
 </script>

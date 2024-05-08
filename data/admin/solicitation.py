@@ -1,15 +1,18 @@
 from django.contrib import admin
 
-from data.models import Solicitation
+from data.models import CollaborationInvitation, CoSupervisionClaim, SupervisionClaim
 
 
-@admin.register(Solicitation)
-class SolicitationAdmin(admin.ModelAdmin):
-    list_display = ("id", "creation_date", "kind", "sender", "display_recipients", "process_state")
+class BaseSolicitationAdmin:
+    list_display = ("id", "creation_date", "sender", "display_recipients", "process_state")
 
     def process_state(self, obj):
         return "✅ Traitée" if obj.is_processed else "🕣 Non traitée"
 
+    process_state.short_description = "État du traitement"
+
+
+class WithDisplayRecipients:
     def display_recipients(self, obj):
         recipient_count = obj.recipients.count()
         if recipient_count == 1:
@@ -17,5 +20,22 @@ class SolicitationAdmin(admin.ModelAdmin):
         else:
             return f"{recipient_count} destinataires"
 
-    process_state.short_description = "État du traitement"
     display_recipients.short_description = "Destinataire(s)"
+
+
+@admin.register(SupervisionClaim)
+class SupervisionClaimAdmin(BaseSolicitationAdmin, WithDisplayRecipients, admin.ModelAdmin):
+    pass
+
+
+@admin.register(CoSupervisionClaim)
+class CoSupervisionClaimAdmin(BaseSolicitationAdmin, WithDisplayRecipients, admin.ModelAdmin):
+    pass
+
+
+@admin.register(CollaborationInvitation)
+class CollaborationInvitation(BaseSolicitationAdmin, admin.ModelAdmin):
+    def display_recipients(self, obj):
+        return obj.recipient_email
+
+    display_recipients.short_description = "Destinataire"

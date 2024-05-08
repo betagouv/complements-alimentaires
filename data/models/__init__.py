@@ -23,7 +23,7 @@ from .declaration import (
     ComputedSubstance,
     Attachment,
 )
-from .solicitation import Solicitation
+from .solicitation import SupervisionClaim, CoSupervisionClaim, CollaborationInvitation
 
 ELEMENT_MODELS = [
     Ingredient,

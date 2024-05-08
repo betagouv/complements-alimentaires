@@ -49,12 +49,12 @@ class BaseCompanyWithSupervisionFactory(SolicitationFactory):
 
 class ClaimSupervisionFactory(BaseCompanyWithSupervisionFactory):
     kind = SolicitationKindChoices.ClaimSupervision
-    sender_msg = "svp, merci de m'ajouter"
+    personal_msg = "svp, merci de m'ajouter"
 
 
 class ClaimCoSupervisionFactory(BaseCompanyWithSupervisionFactory):
     kind = SolicitationKindChoices.ClaimCoSupervision
-    sender_msg = "svp, merci de m'ajouter"
+    personal_msg = "svp, merci de m'ajouter"
 
 
 class InviteCoSupervision(BaseCompanyWithSupervisionFactory):

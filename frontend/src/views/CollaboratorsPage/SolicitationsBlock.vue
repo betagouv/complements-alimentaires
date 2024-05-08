@@ -33,7 +33,7 @@
       <hr class="mt-4 -mb-2 border" />
     </div>
     <div v-if="solicitations.length === 0">
-      <p>Vous n'avez actuellement aucune demande en cours.</p>
+      <p class="italic">Vous n'avez actuellement aucune demande en cours.</p>
     </div>
   </div>
 </template>
@@ -70,7 +70,7 @@ const {
   response,
   execute,
 } = useFetch(
-  `/api/v1/companies/${company.value.id}/solicitations`,
+  `/api/v1/companies/${company.value.id}/co-supervision-claims/`,
   {
     headers: headers(),
   },
@@ -83,8 +83,8 @@ onMounted(async () => {
 })
 
 const process = async (solicitationId, actionName) => {
-  const url = `/api/v1/solicitations/${solicitationId}/${actionName}/`
-  const { response } = await useFetch(url, { headers: headers() }).post().json()
+  const url = `/api/v1/co-supervision-claims/${solicitationId}/process/`
+  const { response } = await useFetch(url, { headers: headers() }).post({ actionName: actionName }).json()
   await handleError(response)
   if (response.value.ok) {
     useToaster().addMessage({

@@ -5,30 +5,29 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from data.models.company import Company
-from data.models.solicitation import Solicitation
+from data.models.solicitation import CoSupervisionClaim
 
 from ..permissions import IsSolicitationRecipient
-from ..serializers import UnprocessedSolicitationSerializer
+from ..serializers import CoSupervisionClaimSerializer
 
 
-class SolicitationListView(ListAPIView):
-    """Liste les solicitations non traitées dont l'utilisateur est le destinataire"""
-
-    serializer_class = UnprocessedSolicitationSerializer
+class CoSupervisionClaimListView(ListAPIView):
+    serializer_class = CoSupervisionClaimSerializer
 
     def get_queryset(self):
         user = self.request.user
         company = get_object_or_404(Company.objects.filter(supervisors=user), pk=self.kwargs["pk"])
-        return Solicitation.objects.filter(recipients=user, company=company, processor__isnull=True)
+        return CoSupervisionClaim.objects.filter(recipients=user, company=company, processor__isnull=True)
 
 
-class SolicitationProcessView(APIView):
-    """Effectue une action de traitement sur une solicitation (RPC-style)"""
+class ProcessCoSupervisionClaim(APIView):
+    """Effectue une action de traitement sur une demande de co-gestion"""
 
     permission_classes = [IsSolicitationRecipient]
 
-    def post(self, request, pk: int, action: str, *args, **kwargs):
-        solicitation = get_object_or_404(Solicitation, pk=pk)
+    def post(self, request, pk: int, *args, **kwargs):
+        solicitation = get_object_or_404(CoSupervisionClaim, pk=pk)
         self.check_object_permissions(request, solicitation)
-        solicitation.process(action=action, processor=request.user)
+        action = getattr(solicitation, request.data["action_name"])
+        action(processor=request.user)
         return Response({})
