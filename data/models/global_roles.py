@@ -13,9 +13,7 @@ class BaseGlobalRoleQuerySet(DeactivableQuerySet):
 
 
 class BaseGlobalRole(Deactivable, models.Model):
-    """Un rôle global est un rôle uniquement lié à l'utilisateur.
-    NOTE: il n'y en a aucun pour le moment.
-    """
+    """Un rôle global est un rôle uniquement lié à l'utilisateur."""
 
     class Meta:
         abstract = True
@@ -26,6 +24,7 @@ class BaseGlobalRole(Deactivable, models.Model):
         settings.AUTH_USER_MODEL,
         verbose_name="utilisateur",
         on_delete=models.CASCADE,
+        unique=True,
     )
 
     @property
@@ -34,3 +33,11 @@ class BaseGlobalRole(Deactivable, models.Model):
 
     def __str__(self):
         return self.name
+
+
+class InstructionRole(BaseGlobalRole):
+    class Meta:
+        verbose_name = "rôle instruction"
+        verbose_name_plural = "rôles instruction"
+
+    pass

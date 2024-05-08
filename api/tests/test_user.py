@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from data.factories import CompanyFactory, DeclarantRoleFactory, SupervisorRoleFactory
+from data.factories import CompanyFactory, DeclarantRoleFactory, InstructionRoleFactory, SupervisorRoleFactory
 from data.factories.user import UserFactory
 
 from .utils import ProjectAPITestCase
@@ -74,6 +74,17 @@ class TestGetLoggedUser(ProjectAPITestCase):
                 },
             ],
         )
+
+    def test_global_roles(self):
+        """
+        Les rôles globaux sont serialisées dans le call du logged user
+        """
+        user = self.login()
+        InstructionRoleFactory(user=user)
+        response = self.get(self.url()).json()
+
+        self.assertEqual(len(response["globalRoles"]), 1)
+        self.assertEqual(response["globalRoles"][0]["name"], "InstructionRole")
 
 
 class TestCreateUser(ProjectAPITestCase):

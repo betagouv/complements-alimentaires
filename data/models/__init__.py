@@ -23,6 +23,7 @@ from .declaration import (
     ComputedSubstance,
     Attachment,
 )
+from .global_roles import InstructionRole
 
 ELEMENT_MODELS = [
     Ingredient,
