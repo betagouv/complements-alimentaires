@@ -1,4 +1,9 @@
+import re
+
 import django_filters
+from djangorestframework_camel_case.settings import api_settings
+from djangorestframework_camel_case.util import camel_to_underscore, camelize_re, underscore_to_camel
+from rest_framework.filters import OrderingFilter
 
 
 class BaseNumberInFilter(django_filters.BaseInFilter, django_filters.NumberFilter):
@@ -11,3 +16,25 @@ class BaseNumberInFilter(django_filters.BaseInFilter, django_filters.NumberFilte
     """
 
     pass
+
+
+class CamelCaseOrderingFilter(OrderingFilter):
+    """
+    Allows filtering with camel case parameters. More info :
+    https://github.com/vbabiy/djangorestframework-camel-case/issues/87
+    """
+
+    def get_ordering(self, request, queryset, view):
+        ordering = super().get_ordering(request, queryset, view)
+
+        if ordering is None:
+            return None
+
+        return [camel_to_underscore(field, **api_settings.JSON_UNDERSCOREIZE) for field in ordering]
+
+    def get_valid_fields(self, queryset, view, context=None):
+        if context is None:
+            context = {}
+        fields = super().get_valid_fields(queryset, view, context=context)
+
+        return [(re.sub(camelize_re, underscore_to_camel, f[0]), f[1]) for f in fields]

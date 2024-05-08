@@ -790,10 +790,41 @@ class TestDeclarationApi(APITestCase):
         [DeclarationFactory(status=Declaration.DeclarationStatus.REJECTED) for _ in range(3)]
 
         # Filtrage pour obtenir les déclarations approuvées
-        spproved_filter_url = f"{reverse('api:list_all_declarations')}?status=APPROVED"
-        response = self.client.get(spproved_filter_url, format="json")
+        approved_filter_url = f"{reverse('api:list_all_declarations')}?status=APPROVED"
+        response = self.client.get(approved_filter_url, format="json")
         results = response.json()["results"]
         self.assertEqual(len(results), 3)
 
         for result in results:
             self.assertEqual(result["status"], Declaration.DeclarationStatus.APPROVED.value)
+
+    @authenticate
+    def test_sort_declarations_by_name(self):
+        """
+        Les déclarations peuvent être triées par nom
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        names = ["B", "C", "A", "D"]
+
+        for name in names:
+            DeclarationFactory(name=name)
+
+        # Triage par nom
+        name_sort_url = f"{reverse('api:list_all_declarations')}?ordering=name"
+        response = self.client.get(name_sort_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 4)
+
+        names.sort()
+        for index, expected_name in enumerate(names):
+            self.assertEqual(results[index]["name"], expected_name)
+
+        # Triage par nom inversé
+        reverse_name_sort_url = f"{reverse('api:list_all_declarations')}?ordering=-name"
+        response = self.client.get(reverse_name_sort_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 4)
+
+        names.reverse()
+        for index, expected_name in enumerate(names):
+            self.assertEqual(results[index]["name"], expected_name)

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from api.permissions import CanAccessUserDeclatarions, IsDeclarant, IsDeclarationAuthor, IsInstructor
 from api.serializers import DeclarationSerializer, DeclarationShortSerializer
-from api.utils.filters import BaseNumberInFilter
+from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
 from data.models import Company, Declaration
 
@@ -87,6 +87,7 @@ class AllDeclarationsListView(ListAPIView):
     pagination_class = DeclarationPagination
     filter_backends = [
         django_filters.DjangoFilterBackend,
+        CamelCaseOrderingFilter,
     ]
     filterset_class = DeclarationFilterSet
     queryset = Declaration.objects.all()
