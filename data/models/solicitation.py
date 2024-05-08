@@ -40,7 +40,8 @@ class BaseSolicitation(AutoValidable, TimeStampable):
         settings.AUTH_USER_MODEL, verbose_name="émetteur", on_delete=models.PROTECT, related_name="%(class)s_sent"
     )
     personal_msg = models.TextField(blank=True, null=False, verbose_name="message personnel de l'émetteur (optionnel)")
-    description = models.TextField(blank=True, null=False)  # auto-rempli
+
+    # Les champs ci-dessous concernent le traitement de la solicitation, et sont vide à la création
     processed_at = models.DateTimeField(blank=True, null=True, verbose_name="traité à")
     processor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -60,7 +61,7 @@ class BaseSolicitation(AutoValidable, TimeStampable):
 
     def clean(self):
         if self._state.adding:
-            if any([self.processed_at, self.processor, self.processed_action, self.description]):
+            if any([self.processed_at, self.processor, self.processed_action]):
                 raise ValidationError("Des champs innatendus ont été définis lors de la création de l'objet.")
 
         if not all_true_or_all_false(self.processed_at, self.processor, self.processed_action):
@@ -75,12 +76,21 @@ class BaseSolicitation(AutoValidable, TimeStampable):
         self.processed_action = action
         self.save()
 
+    @property
+    def personal_message_for_mail(self) -> str:
+        """Permet d'ajouter les messages personnels dans le corps d'un message d'email"""
+        return f" Il a ajouté ce message : «{self.personal_msg}»." if self.personal_msg else ""
+
     def save(self, *args, **kwargs):
         """Surchargée pour appeler un hook optionnel à la création de l'objet, défini dans la classe enfant"""
         is_adding = self._state.adding
         super().save(*args, **kwargs)  # modifie self._state.adding, c'est pour ça qu'on l'a mis en variable avant
         if is_adding and hasattr(self, "create_hook"):
             self.create_hook()
+
+    @property
+    def description(self):
+        raise NotImplementedError("Veuillez décrire cette property dans la classe enfant")
 
     def __str__(self):
         return self.description
@@ -96,21 +106,16 @@ class SupervisionClaim(BaseSolicitation, models.Model):
     recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, verbose_name="destinataires")
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
+    @property
+    def description(self):
+        return f"{self.sender.name} (id: {self.sender.id}) a demandé à devenir gestionnaire de l'entreprise {self.company.social_name} (id: {self.company.id}). "
+
     def create_hook(self):
         recipients = User.objects.filter(is_staff=True)
         self.recipients.set(recipients)
-
-        self.description = f"{self.sender.name} (id: {self.sender.id}) a demandé à devenir gestionnaire de l'entreprise {self.company.social_name} (id: {self.company.id})."
-        self.save()
-        # TODO: isoler cette logique car répétée partout
-        if self.personal_msg:
-            mail_message = self.description + f" Il a ajouté ce message : «{self.personal_msg}»."
-        else:
-            mail_message = self.description
-
         send_mail(
             subject="[Compl'Alim] Nouvelle demande de gestion d'une entreprise",
-            message=mail_message,
+            message=f"{self.description} {self.personal_message_for_mail}",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=self.recipients.values_list("email", flat=True),
         )
@@ -145,24 +150,16 @@ class CoSupervisionClaim(BaseSolicitation, models.Model):
     recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, verbose_name="destinataires")
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
+    @property
+    def description(self):
+        return f"{self.sender.name} a demandé à devenir co-gestionnaire de l'entreprise {self.company.social_name}."
+
     def create_hook(self):
         recipients = self.company.supervisors.all()
         self.recipients.set(recipients)
-
-        self.description = (
-            f"{self.sender.name} a demandé à devenir co-gestionnaire de l'entreprise {self.company.social_name}."
-        )
-        self.save()
-        # TODO: isoler cette logique car répétée partout
-        suffix_msg = " Veuillez vous rendre sur la plateforme (section : gestion des collaborateurs) pour traiter cette demande."
-        if self.personal_msg:
-            mail_message = self.description + f" Il a ajouté ce message : «{self.personal_msg}»" + suffix_msg
-        else:
-            mail_message = self.description + suffix_msg
-
         send_mail(
             subject="[Compl'Alim] Nouvelle demande de co-gestion",
-            message=mail_message,
+            message=f"{self.description} {self.personal_message_for_mail} Veuillez vous rendre sur la plateforme (section : gestion des collaborateurs) pour traiter cette demande.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=recipients.values_list("email", flat=True),
         )
@@ -202,18 +199,15 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
         models.CharField(choices=CompanyRoleClassChoices), verbose_name="classes de rôle", default=list
     )
 
-    def create_hook(self):
-        self.description = f"{self.sender.name} vous invite à créer un compte Compl'Alim et rejoindre l'entreprise {self.company.social_name}."
-        self.save()
-        if self.personal_msg:
-            mail_message = self.description + f" Il a ajouté ce message : «{self.personal_msg}»."
-        else:
-            mail_message = self.description
+    @property
+    def description(self):
+        return f"{self.sender.name} vous invite à créer un compte Compl'Alim et rejoindre l'entreprise {self.company.social_name}."
 
+    def create_hook(self):
         create_account_page_url = urljoin(get_base_url(), "inscription")
         send_mail(
             subject="[Compl'Alim] Invitation à créer votre compte",
-            message=f"{mail_message} Veuillez vous rendre sur <a href='{create_account_page_url}'>la plateforme Compl'Alim</a> pour créer votre compte.",
+            message=f"{self.description} {self.personal_message_for_mail} Veuillez vous rendre sur <a href='{create_account_page_url}'>la plateforme Compl'Alim</a> pour créer votre compte.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[self.recipient_email],
         )
