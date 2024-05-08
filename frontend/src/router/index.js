@@ -22,6 +22,7 @@ import UserAccountPage from "@/views/UserAccountPage"
 import VerificationSentPage from "@/views/VerificationSentPage"
 import DeclarationsHomePage from "@/views/DeclarationsHomePage"
 import CollaboratorsPage from "@/views/CollaboratorsPage"
+import AllDeclarationsPage from "@/views/AllDeclarationsPage"
 
 const routes = [
   {
@@ -208,6 +209,19 @@ const routes = [
     },
   },
   {
+    path: "/toutes-les-declarations",
+    name: "AllDeclarations",
+    component: AllDeclarationsPage,
+    meta: {
+      title: "Toutes les déclarations",
+      authenticationRequired: true,
+      requiredRole: "InstructionRole",
+      defaultQueryParams: {
+        page: 1,
+      },
+    },
+  },
+  {
     path: "/:catchAll(.*)*", // https://stackoverflow.com/a/70343919/2255491
     component: NotFound,
     name: "NotFound",
@@ -236,14 +250,29 @@ function chooseAuthorisedRoute(to, from, next, store) {
   } else {
     if (to.meta.home) next({ name: store.loggedUser ? "DashboardPage" : "LandingPage" })
     const authenticationCheck = !to.meta.authenticationRequired || store.loggedUser
-    const roleCheck = !to.meta.requiredRole || store.company?.roles?.some((x) => x.name === to.meta.requiredRole)
+    const roleCheck =
+      !to.meta.requiredRole ||
+      store.company?.roles?.some((x) => x.name === to.meta.requiredRole) ||
+      store.loggedUser?.globalRoles?.some((x) => x.name === to.meta.requiredRole)
 
     authenticationCheck && roleCheck ? next() : next({ name: "LoginPage" })
   }
 }
 
+function ensureDefaultQueryParams(route, next) {
+  if (!route.meta.defaultQueryParams) return
+  let needsRedirection = false
+  for (const [queryParam, value] of Object.entries(route.meta.defaultQueryParams))
+    if (!route.query[queryParam]) {
+      route.query[queryParam] = value
+      needsRedirection = true
+    }
+  if (needsRedirection) next(route)
+}
+
 router.beforeEach((to, from, next) => {
   const store = useRootStore()
+  ensureDefaultQueryParams(to, next)
   chooseAuthorisedRoute(to, from, next, store)
 })
 
