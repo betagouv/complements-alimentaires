@@ -2,6 +2,9 @@ export const getTypeIcon = (type) => {
   const mapping = {
     plant: "ri-plant-line",
     microorganism: "ri-microscope-line",
+    form_of_supply: "ri-contrast-drop-line",
+    aroma: "ri-bubble-chart-line",
+    additive: "ri-filter-2-line",
     ingredient: "ri-flask-line",
     substance: "ri-test-tube-line",
   }
