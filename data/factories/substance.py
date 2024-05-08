@@ -1,7 +1,8 @@
 import factory
-from data.models import Substance, SubstanceSynonym
+
 from data.factories.unit import SubstanceUnitFactory
-from data.models.status import IngredientStatus
+from data.models import Substance, SubstanceSynonym
+from data.models.ingredient_status import IngredientStatus
 
 
 class SubstanceFactory(factory.django.DjangoModelFactory):

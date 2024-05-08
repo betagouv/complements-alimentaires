@@ -36,7 +36,7 @@ REF_ICA_FONCTION_INGREDIENT     |       |       |       |       |       |
 ### Déclaration
 |nom de table|importée ?|commentaires|
 |---    |:-:    |---    |
-|ICA_PREPARATION     |       |Relation entre chaque Element, une unité et une quantité|
+|ICA_PREPARATION     |       |Relation entre chaque Plante utilisé dans une composition de complément alimentaire, une unité et une quantité|
 |ICA_INGREDIENT_AUTRE     |       |       |
 |ICA_INGREDIENT     |       |Contient tous les types d'éléments d'un complément alimentaire|
 |ICA_MICRO_ORGANISME     |       |  contient le champ `souches` rentré à la main jusqu'à maintenant à intégrer dans Microorganism     |

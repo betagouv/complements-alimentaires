@@ -1,8 +1,10 @@
 import random
+
 import factory
-from data.models import Ingredient, IngredientSynonym
+
 from data.factories.substance import SubstanceFactory
-from data.models.status import IngredientStatus
+from data.models import Ingredient, IngredientSynonym
+from data.models.ingredient_status import IngredientStatus
 
 
 class IngredientFactory(factory.django.DjangoModelFactory):
