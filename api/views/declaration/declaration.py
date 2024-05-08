@@ -75,7 +75,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
 
 
 class DeclarationPagination(LimitOffsetPagination):
-    default_limit = 15
+    default_limit = 10
     max_limit = 50
 
 
