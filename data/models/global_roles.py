@@ -24,7 +24,6 @@ class BaseGlobalRole(Deactivable, models.Model):
         settings.AUTH_USER_MODEL,
         verbose_name="utilisateur",
         on_delete=models.CASCADE,
-        unique=True,
     )
 
     @property
