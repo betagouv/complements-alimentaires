@@ -1,16 +1,18 @@
 from django.urls import reverse
-from rest_framework.test import APITestCase
+
 from rest_framework import status
-from data.models.status import IngredientStatus
+from rest_framework.test import APITestCase
+
 from data.factories import (
-    PlantFactory,
-    PlantSynonymFactory,
     IngredientFactory,
-    SubstanceFactory,
-    SubstanceSynonymFactory,
     MicroorganismFactory,
     MicroorganismSynonymFactory,
+    PlantFactory,
+    PlantSynonymFactory,
+    SubstanceFactory,
+    SubstanceSynonymFactory,
 )
+from data.models.ingredient_status import IngredientStatus
 
 
 class TestAutocomplete(APITestCase):

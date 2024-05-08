@@ -1,13 +1,14 @@
 from django.db import models
-from django.db.models.functions import Coalesce, NullIf
 from django.db.models import F, Value
+from django.db.models.functions import Coalesce, NullIf
 
 from simple_history.models import HistoricalRecords
 
-from data.behaviours import TimeStampable, Historisable
-from .mixins import WithMissingImportBoolean, WithComments
-from .status import WithStatus
+from data.behaviours import Historisable, TimeStampable
+
 from .abstract_models import CommonModel
+from .ingredient_status import WithStatus
+from .mixins import WithComments, WithMissingImportBoolean
 from .substance import Substance
 
 
