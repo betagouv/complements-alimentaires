@@ -23,6 +23,7 @@ import VerificationSentPage from "@/views/VerificationSentPage"
 import DeclarationsHomePage from "@/views/DeclarationsHomePage"
 import CollaboratorsPage from "@/views/CollaboratorsPage"
 import AllDeclarationsPage from "@/views/AllDeclarationsPage"
+import InstructionPage from "@/views/InstructionPage"
 
 const routes = [
   {
@@ -219,6 +220,17 @@ const routes = [
       defaultQueryParams: {
         page: 1,
       },
+    },
+  },
+  {
+    path: "/instruction/:declarationId",
+    props: true,
+    name: "InstructionPage",
+    component: InstructionPage,
+    meta: {
+      title: "Instruction",
+      authenticationRequired: true,
+      requiredRole: "InstructionRole",
     },
   },
   {

@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import FilePreview from "./FilePreview"
+import FilePreview from "@/components/FilePreview"
 
 const props = defineProps({ files: Array, hideTypeSelection: Boolean })
 </script>

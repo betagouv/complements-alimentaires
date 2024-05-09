@@ -2,7 +2,7 @@
   <DsfrTable
     ref="table"
     class="w-full"
-    title="Mes déclarations"
+    title="Toutes les déclarations"
     :headers="headers"
     :rows="rows"
     :no-caption="true"

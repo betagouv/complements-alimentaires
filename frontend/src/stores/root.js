@@ -62,6 +62,14 @@ export const useRootStore = defineStore("root", () => {
     const { data } = await useFetch("/api/v1/units/").json()
     units.value = data.value
   }
+  const fetchDeclarationFieldsData = () => {
+    fetchConditions()
+    fetchEffects()
+    fetchPopulations()
+    fetchPlantParts()
+    fetchGalenicFormulation()
+    fetchUnits()
+  }
   return {
     loggedUser,
     company,
@@ -74,7 +82,7 @@ export const useRootStore = defineStore("root", () => {
     fetchConditions,
     fetchEffects,
     fetchGalenicFormulation,
-
+    fetchDeclarationFieldsData,
     fetchPlantParts,
     fetchUnits,
     plantParts,

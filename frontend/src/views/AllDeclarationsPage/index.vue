@@ -7,7 +7,7 @@
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
-    <InstructionDeclarationsTable v-else-if="hasDeclarations" :data="data" />
+    <InstructionDeclarationsTable v-else-if="hasDeclarations" :data="data" @open="openDeclaration" />
     <p v-else class="mb-8">Il n'y a pas encore de déclarations.</p>
     <DsfrPagination
       v-if="showPagination"
@@ -50,4 +50,6 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 watch(page, fetchSearchResults)
+
+const openDeclaration = (id) => router.push({ name: "InstructionPage", params: { declarationId: id } })
 </script>
