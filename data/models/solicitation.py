@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.db import models, transaction
+from django.db.models import Q
 from django.utils import timezone
 
 from api.utils.urls import get_base_url
@@ -188,7 +189,13 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
     class Meta:
         verbose_name = "invitation à devenir collaborateur"
         verbose_name_plural = "invitations à devenir collaborateur"
-        unique_together = ["company", "recipient_email"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "recipient_email"],
+                name="unique_collaboration_invitation",
+                condition=Q(processed_at__isnull=True),  # s'applique uniquement sur les invitations non traitées
+            )
+        ]
 
     recipient_email = models.EmailField("adresse e-mail du destinataire")
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
