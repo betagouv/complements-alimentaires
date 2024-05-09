@@ -5,14 +5,14 @@ from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from data.models import CollaborationInvitation, Company, CoSupervisionClaim
 
 from ..exception_handling import ProjectAPIException
-from ..permissions import IsSolicitationRecipient
+from ..permissions import IsSolicitationRecipient, IsSupervisor
 from ..serializers import CoSupervisionClaimSerializer
 
 User = get_user_model()
@@ -40,12 +40,17 @@ class ProcessCoSupervisionClaim(APIView):
         return Response({})
 
 
-class CollaborationInvitationCreateView(APIView):
-    # TODO: transformer en APIView ?
+class CollaborationInvitationCreateView(CreateAPIView):
+    """Ajout d'un collaborateur pouvant mener à différents cas (ajout des rôles, invitation par mail, erreurs).
+    NOTE: semble difficile à écrire en GenericView sachant qu'il y a plusieurs cas fonctionnels
+    """
+
+    permission_classes = [IsSupervisor]
 
     @transaction.atomic
     def post(self, request, pk: int, *args, **kwargs):
         company = get_object_or_404(Company, pk=pk)
+        self.check_object_permissions(request, company)
         cleaned_email = User.objects.normalize_email(request.data["recipient_email"])
         sender = request.user
         try:
