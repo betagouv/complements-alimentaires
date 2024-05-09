@@ -4,7 +4,13 @@ from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIVi
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
-from api.permissions import CanAccessUserDeclatarions, IsDeclarant, IsDeclarationAuthor, IsInstructor
+from api.permissions import (
+    CanAccessIndividualDeclaration,
+    CanAccessUserDeclatarions,
+    IsDeclarant,
+    IsDeclarationAuthor,
+    IsInstructor,
+)
 from api.serializers import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer
 from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
@@ -39,7 +45,7 @@ class UserDeclarationsListCreateApiView(ListCreateAPIView):
 class DeclarationRetrieveUpdateView(RetrieveUpdateAPIView):
     model = Declaration
     serializer_class = DeclarationSerializer
-    permission_classes = [IsDeclarationAuthor, IsDeclarant]
+    permission_classes = [CanAccessIndividualDeclaration]
     queryset = Declaration.objects.all()
 
 

@@ -43,3 +43,16 @@ class IsDeclarationAuthor(permissions.BasePermission):
 class IsInstructor(permissions.BasePermission):
     def has_permission(self, request, view):
         return InstructionRole.objects.filter(user=request.user).exists()
+
+
+class CanAccessIndividualDeclaration(permissions.BasePermission):
+    message = "Vous n'avez pas accès à cette déclaration"
+
+    def has_object_permission(self, request, view, obj):  # obj: Declaration
+        is_author = IsDeclarationAuthor().has_object_permission(request, view, obj)
+        is_instructor = IsInstructor().has_permission(request, view)
+        is_declarant = IsDeclarant().has_object_permission(request, view, obj)
+        if request.method == "GET":
+            return is_author or is_instructor
+
+        return is_author and is_declarant
