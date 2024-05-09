@@ -1,14 +1,12 @@
 <template>
   <div>
     <div class="flex justify-between">
+      <SectionTitle :title="`Collaborateurs actuels de ${company.socialName}`" icon="ri-user-line" />
       <div>
-        <SectionTitle :title="`Collaborateurs actuels de ${company.socialName}`" icon="ri-user-line" />
-        <p>Gérez ici l'ensemble des collaborateurs et leurs rôles.</p>
-      </div>
-      <div>
-        <DsfrButton @click="opened = true" label="Ajouter un nouveau collaborateur" icon="ri-user-add-line" size="sm" />
+        <DsfrButton @click="opened = true" label="Ajouter un collaborateur" icon="ri-user-add-line" size="sm" />
       </div>
     </div>
+    <p>Gérez ici l'ensemble des collaborateurs et leurs rôles.</p>
 
     <div v-for="user in collaborators" :key="user.id">
       <div class="flex items-center">
@@ -48,18 +46,18 @@
     </div>
   </div>
 
-  <!-- Modale d'ajout d'un nouveau collaborateur -->
+  <!-- Modale d'ajout d'un collaborateur -->
   <DsfrModal
     :actions="actions"
     ref="modal"
     :opened="opened"
-    @close="opened = false"
-    title="Ajouter un nouveau collaborateur"
+    @close="close"
+    title="Ajouter un collaborateur"
     icon="ri-user-add-line"
   >
-    <DsfrInputGroup>
+    <DsfrInputGroup :error-message="firstErrorMsg(v$, 'recipientEmail')">
       <DsfrInput
-        v-model="email"
+        v-model="state.recipientEmail"
         label="Entrez l'adresse e-mail de votre collaborateur :"
         labelVisible
         type="email"
@@ -69,7 +67,8 @@
       />
     </DsfrInputGroup>
     <DsfrCheckboxSet
-      v-model="selectedRoles"
+      :error-message="firstErrorMsg(v$, 'selectedRoles')"
+      v-model="state.selectedRoles"
       :options="selectableRoles"
       small
       legend="Sélectionnez un ou plusieurs rôles qui lui seront attribués :"
@@ -87,6 +86,9 @@ import SectionTitle from "@/components/SectionTitle"
 import RoleTag from "@/components/RoleTag.vue"
 import { headers } from "@/utils/data-fetching"
 import { roleNameDisplayNameMapping } from "@/utils/mappings"
+import useVuelidate from "@vuelidate/core"
+import useToaster from "@/composables/use-toaster"
+import { errorRequiredField, errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
 
 const store = useRootStore()
 const { loggedUser, company } = storeToRefs(store)
@@ -130,25 +132,29 @@ const changeRole = async (roleName, user, action) => {
   }
 }
 
-// Modal d'ajout d'un nouvel utilisateur
+//
+// Modal d'ajout d'un nouvel utilisateur // TODO: isoler cette partie dans un component à part ?
+//
+
 const opened = ref(false)
-const submitAddNewCollaborator = () => {}
-const actions = [
-  {
-    label: "Valider",
-    onClick: submitAddNewCollaborator,
-  },
-  {
-    label: "Annuler",
-    onClick: () => {
-      opened.value = false
-    },
-    secondary: true,
-  },
-]
-// TODO: isoler l'ajout d'un colab dans un component à part ?
-const email = ref("")
-const selectedRoles = ref([])
+
+// Form state & rules
+
+const getInitialState = () => ({
+  recipientEmail: "",
+  selectedRoles: [],
+})
+
+const state = ref(getInitialState())
+
+const rules = {
+  recipientEmail: errorRequiredEmail,
+  selectedRoles: errorRequiredField,
+}
+
+const $externalResults = ref({})
+const v$ = useVuelidate(rules, state, { $externalResults })
+
 const selectableRoles = [
   {
     label: roleNameDisplayNameMapping.DeclarantRole,
@@ -159,6 +165,47 @@ const selectableRoles = [
     label: roleNameDisplayNameMapping.SupervisorRole,
     name: "SupervisorRole",
     hint: "permet au collaborateur de gérer l'ensemble de l'entreprise (les déclarations existantes, les collaborateurs, et l'entreprise elle-même).",
+  },
+]
+
+const close = () => {
+  opened.value = false
+  // RAZ form state & Vuelidate validation state
+  state.value = getInitialState()
+  v$.value.$reset()
+}
+
+const submitInviteCollaborator = async () => {
+  v$.value.$clearExternalResults()
+  v$.value.$validate()
+  if (v$.value.$error) {
+    return
+  }
+  const url = `/api/v1/companies/${company.value.id}/collaboration-invitations/`
+  const { response, data } = await useFetch(url, { headers: headers() })
+    .post({ roles: state.value.selectedRoles, recipientEmail: state.value.recipientEmail })
+    .json()
+  $externalResults.value = await handleError(response)
+  if (response.value.ok) {
+    await collaboratorsExecute() // met à jour les collaborateurs existants, car ils peuvent avoir changé
+    useToaster().addMessage({
+      type: "success",
+      // exceptionnellement on utilise le message directement du back, car plusieurs cas possibles
+      description: data.value.message,
+    })
+    close()
+  }
+}
+
+const actions = [
+  {
+    label: "Valider",
+    onClick: submitInviteCollaborator,
+  },
+  {
+    label: "Annuler",
+    onClick: close,
+    secondary: true,
   },
 ]
 </script>

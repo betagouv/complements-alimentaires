@@ -78,6 +78,11 @@ urlpatterns = {
         views.ProcessCoSupervisionClaim.as_view(),
         name="process_co_supervision_claim",
     ),
+    path(
+        "companies/<int:pk>/collaboration-invitations/",
+        views.CollaborationInvitationCreateView.as_view(),
+        name="create_collaboration_invitation",
+    ),
     # Declarations
     path("declarations/", views.DeclarationListCreateApiView.as_view(), name="list_create_declaration"),
     path("declarations/<int:pk>", views.DeclarationRetrieveUpdateView.as_view(), name="retrieve_update_declaration"),
