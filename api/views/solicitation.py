@@ -82,7 +82,5 @@ class CollaborationInvitationCreateView(APIView):
                     recipient_list=[sender.email],
                 )
                 return Response(
-                    {
-                        "message": f"{recipient.name} a été ajouté à vos collaborateurs. Un e-mail a été envoyé pour le prévenir."
-                    }
+                    {"message": f"{recipient.name} a été ajouté à vos collaborateurs. Un e-mail lui a été envoyé."}
                 )

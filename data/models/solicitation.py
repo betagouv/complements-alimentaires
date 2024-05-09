@@ -204,7 +204,7 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
         return f"{self.sender.name} vous invite à créer un compte Compl'Alim et rejoindre l'entreprise {self.company.social_name}."
 
     def create_hook(self):
-        create_account_page_url = urljoin(get_base_url(), "inscription")
+        create_account_page_url = urljoin(get_base_url(), "inscription") + f"?email={self.recipient_email}"
         send_mail(
             subject="[Compl'Alim] Invitation à créer votre compte",
             message=f"{self.description} {self.personal_message_for_mail} Veuillez vous rendre sur <a href='{create_account_page_url}'>la plateforme Compl'Alim</a> pour créer votre compte.",
