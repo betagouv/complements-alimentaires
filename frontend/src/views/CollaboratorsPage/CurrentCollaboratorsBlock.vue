@@ -181,7 +181,7 @@ const submitInviteCollaborator = async () => {
   if (v$.value.$error) {
     return
   }
-  const url = `/api/v1/companies/${company.value.id}/collaboration-invitations/`
+  const url = `/api/v1/companies/${company.value.id}/add-new-collaborator/`
   const { response, data } = await useFetch(url, { headers: headers() })
     .post({ roles: state.value.selectedRoles, recipientEmail: state.value.recipientEmail })
     .json()

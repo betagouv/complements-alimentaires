@@ -40,10 +40,8 @@ class ProcessCoSupervisionClaim(APIView):
         return Response({})
 
 
-class CollaborationInvitationCreateView(CreateAPIView):
-    """Ajout d'un collaborateur pouvant mener à différents cas (ajout des rôles, invitation par mail, erreurs).
-    NOTE: semble difficile à écrire en GenericView sachant qu'il y a plusieurs cas fonctionnels
-    """
+class AddNewCollaboratorView(CreateAPIView):
+    """Ajout d'un collaborateur pouvant mener à différents cas (ajout des rôles, invitation par mail, erreurs)."""
 
     permission_classes = [IsSupervisor]
 
@@ -53,6 +51,7 @@ class CollaborationInvitationCreateView(CreateAPIView):
         self.check_object_permissions(request, company)
         cleaned_email = User.objects.normalize_email(request.data["recipient_email"])
         sender = request.user
+
         try:
             recipient = User.objects.get(email=cleaned_email)
         except User.DoesNotExist:

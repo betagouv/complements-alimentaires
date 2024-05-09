@@ -79,9 +79,9 @@ urlpatterns = {
         name="process_co_supervision_claim",
     ),
     path(
-        "companies/<int:pk>/collaboration-invitations/",
-        views.CollaborationInvitationCreateView.as_view(),
-        name="create_collaboration_invitation",
+        "companies/<int:pk>/add-new-collaborator/",
+        views.AddNewCollaboratorView.as_view(),
+        name="add_new_collaborator",
     ),
     # Declarations
     path("declarations/", views.DeclarationListCreateApiView.as_view(), name="list_create_declaration"),
