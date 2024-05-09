@@ -36,7 +36,7 @@
                 ({{ option.name.toLowerCase() }})
               </span>
             </div>
-            <div>{{ getType(option.objectType) }}</div>
+            <div>{{ getTypeInFrench(option.objectType) }}</div>
           </div>
         </div>
       </li>
@@ -47,7 +47,7 @@
 <script setup>
 import { computed, nextTick, ref, watch } from "vue"
 import { headers } from "@/utils/data-fetching"
-import { getTypeIcon, getType } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
 import { useFetch, useDebounceFn } from "@vueuse/core"
 import useToaster from "@/composables/use-toaster"
 

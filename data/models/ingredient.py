@@ -23,9 +23,9 @@ class IngredientType(models.IntegerChoices):
         "Nutriment (Forme d'apport)",
     )
     ADDITIVE = 2, "Additif"
-    AROMA = 3, "Arôme"  # TODO ces ingrédients devraient peut-être disparaître
+    AROMA = 3, "Arôme"  # TODO les arômes devraient peut-être disparaître à terme car tous non actifs
     ACTIVE_INGREDIENT = 4, "Autre ingrédient actif"
-    INACTIVE_INGREDIENT = 5, "Autre ingrédient"
+    NON_ACTIVE_INGREDIENT = 5, "Autre ingrédient"
 
 
 class Ingredient(CommonModel, WithComments, WithStatus):
@@ -56,9 +56,12 @@ class Ingredient(CommonModel, WithComments, WithStatus):
     @property
     def object_type(self):
         """
-        overwrites object_type from CommonModel
+        overwrites object_type property from CommonModel
         """
-        return self.ingredient_type.lower()
+        if self.ingredient_type:
+            return IngredientType(self.ingredient_type).name.lower()
+        else:
+            return self.__class__.__name__.lower()
 
 
 class IngredientSubstanceRelation(TimeStampable, Historisable):

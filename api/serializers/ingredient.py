@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from data.models import Ingredient, IngredientSynonym, IngredientStatus
+
 from api.utils.choice_field import GoodReprChoiceField
+from data.models import Ingredient, IngredientStatus, IngredientSynonym, IngredientType
 
 from .substance import SubstanceShortSerializer
 

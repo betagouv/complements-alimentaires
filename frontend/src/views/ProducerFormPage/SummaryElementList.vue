@@ -4,7 +4,7 @@
       <div :class="`mr-2 self-center justify-center rounded-full size-4 flex`">
         <v-icon class="self-center" :name="getTypeIcon(objectType)" />
       </div>
-      <p class="m-0 font-bold capitalize self-center">{{ getType(objectType) }}s</p>
+      <p class="m-0 font-bold capitalize self-center">{{ getTypeInFrench(objectType) }}s</p>
     </div>
 
     <ul>
@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { getTypeIcon, getType } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
 import SummaryElementItem from "./SummaryElementItem"
 
 defineProps({ objectType: { type: String }, elements: { type: Array } })
