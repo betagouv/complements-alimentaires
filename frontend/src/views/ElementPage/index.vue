@@ -22,7 +22,7 @@
         <ElementColumn title="Type">
           <div class="flex gap-x-1">
             <div><v-icon scale="0.75" :name="icon" /></div>
-            <ElementText :text="type === 'ingredient' ? 'ingrédient' : type" />
+            <ElementText :text="typesMapping[type]" />
           </div>
         </ElementColumn>
 
@@ -99,7 +99,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue"
-import { getTypeIcon } from "@/utils/mappings"
+import { getTypeIcon, frenchSlugToTypeMapping, typesMapping, getApiType } from "@/utils/mappings"
 import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
@@ -120,20 +120,11 @@ const search = () => {
   else router.push({ name: "ElementSearchResultsPage", query: { q: searchTerm.value } })
 }
 
-const typeMapping = {
-  plante: "plant",
-  "micro-organisme": "microorganism",
-  ingredient: "ingredient",
-  substance: "substance",
-}
-
 // Afin d'améliorer le SEO, l'urlComponent prend la forme id--type--name
 const props = defineProps({ urlComponent: String })
 const elementId = computed(() => props.urlComponent.split("--")[0])
-const type = computed(() => props.urlComponent.split("--")[1])
-
-const icon = computed(() => getTypeIcon(typeMapping[type.value]))
-
+const type = computed(() => frenchSlugToTypeMapping[props.urlComponent.split("--")[1]])
+const icon = computed(() => getTypeIcon(type.value))
 // Information affichée
 const family = computed(() => element.value?.family?.name)
 const genre = computed(() => element.value?.genre)
@@ -169,7 +160,18 @@ const historyData = computed(() =>
 // TODO: remove background
 // TODO: affichage du change reason dans l'admin
 
-const url = computed(() => `/api/v1/${typeMapping[type.value]}s/${elementId.value}`)
+const historyData = computed(() =>
+  element.value?.history.map((item) => [
+    new Date(item.historyDate).toLocaleString("default", { month: "long", year: "numeric" }),
+    item.historyChangeReason || "",
+  ])
+)
+// TODO: deduplication
+// TODO: enlarge
+// TODO: remove background
+// TODO: affichage du change reason dans l'admin
+
+const url = computed(() => `/api/v1/${getApiType(type.value)}/${elementId.value}`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
 const getElementFromApi = async () => {

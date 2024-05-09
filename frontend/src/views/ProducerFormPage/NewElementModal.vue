@@ -45,6 +45,7 @@ import { ref, watch, computed } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { required, helpers } from "@vuelidate/validators"
 import { firstErrorMsg } from "@/utils/forms"
+import { typesMapping } from "@/utils/mappings"
 
 const opened = ref(false)
 const model = ref({})
@@ -67,15 +68,8 @@ const actions = [
 ]
 
 // Note : Sur téléicare on ne peux pas ajouter des substances directement
-const types = [
-  { value: "plant", text: "Plante" },
-  { value: "microorganism", text: "Micro-organisme" },
-  { value: "ingredient", text: "Ingredient" },
-  // TODO : ces éléments seront proposés lors qu'on aura leur table dans la DB
-  // { value: "nutrient", text: "Nutriment" },
-  // { value: "additive", text: "Additif" },
-  // { value: "aroma", text: "Arôme" },
-]
+const types = typesMapping
+delete types["substance"]
 
 watch(
   () => model.value.objectType,
