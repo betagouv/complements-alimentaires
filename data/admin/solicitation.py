@@ -7,7 +7,7 @@ class BaseSolicitationAdmin:
     list_display = ("id", "creation_date", "sender", "display_recipients", "process_state")
 
     def process_state(self, obj):
-        return "✅ Traitée" if obj.is_processed else "🕣 Non traitée"
+        return "✅ Traitée" if obj.processed_at else "🕣 Non traitée"
 
     process_state.short_description = "État du traitement"
 

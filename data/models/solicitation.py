@@ -42,7 +42,9 @@ class BaseSolicitation(AutoValidable, TimeStampable):
     personal_msg = models.TextField(blank=True, null=False, verbose_name="message personnel de l'émetteur (optionnel)")
 
     # Les champs ci-dessous concernent le traitement de la solicitation, et sont vide à la création
-    processed_at = models.DateTimeField(blank=True, null=True, verbose_name="traité à")
+    processed_at = models.DateTimeField(
+        blank=True, null=True, verbose_name="traité à"
+    )  # par convention, on utilise ce champ parmi les 3 pour définir si l'objet a été traité ou pas
     processor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name="traité par",
@@ -53,11 +55,6 @@ class BaseSolicitation(AutoValidable, TimeStampable):
         related_name="%(class)s_processed",
     )
     processed_action = models.CharField(blank=True, verbose_name="action de traitement")
-
-    @property
-    def is_processed(self) -> bool:
-        # NOTE: on pourrait utiliser un GeneratedField à la place pour pouvoir filtrer avec
-        return bool(self.processed_at)
 
     def clean(self):
         if self._state.adding:
