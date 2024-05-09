@@ -77,7 +77,7 @@ class BaseSolicitation(AutoValidable, TimeStampable):
     @property
     def personal_message_for_mail(self) -> str:
         """Permet d'ajouter les messages personnels dans le corps d'un message d'email"""
-        return f" Il a ajouté ce message : «{self.personal_msg}»." if self.personal_msg else ""
+        return f" Iel a ajouté ce message : «{self.personal_msg}»." if self.personal_msg else ""
 
     def save(self, *args, **kwargs):
         """Surchargée pour appeler un hook optionnel à la création de l'objet, défini dans la classe enfant"""
@@ -102,7 +102,7 @@ class SupervisionClaim(BaseSolicitation, models.Model):
         verbose_name_plural = "demandes de gestion"
 
     recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, verbose_name="destinataires")
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, verbose_name=Company._meta.verbose_name, on_delete=models.CASCADE)
 
     @property
     def description(self):
@@ -146,7 +146,7 @@ class CoSupervisionClaim(BaseSolicitation, models.Model):
         verbose_name_plural = "demandes de co-gestion"
 
     recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, verbose_name="destinataires")
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, verbose_name=Company._meta.verbose_name, on_delete=models.CASCADE)
 
     @property
     def description(self):
@@ -198,7 +198,7 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
         ]
 
     recipient_email = models.EmailField("adresse e-mail du destinataire")
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, verbose_name=Company._meta.verbose_name, on_delete=models.CASCADE)
     roles = MultipleChoiceField(
         models.CharField(choices=CompanyRoleClassChoices), verbose_name="classes de rôle", default=list
     )
