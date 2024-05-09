@@ -3,13 +3,19 @@ from django.contrib.auth.password_validation import validate_password as django_
 
 from rest_framework import serializers
 
+from data.models import InstructionRole
 from data.models.company import DeclarantRole, SupervisorRole
 
 from .company import DeclarantRoleSerializer, SimpleCompanySerializer, SupervisorRoleSerializer
+from .global_roles import InstructionRoleSerializer
 
 User = get_user_model()
 
-ROLE_SERIALIZER_MAPPING = {SupervisorRole: SupervisorRoleSerializer, DeclarantRole: DeclarantRoleSerializer}
+ROLE_SERIALIZER_MAPPING = {
+    SupervisorRole: SupervisorRoleSerializer,
+    DeclarantRole: DeclarantRoleSerializer,
+    InstructionRole: InstructionRoleSerializer,
+}
 
 
 class BlogPostAuthor(serializers.ModelSerializer):
@@ -43,10 +49,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "last_name", "first_name", "companies")
+        fields = ("id", "username", "email", "last_name", "first_name", "companies", "global_roles")
 
     id = serializers.IntegerField(read_only=True)
     companies = serializers.SerializerMethodField(read_only=True)  # entreprises + roles par entreprise
+    global_roles = serializers.SerializerMethodField(read_only=True)
 
     def get_companies(self, obj):
         from data.models import Company  # évite un import circulaire
@@ -59,6 +66,9 @@ class UserSerializer(serializers.ModelSerializer):
             result.append(company_data_dict | {"roles": role_data})
 
         return result
+
+    def get_global_roles(self, obj):
+        return [ROLE_SERIALIZER_MAPPING[type(role)](role).data for role in obj.get_global_roles()]
 
 
 class CreateUserSerializer(UserSerializer):

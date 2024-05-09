@@ -10,6 +10,7 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from phonenumber_field.modelfields import PhoneNumberField
+from rest_framework.fields import ObjectDoesNotExist
 
 from data.behaviours import AutoValidable, Deactivable, DeactivableQuerySet, Verifiable
 
@@ -96,7 +97,14 @@ class User(PermissionsMixin, AutoValidable, Verifiable, Deactivable, AbstractBas
 
     def get_global_roles(self) -> list[BaseGlobalRole]:
         """Récupère les rôles globaux directement liés à cet utilisateur"""
-        return []  # NOTE: pour l'instant, ce type d'objet n'existe pas
+        roles = []
+        for f in User._meta.get_fields():
+            if isinstance(f, models.OneToOneRel) and issubclass(f.related_model, BaseGlobalRole):
+                try:
+                    roles.append(getattr(self, f.name))
+                except ObjectDoesNotExist:
+                    pass
+        return roles
 
     def get_company_roles(self, company) -> list[CompanyRole]:
         """Récupère les rôles d'une entreprise donnée pour cet utilisateur"""
