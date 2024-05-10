@@ -67,6 +67,11 @@ urlpatterns = {
         views.ClaimCompanyCoSupervisionView.as_view(),
         name="claim_company_co_supervision",
     ),
+    path(
+        "companies/<int:pk>/add-new-collaborator/",
+        views.AddNewCollaboratorView.as_view(),
+        name="add_new_collaborator",
+    ),
     # Solicitations
     path(
         "companies/<int:pk>/co-supervision-claims/",
@@ -77,11 +82,6 @@ urlpatterns = {
         "co-supervision-claims/<int:pk>/process/",
         views.ProcessCoSupervisionClaim.as_view(),
         name="process_co_supervision_claim",
-    ),
-    path(
-        "companies/<int:pk>/add-new-collaborator/",
-        views.AddNewCollaboratorView.as_view(),
-        name="add_new_collaborator",
     ),
     # Declarations
     path("declarations/", views.DeclarationListCreateApiView.as_view(), name="list_create_declaration"),
