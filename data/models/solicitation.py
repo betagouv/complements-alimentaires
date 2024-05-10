@@ -72,7 +72,7 @@ class BaseSolicitation(AutoValidable, TimeStampable):
     @property
     def personal_message_for_mail(self) -> str:
         """Permet d'ajouter les messages personnels dans le corps d'un message d'email"""
-        return f" Iel a ajouté ce message : «{self.personal_msg}»." if self.personal_msg else ""
+        return f"Iel a ajouté ce message : «{self.personal_msg}»." if self.personal_msg else ""
 
     def save(self, *args, **kwargs):
         """Surchargée pour appeler un hook optionnel à la création de l'objet, défini dans la classe enfant"""
@@ -115,7 +115,7 @@ class SupervisionClaim(BaseSolicitation, models.Model):
 
     @processable_action
     def accept(self, processor):
-        self.company.supervisors.set(self.sender)
+        self.company.supervisors.add(self.sender)
         send_mail(
             subject="[Compl'Alim] Votre demande de gestion a été acceptée",
             message=f"L'équipe Compl'Alim a accepté que vous deveniez gestionnaire de {self.company.social_name}. Vous pouvez vous connecter à la plateforme.",

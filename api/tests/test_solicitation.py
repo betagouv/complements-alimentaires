@@ -1,8 +1,13 @@
 from rest_framework import status
 
-from data.factories.company import CompanyFactory, DeclarantRoleFactory, SupervisorRoleFactory
-from data.factories.solicitation import CollaborationInvitationFactory, CoSupervisionClaimFactory
-from data.factories.user import UserFactory
+from data.factories import (
+    CollaborationInvitationFactory,
+    CompanyFactory,
+    CoSupervisionClaimFactory,
+    DeclarantRoleFactory,
+    SupervisorRoleFactory,
+    UserFactory,
+)
 
 from .utils import ProjectAPITestCase
 
