@@ -63,7 +63,9 @@ class AddNewCollaboratorView(APIView):
                 company=company, recipient_email=recipient_email, processed_at__isnull=True
             ).exists():
                 raise ProjectAPIException(
-                    global_error="Une invitation a déjà été envoyée à cette adresse e-mail (peut-être par quelqu'un d'autre)."
+                    field_errors={
+                        "recipient_email": "Une invitation a déjà été envoyée à cette adresse e-mail (peut-être par quelqu'un d'autre)."
+                    }
                 )
             # Cas B : l'invité n'existe pas en base, et aucune invitation n'a été envoyée
             CollaborationInvitation.objects.create(
