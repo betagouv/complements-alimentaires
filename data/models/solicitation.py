@@ -22,12 +22,14 @@ User = get_user_model()
 
 
 def processable_action(func):
-    """Décorateur pour les méthodes d'action permettant d'appeler `mark_processed()` automatiquement"""
+    """Décorateur pour traiter les solicitations automatiquement"""
 
     def wrapper(self, processor, *args, **kwargs):
         with transaction.atomic():
-            action = func.__name__
-            self.mark_processed(action=action, processor=processor)
+            self.processed_at = timezone.now()
+            self.processor = processor
+            self.processed_action = func.__name__
+            self.save()
             return func(self, processor, *args, **kwargs)
 
     return wrapper
@@ -66,13 +68,6 @@ class BaseSolicitation(AutoValidable, TimeStampable):
             raise ValidationError(
                 "Une demande traitée doit l'être par quelqu'un ET à une date spécifiée ET par une action spécifique."
             )
-
-    def mark_processed(self, action: str, processor) -> None:
-        """Marque une demande comme traitée"""
-        self.processor = processor
-        self.processed_at = timezone.now()
-        self.processed_action = action
-        self.save()
 
     @property
     def personal_message_for_mail(self) -> str:
