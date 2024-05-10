@@ -5,6 +5,7 @@ from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
+from rest_framework.exceptions import ParseError
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -35,8 +36,11 @@ class ProcessCoSupervisionClaim(APIView):
     def post(self, request, pk: int, *args, **kwargs):
         solicitation = get_object_or_404(CoSupervisionClaim, pk=pk)
         self.check_object_permissions(request, solicitation)
-        action = getattr(solicitation, request.data["action_name"])
-        action(processor=request.user)
+        action = getattr(solicitation, request.data.get("action_name", ""), None)
+        if action:
+            action(processor=request.user)
+        else:
+            raise ParseError()
         return Response({})
 
 
