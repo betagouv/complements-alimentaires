@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions, status
 from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -67,7 +67,7 @@ class UserRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     - Obtention d'un utilisateur (aujourd'hui principalement par le rôle instructor)
     """
 
-    permission_classes = [CanAccessUser]
+    permission_classes = [IsAuthenticated, CanAccessUser]
     serializer_class = UserSerializer
     queryset = get_user_model().objects.active()
 

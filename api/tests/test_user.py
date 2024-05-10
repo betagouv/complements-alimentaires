@@ -207,13 +207,6 @@ class TestEditUser(ProjectAPITestCase):
         response = self.put(self.url(pk=self.user.id), {})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_get_user_ko(self):
-        """Ensure that GET method has been deactivated on the RetrieveUpdateDestroyAPIView
-        (this test should not be exactly there, but is here by convenience)
-        """
-        response = self.get(self.url(pk=self.user.id))
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-
 
 class TestDeleteUser(ProjectAPITestCase):
     viewname = "user_retrieve_update_destroy"
