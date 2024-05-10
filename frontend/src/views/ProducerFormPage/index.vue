@@ -95,7 +95,7 @@ const hasNewElements = computed(() => {
     )
     .some((x) => x.new)
 })
-const readonly = computed(() => payload.value.status !== "DRAFT")
+const readonly = computed(() => !isNewDeclaration.value && payload.value.status !== "DRAFT")
 const currentStep = ref(null)
 const steps = computed(() => {
   if (readonly.value) return ["Résumé"]
