@@ -3,12 +3,15 @@ from rest_framework import permissions
 from data.models import InstructionRole
 
 
-class IsLoggedUser(permissions.BasePermission):
+class CanAccessUser(permissions.BasePermission):
     message = "Vous devez être connecté et être l'utilisateur en question pour effectuer cette action"
 
     def has_object_permission(self, request, view, obj):  # obj: User
         user = request.user
-        return user.is_authenticated and user == obj
+        is_instructor = IsInstructor().has_permission(request, view)
+        if user.is_authenticated and user == obj:
+            return True
+        return request.method == "GET" and is_instructor
 
 
 class CanAccessUserDeclatarions(permissions.BasePermission):

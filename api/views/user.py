@@ -8,14 +8,13 @@ from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions, status
-from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.exception_handling import ProjectAPIException
-from api.permissions import IsLoggedUser
+from api.permissions import CanAccessUser
 from api.serializers import (
     ChangePasswordSerializer,
     CreateUserSerializer,
@@ -61,13 +60,14 @@ class UserCreateView(CreateAPIView):
         return new_user
 
 
-class UserUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+class UserRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     """
     - Modification d'un utilisateur connecté (hors mot de passe)
     - Désactivation d'un utilisateur
+    - Obtention d'un utilisateur (aujourd'hui principalement par le rôle instructor)
     """
 
-    permission_classes = [IsLoggedUser]
+    permission_classes = [CanAccessUser]
     serializer_class = UserSerializer
     queryset = get_user_model().objects.active()
 
@@ -88,9 +88,6 @@ class UserUpdateDestroyView(RetrieveUpdateDestroyAPIView):
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[settings.CONTACT_EMAIL],
         )
-
-    def get(self, request, *args, **kwargs):
-        raise MethodNotAllowed("Retrieve feature should not be used here")
 
 
 class ChangePasswordView(APIView):
