@@ -83,6 +83,7 @@ class TestAddNewCollaborator(ProjectAPITestCase):
         self.login(self.adder)
         response = self.post(self.url(pk=self.company.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("message", response.data)
 
     def test_add_collaborator_already_a_collaborator_ko(self):
         # L'invité existe en base et fait déjà partie des collaborateurs de l'entreprise.
@@ -99,6 +100,7 @@ class TestAddNewCollaborator(ProjectAPITestCase):
         payload = dict(recipient_email=recipient.email, roles=["DeclarantRole"])
         response = self.post(self.url(pk=self.company.pk), payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("message", response.data)
         self.assertIn(recipient, self.company.collaborators)
 
     def test_add_collaborator_not_logged_ko(self):
