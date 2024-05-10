@@ -1,6 +1,6 @@
 <template>
   <div v-if="solicitations">
-    <SectionTitle title="Demandes en cours" icon="ri-chat-3-line" />
+    <SectionTitle title="Demandes reçues" icon="ri-chat-3-line" />
     <p>Visualisez et traitez vos demandes reçues pour rejoindre votre entreprise.</p>
     <div v-for="solicitation in solicitations" :key="solicitation.id">
       <div class="flex items-center">

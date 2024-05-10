@@ -5,7 +5,7 @@ from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -13,7 +13,7 @@ from data.models import CollaborationInvitation, Company, CoSupervisionClaim
 
 from ..exception_handling import ProjectAPIException
 from ..permissions import IsSolicitationRecipient, IsSupervisor
-from ..serializers import CoSupervisionClaimSerializer
+from ..serializers import AddNewCollaboratorSerializer, CoSupervisionClaimSerializer
 
 User = get_user_model()
 
@@ -40,7 +40,7 @@ class ProcessCoSupervisionClaim(APIView):
         return Response({})
 
 
-class AddNewCollaboratorView(CreateAPIView):
+class AddNewCollaboratorView(APIView):
     """Ajout d'un collaborateur pouvant mener à différents cas (ajout des rôles, invitation par mail, erreurs)."""
 
     permission_classes = [IsSupervisor]
@@ -49,31 +49,36 @@ class AddNewCollaboratorView(CreateAPIView):
     def post(self, request, pk: int, *args, **kwargs):
         company = get_object_or_404(Company, pk=pk)
         self.check_object_permissions(request, company)
-        cleaned_email = User.objects.normalize_email(request.data["recipient_email"])
-        sender = request.user
 
+        serializer = AddNewCollaboratorSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        recipient_email = serializer.validated_data["recipient_email"]
+        roles = serializer.validated_data["roles"]
+        sender = request.user
         try:
-            recipient = User.objects.get(email=cleaned_email)
+            recipient = User.objects.get(email=recipient_email)
         except User.DoesNotExist:
-            # Cas A : l'utilisateur n'existe pas en base, mais une invitation non traitée a déjà été envoyée
+            # Cas A : l'invité n'existe pas en base, mais une invitation non traitée a déjà été envoyée
             if CollaborationInvitation.objects.filter(
-                sender=sender, company=company, recipient_email=cleaned_email, processed_at__isnull=True
+                company=company, recipient_email=recipient_email, processed_at__isnull=True
             ).exists():
-                raise ProjectAPIException(global_error="Une invitation a déjà été envoyée pour cette adresse e-mail.")
-            # Cas B : l'utilisateur n'existe pas en base, et aucune invitation n'a été envoyée
+                raise ProjectAPIException(
+                    global_error="Une invitation a déjà été envoyée à cette adresse e-mail (peut-être par quelqu'un d'autre)."
+                )
+            # Cas B : l'invité n'existe pas en base, et aucune invitation n'a été envoyée
             CollaborationInvitation.objects.create(
-                sender=sender, company=company, recipient_email=cleaned_email, roles=request.data["roles"]
+                sender=sender, company=company, recipient_email=recipient_email, roles=roles
             )
-            return Response({"message": f"L'invitation a bien été envoyéee à {cleaned_email}."})
+            return Response({"message": f"L'invitation a bien été envoyéee à {recipient_email}."})
         else:
-            # Cas C : l'utilisateur existe en base et fait déjà partie des collaborateurs de l'entreprise
+            # Cas C : l'invité existe en base et fait déjà partie des collaborateurs de l'entreprise
             if recipient in company.collaborators:
                 raise ProjectAPIException(
                     field_errors={"recipient_email": "Cet utilisateur fait déjà partie de vos collaborateurs."}
                 )
-            # Cas D : l'utilisateur existe en base mais n'est pas encore collaborateur de l'entreprise
+            # Cas D : l'invité existe en base mais n'est pas encore collaborateur de l'entreprise
             else:
-                for role_name in request.data["roles"]:
+                for role_name in roles:
                     role_class = apps.get_model("data", role_name)
                     role_class.objects.get_or_create(
                         company=company, user=recipient
