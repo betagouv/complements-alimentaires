@@ -94,7 +94,7 @@ class AddNewCollaboratorView(APIView):
                     subject=f"[Compl'Alim] {sender.name} vous a ajouté en tant que collaborateur.",
                     message=f"{sender.name} vous a ajouté en tant que collaborateur de l'entreprise {company.social_name}.",
                     from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[sender.email],
+                    recipient_list=[recipient.email],
                 )
                 return Response(
                     {"message": f"{recipient.name} a été ajouté à vos collaborateurs. Un e-mail lui a été envoyé."}

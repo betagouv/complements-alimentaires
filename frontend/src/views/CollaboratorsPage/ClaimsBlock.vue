@@ -45,12 +45,9 @@ import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 import { onMounted } from "vue"
 import { isoToPrettyDate, isoToPrettyTime } from "@/utils/date"
-import { useRootStore } from "@/stores/root"
-import { storeToRefs } from "pinia"
 import useToaster from "@/composables/use-toaster"
 
-const store = useRootStore()
-const { company } = storeToRefs(store)
+const props = defineProps({ companyId: Number, collaboratorsExecute: Function })
 
 const dateOptions = {
   weekday: "short",
@@ -70,7 +67,7 @@ const {
   response,
   execute,
 } = useFetch(
-  `/api/v1/companies/${company.value.id}/co-supervision-claims/`,
+  `/api/v1/companies/${props.companyId}/co-supervision-claims/`,
   {
     headers: headers(),
   },
@@ -87,6 +84,7 @@ const process = async (solicitationId, actionName) => {
   const { response } = await useFetch(url, { headers: headers() }).post({ actionName: actionName }).json()
   await handleError(response)
   if (response.value.ok) {
+    await props.collaboratorsExecute() // met à jour les collaborateurs existants, car ils peuvent avoir changé
     useToaster().addMessage({
       type: "success",
       description: "La demande a bien été traitée.",
