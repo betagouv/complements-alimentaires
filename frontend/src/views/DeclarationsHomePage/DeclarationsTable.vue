@@ -13,7 +13,7 @@
 <script setup>
 import { computed, ref } from "vue"
 import { timeAgo } from "@/utils/date"
-import { statusProps } from "@/utils/mappings"
+import { getStatusTagForCell } from "@/utils/components"
 import { useResizeObserver, useDebounceFn } from "@vueuse/core"
 
 const props = defineProps({ data: { type: Array, default: () => [] } })
@@ -32,20 +32,13 @@ const rows = computed(() => {
   if (useShortTable.value)
     return sorted.map((d) => ({
       rowAttrs: { class: "cursor-pointer", onClick: () => emit("open", d.id) },
-      rowData: [d.name, getTagForCell(d.status)],
+      rowData: [d.name, getStatusTagForCell(d.status)],
     }))
 
   return sorted.map((d) => ({
     rowAttrs: { class: "cursor-pointer", onClick: () => emit("open", d.id) },
-    rowData: [d.name, d.brand || "—", getTagForCell(d.status), timeAgo(d.modificationDate)],
+    rowData: [d.name, d.brand || "—", getStatusTagForCell(d.status), timeAgo(d.modificationDate)],
   }))
-})
-
-const getTagForCell = (status) => ({
-  component: "DsfrTag",
-  label: statusProps[status].label,
-  class: status,
-  icon: statusProps[status].icon,
 })
 // On prend la width de la table pour montrer/cacher les colonnes
 const table = ref(null)
@@ -58,25 +51,5 @@ useResizeObserver(
 <style scoped>
 .fr-table :deep(table) {
   @apply !table;
-}
-.fr-table :deep(.fr-tag .ov-icon) {
-  @apply !mr-2;
-}
-/* Je dois les spécifier ici car Tailwind ne fait pas des classes dynamiques pour le bg */
-/* https://stackoverflow.com/questions/72481680/tailwinds-background-color-is-not-being-applied-when-added-dynamically */
-.fr-table :deep(.fr-tag.DRAFT) {
-  @apply !bg-blue-france-925;
-}
-.fr-table :deep(.fr-tag.AWAITING_INSTRUCTION) {
-  @apply !bg-gray-200;
-}
-.fr-table :deep(.fr-tag.AWAITING_PRODUCER) {
-  @apply !bg-amber-100;
-}
-.fr-table :deep(.fr-tag.REJECTED) {
-  @apply !bg-red-marianne-925;
-}
-.fr-table :deep(.fr-tag.APPROVED) {
-  @apply !bg-success-950;
 }
 </style>

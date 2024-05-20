@@ -8,6 +8,7 @@
       icon="ri-home-4-line"
     />
     <ActionGrid v-if="isDeclarant" :actions="declarantActions" title="Mes déclarations" icon="ri-capsule-fill" />
+    <ActionGrid v-if="isInstructor" :actions="instructionActions" title="Instruction" icon="ri-survey-fill" />
     <ActionGrid v-if="emptyRoles" :actions="onboardingActions" title="Démarrez chez Compl-Alim !" />
     <ActionGrid :actions="userActions" title="Mon compte" icon="ri-account-circle-line" />
   </div>
@@ -26,6 +27,7 @@ const { loggedUser, company } = storeToRefs(store)
 const emptyRoles = computed(() => !company.value || !company.value.roles || company.value.roles.length === 0)
 const isSupervisor = computed(() => company.value?.roles.some((x) => x.name === "SupervisorRole"))
 const isDeclarant = computed(() => company.value?.roles.some((x) => x.name === "DeclarantRole"))
+const isInstructor = computed(() => loggedUser.value?.globalRoles.some((x) => x.name === "InstructionRole"))
 
 const supervisorActions = [
   {
@@ -58,6 +60,14 @@ const declarantActions = [
     title: "Toutes mes déclarations",
     description: "Consultez, modifiez ou dupliquez une déclaration que vous avez effectuée",
     link: { name: "DeclarationsHomePage" },
+  },
+]
+
+const instructionActions = [
+  {
+    title: "Liste des déclarations",
+    description: "Accédez à la liste des déclarations Compl'Alim",
+    link: { name: "AllDeclarations" },
   },
 ]
 
