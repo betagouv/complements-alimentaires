@@ -12,7 +12,7 @@ class BaseNumberInFilter(django_filters.BaseInFilter, django_filters.NumberFilte
     séparateur. Pratique pour le filtrage d'IDs des modèles.
 
     Par exemple, dans un URL on pourrait avoir `company=12,13,14` pour filtrer des objets ayant
-    comme compagnie une de ces trois (IDs 12, 13 ou 14).
+    comme entreprise une de ces trois (IDs 12, 13 ou 14).
     """
 
     pass

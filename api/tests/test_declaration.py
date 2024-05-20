@@ -703,7 +703,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(len(results), 3)
 
     @authenticate
-    def test_get_all_declarations_non_admin(self):
+    def test_get_all_declarations_non_instructor(self):
         """
         Un utilisateur n'ayant pas le rôle d'instruction ne pourra pas obtenir toutes les
         déclarations

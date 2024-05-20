@@ -12,6 +12,12 @@ class IsLoggedUser(permissions.BasePermission):
 
 
 class CanAccessUserDeclatarions(permissions.BasePermission):
+    """
+    Un.e utilisateur.ice peut seulement avoir accès à ces propres déclarations. Cette
+    permission vérifie que le paramètre dans l'URL `user_pk` corresponde à l'objet
+    `user` de la requête.
+    """
+
     def has_permission(self, request, view):
         return view.kwargs["user_pk"] == request.user.id
 
