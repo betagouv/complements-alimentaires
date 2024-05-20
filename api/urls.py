@@ -31,7 +31,7 @@ urlpatterns = {
     # User
     path("get-logged-user/", views.LoggedUserView.as_view(), name="get_logged_user"),
     path("users/", views.UserCreateView.as_view(), name="user_create"),
-    path("users/<int:pk>", views.UserUpdateDestroyView.as_view(), name="user_update_destroy"),
+    path("users/<int:pk>", views.UserRetrieveUpdateDestroyView.as_view(), name="user_retrieve_update_destroy"),
     path("change-password/", views.ChangePasswordView.as_view(), name="change_password"),
     path("generate-username/", views.GenerateUsernameView.as_view(), name="generate_username"),
     path("verify-email/", views.VerifyEmailView.as_view(), name="verify_email"),

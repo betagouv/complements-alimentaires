@@ -52,12 +52,7 @@ import useToaster from "@/composables/use-toaster"
 const $externalResults = ref({})
 
 const store = useRootStore()
-store.fetchConditions()
-store.fetchEffects()
-store.fetchPopulations()
-store.fetchPlantParts()
-store.fetchGalenicFormulation()
-store.fetchUnits()
+store.fetchDeclarationFieldsData()
 
 const props = defineProps({
   id: String,

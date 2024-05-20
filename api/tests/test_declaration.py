@@ -828,3 +828,14 @@ class TestDeclarationApi(APITestCase):
         names.reverse()
         for index, expected_name in enumerate(names):
             self.assertEqual(results[index]["name"], expected_name)
+
+    @authenticate
+    def test_instructor_can_access_delcaration(self):
+        """
+        Les déclarations peuvent être vues par des personnes ayant le rôle instructor
+        """
+        declaration = DeclarationFactory()
+        InstructionRoleFactory(user=authenticate.user)
+
+        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
