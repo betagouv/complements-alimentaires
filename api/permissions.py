@@ -1,5 +1,7 @@
 from rest_framework import permissions
 
+from data.models import InstructionRole
+
 
 class IsLoggedUser(permissions.BasePermission):
     message = "Vous devez être connecté et être l'utilisateur en question pour effectuer cette action"
@@ -7,6 +9,17 @@ class IsLoggedUser(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):  # obj: User
         user = request.user
         return user.is_authenticated and user == obj
+
+
+class CanAccessUserDeclatarions(permissions.BasePermission):
+    """
+    Un.e utilisateur.ice peut seulement avoir accès à ces propres déclarations. Cette
+    permission vérifie que le paramètre dans l'URL `user_pk` corresponde à l'objet
+    `user` de la requête.
+    """
+
+    def has_permission(self, request, view):
+        return view.kwargs["user_pk"] == request.user.id
 
 
 class IsSupervisor(permissions.BasePermission):
@@ -31,3 +44,8 @@ class IsDeclarationAuthor(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):  # obj: Declaration
         user = request.user
         return user.is_authenticated and obj.author == user
+
+
+class IsInstructor(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return InstructionRole.objects.filter(user=request.user).exists()

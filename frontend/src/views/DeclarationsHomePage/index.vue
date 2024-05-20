@@ -26,8 +26,12 @@ import { handleError } from "@/utils/error-handling"
 import DeclarationsTable from "./DeclarationsTable"
 import { useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
+import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
 
-const { response, data, isFetching } = useFetch("/api/v1/declarations/").get().json()
+const store = useRootStore()
+const { loggedUser } = storeToRefs(store)
+const { response, data, isFetching } = useFetch(`/api/v1/users/${loggedUser.id}/declarations/`).get().json()
 
 watch(response, () => handleError(response))
 
