@@ -20,7 +20,7 @@ from data.utils.external_utils import SiretData
 from data.validators import validate_siret, validate_vat  # noqa
 
 from ..exception_handling import ProjectAPIException
-from ..permissions import IsSupervisor
+from ..permissions import IsInstructor, IsSupervisor
 from ..serializers import CollaboratorSerializer, CompanySerializer
 
 User = get_user_model()
@@ -153,10 +153,13 @@ class CompanyCreateView(CreateAPIView):
 
 
 class CompanyRetrieveView(RetrieveAPIView):
-    """Récupération d'une entreprise dont l'utilisateur est gestionnaire"""
+    """Récupération d'une entreprise dont l'utilisateur est gestionnaire ou instructeur"""
 
     queryset = Company.objects.all()
-    permission_classes = [IsSupervisor]
+    permission_classes = [
+        IsAuthenticated,
+        IsSupervisor | IsInstructor,
+    ]
     serializer_class = CompanySerializer
 
 

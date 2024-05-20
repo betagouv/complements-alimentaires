@@ -18,10 +18,10 @@ ROLE_SERIALIZER_MAPPING = {
 }
 
 
-class BlogPostAuthor(serializers.ModelSerializer):
+class SimpleUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("first_name", "last_name")
+        fields = ("id", "first_name", "last_name")
 
 
 class CollaboratorSerializer(serializers.ModelSerializer):

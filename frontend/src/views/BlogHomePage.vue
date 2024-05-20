@@ -40,6 +40,7 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import BlogCard from "@/components/BlogCard"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
+import { getPagesForPagination } from "@/utils/components"
 
 const route = useRoute()
 const router = useRouter()
@@ -48,17 +49,8 @@ const router = useRouter()
 const limit = 6
 const page = ref(null)
 const offset = computed(() => (page.value - 1) * limit)
-const pages = computed(() => {
-  const totalPages = Math.ceil(data?.value.count / limit)
-  const pages = []
-  for (let i = 0; i < totalPages; i++)
-    pages.push({
-      label: i + 1,
-      href: `${route.path}?page=${i + 1}`,
-      title: `Page ${i + 1}`,
-    })
-  return pages
-})
+const pages = computed(() => getPagesForPagination(data.value.count, limit, route.path))
+
 const updatePage = (newPage) => (page.value = newPage + 1)
 const updateRoute = () => {
   const query = { page: page.value }

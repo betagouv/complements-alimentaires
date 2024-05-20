@@ -37,7 +37,7 @@ urlpatterns = {
     # User
     path("get-logged-user/", views.LoggedUserView.as_view(), name="get_logged_user"),
     path("users/", views.UserCreateView.as_view(), name="user_create"),
-    path("users/<int:pk>", views.UserUpdateDestroyView.as_view(), name="user_update_destroy"),
+    path("users/<int:pk>", views.UserRetrieveUpdateDestroyView.as_view(), name="user_retrieve_update_destroy"),
     path("change-password/", views.ChangePasswordView.as_view(), name="change_password"),
     path("generate-username/", views.GenerateUsernameView.as_view(), name="generate_username"),
     path("verify-email/", views.VerifyEmailView.as_view(), name="verify_email"),
@@ -73,7 +73,12 @@ urlpatterns = {
         views.ClaimCompanyCoSupervisionView.as_view(),
         name="claim_company_co_supervision",
     ),
-    path("declarations/", views.DeclarationListCreateApiView.as_view(), name="list_create_declaration"),
+    path(
+        "users/<int:user_pk>/declarations/",
+        views.UserDeclarationsListCreateApiView.as_view(),
+        name="list_create_declaration",
+    ),
+    path("declarations/", views.AllDeclarationsListView.as_view(), name="list_all_declarations"),
     path("declarations/<int:pk>", views.DeclarationRetrieveUpdateView.as_view(), name="retrieve_update_declaration"),
     path("declarations/<int:pk>/submit/", views.DeclarationSubmitView.as_view(), name="submit_declaration"),
 }

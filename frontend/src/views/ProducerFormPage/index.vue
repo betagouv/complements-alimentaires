@@ -52,12 +52,7 @@ import useToaster from "@/composables/use-toaster"
 const $externalResults = ref({})
 
 const store = useRootStore()
-store.fetchConditions()
-store.fetchEffects()
-store.fetchPopulations()
-store.fetchPlantParts()
-store.fetchGalenicFormulation()
-store.fetchUnits()
+store.fetchDeclarationFieldsData()
 
 const props = defineProps({
   id: String,
@@ -113,7 +108,9 @@ const components = computed(() => {
 
 const savePayload = async () => {
   const isNewDeclaration = !payload.value.id
-  const url = isNewDeclaration ? "/api/v1/declarations/" : `/api/v1/declarations/${payload.value.id}`
+  const url = isNewDeclaration
+    ? `/api/v1/users/${store.loggedUser.id}/declarations/`
+    : `/api/v1/declarations/${payload.value.id}`
   const httpMethod = isNewDeclaration ? "post" : "put"
   const { response, data } = await useFetch(url, { headers: headers() })[httpMethod](payload).json()
   $externalResults.value = await handleError(response)
