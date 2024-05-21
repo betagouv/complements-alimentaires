@@ -697,7 +697,7 @@ class TestDeclarationApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
 
         for _ in range(3):
-            DeclarationFactory()
+            DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         response = self.client.get(reverse("api:list_all_declarations"), format="json")
         results = response.json()["results"]
         self.assertEqual(len(results), 3)
@@ -709,7 +709,7 @@ class TestDeclarationApi(APITestCase):
         déclarations
         """
         for _ in range(3):
-            DeclarationFactory()
+            DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         response = self.client.get(reverse("api:list_all_declarations"), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -724,9 +724,18 @@ class TestDeclarationApi(APITestCase):
         edouard = DeclarantRoleFactory()
         stephane = DeclarantRoleFactory()
 
-        [DeclarationFactory(author=edouard.user) for _ in range(4)]
-        emma_declarations = [DeclarationFactory(author=emma.user) for _ in range(3)]
-        stephane_declarations = [DeclarationFactory(author=stephane.user) for _ in range(5)]
+        [
+            DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION, author=edouard.user)
+            for _ in range(4)
+        ]
+        emma_declarations = [
+            DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION, author=emma.user)
+            for _ in range(3)
+        ]
+        stephane_declarations = [
+            DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION, author=stephane.user)
+            for _ in range(5)
+        ]
 
         # Filtrage pour obtenir les déclarations d'Emma
         emma_filter_url = f"{reverse('api:list_all_declarations')}?author={emma.user.id}"
@@ -757,9 +766,18 @@ class TestDeclarationApi(APITestCase):
         acme = CompanyFactory()
         wonka_industries = CompanyFactory()
 
-        [DeclarationFactory(company=buy_n_large) for _ in range(4)]
-        acme_declarations = [DeclarationFactory(company=acme) for _ in range(3)]
-        wonka_declarations = [DeclarationFactory(company=wonka_industries) for _ in range(5)]
+        [
+            DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION, company=buy_n_large)
+            for _ in range(4)
+        ]
+        acme_declarations = [
+            DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION, company=acme)
+            for _ in range(3)
+        ]
+        wonka_declarations = [
+            DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION, company=wonka_industries)
+            for _ in range(5)
+        ]
 
         # Filtrage pour obtenir les déclarations de l'entreprise Acme
         acme_filter_url = f"{reverse('api:list_all_declarations')}?company={acme.id}"
@@ -807,7 +825,7 @@ class TestDeclarationApi(APITestCase):
         names = ["B", "C", "A", "D"]
 
         for name in names:
-            DeclarationFactory(name=name)
+            DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION, name=name)
 
         # Triage par nom
         name_sort_url = f"{reverse('api:list_all_declarations')}?ordering=name"
@@ -830,12 +848,27 @@ class TestDeclarationApi(APITestCase):
             self.assertEqual(results[index]["name"], expected_name)
 
     @authenticate
-    def test_instructor_can_access_delcaration(self):
+    def test_instructor_can_access_declaration(self):
         """
         Les déclarations peuvent être vues par des personnes ayant le rôle instructor
         """
-        declaration = DeclarationFactory()
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         InstructionRoleFactory(user=authenticate.user)
 
         response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": declaration.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @authenticate
+    def test_instructor_does_not_see_drafts(self):
+        """
+        Les déclarations brouillons ne sont pas visibles aux personnes ayant le rôle instructor
+        """
+        draft_declaration = DeclarationFactory()
+        InstructionRoleFactory(user=authenticate.user)
+
+        response = self.client.get(reverse("api:list_all_declarations"), format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 0)
+
+        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": draft_declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
