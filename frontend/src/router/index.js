@@ -219,6 +219,7 @@ const routes = [
       requiredRole: "InstructionRole",
       defaultQueryParams: {
         page: 1,
+        status: "",
       },
     },
   },
@@ -275,7 +276,7 @@ function ensureDefaultQueryParams(route, next) {
   if (!route.meta.defaultQueryParams) return
   let needsRedirection = false
   for (const [queryParam, value] of Object.entries(route.meta.defaultQueryParams))
-    if (!route.query[queryParam]) {
+    if (!(queryParam in route.query)) {
       route.query[queryParam] = value
       needsRedirection = true
     }
