@@ -70,14 +70,18 @@ class DeclarationFlowView(GenericAPIView):
 class DeclarationFilterSet(django_filters.FilterSet):
     author = BaseNumberInFilter(field_name="author__id")
     company = BaseNumberInFilter(field_name="company__id")
+    company_name_start = django_filters.CharFilter(field_name="company__social_name", lookup_expr="gte")
+    company_name_end = django_filters.CharFilter(field_name="company__social_name", lookup_expr="lte")
 
     class Meta:
         model = Declaration
-        fields = {
+        fields = [
             "company",
             "status",
             "author",
-        }
+            "company_name_start",
+            "company_name_end",
+        ]
 
 
 class DeclarationPagination(LimitOffsetPagination):

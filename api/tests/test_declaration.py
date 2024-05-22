@@ -1,6 +1,7 @@
 import base64
 import os
 
+from django.test import tag
 from django.urls import reverse
 
 from rest_framework import status
@@ -797,6 +798,61 @@ class TestDeclarationApi(APITestCase):
 
         for result in results:
             self.assertEqual(result["status"], Declaration.DeclarationStatus.APPROVED.value)
+
+    @tag("DEBUG")
+    @authenticate
+    def test_filter_company_name_start_end(self):
+        """
+        Les déclarations peuvent être filtrées par le nom d'une compagnie : début et fin
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        companies = [
+            CompanyFactory(social_name="Àccented Corporation"),
+            CompanyFactory(social_name="Compléments santé"),
+            CompanyFactory(social_name="lowercase ltd"),
+            CompanyFactory(social_name="Soylent Corp"),
+            CompanyFactory(social_name="Umbrella Corporation"),
+        ]
+        for company in companies:
+            DeclarationFactory(status=Declaration.DeclarationStatus.APPROVED, company=company)
+
+        # Filtrage pour obtenir les déclarations utilisant le filtre début et fin du social name
+
+        # Tout ce qui vient après la « S » : Soylent Corp et Umbrella Corporation
+        url = f"{reverse('api:list_all_declarations')}?company_name_start=S"
+        response = self.client.get(url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+        returned_companies = list(map(lambda x: x["company"]["socialName"], results))
+        self.assertIn("Soylent Corp", returned_companies)
+        self.assertIn("Umbrella Corporation", returned_companies)
+
+        # De la « A » à la « Co » : Àccented Corporation et Compléments santé
+        url = f"{reverse('api:list_all_declarations')}?company_name_start=A&company_name_end=Co"
+        response = self.client.get(url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+        returned_companies = list(map(lambda x: x["company"]["socialName"], results))
+        self.assertIn("Àccented Corporation", returned_companies)
+        self.assertIn("Compléments santé", returned_companies)
+
+        # Jusqu'à la « L » : Àccented Corporation, Compléments santé et lowercase ltd
+        url = f"{reverse('api:list_all_declarations')}?company_name_end=L"
+        response = self.client.get(url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 3)
+        returned_companies = list(map(lambda x: x["company"]["socialName"], results))
+        self.assertIn("Àccented Corporation", returned_companies)
+        self.assertIn("Compléments santé", returned_companies)
+        self.assertIn("lowercase ltd", returned_companies)
+
+        # À partir de « um » (minuscule) : Umbrella Corporation
+        url = f"{reverse('api:list_all_declarations')}?company_name_start=ul"
+        response = self.client.get(url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        returned_companies = list(map(lambda x: x["company"]["socialName"], results))
+        self.assertIn("Umbrella Corporation", returned_companies)
 
     @authenticate
     def test_sort_declarations_by_name(self):
