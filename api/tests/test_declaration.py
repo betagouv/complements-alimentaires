@@ -863,7 +863,7 @@ class TestDeclarationApi(APITestCase):
         """
         Les déclarations brouillons ne sont pas visibles aux personnes ayant le rôle instructor
         """
-        draft_declaration = DeclarationFactory()
+        draft_declaration = DeclarationFactory(status=Declaration.DeclarationStatus.DRAFT)
         InstructionRoleFactory(user=authenticate.user)
 
         response = self.client.get(reverse("api:list_all_declarations"), format="json")
