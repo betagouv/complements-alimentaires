@@ -11,11 +11,8 @@ class IngredientStatus(models.IntegerChoices):
 
     AUTHORIZED = 1, "autorisé"
     NOT_AUTHORIZED = 2, "non autorisé"
-    PENDING_REGISTRATION = 3, "à inscrire"
-    NA = 4, "sans objet"
 
     __empty__ = "inconnu"
-    # TODO: devrait-on merger "sans objet" et "inconnu" ?
 
 
 class WithStatus(models.Model):

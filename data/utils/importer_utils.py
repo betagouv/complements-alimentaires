@@ -1,11 +1,50 @@
 from django.db.models import (
-    TextField,
     CharField,
     FloatField,
     IntegerField,
+    TextField,
 )
-from simple_history.utils import update_change_reason
+
 from simple_history.exceptions import NotHistoricalModelError
+from simple_history.utils import update_change_reason
+
+
+def pre_import_treatments(field, value):
+    """
+    Fonction dans laquelle se font toutes les modifications des données SICCRF
+    pour intégration dans les modèles Compl'Alim :
+    * nettoyage de valeurs (trim)
+    * transformation de valeurs en d'autres valeurs
+    """
+    if field.name == "status":
+        new_fields = {field.name: convert_status(clean_value(value, field))}
+        # si le status SICCRF correspond à "à inscrire"
+        if value == 3:
+            new_fields["to_be_entered_in_next_decree"] = 1
+    else:
+        new_fields = {field.name: clean_value(value, field)}
+    return new_fields
+
+
+def convert_status(value):
+    """
+    Converti les statuts SICCRF en statuts Compl'Alim
+    * à inscrire sera calculé automatiquement à partir de la date d'entrée en base de l'ingrédient
+    * sans objet apparaît comme autorisé, car non reliée à une quelconque règlementation
+    """
+    match value:
+        # autorisé
+        case 1:
+            return 1
+        # non autorisé
+        case 2:
+            return 2
+        # à inscrire
+        case 3:
+            return 1
+        # sans objet
+        case 4:
+            return 1
 
 
 def clean_value(value, field):
