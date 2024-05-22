@@ -1,10 +1,12 @@
 from rest_framework import serializers
+
 from data.models import BlogPost
-from .user import BlogPostAuthor
+
+from .user import SimpleUserSerializer
 
 
 class BlogPostSerializer(serializers.ModelSerializer):
-    author = BlogPostAuthor()
+    author = SimpleUserSerializer()
     tags = serializers.SlugRelatedField(many=True, read_only=True, slug_field="name")
 
     class Meta:

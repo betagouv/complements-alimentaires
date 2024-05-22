@@ -19,3 +19,4 @@ from .galenic_formulation import GalenicFormulationFactory
 from .unit import SubstanceUnitFactory
 from .declaration import DeclarationFactory, InstructionReadyDeclarationFactory
 from .solicitation import CollaborationInvitationFactory, CoSupervisionClaimFactory, SupervisionClaimFactory
+from .global_roles import InstructionRoleFactory

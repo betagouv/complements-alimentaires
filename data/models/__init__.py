@@ -24,6 +24,7 @@ from .declaration import (
     Attachment,
 )
 from .solicitation import SupervisionClaim, CoSupervisionClaim, CollaborationInvitation
+from .global_roles import InstructionRole
 
 ELEMENT_MODELS = [
     Ingredient,

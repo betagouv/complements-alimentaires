@@ -1,16 +1,25 @@
+from django_filters import rest_framework as django_filters
 from rest_framework.exceptions import NotFound, PermissionDenied
-from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
-from api.permissions import IsDeclarant, IsDeclarationAuthor
-from api.serializers import DeclarationSerializer, DeclarationShortSerializer
+from api.permissions import (
+    CanAccessIndividualDeclaration,
+    CanAccessUserDeclatarions,
+    IsDeclarant,
+    IsDeclarationAuthor,
+    IsInstructor,
+)
+from api.serializers import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer
+from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
 from data.models import Company, Declaration
 
 
-class DeclarationListCreateApiView(ListCreateAPIView):
+class UserDeclarationsListCreateApiView(ListCreateAPIView):
     model = Declaration
-    permission_classes = [IsDeclarant]
+    permission_classes = [IsDeclarant, CanAccessUserDeclatarions]
 
     def get_queryset(self):
         return self.request.user.declarations
@@ -36,7 +45,7 @@ class DeclarationListCreateApiView(ListCreateAPIView):
 class DeclarationRetrieveUpdateView(RetrieveUpdateAPIView):
     model = Declaration
     serializer_class = DeclarationSerializer
-    permission_classes = [IsDeclarationAuthor, IsDeclarant]
+    permission_classes = [CanAccessIndividualDeclaration]
     queryset = Declaration.objects.all()
 
 
@@ -56,6 +65,38 @@ class DeclarationFlowView(GenericAPIView):
         declaration.save()
         serializer = self.get_serializer(declaration)
         return Response(serializer.data)
+
+
+class DeclarationFilterSet(django_filters.FilterSet):
+    author = BaseNumberInFilter(field_name="author__id")
+    company = BaseNumberInFilter(field_name="company__id")
+
+    class Meta:
+        model = Declaration
+        fields = {
+            "company",
+            "status",
+            "author",
+        }
+
+
+class DeclarationPagination(LimitOffsetPagination):
+    default_limit = 10
+    max_limit = 50
+
+
+class AllDeclarationsListView(ListAPIView):
+    model = Declaration
+    serializer_class = SimpleDeclarationSerializer
+    permission_classes = [IsInstructor]
+    ordering_fields = ["creation_date", "modification_date", "name"]
+    pagination_class = DeclarationPagination
+    filter_backends = [
+        django_filters.DjangoFilterBackend,
+        CamelCaseOrderingFilter,
+    ]
+    filterset_class = DeclarationFilterSet
+    queryset = Declaration.objects.all()
 
 
 class DeclarationSubmitView(DeclarationFlowView):

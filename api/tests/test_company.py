@@ -6,6 +6,7 @@ from data.factories import (
     CompanyWithSiretFactory,
     CompanyWithVatFactory,
     DeclarantRoleFactory,
+    InstructionRoleFactory,
     SupervisorRoleFactory,
     UserFactory,
 )
@@ -99,6 +100,13 @@ class TestRetrieveCompany(ProjectAPITestCase):
 
     def test_retrieve_company_ok(self):
         self.login(self.supervisor_user)
+        response = self.get(self.url(pk=self.company.id))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["social_name"], "Too Good")
+
+    def test_retrieve_company_instructor_ok(self):
+        instructor = InstructionRoleFactory()
+        self.login(instructor.user)
         response = self.get(self.url(pk=self.company.id))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["social_name"], "Too Good")

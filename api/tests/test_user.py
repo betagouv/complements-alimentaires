@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from data.factories import CompanyFactory, DeclarantRoleFactory, SupervisorRoleFactory
+from data.factories import CompanyFactory, DeclarantRoleFactory, InstructionRoleFactory, SupervisorRoleFactory
 from data.factories.user import UserFactory
 
 from .utils import ProjectAPITestCase
@@ -75,6 +75,17 @@ class TestGetLoggedUser(ProjectAPITestCase):
             ],
         )
 
+    def test_global_roles(self):
+        """
+        Les rôles globaux sont serialisées dans le call du logged user
+        """
+        user = self.login()
+        InstructionRoleFactory(user=user)
+        response = self.get(self.url()).json()
+
+        self.assertEqual(len(response["globalRoles"]), 1)
+        self.assertEqual(response["globalRoles"][0]["name"], "InstructionRole")
+
 
 class TestCreateUser(ProjectAPITestCase):
     viewname = "user_create"
@@ -121,8 +132,31 @@ class TestCreateUser(ProjectAPITestCase):
         self.assertIn("password", response.data["field_errors"])
 
 
+class TestGetUser(ProjectAPITestCase):
+    viewname = "user_retrieve_update_destroy"
+
+    def setUp(self):
+        self.user_data = dict(last_name="Cook", first_name="Tim", email="tim.cook@example.com", username="tcook")
+        self.user = UserFactory(**self.user_data, is_verified=True)
+
+    def test_get_user_as_instructor_ok(self):
+        instructor = InstructionRoleFactory()
+        self.login(instructor.user)
+        response = self.get(self.url(pk=self.user.id))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_user_as_logged_user_ok(self):
+        self.login(self.user)
+        response = self.get(self.url(pk=self.user.id))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_user_not_authorized_ko(self):
+        response = self.get(self.url(pk=self.user.id))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
 class TestEditUser(ProjectAPITestCase):
-    viewname = "user_update_destroy"
+    viewname = "user_retrieve_update_destroy"
 
     def setUp(self):
         self.user_data = dict(last_name="Cook", first_name="Tim", email="tim.cook@example.com", username="tcook")
@@ -173,16 +207,9 @@ class TestEditUser(ProjectAPITestCase):
         response = self.put(self.url(pk=self.user.id), {})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_get_user_ko(self):
-        """Ensure that GET method has been deactivated on the RetrieveUpdateDestroyAPIView
-        (this test should not be exactly there, but is here by convenience)
-        """
-        response = self.get(self.url(pk=self.user.id))
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-
 
 class TestDeleteUser(ProjectAPITestCase):
-    viewname = "user_update_destroy"
+    viewname = "user_retrieve_update_destroy"
 
     def setUp(self):
         self.user = UserFactory(is_verified=True)

@@ -17,6 +17,6 @@ from .effect import EffectSerializer
 from .galenic_formulation import GalenicFormulationSerializer
 from .unit import SubstanceUnitSerializer
 from .autocomplete_item import AutocompleteItemSerializer
-from .declaration import DeclarationSerializer, DeclarationShortSerializer
+from .declaration import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer
 from .company import CompanySerializer
 from .solicitation import CoSupervisionClaimSerializer, AddNewCollaboratorSerializer

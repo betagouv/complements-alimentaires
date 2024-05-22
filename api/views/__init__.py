@@ -2,7 +2,12 @@ from .authentication import LoginView, LogoutView
 from .autocomplete import AutocompleteView
 from .blog import BlogPostsView, BlogPostView
 from .condition import ConditionListView
-from .declaration import DeclarationListCreateApiView, DeclarationRetrieveUpdateView, DeclarationSubmitView
+from .declaration import (
+    UserDeclarationsListCreateApiView,
+    DeclarationRetrieveUpdateView,
+    DeclarationSubmitView,
+    AllDeclarationsListView,
+)
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
 from .ingredient import IngredientRetrieveView
@@ -20,7 +25,7 @@ from .user import (
     LoggedUserView,
     SendNewSignupVerificationEmailView,
     UserCreateView,
-    UserUpdateDestroyView,
+    UserRetrieveUpdateDestroyView,
     VerifyEmailView,
 )
 from .webinar import WebinarView
