@@ -3,13 +3,13 @@
   fields:
     address: 34 rue des peupliers
     additional_details: Bâtiment C
-    postal_code: "92370"
+    postal_code: '92370'
     city: Chaville
-    cedex: ""
+    cedex: ''
     country: FR
-    phone_number: "+33132894398"
+    phone_number: '+33132894398'
     email: contact@tntl.com
-    website: ""
+    website: ''
     social_name: TNTL Corp
     commercial_name: Too Nice to Leave
     siret: 08670192700799
@@ -20,32 +20,32 @@
   fields:
     address: Too Good Corp
     additional_details: Bâtiment C
-    postal_code: "75001"
+    postal_code: '75001'
     city: Paris
-    cedex: "92100"
+    cedex: '92100'
     country: FR
-    phone_number: "+33612324312"
+    phone_number: '+33612324312'
     email: contact@toogood.com
-    website: ""
+    website: ''
     social_name: Too Good Corp
     commercial_name: Too Good
-    siret: "41737108500412"
+    siret: '41737108500412'
     vat: null
     activities: '["CONSEIL", "DISTRIBUTEUR"]'
 - model: data.company
   pk: 3
   fields:
     address: 12 rue des tilleuls
-    additional_details: ""
-    postal_code: "94100"
+    additional_details: ''
+    postal_code: '94100'
     city: Saint-Maur-des-Fossés
-    cedex: ""
+    cedex: ''
     country: FR
-    phone_number: "+33143422323"
+    phone_number: '+33143422323'
     email: contact@dequecatlong.fr
-    website: ""
+    website: ''
     social_name: Deque cat Long
     commercial_name: Deque cat Long
-    siret: "78797317100244"
+    siret: '78797317100244'
     vat: null
     activities: '["IMPORTATEUR", "INTRODUCTEUR"]'
