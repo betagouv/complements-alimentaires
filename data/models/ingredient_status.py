@@ -9,10 +9,8 @@ class IngredientStatus(models.IntegerChoices):
     si on veut s'assurer de la cohérence des données.
     """
 
-    AUTHORIZED = 1, "autorisé"
+    AUTHORIZED = 1, "autorisé"  # contient aussi les status SICCRF "à inscrire" et "sans objet"
     NOT_AUTHORIZED = 2, "non autorisé"
-
-    __empty__ = "inconnu"
 
 
 class WithStatus(models.Model):
@@ -30,6 +28,7 @@ class WithStatus(models.Model):
 
     status = models.IntegerField(
         choices=IngredientStatus.choices,
+        default=2,  # un ingrédient est non autorisé par défaut
         null=True,
         verbose_name="statut de l'ingrédient ou substance",
     )
