@@ -42,9 +42,6 @@ class WithDefaultFields(models.Model):
         output_field=models.BooleanField(verbose_name="objet obsolète"),
         db_persist=True,
     )
-    to_be_entered_in_next_decree = models.BooleanField(
-        editable=False, default=0, verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"
-    )
 
 
 class WithComments(models.Model):
