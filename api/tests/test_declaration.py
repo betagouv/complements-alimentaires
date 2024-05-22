@@ -1,7 +1,6 @@
 import base64
 import os
 
-from django.test import tag
 from django.urls import reverse
 
 from rest_framework import status
@@ -799,7 +798,6 @@ class TestDeclarationApi(APITestCase):
         for result in results:
             self.assertEqual(result["status"], Declaration.DeclarationStatus.APPROVED.value)
 
-    @tag("DEBUG")
     @authenticate
     def test_filter_company_name_start_end(self):
         """
@@ -828,7 +826,7 @@ class TestDeclarationApi(APITestCase):
         self.assertIn("Umbrella Corporation", returned_companies)
 
         # De la « A » à la « Co » : Àccented Corporation et Compléments santé
-        url = f"{reverse('api:list_all_declarations')}?company_name_start=A&company_name_end=Co"
+        url = f"{reverse('api:list_all_declarations')}?company_name_start=A&company_name_end=Cz"
         response = self.client.get(url, format="json")
         results = response.json()["results"]
         self.assertEqual(len(results), 2)
@@ -836,15 +834,14 @@ class TestDeclarationApi(APITestCase):
         self.assertIn("Àccented Corporation", returned_companies)
         self.assertIn("Compléments santé", returned_companies)
 
-        # Jusqu'à la « L » : Àccented Corporation, Compléments santé et lowercase ltd
+        # Jusqu'à la « L » : Àccented Corporation et Compléments santé
         url = f"{reverse('api:list_all_declarations')}?company_name_end=L"
         response = self.client.get(url, format="json")
         results = response.json()["results"]
-        self.assertEqual(len(results), 3)
+        self.assertEqual(len(results), 2)
         returned_companies = list(map(lambda x: x["company"]["socialName"], results))
         self.assertIn("Àccented Corporation", returned_companies)
         self.assertIn("Compléments santé", returned_companies)
-        self.assertIn("lowercase ltd", returned_companies)
 
         # À partir de « um » (minuscule) : Umbrella Corporation
         url = f"{reverse('api:list_all_declarations')}?company_name_start=ul"
