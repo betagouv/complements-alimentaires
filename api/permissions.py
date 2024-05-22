@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from data.models import InstructionRole
+from data.models import Declaration, InstructionRole
 
 
 class CanAccessUser(permissions.BasePermission):
@@ -61,7 +61,8 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
         is_author = IsDeclarationAuthor().has_object_permission(request, view, obj)
         is_instructor = IsInstructor().has_permission(request, view)
         is_declarant = IsDeclarant().has_object_permission(request, view, obj)
+        is_draft = obj.status == Declaration.DeclarationStatus.DRAFT
         if request.method == "GET":
-            return is_author or is_instructor
+            return is_author or (is_instructor and not is_draft)
 
         return is_author and is_declarant
