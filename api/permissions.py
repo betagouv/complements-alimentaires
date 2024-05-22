@@ -4,14 +4,14 @@ from data.models import InstructionRole
 
 
 class CanAccessUser(permissions.BasePermission):
-    message = "Vous devez être connecté et être l'utilisateur en question pour effectuer cette action"
+    message = "Vous n'avez pas accès à cet utilisateur"
 
     def has_object_permission(self, request, view, obj):  # obj: User
         user = request.user
         is_instructor = IsInstructor().has_permission(request, view)
         if user.is_authenticated and user == obj:
             return True
-        return request.method == "GET" and is_instructor
+        return request.method in permissions.SAFE_METHODS and is_instructor
 
 
 class CanAccessUserDeclatarions(permissions.BasePermission):
@@ -61,7 +61,7 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
         is_author = IsDeclarationAuthor().has_object_permission(request, view, obj)
         is_instructor = IsInstructor().has_permission(request, view)
         is_declarant = IsDeclarant().has_object_permission(request, view, obj)
-        if request.method == "GET":
+        if request.method in permissions.SAFE_METHODS:
             return is_author or is_instructor
 
         return is_author and is_declarant
