@@ -16,10 +16,22 @@
       <DsfrFieldset legend="Nom d'entreprise" class="!mb-0">
         <div class="flex gap-4">
           <DsfrInputGroup>
-            <DsfrInput class="max-w-28" label="De :" label-visible @update:modelValue="updateStatusFilter" />
+            <DsfrInput
+              class="max-w-28"
+              label="De :"
+              :modelValue="companyNameStart"
+              label-visible
+              @update:modelValue="updateCompanyNameStartFilter"
+            />
           </DsfrInputGroup>
           <DsfrInputGroup>
-            <DsfrInput class="max-w-28" label="À :" label-visible @update:modelValue="updateStatusFilter" />
+            <DsfrInput
+              class="max-w-28"
+              label="À :"
+              :modelValue="companyNameEnd"
+              label-visible
+              @update:modelValue="updateCompanyNameEndFilter"
+            />
           </DsfrInputGroup>
         </div>
       </DsfrFieldset>
@@ -57,25 +69,10 @@ const route = useRoute()
 
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
+const offset = computed(() => (page.value - 1) * limit)
 
 const limit = 10
-const page = computed(() => parseInt(route.query.page))
-const filteredStatus = computed(() => route.query.status)
 const pages = computed(() => getPagesForPagination(data.value.count, limit, route.path))
-
-// Obtention de la donnée via API
-const offset = computed(() => (page.value - 1) * limit)
-const url = computed(
-  () => `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}`
-)
-const { response, data, isFetching, execute } = useFetch(url).get().json()
-const fetchSearchResults = async () => {
-  await execute()
-  await handleError(response)
-}
-watch(page, fetchSearchResults)
-watch(filteredStatus, fetchSearchResults)
-
 const openDeclaration = (id) => router.push({ name: "InstructionPage", params: { declarationId: id } })
 
 const statusFilterOptions = [
@@ -86,8 +83,31 @@ const statusFilterOptions = [
   { value: "APPROVED", text: "Validé" },
 ]
 
+// Valeurs obtenus du queryparams
+const page = computed(() => parseInt(route.query.page))
+const filteredStatus = computed(() => route.query.status)
+const companyNameStart = computed(() => route.query.entrepriseDe)
+const companyNameEnd = computed(() => route.query.entrepriseA)
+
 const updateStatusFilter = (status) => router.push({ query: { ...route.query, ...{ status } } })
 const updatePage = (newPage) => router.push({ query: { ...route.query, ...{ page: newPage + 1 } } })
+const updateCompanyNameStartFilter = (newValue) =>
+  router.push({ query: { ...route.query, ...{ entrepriseDe: newValue } } })
+const updateCompanyNameEndFilter = (newValue) =>
+  router.push({ query: { ...route.query, ...{ entrepriseA: newValue } } })
+
+// Obtention de la donnée via API
+const url = computed(
+  () =>
+    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&company_name_start=${companyNameStart.value}&company_name_end=${companyNameEnd.value}`
+)
+const { response, data, isFetching, execute } = useFetch(url).get().json()
+const fetchSearchResults = async () => {
+  await execute()
+  await handleError(response)
+}
+
+watch([page, filteredStatus, companyNameStart, companyNameEnd], fetchSearchResults)
 </script>
 
 <style scoped>

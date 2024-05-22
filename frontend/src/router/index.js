@@ -220,6 +220,8 @@ const routes = [
       defaultQueryParams: {
         page: 1,
         status: "",
+        entrepriseDe: "",
+        entrepriseA: "",
       },
     },
   },
