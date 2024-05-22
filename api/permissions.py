@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from data.models import InstructionRole
+from data.models import Declaration, InstructionRole
 
 
 class CanAccessUser(permissions.BasePermission):
@@ -49,6 +49,14 @@ class IsDeclarationAuthor(permissions.BasePermission):
         return user.is_authenticated and obj.author == user
 
 
+class IsSolicitationRecipient(permissions.BasePermission):
+    message = "Vous devez être un des destinataires de cette demande pour effectuer cette action"
+
+    def has_object_permission(self, request, view, obj):  # obj: une Solicitation ayant un attribut recipients
+        user = request.user
+        return user.is_authenticated and user in obj.recipients.all()
+
+
 class IsInstructor(permissions.BasePermission):
     def has_permission(self, request, view):
         return InstructionRole.objects.filter(user=request.user).exists()
@@ -61,7 +69,8 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
         is_author = IsDeclarationAuthor().has_object_permission(request, view, obj)
         is_instructor = IsInstructor().has_permission(request, view)
         is_declarant = IsDeclarant().has_object_permission(request, view, obj)
+        is_draft = obj.status == Declaration.DeclarationStatus.DRAFT
         if request.method in permissions.SAFE_METHODS:
-            return is_author or is_instructor
+            return is_author or (is_instructor and not is_draft)
 
         return is_author and is_declarant
