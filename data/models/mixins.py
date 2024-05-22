@@ -1,6 +1,6 @@
 from django.db import models
-from django.db.models.functions import Coalesce, NullIf
 from django.db.models import F, Value
+from django.db.models.functions import Coalesce, NullIf
 
 
 class WithMissingImportBoolean(models.Model):
@@ -41,6 +41,9 @@ class WithDefaultFields(models.Model):
         expression=Coalesce(F("ca_is_obsolete"), F("siccrf_is_obsolete")),
         output_field=models.BooleanField(verbose_name="objet obsolète"),
         db_persist=True,
+    )
+    to_be_entered_in_next_decree = models.BooleanField(
+        editable=False, default=0, verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"
     )
 
 

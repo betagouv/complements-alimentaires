@@ -2,36 +2,37 @@ import csv
 import logging
 import os
 import pathlib
-
 from functools import cached_property
 
 from django.db.models import (
     ForeignKey,
-    ManyToManyField,
     GeneratedField,
+    ManyToManyField,
 )
 
 from .exceptions import CSVFileError
 
 # Import the model
 from .models import (
+    Effect,
+    GalenicFormulation,
     Ingredient,
+    IngredientStatus,
     IngredientSynonym,
     Microorganism,
+    Part,
     Plant,
+    PlantFamily,
     PlantPart,
     PlantSynonym,
-    PlantFamily,
-    Part,
+    Population,
     Substance,
     SubstanceSynonym,
+    SubstanceUnit,
 )
 
-from .models import Effect, GalenicFormulation, IngredientStatus, Population, SubstanceUnit
-
 # from .models.condition import Condition
-
-from .utils.importer_utils import clean_value, update_or_create_object, get_update_or_create_related_object
+from .utils.importer_utils import get_update_or_create_related_object, pre_import_treatments, update_or_create_object
 
 logger = logging.getLogger(__name__)
 
@@ -133,6 +134,7 @@ class CSVImporter:
         "creation_date",
         "modification_date",
         "missing_import_data",
+        "to_be_entered_in_next_decree",
     ]
     NEW_FIELDS = ["is_liquid", "long_name"]
 
@@ -256,7 +258,8 @@ class CSVImporter:
                 if not isinstance(field, ForeignKey) and not isinstance(field, ManyToManyField):
                     # cas d'un champ simple avec une valeur
                     value = row.get(column_name)
-                    object_definition[field.name] = clean_value(value, field)
+                    new_fields = pre_import_treatments(field, value)
+                    object_definition.update(new_fields)
                 else:
                     # cas d'un champ clé étrangère vers un autre modèle
                     foreign_key_id = row.get(column_name)
@@ -271,7 +274,8 @@ class CSVImporter:
                         else:
                             logger.warning(f"Il n'y a pas de modèle défini pour cette table : {e}")
 
-            # ici, c'est un csv correspondant à une relation complexe (stockée dans un Model spécifique) qui est importée
+            # ici, c'est un csv correspondant à une relation complexe (stockée dans un Model spécifique)
+            # qui est importée
             if self.model == Part:
                 default_extra_fields = (
                     {"siccrf_must_be_monitored": True}
