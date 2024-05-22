@@ -11,6 +11,8 @@ class BaseSolicitationAdmin:
 
     process_state.short_description = "État du traitement"
 
+    readonly_fields = ["processed_at", "processor", "processed_action"]
+
 
 class WithDisplayRecipients:
     def display_recipients(self, obj):

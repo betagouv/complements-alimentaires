@@ -19,7 +19,6 @@ class AddNewCollaboratorSerializer(serializers.Serializer):
     recipient_email = serializers.EmailField()
     roles = serializers.ListField(child=serializers.ChoiceField(choices=CompanyRoleClassChoices))
 
-    def to_internal_value(self, data):
-        internal_value = super().to_internal_value(data)
-        internal_value["recipient_email"] = get_user_model().objects.normalize_email(internal_value["recipient_email"])
-        return internal_value
+    def validate_recipient_email(self, value):
+        normalized_email = get_user_model().objects.normalize_email(value)
+        return normalized_email
