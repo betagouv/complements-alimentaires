@@ -15,8 +15,10 @@ class Migration(migrations.Migration):
         for table in [Ingredient, Plant, Microorganism, Substance]:
             for obj in table.objects.all().iterator():
                 obj.to_be_entered_in_next_decree = obj.status == 3
-                if obj.status in [3, 4]:
+                if obj.status == 3:
                     obj.status = 1
+                if obj.status == 4:
+                    obj.status = None
                 obj.save()
 
     def reverse_set_default(apps, schema_editor):

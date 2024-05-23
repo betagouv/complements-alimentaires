@@ -14,7 +14,7 @@ class IngredientStatus(models.IntegerChoices):
 
 
 class WithStatus(models.Model):
-    """Mixins pour les ingrédients qui portent un statut.
+    """Mixins pour les ingrédients qui portent un statut règlementaire.
     (plantes, micro-organismes, substances, arômes, additifs, formes d'apport)
     C'est le statut de leur autorisation dans les compléments alimentaires.
     Cette mixins ne se trouve pas dans le fichier mixins pour éviter
@@ -28,7 +28,8 @@ class WithStatus(models.Model):
 
     status = models.IntegerField(
         choices=IngredientStatus.choices,
-        default=2,  # un ingrédient est non autorisé par défaut
+        blank=True,
+        default=None,  # un ingrédient n'a pas de status par défaut
         null=True,
         verbose_name="statut de l'ingrédient ou substance",
     )

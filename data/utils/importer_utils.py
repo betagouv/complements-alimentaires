@@ -45,7 +45,7 @@ def convert_status(value: int) -> int:
             return 1
         # sans objet
         case 4:
-            return 1
+            return None
 
 
 def clean_value(value, field):

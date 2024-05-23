@@ -213,5 +213,5 @@ class CSVImporterTestCase(TestCase):
 
         self.assertEqual(len(Microorganism.objects.filter(status=IngredientStatus.AUTHORIZED)), 2)
         self.assertEqual(len(Microorganism.objects.filter(to_be_entered_in_next_decree=True)), 2)
-        self.assertEqual(len(Ingredient.objects.filter(status=IngredientStatus.AUTHORIZED)), 2)
+        self.assertEqual(len(Ingredient.objects.filter(status=IngredientStatus.AUTHORIZED)), 0)
         self.assertEqual(len(Substance.objects.filter(status=IngredientStatus.NOT_AUTHORIZED)), 2)
