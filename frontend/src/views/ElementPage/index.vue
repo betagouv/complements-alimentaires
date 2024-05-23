@@ -58,15 +58,6 @@
           <ElementTag :label="part" v-for="part in plantParts" :key="part" />
         </ElementColumn>
 
-        <ElementColumn title="Parties à surveiller" v-if="toWatchParts?.length">
-          <ElementTag
-            :label="part"
-            v-for="part in toWatchParts"
-            :key="part"
-            class="!bg-warning-925 !text-warning-425"
-          />
-        </ElementColumn>
-
         <ElementColumn title="Substances" v-if="substances?.length">
           <ElementTag
             :link="{
@@ -138,9 +129,6 @@ const icon = computed(() => getTypeIcon(typeMapping[type.value]))
 const family = computed(() => element.value?.family?.name)
 const genre = computed(() => element.value?.genre)
 const plantParts = computed(() => element.value?.plantParts?.map((x) => x.name).filter((x) => !!x))
-const toWatchParts = computed(() =>
-  element.value?.plantParts?.filter((x) => x.mustBeMonitored === true && !!x.name).map((x) => x.name)
-)
 const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))
 const casNumber = computed(() => element.value?.casNumber)
