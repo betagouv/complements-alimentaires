@@ -8,7 +8,13 @@
       n'est pas encore enregistrée dans notre base de données. Pour ce faire, veuillez vérifier ou compléter les
       informations ci-dessous. À l'issue, vous en deviendrez automatiquement son gestionnaire.
     </DsfrAlert>
-    <CompanyForm @responseReady="handleResponse" :initialState="initialState" :url="createCompanyUrl" method="post" />
+    <CompanyForm
+      class="mt-8"
+      @responseReady="handleResponse"
+      :initialState="initialState"
+      :url="createCompanyUrl"
+      method="post"
+    />
   </div>
 </template>
 

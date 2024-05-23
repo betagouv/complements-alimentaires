@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FormWrapper class="mx-auto mt-8">
+    <FormWrapper class="mx-auto">
       <DsfrFieldset legend="Informations administratives de l'entreprise">
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'socialName')">
           <DsfrInput v-model="state.socialName" label="Dénomination sociale" required labelVisible />

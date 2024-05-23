@@ -16,40 +16,10 @@
         showCancelButton
       />
     </div>
-    <div v-else>
-      <p class="font-bold">Informations administratives de l'entreprise</p>
-      <div class="grid grid-col-3 border-t border-gray-100">
-        <div class="divide-y divide-gray-100">
-          <div v-for="line in companyLines" :key="line.title" class="grid grid-cols-3 py-5 whitespace-pre-line">
-            <dt class="font-medium">{{ line.title }}</dt>
-            <dd class="text-gray-700">{{ line.val }}</dd>
-          </div>
-        </div>
-      </div>
-      <p class="font-bold mt-4">Activités de l'entreprise</p>
-      <div class="grid grid-col-3 border-t border-gray-100">
-        <div class="divide-y divide-gray-100">
-          <div class="grid grid-cols-3 py-5 whitespace-pre-line">
-            <dt class="font-medium">Activités enregistrées</dt>
-            <dd class="text-gray-700">
-              <ul class="m-0">
-                <li v-for="activity in company.activities" :key="activity">
-                  {{ activity.toLowerCase() }}
-                </li>
-              </ul>
-            </dd>
-          </div>
-        </div>
-      </div>
-      <p class="font-bold mt-4">Informations de contact</p>
-      <div class="grid grid-col-3 border-t border-gray-100">
-        <div class="divide-y divide-gray-100">
-          <div v-for="line in contactLines" :key="line.title" class="grid grid-cols-3 py-5 whitespace-pre-line">
-            <dt class="font-medium">{{ line.title }}</dt>
-            <dd class="text-gray-700">{{ line.val }}</dd>
-          </div>
-        </div>
-      </div>
+    <div v-else class="flex flex-col gap-y-10">
+      <TabularDataDisplayer title="Informations administratives de l'entreprise" :dataLines="AdminInfoLines" />
+      <TabularDataDisplayer title="Activités de l'entreprise" :dataLines="activityLines" />
+      <TabularDataDisplayer title="Informations de contact" :dataLines="contactLines" />
     </div>
   </div>
 </template>
@@ -64,35 +34,40 @@ import { useRootStore } from "@/stores/root"
 import useToaster from "@/composables/use-toaster"
 import SectionTitle from "@/components/SectionTitle"
 import CompanyForm from "@/components/CompanyForm"
+import TabularDataDisplayer from "@/components/TabularDataDisplayer"
 
 const route = useRoute()
 const rootStore = useRootStore()
 
-// Lecture
+// Données pour l'affichage des différentes sections en lecture
 
-const displayableAddress = (company) => {
-  /* affichage propre d'une adresse complète */
-  const lines = [
-    company.address,
-    company.additionalDetails,
-    `${company.postalCode} ${company.city}`,
-    company.cedex,
-    company.countryLabel,
-  ]
-  return lines.filter((line) => line !== "").join("\n")
-}
+const AdminInfoLines = computed(() => {
+  const displayableAddress = (company) => {
+    /* affichage propre d'une adresse complète */
+    const lines = [
+      company.address,
+      company.additionalDetails,
+      `${company.postalCode} ${company.city}`,
+      company.cedex,
+      company.countryLabel,
+    ]
+    return lines.filter((line) => line !== "").join("\n")
+  }
 
-const companyLines = computed(() => {
   return [
-    company.value.siret ? { title: "N° SIRET", val: company.value.siret } : null,
-    company.value.vat ? { title: "N° VAT", val: company.value.vat } : null,
     { title: "Dénomination sociale", val: company.value.socialName },
     { title: "Nom commercial", val: company.value.commercialName },
+    company.value.siret ? { title: "N° SIRET", val: company.value.siret } : null,
+    company.value.vat ? { title: "N° VAT", val: company.value.vat } : null,
     {
       title: "Adresse",
       val: displayableAddress(company.value),
     },
   ].filter((item) => item !== null)
+})
+
+const activityLines = computed(() => {
+  return [{ title: "Activités enregistrées", val: company.value.activities.map((x) => x.toLowerCase()).join("\n") }]
 })
 
 const contactLines = computed(() => {
@@ -130,8 +105,9 @@ const handleResponse = (data) => {
   if (data.value) {
     company.value = data.value
     isEditing.value = false
-    rootStore.fetchInitialData()
+    rootStore.fetchInitialData() // MAJ du state global car le nom de l'entreprise peut avoir changé
     useToaster().addSuccessMessage("L'entreprise a bien été modifiée")
+    window.scrollTo(0, 0)
   }
 }
 </script>
