@@ -81,7 +81,7 @@ import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import PasswordRules from "@/components/PasswordRules"
 import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 const router = useRouter()
 const showPassword = ref(false)
@@ -90,7 +90,7 @@ const showPassword = ref(false)
 const state = ref({
   lastName: "",
   firstName: "",
-  email: "",
+  email: useRoute().query.email || "",
   username: "",
   password: "",
 })

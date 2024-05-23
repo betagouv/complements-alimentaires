@@ -13,9 +13,9 @@ export const isoToPrettyDate = (
 
 // e.g. 2024-02-22T16:43:57+01:00 -> 16h43
 export const isoToPrettyTime = (isoDate) => {
-  const hour = new Date(isoDate).toLocaleString(frLocale, { hour: "numeric" })
-  const minutes = new Date(isoDate).toLocaleString(frLocale, { minute: "2-digit" })
-  return `${hour}${minutes}`.replace(" ", "")
+  const options = { hour: "numeric", minute: "2-digit", hour12: false }
+  const prettyTime = new Date(isoDate).toLocaleString(frLocale, options)
+  return prettyTime.replace(/\s/g, "").replace(":", "h")
 }
 
 export const timeAgo = (date) => {
