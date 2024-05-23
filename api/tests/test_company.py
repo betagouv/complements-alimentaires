@@ -11,6 +11,7 @@ from data.factories import (
     UserFactory,
 )
 from data.models import Company
+from data.models.company import ActivityChoices
 
 from ..views.company import CompanyStatusChoices
 from .utils import ProjectAPITestCase
@@ -91,15 +92,14 @@ class TestCheckCompanyIdentifier(ProjectAPITestCase):
 
 
 class TestRetrieveCompany(ProjectAPITestCase):
-    viewname = "company_retrieve"
+    viewname = "company_retrieve_update"
 
     def setUp(self):
         self.company = CompanyFactory(social_name="Too Good")
-        self.supervisor = SupervisorRoleFactory(company=self.company)
-        self.supervisor_user = self.supervisor.user
+        self.supervisor = SupervisorRoleFactory(company=self.company).user
 
     def test_retrieve_company_ok(self):
-        self.login(self.supervisor_user)
+        self.login(self.supervisor)
         response = self.get(self.url(pk=self.company.id))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["social_name"], "Too Good")
@@ -111,19 +111,69 @@ class TestRetrieveCompany(ProjectAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["social_name"], "Too Good")
 
-    def test_retrieve_ko_unexising_company(self):
-        self.login(self.supervisor_user)
+    def test_retrieve_company_ko_unexising_company(self):
+        self.login(self.supervisor)
         response = self.get(self.url(pk=99999999))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_retrieve_ko_not_a_supervisor(self):
+    def test_retrieve_company_ko_not_a_supervisor(self):
         self.login()  # logged user is not a supervisor here
         response = self.get(self.url(pk=self.company.id))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_retrieve_ko_unauthenticated(self):
+    def test_retrieve_company_ko_unauthenticated(self):
         response = self.get(self.url(pk=self.company.id))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestUpdateCompany(ProjectAPITestCase):
+    viewname = "company_retrieve_update"
+
+    def setUp(self):
+        self.payload = dict(
+            social_name="Too Good Corp",
+            commercial_name="Too Good",
+            siret="82073111500037",
+            address="34 rue des peupliers",
+            postal_code="75001",
+            city="PARIS",
+            country="FR",
+            activities=[ActivityChoices.FABRICANT],
+            phone_number="+33143324354",
+            email="toogood@gmail.com",
+        )
+
+        self.company = CompanyFactory(**self.payload)
+        self.supervisor = SupervisorRoleFactory(company=self.company).user
+
+    def test_update_company_ok(self):
+        self.login(self.supervisor)
+        new_email = "toobad@gmail.com"
+        self.payload["email"] = new_email
+        response = self.put(self.url(pk=self.company.id), self.payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.email, new_email)
+
+    def test_update_company_ko_with_instructor(self):
+        self.login(InstructionRoleFactory().user)
+        response = self.put(self.url(pk=self.company.id), self.payload)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update_company_ko_unexising_company(self):
+        self.login(self.supervisor)
+        response = self.put(self.url(pk=99999999), self.payload)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_company_ko_unauthenticated(self):
+        response = self.put(self.url(pk=self.company.id), self.payload)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update_company_ko_bad_data(self):
+        self.login(self.supervisor)
+        self.payload["email"] = ""
+        response = self.put(self.url(pk=self.company.id), self.payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class TestCreateCompany(ProjectAPITestCase):
