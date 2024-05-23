@@ -116,7 +116,7 @@ class AllDeclarationsListView(ListAPIView):
         CamelCaseOrderingFilter,
     ]
     filterset_class = DeclarationFilterSet
-    queryset = Declaration.objects.all()
+    queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT)
 
 
 class DeclarationSubmitView(DeclarationFlowView):

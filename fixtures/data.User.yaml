@@ -2,7 +2,7 @@
   pk: 1
   fields:
     password: pbkdf2_sha256$720000$j8erHrBDtih9Gh2WcLaR33$xyaaly4Ed/ufvROyGC+o4nO2ekkcPWNrIcDj1KETOxk=
-    last_login: 2024-05-01 11:36:19.973026+00:00
+    last_login: 2024-05-11 07:18:29.696471+00:00
     is_superuser: true
     is_active: true
     is_verified: true
@@ -64,5 +64,22 @@
     phone_number: null
     is_staff: true
     date_joined: 2024-03-25 16:22:43+00:00
+    groups: []
+    user_permissions: []
+- model: data.user
+  pk: 5
+  fields:
+    password: pbkdf2_sha256$720000$8H2LWlBUDyraYGe3SFkQcD$ADcKERRPGw+iL4M+bdSqmTFtMEKiivQRgN00njki5kI=
+    last_login: 2024-05-11 07:19:26.677549+00:00
+    is_superuser: false
+    is_active: true
+    is_verified: true
+    username: tom
+    first_name: Tom
+    last_name: COOK
+    email: tom@cook.com
+    phone_number: null
+    is_staff: false
+    date_joined: 2024-05-11 07:19:16.054907+00:00
     groups: []
     user_permissions: []

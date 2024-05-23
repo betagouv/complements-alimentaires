@@ -20,6 +20,7 @@ from api.serializers import (
     CreateUserSerializer,
     UserSerializer,
 )
+from data.models.solicitation import CollaborationInvitation
 from tokens.models import MagicLinkToken, MagicLinkUsage
 
 from ..utils.urls import get_base_url
@@ -54,8 +55,14 @@ class UserCreateView(CreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = CreateUserSerializer
 
+    @transaction.atomic
     def perform_create(self, serializer):
         new_user = serializer.save()
+        # ajout automatique de rôles collaborateurs, si des invitations liées existent
+        for solicitation in CollaborationInvitation.objects.filter(
+            recipient_email=new_user.email, processed_at__isnull=True
+        ):
+            solicitation.account_created(processor=new_user)
         _send_verification_mail(new_user)
         return new_user
 

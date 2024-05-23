@@ -112,6 +112,11 @@ class Company(AutoValidable, Address, CompanyContact, models.Model):
         return self.social_name
 
 
+class CompanyRoleClassChoices(models.TextChoices):
+    DeclarantRole = auto()
+    SupervisorRole = auto()
+
+
 class CompanyRole(Deactivable):
     """Réprésente un rôle d'utilisateur qui n'a de sens que pour une entreprise donnée"""
 
