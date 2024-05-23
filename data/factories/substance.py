@@ -22,6 +22,7 @@ class SubstanceFactory(factory.django.DjangoModelFactory):
     ca_nutritional_reference = factory.Faker("random_int", min=0, max=20)
     unit = factory.SubFactory(SubstanceUnitFactory)
     status = IngredientStatus.AUTHORIZED
+    to_be_entered_in_next_decree = False
 
 
 class SubstanceSynonymFactory(factory.django.DjangoModelFactory):

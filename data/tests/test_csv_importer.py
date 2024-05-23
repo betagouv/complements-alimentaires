@@ -1,25 +1,25 @@
 import os
 from unittest.mock import patch
 
-from django.test import TestCase
 from django.core.management import call_command
-from django.db.models import TextField, CharField, FloatField, IntegerField
+from django.db.models import CharField, FloatField, IntegerField, TextField
+from django.test import TestCase
 
-from data.csv_importer import import_csv_from_filepath, CSVImporter
-from data.utils.importer_utils import clean_value
+from data.csv_importer import CSVImporter, import_csv_from_filepath
 from data.exceptions import CSVFileError
 from data.models import (
+    Effect,
+    GalenicFormulation,
+    Ingredient,
+    IngredientStatus,
+    Microorganism,
     Plant,
     PlantFamily,
     PlantPart,
-    Ingredient,
-    Microorganism,
     Substance,
-    Effect,
-    GalenicFormulation,
-    IngredientStatus,
     SubstanceUnit,
 )
+from data.utils.importer_utils import clean_value
 
 
 class CSVImporterTestCase(TestCase):
@@ -211,6 +211,7 @@ class CSVImporterTestCase(TestCase):
 
         self.assertEqual(len(Plant.objects.filter(status=IngredientStatus.AUTHORIZED)), 2)
 
-        self.assertEqual(len(Microorganism.objects.filter(status=IngredientStatus.PENDING_REGISTRATION)), 2)
-        self.assertEqual(len(Ingredient.objects.filter(status=IngredientStatus.NA)), 2)
+        self.assertEqual(len(Microorganism.objects.filter(status=IngredientStatus.AUTHORIZED)), 2)
+        self.assertEqual(len(Microorganism.objects.filter(to_be_entered_in_next_decree=True)), 2)
+        self.assertEqual(len(Ingredient.objects.filter(status=IngredientStatus.AUTHORIZED)), 2)
         self.assertEqual(len(Substance.objects.filter(status=IngredientStatus.NOT_AUTHORIZED)), 2)

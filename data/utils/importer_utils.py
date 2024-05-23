@@ -16,23 +16,24 @@ def pre_import_treatments(field, value):
     * nettoyage de valeurs (trim)
     * transformation de valeurs en d'autres valeurs
     """
+
     if field.name == "status":
         new_fields = {field.name: convert_status(clean_value(value, field))}
         # si le status SICCRF correspond à "à inscrire"
-        if value == 3:
+        if int(value) == 3:
             new_fields["to_be_entered_in_next_decree"] = 1
     else:
         new_fields = {field.name: clean_value(value, field)}
     return new_fields
 
 
-def convert_status(value):
+def convert_status(value: int) -> int:
     """
     Converti les statuts SICCRF en statuts Compl'Alim
     * à inscrire sera calculé automatiquement à partir de la date d'entrée en base de l'ingrédient
     * sans objet apparaît comme autorisé, car non reliée à une quelconque règlementation
     """
-    match value:
+    match int(value):
         # autorisé
         case 1:
             return 1

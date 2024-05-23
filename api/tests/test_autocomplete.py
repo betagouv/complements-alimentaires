@@ -112,7 +112,7 @@ class TestAutocomplete(APITestCase):
         forbidden_plant = PlantFactory.create(ca_name="Ephedra", status=IngredientStatus.NOT_AUTHORIZED)
 
         to_be_authorized_plant = PlantFactory.create(
-            ca_name="Ephedralite", status=IngredientStatus.PENDING_REGISTRATION
+            ca_name="Ephedralite", status=IngredientStatus.AUTHORIZED, to_be_entered_in_next_decree=True
         )
 
         response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})
