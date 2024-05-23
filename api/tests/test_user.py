@@ -140,8 +140,8 @@ class TestGetUser(ProjectAPITestCase):
         self.user = UserFactory(**self.user_data, is_verified=True)
 
     def test_get_user_as_instructor_ok(self):
-        instructor = InstructionRoleFactory()
-        self.login(instructor.user)
+        instructor_role = InstructionRoleFactory()
+        self.login(instructor_role.user)
         response = self.get(self.url(pk=self.user.id))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
