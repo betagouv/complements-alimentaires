@@ -22,7 +22,6 @@
         </DsfrRadioButton>
       </div>
     </DsfrInputGroup>
-    <div></div>
   </div>
   <div v-if="decisionCategory === 'modify'" class="reject-reasons">
     <hr />
@@ -73,9 +72,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+import { ref, computed, watch } from "vue"
 
 const decisionCategory = ref(null)
+watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "approve" : null))
+
 const proposal = ref(null)
 
 const decisionCategories = [
@@ -110,8 +111,12 @@ const rejectReasons = [
     items: ["Par fonction", "Par présentation", "Sevrage tabagique"],
   },
   {
-    title: "Les procédures du droit de l'UE ne sont pas respectées",
-    items: ["Présence d'un nouvel food", "Présence d'une form d'apport en nutriments non autorisée"],
+    title: "Les procédures ne sont pas respectées",
+    items: [
+      "Présence d'un nouvel food",
+      "Présence d'une form d'apport en nutriments non autorisée",
+      "Demande en article 18 attendue",
+    ],
   },
   {
     title: "Le dossier n'est pas recevable",
