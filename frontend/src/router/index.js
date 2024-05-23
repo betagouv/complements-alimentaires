@@ -143,7 +143,7 @@ const routes = [
   },
   {
     path: "/entreprise/:id",
-    name: "Company",
+    name: "CompanyPage",
     component: CompanyPage,
     meta: {
       title: "Mon entreprise", // TODO: titre plus dynamique ?

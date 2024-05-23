@@ -46,7 +46,7 @@ urlpatterns = {
     # Company
     path("countries/", views.CountryListView.as_view(), name="country_list"),
     path("companies/", views.CompanyCreateView.as_view(), name="company_create"),
-    path("companies/<int:pk>", views.CompanyRetrieveView.as_view(), name="company_retrieve"),
+    path("companies/<int:pk>", views.CompanyRetrieveUpdateView.as_view(), name="company_retrieve"),
     path(
         "companies/<int:pk>/collaborators",
         views.CompanyCollaboratorsListView.as_view(),

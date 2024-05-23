@@ -42,6 +42,7 @@ const supervisorActions = [
   {
     title: "Les coordonnées de l'entreprise",
     description: "Consultez et mettez à jour les données de votre entreprise",
+    link: { name: "CompanyPage", params: { id: company.value.id } },
   },
   {
     title: "Nouvelle entreprise",

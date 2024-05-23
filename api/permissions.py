@@ -62,6 +62,14 @@ class IsInstructor(permissions.BasePermission):
         return InstructionRole.objects.filter(user=request.user).exists()
 
 
+class IsSupervisorOrInstructor(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):  # obj: Company (for supervisor)
+        user = request.user
+        return user.is_authenticated and (
+            IsSupervisor().has_object_permission(request, view, obj) or IsInstructor().has_permission(request, view)
+        )
+
+
 class CanAccessIndividualDeclaration(permissions.BasePermission):
     message = "Vous n'avez pas accès à cette déclaration"
 
