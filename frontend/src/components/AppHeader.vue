@@ -1,9 +1,12 @@
 <template>
-  <DsfrHeader :logo-text="logoText" service-title="Compl'Alim" :quickLinks="quickLinks">
+  <DsfrHeader :logo-text="logoText" :quickLinks="quickLinks">
     <template v-if="environment != 'prod'" #operator>
-      <DsfrBadge v-if="environment === 'dev'" :label="environment" type="info" />
-      <DsfrBadge v-else-if="environment === 'demo'" :label="environment" type="new" />
-      <DsfrBadge v-else :label="environment" type="warning" />
+      <div class="flex items-center">
+        <img :src="require('@/assets/logo.svg')" alt="Logo Compl'Alim" class="h-20" />
+        <DsfrBadge v-if="environment === 'dev'" :label="environment" type="info" />
+        <DsfrBadge v-if="environment === 'demo'" :label="environment" type="new" />
+        <DsfrBadge v-if="environment === 'staging'" :label="environment" type="warning" />
+      </div>
     </template>
     <template #mainnav>
       <div class="flex justify-between whitespace-nowrap">
