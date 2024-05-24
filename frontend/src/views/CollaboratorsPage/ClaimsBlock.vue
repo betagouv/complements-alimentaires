@@ -1,10 +1,10 @@
 <template>
   <div v-if="solicitations">
-    <SectionTitle title="Demandes reçues" icon="ri-chat-3-line" />
+    <SectionTitle title="Demandes reçues" icon="ri-chat-download-line" />
     <p>Visualisez et traitez vos demandes reçues pour rejoindre votre entreprise.</p>
     <div v-for="solicitation in solicitations" :key="solicitation.id">
       <div class="flex items-center">
-        <v-icon class="size-4" name="ri-chat-3-line" />
+        <v-icon class="size-4" name="ri-chat-download-line" />
 
         <div class="ml-2">
           <div>{{ solicitation.senderName }}</div>

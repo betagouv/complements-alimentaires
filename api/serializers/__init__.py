@@ -19,4 +19,4 @@ from .unit import SubstanceUnitSerializer
 from .autocomplete_item import AutocompleteItemSerializer
 from .declaration import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer
 from .company import CompanySerializer
-from .solicitation import CoSupervisionClaimSerializer, AddNewCollaboratorSerializer
+from .solicitation import CollaborationInvitationSerializer, CoSupervisionClaimSerializer, AddNewCollaboratorSerializer
