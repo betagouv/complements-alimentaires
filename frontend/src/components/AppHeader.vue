@@ -1,6 +1,6 @@
 <template>
   <DsfrHeader :logo-text="logoText" :quickLinks="quickLinks">
-    <template v-if="environment != 'prod'" #operator>
+    <template #operator>
       <div class="flex items-center">
         <img :src="require('@/assets/logo.svg')" alt="Logo Compl'Alim" class="h-20" />
         <DsfrBadge v-if="environment === 'dev'" :label="environment" type="info" />
