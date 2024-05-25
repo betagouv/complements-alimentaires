@@ -1,13 +1,19 @@
 import { createRouter, createWebHistory } from "vue-router"
 import { useRootStore } from "@/stores/root"
+
+// layouts
+import Main from "@/layouts/main"
+import Pro from "@/layouts/pro"
+
+// views
 import LandingPage from "@/views/LandingPage"
 import ProducerHomePage from "@/views/ProducerHomePage"
 import BlogHomePage from "@/views/BlogHomePage"
 import BlogPostPage from "@/views/BlogPostPage"
 import ElementSearchResultsPage from "@/views/ElementSearchResultsPage"
 import ElementPage from "@/views/ElementPage"
-import CGUPage from "@/views/CGUPage.vue"
-import PrivacyPolicyPage from "@/views/PrivacyPolicyPage.vue"
+import CGUPage from "@/views/CGUPage"
+import PrivacyPolicyPage from "@/views/PrivacyPolicyPage"
 import LegalNoticesPage from "@/views/LegalNoticesPage"
 import CookiesInfoPage from "@/views/CookiesInfoPage"
 import ProducerFormPage from "@/views/ProducerFormPage"
@@ -24,214 +30,220 @@ import DeclarationsHomePage from "@/views/DeclarationsHomePage"
 import CollaboratorsPage from "@/views/CollaboratorsPage"
 import AllDeclarationsPage from "@/views/AllDeclarationsPage"
 import InstructionPage from "@/views/InstructionPage"
+import OfficialLetterPage from "@/views/OfficialLetterPage"
 
 const routes = [
   {
     path: "/",
-    name: "Root",
-    meta: {
-      home: true,
-    },
-  },
-  {
-    path: "/accueil",
-    name: "LandingPage",
-    component: LandingPage,
-  },
-  {
-    path: "/entreprises",
-    name: "ProducerHomePage",
-    component: ProducerHomePage,
-  },
-  {
-    path: "/blog",
-    name: "BlogHomePage",
-    component: BlogHomePage,
-    meta: {
-      title: "Articles de blog",
-    },
-  },
-  {
-    path: "/blog/:id",
-    name: "BlogPostPage",
-    component: BlogPostPage,
-    props: true,
-  },
-  {
-    path: "/resultats/",
-    name: "ElementSearchResultsPage",
-    component: ElementSearchResultsPage,
-    props: true,
-    beforeEnter(to) {
-      if (!to.query?.q) return { to: "LandingPage" }
-    },
-  },
-  {
-    path: "/element/:urlComponent",
-    name: "ElementPage",
-    component: ElementPage,
-    props: true,
-  },
-  {
-    path: "/mentions-legales",
-    name: "LegalNoticesPage",
-    component: LegalNoticesPage,
-    meta: {
-      title: "Mentions légales",
-    },
-  },
-  {
-    path: "/cgu",
-    name: "CGUPage",
-    component: CGUPage,
-    meta: {
-      title: "Conditions générales d'utilisation",
-    },
-  },
-  {
-    path: "/politique-de-confidentialite",
-    name: "PrivacyPolicyPage",
-    component: PrivacyPolicyPage,
-    meta: {
-      title: "Politique de confidentialité",
-    },
-  },
-  {
-    path: "/cookies",
-    name: "CookiesInfoPage",
-    component: CookiesInfoPage,
-    meta: {
-      title: "Cookies",
-    },
-  },
-  {
-    path: "/tableau-de-bord",
-    name: "DashboardPage",
-    component: DashboardPage,
-    meta: {
-      title: "Tableau de bord",
-      authenticationRequired: true,
-    },
-  },
-  {
-    path: "/nouvelle-demarche",
-    name: "NewDeclaration",
-    component: ProducerFormPage,
-    meta: {
-      title: "Nouvelle démarche",
-      authenticationRequired: true,
-      requiredRole: "DeclarantRole",
-    },
-  },
-  {
-    path: "/nouvelle-entreprise",
-    name: "CompanyFormPage",
-    component: CompanyFormPage,
-    meta: {
-      title: "Nouvelle entreprise",
-      authenticationRequired: true,
-    },
-  },
-  {
-    path: "/informations-personnelles",
-    name: "UserAccountPage",
-    component: UserAccountPage,
-    meta: {
-      title: "Mes informations personnelles",
-      authenticationRequired: true,
-    },
-  },
-  {
-    path: "/entreprise/:id",
-    name: "Company",
-    component: CompanyPage,
-    meta: {
-      title: "Mon entreprise", // TODO: titre plus dynamique ?
-      authenticationRequired: true,
-    },
-  },
-  {
-    path: "/connexion",
-    name: "LoginPage",
-    component: LoginPage,
-    meta: {
-      title: "Se connecter",
-    },
-  },
-  {
-    path: "/inscription",
-    name: "SignupPage",
-    component: SignupPage,
-    meta: {
-      title: "S'enregistrer",
-    },
-  },
-  {
-    path: "/verification-envoyee",
-    name: "VerificationSentPage",
-    component: VerificationSentPage,
-    meta: {
-      title: "Vérification envoyée",
-    },
-  },
-  {
-    path: "/verification-email",
-    name: "VerifyEmailPage",
-    component: VerifyEmailPage,
-    meta: {
-      title: "Vérifier son adresse e-mail",
-    },
-  },
-  {
-    path: "/mes-declarations",
-    name: "DeclarationsHomePage",
-    component: DeclarationsHomePage,
-    meta: {
-      title: "Mes déclarations",
-    },
-  },
-  {
-    path: "/mes-declarations/:id",
-    name: "DeclarationPage",
-    component: ProducerFormPage,
-    props: true,
-    meta: {
-      title: "Ma déclaration",
-    },
-  },
-  {
-    path: "/gestion-des-collaborateurs",
-    name: "CollaboratorsPage",
-    component: CollaboratorsPage,
-    meta: {
-      title: "Gestion des collaborateurs",
-      authenticationRequired: true,
-      requiredRole: "SupervisorRole",
-    },
-  },
-  {
-    path: "/toutes-les-declarations",
-    name: "AllDeclarations",
-    component: AllDeclarationsPage,
-    meta: {
-      title: "Toutes les déclarations",
-      authenticationRequired: true,
-      requiredRole: "InstructionRole",
-      defaultQueryParams: {
-        page: 1,
+    component: Main,
+    children: [
+      {
+        path: "accueil",
+        name: "LandingPage",
+        component: LandingPage,
       },
-    },
+      {
+        path: "entreprises",
+        name: "ProducerHomePage",
+        component: ProducerHomePage,
+      },
+      {
+        path: "blog",
+        name: "BlogHomePage",
+        component: BlogHomePage,
+        meta: {
+          title: "Articles de blog",
+        },
+      },
+      {
+        path: "blog/:id",
+        name: "BlogPostPage",
+        component: BlogPostPage,
+        props: true,
+      },
+      {
+        path: "resultats",
+        name: "ElementSearchResultsPage",
+        component: ElementSearchResultsPage,
+        props: true,
+        beforeEnter(to) {
+          if (!to.query?.q) return { to: "LandingPage" }
+        },
+      },
+      {
+        path: "element/:urlComponent",
+        name: "ElementPage",
+        component: ElementPage,
+        props: true,
+      },
+      {
+        path: "mentions-legales",
+        name: "LegalNoticesPage",
+        component: LegalNoticesPage,
+        meta: {
+          title: "Mentions légales",
+        },
+      },
+      {
+        path: "cgu",
+        name: "CGUPage",
+        component: CGUPage,
+        meta: {
+          title: "Conditions générales d'utilisation",
+        },
+      },
+      {
+        path: "politique-de-confidentialite",
+        name: "PrivacyPolicyPage",
+        component: PrivacyPolicyPage,
+        meta: {
+          title: "Politique de confidentialité",
+        },
+      },
+      {
+        path: "cookies",
+        name: "CookiesInfoPage",
+        component: CookiesInfoPage,
+        meta: {
+          title: "Cookies",
+        },
+      },
+      {
+        path: "connexion",
+        name: "LoginPage",
+        component: LoginPage,
+        meta: {
+          title: "Se connecter",
+        },
+      },
+      {
+        path: "inscription",
+        name: "SignupPage",
+        component: SignupPage,
+        meta: {
+          title: "S'enregistrer",
+        },
+      },
+      {
+        path: "verification-envoyee",
+        name: "VerificationSentPage",
+        component: VerificationSentPage,
+        meta: {
+          title: "Vérification envoyée",
+        },
+      },
+      {
+        path: "verification-email",
+        name: "VerifyEmailPage",
+        component: VerifyEmailPage,
+        meta: {
+          title: "Vérifier son adresse e-mail",
+        },
+      },
+      {
+        path: "pro",
+        component: Pro,
+        redirect: { name: "DashboardPage" },
+        meta: {
+          authenticationRequired: true,
+        },
+        children: [
+          {
+            path: "tableau-de-bord",
+            name: "DashboardPage",
+            component: DashboardPage,
+            meta: { title: "Tableau de bord" },
+          },
+          {
+            path: "nouvelle-demarche",
+            name: "NewDeclaration",
+            component: ProducerFormPage,
+            meta: {
+              title: "Nouvelle démarche",
+              requiredRole: "DeclarantRole",
+            },
+          },
+          {
+            path: "informations-personnelles",
+            name: "UserAccountPage",
+            component: UserAccountPage,
+            meta: {
+              title: "Mes informations personnelles",
+            },
+          },
+          {
+            path: "entreprise/:id",
+            name: "Company",
+            component: CompanyPage,
+            meta: {
+              title: "Mon entreprise",
+            },
+          },
+          {
+            path: "/nouvelle-entreprise",
+            name: "CompanyFormPage",
+            component: CompanyFormPage,
+            meta: {
+              title: "Nouvelle entreprise",
+              authenticationRequired: true,
+            },
+          },
+          {
+            path: "mes-declarations",
+            name: "DeclarationsHomePage",
+            component: DeclarationsHomePage,
+            meta: {
+              title: "Mes déclarations",
+            },
+          },
+          {
+            path: "mes-declarations/:id",
+            name: "DeclarationPage",
+            component: ProducerFormPage,
+            props: true,
+            meta: {
+              title: "Ma déclaration",
+            },
+          },
+          {
+            path: "gestion-des-collaborateurs",
+            name: "CollaboratorsPage",
+            component: CollaboratorsPage,
+            meta: {
+              title: "Gestion des collaborateurs",
+              requiredRole: "SupervisorRole",
+            },
+          },
+          {
+            path: "toutes-les-declarations",
+            name: "AllDeclarations",
+            component: AllDeclarationsPage,
+            meta: {
+              title: "Toutes les déclarations",
+              requiredRole: "InstructionRole",
+              defaultQueryParams: {
+                page: 1,
+              },
+            },
+          },
+          {
+            path: "instruction/:declarationId",
+            props: true,
+            name: "InstructionPage",
+            component: InstructionPage,
+            meta: {
+              title: "Instruction",
+              requiredRole: "InstructionRole",
+            },
+          },
+        ],
+      },
+    ],
   },
   {
-    path: "/instruction/:declarationId",
-    props: true,
-    name: "InstructionPage",
-    component: InstructionPage,
-    meta: {
-      title: "Instruction",
-      authenticationRequired: true,
-      requiredRole: "InstructionRole",
-    },
+    path: "/lettre-officielle",
+    name: "OfficialLetterPage",
+    component: OfficialLetterPage, // puisqu'à la racine des routes, n'utilise pas de layout
   },
   {
     path: "/:catchAll(.*)*", // https://stackoverflow.com/a/70343919/2255491
@@ -250,7 +262,8 @@ const router = createRouter({
   },
 })
 
-function chooseAuthorisedRoute(to, from, next, store) {
+const chooseAuthorisedRoute = async (to, from, next, store) => {
+  // 1) vérifie si les données initiales sont chargées, sinon le fait avant toute chose
   if (!store.initialDataLoaded) {
     store
       .fetchInitialData()
@@ -260,7 +273,8 @@ function chooseAuthorisedRoute(to, from, next, store) {
         next({ name: "LandingPage" })
       })
   } else {
-    if (to.meta.home) next({ name: store.loggedUser ? "DashboardPage" : "LandingPage" })
+    // 2) vérifie les règles de redirection
+    if (to.path === "/") next({ name: store.loggedUser ? "DashboardPage" : "LandingPage" })
     const authenticationCheck = !to.meta.authenticationRequired || store.loggedUser
     const roleCheck =
       !to.meta.requiredRole ||
@@ -271,7 +285,7 @@ function chooseAuthorisedRoute(to, from, next, store) {
   }
 }
 
-function ensureDefaultQueryParams(route, next) {
+const ensureDefaultQueryParams = (route, next) => {
   if (!route.meta.defaultQueryParams) return
   let needsRedirection = false
   for (const [queryParam, value] of Object.entries(route.meta.defaultQueryParams))

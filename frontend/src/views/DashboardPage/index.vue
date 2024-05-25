@@ -1,6 +1,5 @@
 <template>
-  <RoleBarBlock :name="loggedUser.firstName" :company="company" />
-  <div class="fr-container my-8 flex flex-col gap-8">
+  <div class="flex flex-col gap-8">
     <ActionGrid
       v-if="isSupervisor"
       :actions="supervisorActions"
@@ -19,7 +18,6 @@ import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import ActionGrid from "./ActionGrid"
-import RoleBarBlock from "./RoleBarBlock"
 
 const store = useRootStore()
 const { loggedUser, company } = storeToRefs(store)

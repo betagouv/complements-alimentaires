@@ -39,7 +39,7 @@ const navItems = [
 ]
 const loggedOnlyNavItems = [
   {
-    to: "/tableau-de-bord",
+    to: "/pro/tableau-de-bord",
     text: "Tableau de bord",
   },
 ]
