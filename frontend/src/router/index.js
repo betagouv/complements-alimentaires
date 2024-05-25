@@ -185,7 +185,6 @@ const routes = [
             component: CompanyFormPage,
             meta: {
               title: "Nouvelle entreprise",
-              authenticationRequired: true,
             },
           },
           {
