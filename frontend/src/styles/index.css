@@ -50,4 +50,17 @@
   .fr-table .fr-tag .ov-icon {
     @apply !mr-2;
   }
+  /* letters */
+  @media print {
+    .print-break {
+      @apply block;
+      page-break-before: always;
+    }
+  }
+  .letter-p {
+    @apply my-3 text-[12px] leading-4 tracking-tight text-justify;
+  }
+  .letter-a {
+    @apply text-blue-france-sun-113;
+  }
 }
