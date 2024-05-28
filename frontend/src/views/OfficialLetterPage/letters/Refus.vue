@@ -59,16 +59,17 @@ const dateOptions = {
   year: "numeric",
 }
 
-// props
-const recipientName = "ARIIX EUROPE B.V"
-const recipientAddress = "President Kennedylaan 19\n2517 JK DEN HAAG"
-const letterGenerationDate = new Date(2024, 6, 20)
-const caName = "RENEW"
-const caGalenicForm = "Poudre"
-const caCompany = "Kiwi Baies"
-const declarationDate = new Date(2024, 5, 25)
-const caseNumber = "2024-5-1273"
-const telerecoursUrl = "https://citoyens.telerecours.fr/#/authentication"
+defineProps({
+  recipientName: { type: String, required: true },
+  recipientAddress: { type: String, required: true },
+  letterGenerationDate: { type: Date, required: true },
+  caName: { type: String, required: true },
+  caGalenicForm: { type: String, required: true },
+  caCompany: { type: String, required: true },
+  declarationDate: { type: Date, required: true },
+  caseNumber: { type: String, required: true },
+  telerecoursUrl: { type: String, required: true },
+})
 </script>
 
 <style scoped>

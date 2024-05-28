@@ -57,17 +57,18 @@ const dateOptions = {
 }
 
 // props
-const title = "attestation de déclaration d’un complément alimentaire"
-const letterGenerationDate = new Date(2024, 5, 25)
-const name = "Johanna Galibert"
-
-const caName = "Ronce"
-const caGalenicForm = "Flacon"
-const caCompany = "Belar basa gemmothérapie"
-const declarationDate = new Date(2024, 5, 25)
-const caseNumber = "2024-5-1273"
-const attestationUrl = "https://url-a-definir" // TODO
-const moreLegalInfoUrl = "https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire"
+defineProps({
+  title: { type: String, required: true },
+  letterGenerationDate: { type: Date, required: true },
+  name: { type: String, required: true },
+  caName: { type: String, required: true },
+  caGalenicForm: { type: String, required: true },
+  caCompany: { type: String, required: true },
+  declarationDate: { type: Date, required: true },
+  caseNumber: { type: String, required: true },
+  attestationUrl: { type: String, required: true },
+  moreLegalInfoUrl: { type: String, required: true },
+})
 </script>
 
 <style scoped>

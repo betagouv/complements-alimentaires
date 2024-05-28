@@ -163,17 +163,19 @@ const dateOptions = {
 }
 
 // props
-const title = "accusé d’enregistrement de déclaration d’un complément alimentaire"
-const letterGenerationDate = new Date(2024, 5, 25)
-const declarationDate = new Date(2024, 5, 25)
-const caName = "L-Glutamine 2000"
-const caGalenicForm = "Gélule"
-const caCompany = "Nutrition Sportive Way"
-const caseNumber = "2024-5-1273"
-const transmissionEmail = "complement-alimentaire.dgal@agriculture.gouv.fr"
-const dgalDocumentUrl = "https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire"
-const attestationUrl = "https://url-a-definir" // TODO
-const moreLegalInfoUrl = "https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire"
+defineProps({
+  title: { type: String, required: true },
+  letterGenerationDate: { type: Date, required: true },
+  declarationDate: { type: Date, required: true },
+  caName: { type: String, required: true },
+  caGalenicForm: { type: String, required: true },
+  caCompany: { type: String, required: true },
+  caseNumber: { type: String, required: true },
+  transmissionEmail: { type: String, required: true },
+  dgalDocumentUrl: { type: String, required: true },
+  attestationUrl: { type: String, required: true },
+  moreLegalInfoUrl: { type: String, required: true },
+})
 </script>
 
 <style scoped>
