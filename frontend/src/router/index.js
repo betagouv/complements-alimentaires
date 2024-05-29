@@ -178,7 +178,7 @@ const routes = [
             },
           },
           {
-            path: "/nouvelle-entreprise",
+            path: "nouvelle-entreprise",
             name: "CompanyFormPage",
             component: CompanyFormPage,
             meta: {
