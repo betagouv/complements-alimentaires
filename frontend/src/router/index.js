@@ -220,6 +220,9 @@ const routes = [
               requiredRole: "InstructionRole",
               defaultQueryParams: {
                 page: 1,
+                status: "",
+                entrepriseDe: "",
+                entrepriseA: "",
               },
             },
           },
