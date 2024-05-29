@@ -3,10 +3,10 @@
   <!-- <component :is="getComponentFromName(letterName)" v-bind="childrenProps"></component> -->
 
   <!-- POUR LES TESTS -->
-  <!-- <component :is="getComponentFromName('AccuseEnregistrement')" v-bind="exPropsAccuseEnregistrement" /> -->
+  <component :is="getComponentFromName('AccuseEnregistrement')" v-bind="exPropsAccuseEnregistrement" />
   <!-- <component :is="getComponentFromName('AttestationDeclarationArt15')" v-bind="exPropsAttestationDeclarationArt15" /> -->
   <!-- <component :is="getComponentFromName('AttestationDeclarationArt16')" v-bind="exPropsAttestationDeclarationArt16" /> -->
-  <component :is="getComponentFromName('Refus')" v-bind="exPropsRefus" />
+  <!-- <component :is="getComponentFromName('Refus')" v-bind="exPropsRefus" /> -->
 </template>
 
 <script setup>
