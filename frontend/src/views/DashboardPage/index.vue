@@ -21,7 +21,7 @@ import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import ActionGrid from "./ActionGrid"
-import RoleBarBlock from "@/components/RoleBarBlock"
+import RoleBarBlock from "./RoleBarBlock"
 
 const store = useRootStore()
 const { loggedUser, company } = storeToRefs(store)
