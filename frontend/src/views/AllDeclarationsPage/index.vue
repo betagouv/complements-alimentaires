@@ -59,7 +59,6 @@ import { computed, watch } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import InstructionDeclarationsTable from "./InstructionDeclarationsTable"
-import { DsfrPagination } from "@gouvminint/vue-dsfr"
 import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
 import { DsfrInput } from "@gouvminint/vue-dsfr"
@@ -89,12 +88,12 @@ const filteredStatus = computed(() => route.query.status)
 const companyNameStart = computed(() => route.query.entrepriseDe)
 const companyNameEnd = computed(() => route.query.entrepriseA)
 
-const updateStatusFilter = (status) => router.push({ query: { ...route.query, ...{ status } } })
-const updatePage = (newPage) => router.push({ query: { ...route.query, ...{ page: newPage + 1 } } })
-const updateCompanyNameStartFilter = (newValue) =>
-  router.push({ query: { ...route.query, ...{ entrepriseDe: newValue } } })
-const updateCompanyNameEndFilter = (newValue) =>
-  router.push({ query: { ...route.query, ...{ entrepriseA: newValue } } })
+const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
+
+const updateStatusFilter = (status) => updateQuery({ status })
+const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
+const updateCompanyNameStartFilter = (newValue) => updateQuery({ entrepriseDe: newValue })
+const updateCompanyNameEndFilter = (newValue) => updateQuery({ entrepriseA: newValue })
 
 // Obtention de la donnée via API
 const url = computed(
