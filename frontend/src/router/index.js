@@ -3,7 +3,6 @@ import { useRootStore } from "@/stores/root"
 
 // layouts
 import Main from "@/layouts/main"
-import Pro from "@/layouts/pro"
 
 // views
 import LandingPage from "@/views/LandingPage"
@@ -142,7 +141,6 @@ const routes = [
       },
       {
         path: "pro",
-        component: Pro,
         redirect: { name: "DashboardPage" },
         meta: {
           authenticationRequired: true,
