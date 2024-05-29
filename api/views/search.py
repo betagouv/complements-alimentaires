@@ -1,11 +1,13 @@
-import logging
 import json
-from rest_framework.views import APIView
-from rest_framework.response import Response
+import logging
 from collections import OrderedDict
-from api.serializers import SearchResultSerializer
+
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from api.exception_handling import ProjectAPIException
+from api.serializers import SearchResultSerializer
 from api.utils.search import search_elements
 
 logger = logging.getLogger(__name__)

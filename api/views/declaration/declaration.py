@@ -1,3 +1,6 @@
+from django.db.models import F, Func
+from django.db.models.functions import Lower
+
 from django_filters import rest_framework as django_filters
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
@@ -67,17 +70,34 @@ class DeclarationFlowView(GenericAPIView):
         return Response(serializer.data)
 
 
+class Unaccent(Func):
+    function = "unaccent"
+
+
 class DeclarationFilterSet(django_filters.FilterSet):
     author = BaseNumberInFilter(field_name="author__id")
     company = BaseNumberInFilter(field_name="company__id")
+    company_name_start = django_filters.CharFilter(method="company_name_start__gte")
+    company_name_end = django_filters.CharFilter(method="company_name_end__lte")
 
     class Meta:
         model = Declaration
-        fields = {
+        fields = [
             "company",
             "status",
             "author",
-        }
+            "company_name_start",
+            "company_name_end",
+        ]
+
+    def company_name_start__gte(self, queryset, value, *args, **kwargs):
+        return self._annotate_queryset(queryset).filter(name_unaccented_lower__gte=args[0].lower())
+
+    def company_name_end__lte(self, queryset, value, *args, **kwargs):
+        return self._annotate_queryset(queryset).filter(name_unaccented_lower__lte=args[0].lower())
+
+    def _annotate_queryset(self, queryset):
+        return queryset.annotate(name_unaccented_lower=Lower(Unaccent(F("company__social_name"))))
 
 
 class DeclarationPagination(LimitOffsetPagination):

@@ -238,3 +238,13 @@ export const RiEditLine = remixIcon(
   "ri-edit-line",
   "M6.414 16L16.556 5.858l-1.414-1.414L5 14.586V16h1.414zm.829 2H3v-4.243L14.435 2.322a1 1 0 011.414 0l2.829 2.829a1 1 0 010 1.414L7.243 18zM3 20h18v2H3v-2z"
 )
+
+export const RiChatDownloadLine = remixIcon(
+  "ri-chat-download-line",
+  "M6.455 19L2 22.5V4a1 1 0 011-1h18a1 1 0 011 1v14a1 1 0 01-1 1H6.455zM4 18.385L5.763 17H20V5H4v13.385zM13 11h3l-4 4-4-4h3V7h2v4z"
+)
+
+export const RiChatUploadLine = remixIcon(
+  "ri-chat-upload-line",
+  "M6.455 19L2 22.5V4a1 1 0 011-1h18a1 1 0 011 1v14a1 1 0 01-1 1H6.455zM4 18.385L5.763 17H20V5H4v13.385zM13 11v4h-2v-4H8l4-4 4 4h-3z"
+)

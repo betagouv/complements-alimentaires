@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework.exceptions import ParseError
 from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -14,9 +15,20 @@ from data.models import CollaborationInvitation, Company, CoSupervisionClaim
 
 from ..exception_handling import ProjectAPIException
 from ..permissions import IsSolicitationRecipient, IsSupervisor
-from ..serializers import AddNewCollaboratorSerializer, CoSupervisionClaimSerializer
+from ..serializers import AddNewCollaboratorSerializer, CollaborationInvitationSerializer, CoSupervisionClaimSerializer
 
 User = get_user_model()
+
+
+class CollaborationInvitationListView(ListAPIView):
+    serializer_class = CollaborationInvitationSerializer
+
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        company = get_object_or_404(Company.objects.filter(supervisors=user), pk=self.kwargs["pk"])
+        return CollaborationInvitation.objects.filter(company=company, processor__isnull=True)
 
 
 class CoSupervisionClaimListView(ListAPIView):

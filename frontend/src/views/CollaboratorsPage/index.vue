@@ -43,6 +43,7 @@
       <hr class="mt-4 -mb-2 border" />
     </div>
     <ClaimsBlock class="mt-8" :companyId="company.id" :collaboratorsExecute="collaboratorsExecute" />
+    <SentInvitationsBlock class="mt-8" :companyId="company.id" />
   </div>
 </template>
 
@@ -57,6 +58,7 @@ import RoleTag from "@/components/RoleTag.vue"
 import { headers } from "@/utils/data-fetching"
 import { roleNameDisplayNameMapping } from "@/utils/mappings"
 import ClaimsBlock from "./ClaimsBlock"
+import SentInvitationsBlock from "./SentInvitationsBlock.vue"
 import AddNewCollaborator from "./AddNewCollaborator"
 
 const store = useRootStore()

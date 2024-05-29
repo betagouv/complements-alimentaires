@@ -41,4 +41,9 @@ from .company import (
     AddCompanyRoleView,
     RemoveCompanyRoleView,
 )
-from .solicitation import ProcessCoSupervisionClaim, CoSupervisionClaimListView, AddNewCollaboratorView
+from .solicitation import (
+    ProcessCoSupervisionClaim,
+    CoSupervisionClaimListView,
+    CollaborationInvitationListView,
+    AddNewCollaboratorView,
+)

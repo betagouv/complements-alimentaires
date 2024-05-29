@@ -9,17 +9,12 @@ class IngredientStatus(models.IntegerChoices):
     si on veut s'assurer de la cohérence des données.
     """
 
-    AUTHORIZED = 1, "autorisé"
+    AUTHORIZED = 1, "autorisé"  # contient aussi les status SICCRF "à inscrire" et "sans objet"
     NOT_AUTHORIZED = 2, "non autorisé"
-    PENDING_REGISTRATION = 3, "à inscrire"
-    NA = 4, "sans objet"
-
-    __empty__ = "inconnu"
-    # TODO: devrait-on merger "sans objet" et "inconnu" ?
 
 
 class WithStatus(models.Model):
-    """Mixins pour les ingrédients qui portent un statut.
+    """Mixins pour les ingrédients qui portent un statut règlementaire.
     (plantes, micro-organismes, substances, arômes, additifs, formes d'apport)
     C'est le statut de leur autorisation dans les compléments alimentaires.
     Cette mixins ne se trouve pas dans le fichier mixins pour éviter
@@ -33,6 +28,11 @@ class WithStatus(models.Model):
 
     status = models.IntegerField(
         choices=IngredientStatus.choices,
+        blank=True,
+        default=None,  # un ingrédient n'a pas de status par défaut
         null=True,
         verbose_name="statut de l'ingrédient ou substance",
+    )
+    to_be_entered_in_next_decree = models.BooleanField(
+        editable=False, default=False, verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"
     )
