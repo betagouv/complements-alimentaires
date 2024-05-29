@@ -74,6 +74,11 @@ urlpatterns = {
     ),
     # Solicitations
     path(
+        "companies/<int:pk>/collaboration-invitations/",
+        views.CollaborationInvitationListView.as_view(),
+        name="list_collaboration_invitation",
+    ),
+    path(
         "companies/<int:pk>/co-supervision-claims/",
         views.CoSupervisionClaimListView.as_view(),
         name="list_co_supervision_claim",
