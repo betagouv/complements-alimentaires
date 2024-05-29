@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework.exceptions import ParseError
 from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -21,6 +22,8 @@ User = get_user_model()
 
 class CollaborationInvitationListView(ListAPIView):
     serializer_class = CollaborationInvitationSerializer
+
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user

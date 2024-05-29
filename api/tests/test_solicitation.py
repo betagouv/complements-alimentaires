@@ -46,6 +46,10 @@ class TestListCollaborationInvitations(ProjectAPITestCase):
         response = self.get(self.url(pk=self.company_3.id))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)  # get_or_404 appelé avant permission
 
+    def test_get_collaboration_invitations_unauthenticated(self):
+        response = self.get(self.url(pk=self.company_3.id))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
 
 class TestListCoSupervisionClaims(ProjectAPITestCase):
     viewname = "list_co_supervision_claim"
