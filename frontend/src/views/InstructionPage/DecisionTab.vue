@@ -128,7 +128,7 @@ const rejectReasons = [
     items: [
       "Absence de preuve de reconnaissance mutuelle",
       "Existence d'un risque",
-      "Absence d'étiquetage",
+      "Absence ou non conformité de l'étiquetage",
       "Absence de preuve",
       "Incohérence entre le dossier et l'étiquetage",
       "Autres données manquantes",
