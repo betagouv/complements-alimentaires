@@ -50,7 +50,7 @@
           </div>
           <div class="content-end" v-if="decisionCategory != 'approve'">
             <DsfrInputGroup>
-              <DsfrInput label="Délai de réponse (jours)" label-visible />
+              <DsfrInput v-model="delayDays" label="Délai de réponse (jours)" label-visible />
             </DsfrInputGroup>
           </div>
         </div>
@@ -78,13 +78,14 @@ const decisionCategory = ref(null)
 watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "approve" : null))
 
 const proposal = ref(null)
+const delayDays = ref(30)
 
 const decisionCategories = [
   {
     value: "approve",
     title: "Bon pour autorisation",
     icon: "ri-checkbox-circle-fill",
-    description: "La déclaration ne présente pas de problèmes et elle peut être autorisé dans l'état.",
+    description: "La déclaration ne pose pas de problème et peut être autorisé en l'état.",
     color: "green",
   },
   {
@@ -113,8 +114,8 @@ const rejectReasons = [
   {
     title: "Les procédures ne sont pas respectées",
     items: [
-      "Présence d'un nouvel food",
-      "Présence d'une form d'apport en nutriments non autorisée",
+      "Présence d'un Novel Food",
+      "Présence d'une forme d'apport en nutriments non autorisée",
       "Demande en article 18 attendue",
     ],
   },
@@ -129,7 +130,7 @@ const rejectReasons = [
       "Existence d'un risque",
       "Absence d'étiquetage",
       "Absence de preuve",
-      "Icohérence entre le dossier et l'étiquetage",
+      "Incohérence entre le dossier et l'étiquetage",
       "Autres données manquantes",
     ],
   },
