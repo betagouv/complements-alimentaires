@@ -1,8 +1,7 @@
 <template>
   <div>
     <div class="filigrane"></div>
-    <!-- TODO: retirer margin -->
-    <div class="m-10 text-sm text-black">
+    <div class="text-sm text-black">
       <!-- en-tête MASA + DGAL -->
       <div class="flex items-center justify-between">
         <img :src="require('@/assets/masa.png')" class="w-48" />

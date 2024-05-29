@@ -57,6 +57,7 @@ ipdb = "*"              # https://github.com/gotcha/ipdb
 factory-boy = "*"       # https://github.com/FactoryBoy/factory_boy
 requests-mock = "*"     # https://github.com/jamielennox/requests-mock
 django-extensions = "*" # https://github.com/django-extensions/django-extensions
+playwright = "*"        # https://github.com/microsoft/playwright-python
 
 ######################################################################################################################
 # Front-end related
