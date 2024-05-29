@@ -1,15 +1,18 @@
 <template>
-  <div class="flex flex-col gap-8">
-    <ActionGrid
-      v-if="isSupervisor"
-      :actions="supervisorActions"
-      :title="`Gestion de l'entreprise ${company.socialName}`"
-      icon="ri-home-4-line"
-    />
-    <ActionGrid v-if="isDeclarant" :actions="declarantActions" title="Mes déclarations" icon="ri-capsule-fill" />
-    <ActionGrid v-if="isInstructor" :actions="instructionActions" title="Instruction" icon="ri-survey-fill" />
-    <ActionGrid v-if="emptyRoles" :actions="onboardingActions" title="Démarrez chez Compl-Alim !" />
-    <ActionGrid :actions="userActions" title="Mon compte" icon="ri-account-circle-line" />
+  <div>
+    <RoleBarBlock :name="loggedUser.firstName" :company="company" />
+    <div class="fr-container my-8 flex flex-col gap-8">
+      <ActionGrid
+        v-if="isSupervisor"
+        :actions="supervisorActions"
+        :title="`Gestion de l'entreprise ${company.socialName}`"
+        icon="ri-home-4-line"
+      />
+      <ActionGrid v-if="isDeclarant" :actions="declarantActions" title="Mes déclarations" icon="ri-capsule-fill" />
+      <ActionGrid v-if="isInstructor" :actions="instructionActions" title="Instruction" icon="ri-survey-fill" />
+      <ActionGrid v-if="emptyRoles" :actions="onboardingActions" title="Démarrez chez Compl-Alim !" />
+      <ActionGrid :actions="userActions" title="Mon compte" icon="ri-account-circle-line" />
+    </div>
   </div>
 </template>
 
@@ -18,6 +21,7 @@ import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import ActionGrid from "./ActionGrid"
+import RoleBarBlock from "./RoleBarBlock"
 
 const store = useRootStore()
 const { loggedUser, company } = storeToRefs(store)

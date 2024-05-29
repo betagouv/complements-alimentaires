@@ -3,7 +3,6 @@ import { useRootStore } from "@/stores/root"
 
 // layouts
 import Main from "@/layouts/main"
-import Pro from "@/layouts/pro"
 
 // views
 import LandingPage from "@/views/LandingPage"
@@ -142,7 +141,6 @@ const routes = [
       },
       {
         path: "pro",
-        component: Pro,
         redirect: { name: "DashboardPage" },
         meta: {
           authenticationRequired: true,
@@ -180,7 +178,7 @@ const routes = [
             },
           },
           {
-            path: "/nouvelle-entreprise",
+            path: "nouvelle-entreprise",
             name: "CompanyFormPage",
             component: CompanyFormPage,
             meta: {
@@ -222,6 +220,9 @@ const routes = [
               requiredRole: "InstructionRole",
               defaultQueryParams: {
                 page: 1,
+                status: "",
+                entrepriseDe: "",
+                entrepriseA: "",
               },
             },
           },
@@ -288,7 +289,7 @@ const ensureDefaultQueryParams = (route, next) => {
   if (!route.meta.defaultQueryParams) return
   let needsRedirection = false
   for (const [queryParam, value] of Object.entries(route.meta.defaultQueryParams))
-    if (!route.query[queryParam]) {
+    if (!(queryParam in route.query)) {
       route.query[queryParam] = value
       needsRedirection = true
     }
