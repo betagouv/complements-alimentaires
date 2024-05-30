@@ -165,8 +165,8 @@ const dateOptions = {
 // props
 defineProps({
   title: { type: String, required: true },
-  letterGenerationDate: { type: Date, required: true },
-  declarationDate: { type: Date, required: true },
+  letterGenerationDate: { type: String, required: true },
+  declarationDate: { type: String, required: true },
   caName: { type: String, required: true },
   caGalenicForm: { type: String, required: true },
   caCompany: { type: String, required: true },
