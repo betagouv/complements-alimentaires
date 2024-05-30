@@ -40,6 +40,7 @@ class PlantFactory(factory.django.DjangoModelFactory):
     siccrf_family = factory.SubFactory(PlantFamilyFactory)
     ca_family = factory.SubFactory(PlantFamilyFactory)
     status = IngredientStatus.AUTHORIZED
+    to_be_entered_in_next_decree = False
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):

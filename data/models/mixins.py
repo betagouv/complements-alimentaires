@@ -1,6 +1,6 @@
 from django.db import models
-from django.db.models.functions import Coalesce, NullIf
 from django.db.models import F, Value
+from django.db.models.functions import Coalesce, NullIf
 
 
 class WithMissingImportBoolean(models.Model):

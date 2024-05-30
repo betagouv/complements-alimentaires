@@ -2,8 +2,17 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 
-from data.models import CoSupervisionClaim
+from data.models import CollaborationInvitation, CoSupervisionClaim
 from data.models.company import CompanyRoleClassChoices
+
+
+class CollaborationInvitationSerializer(serializers.ModelSerializer):
+    sender_name = serializers.CharField(source="sender.name")
+
+    class Meta:
+        model = CollaborationInvitation
+        fields = ("id", "creation_date", "sender_name", "description", "recipient_email")
+        read_only_fields = fields
 
 
 class CoSupervisionClaimSerializer(serializers.ModelSerializer):

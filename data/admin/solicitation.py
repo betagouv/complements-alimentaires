@@ -18,7 +18,7 @@ class WithDisplayRecipients:
     def display_recipients(self, obj):
         recipient_count = obj.recipients.count()
         if recipient_count == 1:
-            return obj.recipient.get().name
+            return obj.recipients.get().name
         else:
             return f"{recipient_count} destinataires"
 
