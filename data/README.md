@@ -24,12 +24,12 @@ La séparation fonctionnelle entre ces différentes tables est soumise à modifi
 |REF_ICA_TYPE_SYNONYME_MICROORG     |       |       |       |
 |REF_ICA_TYPE_SYNONYME_PLANTE     |       |       |       |
 |REF_ICA_TYPE_SYNONYME_SUBSTACTIVE     |       |       |       |
-|REF_ICA_FAMILLE_PLANTE     |TODO|PlantFamily|       |
+|REF_ICA_FAMILLE_PLANTE     |✅|PlantFamily|       |
 |REF_ICA_TYPE_SUBSTANCE     |       |       |       |       |       |
 REF_ICA_TYPE_INGREDIENT     |       |       |       |       |       |
 REF_ICA_TYPE_AUTRE_INGREDIENT     |       |       |       |       |       |
 REF_ICA_STATUT_INGR_SUBST     |       |       |       |       |       |
-REF_ICA_STD_STATUT     |       |       |       |       |       |
+REF_ICA_STD_STATUT     |✅|       |       |       |       |
 REF_ICA_FONCTION_INGREDIENT     |       |       |       |       |       |
 |REF_ICA_TYPE_PREPARATION     |       |       |       |
 
