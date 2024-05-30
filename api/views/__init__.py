@@ -35,7 +35,7 @@ from .company import (
     ClaimCompanyCoSupervisionView,
     ClaimCompanySupervisionView,
     CompanyCreateView,
-    CompanyRetrieveView,
+    CompanyRetrieveUpdateView,
     CountryListView,
     CompanyCollaboratorsListView,
     AddCompanyRoleView,

@@ -6,8 +6,9 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
+from rest_framework import permissions
 from rest_framework.exceptions import NotFound
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -19,7 +20,7 @@ from data.utils.external_utils import SiretData
 from data.validators import validate_siret, validate_vat  # noqa
 
 from ..exception_handling import ProjectAPIException
-from ..permissions import IsInstructor, IsSupervisor
+from ..permissions import IsSupervisor, IsSupervisorOrInstructor
 from ..serializers import CollaboratorSerializer, CompanySerializer
 
 User = get_user_model()
@@ -147,15 +148,17 @@ class CompanyCreateView(CreateAPIView):
         return new_company
 
 
-class CompanyRetrieveView(RetrieveAPIView):
-    """Récupération d'une entreprise dont l'utilisateur est gestionnaire ou instructeur"""
+class CompanyRetrieveUpdateView(RetrieveUpdateAPIView):
+    """Récupération d'une entreprise dont l'utilisateur est gestionnaire ou instructeur, ou modification quand l'utilisateur est gestionnaire"""
 
     queryset = Company.objects.all()
-    permission_classes = [
-        IsAuthenticated,
-        IsSupervisor | IsInstructor,
-    ]
     serializer_class = CompanySerializer
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return [IsAuthenticated(), IsSupervisorOrInstructor()]
+        else:
+            return [IsAuthenticated(), IsSupervisor()]
 
 
 class CompanyCollaboratorsListView(ListAPIView):

@@ -5,7 +5,7 @@
       <div class="mt-4 flex gap-x-4">
         <DsfrButton
           :label="`Accéder à « ${company.socialName} »`"
-          @click="$router.push({ name: 'Company', params: { id: company.id } })"
+          @click="$router.push({ name: 'CompanyPage', params: { id: company.id } })"
         />
         <DsfrButton label="Retour au tableau de bord" tertiary @click="$router.push({ name: 'DashboardPage' })" />
       </div>

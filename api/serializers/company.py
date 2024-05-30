@@ -28,6 +28,7 @@ class CompanySerializer(serializers.ModelSerializer):
             "city",
             "cedex",
             "country",
+            "country_label",
             "activities",
             "phone_number",
             "email",
@@ -36,6 +37,7 @@ class CompanySerializer(serializers.ModelSerializer):
 
     id = serializers.IntegerField(read_only=True)
     phone_number = PhoneNumberField()
+    country_label = serializers.CharField(read_only=True, source="get_country_display")
 
     def to_internal_value(self, data):
         # permet de définir dynamiquement la bonne région pour le numéro de téléphone entré
