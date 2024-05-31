@@ -1,11 +1,13 @@
 <template>
-  <DsfrAlert v-if="!readonly">
-    <p class="mb-2">Veuillez vérifier les données ci-dessous avant de procéder à la validation de votre démarche</p>
-    <DsfrButton @click="emit('submit')" label="Soumettre ma démarche" />
-  </DsfrAlert>
+  <div>
+    <DsfrAlert v-if="!readonly">
+      <p class="mb-2">Veuillez vérifier les données ci-dessous avant de procéder à la validation de votre démarche</p>
+      <DsfrButton @click="emit('submit')" label="Soumettre ma démarche" />
+    </DsfrAlert>
 
-  <SectionTitle class="!mt-8" title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" />
-  <DeclarationSummary v-model="payload" :readonly="readonly" />
+    <SectionTitle class="!mt-8" title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" />
+    <DeclarationSummary v-model="payload" :readonly="readonly" />
+  </div>
 </template>
 
 <script setup>

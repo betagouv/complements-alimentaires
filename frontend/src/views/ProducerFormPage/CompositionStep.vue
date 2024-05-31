@@ -1,38 +1,40 @@
 <template>
-  <SectionTitle title="Ma composition" sizeTag="h6" icon="ri-flask-line" />
-  <div class="sm:flex gap-10 items-center">
-    <ElementAutocomplete
-      autocomplete="nothing"
-      label="Cherchez un ingrédient"
-      label-visible
-      class="max-w-md grow"
-      hint="Tapez au moins trois caractères pour démarrer la recherche"
-      @selected="selectOption"
-    />
-    <div class="hidden sm:flex flex-col items-center">
-      <div class="border-l h-6"></div>
-      <div class="my-2">Ou</div>
-      <div class="border-l h-6"></div>
+  <div>
+    <SectionTitle title="Ma composition" sizeTag="h6" icon="ri-flask-line" />
+    <div class="sm:flex gap-10 items-center">
+      <ElementAutocomplete
+        autocomplete="nothing"
+        label="Cherchez un ingrédient"
+        label-visible
+        class="max-w-md grow"
+        hint="Tapez au moins trois caractères pour démarrer la recherche"
+        @selected="selectOption"
+      />
+      <div class="hidden sm:flex flex-col items-center">
+        <div class="border-l h-6"></div>
+        <div class="my-2">Ou</div>
+        <div class="border-l h-6"></div>
+      </div>
+      <div class="mt-4 sm:mt-0"><NewElementModal @add="addElement" /></div>
     </div>
-    <div class="mt-4 sm:mt-0"><NewElementModal @add="addElement" /></div>
-  </div>
 
-  <ElementList @remove="removeElement" objectType="plant" :elements="payload.declaredPlants" />
-  <ElementList @remove="removeElement" objectType="microorganism" :elements="payload.declaredMicroorganisms" />
-  <ElementList @remove="removeElement" objectType="ingredient" :elements="payload.declaredIngredients" />
-  <ElementList @remove="removeElement" objectType="substance" :elements="payload.declaredSubstances" />
-  <div v-if="allElements.length === 0" class="my-12">
-    <v-icon name="ri-information-line" class="mr-1"></v-icon>
-    Vous n'avez pas encore saisi d'ingrédients pour votre complément alimentaire
-  </div>
+    <ElementList @remove="removeElement" objectType="plant" :elements="payload.declaredPlants" />
+    <ElementList @remove="removeElement" objectType="microorganism" :elements="payload.declaredMicroorganisms" />
+    <ElementList @remove="removeElement" objectType="ingredient" :elements="payload.declaredIngredients" />
+    <ElementList @remove="removeElement" objectType="substance" :elements="payload.declaredSubstances" />
+    <div v-if="allElements.length === 0" class="my-12">
+      <v-icon name="ri-information-line" class="mr-1"></v-icon>
+      Vous n'avez pas encore saisi d'ingrédients pour votre complément alimentaire
+    </div>
 
-  <div v-show="hasActiveSubstances">
-    <h3 class="fr-h6 !mb-4 !mt-6">Substances</h3>
-    <p>
-      Les substances contenues dans les ingrédients actifs renseignés sont affichées ci-dessous. Veuillez compléter leur
-      dosage total.
-    </p>
-    <SubstancesTable v-model="payload" />
+    <div v-show="hasActiveSubstances">
+      <h3 class="fr-h6 !mb-4 !mt-6">Substances</h3>
+      <p>
+        Les substances contenues dans les ingrédients actifs renseignés sont affichées ci-dessous. Veuillez compléter
+        leur dosage total.
+      </p>
+      <SubstancesTable v-model="payload" />
+    </div>
   </div>
 </template>
 

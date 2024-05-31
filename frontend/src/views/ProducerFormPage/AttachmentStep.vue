@@ -1,28 +1,30 @@
 <template>
-  <SectionTitle title="Étiquetage" sizeTag="h6" icon="ri-price-tag-2-fill" />
-  <DsfrInputGroup>
-    <DsfrFileUpload
-      label="Merci d'ajouter au moins un fichier image ou PDF correspondant à l'étiquetage."
-      :accept="['image/jpeg, image/gif, image/png, application/pdf']"
-      @change="addLabelFiles"
-      v-model="selectedLabelFile"
-    />
-  </DsfrInputGroup>
+  <div>
+    <SectionTitle title="Étiquetage" sizeTag="h6" icon="ri-price-tag-2-fill" />
+    <DsfrInputGroup>
+      <DsfrFileUpload
+        label="Merci d'ajouter au moins un fichier image ou PDF correspondant à l'étiquetage."
+        :accept="['image/jpeg, image/gif, image/png, application/pdf']"
+        @change="addLabelFiles"
+        v-model="selectedLabelFile"
+      />
+    </DsfrInputGroup>
 
-  <FileGrid :files="labelFiles" @remove="removeFile" hideTypeSelection />
+    <FileGrid :files="labelFiles" @remove="removeFile" hideTypeSelection />
 
-  <SectionTitle title="Autres" class="!mt-10" sizeTag="h6" icon="ri-attachment-2" />
+    <SectionTitle title="Autres" class="!mt-10" sizeTag="h6" icon="ri-attachment-2" />
 
-  <DsfrInputGroup>
-    <DsfrFileUpload
-      label="Autres pièces que vous jugez nécessaires pour l'étude du dossier"
-      :acceptTypes="['image/jpeg, image/gif, image/png, application/pdf']"
-      @change="addOtherFiles"
-      v-model="selectedOtherFile"
-    />
-  </DsfrInputGroup>
+    <DsfrInputGroup>
+      <DsfrFileUpload
+        label="Autres pièces que vous jugez nécessaires pour l'étude du dossier"
+        :acceptTypes="['image/jpeg, image/gif, image/png, application/pdf']"
+        @change="addOtherFiles"
+        v-model="selectedOtherFile"
+      />
+    </DsfrInputGroup>
 
-  <FileGrid :files="otherFiles" @remove="removeFile" />
+    <FileGrid :files="otherFiles" @remove="removeFile" />
+  </div>
 </template>
 
 <script setup>
