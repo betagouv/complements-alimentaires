@@ -7,7 +7,7 @@
       class="!p-0"
     >
       <template v-slot:default>
-        <router-link :to="{ name: 'BlogHomePage' }" class="fr-btn fr-btn--md mt-0 mb-8">Page d'accueil</router-link>
+        <router-link to="/" class="fr-btn fr-btn--md mt-0 mb-8">Page d'accueil</router-link>
       </template>
     </DsfrErrorPage>
   </div>
