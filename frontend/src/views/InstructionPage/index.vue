@@ -3,8 +3,8 @@
     <DsfrBreadcrumb
       class="mb-8"
       :links="[
-        { to: '/tableau-de-bord', text: 'Tableau de bord' },
-        { to: '/toutes-les-declarations', text: 'Toutes les déclarations' },
+        { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
+        { to: { name: 'AllDeclarations' }, text: 'Toutes les déclarations' },
         { text: 'Instruction' },
       ]"
     />

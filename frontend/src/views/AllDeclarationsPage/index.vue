@@ -2,7 +2,7 @@
   <div class="fr-container">
     <DsfrBreadcrumb
       class="mb-8"
-      :links="[{ to: '/tableau-de-bord', text: 'Tableau de bord' }, { text: 'Toutes les déclarations' }]"
+      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Toutes les déclarations' }]"
     />
     <div class="border px-4 mb-2 sm:flex gap-8 items-baseline filters">
       <DsfrInputGroup>

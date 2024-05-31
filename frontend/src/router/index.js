@@ -274,7 +274,10 @@ const chooseAuthorisedRoute = async (to, from, next, store) => {
       })
   } else {
     // 2) vérifie les règles de redirection
-    if (to.path === "/") next({ name: store.loggedUser ? "DashboardPage" : "LandingPage" })
+    if (to.path === "/") {
+      next({ name: store.loggedUser ? "DashboardPage" : "LandingPage" })
+      return
+    }
     const authenticationCheck = !to.meta.authenticationRequired || store.loggedUser
     const roleCheck =
       !to.meta.requiredRole ||

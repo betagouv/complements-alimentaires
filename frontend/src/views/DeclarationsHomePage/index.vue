@@ -2,7 +2,7 @@
   <div class="fr-container">
     <DsfrBreadcrumb
       class="mb-8"
-      :links="[{ to: '/tableau-de-bord', text: 'Tableau de bord' }, { text: 'Mes déclarations' }]"
+      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Mes déclarations' }]"
     />
     <div class="block sm:flex items-center mb-8">
       <h1 class="!mb-0 grow">Mes déclarations</h1>
