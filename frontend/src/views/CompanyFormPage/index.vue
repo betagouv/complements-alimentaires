@@ -1,5 +1,9 @@
 <template>
-  <div class="fr-container my-8 flex flex-col">
+  <div class="fr-container mb-8 flex flex-col">
+    <DsfrBreadcrumb
+      class="mb-8"
+      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Nouvelle entreprise' }]"
+    />
     <!-- Stepper -->
     <DsfrStepper :steps="mapping.map((x) => x.name)" :currentStep="step" />
 
