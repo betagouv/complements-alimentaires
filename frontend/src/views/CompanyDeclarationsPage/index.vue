@@ -66,7 +66,7 @@ const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 
 const url = computed(
   () =>
-    `/api/v1/declarations/?company=${company.value?.id}&limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}`
+    `/api/v1/companies/${company.value?.id}/declarations/?&limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {

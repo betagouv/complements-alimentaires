@@ -3,4 +3,5 @@ from .declaration import (  # noqa: F401
     DeclarationRetrieveUpdateView,
     DeclarationSubmitView,
     AllDeclarationsListView,
+    CompanyDeclarationsListView,
 )
