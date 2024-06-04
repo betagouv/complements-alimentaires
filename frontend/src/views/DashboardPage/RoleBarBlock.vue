@@ -7,11 +7,17 @@
             <v-icon class="text-blue-france-sun-113" name="ri-account-circle-line" />
             <div class="shrink-0 fr-notice__title text-blue-france-sun-113">Bienvenue, {{ name }}</div>
           </div>
-          <div v-if="company" class="flex gap-x-1.5">
-            <RoleTag v-for="role in company.roles" :key="role.name" :role="role" />
+          <div v-if="activeCompany" class="flex gap-x-1.5">
+            <RoleTag v-for="role in activeCompany.roles" :key="role.name" :role="role" />
           </div>
         </div>
-        <CompanyTag v-if="company" :name="company.socialName" />
+        <CompanyTag v-if="activeCompany && companies.length === 1" :name="activeCompany.socialName" />
+        <DsfrSelect
+          v-else-if="companies.length > 1"
+          :options="companiesSelectOptions"
+          :modelValue="activeCompany?.id"
+          @update:modelValue="(x) => emit('changeCompany', x)"
+        />
       </div>
     </div>
   </div>
@@ -20,6 +26,10 @@
 <script setup>
 import RoleTag from "@/components/RoleTag.vue"
 import CompanyTag from "@/components/CompanyTag.vue"
+import { computed } from "vue"
 
-defineProps({ name: String, company: Object })
+const emit = defineEmits(["changeCompany"])
+const props = defineProps({ name: String, activeCompany: Object, companies: Array })
+
+const companiesSelectOptions = computed(() => props.companies?.map((c) => ({ text: c.socialName, value: c.id })))
 </script>

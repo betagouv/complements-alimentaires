@@ -203,7 +203,7 @@ const routes = [
             },
           },
           {
-            path: "gestion-des-collaborateurs",
+            path: "gestion-des-collaborateurs/:id",
             name: "CollaboratorsPage",
             component: CollaboratorsPage,
             meta: {
@@ -280,9 +280,8 @@ const chooseAuthorisedRoute = async (to, from, next, store) => {
     }
     const authenticationCheck = !to.meta.authenticationRequired || store.loggedUser
     const roleCheck =
-      !to.meta.requiredRole ||
-      store.company?.roles?.some((x) => x.name === to.meta.requiredRole) ||
-      store.loggedUser?.globalRoles?.some((x) => x.name === to.meta.requiredRole)
+      !to.meta.requiredRole || store.companies?.some((c) => c.roles?.some((x) => x.name === to.meta.requiredRole))
+    store.loggedUser?.globalRoles?.some((x) => x.name === to.meta.requiredRole)
 
     authenticationCheck && roleCheck ? next() : next({ name: "LoginPage" })
   }
