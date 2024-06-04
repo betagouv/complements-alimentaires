@@ -265,6 +265,7 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
             "gamme",
             "description",
             "modification_date",
+            "creation_date",
         )
         read_only_fields = fields
 

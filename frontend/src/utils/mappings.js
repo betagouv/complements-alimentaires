@@ -45,3 +45,11 @@ export const statusProps = {
 }
 
 export const roleNameDisplayNameMapping = { DeclarantRole: "déclarant", SupervisorRole: "gestionnaire" }
+
+export const statusFilterOptions = [
+  { value: "", text: "Tous les statuts" },
+  { value: "AWAITING_INSTRUCTION", text: "En attente d'instruction" },
+  { value: "AWAITING_PRODUCER", text: "En attente de retour du producteur" },
+  { value: "REJECTED", text: "Rejeté" },
+  { value: "APPROVED", text: "Validé" },
+]
