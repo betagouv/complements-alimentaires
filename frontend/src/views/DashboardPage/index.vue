@@ -56,7 +56,7 @@ onMounted(() => {
   }
 })
 
-const onChangeCompany = (id) => router.replace({ query: { company: id } })
+const onChangeCompany = (id) => router.push({ query: { company: id } })
 
 const supervisorActions = computed(() => [
   {
