@@ -49,7 +49,11 @@ const isSupervisorForActiveCompany = computed(() => company.value?.roles?.some((
 
 // Sélectionne une entreprise si l'user est un superviseur et qu'on n'a pas le queryparam
 onMounted(() => {
-  if (companies.value?.length && !route.query.company) router.replace({ query: { company: companies.value[0].id } })
+  const hasInvalidCompanyParam = route.query.company && !company.value
+  if (hasInvalidCompanyParam || !route.query.company) {
+    const query = companies.value?.length ? { company: companies.value[0].id } : {}
+    router.replace({ query })
+  }
 })
 
 const onChangeCompany = (id) => router.replace({ query: { company: id } })
