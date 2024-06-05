@@ -17,16 +17,16 @@ from .solicitation import SupervisionClaimAdmin, CoSupervisionClaim, Collaborati
 from .global_roles import InstructionRoleAdmin
 
 from data.models import PlantPart, PlantFamily
-from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
+from simple_history.admin import SimpleHistoryAdmin
 
 
 @admin.register(PlantPart)
-class PlantPartAdmin(IngredientAdminHistorisableChangedFields):
+class PlantPartAdmin(SimpleHistoryAdmin):
     pass
 
 
 @admin.register(PlantFamily)
-class PlantFamilyAdmin(IngredientAdminHistorisableChangedFields):
+class PlantFamilyAdmin(SimpleHistoryAdmin):
     pass
 
 
