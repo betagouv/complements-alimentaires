@@ -1,8 +1,9 @@
 from django import forms
 from django.contrib import admin
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Microorganism
-from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
 
 
 class MicroorganismForm(forms.ModelForm):
@@ -15,7 +16,7 @@ class MicroorganismForm(forms.ModelForm):
 
 
 @admin.register(Microorganism)
-class MicroorganismAdmin(IngredientAdminHistorisableChangedFields):
+class MicroorganismAdmin(SimpleHistoryAdmin):
     form = MicroorganismForm
     fieldsets = [
         (

@@ -2,8 +2,9 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Plant, PlantSynonym
-from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
 
 
 class PlantSynonymInline(admin.TabularInline):
@@ -36,7 +37,7 @@ class PlantForm(forms.ModelForm):
 
 
 @admin.register(Plant)
-class PlantAdmin(IngredientAdminHistorisableChangedFields):
+class PlantAdmin(SimpleHistoryAdmin):
     form = PlantForm
     fieldsets = [
         (
@@ -78,7 +79,6 @@ class PlantAdmin(IngredientAdminHistorisableChangedFields):
     )
     list_display = ("name", "siccrf_family", "status")
     list_filter = ("is_obsolete", "siccrf_family", "status")
-    history_list_display = ["changed_fields"]
     readonly_fields = (
         "siccrf_name",
         "name",
