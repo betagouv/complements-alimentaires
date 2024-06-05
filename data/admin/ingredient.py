@@ -15,3 +15,4 @@ class IngredientAdmin(SimpleHistoryAdmin):
         "siccrf_public_comments",
         "siccrf_private_comments",
     )
+    search_fields = ["id", "name"]

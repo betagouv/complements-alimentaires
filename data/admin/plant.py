@@ -88,3 +88,4 @@ class PlantAdmin(SimpleHistoryAdmin):
         "siccrf_family",
         "family",
     )
+    search_fields = ["id", "name"]

@@ -56,7 +56,6 @@ class MicroorganismAdmin(SimpleHistoryAdmin):
 
     list_display = ("name", "status")
     list_filter = ("is_obsolete", "status")
-    history_list_display = ["changed_fields"]
     readonly_fields = (
         "name",
         "is_obsolete",
@@ -65,3 +64,4 @@ class MicroorganismAdmin(SimpleHistoryAdmin):
         "siccrf_genus",
         "siccrf_species",
     )
+    search_fields = ["id", "name"]
