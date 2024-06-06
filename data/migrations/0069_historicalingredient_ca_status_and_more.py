@@ -191,13 +191,12 @@ class Migration(migrations.Migration):
             field=models.GeneratedField(
                 db_persist=True,
                 expression=django.db.models.functions.comparison.Coalesce(
-                    models.F("siccrf_status"),
-                    models.F("ca_status"),
+                    models.F("ca_status"), models.F("siccrf_status")
                 ),
                 output_field=models.IntegerField(
-                    verbose_name="statut de l'ingrédient ou substance",
                     choices=[(1, "autorisé"), (2, "non autorisé")],
                     null=True,
+                    verbose_name="statut de l'ingrédient ou substance",
                 ),
             ),
         ),
@@ -207,13 +206,12 @@ class Migration(migrations.Migration):
             field=models.GeneratedField(
                 db_persist=True,
                 expression=django.db.models.functions.comparison.Coalesce(
-                    models.F("siccrf_status"),
-                    models.F("ca_status"),
+                    models.F("ca_status"), models.F("siccrf_status")
                 ),
                 output_field=models.IntegerField(
-                    verbose_name="statut de l'ingrédient ou substance",
                     choices=[(1, "autorisé"), (2, "non autorisé")],
                     null=True,
+                    verbose_name="statut de l'ingrédient ou substance",
                 ),
             ),
         ),
@@ -228,13 +226,12 @@ class Migration(migrations.Migration):
             field=models.GeneratedField(
                 db_persist=True,
                 expression=django.db.models.functions.comparison.Coalesce(
-                    models.F("siccrf_status"),
-                    models.F("ca_status"),
+                    models.F("ca_status"), models.F("siccrf_status")
                 ),
                 output_field=models.IntegerField(
-                    verbose_name="statut de l'ingrédient ou substance",
                     choices=[(1, "autorisé"), (2, "non autorisé")],
                     null=True,
+                    verbose_name="statut de l'ingrédient ou substance",
                 ),
             ),
         ),
@@ -264,13 +261,12 @@ class Migration(migrations.Migration):
             field=models.GeneratedField(
                 db_persist=True,
                 expression=django.db.models.functions.comparison.Coalesce(
-                    models.F("siccrf_status"),
-                    models.F("ca_status"),
+                    models.F("ca_status"), models.F("siccrf_status")
                 ),
                 output_field=models.IntegerField(
-                    verbose_name="statut de l'ingrédient ou substance",
                     choices=[(1, "autorisé"), (2, "non autorisé")],
                     null=True,
+                    verbose_name="statut de l'ingrédient ou substance",
                 ),
             ),
         ),
