@@ -12,6 +12,7 @@ class IngredientAdmin(SimpleHistoryAdmin):
     readonly_fields = (
         "name",
         "is_obsolete",
+        "siccrf_status",
         "siccrf_public_comments",
         "siccrf_private_comments",
     )

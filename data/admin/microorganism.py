@@ -25,7 +25,8 @@ class MicroorganismAdmin(SimpleHistoryAdmin):
                 "fields": [
                     "name",
                     "is_obsolete",
-                    "status",
+                    "siccrf_status",
+                    "ca_status",
                     "ca_is_obsolete",
                 ],
             },
@@ -59,6 +60,7 @@ class MicroorganismAdmin(SimpleHistoryAdmin):
     readonly_fields = (
         "name",
         "is_obsolete",
+        "siccrf_status",
         "siccrf_public_comments",
         "siccrf_private_comments",
         "siccrf_genus",
