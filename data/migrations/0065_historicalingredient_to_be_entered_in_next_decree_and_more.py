@@ -2,7 +2,6 @@
 # * set_default to_be_entered_in_next_decree à 1 pour les status siccrf à 3 - à inscrire
 
 from django.db import migrations, models
-from data.models import Ingredient, Plant, Microorganism, Substance
 
 
 class Migration(migrations.Migration):
@@ -12,8 +11,14 @@ class Migration(migrations.Migration):
     ]
     
     def set_default(apps, schema_editor):
-        for table in [Ingredient, Plant, Microorganism, Substance]:
-            for obj in table.objects.all().iterator():
+        models = [
+            apps.get_model('data', 'Ingredient'),
+            apps.get_model('data', 'Plant'),
+            apps.get_model('data', 'Microorganism'),
+            apps.get_model('data', 'Substance')
+        ]
+        for model in models:
+            for obj in model.objects.all().iterator():
                 obj.to_be_entered_in_next_decree = obj.status == 3
                 if obj.status == 3:
                     obj.status = 1
