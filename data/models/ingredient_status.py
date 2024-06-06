@@ -1,6 +1,6 @@
 from django.db import models
-from django.db.models import F, Value
-from django.db.models.functions import Coalesce, NullIf
+from django.db.models import F
+from django.db.models.functions import Coalesce
 
 
 class IngredientStatus(models.IntegerChoices):
@@ -43,8 +43,10 @@ class WithStatus(models.Model):
         verbose_name="statut de l'ingrédient ou substance selon Compl'Alim",
     )
     status = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_status"), Value("")), F("siccrf_status")),
-        output_field=models.TextField(verbose_name="statut de l'ingrédient ou substance"),
+        expression=Coalesce(F("ca_status"), F("siccrf_status")),
+        output_field=models.IntegerField(
+            choices=IngredientStatus.choices, null=True, verbose_name="statut de l'ingrédient ou substance"
+        ),
         db_persist=True,
     )
     to_be_entered_in_next_decree = models.BooleanField(
