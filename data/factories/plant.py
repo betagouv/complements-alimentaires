@@ -39,7 +39,7 @@ class PlantFactory(factory.django.DjangoModelFactory):
     siccrf_id = factory.Sequence(lambda n: n + 1)
     siccrf_family = factory.SubFactory(PlantFamilyFactory)
     ca_family = factory.SubFactory(PlantFamilyFactory)
-    status = IngredientStatus.AUTHORIZED
+    siccrf_status = IngredientStatus.AUTHORIZED
     to_be_entered_in_next_decree = False
 
     @factory.post_generation

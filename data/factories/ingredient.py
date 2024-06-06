@@ -17,7 +17,7 @@ class IngredientFactory(factory.django.DjangoModelFactory):
     siccrf_name_en = factory.Faker("text", max_nb_chars=15)
     siccrf_id = factory.Sequence(lambda n: n + 1)
     siccrf_description = factory.Faker("text", max_nb_chars=160)
-    status = IngredientStatus.AUTHORIZED
+    siccrf_status = IngredientStatus.AUTHORIZED
     to_be_entered_in_next_decree = False
 
     @factory.post_generation
