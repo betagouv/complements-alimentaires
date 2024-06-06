@@ -17,8 +17,11 @@ def pre_import_treatments(field, value):
     * transformation de valeurs en d'autres valeurs
     """
 
-    if field.name == "status":
-        new_fields = {field.name: convert_status(clean_value(value, field))}
+    if field.name == "siccrf_status":
+        new_fields = {
+            "siccrf_status": clean_value(value, field),
+            "ca_status": convert_status(clean_value(value, field)),
+        }
         # si le status SICCRF correspond à "à inscrire"
         if int(value) == 3:
             new_fields["to_be_entered_in_next_decree"] = 1
@@ -95,6 +98,6 @@ def get_update_or_create_related_object(model, id, csv_filename):
             model,
             object_definition={"siccrf_id": id},
             default_extra_fields={"name": ""},
-            change_message=f"Import csv {csv_filename}.",
+            change_message=f"New import from Teleicare extract {csv_filename}.",
         )
         return linked_obj

@@ -123,7 +123,7 @@ class CSVImporter:
         # Les champs ManyToMany
         "substances": ["SBSACT_IDENT"],
         "plant_parts": ["PPLAN_IDENT"],
-        "status": ["STINGSBS_IDENT"],
+        "siccrf_status": ["STINGSBS_IDENT"],
     }
 
     # Ces champs sont remplis automatiquement et ne sont pas recherchés dans les fichiers csv
@@ -227,7 +227,7 @@ class CSVImporter:
             if self.model == Part and field.name in ["siccrf_must_be_monitored", "siccrf_is_useful"]:
                 continue
             # le nom des colonnes contenant les clés étrangères ne sont pas préfixées par le nom de la table
-            prefixed = not (isinstance(field, (ForeignKey, ManyToManyField)) or field.name == "status")
+            prefixed = not (isinstance(field, (ForeignKey, ManyToManyField)) or field.name == "siccrf_status")
             try:
                 column_name = self._get_column_name(field.name, prefixed=prefixed)
                 django_fields_to_column_names[field] = column_name
