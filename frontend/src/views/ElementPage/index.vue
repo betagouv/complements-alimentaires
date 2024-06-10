@@ -78,7 +78,7 @@
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <!-- Date de dernière mise à jour de la donnée -->
-      <ElementTextSection title="Historique de l'ingrédient" :text="ingredientUpdateDate" />
+      <ElementTextSection title="Historique de l'ingrédient" :text="`Dernière mise à jour : ${ingredientUpdateDate}`" />
     </div>
 
     <!-- Rapporter un problème dans les données -->
@@ -149,8 +149,9 @@ const maxQuantity = computed(() => {
 })
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
-// const ingredientUpdateDate = computed(() => element.value?.publicComments)
-const ingredientUpdateDate = "date  import TeleIcare  colonne modifiée"
+const ingredientUpdateDate = computed(() =>
+  new Date(element.value?.modificationDate).toLocaleString("default", { month: "long", year: "numeric" })
+)
 
 const url = computed(() => `/api/v1/${typeMapping[type.value]}s/${elementId.value}`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
