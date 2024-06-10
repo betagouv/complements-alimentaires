@@ -11,7 +11,7 @@
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
-    <DeclarationsTable :data="data" v-else-if="hasDeclarations" @open="openDeclaration" />
+    <DeclarationsTable :data="data" v-else-if="hasDeclarations" />
     <div v-else class="mb-8">
       <p>Vous n'avez pas encore créé des déclarations.</p>
       <DsfrButton icon="ri-capsule-fill" label="Créer ma première déclaration" @click="createNewDeclaration" />
@@ -39,5 +39,4 @@ const hasDeclarations = computed(() => !!data.value?.length)
 
 const router = useRouter()
 const createNewDeclaration = () => router.push({ name: "NewDeclaration" })
-const openDeclaration = (id) => router.push({ name: "DeclarationPage", params: { id } })
 </script>

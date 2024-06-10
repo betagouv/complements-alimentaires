@@ -30,6 +30,7 @@ import CollaboratorsPage from "@/views/CollaboratorsPage"
 import AllDeclarationsPage from "@/views/AllDeclarationsPage"
 import InstructionPage from "@/views/InstructionPage"
 import OfficialLetterPage from "@/views/OfficialLetterPage"
+import A11yPage from "@/views/A11yPage.vue"
 
 const routes = [
   {
@@ -105,6 +106,14 @@ const routes = [
         component: CookiesInfoPage,
         meta: {
           title: "Cookies",
+        },
+      },
+      {
+        path: "accessibilite",
+        name: "A11yPage",
+        component: A11yPage,
+        meta: {
+          title: "Accessibilité",
         },
       },
       {

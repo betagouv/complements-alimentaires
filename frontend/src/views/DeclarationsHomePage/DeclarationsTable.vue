@@ -36,8 +36,16 @@ const rows = computed(() => {
     }))
 
   return sorted.map((d) => ({
-    rowAttrs: { class: "cursor-pointer", onClick: () => emit("open", d.id) },
-    rowData: [d.name, d.brand || "—", getStatusTagForCell(d.status), timeAgo(d.modificationDate)],
+    rowData: [
+      {
+        component: "router-link",
+        text: d.name,
+        to: { name: "DeclarationPage", params: { id: d.id } },
+      },
+      d.brand || "—",
+      getStatusTagForCell(d.status),
+      timeAgo(d.modificationDate),
+    ],
   }))
 })
 // On prend la width de la table pour montrer/cacher les colonnes

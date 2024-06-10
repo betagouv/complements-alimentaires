@@ -40,7 +40,7 @@
       <ProgressSpinner />
     </div>
     <div v-else-if="hasDeclarations">
-      <InstructionDeclarationsTable :data="data" @open="openDeclaration" />
+      <InstructionDeclarationsTable :data="data" />
     </div>
     <p v-else class="mb-8">Il n'y a pas encore de déclarations.</p>
     <DsfrPagination
@@ -72,7 +72,6 @@ const offset = computed(() => (page.value - 1) * limit)
 
 const limit = 10
 const pages = computed(() => getPagesForPagination(data.value.count, limit, route.path))
-const openDeclaration = (id) => router.push({ name: "InstructionPage", params: { declarationId: id } })
 
 const statusFilterOptions = [
   { value: "", text: "Tous les statuts" },
