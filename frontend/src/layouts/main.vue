@@ -7,6 +7,8 @@
     :legalLink="{ name: 'LegalNoticesPage' }"
     :personalDataLink="{ name: 'PrivacyPolicyPage' }"
     :afterMandatoryLinks="[{ label: 'Conditions générales d’utilisation', to: { name: 'CGUPage' } }]"
+    a11yCompliance="non conforme"
+    :a11yComplianceLink="{ name: 'A11yPage' }"
   >
     <template v-slot:description>
       <p>Compl'Alim</p>
