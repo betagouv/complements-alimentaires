@@ -1,9 +1,14 @@
 <template>
   <div>
-    <RoleBarBlock :name="loggedUser.firstName" :company="company" />
+    <RoleBarBlock
+      @changeCompany="onChangeCompany"
+      :name="loggedUser.firstName"
+      :companies="companies"
+      :activeCompany="company"
+    />
     <div class="fr-container my-8 flex flex-col gap-8">
       <ActionGrid
-        v-if="isSupervisor"
+        v-if="isSupervisorForActiveCompany"
         :actions="supervisorActions"
         :title="`Gestion de l'entreprise ${company.socialName}`"
         icon="ri-home-4-line"
@@ -17,21 +22,43 @@
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed, onMounted } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import ActionGrid from "./ActionGrid"
 import RoleBarBlock from "./RoleBarBlock"
+import { useRoute } from "vue-router"
+import { useRouter } from "vue-router"
 
 const store = useRootStore()
-const { loggedUser, company } = storeToRefs(store)
+const router = useRouter()
+const route = useRoute()
+const { loggedUser, companies } = storeToRefs(store)
 
-const emptyRoles = computed(() => !company.value || !company.value.roles || company.value.roles.length === 0)
-const isSupervisor = computed(() => company.value?.roles.some((x) => x.name === "SupervisorRole"))
-const isDeclarant = computed(() => company.value?.roles.some((x) => x.name === "DeclarantRole"))
+const company = computed(() => companies.value?.find((c) => +c.id === +route.query.company))
+const isSupervisor = computed(() => companies?.value.some((c) => c.roles?.some((x) => x.name === "SupervisorRole")))
+const isDeclarant = computed(() => companies?.value.some((c) => c.roles?.some((x) => x.name === "DeclarantRole")))
 const isInstructor = computed(() => loggedUser.value?.globalRoles.some((x) => x.name === "InstructionRole"))
+const emptyRoles = computed(() => !isSupervisor.value && !isDeclarant.value && !isInstructor.value)
 
-const supervisorActions = [
+const isSupervisorForActiveCompany = computed(() => company.value?.roles?.some((x) => x.name === "SupervisorRole"))
+
+// Si on voulait lier le bloc délcarant.e à l'entreprise active, on pourrait utiliser cette
+// computed var dans le v-if de ce bloc
+// const isDeclarantForActiveCompany = computed(() => company.value?.roles?.some((x) => x.name === "DeclarantRole"))
+
+// Sélectionne une entreprise si l'user est un superviseur et qu'on n'a pas le queryparam
+onMounted(() => {
+  const hasInvalidCompanyParam = route.query.company && !company.value
+  if (hasInvalidCompanyParam || !route.query.company) {
+    const query = companies.value?.length ? { company: companies.value[0].id } : {}
+    router.replace({ query })
+  }
+})
+
+const onChangeCompany = (id) => router.push({ query: { company: id } })
+
+const supervisorActions = computed(() => [
   {
     title: "Les déclarations de mon entreprise",
     description: "Visualisez et gérez les déclarations de votre entreprise",
@@ -39,19 +66,19 @@ const supervisorActions = [
   {
     title: "Les collaborateurs de mon entreprise",
     description: "Gérez les différents collaborateurs, leurs rôles, les demandes, et invitez-en des nouveaux",
-    link: { name: "CollaboratorsPage" },
+    link: { name: "CollaboratorsPage", params: { id: company.value?.id } },
   },
   {
     title: "Les coordonnées de l'entreprise",
     description: "Consultez et mettez à jour les données de votre entreprise",
-    link: { name: "CompanyPage", params: { id: company.value.id } },
+    link: { name: "CompanyPage", params: { id: company.value?.id } },
   },
   {
     title: "Nouvelle entreprise",
     description: "Créez ou rejoignez une nouvelle entreprise",
     link: { name: "CompanyFormPage" },
   },
-]
+])
 
 const declarantActions = [
   {

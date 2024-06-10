@@ -65,10 +65,13 @@ import { roleNameDisplayNameMapping } from "@/utils/mappings"
 import ClaimsBlock from "./ClaimsBlock"
 import SentInvitationsBlock from "./SentInvitationsBlock.vue"
 import AddNewCollaborator from "./AddNewCollaborator"
+import { useRoute } from "vue-router"
 
+const route = useRoute()
 const store = useRootStore()
-const { loggedUser, company } = storeToRefs(store)
+const { loggedUser, companies } = storeToRefs(store)
 
+const company = computed(() => companies.value?.find((c) => +c.id === +route.params.id))
 const canRoleBeAddedTo = (roleName, user) => !user.roles.some((role) => role.name === roleName)
 
 // Requête initiale pour récupérer les collaborateurs de l'entreprise
