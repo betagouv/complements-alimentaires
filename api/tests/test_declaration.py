@@ -23,6 +23,7 @@ from data.factories import (
     PopulationFactory,
     SubstanceFactory,
     SubstanceUnitFactory,
+    SupervisorRoleFactory,
 )
 from data.models import Attachment, Declaration
 
@@ -925,3 +926,24 @@ class TestDeclarationApi(APITestCase):
 
         response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": draft_declaration.id}))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_supervisor_declarations_list_view(self):
+        """
+        Une view spécifique pour les gestionnaires des entreprises est disponible et doit
+        retourner toutes les déclarations non-draft de l'entreprise
+        """
+        company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        other_company = CompanyFactory()
+
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION, company=company)
+        DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION, company=other_company)
+
+        response = self.client.get(reverse("api:company_declarations_list_view", kwargs={"pk": company.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration.id)

@@ -62,6 +62,7 @@ const supervisorActions = computed(() => [
   {
     title: "Les déclarations de mon entreprise",
     description: "Visualisez et gérez les déclarations de votre entreprise",
+    link: { name: "CompanyDeclarationsPage", params: { id: company.value?.id } },
   },
   {
     title: "Les collaborateurs de mon entreprise",

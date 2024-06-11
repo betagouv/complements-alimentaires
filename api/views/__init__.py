@@ -7,6 +7,7 @@ from .declaration import (
     DeclarationRetrieveUpdateView,
     DeclarationSubmitView,
     AllDeclarationsListView,
+    CompanyDeclarationsListView,
 )
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView

@@ -1,5 +1,6 @@
 from django.db.models import F, Func
 from django.db.models.functions import Lower
+from django.shortcuts import get_object_or_404
 
 from django_filters import rest_framework as django_filters
 from rest_framework.exceptions import NotFound, PermissionDenied
@@ -13,6 +14,7 @@ from api.permissions import (
     IsDeclarant,
     IsDeclarationAuthor,
     IsInstructor,
+    IsSupervisor,
 )
 from api.serializers import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer
 from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
@@ -105,18 +107,33 @@ class DeclarationPagination(LimitOffsetPagination):
     max_limit = 50
 
 
-class AllDeclarationsListView(ListAPIView):
+class GenericDeclarationsListView(ListAPIView):
     model = Declaration
-    serializer_class = SimpleDeclarationSerializer
-    permission_classes = [IsInstructor]
-    ordering_fields = ["creation_date", "modification_date", "name"]
     pagination_class = DeclarationPagination
     filter_backends = [
         django_filters.DjangoFilterBackend,
         CamelCaseOrderingFilter,
     ]
     filterset_class = DeclarationFilterSet
+
+
+class AllDeclarationsListView(GenericDeclarationsListView):
+    serializer_class = SimpleDeclarationSerializer
+    permission_classes = [IsInstructor]
+    ordering_fields = ["creation_date", "modification_date", "name"]
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT)
+
+
+class CompanyDeclarationsListView(GenericDeclarationsListView):
+    # Une fois l'instruction commencée on pourra avoir un serializer différent pour cette vue
+    serializer_class = SimpleDeclarationSerializer
+    permission_classes = [IsSupervisor]
+
+    def get_queryset(self):
+        company = get_object_or_404(
+            Company.objects.filter(supervisors=self.request.user, pk=self.kwargs[self.lookup_field])
+        )
+        return company.declarations.exclude(status=Declaration.DeclarationStatus.DRAFT)
 
 
 class DeclarationSubmitView(DeclarationFlowView):

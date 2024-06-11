@@ -30,6 +30,7 @@ import CollaboratorsPage from "@/views/CollaboratorsPage"
 import AllDeclarationsPage from "@/views/AllDeclarationsPage"
 import InstructionPage from "@/views/InstructionPage"
 import OfficialLetterPage from "@/views/OfficialLetterPage"
+import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
 import A11yPage from "@/views/A11yPage.vue"
 
 const routes = [
@@ -218,6 +219,19 @@ const routes = [
             meta: {
               title: "Gestion des collaborateurs",
               requiredRole: "SupervisorRole",
+            },
+          },
+          {
+            path: "les-declarations-de-mon-entreprise/:id",
+            name: "CompanyDeclarationsPage",
+            component: CompanyDeclarationsPage,
+            meta: {
+              title: "Les déclarations de mon entreprise",
+              requiredRole: "SupervisorRole",
+              defaultQueryParams: {
+                page: 1,
+                status: "",
+              },
             },
           },
           {

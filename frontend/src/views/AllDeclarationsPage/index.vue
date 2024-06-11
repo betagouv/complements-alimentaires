@@ -62,6 +62,7 @@ import InstructionDeclarationsTable from "./InstructionDeclarationsTable"
 import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
 import { DsfrInput } from "@gouvminint/vue-dsfr"
+import { statusFilterOptions } from "@/utils/mappings"
 
 const router = useRouter()
 const route = useRoute()
@@ -72,14 +73,6 @@ const offset = computed(() => (page.value - 1) * limit)
 
 const limit = 10
 const pages = computed(() => getPagesForPagination(data.value.count, limit, route.path))
-
-const statusFilterOptions = [
-  { value: "", text: "Tous les statuts" },
-  { value: "AWAITING_INSTRUCTION", text: "En attente d'instruction" },
-  { value: "AWAITING_PRODUCER", text: "En attente de retour du producteur" },
-  { value: "REJECTED", text: "Rejeté" },
-  { value: "APPROVED", text: "Validé" },
-]
 
 // Valeurs obtenus du queryparams
 const page = computed(() => parseInt(route.query.page))
