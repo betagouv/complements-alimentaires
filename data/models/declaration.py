@@ -1,33 +1,35 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
+
 from data.behaviours import Historisable, TimeStampable
-from data.choices import CountryChoices, FrAuthorizationReasons, AuthorizationModes
+from data.choices import AuthorizationModes, CountryChoices, FrAuthorizationReasons
 from data.models import (
-    SubstanceUnit,
-    Population,
+    Company,
     Condition,
     Effect,
-    Plant,
-    Microorganism,
-    Ingredient,
-    Substance,
-    PlantPart,
-    Company,
     GalenicFormulation,
+    Ingredient,
+    InstructionRole,
+    Microorganism,
+    Plant,
+    PlantPart,
+    Population,
+    Substance,
+    SubstanceUnit,
 )
 
 
 class Declaration(Historisable, TimeStampable):
-
     class Meta:
         verbose_name = "déclaration"
 
     class DeclarationStatus(models.TextChoices):
         DRAFT = "DRAFT", "Brouillon"
-        AWAITING_INSTRUCTION = "AWAITING_INSTRUCTION", "En attente de retour instruction"
-        AWAITING_PRODUCER = "AWAITING_PRODUCER", "En attente de retour du déclarant"
-        REJECTED = "REJECTED", "Rejeté"
-        APPROVED = "APPROVED", "Validé"
+        AWAITING_INSTRUCTION = "AWAITING_INSTRUCTION", "En attente d'instruction"
+        ONGOING_INSTRUCTION = "ONGOING_INSTRUCTION", "Instruction en cours"
+        OBSERVATION = "OBSERVATION", "En observation"
+        ABANDONED = "ABANDONED", "Abandonnée"
+        AUTHORIZED = "AUTHORIZED", "Autorisée"
 
     class RejectionReason(models.TextChoices):
         MISSING_DATA = "MISSING_DATA", "Le dossier manque des données nécessaires"
@@ -38,7 +40,7 @@ class Declaration(Historisable, TimeStampable):
         max_length=50,
         choices=DeclarationStatus.choices,
         default=DeclarationStatus.DRAFT,
-        verbose_name="Status",
+        verbose_name="status",
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -47,6 +49,14 @@ class Declaration(Historisable, TimeStampable):
         verbose_name="auteur",
         related_name="declarations",
     )
+    instrctor = models.ForeignKey(
+        InstructionRole,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name="instructeur",
+        related_name="declarations",
+    )
+    private_notes = models.TextField("notes à destination de l'administration", blank=True, default="")
     company = models.ForeignKey(
         Company, null=True, on_delete=models.SET_NULL, verbose_name="entreprise", related_name="declarations"
     )
@@ -98,6 +108,44 @@ class Declaration(Historisable, TimeStampable):
 
     effects = models.ManyToManyField(Effect, blank=True, verbose_name="objectifs ou effets")
     other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non-listés")
+
+    def save(self, user=None, comment="", *args, **kwargs):
+        """Surchargée ajouter la creation des snapshots"""
+        from data.factories import SnapshotFactory  # Sinon on a un import circulaire
+
+        statuses_for_snapshot = [
+            Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            Declaration.DeclarationStatus.OBSERVATION,
+            Declaration.DeclarationStatus.AUTHORIZED,
+            Declaration.DeclarationStatus.ABANDONED,
+        ]
+        super().save(*args, **kwargs)
+        if self.status in statuses_for_snapshot:
+            SnapshotFactory.create(
+                declaration=self,
+                user=user,
+                status=self.status,
+                json_declaration=self.json_representation,
+                comment=comment,
+            )
+
+    @property
+    def json_representation(self):
+        json_representation = {
+            "id": self.id,
+            "status": self.status,
+        }
+        if self.author:
+            json_representation["author"] = {
+                "id": self.author.id,
+                "first_name": self.author.first_name,
+            }
+        if self.company:
+            json_representation["company"] = {
+                "id": self.company.id,
+                "social_name": self.company.social_name,
+            }
+        return json_representation  # TODO : enrich with the other fields
 
 
 # Les modèles commençant par `Declared` représentent des éléments ajoutés par l'utilisateur.ice dans sa

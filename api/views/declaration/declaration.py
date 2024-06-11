@@ -67,7 +67,7 @@ class DeclarationFlowView(GenericAPIView):
         if flow_permission_method and not flow_permission_method(request.user):
             raise PermissionDenied()
         transition_method()
-        declaration.save()
+        declaration.save(user=request.user, comment=request.data.get("comment"))
         serializer = self.get_serializer(declaration)
         return Response(serializer.data)
 

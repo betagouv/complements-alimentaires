@@ -26,20 +26,20 @@ class DeclarationFlow:
     def submit_for_instruction(self):
         self.ensure_validators([validate_number_of_elements, validate_mandatory_fields])
 
-    @status.transition(source=Status.AWAITING_INSTRUCTION, target=Status.AWAITING_PRODUCER)
-    def submit_for_remarks(self):
+    @status.transition(source=Status.AWAITING_INSTRUCTION, target=Status.ONGOING_INSTRUCTION)
+    def take_instruction(self):
         self.error()
 
-    @status.transition(source={Status.AWAITING_PRODUCER, Status.AWAITING_INSTRUCTION}, target=Status.DRAFT)
-    def turn_to_draft(self):
-        pass
-
-    @status.transition(source=Status.AWAITING_INSTRUCTION, target=Status.APPROVED)
-    def approve(self):
+    @status.transition(source=Status.ONGOING_INSTRUCTION, target=Status.OBSERVATION)
+    def observe_no_visa(self):
         self.error()
 
-    @status.transition(source=Status.AWAITING_INSTRUCTION, target=Status.REJECTED)
-    def reject(self):
+    @status.transition(source=Status.OBSERVATION, target=Status.ABANDONED)
+    def abandon(self):
+        self.error()
+
+    @status.transition(source=Status.ONGOING_INSTRUCTION, target=Status.AUTHORIZED)
+    def authorize(self):
         self.error()
 
     def ensure_validators(self, validators):

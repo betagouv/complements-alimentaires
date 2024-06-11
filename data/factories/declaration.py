@@ -2,10 +2,11 @@ import factory
 
 from data.models import Declaration, DeclaredPlant
 
-from .company import CompanyFactory
+from .company import CompanyFactory, DeclarantRoleFactory
 from .condition import ConditionFactory
 from .effect import EffectFactory
 from .galenic_formulation import GalenicFormulationFactory
+from .global_roles import InstructionRoleFactory
 from .plant import PlantFactory
 from .population import PopulationFactory
 from .unit import SubstanceUnitFactory
@@ -33,7 +34,7 @@ class DeclaredPlantFactory(factory.django.DjangoModelFactory):
     unit = factory.SubFactory(SubstanceUnitFactory)
 
 
-class InstructionReadyDeclarationFactory(DeclarationFactory):
+class CompleteDeclarationFactory(DeclarationFactory):
     class Meta:
         model = Declaration
 
@@ -90,3 +91,13 @@ class InstructionReadyDeclarationFactory(DeclarationFactory):
         else:
             for _ in range(3):
                 self.declared_plants.add(DeclaredPlantFactory(declaration=self))
+
+
+class InstructionReadyDeclarationFactory(CompleteDeclarationFactory):
+    pass
+
+
+class InstructionOngoingDeclarationFactory(CompleteDeclarationFactory):
+    status = Declaration.DeclarationStatus.ONGOING_INSTRUCTION
+    author = factory.SubFactory(DeclarantRoleFactory)
+    instructor = factory.SubFactory(InstructionRoleFactory)
