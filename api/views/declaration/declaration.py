@@ -78,7 +78,7 @@ class DeclarationFlowView(GenericAPIView):
         declaration.save(
             user=request.user,
             comment=request.data.get("comment", ""),
-            expiration_days=request.data.get("expiration", ""),
+            expiration_days=request.data.get("expiration"),
         )
         serializer = self.get_serializer(declaration)
         return Response(serializer.data)
