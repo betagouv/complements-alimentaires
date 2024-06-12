@@ -1,5 +1,9 @@
+import json
+
 from django.conf import settings
 from django.db import models
+
+from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 
 from data.behaviours import Historisable, TimeStampable
 from data.choices import AuthorizationModes, CountryChoices, FrAuthorizationReasons
@@ -45,13 +49,15 @@ class Declaration(Historisable, TimeStampable):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         verbose_name="auteur",
         related_name="declarations",
     )
-    instrctor = models.ForeignKey(
+    instructor = models.ForeignKey(
         InstructionRole,
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         verbose_name="instructeur",
         related_name="declarations",
@@ -104,7 +110,9 @@ class Declaration(Historisable, TimeStampable):
     warning = models.TextField(blank=True, verbose_name="mise en garde et avertissement")
 
     populations = models.ManyToManyField(Population, blank=True, verbose_name="populations cible")
-    conditions_not_recommended = models.ManyToManyField(Condition, verbose_name="consommation déconseillée")
+    conditions_not_recommended = models.ManyToManyField(
+        Condition, blank=True, verbose_name="consommation déconseillée"
+    )
 
     effects = models.ManyToManyField(Effect, blank=True, verbose_name="objectifs ou effets")
     other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non-listés")
@@ -131,21 +139,11 @@ class Declaration(Historisable, TimeStampable):
 
     @property
     def json_representation(self):
-        json_representation = {
-            "id": self.id,
-            "status": self.status,
-        }
-        if self.author:
-            json_representation["author"] = {
-                "id": self.author.id,
-                "first_name": self.author.first_name,
-            }
-        if self.company:
-            json_representation["company"] = {
-                "id": self.company.id,
-                "social_name": self.company.social_name,
-            }
-        return json_representation  # TODO : enrich with the other fields
+        from api.serializers import DeclarationSerializer
+
+        serialized_data = DeclarationSerializer(self).data
+        camelized_bytes = CamelCaseJSONRenderer().render(serialized_data)
+        return json.loads(camelized_bytes.decode("utf-8"))
 
 
 # Les modèles commençant par `Declared` représentent des éléments ajoutés par l'utilisateur.ice dans sa

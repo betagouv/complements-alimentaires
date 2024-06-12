@@ -15,6 +15,14 @@ export const handleError = async (response) => {
     return
   }
 
+  const contentType = response.value.headers.get("content-type")
+  const hasJSON = contentType && contentType.startsWith("application/json")
+  if (!hasJSON) {
+    addErrorMessage("Une erreur s'est produite, merci de réessayer ultérieurement")
+    console.error(response.value)
+    return
+  }
+
   // Handle display of the errors (directly on the form or in a toast)
   // https://vuelidate-next.netlify.app/advanced_usage.html#config-with-composition-api
   const backErrorData = await response.value.json()

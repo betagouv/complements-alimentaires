@@ -59,7 +59,7 @@ class IsSolicitationRecipient(permissions.BasePermission):
 
 class IsInstructor(permissions.BasePermission):
     def has_permission(self, request, view):
-        return InstructionRole.objects.filter(user=request.user).exists()
+        return request.user.is_authenticated and InstructionRole.objects.filter(user=request.user).exists()
 
 
 class IsSupervisorOrInstructor(permissions.BasePermission):

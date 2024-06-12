@@ -23,23 +23,30 @@ class DeclarationFlow:
         return self.declaration.status
 
     @status.transition(source=Status.DRAFT, target=Status.AWAITING_INSTRUCTION)
-    def submit_for_instruction(self):
+    def submit(self):
         self.ensure_validators([validate_number_of_elements, validate_mandatory_fields])
 
+    @status.transition(source=Status.OBSERVATION, target=Status.ONGOING_INSTRUCTION)
+    def resubmit(self):
+        self.ensure_validators([validate_number_of_elements, validate_mandatory_fields])
+
+    # NOTE : Pour l'instant les permissions concernant le rôle de la personne effectuant
+    # ces opérations se trouve au niveau de la view. On pourrait par la suite l'ajouter
+    # aussi au niveau de la transition.
     @status.transition(source=Status.AWAITING_INSTRUCTION, target=Status.ONGOING_INSTRUCTION)
-    def take_instruction(self):
-        self.error()
+    def take_for_instruction(self):
+        pass
 
     @status.transition(source=Status.ONGOING_INSTRUCTION, target=Status.OBSERVATION)
     def observe_no_visa(self):
-        self.error()
+        pass
+
+    @status.transition(source=Status.ONGOING_INSTRUCTION, target=Status.AUTHORIZED)
+    def authorize_no_visa(self):
+        pass
 
     @status.transition(source=Status.OBSERVATION, target=Status.ABANDONED)
     def abandon(self):
-        self.error()
-
-    @status.transition(source=Status.ONGOING_INSTRUCTION, target=Status.AUTHORIZED)
-    def authorize(self):
         self.error()
 
     def ensure_validators(self, validators):

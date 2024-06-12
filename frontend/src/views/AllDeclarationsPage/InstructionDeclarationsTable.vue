@@ -24,7 +24,7 @@ const rows = computed(() =>
       {
         component: "router-link",
         text: x.name,
-        to: { name: "DeclarationPage", params: { id: x.id } },
+        to: { name: "InstructionPage", params: { declarationId: x.id } },
       },
       x.company.socialName,
       `${x.author.firstName} ${x.author.lastName}`,
@@ -38,5 +38,16 @@ const rows = computed(() =>
 <style scoped>
 .fr-table :deep(table) {
   @apply !table;
+}
+
+/* On surcharge les couleurs dans `index.css` car pour les instructeur.ices les points d'attentions sont différents */
+.fr-table :deep(.fr-tag.AWAITING_INSTRUCTION) {
+  @apply !bg-amber-100;
+}
+.fr-table :deep(.fr-tag.ONGOING_INSTRUCTION) {
+  @apply !bg-blue-france-925;
+}
+.fr-table :deep(.fr-tag.OBSERVATION) {
+  @apply !bg-gray-200;
 }
 </style>

@@ -101,7 +101,28 @@ urlpatterns = {
     ),
     path("declarations/", views.AllDeclarationsListView.as_view(), name="list_all_declarations"),
     path("declarations/<int:pk>", views.DeclarationRetrieveUpdateView.as_view(), name="retrieve_update_declaration"),
+    # Flow de la délcaration (state machine)
     path("declarations/<int:pk>/submit/", views.DeclarationSubmitView.as_view(), name="submit_declaration"),
+    path(
+        "declarations/<int:pk>/take-for-instruction/",
+        views.DeclarationTakeView.as_view(),
+        name="take_for_instruction",
+    ),
+    path(
+        "declarations/<int:pk>/observe-no-visa/",
+        views.DeclarationObserveView.as_view(),
+        name="observe_no_visa",
+    ),
+    path(
+        "declarations/<int:pk>/authorize-no-visa/",
+        views.DeclarationAuthorizeView.as_view(),
+        name="authorize_no_visa",
+    ),
+    path(
+        "declarations/<int:pk>/resubmit/",
+        views.DeclarationResubmitView.as_view(),
+        name="resubmit_declaration",
+    ),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -28,19 +28,23 @@ export const statusProps = {
   },
   AWAITING_INSTRUCTION: {
     icon: "ri-time-fill",
-    label: "En attente",
+    label: "En attente d'instruction",
   },
-  AWAITING_PRODUCER: {
-    icon: "ri-error-warning-fill",
-    label: "Action requise",
+  ONGOING_INSTRUCTION: {
+    icon: "ri-todo-fill",
+    label: "En cours d'instruction",
   },
-  REJECTED: {
-    icon: "ri-close-fill",
-    label: "Rejetée",
+  OBSERVATION: {
+    icon: "ri-file-search-fill",
+    label: "En observation",
   },
-  APPROVED: {
+  ABANDONED: {
+    icon: "ri-time-fill",
+    label: "Abandonnée",
+  },
+  AUTHORIZED: {
     icon: "ri-check-fill",
-    label: "Validée",
+    label: "Autorisée",
   },
 }
 
@@ -49,7 +53,8 @@ export const roleNameDisplayNameMapping = { DeclarantRole: "déclarant", Supervi
 export const statusFilterOptions = [
   { value: "", text: "Tous les statuts" },
   { value: "AWAITING_INSTRUCTION", text: "En attente d'instruction" },
-  { value: "AWAITING_PRODUCER", text: "En attente de retour du producteur" },
-  { value: "REJECTED", text: "Rejeté" },
-  { value: "APPROVED", text: "Validé" },
+  { value: "ONGOING_INSTRUCTION", text: "En cours d'instruction" },
+  { value: "OBSERVATION", text: "Observation" },
+  { value: "ABANDON", text: "Abandon" },
+  { value: "AUTHORIZED", text: "Autorisé" },
 ]

@@ -19,7 +19,7 @@ from api.permissions import (
 from api.serializers import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer
 from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
-from data.models import Company, Declaration
+from data.models import Company, Declaration, InstructionRole
 
 
 class UserDeclarationsListCreateApiView(ListCreateAPIView):
@@ -59,6 +59,13 @@ class DeclarationFlowView(GenericAPIView):
     serializer_class = DeclarationSerializer
     transition = None
 
+    def on_transition_success(self, request, declaration):
+        """
+        Hook à surcharger dans le cas où il faut faire des choses particulières
+        après le succès de la transition
+        """
+        pass
+
     def post(self, request, *args, **kwargs):
         declaration = self.get_object()
         flow = DeclarationFlow(declaration)
@@ -67,7 +74,8 @@ class DeclarationFlowView(GenericAPIView):
         if flow_permission_method and not flow_permission_method(request.user):
             raise PermissionDenied()
         transition_method()
-        declaration.save(user=request.user, comment=request.data.get("comment"))
+        self.on_transition_success(request, declaration)
+        declaration.save(user=request.user, comment=request.data.get("comment", ""))
         serializer = self.get_serializer(declaration)
         return Response(serializer.data)
 
@@ -137,15 +145,57 @@ class CompanyDeclarationsListView(GenericDeclarationsListView):
 
 
 class DeclarationSubmitView(DeclarationFlowView):
+    """
+    DRAFT -> AWAITING_INSTRUCTION
+    """
+
     permission_classes = [IsDeclarationAuthor, IsDeclarant]
-    transition = "submit_for_instruction"
+    transition = "submit"
 
 
-class DeclarationApproveView(DeclarationFlowView):
-    # permission_classes = [] TODO : Ajouter la permission pour l'instruction
-    transition = "approve"
+class DeclarationTakeView(DeclarationFlowView):
+    """
+    AWAITING_INSTRUCTION -> ONGOING_INSTRUCTION
+    """
+
+    permission_classes = [IsInstructor]
+    transition = "take_for_instruction"
+
+    def on_transition_success(self, request, declaration):
+        declaration.instructor = InstructionRole.objects.get(user=request.user)
+        return super().on_transition_success(request, declaration)
 
 
-class DeclarationRejectView(DeclarationFlowView):
-    # permission_classes = [] TODO : Ajouter la permission pour l'instruction
-    transition = "reject"
+class DeclarationObserveView(DeclarationFlowView):
+    """
+    ONGOING_INSTRUCTION -> OBSERVATION
+    """
+
+    permission_classes = [IsInstructor]
+    transition = "observe_no_visa"
+
+    def on_transition_success(self, request, declaration):
+        # Envoyer un email au déclarant.e avec le notes de l'observation
+        return super().on_transition_success(request, declaration)
+
+
+class DeclarationAuthorizeView(DeclarationFlowView):
+    """
+    ONGOING_INSTRUCTION -> AUTHORIZED
+    """
+
+    permission_classes = [IsInstructor]
+    transition = "authorize_no_visa"
+
+    def on_transition_success(self, request, declaration):
+        # Envoyer un email au déclarant.e l'informant de l'autorisation
+        return super().on_transition_success(request, declaration)
+
+
+class DeclarationResubmitView(DeclarationFlowView):
+    """
+    OBSERVATION -> ONGOING_INSTRUCTION
+    """
+
+    permission_classes = [IsDeclarationAuthor, IsDeclarant]
+    transition = "resubmit"

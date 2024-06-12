@@ -48,7 +48,7 @@ import { statusFilterOptions } from "@/utils/mappings"
 const route = useRoute()
 const store = useRootStore()
 const router = useRouter()
-const { loggedUser, companies } = storeToRefs(store)
+const { companies } = storeToRefs(store)
 const company = computed(() => companies.value?.find((c) => +c.id === +route.params.id))
 
 const limit = 10
