@@ -29,7 +29,7 @@
           <SummaryTab v-model="declaration" />
         </DsfrTabContent>
         <DsfrTabContent panelId="tab-content-2" tabId="tab-2" :selected="selectedTabIndex === 2" :asc="asc">
-          <HistoryTab />
+          <HistoryTab :declarationId="declaration?.id" />
         </DsfrTabContent>
         <DsfrTabContent panelId="tab-content-3" tabId="tab-3" :selected="selectedTabIndex === 3" :asc="asc">
           <DecisionTab />

@@ -5,7 +5,11 @@
     </div>
   </div>
 
-  <div class="fr-container" v-if="!isFetching">
+  <div v-if="isFetching" class="flex justify-center items-center min-h-60">
+    <ProgressSpinner />
+  </div>
+
+  <div class="fr-container" v-else>
     <StepButtons
       class="mb-6 mt-3"
       @next="goForward"
@@ -34,6 +38,7 @@
   </div>
 </template>
 <script setup>
+import ProgressSpinner from "@/components/ProgressSpinner"
 import { useRootStore } from "@/stores/root"
 import { onMounted, ref, computed, watch } from "vue"
 import ProductStep from "./ProductStep"
@@ -138,9 +143,9 @@ const savePayload = async () => {
   }
 }
 
-const submitPayload = async () => {
+const submitPayload = async (comment) => {
   const url = `/api/v1/declarations/${payload.value.id}/submit/`
-  const { response } = await useFetch(url, { headers: headers() }).post().json()
+  const { response } = await useFetch(url, { headers: headers() }).post({ comment }).json()
   $externalResults.value = await handleError(response)
 
   if ($externalResults.value) {

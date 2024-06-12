@@ -101,6 +101,11 @@ urlpatterns = {
     ),
     path("declarations/", views.AllDeclarationsListView.as_view(), name="list_all_declarations"),
     path("declarations/<int:pk>", views.DeclarationRetrieveUpdateView.as_view(), name="retrieve_update_declaration"),
+    path(
+        "declarations/<int:pk>/snapshots/",
+        views.DeclarationSnapshotListView.as_view(),
+        name="declaration_snapshots",
+    ),
     # Flow de la délcaration (state machine)
     path("declarations/<int:pk>/submit/", views.DeclarationSubmitView.as_view(), name="submit_declaration"),
     path(
