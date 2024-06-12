@@ -18,7 +18,7 @@ class SubstanceSerializer(serializers.ModelSerializer):
     synonyms = SubstanceSynonymSerializer(many=True, read_only=True, source="substancesynonym_set")
     unit = serializers.CharField(read_only=True, source="unit.name")
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
-    modification_date = serializers.DateField(format="%Y-%m-%d")
+    modification_date = serializers.DateTimeField(format="%Y-%m-%d", required=False)
 
     class Meta:
         model = Substance

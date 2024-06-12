@@ -54,7 +54,7 @@ class PlantSerializer(serializers.ModelSerializer):
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
-    modification_date = serializers.DateField(format="%Y-%m-%d")
+    modification_date = serializers.DateTimeField(format="%Y-%m-%d", required=False)
 
     class Meta:
         model = Plant
