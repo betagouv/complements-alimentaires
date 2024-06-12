@@ -35,5 +35,6 @@ class Snapshot(TimeStampable):
         verbose_name="déclaration",
         related_name="snapshots",
     )
+    expiration_days = models.IntegerField(null=True, blank=True, verbose_name="délai de réponse")
     json_declaration = models.JSONField(verbose_name="données au moment de la création", encoder=CustomJSONEncoder)
     comment = models.TextField("commentaire", blank=True, default="")

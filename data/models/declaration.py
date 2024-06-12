@@ -117,7 +117,7 @@ class Declaration(Historisable, TimeStampable):
     effects = models.ManyToManyField(Effect, blank=True, verbose_name="objectifs ou effets")
     other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non-listés")
 
-    def save(self, user=None, comment="", *args, **kwargs):
+    def save(self, user=None, comment="", expiration_days=None, *args, **kwargs):
         """Surchargée ajouter la creation des snapshots"""
         from data.factories import SnapshotFactory  # Sinon on a un import circulaire
 
@@ -134,6 +134,7 @@ class Declaration(Historisable, TimeStampable):
                 user=user,
                 status=self.status,
                 json_declaration=self.json_representation,
+                expiration_days=expiration_days,
                 comment=comment,
             )
 
