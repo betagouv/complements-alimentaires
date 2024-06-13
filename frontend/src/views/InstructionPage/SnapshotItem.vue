@@ -7,12 +7,12 @@
       <div v-if="snapshot.comment" class="italic mb-2 rounded-xl bg-slate-100 p-4 rounded-tl-none">
         {{ snapshot.comment }}
       </div>
-      <div>
+      <div class="fr-text--sm !mb-0 !text-slate-500">
         {{ isoToPrettyDate(snapshot.creationDate) }} à
         {{ isoToPrettyTime(snapshot.creationDate) }}
       </div>
       <div>
-        {{ snapshot.user.firstName }} {{ snapshot.user.lastName }} a changé le statut à «
+        {{ snapshot.user.firstName }} {{ snapshot.user.lastName }} a changé le status à «
         <span class="font-bold">{{ statusProps[snapshot.status].label }}</span>
         »
         <span v-if="!snapshot.comment">sans laisser de message</span>
