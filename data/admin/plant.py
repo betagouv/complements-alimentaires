@@ -2,9 +2,9 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 
-from simple_history.admin import SimpleHistoryAdmin
-
 from data.models import Plant, PlantSynonym
+
+from .abstract_admin import ElementAdminWithChangeReason
 
 
 class PlantSynonymInline(admin.TabularInline):
@@ -37,7 +37,7 @@ class PlantForm(forms.ModelForm):
 
 
 @admin.register(Plant)
-class PlantAdmin(SimpleHistoryAdmin):
+class PlantAdmin(ElementAdminWithChangeReason):
     form = PlantForm
     fieldsets = [
         (

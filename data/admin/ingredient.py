@@ -1,12 +1,12 @@
 from django.contrib import admin
 
-from simple_history.admin import SimpleHistoryAdmin
-
 from data.models import Ingredient
+
+from .abstract_admin import ElementAdminWithChangeReason
 
 
 @admin.register(Ingredient)
-class IngredientAdmin(SimpleHistoryAdmin):
+class IngredientAdmin(ElementAdminWithChangeReason):
     list_display = ("name", "status")
     list_filter = ("is_obsolete", "status")
     readonly_fields = (

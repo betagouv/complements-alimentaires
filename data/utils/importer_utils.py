@@ -73,7 +73,10 @@ def clean_value(value, field):
             return None
         return value
     elif isinstance(field, (TextField, CharField)):
-        return value.strip()
+        if value is None:
+            return ""
+        else:
+            return value.strip()
     return value
 
 

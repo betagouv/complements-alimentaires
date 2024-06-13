@@ -3,9 +3,9 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
 
-from simple_history.admin import SimpleHistoryAdmin
-
 from data.models import Substance
+
+from .abstract_admin import ElementAdminWithChangeReason
 
 
 class SubstanceForm(forms.ModelForm):
@@ -20,7 +20,7 @@ class SubstanceForm(forms.ModelForm):
 
 
 @admin.register(Substance)
-class SubstanceAdmin(SimpleHistoryAdmin):
+class SubstanceAdmin(ElementAdminWithChangeReason):
     @classmethod
     def links_to_objects(cls, object_name, objects):
         rel_list = "<ul>"
