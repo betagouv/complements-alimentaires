@@ -13,6 +13,7 @@ class IngredientStatus(models.IntegerChoices):
 
     AUTHORIZED = 1, "autorisé"  # contient aussi les status SICCRF "à inscrire" et "sans objet"
     NOT_AUTHORIZED = 2, "non autorisé"
+    NO_STATUS = 3, "sans objet"
 
 
 class WithStatus(models.Model):

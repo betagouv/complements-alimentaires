@@ -8,6 +8,8 @@ from django.db.models import (
 from simple_history.exceptions import NotHistoricalModelError
 from simple_history.utils import update_change_reason
 
+from data.models.ingredient_status import IngredientStatus
+
 
 def pre_import_treatments(field, value):
     """
@@ -34,21 +36,21 @@ def convert_status(value: int) -> int:
     """
     Converti les statuts SICCRF en statuts Compl'Alim
     * à inscrire sera calculé automatiquement à partir de la date d'entrée en base de l'ingrédient
-    * sans objet apparaît comme autorisé, car non reliée à une quelconque règlementation
     """
     match int(value):
         # autorisé
         case 1:
-            return 1
+            return IngredientStatus.AUTHORIZED
         # non autorisé
         case 2:
-            return 2
+            return IngredientStatus.NOT_AUTHORIZED
         # à inscrire
         case 3:
-            return 1
+            return IngredientStatus.AUTHORIZED
         # sans objet
+        # ne retourne pas None car cela reviendrait à chercher la valeur 2 dans les GeneratedField avec Coalesce.
         case 4:
-            return None
+            return IngredientStatus.NO_STATUS
 
 
 def clean_value(value, field):

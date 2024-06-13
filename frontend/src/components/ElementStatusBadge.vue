@@ -1,14 +1,10 @@
 <template>
-  <DsfrBadge :label="text" small :type="badgeTypes.find((x) => x.text === text)?.type" />
+  <DsfrBadge v-if="text === 'autorisé'" :label="text" small type="success" />
+  <DsfrBadge v-if="text === 'non autorisé'" :label="text" small type="error" />
 </template>
 
 <script setup>
 defineProps({
   text: String,
 })
-
-const badgeTypes = [
-  { text: "autorisé", type: "success" },
-  { text: "non autorisé", type: "error" },
-]
 </script>
