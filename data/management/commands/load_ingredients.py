@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 
@@ -20,22 +21,28 @@ class Command(BaseCommand):
     help = "Load the ingredients from the csv files given by SICCRF"
 
     def add_arguments(self, parser):
+        parser.add_argument(
+            "date",
+            type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d"),
+            help="Indique la date d'export.",
+        )
         # argument optionnel
         parser.add_argument(
             "-d",
             "--directory",
             type=str,
-            help="Indicates where the files are located.",
+            help="Indique où les fichiers d'export se trouvent.",
             default="files",
         )
 
     def handle(self, *args, **options):
         directory_relative_path = options.get("directory")
         files = os.listdir(directory_relative_path)
+        export_date = options.get("date")
         models_to_check = set()
         for file in files:
             try:
-                updated_models = import_csv_from_filepath(os.path.join(directory_relative_path, file))
+                updated_models = import_csv_from_filepath(os.path.join(directory_relative_path, file), export_date)
                 models_to_check = models_to_check.union(updated_models)
             except CSVFileError as e:
                 logger.error(e.message)

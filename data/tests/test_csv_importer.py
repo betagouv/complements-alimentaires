@@ -1,3 +1,4 @@
+import datetime
 import os
 from unittest.mock import patch
 
@@ -29,7 +30,7 @@ class CSVImporterTestCase(TestCase):
         file_name = "déclaration_impots_2002.csv"
 
         with self.assertRaises(CSVFileError) as context:
-            import_csv_from_filepath(file_name)
+            import_csv_from_filepath(file_name, datetime.datetime.strptime("2024-05-06", "%Y-%m-%d"))
         self.assertEqual(
             "Ce nom de fichier ne ressemble pas à ceux attendus : 'déclaration_impots_2002.csv'",
             context.exception.message,
@@ -44,7 +45,7 @@ class CSVImporterTestCase(TestCase):
     @patch("data.management.commands.load_ingredients.logger")
     def test_raises_if_not_unicode_file(self, mocked_logger):
         test_path = f"{self.TEST_DIR_PATH}/raises_if_not_utf_8_file/"
-        call_command("load_ingredients", directory=test_path)
+        call_command("load_ingredients", "2024-05-06", directory=test_path)
 
         mocked_logger.error.assert_called_with("'REF_ICA_PLANTE.csv' n'est pas un fichier unicode.")
 
@@ -74,7 +75,7 @@ class CSVImporterTestCase(TestCase):
 
     def test_element_models_created(self):
         test_path = f"{self.TEST_DIR_PATH}/element_models_creation/"
-        call_command("load_ingredients", directory=test_path)
+        call_command("load_ingredients", "2024-05-06", directory=test_path)
 
         self.assertTrue(Plant.objects.filter(siccrf_id=10).exists())
         self.assertTrue(Plant.objects.filter(siccrf_id=11).exists())
@@ -100,7 +101,7 @@ class CSVImporterTestCase(TestCase):
 
     def test_ingredient_models_created(self):
         test_path = f"{self.TEST_DIR_PATH}/declaration_models_creation/"
-        call_command("load_ingredients", directory=test_path)
+        call_command("load_ingredients", "2024-05-06", directory=test_path)
 
         self.assertTrue(Effect.objects.filter(siccrf_id=1).exists())
         self.assertTrue(Effect.objects.filter(siccrf_id=2).exists())
@@ -115,14 +116,14 @@ class CSVImporterTestCase(TestCase):
 
     def test_linked_models_created_even_if_no_corresponding_file(self):
         test_path = f"{self.TEST_DIR_PATH}/element_models_creation/"
-        call_command("load_ingredients", directory=test_path)
+        call_command("load_ingredients", "2024-05-06", directory=test_path)
         self.assertTrue(PlantFamily.objects.filter(siccrf_id=6).exists())
         self.assertEqual(PlantFamily.objects.get(siccrf_id=6).missing_import_data, True)
         self.assertEqual(PlantFamily.objects.get(siccrf_id=6).name, "")
 
     def test_import_twice_same_synonym_created_only_once(self):
         test_path = f"{self.TEST_DIR_PATH}/import_twice_same_synonym_created_only_once/"
-        call_command("load_ingredients", directory=test_path)
+        call_command("load_ingredients", "2024-05-06", directory=test_path)
         # les lignes doublonnées ne sont pas ajoutées
         self.assertEqual(len(Plant.objects.get(name="Pour les pieds").plantsynonym_set.all()), 4)
         self.assertEqual(len(Plant.objects.get(name="Pour le cou").plantsynonym_set.all()), 3)
@@ -133,14 +134,14 @@ class CSVImporterTestCase(TestCase):
 
     def test_creates_models_with_their_relations(self):
         test_path = f"{self.TEST_DIR_PATH}/creates_models_with_their_relations/"
-        call_command("load_ingredients", directory=test_path)
+        call_command("load_ingredients", "2024-05-06", directory=test_path)
 
         self.assertEqual(len(Plant.objects.get(name="Pour les pieds").plant_parts.all()), 1)
         self.assertEqual(len(Plant.objects.get(name="Pour le cou").plant_parts.all()), 3)
 
     def test_create_objects_in_relation_if_they_do_not_already_exist(self):
         test_path = f"{self.TEST_DIR_PATH}/create_objects_in_relation_if_they_do_not_already_exist/"
-        call_command("load_ingredients", directory=test_path)
+        call_command("load_ingredients", "2024-05-06", directory=test_path)
 
         self.assertEqual(len(Plant.objects.get(name="Pour les pieds").plant_parts.all()), 1)
         self.assertEqual(len(Plant.objects.get(name="Pour le cou").plant_parts.all()), 4)
@@ -155,7 +156,7 @@ class CSVImporterTestCase(TestCase):
 
     def test_missing_import_data_field_well_filled(self):
         test_path = f"{self.TEST_DIR_PATH}/create_objects_in_relation_if_they_do_not_already_exist/"
-        call_command("load_ingredients", directory=test_path)
+        call_command("load_ingredients", "2024-05-06", directory=test_path)
 
         missing_plants = Plant.objects.filter(missing_import_data=True)
         missing_plantparts = PlantPart.objects.filter(missing_import_data=True)
@@ -182,7 +183,7 @@ class CSVImporterTestCase(TestCase):
         Il existe des plantparts avec siccrf_is_useful = False et siccrf_must_be_monitored = True
         """
         test_path = f"{self.TEST_DIR_PATH}/create_plants_with_distinct_useful_and_to_be_monitored_parts/"
-        call_command("load_ingredients", directory=test_path)
+        call_command("load_ingredients", "2024-05-06", directory=test_path)
 
         plants_with_parts = Plant.objects.exclude(plant_parts=None)
         for plant in plants_with_parts:
@@ -207,7 +208,7 @@ class CSVImporterTestCase(TestCase):
         pointent bien comme convenu vers le bon objet du modèle Status.
         """
         test_path = f"{self.TEST_DIR_PATH}/element_models_creation/"
-        call_command("load_ingredients", directory=test_path)
+        call_command("load_ingredients", "2024-05-06", directory=test_path)
 
         self.assertEqual(len(Plant.objects.filter(status=IngredientStatus.AUTHORIZED)), 2)
         self.assertEqual(len(Plant.objects.filter(siccrf_status=1)), 2)

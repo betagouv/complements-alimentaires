@@ -86,7 +86,7 @@ def update_or_create_object(model, object_definition, default_extra_fields, chan
     return model_object, created
 
 
-def get_update_or_create_related_object(model, id, csv_filename):
+def get_update_or_create_related_object(model, id, change_message):
     """
     Indépendamment de l'ordre dans lequel les fichiers sont importés,
     les objets sont créés avec seulement leur id s'ils existent dans un fichier relation
@@ -100,6 +100,6 @@ def get_update_or_create_related_object(model, id, csv_filename):
             model,
             object_definition={"siccrf_id": id},
             default_extra_fields={"name": ""},
-            change_message=f"New import from Teleicare extract {csv_filename}.",
+            change_message=change_message,
         )
         return linked_obj
