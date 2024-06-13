@@ -54,36 +54,6 @@ class DeclarationRetrieveUpdateView(RetrieveUpdateAPIView):
     queryset = Declaration.objects.all()
 
 
-class DeclarationFlowView(GenericAPIView):
-    queryset = Declaration.objects.all()
-    serializer_class = DeclarationSerializer
-    transition = None
-
-    def on_transition_success(self, request, declaration):
-        """
-        Hook à surcharger dans le cas où il faut faire des choses particulières
-        après le succès de la transition
-        """
-        pass
-
-    def post(self, request, *args, **kwargs):
-        declaration = self.get_object()
-        flow = DeclarationFlow(declaration)
-        transition_method = getattr(flow, self.transition)
-        flow_permission_method = getattr(transition_method, "has_permission", None)
-        if flow_permission_method and not flow_permission_method(request.user):
-            raise PermissionDenied()
-        transition_method()
-        self.on_transition_success(request, declaration)
-        declaration.save(
-            user=request.user,
-            comment=request.data.get("comment", ""),
-            expiration_days=request.data.get("expiration"),
-        )
-        serializer = self.get_serializer(declaration)
-        return Response(serializer.data)
-
-
 class Unaccent(Func):
     function = "unaccent"
 
@@ -148,6 +118,38 @@ class CompanyDeclarationsListView(GenericDeclarationsListView):
         return company.declarations.exclude(status=Declaration.DeclarationStatus.DRAFT)
 
 
+class DeclarationFlowView(GenericAPIView):
+    queryset = Declaration.objects.all()
+    serializer_class = DeclarationSerializer
+    transition = None
+    create_snapshot = False
+
+    def on_transition_success(self, request, declaration):
+        """
+        Hook à surcharger dans le cas où il faut faire des choses particulières
+        après le succès de la transition
+        """
+        pass
+
+    def post(self, request, *args, **kwargs):
+        declaration = self.get_object()
+        flow = DeclarationFlow(declaration)
+        transition_method = getattr(flow, self.transition)
+        flow_permission_method = getattr(transition_method, "has_permission", None)
+        if flow_permission_method and not flow_permission_method(request.user):
+            raise PermissionDenied()
+        transition_method()
+        if self.create_snapshot:
+            declaration.create_snapshot(
+                user=request.user,
+                comment=request.data.get("comment", ""),
+                expiration_days=request.data.get("expiration"),
+            )
+        self.on_transition_success(request, declaration)
+        serializer = self.get_serializer(declaration)
+        return Response(serializer.data)
+
+
 class DeclarationSubmitView(DeclarationFlowView):
     """
     DRAFT -> AWAITING_INSTRUCTION
@@ -155,6 +157,7 @@ class DeclarationSubmitView(DeclarationFlowView):
 
     permission_classes = [IsDeclarationAuthor, IsDeclarant]
     transition = "submit"
+    create_snapshot = True
 
 
 class DeclarationTakeView(DeclarationFlowView):
@@ -177,6 +180,7 @@ class DeclarationObserveView(DeclarationFlowView):
 
     permission_classes = [IsInstructor]
     transition = "observe_no_visa"
+    create_snapshot = True
 
     def on_transition_success(self, request, declaration):
         # Envoyer un email au déclarant.e avec le notes de l'observation
@@ -190,6 +194,7 @@ class DeclarationAuthorizeView(DeclarationFlowView):
 
     permission_classes = [IsInstructor]
     transition = "authorize_no_visa"
+    create_snapshot = True
 
     def on_transition_success(self, request, declaration):
         # Envoyer un email au déclarant.e l'informant de l'autorisation
@@ -203,3 +208,4 @@ class DeclarationResubmitView(DeclarationFlowView):
 
     permission_classes = [IsDeclarationAuthor, IsDeclarant]
     transition = "resubmit"
+    create_snapshot = True

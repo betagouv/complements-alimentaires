@@ -25,13 +25,18 @@ class TestSnapshotApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # A snapshot should have been created
+        # Un snapshot devrait être créé
         declaration.refresh_from_db()
         self.assertEqual(declaration.snapshots.count(), 1)
         snapshot = declaration.snapshots.first()
         self.assertEqual(snapshot.declaration, declaration)
         self.assertEqual(snapshot.user, declarant_role.user)
         self.assertEqual(snapshot.comment, "Voici notre nouveau produit")
+
+        # Si on sauvegarde une autre chose (pas le status) on ne devrait pas créer de snapshot
+        declaration.name = "new name"
+        declaration.save()
+        self.assertEqual(declaration.snapshots.count(), 1)
 
     @authenticate
     def test_snapshot_list_view(self):
