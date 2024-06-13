@@ -146,6 +146,7 @@ class DeclarationFlowView(GenericAPIView):
                 expiration_days=request.data.get("expiration"),
             )
         self.on_transition_success(request, declaration)
+        declaration.save()
         serializer = self.get_serializer(declaration)
         return Response(serializer.data)
 
