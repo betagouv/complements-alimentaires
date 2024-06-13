@@ -78,7 +78,14 @@
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <!-- Date de dernière mise à jour de la donnée -->
-      <ElementTextSection title="Historique de l'ingrédient" :text="`Dernière mise à jour : ${ingredientUpdateDate}`" />
+      <DsfrAccordion
+        title="Historique de l'ingrédient"
+        id="accordion-history"
+        :expanded-id="expandedId"
+        @expand="(id) => (expandedId = id)"
+      >
+        <DsfrTable :rows="historyData"></DsfrTable>
+      </DsfrAccordion>
     </div>
 
     <!-- Rapporter un problème dans les données -->
@@ -149,9 +156,18 @@ const maxQuantity = computed(() => {
 })
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
-const ingredientUpdateDate = computed(() =>
-  new Date(element.value?.modificationDate).toLocaleString("default", { month: "long", year: "numeric" })
+
+const historyData = computed(() =>
+  element.value?.history.map((item) => [
+    new Date(item.historyDate).toLocaleString("default", { month: "long", year: "numeric" }),
+    item.historyChangeReason || "",
+  ])
 )
+
+// TODO: deduplication
+// TODO: enlarge
+// TODO: remove background
+// TODO: affichage du change reason dans l'admin
 
 const url = computed(() => `/api/v1/${typeMapping[type.value]}s/${elementId.value}`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
@@ -166,6 +182,7 @@ const getElementFromApi = async () => {
 }
 
 const searchPageSource = ref(null)
+const expandedId = ref(null)
 
 const breadcrumbLinks = computed(() => {
   const links = [{ to: "/", text: "Accueil" }]

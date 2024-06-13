@@ -3,6 +3,8 @@ from rest_framework import serializers
 from api.utils.choice_field import GoodReprChoiceField
 from data.models import IngredientStatus, Substance, SubstanceSynonym
 
+from .historical_record import HistoricalRecordField
+
 
 class SubstanceSynonymSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,6 +21,7 @@ class SubstanceSerializer(serializers.ModelSerializer):
     unit = serializers.CharField(read_only=True, source="unit.name")
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
     modification_date = serializers.DateTimeField(format="%Y-%m-%d", required=False)
+    history = HistoricalRecordField(read_only=True, required=False)
 
     class Meta:
         model = Substance
@@ -37,6 +40,7 @@ class SubstanceSerializer(serializers.ModelSerializer):
             "public_comments",
             "status",
             "modification_date",
+            "history",
         )
         read_only_fields = fields
 

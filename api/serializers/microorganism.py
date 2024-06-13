@@ -3,6 +3,7 @@ from rest_framework import serializers
 from api.utils.choice_field import GoodReprChoiceField
 from data.models import IngredientStatus, Microorganism, MicroorganismSynonym
 
+from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
 
 
@@ -21,6 +22,7 @@ class MicroorganismSerializer(serializers.ModelSerializer):
     substances = SubstanceShortSerializer(many=True, read_only=True)
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
     modification_date = serializers.DateTimeField(format="%Y-%m-%d", required=False)
+    history = HistoricalRecordField(read_only=True, required=False)
 
     class Meta:
         model = Microorganism
@@ -34,5 +36,6 @@ class MicroorganismSerializer(serializers.ModelSerializer):
             "public_comments",
             "status",
             "modification_date",
+            "history",
         )
         read_only_fields = fields
