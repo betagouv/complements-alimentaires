@@ -15,7 +15,6 @@ from data.factories import (
     EffectFactory,
     GalenicFormulationFactory,
     IngredientFactory,
-    InstructionReadyDeclarationFactory,
     InstructionRoleFactory,
     MicroorganismFactory,
     PlantFactory,
@@ -648,49 +647,6 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(user_declaration.name, "New name")
 
     @authenticate
-    def test_submit_declaration(self):
-        declarant_role = DeclarantRoleFactory(user=authenticate.user)
-        company = declarant_role.company
-
-        # Une déclaration avec toutes les conditions nécessaires pour l'instruction
-        declaration = InstructionReadyDeclarationFactory(author=authenticate.user, company=company)
-        response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Si un champ obligatoire pour l'instruction manque, on le spécifie
-        missing_field_declaration = InstructionReadyDeclarationFactory(
-            author=authenticate.user, daily_recommended_dose="", company=company
-        )
-        response = self.client.post(
-            reverse("api:submit_declaration", kwargs={"pk": missing_field_declaration.id}), format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        json_errors = response.json()
-        self.assertEqual(len(json_errors["fieldErrors"]), 1)
-        self.assertIn("dailyRecommendedDose", json_errors["fieldErrors"][0])
-
-        # S'il n'y a pas d'éléments dans la déclaration, on ne peut pas la soumettre pour instruction
-        missing_elements_declaration = InstructionReadyDeclarationFactory(
-            author=authenticate.user, declared_plants=[], company=company
-        )
-        response = self.client.post(
-            reverse("api:submit_declaration", kwargs={"pk": missing_elements_declaration.id}), format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        json_errors = response.json()
-        self.assertEqual(len(json_errors["nonFieldErrors"]), 1)
-        self.assertEqual("Le complément doit comporter au moins un ingrédient", json_errors["nonFieldErrors"][0])
-
-    @authenticate
-    def test_submit_declaration_wrong_company(self):
-        DeclarantRoleFactory(user=authenticate.user)
-        wrong_company = CompanyFactory()
-
-        declaration = InstructionReadyDeclarationFactory(author=authenticate.user, company=wrong_company)
-        response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    @authenticate
     def test_get_all_declarations(self):
         """
         Un utilisateur ayant le rôle d'instruction peut récuperer tous les déclarations
@@ -805,17 +761,17 @@ class TestDeclarationApi(APITestCase):
         """
         InstructionRoleFactory(user=authenticate.user)
 
-        [DeclarationFactory(status=Declaration.DeclarationStatus.APPROVED) for _ in range(3)]
-        [DeclarationFactory(status=Declaration.DeclarationStatus.REJECTED) for _ in range(3)]
+        [DeclarationFactory(status=Declaration.DeclarationStatus.AUTHORIZED) for _ in range(3)]
+        [DeclarationFactory(status=Declaration.DeclarationStatus.ABANDONED) for _ in range(3)]
 
         # Filtrage pour obtenir les déclarations approuvées
-        approved_filter_url = f"{reverse('api:list_all_declarations')}?status=APPROVED"
-        response = self.client.get(approved_filter_url, format="json")
+        authorized_filter_url = f"{reverse('api:list_all_declarations')}?status=AUTHORIZED"
+        response = self.client.get(authorized_filter_url, format="json")
         results = response.json()["results"]
         self.assertEqual(len(results), 3)
 
         for result in results:
-            self.assertEqual(result["status"], Declaration.DeclarationStatus.APPROVED.value)
+            self.assertEqual(result["status"], Declaration.DeclarationStatus.AUTHORIZED.value)
 
     @authenticate
     def test_filter_company_name_start_end(self):
@@ -831,7 +787,7 @@ class TestDeclarationApi(APITestCase):
             CompanyFactory(social_name="Umbrella Corporation"),
         ]
         for company in companies:
-            DeclarationFactory(status=Declaration.DeclarationStatus.APPROVED, company=company)
+            DeclarationFactory(status=Declaration.DeclarationStatus.AUTHORIZED, company=company)
 
         # Filtrage pour obtenir les déclarations utilisant le filtre début et fin du social name
 

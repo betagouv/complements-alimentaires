@@ -92,12 +92,9 @@ def custom_exception_handler(exc, context):
             response = Response(data=exc.__dict__, status=status.HTTP_400_BAD_REQUEST)
         # CASE: # Other uncaught error that should not be displayed to the client
         else:
-            response = Response(
-                data=ProjectAPIException(
-                    global_error="Une erreur inatendue est survenue, veuillez réessayer plus tard.",
-                    log_level=logging.ERROR,
-                ).__dict__,
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+            # On arrive ici si l'exception n'a pas vocation à être gérée de notre coté. Conformément à la
+            # documentation de DRF, on retourne None : https://www.django-rest-framework.org/api-guide/exceptions/#custom-exception-handling
+            # ce qui passera l'exception à Django
+            return None
 
     return response

@@ -35,6 +35,7 @@ export const useRootStore = defineStore("root", () => {
     initialDataLoaded.value = false
   }
 
+  // TODO : Management d'erreur pour tous ces appels
   const fetchPopulations = async () => {
     const { data } = await useFetch("/api/v1/populations/").json()
     populations.value = data.value

@@ -1,33 +1,39 @@
-from django.db import models
+import json
+
 from django.conf import settings
+from django.db import models
+
+from djangorestframework_camel_case.render import CamelCaseJSONRenderer
+
 from data.behaviours import Historisable, TimeStampable
-from data.choices import CountryChoices, FrAuthorizationReasons, AuthorizationModes
+from data.choices import AuthorizationModes, CountryChoices, FrAuthorizationReasons
 from data.models import (
-    SubstanceUnit,
-    Population,
+    Company,
     Condition,
     Effect,
-    Plant,
-    Microorganism,
-    Ingredient,
-    Substance,
-    PlantPart,
-    Company,
     GalenicFormulation,
+    Ingredient,
+    InstructionRole,
+    Microorganism,
+    Plant,
+    PlantPart,
+    Population,
+    Substance,
+    SubstanceUnit,
 )
 
 
 class Declaration(Historisable, TimeStampable):
-
     class Meta:
         verbose_name = "déclaration"
 
     class DeclarationStatus(models.TextChoices):
         DRAFT = "DRAFT", "Brouillon"
-        AWAITING_INSTRUCTION = "AWAITING_INSTRUCTION", "En attente de retour instruction"
-        AWAITING_PRODUCER = "AWAITING_PRODUCER", "En attente de retour du déclarant"
-        REJECTED = "REJECTED", "Rejeté"
-        APPROVED = "APPROVED", "Validé"
+        AWAITING_INSTRUCTION = "AWAITING_INSTRUCTION", "En attente d'instruction"
+        ONGOING_INSTRUCTION = "ONGOING_INSTRUCTION", "Instruction en cours"
+        OBSERVATION = "OBSERVATION", "En observation"
+        ABANDONED = "ABANDONED", "Abandonnée"
+        AUTHORIZED = "AUTHORIZED", "Autorisée"
 
     class RejectionReason(models.TextChoices):
         MISSING_DATA = "MISSING_DATA", "Le dossier manque des données nécessaires"
@@ -38,15 +44,25 @@ class Declaration(Historisable, TimeStampable):
         max_length=50,
         choices=DeclarationStatus.choices,
         default=DeclarationStatus.DRAFT,
-        verbose_name="Status",
+        verbose_name="status",
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         verbose_name="auteur",
         related_name="declarations",
     )
+    instructor = models.ForeignKey(
+        InstructionRole,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name="instructeur",
+        related_name="declarations",
+    )
+    private_notes = models.TextField("notes à destination de l'administration", blank=True, default="")
     company = models.ForeignKey(
         Company, null=True, on_delete=models.SET_NULL, verbose_name="entreprise", related_name="declarations"
     )
@@ -94,10 +110,32 @@ class Declaration(Historisable, TimeStampable):
     warning = models.TextField(blank=True, verbose_name="mise en garde et avertissement")
 
     populations = models.ManyToManyField(Population, blank=True, verbose_name="populations cible")
-    conditions_not_recommended = models.ManyToManyField(Condition, verbose_name="consommation déconseillée")
+    conditions_not_recommended = models.ManyToManyField(
+        Condition, blank=True, verbose_name="consommation déconseillée"
+    )
 
     effects = models.ManyToManyField(Effect, blank=True, verbose_name="objectifs ou effets")
     other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non-listés")
+
+    def create_snapshot(self, user=None, comment="", expiration_days=None):
+        from data.factories import SnapshotFactory  # Sinon on a un import circulaire
+
+        SnapshotFactory.create(
+            declaration=self,
+            user=user,
+            status=self.status,
+            json_declaration=self.json_representation,
+            expiration_days=expiration_days,
+            comment=comment,
+        )
+
+    @property
+    def json_representation(self):
+        from api.serializers import DeclarationSerializer
+
+        serialized_data = DeclarationSerializer(self).data
+        camelized_bytes = CamelCaseJSONRenderer().render(serialized_data)
+        return json.loads(camelized_bytes.decode("utf-8"))
 
 
 # Les modèles commençant par `Declared` représentent des éléments ajoutés par l'utilisateur.ice dans sa

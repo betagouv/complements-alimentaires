@@ -2,12 +2,16 @@ from .authentication import LoginView, LogoutView
 from .autocomplete import AutocompleteView
 from .blog import BlogPostsView, BlogPostView
 from .condition import ConditionListView
-from .declaration import (
+from .declaration.declaration import (
     UserDeclarationsListCreateApiView,
     DeclarationRetrieveUpdateView,
     DeclarationSubmitView,
     AllDeclarationsListView,
     CompanyDeclarationsListView,
+    DeclarationTakeView,
+    DeclarationObserveView,
+    DeclarationAuthorizeView,
+    DeclarationResubmitView,
 )
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
