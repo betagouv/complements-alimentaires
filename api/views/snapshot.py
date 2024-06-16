@@ -13,4 +13,4 @@ class DeclarationSnapshotListView(ListAPIView):
 
     def get_queryset(self):
         declaration = get_object_or_404(Declaration, pk=self.kwargs[self.lookup_field])
-        return declaration.snapshots.all()
+        return declaration.snapshots.order_by("-creation_date").all()

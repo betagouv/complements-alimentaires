@@ -1,6 +1,15 @@
 <template>
-  <div class="bg-blue-france-975 border border-slate-300">
-    <div class="fr-container pt-4 pb-6" v-if="steps.length > 1">
+  <DsfrBreadcrumb
+    v-if="readonly"
+    class="mb-8 fr-container"
+    :links="[
+      { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
+      { to: { name: 'DeclarationsHomePage' }, text: 'Mes déclarations' },
+      { text: 'Détails de la déclaration' },
+    ]"
+  />
+  <div class="bg-blue-france-975 border border-slate-300" v-if="steps.length > 1">
+    <div class="fr-container pt-4 pb-6">
       <DsfrStepper class="!mb-0" :currentStep="currentStep" :steps="steps" />
     </div>
   </div>
@@ -10,6 +19,12 @@
   </div>
 
   <div class="fr-container" v-else>
+    <DsfrAlert
+      v-if="readonly && payload"
+      class="mb-4"
+      :type="payload.status === 'AUTHORIZED' ? 'success' : 'info'"
+      :title="`Cette déclaration est en status « ${statusProps[payload.status].label} »`"
+    />
     <StepButtons
       class="mb-6 mt-3"
       @next="goForward"
@@ -53,6 +68,7 @@ import { handleError } from "@/utils/error-handling"
 import FormWrapper from "@/components/FormWrapper"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
+import { statusProps } from "@/utils/mappings"
 
 const $externalResults = ref({})
 
@@ -95,7 +111,9 @@ const hasNewElements = computed(() => {
     )
     .some((x) => x.new)
 })
-const readonly = computed(() => !isNewDeclaration.value && payload.value.status !== "DRAFT")
+const readonly = computed(
+  () => !isNewDeclaration.value && payload.value.status !== "DRAFT" && payload.value.status !== "OBSERVATION"
+)
 const currentStep = ref(null)
 const steps = computed(() => {
   if (readonly.value) return ["Résumé"]
@@ -144,7 +162,8 @@ const savePayload = async () => {
 }
 
 const submitPayload = async (comment) => {
-  const url = `/api/v1/declarations/${payload.value.id}/submit/`
+  const path = payload.value.status === "DRAFT" ? "submit" : "resubmit"
+  const url = `/api/v1/declarations/${payload.value.id}/${path}/`
   const { response } = await useFetch(url, { headers: headers() }).post({ comment }).json()
   $externalResults.value = await handleError(response)
 

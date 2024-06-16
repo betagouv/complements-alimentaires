@@ -199,13 +199,17 @@
           hint="Bâtiment, immeuble, escalier et numéro d’appartement"
         />
       </DsfrInputGroup>
-      <div class="grid grid-cols-7 gap-6">
-        <DsfrInputGroup class="col-span-12 md:col-span-3">
-          <DsfrInput v-model="payload.postalCode" label-visible label="Code Postal" :required="true" />
-        </DsfrInputGroup>
-        <DsfrInputGroup class="col-span-12 md:col-span-4">
-          <DsfrInput v-model="payload.city" label-visible label="Ville ou commune" :required="true" />
-        </DsfrInputGroup>
+      <div class="grid grid-cols-12 gap-6">
+        <div class="col-span-12 md:col-span-4">
+          <DsfrInputGroup>
+            <DsfrInput v-model="payload.postalCode" label-visible label="Code Postal" :required="true" />
+          </DsfrInputGroup>
+        </div>
+        <div class="col-span-12 md:col-span-5">
+          <DsfrInputGroup>
+            <DsfrInput v-model="payload.city" label-visible label="Ville ou commune" :required="true" />
+          </DsfrInputGroup>
+        </div>
       </div>
       <DsfrInputGroup>
         <DsfrInput v-model="payload.cedex" label-visible label="Cedex" />
