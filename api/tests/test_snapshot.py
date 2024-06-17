@@ -6,6 +6,7 @@ from rest_framework.test import APITestCase
 from data.factories import (
     DeclarantRoleFactory,
     InstructionReadyDeclarationFactory,
+    InstructionRoleFactory,
 )
 
 from .utils import authenticate
@@ -58,3 +59,16 @@ class TestSnapshotApi(APITestCase):
         self.assertEqual(len(body), 1)
         self.assertEqual(body[0]["id"], snapshot.id)
         self.assertEqual(body[0]["comment"], snapshot.comment)
+
+    @authenticate
+    def test_snapshot_list_view_unauthorized(self):
+        declaration = InstructionReadyDeclarationFactory()
+
+        # L'endpoint est seulement disponible pour l'auteur de la déclaration ou pour une
+        # personne ayant le rôle d'instruction
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        InstructionRoleFactory(user=authenticate.user)
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
