@@ -38,13 +38,16 @@
     .fr-table .fr-tag.AWAITING_INSTRUCTION {
         @apply !bg-gray-200;
     }
-    .fr-table .fr-tag.AWAITING_PRODUCER {
-        @apply !bg-amber-100;
+    .fr-table .fr-tag.ONGOING_INSTRUCTION {
+        @apply !bg-blue-200;
     }
-    .fr-table .fr-tag.REJECTED {
-        @apply !bg-red-marianne-925;
+    .fr-table .fr-tag.OBSERVATION {
+        @apply !bg-amber-200;
     }
-    .fr-table .fr-tag.APPROVED {
+    .fr-table .fr-tag.ABANDONED {
+        @apply !bg-red-100;
+    }
+    .fr-table .fr-tag.AUTHORIZED {
         @apply !bg-success-950;
     }
     .fr-table .fr-tag .ov-icon {

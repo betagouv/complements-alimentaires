@@ -30,6 +30,7 @@ import CollaboratorsPage from "@/views/CollaboratorsPage"
 import AllDeclarationsPage from "@/views/AllDeclarationsPage"
 import InstructionPage from "@/views/InstructionPage"
 import OfficialLetterPage from "@/views/OfficialLetterPage"
+import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
 import A11yPage from "@/views/A11yPage.vue"
 
 const routes = [
@@ -212,12 +213,25 @@ const routes = [
             },
           },
           {
-            path: "gestion-des-collaborateurs",
+            path: "gestion-des-collaborateurs/:id",
             name: "CollaboratorsPage",
             component: CollaboratorsPage,
             meta: {
               title: "Gestion des collaborateurs",
               requiredRole: "SupervisorRole",
+            },
+          },
+          {
+            path: "les-declarations-de-mon-entreprise/:id",
+            name: "CompanyDeclarationsPage",
+            component: CompanyDeclarationsPage,
+            meta: {
+              title: "Les déclarations de mon entreprise",
+              requiredRole: "SupervisorRole",
+              defaultQueryParams: {
+                page: 1,
+                status: "",
+              },
             },
           },
           {
@@ -290,7 +304,7 @@ const chooseAuthorisedRoute = async (to, from, next, store) => {
     const authenticationCheck = !to.meta.authenticationRequired || store.loggedUser
     const roleCheck =
       !to.meta.requiredRole ||
-      store.company?.roles?.some((x) => x.name === to.meta.requiredRole) ||
+      store.companies?.some((c) => c.roles?.some((x) => x.name === to.meta.requiredRole)) ||
       store.loggedUser?.globalRoles?.some((x) => x.name === to.meta.requiredRole)
 
     authenticationCheck && roleCheck ? next() : next({ name: "LoginPage" })
@@ -298,20 +312,21 @@ const chooseAuthorisedRoute = async (to, from, next, store) => {
 }
 
 const ensureDefaultQueryParams = (route, next) => {
-  if (!route.meta.defaultQueryParams) return
+  if (!route.meta.defaultQueryParams) return true
   let needsRedirection = false
   for (const [queryParam, value] of Object.entries(route.meta.defaultQueryParams))
     if (!(queryParam in route.query)) {
       route.query[queryParam] = value
       needsRedirection = true
     }
-  if (needsRedirection) next(route)
+  if (!needsRedirection) return true
+  next(route)
+  return false
 }
 
 router.beforeEach((to, from, next) => {
   const store = useRootStore()
-  ensureDefaultQueryParams(to, next)
-  chooseAuthorisedRoute(to, from, next, store)
+  if (ensureDefaultQueryParams(to, next)) chooseAuthorisedRoute(to, from, next, store)
 })
 
 export default router

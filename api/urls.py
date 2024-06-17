@@ -48,6 +48,11 @@ urlpatterns = {
     path("companies/", views.CompanyCreateView.as_view(), name="company_create"),
     path("companies/<int:pk>", views.CompanyRetrieveUpdateView.as_view(), name="company_retrieve_update"),
     path(
+        "companies/<int:pk>/declarations/",
+        views.CompanyDeclarationsListView.as_view(),
+        name="company_declarations_list_view",
+    ),
+    path(
         "companies/<int:pk>/collaborators",
         views.CompanyCollaboratorsListView.as_view(),
         name="get_company_collaborators",
@@ -96,7 +101,33 @@ urlpatterns = {
     ),
     path("declarations/", views.AllDeclarationsListView.as_view(), name="list_all_declarations"),
     path("declarations/<int:pk>", views.DeclarationRetrieveUpdateView.as_view(), name="retrieve_update_declaration"),
+    path(
+        "declarations/<int:pk>/snapshots/",
+        views.DeclarationSnapshotListView.as_view(),
+        name="declaration_snapshots",
+    ),
+    # Flow de la délcaration (state machine)
     path("declarations/<int:pk>/submit/", views.DeclarationSubmitView.as_view(), name="submit_declaration"),
+    path(
+        "declarations/<int:pk>/take-for-instruction/",
+        views.DeclarationTakeView.as_view(),
+        name="take_for_instruction",
+    ),
+    path(
+        "declarations/<int:pk>/observe-no-visa/",
+        views.DeclarationObserveView.as_view(),
+        name="observe_no_visa",
+    ),
+    path(
+        "declarations/<int:pk>/authorize-no-visa/",
+        views.DeclarationAuthorizeView.as_view(),
+        name="authorize_no_visa",
+    ),
+    path(
+        "declarations/<int:pk>/resubmit/",
+        views.DeclarationResubmitView.as_view(),
+        name="resubmit_declaration",
+    ),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

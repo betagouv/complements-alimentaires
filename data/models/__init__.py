@@ -14,6 +14,7 @@ from .effect import Effect
 from .galenic_formulation import GalenicFormulation
 from .unit import SubstanceUnit
 from .ingredient_status import IngredientStatus
+from .global_roles import InstructionRole
 from .declaration import (
     Declaration,
     DeclaredPlant,
@@ -24,7 +25,7 @@ from .declaration import (
     Attachment,
 )
 from .solicitation import SupervisionClaim, CoSupervisionClaim, CollaborationInvitation
-from .global_roles import InstructionRole
+from .snapshot import Snapshot
 
 ELEMENT_MODELS = [
     Ingredient,

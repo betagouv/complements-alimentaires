@@ -253,3 +253,13 @@ export const RiCheckboxCircleFill = remixIcon(
   "ri-checkbox-circle-fill",
   "M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-.997-6l7.07-7.071-1.414-1.414-5.656 5.657-2.829-2.829-1.414 1.414L11.003 16z"
 )
+
+export const RiTodoFill = remixIcon(
+  "ri-todo-fill",
+  "M17 2h3a1 1 0 011 1v18a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1h3V0h2v2h6V0h2v2zM7 8v2h10V8H7zm0 4v2h10v-2H7z"
+)
+
+export const RiFileSearchFill = remixIcon(
+  "ri-file-search-fill",
+  "M16 2l5 5v14.008a.993.993 0 01-.993.992H3.993A1 1 0 013 21.008V2.992C3 2.444 3.445 2 3.993 2H16zm-2.471 12.446l2.21 2.21 1.415-1.413-2.21-2.21a4.002 4.002 0 00-6.276-4.861 4 4 0 004.861 6.274zm-.618-2.032a2 2 0 11-2.828-2.828 2 2 0 012.828 2.828z"
+)

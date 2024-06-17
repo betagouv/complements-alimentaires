@@ -1,6 +1,7 @@
 from rest_framework.generics import ListAPIView
-from data.models import GalenicFormulation
+
 from api.serializers import GalenicFormulationSerializer
+from data.models import GalenicFormulation
 
 
 class GalenicFormulationListView(ListAPIView):

@@ -28,16 +28,14 @@ export const useRootStore = defineStore("root", () => {
     // TODO: add error handling here, but weird bug with await and response
   }
 
-  const company = computed(() =>
-    // Pour le moment, prend la 1ère entreprise de la liste comme entreprise par défaut.
-    loggedUser.value.companies?.length > 0 ? loggedUser.value.companies[0] : null
-  )
+  const companies = computed(() => loggedUser.value.companies)
 
   const resetInitialData = () => {
     loggedUser.value = null
     initialDataLoaded.value = false
   }
 
+  // TODO : Management d'erreur pour tous ces appels
   const fetchPopulations = async () => {
     const { data } = await useFetch("/api/v1/populations/").json()
     populations.value = data.value
@@ -72,7 +70,7 @@ export const useRootStore = defineStore("root", () => {
   }
   return {
     loggedUser,
-    company,
+    companies,
     initialDataLoaded,
     fetchInitialData,
     resetInitialData,

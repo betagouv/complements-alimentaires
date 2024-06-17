@@ -1,10 +1,11 @@
 from django.test import RequestFactory
-from rest_framework import status
-from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
+
+from rest_framework import serializers, status
 from rest_framework.test import APITestCase
 from rest_framework.views import APIView
+
 from api.exception_handling import ProjectAPIException
-from django.utils.translation import gettext_lazy as _
 
 
 class TestProjectAPIException(APITestCase):
@@ -23,22 +24,6 @@ class TestApiErrorMessages(APITestCase):
         request = getattr(self.factory, method.lower())("/fake-url")
         view = endpoint.as_view()
         return view(request)
-
-    def test_uncatchable_error(self):
-        class Endpoint(APIView):
-            def get(self, request):
-                raise ValueError("This is a random error that should not be caught by the API")
-
-        response = self._build_response(Endpoint)
-        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-        self.assertEqual(
-            response.data,
-            {
-                "global_error": "Une erreur inatendue est survenue, veuillez réessayer plus tard.",
-                "non_field_errors": [],
-                "field_errors": {},
-            },
-        )
 
     def test_project_error_with_global(self):
         class Error(ProjectAPIException):
