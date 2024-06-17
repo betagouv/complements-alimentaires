@@ -21,8 +21,7 @@ class IngredientSerializer(serializers.ModelSerializer):
     synonyms = IngredientSynonymSerializer(many=True, read_only=True, source="ingredientsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
-    modification_date = serializers.DateTimeField(format="%Y-%m-%d", required=False)
-    history = HistoricalRecordField(read_only=True, required=False)
+    history = HistoricalRecordField(read_only=True)
 
     class Meta:
         model = Ingredient
@@ -35,7 +34,6 @@ class IngredientSerializer(serializers.ModelSerializer):
             "substances",
             "public_comments",
             "status",
-            "modification_date",
             "history",
         )
         read_only_fields = fields

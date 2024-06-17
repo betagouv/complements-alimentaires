@@ -21,8 +21,7 @@ class MicroorganismSerializer(serializers.ModelSerializer):
     synonyms = MicroorganismSynonymSerializer(many=True, read_only=True, source="microorganismsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
-    modification_date = serializers.DateTimeField(format="%Y-%m-%d", required=False)
-    history = HistoricalRecordField(read_only=True, required=False)
+    history = HistoricalRecordField(read_only=True)
 
     class Meta:
         model = Microorganism
@@ -35,7 +34,6 @@ class MicroorganismSerializer(serializers.ModelSerializer):
             "substances",
             "public_comments",
             "status",
-            "modification_date",
             "history",
         )
         read_only_fields = fields

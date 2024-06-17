@@ -202,3 +202,8 @@ watch(element, (newElement) => {
 
 watch(route, getElementFromApi)
 </script>
+<style scoped>
+.fr-table :deep(table) {
+  @apply !table;
+}
+</style>
