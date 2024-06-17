@@ -618,13 +618,13 @@ sftp = ["paramiko (>=1.15)"]
 
 [[package]]
 name = "django-viewflow"
-version = "2.0.2"
+version = "2.1.1"
 description = "Reusable library to build business applications fast"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "django-viewflow-2.0.2.tar.gz", hash = "sha256:56e6010c4c86bda9fcc99857cac335fe8c02f3381e0bb1917364410292da3984"},
-    {file = "django_viewflow-2.0.2-py3-none-any.whl", hash = "sha256:581f94424d969274c75c895ac92489e3e0c1b8148b5e46fa04b60d7f8cbdd88d"},
+    {file = "django-viewflow-2.1.1.tar.gz", hash = "sha256:82d1ba15f5bc923fde0fd1f435e42f8ac97a369a7110bc194050f45c8df02fd0"},
+    {file = "django_viewflow-2.1.1-py3-none-any.whl", hash = "sha256:fb4055cd79590b9eb9954d1f872b228a99480073a37fef9ec1a7390d15b7f041"},
 ]
 
 [package.dependencies]
