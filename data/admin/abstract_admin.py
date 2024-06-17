@@ -1,11 +1,9 @@
 from simple_history.admin import SimpleHistoryAdmin
 
 
-class IngredientAdminHistorisableChangedFields(SimpleHistoryAdmin):
-    history_list_display = ["changed_fields"]
-
-    def changed_fields(self, obj):
-        if obj.prev_record:
-            delta = obj.diff_against(obj.prev_record)
-            return delta.changed_fields
-        return None
+class ElementAdminWithChangeReason(SimpleHistoryAdmin):
+    def save_model(self, request, obj, form, change):
+        if change:
+            # TODO: la change reason devrait pouvoir être renseignée dans le form
+            obj._change_reason = "Modification de l'ingrédient"
+        super().save_model(request, obj, form, change)

@@ -3,7 +3,8 @@ from django.contrib import admin
 from django.db import models
 
 from data.models import Plant, PlantSynonym
-from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
+
+from .abstract_admin import ElementAdminWithChangeReason
 
 
 class PlantSynonymInline(admin.TabularInline):
@@ -36,7 +37,7 @@ class PlantForm(forms.ModelForm):
 
 
 @admin.register(Plant)
-class PlantAdmin(IngredientAdminHistorisableChangedFields):
+class PlantAdmin(ElementAdminWithChangeReason):
     form = PlantForm
     fieldsets = [
         (
@@ -47,7 +48,8 @@ class PlantAdmin(IngredientAdminHistorisableChangedFields):
                     "ca_name",
                     "name",
                     "is_obsolete",
-                    "status",
+                    "siccrf_status",
+                    "ca_status",
                     "ca_is_obsolete",
                 ],
             },
@@ -78,13 +80,14 @@ class PlantAdmin(IngredientAdminHistorisableChangedFields):
     )
     list_display = ("name", "siccrf_family", "status")
     list_filter = ("is_obsolete", "siccrf_family", "status")
-    history_list_display = ["changed_fields"]
     readonly_fields = (
         "siccrf_name",
         "name",
         "is_obsolete",
+        "siccrf_status",
         "siccrf_public_comments",
         "siccrf_private_comments",
         "siccrf_family",
         "family",
     )
+    search_fields = ["id", "name"]

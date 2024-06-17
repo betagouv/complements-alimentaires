@@ -30,7 +30,13 @@ class PlantPart(CommonModel):
         verbose_name = "partie de plante"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
-    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete"])
+    history = HistoricalRecords(
+        inherit=True,
+        excluded_fields=[
+            "name",
+            "is_obsolete",
+        ],
+    )
 
     @property
     def name_en(self):
@@ -81,6 +87,7 @@ class Plant(CommonModel, WithComments, WithStatus):
             "private_comments",
             "public_comments",
             "status",
+            "siccrf_status",
             "family_by_id",
             "family",
         ],

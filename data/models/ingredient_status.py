@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import F
+from django.db.models.functions import Coalesce
 
 
 class IngredientStatus(models.IntegerChoices):
@@ -11,6 +13,7 @@ class IngredientStatus(models.IntegerChoices):
 
     AUTHORIZED = 1, "autorisé"  # contient aussi les status SICCRF "à inscrire" et "sans objet"
     NOT_AUTHORIZED = 2, "non autorisé"
+    NO_STATUS = 3, "sans objet"
 
 
 class WithStatus(models.Model):
@@ -26,12 +29,26 @@ class WithStatus(models.Model):
     class Meta:
         abstract = True
 
-    status = models.IntegerField(
+    siccrf_status = models.IntegerField(
         choices=IngredientStatus.choices,
         blank=True,
         default=None,  # un ingrédient n'a pas de status par défaut
         null=True,
-        verbose_name="statut de l'ingrédient ou substance",
+        verbose_name="statut de l'ingrédient ou substance selon TeleIcare",
+    )
+    ca_status = models.IntegerField(
+        choices=IngredientStatus.choices,
+        blank=True,
+        default=None,  # un ingrédient n'a pas de status par défaut
+        null=True,
+        verbose_name="statut de l'ingrédient ou substance selon Compl'Alim",
+    )
+    status = models.GeneratedField(
+        expression=Coalesce(F("ca_status"), F("siccrf_status")),
+        output_field=models.IntegerField(
+            choices=IngredientStatus.choices, null=True, verbose_name="statut de l'ingrédient ou substance"
+        ),
+        db_persist=True,
     )
     to_be_entered_in_next_decree = models.BooleanField(
         editable=False, default=False, verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"

@@ -2,7 +2,8 @@ from django import forms
 from django.contrib import admin
 
 from data.models import Microorganism
-from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
+
+from .abstract_admin import ElementAdminWithChangeReason
 
 
 class MicroorganismForm(forms.ModelForm):
@@ -15,7 +16,7 @@ class MicroorganismForm(forms.ModelForm):
 
 
 @admin.register(Microorganism)
-class MicroorganismAdmin(IngredientAdminHistorisableChangedFields):
+class MicroorganismAdmin(ElementAdminWithChangeReason):
     form = MicroorganismForm
     fieldsets = [
         (
@@ -24,7 +25,8 @@ class MicroorganismAdmin(IngredientAdminHistorisableChangedFields):
                 "fields": [
                     "name",
                     "is_obsolete",
-                    "status",
+                    "siccrf_status",
+                    "ca_status",
                     "ca_is_obsolete",
                 ],
             },
@@ -55,12 +57,13 @@ class MicroorganismAdmin(IngredientAdminHistorisableChangedFields):
 
     list_display = ("name", "status")
     list_filter = ("is_obsolete", "status")
-    history_list_display = ["changed_fields"]
     readonly_fields = (
         "name",
         "is_obsolete",
+        "siccrf_status",
         "siccrf_public_comments",
         "siccrf_private_comments",
         "siccrf_genus",
         "siccrf_species",
     )
+    search_fields = ["id", "name"]

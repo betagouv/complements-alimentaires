@@ -1,10 +1,11 @@
 from django import forms
 from django.contrib import admin
-from django.utils.html import format_html
 from django.urls import reverse
+from django.utils.html import format_html
 
 from data.models import Substance
-from data.admin.abstract_admin import IngredientAdminHistorisableChangedFields
+
+from .abstract_admin import ElementAdminWithChangeReason
 
 
 class SubstanceForm(forms.ModelForm):
@@ -19,7 +20,7 @@ class SubstanceForm(forms.ModelForm):
 
 
 @admin.register(Substance)
-class SubstanceAdmin(IngredientAdminHistorisableChangedFields):
+class SubstanceAdmin(ElementAdminWithChangeReason):
     @classmethod
     def links_to_objects(cls, object_name, objects):
         rel_list = "<ul>"
@@ -52,7 +53,8 @@ class SubstanceAdmin(IngredientAdminHistorisableChangedFields):
                     "siccrf_name_en",
                     "is_obsolete",
                     "ca_is_obsolete",
-                    "status",
+                    "siccrf_status",
+                    "ca_status",
                     "siccrf_source",
                     "ca_source",
                 ],
@@ -104,6 +106,7 @@ class SubstanceAdmin(IngredientAdminHistorisableChangedFields):
         "siccrf_name",
         "siccrf_name_en",
         "is_obsolete",
+        "siccrf_status",
         "siccrf_source",
         "siccrf_public_comments",
         "siccrf_private_comments",

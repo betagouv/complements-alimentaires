@@ -1,4 +1,5 @@
 import csv
+import datetime
 import logging
 import os
 import pathlib
@@ -123,7 +124,7 @@ class CSVImporter:
         # Les champs ManyToMany
         "substances": ["SBSACT_IDENT"],
         "plant_parts": ["PPLAN_IDENT"],
-        "status": ["STINGSBS_IDENT"],
+        "siccrf_status": ["STINGSBS_IDENT"],
     }
 
     # Ces champs sont remplis automatiquement et ne sont pas recherchés dans les fichiers csv
@@ -227,7 +228,7 @@ class CSVImporter:
             if self.model == Part and field.name in ["siccrf_must_be_monitored", "siccrf_is_useful"]:
                 continue
             # le nom des colonnes contenant les clés étrangères ne sont pas préfixées par le nom de la table
-            prefixed = not (isinstance(field, (ForeignKey, ManyToManyField)) or field.name == "status")
+            prefixed = not (isinstance(field, (ForeignKey, ManyToManyField)) or field.name == "siccrf_status")
             try:
                 column_name = self._get_column_name(field.name, prefixed=prefixed)
                 django_fields_to_column_names[field] = column_name
@@ -248,7 +249,10 @@ class CSVImporter:
             raise NameError(f"{csv_field_names} n'est pas disponible.")
         return csv_field_name
 
-    def import_csv(self):
+    def import_csv(self, export_date=datetime.datetime.today()):
+        # definition du message de modification pour simple-history
+        output_date = export_date.strftime("%d/%m/%Y")
+        change_message = f"Intégration des données TELEICARE du {output_date}: {self.filename}."
         for row in self.reader:
             object_definition = {}
             for field, column_name in self.django_fields_to_csv_column_mapping.items():
@@ -263,7 +267,7 @@ class CSVImporter:
                     try:
                         linked_model = self.linked_models[column_name]
                         object_definition[field.name] = get_update_or_create_related_object(
-                            linked_model, foreign_key_id, self.filename
+                            linked_model, foreign_key_id, change_message
                         )
                     except KeyError as e:
                         if not column_name.endswith("IDENT"):
@@ -280,7 +284,7 @@ class CSVImporter:
                     else {"siccrf_is_useful": True}
                 )
                 object_with_history, created = update_or_create_object(
-                    self.model, object_definition, default_extra_fields, f"Import csv {self.filename}."
+                    self.model, object_definition, default_extra_fields, change_message
                 )
             else:
                 if self.is_relation:
@@ -302,7 +306,7 @@ class CSVImporter:
                         self.model,
                         object_definition={"siccrf_id": row.get(self.primary_key_label)},
                         default_extra_fields=object_definition,
-                        change_message=f"Import csv {self.filename}.",
+                        change_message=change_message,
                     )
 
             self.nb_objects_created += created
@@ -310,7 +314,7 @@ class CSVImporter:
         return list(self.linked_models.values())
 
 
-def import_csv_from_filepath(csv_filepath):
+def import_csv_from_filepath(csv_filepath, export_date):
     """Cette fonction utilise la classe CSVImporter en devinant d'abord :
     * si le fichier importé représente une relation
     * le modèle de sortie
@@ -326,7 +330,7 @@ def import_csv_from_filepath(csv_filepath):
     with open(csv_filepath, mode="rb") as csv_file:
         csv_importer = CSVImporter(csv_file, model, is_relation=is_relation)
         logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} en cours.")
-        updated_models = csv_importer.import_csv()
+        updated_models = csv_importer.import_csv(export_date)
         logger.info(
             f"Import de {csv_filename} dans le modèle {model.__name__} terminé : {csv_importer.nb_line_in_success} objets importés, {csv_importer.nb_objects_created} objets créés."
         )

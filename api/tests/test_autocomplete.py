@@ -106,13 +106,13 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "ephedra"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        authorized_substance = SubstanceFactory.create(ca_name="Vitamine C", status=IngredientStatus.AUTHORIZED)
+        authorized_substance = SubstanceFactory.create(ca_name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED)
         SubstanceSynonymFactory.create(name="Ephedra", standard_name=authorized_substance)
 
-        forbidden_plant = PlantFactory.create(ca_name="Ephedra", status=IngredientStatus.NOT_AUTHORIZED)
+        forbidden_plant = PlantFactory.create(ca_name="Ephedra", siccrf_status=IngredientStatus.NOT_AUTHORIZED)
 
         to_be_authorized_plant = PlantFactory.create(
-            ca_name="Ephedralite", status=IngredientStatus.AUTHORIZED, to_be_entered_in_next_decree=True
+            ca_name="Ephedralite", siccrf_status=IngredientStatus.AUTHORIZED, to_be_entered_in_next_decree=True
         )
 
         response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})

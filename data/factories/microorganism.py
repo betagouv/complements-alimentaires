@@ -18,7 +18,7 @@ class MicroorganismFactory(factory.django.DjangoModelFactory):
     ca_genus = factory.Faker("text", max_nb_chars=20)
     siccrf_species = factory.Faker("text", max_nb_chars=20)
     ca_species = factory.Faker("text", max_nb_chars=20)
-    status = IngredientStatus.AUTHORIZED
+    siccrf_status = IngredientStatus.AUTHORIZED
     to_be_entered_in_next_decree = False
 
     @factory.post_generation

@@ -1,7 +1,9 @@
 from rest_framework import serializers
-from data.models import Microorganism, MicroorganismSynonym, IngredientStatus
-from api.utils.choice_field import GoodReprChoiceField
 
+from api.utils.choice_field import GoodReprChoiceField
+from data.models import IngredientStatus, Microorganism, MicroorganismSynonym
+
+from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
 
 
@@ -19,6 +21,7 @@ class MicroorganismSerializer(serializers.ModelSerializer):
     synonyms = MicroorganismSynonymSerializer(many=True, read_only=True, source="microorganismsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
+    history = HistoricalRecordField(read_only=True)
 
     class Meta:
         model = Microorganism
@@ -31,5 +34,6 @@ class MicroorganismSerializer(serializers.ModelSerializer):
             "substances",
             "public_comments",
             "status",
+            "history",
         )
         read_only_fields = fields

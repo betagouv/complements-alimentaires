@@ -66,6 +66,7 @@ class Microorganism(CommonModel, WithComments, WithStatus):
             "genus",
             "species",
             "status",
+            "siccrf_status",
         ],
     )
 

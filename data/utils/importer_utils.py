@@ -8,6 +8,8 @@ from django.db.models import (
 from simple_history.exceptions import NotHistoricalModelError
 from simple_history.utils import update_change_reason
 
+from data.models.ingredient_status import IngredientStatus
+
 
 def pre_import_treatments(field, value):
     """
@@ -17,8 +19,11 @@ def pre_import_treatments(field, value):
     * transformation de valeurs en d'autres valeurs
     """
 
-    if field.name == "status":
-        new_fields = {field.name: convert_status(clean_value(value, field))}
+    if field.name == "siccrf_status":
+        new_fields = {
+            "siccrf_status": clean_value(value, field),
+            "ca_status": convert_status(clean_value(value, field)),
+        }
         # si le status SICCRF correspond à "à inscrire"
         if int(value) == 3:
             new_fields["to_be_entered_in_next_decree"] = 1
@@ -31,21 +36,21 @@ def convert_status(value: int) -> int:
     """
     Converti les statuts SICCRF en statuts Compl'Alim
     * à inscrire sera calculé automatiquement à partir de la date d'entrée en base de l'ingrédient
-    * sans objet apparaît comme autorisé, car non reliée à une quelconque règlementation
     """
     match int(value):
         # autorisé
         case 1:
-            return 1
+            return IngredientStatus.AUTHORIZED
         # non autorisé
         case 2:
-            return 2
+            return IngredientStatus.NOT_AUTHORIZED
         # à inscrire
         case 3:
-            return 1
+            return IngredientStatus.AUTHORIZED
         # sans objet
+        # ne retourne pas None car cela reviendrait à chercher la valeur 2 dans les GeneratedField avec Coalesce.
         case 4:
-            return None
+            return IngredientStatus.NO_STATUS
 
 
 def clean_value(value, field):
@@ -68,7 +73,10 @@ def clean_value(value, field):
             return None
         return value
     elif isinstance(field, (TextField, CharField)):
-        return value.strip()
+        if value is None:
+            return ""
+        else:
+            return value.strip()
     return value
 
 
@@ -81,7 +89,7 @@ def update_or_create_object(model, object_definition, default_extra_fields, chan
     return model_object, created
 
 
-def get_update_or_create_related_object(model, id, csv_filename):
+def get_update_or_create_related_object(model, id, change_message):
     """
     Indépendamment de l'ordre dans lequel les fichiers sont importés,
     les objets sont créés avec seulement leur id s'ils existent dans un fichier relation
@@ -95,6 +103,6 @@ def get_update_or_create_related_object(model, id, csv_filename):
             model,
             object_definition={"siccrf_id": id},
             default_extra_fields={"name": ""},
-            change_message=f"Import csv {csv_filename}.",
+            change_message=change_message,
         )
         return linked_obj

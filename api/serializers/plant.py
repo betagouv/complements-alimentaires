@@ -3,6 +3,7 @@ from rest_framework import serializers
 from api.utils.choice_field import GoodReprChoiceField
 from data.models import IngredientStatus, Part, Plant, PlantFamily, PlantPart, PlantSynonym
 
+from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
 
 
@@ -54,6 +55,7 @@ class PlantSerializer(serializers.ModelSerializer):
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
+    history = HistoricalRecordField(read_only=True)
 
     class Meta:
         model = Plant
@@ -66,5 +68,6 @@ class PlantSerializer(serializers.ModelSerializer):
             "substances",
             "public_comments",
             "status",
+            "history",
         )
         read_only_fields = fields

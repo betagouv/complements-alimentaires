@@ -19,7 +19,15 @@ class Ingredient(CommonModel, WithComments, WithStatus):
     siccrf_description = models.TextField(blank=True)
     substances = models.ManyToManyField(Substance, through="IngredientSubstanceRelation")
     history = HistoricalRecords(
-        inherit=True, excluded_fields=["name", "is_obsolete", "private_comments", "public_comments", "status"]
+        inherit=True,
+        excluded_fields=[
+            "name",
+            "is_obsolete",
+            "private_comments",
+            "public_comments",
+            "status",
+            "siccrf_status",
+        ],
     )
 
     @property

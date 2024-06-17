@@ -28,7 +28,7 @@ class WithDefaultFields(models.Model):
         verbose_name="id dans les tables et tables relationnelles SICCRF",
     )
     siccrf_name = models.TextField(editable=False, verbose_name="nom SICCRF")
-    ca_name = models.TextField(verbose_name="nom CA")
+    ca_name = models.TextField(blank=True, verbose_name="nom CA")
     name = models.GeneratedField(
         expression=Coalesce(NullIf(F("ca_name"), Value("")), F("siccrf_name")),
         output_field=models.TextField(verbose_name="nom"),

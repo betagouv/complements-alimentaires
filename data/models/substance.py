@@ -16,6 +16,7 @@ class Substance(CommonModel, WithComments, WithStatus):
     """
     siccrf_min_quantity présente dans les tables SICCRF n'est strictement jamais remplie, donc pas transformée en champ du modèle
     siccrf_source_en présente dans les tables SICCRF est très peu remplie, donc pas transformée en champ du modèle
+    TODO: à terme cette table de substance ne devrait contenir que les substances à but nutritionnel ou physiologique (pas les enzymes, etc)
     """
 
     class Meta:
@@ -113,6 +114,7 @@ class Substance(CommonModel, WithComments, WithStatus):
             "max_quantity",
             "nutritional_reference",
             "status",
+            "siccrf_status",
         ],
     )
 
