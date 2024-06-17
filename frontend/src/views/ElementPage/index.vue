@@ -84,7 +84,7 @@
         :expanded-id="expandedId"
         @expand="(id) => (expandedId = id)"
       >
-        <DsfrTable :rows="historyData"></DsfrTable>
+        <DsfrTable :rows="historyDataDedup"></DsfrTable>
       </DsfrAccordion>
     </div>
 
@@ -149,14 +149,16 @@ const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
 
 const historyData = computed(() =>
-  element.value?.history.map((item) => [
-    new Date(item.historyDate).toLocaleString("default", { month: "long", year: "numeric" }),
-    item.historyChangeReason || "",
-  ])
+  element.value?.history
+    .filter((item) => item.historyChangeReason)
+    .map((item) => [
+      new Date(item.historyDate).toLocaleString("default", { month: "long", year: "numeric" }),
+      item.historyChangeReason,
+    ])
 )
+// Deduplication en passant par une string
+const historyDataDedup = computed(() => Array.from(new Set(historyData.value.map(JSON.stringify)), JSON.parse))
 
-// TODO: deduplication
-// TODO: enlarge
 // TODO: remove background
 // TODO: affichage du change reason dans l'admin
 
