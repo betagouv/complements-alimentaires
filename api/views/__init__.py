@@ -52,3 +52,4 @@ from .solicitation import (
     CollaborationInvitationListView,
     AddNewCollaboratorView,
 )
+from .snapshot import DeclarationSnapshotListView

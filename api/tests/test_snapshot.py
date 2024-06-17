@@ -6,6 +6,7 @@ from rest_framework.test import APITestCase
 from data.factories import (
     DeclarantRoleFactory,
     InstructionReadyDeclarationFactory,
+    InstructionRoleFactory,
 )
 
 from .utils import authenticate
@@ -37,3 +38,37 @@ class TestSnapshotApi(APITestCase):
         declaration.name = "new name"
         declaration.save()
         self.assertEqual(declaration.snapshots.count(), 1)
+
+    @authenticate
+    def test_snapshot_list_view(self):
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        # Une déclaration avec toutes les conditions nécessaires pour l'instruction
+        declaration = InstructionReadyDeclarationFactory(author=authenticate.user, company=company)
+        payload = {"comment": "Voici notre nouveau produit"}
+        self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), payload, format="json")
+        declaration.refresh_from_db()
+        snapshot = declaration.snapshots.first()
+
+        # On obtient les snapshots liés à cette déclaration
+
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+        self.assertEqual(len(body), 1)
+        self.assertEqual(body[0]["id"], snapshot.id)
+        self.assertEqual(body[0]["comment"], snapshot.comment)
+
+    @authenticate
+    def test_snapshot_list_view_unauthorized(self):
+        declaration = InstructionReadyDeclarationFactory()
+
+        # L'endpoint est seulement disponible pour l'auteur de la déclaration ou pour une
+        # personne ayant le rôle d'instruction
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        InstructionRoleFactory(user=authenticate.user)
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
