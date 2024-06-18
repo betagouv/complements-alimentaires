@@ -8,7 +8,6 @@
         <h1>Tester ma composition de compléments alimentaires</h1>
         <p>Vérifier la conformité de vos ingrédients en amont de vos développements produits.</p>
         <ElementAutocomplete
-          :options="autocompleteResults"
           autocomplete="nothing"
           class="max-w-md grow"
           hint="Tapez au moins trois caractères pour démarrer la recherche"
