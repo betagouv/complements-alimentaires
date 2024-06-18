@@ -14,7 +14,7 @@
     <div v-else>
       <DsfrAlert
         class="mb-4"
-        v-if="isAwaitingInstruction"
+        v-if="isAwaitingInstruction && !declaration.instructor"
         type="info"
         title="Cette déclaration n'est pas encore assignée"
       >
@@ -57,6 +57,7 @@
 
 <script setup>
 import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
 import { onMounted, computed, ref, nextTick } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
@@ -69,6 +70,7 @@ import { headers } from "@/utils/data-fetching"
 import { statusProps } from "@/utils/mappings"
 
 const store = useRootStore()
+const { loggedUser } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 const $externalResults = ref({})
 const tabs = ref(null) // Corresponds to the template ref (https://vuejs.org/guide/essentials/template-refs.html#accessing-the-refs)
@@ -107,6 +109,12 @@ const {
 onMounted(async () => {
   await executeDeclarationFetch()
   handleError(declarationResponse)
+
+  // Si on arrive à cette page avec une déclaration déjà assignée à quelqun.e mais en état
+  // AWAITING_INSTRUCTION, on la passe directement à ONGOING_INSTRUCTION.
+  if (declaration.value?.instructor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_INSTRUCTION")
+    await instructDeclaration()
+
   await executeDeclarantFetch()
   handleError(declarantResponse)
   await executeCompanyFetch()
@@ -132,10 +140,15 @@ const selectTab = (index) => {
   selectedTabIndex.value = index
 }
 
-const instructDeclaration = async () => {
+const takeDeclaration = async () => {
   const url = `/api/v1/declarations/${props.declarationId}/take-for-instruction/`
   const { response } = await useFetch(url, { headers: headers() }).post({}).json()
   $externalResults.value = await handleError(response)
+  return response
+}
+
+const instructDeclaration = async () => {
+  const response = await takeDeclaration()
 
   if (response.value.ok) {
     await executeDeclarationFetch()
