@@ -14,7 +14,7 @@ from .effect import Effect
 from .galenic_formulation import GalenicFormulation
 from .unit import SubstanceUnit
 from .ingredient_status import IngredientStatus
-from .global_roles import InstructionRole
+from .global_roles import InstructionRole, VisaRole
 from .declaration import (
     Declaration,
     DeclaredPlant,
