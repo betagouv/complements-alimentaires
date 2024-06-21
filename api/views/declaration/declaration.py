@@ -99,7 +99,7 @@ class GenericDeclarationsListView(ListAPIView):
     filterset_class = DeclarationFilterSet
 
 
-class AllDeclarationsListView(GenericDeclarationsListView):
+class OngoingDeclarationsListView(GenericDeclarationsListView):
     serializer_class = SimpleDeclarationSerializer
     permission_classes = [IsInstructor]
     ordering_fields = ["creation_date", "modification_date", "name"]

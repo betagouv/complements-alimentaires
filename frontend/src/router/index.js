@@ -24,7 +24,7 @@ import UserAccountPage from "@/views/UserAccountPage"
 import VerificationSentPage from "@/views/VerificationSentPage"
 import DeclarationsHomePage from "@/views/DeclarationsHomePage"
 import CollaboratorsPage from "@/views/CollaboratorsPage"
-import AllDeclarationsPage from "@/views/AllDeclarationsPage"
+import InstructionDeclarationsPage from "@/views/InstructionDeclarationsPage"
 import InstructionPage from "@/views/InstructionPage"
 import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
 import A11yPage from "@/views/A11yPage.vue"
@@ -235,11 +235,11 @@ const routes = [
     },
   },
   {
-    path: "/toutes-les-declarations",
-    name: "AllDeclarations",
-    component: AllDeclarationsPage,
+    path: "/instruction",
+    name: "InstructionDeclarations",
+    component: InstructionDeclarationsPage,
     meta: {
-      title: "Toutes les déclarations",
+      title: "Instruction",
       requiredRole: "InstructionRole",
       authenticationRequired: true,
       defaultQueryParams: {

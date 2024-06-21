@@ -4,7 +4,7 @@
       class="mb-8"
       :links="[
         { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { to: { name: 'AllDeclarations' }, text: 'Toutes les déclarations' },
+        { to: { name: 'InstructionDeclarations' }, text: 'Instruction' },
         { text: 'Instruction' },
       ]"
     />

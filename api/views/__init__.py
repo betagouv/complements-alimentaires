@@ -6,7 +6,7 @@ from .declaration.declaration import (
     UserDeclarationsListCreateApiView,
     DeclarationRetrieveUpdateView,
     DeclarationSubmitView,
-    AllDeclarationsListView,
+    OngoingDeclarationsListView,
     CompanyDeclarationsListView,
     DeclarationTakeView,
     DeclarationObserveView,
