@@ -140,15 +140,10 @@ const selectTab = (index) => {
   selectedTabIndex.value = index
 }
 
-const takeDeclaration = async () => {
+const instructDeclaration = async () => {
   const url = `/api/v1/declarations/${props.declarationId}/take-for-instruction/`
   const { response } = await useFetch(url, { headers: headers() }).post({}).json()
   $externalResults.value = await handleError(response)
-  return response
-}
-
-const instructDeclaration = async () => {
-  const response = await takeDeclaration()
 
   if (response.value.ok) {
     await executeDeclarationFetch()
