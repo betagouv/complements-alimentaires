@@ -250,6 +250,7 @@ class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
 
 
 class SimpleDeclarationSerializer(serializers.ModelSerializer):
+    instructor = SimpleUserSerializer(read_only=True, source="instructor.user")
     author = SimpleUserSerializer(read_only=True)
     company = SimpleCompanySerializer(read_only=True)
 
@@ -266,11 +267,13 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
             "description",
             "modification_date",
             "creation_date",
+            "instructor",
         )
         read_only_fields = fields
 
 
 class DeclarationSerializer(serializers.ModelSerializer):
+    instructor = SimpleUserSerializer(read_only=True, source="instructor.user")
     author = serializers.PrimaryKeyRelatedField(read_only=True, allow_null=True)
     company = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all(), allow_null=True)
     unit_measurement = serializers.PrimaryKeyRelatedField(
@@ -330,11 +333,13 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "computed_substances",
             "attachments",
             "other_effects",
+            "instructor",
         )
         read_only_fields = (
             "id",
             "status",
             "author",
+            "instructor",
         )
 
     def create(self, validated_data):

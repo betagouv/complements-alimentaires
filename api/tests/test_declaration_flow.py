@@ -198,7 +198,7 @@ class TestDeclarationFlow(APITestCase):
     @authenticate
     def test_resubmit_declaration(self):
         """
-        Passage du OBSERVATION -> ONGOING_INSTRUCTION
+        Passage du OBSERVATION -> AWAITING_INSTRUCTION
         """
         company = CompanyFactory()
         declarant = DeclarantRoleFactory(user=authenticate.user, company=company)
@@ -208,12 +208,12 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         declaration.refresh_from_db()
-        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
 
     @authenticate
     def test_resubmit_declaration_unauthorized(self):
         """
-        Passage du OBSERVATION -> ONGOING_INSTRUCTION
+        Passage du OBSERVATION -> AWAITING_INSTRUCTION
         Seulement possible pour l'auteur de la déclaration
         """
         declaration = ObservationDeclarationFactory()
@@ -224,7 +224,7 @@ class TestDeclarationFlow(APITestCase):
 
     def test_resubmit_declaration_unauthenticated(self):
         """
-        Passage du OBSERVATION -> ONGOING_INSTRUCTION
+        Passage du OBSERVATION -> AWAITING_INSTRUCTION
         Pas possible pour personnes non-authentifiées
         """
         declaration = ObservationDeclarationFactory()
