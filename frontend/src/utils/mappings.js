@@ -21,7 +21,7 @@ export const getApiType = (type) => (type === "form_of_supply" ? "forms-of-suppl
 export const typesMapping = {
   plant: "Plante",
   microorganism: "Micro-organisme",
-  form_of_supply: "Forme d'apport",
+  form_of_supply: "Forme d'apport", // nutrient: "Nutriment"
   aroma: "Arôme",
   additive: "Additif",
   active_ingredient: "Ingredient actif",
