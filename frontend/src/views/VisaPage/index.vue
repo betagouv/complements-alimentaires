@@ -19,7 +19,7 @@
         title="Cette déclaration n'est pas encore assignée pour validation"
       >
         <p>Vous pouvez vous assigner cette déclaration pour visa / signature</p>
-        <DsfrButton class="mt-2" label="Instruire" tertiary @click="validateDeclaration" />
+        <DsfrButton class="mt-2" label="Valider" tertiary @click="validateDeclaration" />
       </DsfrAlert>
       <DeclarationAlert class="mb-4" v-else-if="!canInstruct" :status="declaration.status" />
       <div v-if="declaration">
