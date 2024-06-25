@@ -222,7 +222,6 @@
 </template>
 <script setup>
 import { computed, watch, ref } from "vue"
-import { defineModel } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useVuelidate } from "@vuelidate/core"

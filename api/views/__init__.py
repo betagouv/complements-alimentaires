@@ -12,6 +12,10 @@ from .declaration.declaration import (
     DeclarationObserveView,
     DeclarationAuthorizeView,
     DeclarationResubmitView,
+    DeclarationObserveWithVisa,
+    DeclarationObjectWithVisa,
+    DeclarationRejectWithVisa,
+    DeclarationAuthorizeWithVisa,
 )
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView

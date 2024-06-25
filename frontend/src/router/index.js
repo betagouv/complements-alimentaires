@@ -26,6 +26,8 @@ import DeclarationsHomePage from "@/views/DeclarationsHomePage"
 import CollaboratorsPage from "@/views/CollaboratorsPage"
 import InstructionDeclarationsPage from "@/views/InstructionDeclarationsPage"
 import InstructionPage from "@/views/InstructionPage"
+import VisaDeclarationsPage from "@/views/VisaDeclarationsPage"
+import VisaPage from "@/views/VisaPage"
 import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
 import A11yPage from "@/views/A11yPage.vue"
 
@@ -258,6 +260,33 @@ const routes = [
     meta: {
       title: "Instruction",
       requiredRole: "InstructionRole",
+      authenticationRequired: true,
+    },
+  },
+  {
+    path: "/visa",
+    name: "VisaDeclarations",
+    component: VisaDeclarationsPage,
+    meta: {
+      title: "Visa",
+      requiredRole: "VisaRole",
+      authenticationRequired: true,
+      defaultQueryParams: {
+        page: 1,
+        status: "",
+        entrepriseDe: "",
+        entrepriseA: "",
+      },
+    },
+  },
+  {
+    path: "/visa/:declarationId",
+    props: true,
+    name: "VisaPage",
+    component: VisaPage,
+    meta: {
+      title: "Visa",
+      requiredRole: "VisaRole",
       authenticationRequired: true,
     },
   },

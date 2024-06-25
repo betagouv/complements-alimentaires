@@ -20,6 +20,7 @@ from data.models import (
     Population,
     Substance,
     SubstanceUnit,
+    VisaRole,
 )
 
 
@@ -31,9 +32,13 @@ class Declaration(Historisable, TimeStampable):
         DRAFT = "DRAFT", "Brouillon"
         AWAITING_INSTRUCTION = "AWAITING_INSTRUCTION", "En attente d'instruction"
         ONGOING_INSTRUCTION = "ONGOING_INSTRUCTION", "Instruction en cours"
+        AWAITING_VISA = "AWAITING_VISA", "En attente de visa"
+        ONGOING_VISA = "ONGOING_VISA", "Visa en cours"
+        OBJECTION = "OBJECTION", "En objection"
         OBSERVATION = "OBSERVATION", "En observation"
         ABANDONED = "ABANDONED", "Abandonnée"
         AUTHORIZED = "AUTHORIZED", "Autorisée"
+        REJECTED = "REJECTED", "Refusée"
 
     class RejectionReason(models.TextChoices):
         MISSING_DATA = "MISSING_DATA", "Le dossier manque des données nécessaires"
@@ -41,6 +46,12 @@ class Declaration(Historisable, TimeStampable):
         INCOMPATIBLE_RECOMMENDATIONS = "INCOMPATIBLE_RECOMMENDATIONS", "Recommandations d'emploi incompatibles"
 
     status = models.CharField(
+        max_length=50,
+        choices=DeclarationStatus.choices,
+        default=DeclarationStatus.DRAFT,
+        verbose_name="status",
+    )
+    post_validation_status = models.CharField(
         max_length=50,
         choices=DeclarationStatus.choices,
         default=DeclarationStatus.DRAFT,
@@ -62,6 +73,15 @@ class Declaration(Historisable, TimeStampable):
         verbose_name="instructeur",
         related_name="declarations",
     )
+    visor = models.ForeignKey(
+        VisaRole,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name="visor",
+        related_name="declarations",
+    )
+
     private_notes = models.TextField("notes à destination de l'administration", blank=True, default="")
     company = models.ForeignKey(
         Company, null=True, on_delete=models.SET_NULL, verbose_name="entreprise", related_name="declarations"

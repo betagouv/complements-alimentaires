@@ -128,6 +128,22 @@ urlpatterns = {
         views.DeclarationResubmitView.as_view(),
         name="resubmit_declaration",
     ),
+    path(
+        "declarations/<int:pk>/observe-with-visa/",
+        views.DeclarationObserveWithVisa.as_view(),
+        name="observe_with_visa",
+    ),
+    path(
+        "declarations/<int:pk>/object-with-visa/", views.DeclarationObjectWithVisa.as_view(), name="object_with_visa"
+    ),
+    path(
+        "declarations/<int:pk>/reject-with-visa/", views.DeclarationRejectWithVisa.as_view(), name="reject_with_visa"
+    ),
+    path(
+        "declarations/<int:pk>/authorize-with-visa/",
+        views.DeclarationAuthorizeWithVisa.as_view(),
+        name="authorize_with_visa",
+    ),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

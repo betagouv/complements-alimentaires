@@ -210,3 +210,40 @@ class DeclarationResubmitView(DeclarationFlowView):
     permission_classes = [IsDeclarationAuthor, IsDeclarant]
     transition = "resubmit"
     create_snapshot = True
+
+
+# Nous utilisons une Non-deterministic state machine. Lors qu'un.e instructeur.ice demande une
+# visa, nous assignnos la déclaration à `AWAITING_VISA` et ajoutons un propriété dans le modèle
+# spécifiant quel sera le status à assigner après le flow de validation.
+class VisaRequestFlowView(DeclarationFlowView):
+    """
+    ONGOING_INSTRUCTION -> AWAITING_VISA
+    Cette view doit être sous-classée. Elle assigne le `post_validation_status`
+    spécifié. Les sous-classes doivent donc déclarer cette propriété.
+    """
+
+    permission_classes = [IsInstructor]
+    transition = "request_visa"
+    post_validation_status = None
+
+    def on_transition_success(self, request, declaration):
+        if not self.post_validation_status:
+            raise Exception("VisaRequestFlowView doit être sous-classée et doit spécifier le post_validation_status")
+        declaration.post_validation_status = self.post_validation_status
+        return super().on_transition_success(request, declaration)
+
+
+class DeclarationObserveWithVisa(VisaRequestFlowView):
+    post_validation_status = Declaration.DeclarationStatus.OBSERVATION
+
+
+class DeclarationObjectWithVisa(VisaRequestFlowView):
+    post_validation_status = Declaration.DeclarationStatus.OBJECTION
+
+
+class DeclarationRejectWithVisa(VisaRequestFlowView):
+    post_validation_status = Declaration.DeclarationStatus.REJECTED
+
+
+class DeclarationAuthorizeWithVisa(VisaRequestFlowView):
+    post_validation_status = Declaration.DeclarationStatus.AUTHORIZED

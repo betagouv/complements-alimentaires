@@ -2,9 +2,9 @@
   <div class="fr-container">
     <DsfrBreadcrumb
       class="mb-8"
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Déclarations pour instruction' }]"
+      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Visa / Signature' }]"
     />
-    <div class="border px-4 mb-2 sm:flex gap-8 items-baseline filters">
+    <div class="border px-4 pb-4 mb-2 sm:flex gap-8 items-baseline filters">
       <DsfrInputGroup>
         <DsfrSelect
           :modelValue="filteredStatus"
@@ -13,34 +13,12 @@
           @update:modelValue="updateStatusFilter"
         />
       </DsfrInputGroup>
-      <DsfrFieldset legend="Nom d'entreprise" class="!mb-0">
-        <div class="flex gap-4">
-          <DsfrInputGroup>
-            <DsfrInput
-              class="max-w-28"
-              label="De :"
-              :modelValue="companyNameStart"
-              label-visible
-              @update:modelValue="updateCompanyNameStartFilter"
-            />
-          </DsfrInputGroup>
-          <DsfrInputGroup>
-            <DsfrInput
-              class="max-w-28"
-              label="À :"
-              :modelValue="companyNameEnd"
-              label-visible
-              @update:modelValue="updateCompanyNameEndFilter"
-            />
-          </DsfrInputGroup>
-        </div>
-      </DsfrFieldset>
     </div>
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
     <div v-else-if="hasDeclarations">
-      <InstructionDeclarationsTable :data="data" />
+      <VisaDeclarationsTable :data="data" />
     </div>
     <p v-else class="mb-8">Il n'y a pas encore de déclarations.</p>
     <DsfrPagination
@@ -58,10 +36,9 @@ import { useFetch } from "@vueuse/core"
 import { computed, watch } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
-import InstructionDeclarationsTable from "./InstructionDeclarationsTable"
+import VisaDeclarationsTable from "./VisaDeclarationsTable"
 import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
-import { DsfrInput } from "@gouvminint/vue-dsfr"
 import { statusFilterOptions } from "@/utils/mappings"
 
 const router = useRouter()
@@ -77,20 +54,16 @@ const pages = computed(() => getPagesForPagination(data.value.count, limit, rout
 // Valeurs obtenus du queryparams
 const page = computed(() => parseInt(route.query.page))
 const filteredStatus = computed(() => route.query.status)
-const companyNameStart = computed(() => route.query.entrepriseDe)
-const companyNameEnd = computed(() => route.query.entrepriseA)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 
 const updateStatusFilter = (status) => updateQuery({ status })
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
-const updateCompanyNameStartFilter = (newValue) => updateQuery({ entrepriseDe: newValue })
-const updateCompanyNameEndFilter = (newValue) => updateQuery({ entrepriseA: newValue })
 
 // Obtention de la donnée via API
 const url = computed(
   () =>
-    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&company_name_start=${companyNameStart.value}&company_name_end=${companyNameEnd.value}&ordering=-modificationDate`
+    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&ordering=-modificationDate`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -98,7 +71,7 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
-watch([page, filteredStatus, companyNameStart, companyNameEnd], fetchSearchResults)
+watch([page, filteredStatus], fetchSearchResults)
 </script>
 
 <style scoped>

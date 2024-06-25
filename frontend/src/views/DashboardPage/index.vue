@@ -76,11 +76,6 @@ const supervisorActions = computed(() => [
     description: "Consultez et mettez à jour les données de votre entreprise",
     link: { name: "CompanyPage", params: { id: company.value?.id } },
   },
-  {
-    title: "Nouvelle entreprise",
-    description: "Créez ou rejoignez une nouvelle entreprise",
-    link: { name: "CompanyFormPage" },
-  },
 ])
 
 const declarantActions = [
@@ -108,6 +103,7 @@ const visorActions = [
   {
     title: "Déclarations à viser",
     description: "Consultez la liste des déclarations attendant une validation",
+    link: { name: "VisaDeclarations" },
   },
 ]
 
@@ -128,6 +124,11 @@ const userActions = [
     title: "Mes informations personnelles",
     description: "Consultez et mettez à jour vos informations personnelles",
     link: { name: "UserAccountPage" },
+  },
+  {
+    title: "Nouvelle entreprise",
+    description: "Créez ou rejoignez une nouvelle entreprise",
+    link: { name: "CompanyFormPage" },
   },
 ]
 </script>
