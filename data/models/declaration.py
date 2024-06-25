@@ -53,6 +53,7 @@ class Declaration(Historisable, TimeStampable):
     )
     post_validation_status = models.CharField(
         max_length=50,
+        blank=True,
         choices=DeclarationStatus.choices,
         default=DeclarationStatus.DRAFT,
         verbose_name="status",
