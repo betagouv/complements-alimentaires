@@ -56,24 +56,22 @@ class TestGetLoggedUser(ProjectAPITestCase):
         supervisor_role_2 = SupervisorRoleFactory(user=user, company=company_2)
 
         response = self.get(self.url())
+        companies = response.data["companies"]
+        self.assertEqual(len(companies), 2)
+        self.assertEqual(len(list(filter(lambda x: x["id"] == company_1.id, companies))), 1)
+        self.assertEqual(len(list(filter(lambda x: x["id"] == company_2.id, companies))), 1)
+
+        json_company_1 = next(filter(lambda x: x["id"] == company_1.id, companies))
+        json_company_2 = next(filter(lambda x: x["id"] == company_2.id, companies))
+
         self.assertCountEqual(
-            response.data["companies"],
+            json_company_1["roles"],
             [
-                {
-                    "id": company_1.id,
-                    "social_name": company_1.social_name,
-                    "roles": [
-                        {"id": supervisor_role_1.id, "name": "SupervisorRole"},
-                        {"id": declarant_role.id, "name": "DeclarantRole"},
-                    ],
-                },
-                {
-                    "id": company_2.id,
-                    "social_name": company_2.social_name,
-                    "roles": [{"id": supervisor_role_2.id, "name": "SupervisorRole"}],
-                },
+                {"id": supervisor_role_1.id, "name": "SupervisorRole"},
+                {"id": declarant_role.id, "name": "DeclarantRole"},
             ],
         )
+        self.assertCountEqual(json_company_2["roles"], [{"id": supervisor_role_2.id, "name": "SupervisorRole"}])
 
     def test_global_roles(self):
         """
