@@ -131,6 +131,17 @@ class DeclarationFlowView(GenericAPIView):
         """
         pass
 
+    def perform_snapshot_creation(self, request, declaration):
+        """
+        Possible de le surcharger si la création du snapshot nécessite un
+        traitement spécial
+        """
+        declaration.create_snapshot(
+            user=request.user,
+            comment=request.data.get("comment", ""),
+            expiration_days=request.data.get("expiration"),
+        )
+
     def post(self, request, *args, **kwargs):
         declaration = self.get_object()
         flow = DeclarationFlow(declaration)
@@ -139,13 +150,9 @@ class DeclarationFlowView(GenericAPIView):
         if flow_permission_method and not flow_permission_method(request.user):
             raise PermissionDenied()
         transition_method()
-        if self.create_snapshot:
-            declaration.create_snapshot(
-                user=request.user,
-                comment=request.data.get("comment", ""),
-                expiration_days=request.data.get("expiration"),
-            )
         self.on_transition_success(request, declaration)
+        if self.create_snapshot:
+            self.perform_snapshot_creation(request, declaration)
         declaration.save()
         serializer = self.get_serializer(declaration)
         return Response(serializer.data)
@@ -225,6 +232,17 @@ class VisaRequestFlowView(DeclarationFlowView):
     permission_classes = [IsInstructor]
     transition = "request_visa"
     post_validation_status = None
+    create_snapshot = True
+
+    def perform_snapshot_creation(self, request, declaration):
+        """
+        Dans le cas d'une requête de validation, on ne mettra pas le commentaire à
+        destination du producteur dans le snapshot créé. On le met dans le modèle pour
+        pouvoir l'envoyer au producteur si la décision est acceptée par la viseuse.
+        """
+        declaration.post_validation_producer_message = request.data.get("comment", "")
+        declaration.post_validation_expiration_days = request.data.get("expiration")
+        declaration.create_snapshot(user=request.user)
 
     def on_transition_success(self, request, declaration):
         if not self.post_validation_status:

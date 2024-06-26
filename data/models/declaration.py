@@ -56,7 +56,14 @@ class Declaration(Historisable, TimeStampable):
         blank=True,
         choices=DeclarationStatus.choices,
         default=DeclarationStatus.DRAFT,
-        verbose_name="status",
+        verbose_name="status à assigner après la validation",
+    )
+    post_validation_producer_message = models.TextField(
+        blank=True,
+        verbose_name="message à envoyer au producteur après la validation",
+    )
+    post_validation_expiration_days = models.IntegerField(
+        null=True, blank=True, verbose_name="délai de réponse à assigner après la validation"
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
