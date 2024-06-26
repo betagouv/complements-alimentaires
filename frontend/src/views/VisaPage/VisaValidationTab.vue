@@ -43,15 +43,8 @@
 import { ref, computed, watch } from "vue"
 import { statusProps } from "@/utils/mappings"
 import VisaInfoLine from "./VisaInfoLine.vue"
-import { useFetch } from "@vueuse/core"
-import { headers } from "@/utils/data-fetching"
-import useToaster from "@/composables/use-toaster"
-import { handleError } from "@/utils/error-handling"
 
-const $externalResults = ref({})
 const props = defineProps({ declaration: Object })
-
-const emit = defineEmits(["reload-declaration"])
 
 const decisionCategory = ref(null)
 watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "approve" : null))
