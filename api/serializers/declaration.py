@@ -339,12 +339,18 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "instructor",
             "visor",
             "post_validation_status",
+            "post_validation_producer_message",
+            "post_validation_expiration_days",
         )
         read_only_fields = (
             "id",
             "status",
             "author",
             "instructor",
+            "visor",
+            "post_validation_status",
+            "post_validation_producer_message",
+            "post_validation_expiration_days",
         )
 
     def create(self, validated_data):

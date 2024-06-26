@@ -1,49 +1,48 @@
 <template>
   <div>
-    <div class="mb-4">
-      <DsfrInputGroup>
-        <div class="grid grid-cols-2 gap-6">
-          <DsfrRadioButton
-            v-for="category in decisionCategories"
-            :key="category.value"
-            v-model="decisionCategory"
-            :value="category.value"
-            name="decisionCategory"
-            class="col-span-2 sm:col-span-1 !mb-0"
-          >
-            <template v-slot:label>
-              <div class="font-bold">
-                <v-icon :color="category.color" :name="category.icon" aria-hidden />
-                {{ category.title }}
-              </div>
-              <p class="fr-text--sm !mb-0">
-                {{ category.description }}
-              </p>
-            </template>
-          </DsfrRadioButton>
+    <div class="mb-6">
+      <h3>Proposition à viser / signer</h3>
+      <div class="border p-2">
+        <VisaInfoLine title="Instructeur·ice" :text="instructorName" icon="ri-account-circle-line" />
+        <VisaInfoLine title="Décision" :text="postValidationStatus" icon="ri-focus-2-fill" />
+        <VisaInfoLine
+          title="Message au déclarant·e"
+          icon="ri-chat-3-line"
+          :text="declaration.postValidationProducerMessage || '< sans commentaire >'"
+        />
+        <VisaInfoLine
+          title="Délai de réponse"
+          icon="ri-time-fill"
+          :text="declaration.postValidationExpirationDays || '< non spécifié >'"
+        />
+      </div>
+    </div>
+
+    <DsfrInputGroup>
+      <DsfrInput is-textarea label-visible label="Notes de l'expert (à destination de l'administration)" />
+    </DsfrInputGroup>
+
+    <div class="grid grid-cols-2 gap-10">
+      <div class="border p-4" v-for="decision in decisionCategories" :key="decision.title">
+        <h6 class="font-bold">
+          <v-icon :color="decision.iconColor" :name="decision.icon" scale="1.2" aria-hidden class="mr-1" />
+          {{ decision.title }}
+        </h6>
+        <p class="fr-text--sm">
+          {{ decision.description }}
+        </p>
+        <div class="text-right">
+          <DsfrButton :label="decision.buttonText" @click="decision.buttonHandler" secondary />
         </div>
-      </DsfrInputGroup>
-    </div>
-    <div v-if="decisionCategory === 'modify'" class="reject-reasons">
-      <hr />
-      Nope
-    </div>
-    <div v-if="decisionCategory">
-      <hr />
-      <h3>Décision</h3>
-      <DsfrHighlight>
-        <template v-slot:default>OK va bene</template>
-      </DsfrHighlight>
-      <hr />
-      <DsfrInputGroup>
-        <DsfrInput is-textarea label-visible label="Notes de l'expert (à destination de l'administration)" />
-      </DsfrInputGroup>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch } from "vue"
+import { statusProps } from "@/utils/mappings"
+import VisaInfoLine from "./VisaInfoLine.vue"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
@@ -58,8 +57,6 @@ const decisionCategory = ref(null)
 watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "approve" : null))
 
 const proposal = ref(null)
-const delayDays = ref(30)
-const comment = ref("")
 
 const needsVisa = ref(false)
 const mandatoryVisaProposals = ["objection", "rejection"]
@@ -67,21 +64,29 @@ watch(proposal, (newProposal) => {
   if (mandatoryVisaProposals.indexOf(newProposal) > -1) needsVisa.value = true
 })
 
+const instructorName = computed(
+  () => `${props.declaration?.instructor?.firstName} ${props.declaration?.instructor?.lastName}`
+)
+const postValidationStatus = computed(() => statusProps[props.declaration.postValidationStatus].label)
 const decisionCategories = computed(() => {
   return [
     {
-      value: "approve",
-      title: "Je valide la décision",
+      title: "Je valide cette décision",
       icon: "ri-checkbox-circle-fill",
-      description: `La déclaration assignée à ${props.declaration.instructor} peut passer en état ${props.declaration.postValidationStatus}`,
-      color: "green",
+      iconColor: "green",
+      description: `Je suis d'accord pour donner mon visa et signature. La déclaration partirà en état «
+          ${postValidationStatus.value} ».`,
+      buttonText: "Valider",
+      buttonHandler: null,
     },
     {
-      value: "modify",
-      title: "Je ne suis pas d'accord avec la décision",
+      title: "Je ne suis pas d'accord",
       icon: "ri-close-circle-fill",
-      description: `La décision de ${props.declaration.instructor} n'est pas validée`,
-      color: "red",
+      iconColor: "red",
+      description: `Je ne donne pas mon visa ni signature. La déclaration repartirà en instruction chez
+          ${instructorName.value}.`,
+      buttonText: "Refuser",
+      buttonHandler: null,
     },
   ]
 })
