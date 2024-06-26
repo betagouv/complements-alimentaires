@@ -37,6 +37,10 @@ class DeclarationFlow:
     def take_for_instruction(self):
         pass
 
+    @status.transition(source=Status.AWAITING_VISA, target=Status.ONGOING_VISA)
+    def take_for_visa(self):
+        pass
+
     @status.transition(source=Status.ONGOING_INSTRUCTION, target=Status.OBSERVATION)
     def observe_no_visa(self):
         pass
