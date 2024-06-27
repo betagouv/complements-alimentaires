@@ -7,6 +7,7 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
+from unidecode import unidecode
 
 from api.permissions import (
     CanAccessIndividualDeclaration,
@@ -78,7 +79,23 @@ class DeclarationFilterSet(django_filters.FilterSet):
         return self._annotate_queryset(queryset).filter(name_unaccented_lower__gte=args[0].lower())
 
     def company_name_end__lte(self, queryset, value, *args, **kwargs):
-        return self._annotate_queryset(queryset).filter(name_unaccented_lower__lte=args[0].lower())
+        # Afin d'inclure les compagnies avec la lettre chosie on doit prendre la lettre de l'alphabet
+        # s'après. Par exemple, un filtre avec company_name_end "U" doit contenir "Umbrella corporation".
+        # "Cz" doit inclure "Czech industries"
+
+        normalized_input = unidecode(args[0].lower())
+        # Si le premier char est "z" on peut considérer qu'on n'a pas de end-filter
+        if normalized_input[0] == "z":
+            return self._annotate_queryset(queryset)
+
+        # Si le dernier char est "z" on peut l'ignorer et faire monter l'avant-dernier
+        if normalized_input[-1] == "z":
+            normalized_input = normalized_input[slice(-1)]
+        last_char = normalized_input[-1]
+        letter_order = "abcdefghijklmnopqrstuvwxyz"
+        if last_char in letter_order:
+            normalized_input = normalized_input[slice(-1)] + letter_order[letter_order.index(last_char) + 1]
+        return self._annotate_queryset(queryset).filter(name_unaccented_lower__lt=normalized_input)
 
     def _annotate_queryset(self, queryset):
         return queryset.annotate(name_unaccented_lower=Lower(Unaccent(F("company__social_name"))))
