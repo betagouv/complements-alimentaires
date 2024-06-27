@@ -17,7 +17,7 @@ import { getStatusTagForCell } from "@/utils/components"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
-const headers = ["Nom du produit", "Auteur", "État de la déclaration", "Date de création", "Date de modification"]
+const headers = ["Nom du produit", "Auteur", "État", "Date de création", "Date de modification"]
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
