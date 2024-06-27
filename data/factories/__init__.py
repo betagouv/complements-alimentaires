@@ -23,6 +23,7 @@ from .declaration import (
     OngoingInstructionDeclarationFactory,
     AwaitingInstructionDeclarationFactory,
     ObservationDeclarationFactory,
+    AwaitingVisaDeclarationFactory,
 )
 from .solicitation import CollaborationInvitationFactory, CoSupervisionClaimFactory, SupervisionClaimFactory
 from .global_roles import InstructionRoleFactory, VisaRoleFactory

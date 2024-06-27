@@ -5,12 +5,14 @@ from rest_framework.test import APITestCase
 
 from data.factories import (
     AwaitingInstructionDeclarationFactory,
+    AwaitingVisaDeclarationFactory,
     CompanyFactory,
     DeclarantRoleFactory,
     InstructionReadyDeclarationFactory,
     InstructionRoleFactory,
     ObservationDeclarationFactory,
     OngoingInstructionDeclarationFactory,
+    VisaRoleFactory,
 )
 from data.models import Declaration
 
@@ -84,7 +86,7 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
-    def test_take_declaration(self):
+    def test_take_declaration_for_instruction(self):
         """
         Passage du AWAITING_INSTRUCTION -> ONGOING_INSTRUCTION
         """
@@ -120,6 +122,44 @@ class TestDeclarationFlow(APITestCase):
         response = self.client.post(reverse("api:take_for_instruction", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+    @authenticate
+    def test_take_declaration_for_visa(self):
+        """
+        Passage du AWAITING_VISA -> ONGOING_VISA
+        """
+        visor = VisaRoleFactory(user=authenticate.user)
+        declaration = AwaitingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:take_for_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(visor, declaration.visor)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_VISA)
+
+    @authenticate
+    def test_take_declaration_for_visa_unauthorized(self):
+        """
+        Passage du AWAITING_VISA -> ONGOING_VISA
+        Seulement possible pour personnes ayant le rôle de visa
+        """
+        declaration = AwaitingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:take_for_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_VISA)
+
+    def test_take_declaration_for_visa_unauthenticated(self):
+        """
+        Passage du AWAITING_VISA -> ONGOING_VISA
+        Pas possible pour personnes non-authentifiées
+        """
+        declaration = AwaitingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:take_for_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_VISA)
 
     @authenticate
     def test_observe_declaration(self):

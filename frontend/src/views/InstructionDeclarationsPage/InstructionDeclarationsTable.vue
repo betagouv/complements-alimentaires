@@ -21,7 +21,7 @@ const { loggedUser } = storeToRefs(useRootStore())
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
-const headers = ["", "Nom du produit", "Entreprise", "État de la déclaration", "Date de modification", "Instruit par"]
+const headers = ["", "Nom du produit", "Entreprise", "État", "Date de modification", "Instruit par"]
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowAttrs: { class: needsAttention(x) ? "font-bold" : "" },

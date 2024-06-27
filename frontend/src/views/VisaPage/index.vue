@@ -19,7 +19,7 @@
         title="Cette déclaration n'est pas encore assignée pour validation"
       >
         <p>Vous pouvez vous assigner cette déclaration pour visa / signature</p>
-        <DsfrButton class="mt-2" label="Valider" tertiary @click="validateDeclaration" />
+        <DsfrButton class="mt-2" label="Prendre pour validation" tertiary @click="takeDeclaration" />
       </DsfrAlert>
       <DeclarationAlert class="mb-4" v-else-if="!canInstruct" :status="declaration.status" />
       <div v-if="declaration">
@@ -42,7 +42,7 @@
             :selected="selectedTabIndex === 3"
             :asc="asc"
           >
-            Valider cette déclaration
+            <VisaValidationTab :declaration="declaration" />
           </DsfrTabContent>
         </DsfrTabs>
       </div>
@@ -61,10 +61,13 @@ import DeclarationSummary from "@/components/DeclarationSummary"
 import IdentityTab from "@/components/IdentityTab"
 import HistoryTab from "@/components/HistoryTab"
 import DeclarationAlert from "@/components/DeclarationAlert"
+import VisaValidationTab from "./VisaValidationTab"
+import { headers } from "@/utils/data-fetching"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
+const $externalResults = ref({})
 const tabs = ref(null) // Corresponds to the template ref (https://vuejs.org/guide/essentials/template-refs.html#accessing-the-refs)
 
 const props = defineProps({
@@ -105,7 +108,7 @@ onMounted(async () => {
   // Si on arrive à cette page avec une déclaration déjà assignée à quelqun.e mais en état
   // AWAITING_VISA, on la passe directement à ONGOING_VISA.
   if (declaration.value?.visor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_VISA")
-    await validateDeclaration()
+    await takeDeclaration()
 
   await executeDeclarantFetch()
   handleError(declarantResponse)
@@ -132,7 +135,13 @@ const selectTab = (index) => {
   selectedTabIndex.value = index
 }
 
-const validateDeclaration = async () => {
-  console.log("Take for validation")
+const takeDeclaration = async () => {
+  const url = `/api/v1/declarations/${props.declarationId}/take-for-visa/`
+  const { response } = await useFetch(url, { headers: headers() }).post({}).json()
+  $externalResults.value = await handleError(response)
+
+  if (response.value.ok) {
+    await executeDeclarationFetch()
+  }
 }
 </script>
