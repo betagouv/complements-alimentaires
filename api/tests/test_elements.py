@@ -1,7 +1,10 @@
 from django.urls import reverse
-from rest_framework.test import APITestCase
+
 from rest_framework import status
-from data.factories import PlantFactory, IngredientFactory, MicroorganismFactory, SubstanceFactory, PlantPartFactory
+from rest_framework.test import APITestCase
+
+from data.factories import IngredientFactory, MicroorganismFactory, PlantFactory, PlantPartFactory, SubstanceFactory
+from data.models import IngredientType
 
 
 class TestElementsApi(APITestCase):
@@ -22,6 +25,30 @@ class TestElementsApi(APITestCase):
 
         self.assertEqual(ingredient.name, body["name"])
         self.assertEqual(ingredient.id, body["id"])
+
+    def test_get_single_ingredient_with_right_type(self):
+        """
+        Le modèle (table) ingrédient à un champ `ingredient_type`.
+        C'est la même route api qui sert les différents types.
+        On vérifie ici que le type est bien retourné.
+        """
+        active_ingredient = IngredientFactory.create(ingredient_type=IngredientType.ACTIVE_INGREDIENT)
+        response = self.client.get(reverse("api:single_ingredient", kwargs={"pk": active_ingredient.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        result1 = response.json()
+        self.assertEqual(result1["objectType"], "active_ingredient")
+
+        aroma = IngredientFactory.create(ingredient_type=IngredientType.AROMA)
+        response = self.client.get(reverse("api:single_ingredient", kwargs={"pk": aroma.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        result2 = response.json()
+        self.assertEqual(result2["objectType"], "aroma")
+
+        additive = IngredientFactory.create(ingredient_type=IngredientType.ADDITIVE)
+        response = self.client.get(reverse("api:single_ingredient", kwargs={"pk": additive.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        result2 = response.json()
+        self.assertEqual(result2["objectType"], "additive")
 
     def test_get_single_microorganism(self):
         microorganism = MicroorganismFactory.create()

@@ -1,6 +1,4 @@
-const flip = (data) => Object.fromEntries(Object.entries(data).map(([key, value]) => [slugify(value), key]))
-
-export const slugify = (data) => data?.replace(" ", "-").replace("'", "-").toLowerCase()
+const flip = (data) => Object.fromEntries(Object.entries(data).map(([key, value]) => [value, key]))
 
 export const getTypeIcon = (type) => {
   const iconMapping = {
@@ -16,7 +14,7 @@ export const getTypeIcon = (type) => {
   return iconMapping[type] || "ri-drop-line"
 }
 
-export const getApiType = (type) => (type === "form_of_supply" ? "forms-of-supply" : `${type.replace("_", "-")}s`)
+export const getApiType = (type) => (type === "form_of_supply" ? "forms-of-supply" : type)
 
 export const typesMapping = {
   plant: "Plante",
@@ -25,14 +23,35 @@ export const typesMapping = {
   aroma: "Arôme",
   additive: "Additif",
   active_ingredient: "Ingredient actif",
-  non_active_ingredient: "Ingredient non actif",
+  non_active_ingredient: "Ingredient non actif", // TODO : merger ces 2 types en 1 et n'utiliser que le label "actif"/"inactif"
   substance: "Substance",
+  // TODO: déprecier après l'import de données extraites en mai 2024
+  // qui contient les types plus précis
+  ingredient: "Autre ingrédient",
 }
-
-export const frenchSlugToTypeMapping = flip(typesMapping)
-
+export const typesSlugMapping = {
+  plant: "plante",
+  microorganism: "micro-organisme",
+  form_of_supply: "forme-d-apport",
+  aroma: "arome",
+  additive: "additif",
+  active_ingredient: "ingredient-actif",
+  non_active_ingredient: "ingredient-non-actif",
+  substance: "substance",
+  // déprécié
+  ingredient: "autre-ingredient",
+}
 export const getTypeInFrench = (type) => {
   return typesMapping[type] || null
+}
+
+export const slugify = (type) => {
+  return typesSlugMapping[type] || null
+}
+export const unSlugify = (typeSlug) => {
+  console.log(typeSlug)
+  console.log(flip(typesSlugMapping))
+  return flip(typesSlugMapping)[typeSlug] || null
 }
 
 export const statusProps = {

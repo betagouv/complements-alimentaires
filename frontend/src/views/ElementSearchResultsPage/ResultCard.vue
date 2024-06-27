@@ -24,7 +24,7 @@ const props = defineProps({
 const icon = computed(() => getTypeIcon(props.result.objectType))
 const type = computed(() => getTypeInFrench(props.result.objectType))
 const route = computed(() => {
-  const urlComponent = `${props.result?.id}--${slugify(type.value)}--${props.result?.name}`
+  const urlComponent = `${props.result?.id}--${slugify(props.result.objectType)}--${props.result?.name}`
   return { name: "ElementPage", params: { urlComponent } }
 })
 </script>

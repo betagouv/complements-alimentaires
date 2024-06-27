@@ -15,13 +15,7 @@ urlpatterns = {
     path("search/", views.SearchView.as_view(), name="search"),
     path("plants/<int:pk>", views.PlantRetrieveView.as_view(), name="single_plant"),
     path("plant-parts/", views.PlantPartListView.as_view(), name="plant_part_list"),
-    path("aromas/<int:pk>", views.IngredientRetrieveView.as_view(), name="single_aroma"),
-    path("additives/<int:pk>", views.IngredientRetrieveView.as_view(), name="single_additive"),
-    path("active-ingredients/<int:pk>", views.IngredientRetrieveView.as_view(), name="single_active_ingredient"),
-    path("forms-of-supply/<int:pk>", views.IngredientRetrieveView.as_view(), name="single_form_of_supply"),
-    path(
-        "non-active-ingredients/<int:pk>", views.IngredientRetrieveView.as_view(), name="single_non_active_ingredient"
-    ),
+    path("other-ingredients/<int:pk>", views.IngredientRetrieveView.as_view(), name="single_ingredient"),
     path("microorganisms/<int:pk>", views.MicroorganismRetrieveView.as_view(), name="single_microorganism"),
     path("substances/<int:pk>", views.SubstanceRetrieveView.as_view(), name="single_substance"),
     path("elements/autocomplete/", views.AutocompleteView.as_view(), name="substance_autocomplete"),
