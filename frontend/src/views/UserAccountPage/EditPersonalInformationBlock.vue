@@ -135,8 +135,7 @@ const submit = async (displayWarning = true) => {
     } else {
       addSuccessMessage(baseMessage)
     }
-    store.setLoggedUser(userData.value) // update store to avoid having the need to reload the page
-    // TODO: we should repopulate form fields with reactive loggedUser, in case backend change data (e.g. normalization)
+    store.setLoggedUser(userData.value)
   }
 }
 

@@ -20,6 +20,7 @@ from data.models import (
     Population,
     Substance,
     SubstanceUnit,
+    VisaRole,
 )
 
 
@@ -31,9 +32,13 @@ class Declaration(Historisable, TimeStampable):
         DRAFT = "DRAFT", "Brouillon"
         AWAITING_INSTRUCTION = "AWAITING_INSTRUCTION", "En attente d'instruction"
         ONGOING_INSTRUCTION = "ONGOING_INSTRUCTION", "Instruction en cours"
+        AWAITING_VISA = "AWAITING_VISA", "En attente de visa"
+        ONGOING_VISA = "ONGOING_VISA", "Visa en cours"
+        OBJECTION = "OBJECTION", "En objection"
         OBSERVATION = "OBSERVATION", "En observation"
         ABANDONED = "ABANDONED", "Abandonnée"
         AUTHORIZED = "AUTHORIZED", "Autorisée"
+        REJECTED = "REJECTED", "Refusée"
 
     class RejectionReason(models.TextChoices):
         MISSING_DATA = "MISSING_DATA", "Le dossier manque des données nécessaires"
@@ -45,6 +50,20 @@ class Declaration(Historisable, TimeStampable):
         choices=DeclarationStatus.choices,
         default=DeclarationStatus.DRAFT,
         verbose_name="status",
+    )
+    post_validation_status = models.CharField(
+        max_length=50,
+        blank=True,
+        choices=DeclarationStatus.choices,
+        default=DeclarationStatus.DRAFT,
+        verbose_name="status à assigner après la validation",
+    )
+    post_validation_producer_message = models.TextField(
+        blank=True,
+        verbose_name="message à envoyer au producteur après la validation",
+    )
+    post_validation_expiration_days = models.IntegerField(
+        null=True, blank=True, verbose_name="délai de réponse à assigner après la validation"
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -62,6 +81,15 @@ class Declaration(Historisable, TimeStampable):
         verbose_name="instructeur",
         related_name="declarations",
     )
+    visor = models.ForeignKey(
+        VisaRole,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name="visor",
+        related_name="declarations",
+    )
+
     private_notes = models.TextField("notes à destination de l'administration", blank=True, default="")
     company = models.ForeignKey(
         Company, null=True, on_delete=models.SET_NULL, verbose_name="entreprise", related_name="declarations"

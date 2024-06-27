@@ -2,7 +2,13 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from data.factories import CompanyFactory, DeclarantRoleFactory, InstructionRoleFactory, SupervisorRoleFactory
+from data.factories import (
+    CompanyFactory,
+    DeclarantRoleFactory,
+    InstructionRoleFactory,
+    SupervisorRoleFactory,
+    VisaRoleFactory,
+)
 from data.factories.user import UserFactory
 
 from .utils import ProjectAPITestCase
@@ -83,6 +89,17 @@ class TestGetLoggedUser(ProjectAPITestCase):
 
         self.assertEqual(len(response["globalRoles"]), 1)
         self.assertEqual(response["globalRoles"][0]["name"], "InstructionRole")
+
+    def test_visa_roles(self):
+        """
+        Les rôles du visa sont serialisées dans le call du logged user
+        """
+        user = self.login()
+        VisaRoleFactory(user=user)
+        response = self.get(self.url()).json()
+
+        self.assertEqual(len(response["globalRoles"]), 1)
+        self.assertEqual(response["globalRoles"][0]["name"], "VisaRole")
 
 
 class TestCreateUser(ProjectAPITestCase):

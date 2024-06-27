@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from data.models import InstructionRole
+from data.models import InstructionRole, VisaRole
 
 
 class BaseGlobalRoleSerializer(serializers.ModelSerializer):
@@ -16,4 +16,10 @@ class BaseGlobalRoleSerializer(serializers.ModelSerializer):
 class InstructionRoleSerializer(BaseGlobalRoleSerializer):
     class Meta:
         model = InstructionRole
+        fields = BaseGlobalRoleSerializer.Meta.fields
+
+
+class VisaRoleSerializer(BaseGlobalRoleSerializer):
+    class Meta:
+        model = VisaRole
         fields = BaseGlobalRoleSerializer.Meta.fields

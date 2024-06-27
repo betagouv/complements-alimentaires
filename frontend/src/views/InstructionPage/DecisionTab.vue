@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div class="mb-4">
       <DsfrInputGroup>
         <div class="grid grid-cols-2 gap-6">
           <DsfrRadioButton
@@ -46,7 +46,7 @@
             </div>
             <div class="visa-checkbox content-end">
               <DsfrInputGroup>
-                <DsfrCheckbox disabled label="À viser" />
+                <DsfrCheckbox label="À viser" v-model="needsVisa" :disabled="disableVisaCheckbox" />
               </DsfrInputGroup>
             </div>
             <div class="content-end" v-if="decisionCategory != 'approve'">
@@ -93,6 +93,13 @@ watch(decisionCategory, () => (proposal.value = decisionCategory.value === "appr
 const proposal = ref(null)
 const delayDays = ref(30)
 const comment = ref("")
+
+const needsVisa = ref(false)
+const mandatoryVisaProposals = ["objection", "rejection"]
+const disableVisaCheckbox = computed(() => !proposal.value || mandatoryVisaProposals.indexOf(proposal.value) > -1)
+watch(proposal, (newProposal) => {
+  if (mandatoryVisaProposals.indexOf(newProposal) > -1) needsVisa.value = true
+})
 
 const decisionCategories = [
   {
@@ -154,20 +161,24 @@ const proposalOptions = computed(() => {
   if (decisionCategory.value === "approve") return [{ text: "Autorisation", value: "autorisation" }]
 
   return [
-    // { text: "Objection", value: "objection" },
+    { text: "Objection", value: "objection" },
     { text: "Observation", value: "observation" },
-    // { text: "Refus", value: "rejection" },
+    { text: "Refus", value: "rejection" },
   ]
 })
 
 const canSubmitDecision = computed(() => !!proposal.value && !!delayDays.value)
 const submitDecision = async () => {
   const actions = {
-    observation: "observe-no-visa",
-    approve: "authorize-no-visa",
+    observation: "observe",
+    approve: "authorize",
+    objection: "object",
+    rejection: "reject",
   }
+  const visaPath = needsVisa.value ? "with-visa" : "no-visa"
+  const urlPath = `${actions[proposal.value]}-${visaPath}`
 
-  const url = `/api/v1/declarations/${props.declarationId}/${actions[proposal.value]}/`
+  const url = `/api/v1/declarations/${props.declarationId}/${urlPath}/`
   const { response } = await useFetch(url, { headers: headers() }).post({ comment: comment.value }).json()
   $externalResults.value = await handleError(response)
 

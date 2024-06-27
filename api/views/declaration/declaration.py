@@ -99,7 +99,7 @@ class GenericDeclarationsListView(ListAPIView):
     filterset_class = DeclarationFilterSet
 
 
-class AllDeclarationsListView(GenericDeclarationsListView):
+class OngoingDeclarationsListView(GenericDeclarationsListView):
     serializer_class = SimpleDeclarationSerializer
     permission_classes = [IsInstructor]
     ordering_fields = ["creation_date", "modification_date", "name"]
@@ -131,6 +131,17 @@ class DeclarationFlowView(GenericAPIView):
         """
         pass
 
+    def perform_snapshot_creation(self, request, declaration):
+        """
+        Possible de le surcharger si la création du snapshot nécessite un
+        traitement spécial
+        """
+        declaration.create_snapshot(
+            user=request.user,
+            comment=request.data.get("comment", ""),
+            expiration_days=request.data.get("expiration"),
+        )
+
     def post(self, request, *args, **kwargs):
         declaration = self.get_object()
         flow = DeclarationFlow(declaration)
@@ -139,13 +150,9 @@ class DeclarationFlowView(GenericAPIView):
         if flow_permission_method and not flow_permission_method(request.user):
             raise PermissionDenied()
         transition_method()
-        if self.create_snapshot:
-            declaration.create_snapshot(
-                user=request.user,
-                comment=request.data.get("comment", ""),
-                expiration_days=request.data.get("expiration"),
-            )
         self.on_transition_success(request, declaration)
+        if self.create_snapshot:
+            self.perform_snapshot_creation(request, declaration)
         declaration.save()
         serializer = self.get_serializer(declaration)
         return Response(serializer.data)
@@ -210,3 +217,51 @@ class DeclarationResubmitView(DeclarationFlowView):
     permission_classes = [IsDeclarationAuthor, IsDeclarant]
     transition = "resubmit"
     create_snapshot = True
+
+
+# Nous utilisons une Non-deterministic state machine. Lors qu'un.e instructeur.ice demande une
+# visa, nous assignnos la déclaration à `AWAITING_VISA` et ajoutons un propriété dans le modèle
+# spécifiant quel sera le status à assigner après le flow de validation.
+class VisaRequestFlowView(DeclarationFlowView):
+    """
+    ONGOING_INSTRUCTION -> AWAITING_VISA
+    Cette view doit être sous-classée. Elle assigne le `post_validation_status`
+    spécifié. Les sous-classes doivent donc déclarer cette propriété.
+    """
+
+    permission_classes = [IsInstructor]
+    transition = "request_visa"
+    post_validation_status = None
+    create_snapshot = True
+
+    def perform_snapshot_creation(self, request, declaration):
+        """
+        Dans le cas d'une requête de validation, on ne mettra pas le commentaire à
+        destination du producteur dans le snapshot créé. On le met dans le modèle pour
+        pouvoir l'envoyer au producteur si la décision est acceptée par la viseuse.
+        """
+        declaration.post_validation_producer_message = request.data.get("comment", "")
+        declaration.post_validation_expiration_days = request.data.get("expiration")
+        declaration.create_snapshot(user=request.user)
+
+    def on_transition_success(self, request, declaration):
+        if not self.post_validation_status:
+            raise Exception("VisaRequestFlowView doit être sous-classée et doit spécifier le post_validation_status")
+        declaration.post_validation_status = self.post_validation_status
+        return super().on_transition_success(request, declaration)
+
+
+class DeclarationObserveWithVisa(VisaRequestFlowView):
+    post_validation_status = Declaration.DeclarationStatus.OBSERVATION
+
+
+class DeclarationObjectWithVisa(VisaRequestFlowView):
+    post_validation_status = Declaration.DeclarationStatus.OBJECTION
+
+
+class DeclarationRejectWithVisa(VisaRequestFlowView):
+    post_validation_status = Declaration.DeclarationStatus.REJECTED
+
+
+class DeclarationAuthorizeWithVisa(VisaRequestFlowView):
+    post_validation_status = Declaration.DeclarationStatus.AUTHORIZED

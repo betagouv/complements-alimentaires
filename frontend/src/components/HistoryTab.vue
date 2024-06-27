@@ -22,7 +22,7 @@ import { useFetch } from "@vueuse/core"
 import { onMounted } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
-import SnapshotItem from "@/views/InstructionPage/SnapshotItem"
+import SnapshotItem from "@/components/SnapshotItem"
 
 const props = defineProps(["declarationId"])
 

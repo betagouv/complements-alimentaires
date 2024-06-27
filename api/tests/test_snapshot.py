@@ -7,6 +7,7 @@ from data.factories import (
     DeclarantRoleFactory,
     InstructionReadyDeclarationFactory,
     InstructionRoleFactory,
+    OngoingInstructionDeclarationFactory,
 )
 
 from .utils import authenticate
@@ -38,6 +39,32 @@ class TestSnapshotApi(APITestCase):
         declaration.name = "new name"
         declaration.save()
         self.assertEqual(declaration.snapshots.count(), 1)
+
+    @authenticate
+    def test_snapshot_creation_on_visa_request(self):
+        instructor = InstructionRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        payload = {"comment": "J'objecte", "expiration": 45}
+        response = self.client.post(
+            reverse("api:object_with_visa", kwargs={"pk": declaration.id}), payload, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Un snapshot devrait être créé
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.snapshots.count(), 1)
+        snapshot = declaration.snapshots.first()
+        self.assertEqual(snapshot.declaration, declaration)
+        self.assertEqual(snapshot.user, instructor.user)
+
+        # Dans le cas d'une requête de visa, les champs `commentaire` et
+        # `expiration` ne sont pas marqués directement dans le snapshot, mais
+        # sauvegardés dans le modèle pour les appliquer par la suite
+        self.assertEqual(snapshot.comment, "")
+        self.assertIsNone(snapshot.expiration_days)
+        self.assertEqual(declaration.post_validation_producer_message, "J'objecte")
+        self.assertEqual(declaration.post_validation_expiration_days, 45)
 
     @authenticate
     def test_snapshot_list_view(self):

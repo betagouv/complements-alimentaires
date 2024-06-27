@@ -39,4 +39,8 @@ class InstructionRole(BaseGlobalRole):
         verbose_name = "rôle instruction"
         verbose_name_plural = "rôles instruction"
 
-    pass
+
+class VisaRole(BaseGlobalRole):
+    class Meta:
+        verbose_name = "rôle de visa"
+        verbose_name_plural = "rôles de visa"
