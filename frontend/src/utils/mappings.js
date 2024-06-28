@@ -44,11 +44,11 @@ export const statusProps = {
   },
   OBJECTION: {
     icon: "ri-error-warning-line",
-    label: "En objection",
+    label: "Objection",
   },
   OBSERVATION: {
     icon: "ri-file-search-fill",
-    label: "En observation",
+    label: "Observation",
   },
   ABANDONED: {
     icon: "ri-time-fill",

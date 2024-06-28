@@ -110,8 +110,13 @@ urlpatterns = {
     path("declarations/<int:pk>/submit/", views.DeclarationSubmitView.as_view(), name="submit_declaration"),
     path(
         "declarations/<int:pk>/take-for-instruction/",
-        views.DeclarationTakeView.as_view(),
+        views.DeclarationTakeForInstructionView.as_view(),
         name="take_for_instruction",
+    ),
+    path(
+        "declarations/<int:pk>/take-for-visa/",
+        views.DeclarationTakeForVisaView.as_view(),
+        name="take_for_visa",
     ),
     path(
         "declarations/<int:pk>/observe-no-visa/",

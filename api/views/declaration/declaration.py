@@ -16,11 +16,12 @@ from api.permissions import (
     IsDeclarationAuthor,
     IsInstructor,
     IsSupervisor,
+    IsVisor,
 )
 from api.serializers import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer
 from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
-from data.models import Company, Declaration, InstructionRole
+from data.models import Company, Declaration, InstructionRole, VisaRole
 
 
 class UserDeclarationsListCreateApiView(ListCreateAPIView):
@@ -185,7 +186,7 @@ class DeclarationSubmitView(DeclarationFlowView):
     create_snapshot = True
 
 
-class DeclarationTakeView(DeclarationFlowView):
+class DeclarationTakeForInstructionView(DeclarationFlowView):
     """
     AWAITING_INSTRUCTION -> ONGOING_INSTRUCTION
     """
@@ -195,6 +196,19 @@ class DeclarationTakeView(DeclarationFlowView):
 
     def on_transition_success(self, request, declaration):
         declaration.instructor = InstructionRole.objects.get(user=request.user)
+        return super().on_transition_success(request, declaration)
+
+
+class DeclarationTakeForVisaView(DeclarationFlowView):
+    """
+    AWAITING_VISA -> ONGOING_VISA
+    """
+
+    permission_classes = [IsVisor]
+    transition = "take_for_visa"
+
+    def on_transition_success(self, request, declaration):
+        declaration.visor = VisaRole.objects.get(user=request.user)
         return super().on_transition_success(request, declaration)
 
 

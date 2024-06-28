@@ -41,7 +41,7 @@ onMounted(async () => {
 })
 
 const showOnRight = (snapshot) => {
-  const rightSideStatus = ["OBSERVATION", "AUTHORIZED"]
+  const rightSideStatus = ["OBSERVATION", "AUTHORIZED", "AWAITING_VISA"]
   return rightSideStatus.indexOf(snapshot.status) > -1
 }
 </script>

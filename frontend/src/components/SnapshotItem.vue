@@ -38,7 +38,7 @@
         {{ snapshot.user.firstName }} {{ snapshot.user.lastName }} a changé le status à «
         <span class="font-bold">{{ statusProps[snapshot.status].label }}</span>
         »
-        <span v-if="!snapshot.comment">sans laisser de message</span>
+        <span v-if="!snapshot.comment && !isInValidationState">sans laisser de message</span>
       </div>
     </div>
   </div>
@@ -57,6 +57,7 @@ const date = computed(
   () => `${isoToPrettyDate(props.snapshot.creationDate)} à ${isoToPrettyTime(props.snapshot.creationDate)}`
 )
 const modalOpened = ref(false)
+const isInValidationState = computed(() => props.snapshot.status === "AWAITING_VISA")
 </script>
 
 <style scoped>

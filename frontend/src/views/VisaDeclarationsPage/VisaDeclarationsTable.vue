@@ -17,7 +17,7 @@ import { getStatusTagForCell } from "@/utils/components"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
-const headers = ["Nom du produit", "Entreprise", "État de la déclaration", "Date de modification"]
+const headers = ["Nom du produit", "Entreprise", "État", "Date de modification", "Instruit par", "Visé par"]
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
@@ -29,6 +29,12 @@ const rows = computed(() =>
       x.company.socialName,
       getStatusTagForCell(x.status),
       timeAgo(x.modificationDate),
+      x.instructor
+        ? `${x.instructor.firstName} ${x.instructor.lastName}`
+        : { component: "span", text: "Non-assigné", class: "italic" },
+      x.visor
+        ? `${x.visor.firstName} ${x.visor.lastName}`
+        : { component: "span", text: "Non-assigné", class: "italic" },
     ],
   }))
 )
