@@ -105,6 +105,7 @@ class CSVImporter:
         "siccrf_observation": ["OBSERVATION"],
         "siccrf_description": ["DESCRIPTION"],
         "ingredient_type": ["TAING_IDENT"],
+        # "activity": ["FCTINGR_IDENT"], n'est pas extraite par le CSV Importer car est assignée par type d'ingrédient
         "siccrf_cas_number": ["NUMERO_CAS"],
         "siccrf_einec_number": ["NUM_EINECS"],
         "siccrf_source": ["SOURCE"],
