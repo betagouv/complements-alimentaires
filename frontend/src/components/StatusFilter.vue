@@ -4,7 +4,7 @@
       <DsfrCheckboxSet v-model="statuses" :options="options" />
     </DsfrModal>
     <p class="!mb-2">
-      Types de déclaration afficheés :
+      Types de déclaration affichés :
 
       <span v-if="statuses.length">
         <DsfrTag
