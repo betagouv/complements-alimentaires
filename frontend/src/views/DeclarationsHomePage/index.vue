@@ -31,7 +31,11 @@ import { storeToRefs } from "pinia"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
-const { response, data, isFetching } = useFetch(`/api/v1/users/${loggedUser.value.id}/declarations/`).get().json()
+const { response, data, isFetching } = useFetch(
+  `/api/v1/users/${loggedUser.value.id}/declarations/?ordering=-modificationDate`
+)
+  .get()
+  .json()
 
 watch(response, () => handleError(response))
 

@@ -26,7 +26,7 @@ class DeclarationFlow:
     def submit(self):
         self.ensure_validators([validate_number_of_elements, validate_mandatory_fields])
 
-    @status.transition(source=Status.OBSERVATION, target=Status.ONGOING_INSTRUCTION)
+    @status.transition(source=Status.OBSERVATION, target=Status.AWAITING_INSTRUCTION)
     def resubmit(self):
         self.ensure_validators([validate_number_of_elements, validate_mandatory_fields])
 
@@ -37,12 +37,20 @@ class DeclarationFlow:
     def take_for_instruction(self):
         pass
 
+    @status.transition(source=Status.AWAITING_VISA, target=Status.ONGOING_VISA)
+    def take_for_visa(self):
+        pass
+
     @status.transition(source=Status.ONGOING_INSTRUCTION, target=Status.OBSERVATION)
     def observe_no_visa(self):
         pass
 
     @status.transition(source=Status.ONGOING_INSTRUCTION, target=Status.AUTHORIZED)
     def authorize_no_visa(self):
+        pass
+
+    @status.transition(source=Status.ONGOING_INSTRUCTION, target=Status.AWAITING_VISA)
+    def request_visa(self):
         pass
 
     @status.transition(source=Status.OBSERVATION, target=Status.ABANDONED)

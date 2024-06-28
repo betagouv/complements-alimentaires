@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from data.models import Declaration, InstructionRole
+from data.models import Declaration, InstructionRole, VisaRole
 
 
 class CanAccessUser(permissions.BasePermission):
@@ -60,6 +60,11 @@ class IsSolicitationRecipient(permissions.BasePermission):
 class IsInstructor(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and InstructionRole.objects.filter(user=request.user).exists()
+
+
+class IsVisor(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and VisaRole.objects.filter(user=request.user).exists()
 
 
 class IsSupervisorOrInstructor(permissions.BasePermission):

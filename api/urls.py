@@ -99,7 +99,7 @@ urlpatterns = {
         views.UserDeclarationsListCreateApiView.as_view(),
         name="list_create_declaration",
     ),
-    path("declarations/", views.AllDeclarationsListView.as_view(), name="list_all_declarations"),
+    path("declarations/", views.OngoingDeclarationsListView.as_view(), name="list_all_declarations"),
     path("declarations/<int:pk>", views.DeclarationRetrieveUpdateView.as_view(), name="retrieve_update_declaration"),
     path(
         "declarations/<int:pk>/snapshots/",
@@ -110,8 +110,13 @@ urlpatterns = {
     path("declarations/<int:pk>/submit/", views.DeclarationSubmitView.as_view(), name="submit_declaration"),
     path(
         "declarations/<int:pk>/take-for-instruction/",
-        views.DeclarationTakeView.as_view(),
+        views.DeclarationTakeForInstructionView.as_view(),
         name="take_for_instruction",
+    ),
+    path(
+        "declarations/<int:pk>/take-for-visa/",
+        views.DeclarationTakeForVisaView.as_view(),
+        name="take_for_visa",
     ),
     path(
         "declarations/<int:pk>/observe-no-visa/",
@@ -127,6 +132,22 @@ urlpatterns = {
         "declarations/<int:pk>/resubmit/",
         views.DeclarationResubmitView.as_view(),
         name="resubmit_declaration",
+    ),
+    path(
+        "declarations/<int:pk>/observe-with-visa/",
+        views.DeclarationObserveWithVisa.as_view(),
+        name="observe_with_visa",
+    ),
+    path(
+        "declarations/<int:pk>/object-with-visa/", views.DeclarationObjectWithVisa.as_view(), name="object_with_visa"
+    ),
+    path(
+        "declarations/<int:pk>/reject-with-visa/", views.DeclarationRejectWithVisa.as_view(), name="reject_with_visa"
+    ),
+    path(
+        "declarations/<int:pk>/authorize-with-visa/",
+        views.DeclarationAuthorizeWithVisa.as_view(),
+        name="authorize_with_visa",
     ),
 }
 

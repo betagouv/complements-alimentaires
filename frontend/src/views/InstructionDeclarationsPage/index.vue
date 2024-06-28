@@ -2,7 +2,7 @@
   <div class="fr-container">
     <DsfrBreadcrumb
       class="mb-8"
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Toutes les déclarations' }]"
+      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Déclarations pour instruction' }]"
     />
     <div class="border px-4 mb-2 sm:flex gap-8 items-baseline filters">
       <DsfrInputGroup>
@@ -90,7 +90,7 @@ const updateCompanyNameEndFilter = (newValue) => updateQuery({ entrepriseA: newV
 // Obtention de la donnée via API
 const url = computed(
   () =>
-    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&company_name_start=${companyNameStart.value}&company_name_end=${companyNameEnd.value}`
+    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&company_name_start=${companyNameStart.value}&company_name_end=${companyNameEnd.value}&ordering=-modificationDate`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {

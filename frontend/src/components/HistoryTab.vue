@@ -22,7 +22,7 @@ import { useFetch } from "@vueuse/core"
 import { onMounted } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
-import SnapshotItem from "@/views/InstructionPage/SnapshotItem"
+import SnapshotItem from "@/components/SnapshotItem"
 
 const props = defineProps(["declarationId"])
 
@@ -41,7 +41,7 @@ onMounted(async () => {
 })
 
 const showOnRight = (snapshot) => {
-  const rightSideStatus = ["OBSERVATION", "AUTHORIZED"]
+  const rightSideStatus = ["OBSERVATION", "AUTHORIZED", "AWAITING_VISA"]
   return rightSideStatus.indexOf(snapshot.status) > -1
 }
 </script>

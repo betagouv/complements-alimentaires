@@ -22,7 +22,7 @@ const emit = defineEmits("open")
 // Les données pour la table
 const headers = computed(() => {
   if (useShortTable.value) return ["Nom", "État"]
-  return ["Nom du produit", "Marque", "État de la déclaration", "Date de modification"]
+  return ["Nom du produit", "Marque", "État", "Date de modification"]
 })
 const rows = computed(() => {
   // Les dates ISO sont sortables par text

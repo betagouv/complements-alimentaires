@@ -5,12 +5,14 @@ from rest_framework.test import APITestCase
 
 from data.factories import (
     AwaitingInstructionDeclarationFactory,
+    AwaitingVisaDeclarationFactory,
     CompanyFactory,
     DeclarantRoleFactory,
     InstructionReadyDeclarationFactory,
     InstructionRoleFactory,
     ObservationDeclarationFactory,
     OngoingInstructionDeclarationFactory,
+    VisaRoleFactory,
 )
 from data.models import Declaration
 
@@ -84,7 +86,7 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
-    def test_take_declaration(self):
+    def test_take_declaration_for_instruction(self):
         """
         Passage du AWAITING_INSTRUCTION -> ONGOING_INSTRUCTION
         """
@@ -120,6 +122,44 @@ class TestDeclarationFlow(APITestCase):
         response = self.client.post(reverse("api:take_for_instruction", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+    @authenticate
+    def test_take_declaration_for_visa(self):
+        """
+        Passage du AWAITING_VISA -> ONGOING_VISA
+        """
+        visor = VisaRoleFactory(user=authenticate.user)
+        declaration = AwaitingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:take_for_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(visor, declaration.visor)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_VISA)
+
+    @authenticate
+    def test_take_declaration_for_visa_unauthorized(self):
+        """
+        Passage du AWAITING_VISA -> ONGOING_VISA
+        Seulement possible pour personnes ayant le rôle de visa
+        """
+        declaration = AwaitingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:take_for_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_VISA)
+
+    def test_take_declaration_for_visa_unauthenticated(self):
+        """
+        Passage du AWAITING_VISA -> ONGOING_VISA
+        Pas possible pour personnes non-authentifiées
+        """
+        declaration = AwaitingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:take_for_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_VISA)
 
     @authenticate
     def test_observe_declaration(self):
@@ -198,7 +238,7 @@ class TestDeclarationFlow(APITestCase):
     @authenticate
     def test_resubmit_declaration(self):
         """
-        Passage du OBSERVATION -> ONGOING_INSTRUCTION
+        Passage du OBSERVATION -> AWAITING_INSTRUCTION
         """
         company = CompanyFactory()
         declarant = DeclarantRoleFactory(user=authenticate.user, company=company)
@@ -208,12 +248,12 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         declaration.refresh_from_db()
-        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
 
     @authenticate
     def test_resubmit_declaration_unauthorized(self):
         """
-        Passage du OBSERVATION -> ONGOING_INSTRUCTION
+        Passage du OBSERVATION -> AWAITING_INSTRUCTION
         Seulement possible pour l'auteur de la déclaration
         """
         declaration = ObservationDeclarationFactory()
@@ -224,7 +264,7 @@ class TestDeclarationFlow(APITestCase):
 
     def test_resubmit_declaration_unauthenticated(self):
         """
-        Passage du OBSERVATION -> ONGOING_INSTRUCTION
+        Passage du OBSERVATION -> AWAITING_INSTRUCTION
         Pas possible pour personnes non-authentifiées
         """
         declaration = ObservationDeclarationFactory()
@@ -232,3 +272,155 @@ class TestDeclarationFlow(APITestCase):
         response = self.client.post(reverse("api:resubmit_declaration", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.OBSERVATION)
+
+    @authenticate
+    def test_observe_with_visa(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur OBSERVATION
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:observe_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.post_validation_status, Declaration.DeclarationStatus.OBSERVATION)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_VISA)
+
+    @authenticate
+    def test_observe_with_visa_unauthorized(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur OBSERVATION
+        Seulement possible pour personnes ayant le rôle d'instructeur.ice
+        """
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:observe_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    def test_observe_with_visa_unauthenticated(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur OBSERVATION
+        Pas possible pour personnes non-authentifiées
+        """
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:observe_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    @authenticate
+    def test_object_with_visa(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur OBJECTION
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:object_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.post_validation_status, Declaration.DeclarationStatus.OBJECTION)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_VISA)
+
+    @authenticate
+    def test_object_with_visa_unauthorized(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur OBJECTION
+        Seulement possible pour personnes ayant le rôle d'instructeur.ice
+        """
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:object_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    def test_object_with_visa_unauthenticated(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur OBJECTION
+        Pas possible pour personnes non-authentifiées
+        """
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:object_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    @authenticate
+    def test_reject_with_visa(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur REJECT
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:reject_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.post_validation_status, Declaration.DeclarationStatus.REJECTED)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_VISA)
+
+    @authenticate
+    def test_reject_with_visa_unauthorized(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur REJECT
+        Seulement possible pour personnes ayant le rôle d'instructeur.ice
+        """
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:reject_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    def test_reject_with_visa_unauthenticated(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur REJECT
+        Pas possible pour personnes non-authentifiées
+        """
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:reject_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    @authenticate
+    def test_authorize_with_visa(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur AUTHORIZE
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:authorize_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.post_validation_status, Declaration.DeclarationStatus.AUTHORIZED)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_VISA)
+
+    @authenticate
+    def test_authorize_with_visa_unauthorized(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur AUTHORIZE
+        Seulement possible pour personnes ayant le rôle d'instructeur.ice
+        """
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:authorize_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    def test_authorize_with_visa_unauthenticated(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur AUTHORIZE
+        Pas possible pour personnes non-authentifiées
+        """
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:authorize_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)

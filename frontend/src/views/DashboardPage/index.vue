@@ -15,6 +15,7 @@
       />
       <ActionGrid v-if="isDeclarant" :actions="declarantActions" title="Mes déclarations" icon="ri-capsule-fill" />
       <ActionGrid v-if="isInstructor" :actions="instructionActions" title="Instruction" icon="ri-survey-fill" />
+      <ActionGrid v-if="isVisor" :actions="visorActions" title="Visa / Signature" icon="ri-file-search-fill" />
       <ActionGrid v-if="emptyRoles" :actions="onboardingActions" title="Démarrez chez Compl-Alim !" />
       <ActionGrid :actions="userActions" title="Mon compte" icon="ri-account-circle-line" />
     </div>
@@ -39,6 +40,7 @@ const company = computed(() => companies.value?.find((c) => +c.id === +route.que
 const isSupervisor = computed(() => companies?.value.some((c) => c.roles?.some((x) => x.name === "SupervisorRole")))
 const isDeclarant = computed(() => companies?.value.some((c) => c.roles?.some((x) => x.name === "DeclarantRole")))
 const isInstructor = computed(() => loggedUser.value?.globalRoles.some((x) => x.name === "InstructionRole"))
+const isVisor = computed(() => loggedUser.value?.globalRoles.some((x) => x.name === "VisaRole"))
 const emptyRoles = computed(() => !isSupervisor.value && !isDeclarant.value && !isInstructor.value)
 
 const isSupervisorForActiveCompany = computed(() => company.value?.roles?.some((x) => x.name === "SupervisorRole"))
@@ -74,11 +76,6 @@ const supervisorActions = computed(() => [
     description: "Consultez et mettez à jour les données de votre entreprise",
     link: { name: "CompanyPage", params: { id: company.value?.id } },
   },
-  {
-    title: "Nouvelle entreprise",
-    description: "Créez ou rejoignez une nouvelle entreprise",
-    link: { name: "CompanyFormPage" },
-  },
 ])
 
 const declarantActions = [
@@ -98,7 +95,15 @@ const instructionActions = [
   {
     title: "Liste des déclarations",
     description: "Accédez à la liste des déclarations Compl'Alim",
-    link: { name: "AllDeclarations" },
+    link: { name: "InstructionDeclarations" },
+  },
+]
+
+const visorActions = [
+  {
+    title: "Déclarations à viser",
+    description: "Consultez la liste des déclarations attendant une validation",
+    link: { name: "VisaDeclarations" },
   },
 ]
 
@@ -119,6 +124,11 @@ const userActions = [
     title: "Mes informations personnelles",
     description: "Consultez et mettez à jour vos informations personnelles",
     link: { name: "UserAccountPage" },
+  },
+  {
+    title: "Nouvelle entreprise",
+    description: "Créez ou rejoignez une nouvelle entreprise",
+    link: { name: "CompanyFormPage" },
   },
 ]
 </script>

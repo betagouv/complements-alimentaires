@@ -4,8 +4,8 @@
       class="mb-8"
       :links="[
         { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { to: { name: 'InstructionDeclarations' }, text: 'Déclarations pour instruction' },
-        { text: 'Instruction' },
+        { to: { name: 'VisaDeclarations' }, text: 'Déclarations pour visa / signature' },
+        { text: 'Visa' },
       ]"
     />
     <div v-if="isFetching" class="flex justify-center my-10">
@@ -14,16 +14,16 @@
     <div v-else>
       <DsfrAlert
         class="mb-4"
-        v-if="isAwaitingInstruction && !declaration.instructor"
+        v-if="isAwaitingVisa && !declaration.visa"
         type="info"
-        title="Cette déclaration n'est pas encore assignée"
+        title="Cette déclaration n'est pas encore assignée pour validation"
       >
-        <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
-        <DsfrButton class="mt-2" label="Instruire" tertiary @click="instructDeclaration" />
+        <p>Vous pouvez vous assigner cette déclaration pour visa / signature</p>
+        <DsfrButton class="mt-2" label="Prendre pour validation" tertiary @click="takeDeclaration" />
       </DsfrAlert>
       <DeclarationAlert class="mb-4" v-else-if="!canInstruct" :status="declaration.status" />
       <div v-if="declaration">
-        <DeclarationSummary :readonly="true" v-model="declaration" v-if="isAwaitingInstruction" />
+        <DeclarationSummary :readonly="true" v-model="declaration" v-if="isAwaitingVisa" />
 
         <DsfrTabs v-else ref="tabs" :tab-titles="tabTitles" :initialSelectedIndex="0" @select-tab="selectTab">
           <DsfrTabContent panelId="tab-content-0" tabId="tab-0" :selected="selectedTabIndex === 0" :asc="asc">
@@ -42,7 +42,7 @@
             :selected="selectedTabIndex === 3"
             :asc="asc"
           >
-            <DecisionTab :declarationId="declaration?.id" @reload-declaration="reloadDeclaration" />
+            <VisaValidationTab :declaration="declaration" />
           </DsfrTabContent>
         </DsfrTabs>
       </div>
@@ -53,16 +53,16 @@
 <script setup>
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { onMounted, computed, ref, nextTick } from "vue"
+import { onMounted, computed, ref } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import DeclarationSummary from "@/components/DeclarationSummary"
 import IdentityTab from "@/components/IdentityTab"
 import HistoryTab from "@/components/HistoryTab"
-import DecisionTab from "./DecisionTab"
-import { headers } from "@/utils/data-fetching"
 import DeclarationAlert from "@/components/DeclarationAlert"
+import VisaValidationTab from "./VisaValidationTab"
+import { headers } from "@/utils/data-fetching"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -74,8 +74,8 @@ const props = defineProps({
   declarationId: String,
 })
 
-const isAwaitingInstruction = computed(() => declaration.value?.status === "AWAITING_INSTRUCTION")
-const canInstruct = computed(() => declaration.value?.status === "ONGOING_INSTRUCTION")
+const isAwaitingVisa = computed(() => declaration.value?.status === "AWAITING_VISA")
+const canInstruct = computed(() => declaration.value?.status === "ONGOING_VISA")
 
 // Requêtes
 const isFetching = ref(true)
@@ -106,9 +106,9 @@ onMounted(async () => {
   handleError(declarationResponse)
 
   // Si on arrive à cette page avec une déclaration déjà assignée à quelqun.e mais en état
-  // AWAITING_INSTRUCTION, on la passe directement à ONGOING_INSTRUCTION.
-  if (declaration.value?.instructor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_INSTRUCTION")
-    await instructDeclaration()
+  // AWAITING_VISA, on la passe directement à ONGOING_VISA.
+  if (declaration.value?.visor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_VISA")
+    await takeDeclaration()
 
   await executeDeclarantFetch()
   handleError(declarantResponse)
@@ -125,7 +125,7 @@ const tabTitles = computed(() => {
     { title: "Historique", icon: "ri-chat-3-line", tabId: "tab-2", panelId: "tab-content-2" },
   ]
   if (canInstruct.value)
-    tabs.push({ title: "Décision", icon: "ri-checkbox-circle-line", tabId: "tab-3", panelId: "tab-content-3" })
+    tabs.push({ title: "Visa / Signature", icon: "ri-checkbox-circle-line", tabId: "tab-3", panelId: "tab-content-3" })
   return tabs
 })
 const selectedTabIndex = ref(0)
@@ -135,19 +135,13 @@ const selectTab = (index) => {
   selectedTabIndex.value = index
 }
 
-const instructDeclaration = async () => {
-  const url = `/api/v1/declarations/${props.declarationId}/take-for-instruction/`
+const takeDeclaration = async () => {
+  const url = `/api/v1/declarations/${props.declarationId}/take-for-visa/`
   const { response } = await useFetch(url, { headers: headers() }).post({}).json()
   $externalResults.value = await handleError(response)
 
   if (response.value.ok) {
     await executeDeclarationFetch()
   }
-}
-
-const reloadDeclaration = async () => {
-  tabs.value?.selectIndex?.(0)
-  await nextTick()
-  await executeDeclarationFetch()
 }
 </script>
