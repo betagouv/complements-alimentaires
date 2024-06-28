@@ -161,12 +161,11 @@ const historyDataDedup = computed(() => Array.from(new Set(historyData.value.map
 
 // TODO: remove background
 // TODO: affichage du change reason dans l'admin
-const url = computed(() => `/api/v1/${getApiType(type).value}/${elementId.value}`)
+const url = computed(() => `/api/v1/${getApiType(type.value)}/${elementId.value}`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
 const getElementFromApi = async () => {
   if (!type.value || !elementId.value) {
-    console.log(props.urlComponent.split("--")[1])
     notFound.value = true
     return
   }

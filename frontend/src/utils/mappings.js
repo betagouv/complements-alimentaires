@@ -14,8 +14,6 @@ export const getTypeIcon = (type) => {
   return iconMapping[type] || "ri-drop-line"
 }
 
-export const getApiType = (type) => (type === "form_of_supply" ? "forms-of-supply" : type)
-
 export const typesMapping = {
   plant: "Plante",
   microorganism: "Micro-organisme",
@@ -29,29 +27,39 @@ export const typesMapping = {
   // qui contient les types plus précis
   ingredient: "Autre ingrédient",
 }
-export const typesSlugMapping = {
-  plant: "plante",
-  microorganism: "micro-organisme",
-  form_of_supply: "forme-d-apport",
-  aroma: "arome",
-  additive: "additif",
-  active_ingredient: "ingredient-actif",
-  non_active_ingredient: "ingredient-non-actif",
+export const frontToAPITypesSlugMapping = {
+  plante: "plant",
+  "micro-organisme": "microorganism",
+  "forme-d-apport": "form_of_supply",
+  arome: "aroma",
+  additif: "additive",
+  "ingredient-actif": "active_ingredient",
+  "ingredient-non-actif": "non_active_ingredient",
   substance: "substance",
   // déprécié
-  ingredient: "autre-ingredient",
+  "autre-ingredient": "ingredient",
 }
 export const getTypeInFrench = (type) => {
   return typesMapping[type] || null
 }
 
-export const slugify = (type) => {
-  return typesSlugMapping[type] || null
-}
+export const slugify = (data) => data?.replaceAll(" ", "-").replaceAll("'", "-").toLowerCase()
+
 export const unSlugify = (typeSlug) => {
-  console.log(typeSlug)
-  console.log(flip(typesSlugMapping))
-  return flip(typesSlugMapping)[typeSlug] || null
+  return frontToAPITypesSlugMapping[typeSlug] || null
+}
+
+export const getApiType = (type) => {
+  switch (type) {
+    case "form_of_supply":
+    case "aroma":
+    case "additive":
+    case "active_ingredient":
+    case "non_active_ingredient":
+      return "other-ingredients"
+    default:
+      return `${type.replace("_", "-")}s`
+  }
 }
 
 export const statusProps = {
