@@ -251,6 +251,30 @@ class DeclarationResubmitView(DeclarationFlowView):
     create_snapshot = True
 
 
+class DeclarationRefuseVisaView(DeclarationFlowView):
+    """
+    ONGOING_VISA -> AWAITING_INSTRUCTION
+    """
+
+    permission_classes = [IsVisor]
+    transition = "refuse_visa"
+    create_snapshot = True
+
+    def perform_snapshot_creation(self, request, declaration):
+        declaration.create_snapshot(user=request.user)
+
+    def on_transition_success(self, request, declaration):
+        """
+        Dans le cas d'un refus de visa, on remet à vide les champs post_validation.
+        On met également les notes privées à destination de l'admnistration dans la déclaration.
+        """
+        declaration.post_validation_producer_message = ""
+        declaration.post_validation_status = ""
+        declaration.post_validation_expiration_days = None
+        declaration.private_notes = request.data.get("private_notes", "")
+        return super().on_transition_success(request, declaration)
+
+
 # Nous utilisons une Non-deterministic state machine. Lors qu'un.e instructeur.ice demande une
 # visa, nous assignnos la déclaration à `AWAITING_VISA` et ajoutons un propriété dans le modèle
 # spécifiant quel sera le status à assigner après le flow de validation.
@@ -273,12 +297,13 @@ class VisaRequestFlowView(DeclarationFlowView):
         pouvoir l'envoyer au producteur si la décision est acceptée par la viseuse.
         On met également les notes privées à destination de l'admnistration dans la déclaration.
         """
-        declaration.post_validation_producer_message = request.data.get("comment", "")
-        declaration.post_validation_expiration_days = request.data.get("expiration")
-        declaration.private_notes = request.data.get("private_notes", "")
         declaration.create_snapshot(user=request.user)
 
     def on_transition_success(self, request, declaration):
+        declaration.post_validation_producer_message = request.data.get("comment", "")
+        declaration.post_validation_expiration_days = request.data.get("expiration")
+        declaration.private_notes = request.data.get("private_notes", "")
+
         if not self.post_validation_status:
             raise Exception("VisaRequestFlowView doit être sous-classée et doit spécifier le post_validation_status")
         declaration.post_validation_status = self.post_validation_status
