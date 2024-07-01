@@ -35,5 +35,6 @@ class IngredientSerializer(serializers.ModelSerializer):
             "public_comments",
             "status",
             "history",
+            "object_type",
         )
         read_only_fields = fields

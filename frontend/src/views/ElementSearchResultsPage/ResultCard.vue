@@ -15,16 +15,16 @@
 
 <script setup>
 import { computed } from "vue"
-import { getTypeIcon, getType } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, slugify } from "@/utils/mappings"
 import ElementStatusBadge from "@/components/ElementStatusBadge.vue"
 
 const props = defineProps({
   result: Object,
 })
 const icon = computed(() => getTypeIcon(props.result.objectType))
-const type = computed(() => getType(props.result.objectType))
+const type = computed(() => getTypeInFrench(props.result.objectType))
 const route = computed(() => {
-  const urlComponent = `${props.result?.id}--${type.value?.toLowerCase()}--${props.result?.name}`
+  const urlComponent = `${props.result?.id}--${slugify(type.value)}--${props.result?.name}`
   return { name: "ElementPage", params: { urlComponent } }
 })
 </script>

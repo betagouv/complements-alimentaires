@@ -63,7 +63,7 @@ class TestAutocomplete(APITestCase):
         self.assertEqual(returned_ids[2], myrtaceae.id)
 
         self.assertEqual(results[0]["objectType"], "substance")
-        self.assertEqual(results[1]["objectType"], "ingredient")
+        self.assertEqual(results[1]["objectType"], "active_ingredient")
         self.assertEqual(results[2]["objectType"], "plant")
 
     def test_autocomplete_accented(self):

@@ -30,7 +30,7 @@
 
 <script setup>
 import { useRouter } from "vue-router"
-import { getType } from "@/utils/mappings"
+import { getTypeInFrench } from "@/utils/mappings"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 
 const router = useRouter()
@@ -43,7 +43,7 @@ const getRouteForTerm = (term) => {
   return { name: "ElementSearchResultsPage", query: { q: term } }
 }
 const goToSelectedOption = (option) => {
-  const type = getType(option.objectType)
+  const type = getTypeInFrench(option.objectType)
   const urlComponent = `${option?.id}--${type?.toLowerCase()}--${option?.name}`
   return router.push({ name: "ElementPage", params: { urlComponent } })
 }
