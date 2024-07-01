@@ -1,24 +1,65 @@
+const flip = (data) => Object.fromEntries(Object.entries(data).map(([key, value]) => [value, key]))
+
 export const getTypeIcon = (type) => {
-  const mapping = {
+  const iconMapping = {
     plant: "ri-plant-line",
     microorganism: "ri-microscope-line",
-    ingredient: "ri-flask-line",
+    form_of_supply: "ri-contrast-drop-line",
+    aroma: "ri-bubble-chart-line",
+    additive: "ri-filter-2-line",
+    active_ingredient: "ri-flask-line",
+    non_active_ingredient: "ri-flask-line",
     substance: "ri-test-tube-line",
   }
-  return mapping[type] || "ri-drop-line"
+  return iconMapping[type] || "ri-drop-line"
 }
 
-export const getType = (type) => {
-  const mapping = {
-    plant: "Plante",
-    microorganism: "Micro-organisme",
-    ingredient: "Ingredient",
-    substance: "Substance",
-    nutrient: "Nutriment",
-    additive: "Additif",
-    aroma: "Arôme",
+export const typesMapping = {
+  plant: "Plante",
+  microorganism: "Micro-organisme",
+  form_of_supply: "Forme d'apport", // nutrient: "Nutriment"
+  aroma: "Arôme",
+  additive: "Additif",
+  active_ingredient: "Ingredient actif",
+  non_active_ingredient: "Ingredient non actif", // TODO : merger ces 2 types en 1 et n'utiliser que le label "actif"/"inactif"
+  substance: "Substance",
+  // TODO: déprecier après l'import de données extraites en mai 2024
+  // qui contient les types plus précis
+  ingredient: "Autre ingrédient",
+}
+export const frontToAPITypesSlugMapping = {
+  plante: "plant",
+  "micro-organisme": "microorganism",
+  "forme-d-apport": "form_of_supply",
+  arome: "aroma",
+  additif: "additive",
+  "ingredient-actif": "active_ingredient",
+  "ingredient-non-actif": "non_active_ingredient",
+  substance: "substance",
+  // déprécié
+  "autre-ingredient": "ingredient",
+}
+export const getTypeInFrench = (type) => {
+  return typesMapping[type] || null
+}
+
+export const slugify = (data) => data?.replaceAll(" ", "-").replaceAll("'", "-").toLowerCase()
+
+export const unSlugify = (typeSlug) => {
+  return frontToAPITypesSlugMapping[typeSlug] || null
+}
+
+export const getApiType = (type) => {
+  switch (type) {
+    case "form_of_supply":
+    case "aroma":
+    case "additive":
+    case "active_ingredient":
+    case "non_active_ingredient":
+      return "other-ingredients"
+    default:
+      return `${type.replace("_", "-")}s`
   }
-  return mapping[type] || null
 }
 
 export const statusProps = {
