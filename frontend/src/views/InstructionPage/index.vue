@@ -42,7 +42,7 @@
             :selected="selectedTabIndex === 3"
             :asc="asc"
           >
-            <DecisionTab :declarationId="declaration?.id" @reload-declaration="reloadDeclaration" />
+            <DecisionTab :declaration="declaration" @reload-declaration="reloadDeclaration" />
           </DsfrTabContent>
         </DsfrTabs>
       </div>
