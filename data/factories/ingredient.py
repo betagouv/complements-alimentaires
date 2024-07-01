@@ -3,7 +3,7 @@ import random
 import factory
 
 from data.factories.substance import SubstanceFactory
-from data.models import Ingredient, IngredientSynonym
+from data.models import Ingredient, IngredientSynonym, IngredientType
 from data.models.ingredient_status import IngredientStatus
 
 
@@ -19,6 +19,7 @@ class IngredientFactory(factory.django.DjangoModelFactory):
     siccrf_description = factory.Faker("text", max_nb_chars=160)
     siccrf_status = IngredientStatus.AUTHORIZED
     to_be_entered_in_next_decree = False
+    ingredient_type = IngredientType.ACTIVE_INGREDIENT
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):
