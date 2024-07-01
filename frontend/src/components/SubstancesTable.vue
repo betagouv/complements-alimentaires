@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-import { computed, defineModel, watch } from "vue"
+import { computed, watch } from "vue"
 
 const payload = defineModel()
 const props = defineProps({ readonly: Boolean })
