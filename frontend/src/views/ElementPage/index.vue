@@ -70,6 +70,10 @@
           />
         </ElementColumn>
 
+        <ElementColumn title="Activité" v-if="activity">
+          <ElementTag :label="activity" />
+        </ElementColumn>
+
         <ElementColumn title="Statut" v-if="status">
           <ElementStatusBadge :text="status" />
         </ElementColumn>
@@ -135,6 +139,7 @@ const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))
 const casNumber = computed(() => element.value?.casNumber)
 const einecNumber = computed(() => element.value?.einecNumber)
+const activity = computed(() => element.value?.activity)
 const status = computed(() =>
   ["autorisé", "non autorisé"].includes(element.value?.status) ? element.value?.status : null
 )
