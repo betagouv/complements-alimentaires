@@ -53,6 +53,10 @@ class DeclarationFlow:
     def request_visa(self):
         pass
 
+    @status.transition(source=Status.ONGOING_VISA, target=Status.AWAITING_INSTRUCTION)
+    def refuse_visa(self):
+        pass
+
     @status.transition(source=Status.OBSERVATION, target=Status.ABANDONED)
     def abandon(self):
         self.error()

@@ -6,7 +6,7 @@ from .company import CompanyFactory
 from .condition import ConditionFactory
 from .effect import EffectFactory
 from .galenic_formulation import GalenicFormulationFactory
-from .global_roles import InstructionRoleFactory
+from .global_roles import InstructionRoleFactory, VisaRoleFactory
 from .ingredient import IngredientFactory
 from .microorganism import MicroorganismFactory
 from .plant import PlantFactory
@@ -181,3 +181,14 @@ class AwaitingVisaDeclarationFactory(CompleteDeclarationFactory):
     status = Declaration.DeclarationStatus.AWAITING_VISA
     author = factory.SubFactory(UserFactory)
     instructor = factory.SubFactory(InstructionRoleFactory)
+
+
+class OngoingVisaDeclarationFactory(CompleteDeclarationFactory):
+    status = Declaration.DeclarationStatus.ONGOING_VISA
+    author = factory.SubFactory(UserFactory)
+    instructor = factory.SubFactory(InstructionRoleFactory)
+    visor = factory.SubFactory(VisaRoleFactory)
+
+    post_validation_status = Declaration.DeclarationStatus.AUTHORIZED
+    post_validation_producer_message = factory.Faker("text", max_nb_chars=20)
+    post_validation_expiration_days = factory.Faker("random_int", min=3, max=40)

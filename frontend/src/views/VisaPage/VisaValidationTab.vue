@@ -45,28 +45,34 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue"
+import { ref, computed } from "vue"
 import { statusProps } from "@/utils/mappings"
+import { headers } from "@/utils/data-fetching"
+import { useFetch } from "@vueuse/core"
+import { handleError } from "@/utils/error-handling"
+import useToaster from "@/composables/use-toaster"
 import VisaInfoLine from "./VisaInfoLine.vue"
+
+const $externalResults = ref({})
+const emit = defineEmits(["reload-declaration"])
 
 const props = defineProps({ declaration: Object })
 const privateNotes = ref(props.declaration?.privateNotes || "")
-
-const decisionCategory = ref(null)
-watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "approve" : null))
-
-const proposal = ref(null)
-
-const needsVisa = ref(false)
-const mandatoryVisaProposals = ["objection", "rejection"]
-watch(proposal, (newProposal) => {
-  if (mandatoryVisaProposals.indexOf(newProposal) > -1) needsVisa.value = true
-})
 
 const instructorName = computed(
   () => `${props.declaration?.instructor?.firstName} ${props.declaration?.instructor?.lastName}`
 )
 const postValidationStatus = computed(() => statusProps[props.declaration.postValidationStatus].label)
+const refuseVisa = async () => {
+  const url = `/api/v1/declarations/${props.declaration.id}/refuse-visa/`
+  const { response } = await useFetch(url, { headers: headers() }).post({ privateNotes: privateNotes.value }).json()
+  $externalResults.value = await handleError(response)
+  if (response.value.ok) {
+    useToaster().addSuccessMessage("Votre décision a été prise en compte")
+    emit("reload-declaration")
+  }
+}
+
 const decisionCategories = computed(() => {
   return [
     {
@@ -85,7 +91,7 @@ const decisionCategories = computed(() => {
       description: `Je ne donne pas mon visa ni signature. La déclaration repartirà en instruction chez
           ${instructorName.value}.`,
       buttonText: "Refuser",
-      buttonHandler: null,
+      buttonHandler: refuseVisa,
     },
   ]
 })

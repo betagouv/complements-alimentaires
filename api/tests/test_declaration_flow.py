@@ -12,6 +12,7 @@ from data.factories import (
     InstructionRoleFactory,
     ObservationDeclarationFactory,
     OngoingInstructionDeclarationFactory,
+    OngoingVisaDeclarationFactory,
     VisaRoleFactory,
 )
 from data.models import Declaration
@@ -424,3 +425,21 @@ class TestDeclarationFlow(APITestCase):
         response = self.client.post(reverse("api:authorize_with_visa", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    @authenticate
+    def test_refuse_visa(self):
+        """
+        Passage de ONGOING_VISA à AWAITING_INSTRUCTION
+        """
+        VisaRoleFactory(user=authenticate.user)
+        declaration = OngoingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:refuse_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.post_validation_status, "")
+        self.assertEqual(declaration.post_validation_producer_message, "")
+        self.assertEqual(declaration.post_validation_expiration_days, None)
+
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)

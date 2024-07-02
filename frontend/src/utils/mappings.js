@@ -1,5 +1,3 @@
-const flip = (data) => Object.fromEntries(Object.entries(data).map(([key, value]) => [value, key]))
-
 export const getTypeIcon = (type) => {
   const iconMapping = {
     plant: "ri-plant-line",
