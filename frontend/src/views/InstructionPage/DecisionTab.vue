@@ -69,7 +69,12 @@
       </DsfrHighlight>
       <hr />
       <DsfrInputGroup>
-        <DsfrInput is-textarea label-visible label="Notes de l'expert (à destination de l'administration)" />
+        <DsfrInput
+          v-model="privateNotes"
+          is-textarea
+          label-visible
+          label="Notes de l'expert (à destination de l'administration)"
+        />
       </DsfrInputGroup>
     </div>
   </div>
@@ -83,7 +88,7 @@ import useToaster from "@/composables/use-toaster"
 import { handleError } from "@/utils/error-handling"
 
 const $externalResults = ref({})
-const props = defineProps(["declarationId"])
+const props = defineProps(["declaration"])
 
 const emit = defineEmits(["reload-declaration"])
 
@@ -93,6 +98,7 @@ watch(decisionCategory, () => (proposal.value = decisionCategory.value === "appr
 const proposal = ref(null)
 const delayDays = ref(30)
 const comment = ref("")
+const privateNotes = ref(props.declaration?.privateNotes || "")
 
 const needsVisa = ref(false)
 const mandatoryVisaProposals = ["objection", "rejection"]
@@ -178,8 +184,10 @@ const submitDecision = async () => {
   const visaPath = needsVisa.value ? "with-visa" : "no-visa"
   const urlPath = `${actions[proposal.value]}-${visaPath}`
 
-  const url = `/api/v1/declarations/${props.declarationId}/${urlPath}/`
-  const { response } = await useFetch(url, { headers: headers() }).post({ comment: comment.value }).json()
+  const url = `/api/v1/declarations/${props.declaration.id}/${urlPath}/`
+  const { response } = await useFetch(url, { headers: headers() })
+    .post({ comment: comment.value, privateNotes: privateNotes.value })
+    .json()
   $externalResults.value = await handleError(response)
 
   if (response.value.ok) {

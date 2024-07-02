@@ -630,6 +630,25 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
+    def test_private_notes(self):
+        """
+        Seulement les roles Instruction et Visa peuvent voir les notes privées
+        """
+        DeclarantRoleFactory(user=authenticate.user)
+        declaration = DeclarationFactory(author=authenticate.user)
+
+        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": declaration.id}))
+        json_declaration = response.json()
+        self.assertFalse("privateNotes" in json_declaration)
+
+        # On essaie à nouveau cette fois ci en étant aussi instructeur·ice
+        InstructionRoleFactory(user=authenticate.user)
+        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": declaration.id}))
+        json_declaration = response.json()
+        self.assertTrue("privateNotes" in json_declaration)
+        self.assertEqual(json_declaration["privateNotes"], declaration.private_notes)
+
+    @authenticate
     def test_update_single_declaration(self):
         """
         Un user peut modifier les données de sa déclaration
