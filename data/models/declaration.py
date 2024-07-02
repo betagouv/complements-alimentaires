@@ -165,6 +165,9 @@ class Declaration(Historisable, TimeStampable):
         camelized_bytes = CamelCaseJSONRenderer().render(serialized_data)
         return json.loads(camelized_bytes.decode("utf-8"))
 
+    def __str__(self):
+        return f"Déclaration « {self.name} »"
+
 
 # Les modèles commençant par `Declared` représentent des éléments ajoutés par l'utilisateur.ice dans sa
 # déclaration. Ces éléments peuvent être choisis dans la base de données ou rajoutés manuellement.

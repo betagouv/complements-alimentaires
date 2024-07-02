@@ -2,6 +2,7 @@ from drf_base64.fields import Base64FileField
 from rest_framework import serializers
 
 from api.exceptions import ProjectAPIException
+from api.permissions import IsInstructor, IsVisor
 from data.models import (
     Attachment,
     Company,
@@ -341,6 +342,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "post_validation_status",
             "post_validation_producer_message",
             "post_validation_expiration_days",
+            "private_notes",
         )
         read_only_fields = (
             "id",
@@ -351,6 +353,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "post_validation_status",
             "post_validation_producer_message",
             "post_validation_expiration_days",
+            "private_notes",
         )
 
     def create(self, validated_data):
@@ -394,6 +397,24 @@ class DeclarationSerializer(serializers.ModelSerializer):
                     serializer.create(declared_elements)
 
         return declaration
+
+    def to_representation(self, obj):
+        """
+        On surcharge cette méthode pour assurer que les notes privées ne soient pas
+        sérialisées si la personne ne fait pas partie de l'administration
+        """
+        ret = super().to_representation(obj)
+        request = self.context.get("request")
+        view = self.context.get("view")
+        can_see_private_notes = (
+            request
+            and view
+            and (IsVisor().has_permission(request, view) or IsInstructor().has_permission(request, view))
+        )
+
+        if not can_see_private_notes:
+            ret.pop("private_notes")
+        return ret
 
 
 class DeclarationShortSerializer(serializers.ModelSerializer):

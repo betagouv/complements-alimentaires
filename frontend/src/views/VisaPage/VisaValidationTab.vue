@@ -19,7 +19,12 @@
     </div>
 
     <DsfrInputGroup>
-      <DsfrInput is-textarea label-visible label="Notes de l'expert (à destination de l'administration)" />
+      <DsfrInput
+        v-model="privateNotes"
+        is-textarea
+        label-visible
+        label="Notes de l'expert (à destination de l'administration)"
+      />
     </DsfrInputGroup>
 
     <div class="grid grid-cols-2 gap-10">
@@ -45,6 +50,7 @@ import { statusProps } from "@/utils/mappings"
 import VisaInfoLine from "./VisaInfoLine.vue"
 
 const props = defineProps({ declaration: Object })
+const privateNotes = ref(props.declaration?.privateNotes || "")
 
 const decisionCategory = ref(null)
 watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "approve" : null))

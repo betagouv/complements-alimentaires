@@ -200,6 +200,7 @@ class DeclarationFlowView(GenericAPIView):
             comment=request.data.get("comment", ""),
             expiration_days=request.data.get("expiration"),
         )
+        declaration.private_notes = request.data.get("privateNotes", "")
 
     def post(self, request, *args, **kwargs):
         declaration = self.get_object()
@@ -311,9 +312,11 @@ class VisaRequestFlowView(DeclarationFlowView):
         Dans le cas d'une requête de validation, on ne mettra pas le commentaire à
         destination du producteur dans le snapshot créé. On le met dans le modèle pour
         pouvoir l'envoyer au producteur si la décision est acceptée par la viseuse.
+        On met également les notes privées à destination de l'admnistration dans la déclaration.
         """
         declaration.post_validation_producer_message = request.data.get("comment", "")
         declaration.post_validation_expiration_days = request.data.get("expiration")
+        declaration.private_notes = request.data.get("private_notes", "")
         declaration.create_snapshot(user=request.user)
 
     def on_transition_success(self, request, declaration):
