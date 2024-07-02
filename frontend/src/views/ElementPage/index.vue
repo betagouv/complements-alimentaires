@@ -128,7 +128,7 @@ const search = () => {
 const props = defineProps({ urlComponent: String })
 const elementId = computed(() => props.urlComponent.split("--")[0])
 const type = computed(() => unSlugify(props.urlComponent.split("--")[1]))
-const icon = computed(() => getTypeIcon(type))
+const icon = computed(() => getTypeIcon(type.value))
 // Information affichée
 const family = computed(() => element.value?.family?.name)
 const genre = computed(() => element.value?.genre)
