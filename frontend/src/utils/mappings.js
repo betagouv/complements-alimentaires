@@ -31,7 +31,7 @@ export const frontToAPITypesSlugMapping = {
   plante: "plant",
   "micro-organisme": "microorganism",
   "forme-d-apport": "form_of_supply",
-  arome: "aroma",
+  arôme: "aroma",
   additif: "additive",
   "ingredient-actif": "active_ingredient",
   "ingredient-non-actif": "non_active_ingredient",
