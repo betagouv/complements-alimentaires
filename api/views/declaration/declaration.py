@@ -24,9 +24,50 @@ from api.views.declaration.declaration_flow import DeclarationFlow
 from data.models import Company, Declaration, InstructionRole, VisaRole
 
 
+class DeclarationPagination(LimitOffsetPagination):
+    default_limit = 10
+    max_limit = 50
+
+
+class DeclarationFilterSet(django_filters.FilterSet):
+    author = BaseNumberInFilter(field_name="author__id")
+    company = BaseNumberInFilter(field_name="company__id")
+    company_name_start = django_filters.CharFilter(method="company_name_start__gte")
+    company_name_end = django_filters.CharFilter(method="company_name_end__lte")
+    status = django_filters.CharFilter(method="status__in")
+
+    class Meta:
+        model = Declaration
+        fields = [
+            "company",
+            "status",
+            "author",
+            "company_name_start",
+            "company_name_end",
+        ]
+
+    def company_name_start__gte(self, queryset, value, *args, **kwargs):
+        return self._annotate_queryset(queryset).filter(name_unaccented_lower__gte=args[0].lower())
+
+    def company_name_end__lte(self, queryset, value, *args, **kwargs):
+        return self._annotate_queryset(queryset).filter(name_unaccented_lower__lte=args[0].lower())
+
+    def _annotate_queryset(self, queryset):
+        return queryset.annotate(name_unaccented_lower=Lower(Unaccent(F("company__social_name"))))
+
+    def status__in(self, queryset, value, *args, **kwargs):
+        return queryset.filter(status__in=args[0].split(","))
+
+
 class UserDeclarationsListCreateApiView(ListCreateAPIView):
     model = Declaration
     permission_classes = [IsDeclarant, CanAccessUserDeclatarions]
+    pagination_class = DeclarationPagination
+    filter_backends = [
+        django_filters.DjangoFilterBackend,
+        CamelCaseOrderingFilter,
+    ]
+    filterset_class = DeclarationFilterSet
 
     def get_queryset(self):
         return self.request.user.declarations

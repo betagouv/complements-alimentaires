@@ -605,7 +605,7 @@ class TestDeclarationApi(APITestCase):
 
         response = self.client.get(reverse("api:list_create_declaration", kwargs={"user_pk": authenticate.user.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        declarations = response.json()
+        declarations = response.json()["results"]
 
         self.assertEqual(len(declarations), 2)
         ids = map(lambda x: x["id"], declarations)

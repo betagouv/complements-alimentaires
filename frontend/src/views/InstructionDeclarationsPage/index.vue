@@ -5,14 +5,6 @@
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Déclarations pour instruction' }]"
     />
     <div class="border px-4 mb-2 sm:flex gap-8 items-baseline filters">
-      <DsfrInputGroup>
-        <DsfrSelect
-          :modelValue="filteredStatus"
-          label="Filtrer par statut"
-          :options="statusFilterOptions"
-          @update:modelValue="updateStatusFilter"
-        />
-      </DsfrInputGroup>
       <DsfrFieldset legend="Nom d'entreprise" class="!mb-0">
         <div class="flex gap-4">
           <DsfrInputGroup>
@@ -35,6 +27,12 @@
           </DsfrInputGroup>
         </div>
       </DsfrFieldset>
+      <StatusFilter
+        :exclude="['DRAFT']"
+        class="max-w-2xl"
+        @update:modelValue="updateStatusFilter"
+        v-model="filteredStatus"
+      />
     </div>
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
@@ -62,7 +60,7 @@ import InstructionDeclarationsTable from "./InstructionDeclarationsTable"
 import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
 import { DsfrInput } from "@gouvminint/vue-dsfr"
-import { statusFilterOptions } from "@/utils/mappings"
+import StatusFilter from "@/components/StatusFilter.vue"
 
 const router = useRouter()
 const route = useRoute()

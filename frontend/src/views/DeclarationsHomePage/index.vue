@@ -5,8 +5,16 @@
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Mes déclarations' }]"
     />
     <div class="block sm:flex items-center mb-8">
-      <h1 class="!mb-0 grow">Mes déclarations</h1>
-      <DsfrButton v-if="hasDeclarations" label="Nouvelle déclaration" secondary @click="createNewDeclaration" />
+      <DsfrButton
+        size="small"
+        v-if="hasDeclarations"
+        label="Nouvelle déclaration"
+        secondary
+        @click="createNewDeclaration"
+      />
+    </div>
+    <div class="border px-4 pt-4 mb-2 sm:flex gap-8 items-baseline filters">
+      <StatusFilter class="max-w-2xl" @update:modelValue="updateStatusFilter" v-model="filteredStatus" />
     </div>
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
@@ -16,6 +24,13 @@
       <p>Vous n'avez pas encore créé des déclarations.</p>
       <DsfrButton icon="ri-capsule-fill" label="Créer ma première déclaration" @click="createNewDeclaration" />
     </div>
+    <DsfrPagination
+      v-if="showPagination"
+      @update:currentPage="updatePage"
+      :pages="pages"
+      :current-page="page - 1"
+      :truncLimit="5"
+    />
   </div>
 </template>
 
@@ -24,23 +39,43 @@ import { computed, watch } from "vue"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import { handleError } from "@/utils/error-handling"
 import DeclarationsTable from "./DeclarationsTable"
-import { useRouter } from "vue-router"
+import { useRouter, useRoute } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
+import { getPagesForPagination } from "@/utils/components"
+import StatusFilter from "@/components/StatusFilter.vue"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
-const { response, data, isFetching } = useFetch(
-  `/api/v1/users/${loggedUser.value.id}/declarations/?ordering=-modificationDate`
-)
-  .get()
-  .json()
-
-watch(response, () => handleError(response))
-
-const hasDeclarations = computed(() => !!data.value?.length)
-
 const router = useRouter()
+const route = useRoute()
+
+const hasDeclarations = computed(() => !!data.value?.results?.length)
+const showPagination = computed(() => data.value?.count > data.value?.results?.length)
+const offset = computed(() => (page.value - 1) * limit)
+
+const limit = 10
+const pages = computed(() => getPagesForPagination(data.value.count, limit, route.path))
+
+const page = computed(() => parseInt(route.query.page))
+const filteredStatus = computed(() => route.query.status)
+
 const createNewDeclaration = () => router.push({ name: "NewDeclaration" })
+
+const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
+const updateStatusFilter = (status) => updateQuery({ status })
+const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
+
+const url = computed(
+  () =>
+    `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&ordering=-modificationDate`
+)
+const { response, data, isFetching, execute } = useFetch(url).get().json()
+const fetchSearchResults = async () => {
+  await execute()
+  await handleError(response)
+}
+
+watch([page, filteredStatus], fetchSearchResults)
 </script>

@@ -200,6 +200,10 @@ const routes = [
     meta: {
       title: "Mes déclarations",
       authenticationRequired: true,
+      defaultQueryParams: {
+        page: 1,
+        status: "DRAFT,OBSERVATION,OBJECTION",
+      },
     },
   },
   {
@@ -232,7 +236,7 @@ const routes = [
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
-        status: "",
+        status: "AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA,OBJECTION,OBSERVATION",
       },
     },
   },
@@ -246,7 +250,7 @@ const routes = [
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
-        status: "",
+        status: "AWAITING_INSTRUCTION,ONGOING_INSTRUCTION",
         entrepriseDe: "",
         entrepriseA: "",
       },
@@ -273,7 +277,7 @@ const routes = [
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
-        status: "",
+        status: "AWAITING_VISA,ONGOING_VISA",
         entrepriseDe: "",
         entrepriseA: "",
       },
