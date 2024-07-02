@@ -443,3 +443,117 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(declaration.post_validation_expiration_days, None)
 
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+    @authenticate
+    def refuse_visa_unauthorized(self):
+        """
+        Passage de ONGOING_VISA à AWAITING_INSTRUCTION
+        Seulement possible pour personnes ayant le rôle de visur·se
+        """
+        declaration = OngoingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:refuse_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    def refuse_visa_unauthenticated(self):
+        """
+        Passage de ONGOING_VISA à AWAITING_INSTRUCTION
+        Pas possible pour les personnes non-authentifiées
+        """
+        declaration = OngoingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:refuse_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    @authenticate
+    def test_accept_visa(self):
+        """
+        Passage de ONGOING_VISA à { AUTHORIZED | REJECTED | OBJECTION | OBSERVATION }
+        """
+        VisaRoleFactory(user=authenticate.user)
+
+        # AUTHORIZED
+        declaration = OngoingVisaDeclarationFactory(
+            post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
+            post_validation_producer_message="À authoriser",
+            post_validation_expiration_days=12,
+        )
+
+        response = self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
+        self.assertEqual(latest_snapshot.comment, "À authoriser")
+        self.assertEqual(latest_snapshot.expiration_days, 12)
+
+        # REJECTED
+        declaration = OngoingVisaDeclarationFactory(
+            post_validation_status=Declaration.DeclarationStatus.REJECTED,
+            post_validation_producer_message="À refuser",
+            post_validation_expiration_days=20,
+        )
+
+        response = self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), format="json")
+
+        declaration.refresh_from_db()
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.REJECTED)
+        self.assertEqual(latest_snapshot.comment, "À refuser")
+        self.assertEqual(latest_snapshot.expiration_days, 20)
+
+        # OBJECTION
+        declaration = OngoingVisaDeclarationFactory(
+            post_validation_status=Declaration.DeclarationStatus.OBJECTION,
+            post_validation_producer_message="Objection",
+            post_validation_expiration_days=22,
+        )
+
+        response = self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), format="json")
+
+        declaration.refresh_from_db()
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.OBJECTION)
+        self.assertEqual(latest_snapshot.comment, "Objection")
+        self.assertEqual(latest_snapshot.expiration_days, 22)
+
+        # OBSERVATION
+        declaration = OngoingVisaDeclarationFactory(
+            post_validation_status=Declaration.DeclarationStatus.OBSERVATION,
+            post_validation_producer_message="Observation",
+            post_validation_expiration_days=23,
+        )
+
+        response = self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), format="json")
+
+        declaration.refresh_from_db()
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.OBSERVATION)
+        self.assertEqual(latest_snapshot.comment, "Observation")
+        self.assertEqual(latest_snapshot.expiration_days, 23)
+
+    @authenticate
+    def accept_visa_unauthorized(self):
+        """
+        Passage de ONGOING_VISA à à { AUTHORIZED | REJECTED | OBJECTION | OBSERVATION }
+        Seulement possible pour personnes ayant le rôle de visur·se
+        """
+        declaration = OngoingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    def accept_visa_unauthenticated(self):
+        """
+        Passage de ONGOING_VISA à à { AUTHORIZED | REJECTED | OBJECTION | OBSERVATION }
+        Pas possible pour les personnes non-authentifiées
+        """
+        declaration = OngoingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)

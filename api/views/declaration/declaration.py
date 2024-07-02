@@ -142,6 +142,12 @@ class DeclarationFlowView(GenericAPIView):
     transition = None
     create_snapshot = False
 
+    def get_transition(self, request, declaration):
+        """
+        À surcharger en cas d'une transisiton dynamique
+        """
+        return self.transition
+
     def on_transition_success(self, request, declaration):
         """
         Hook à surcharger dans le cas où il faut faire des choses particulières
@@ -164,14 +170,14 @@ class DeclarationFlowView(GenericAPIView):
     def post(self, request, *args, **kwargs):
         declaration = self.get_object()
         flow = DeclarationFlow(declaration)
-        transition_method = getattr(flow, self.transition)
+        transition_method = getattr(flow, self.get_transition(request, declaration))
         flow_permission_method = getattr(transition_method, "has_permission", None)
         if flow_permission_method and not flow_permission_method(request.user):
             raise PermissionDenied()
         transition_method()
-        self.on_transition_success(request, declaration)
         if self.create_snapshot:
             self.perform_snapshot_creation(request, declaration)
+        self.on_transition_success(request, declaration)
         declaration.save()
         serializer = self.get_serializer(declaration)
         return Response(serializer.data)
@@ -251,17 +257,9 @@ class DeclarationResubmitView(DeclarationFlowView):
     create_snapshot = True
 
 
-class DeclarationRefuseVisaView(DeclarationFlowView):
-    """
-    ONGOING_VISA -> AWAITING_INSTRUCTION
-    """
-
+class VisaDecisionView(DeclarationFlowView):
     permission_classes = [IsVisor]
-    transition = "refuse_visa"
     create_snapshot = True
-
-    def perform_snapshot_creation(self, request, declaration):
-        declaration.create_snapshot(user=request.user)
 
     def on_transition_success(self, request, declaration):
         """
@@ -273,6 +271,44 @@ class DeclarationRefuseVisaView(DeclarationFlowView):
         declaration.post_validation_expiration_days = None
         declaration.private_notes = request.data.get("private_notes", "")
         return super().on_transition_success(request, declaration)
+
+
+class DeclarationRefuseVisaView(VisaDecisionView):
+    """
+    ONGOING_VISA -> AWAITING_INSTRUCTION
+    """
+
+    transition = "refuse_visa"
+
+    def perform_snapshot_creation(self, request, declaration):
+        declaration.create_snapshot(user=request.user)
+
+
+class DeclarationAcceptVisaView(VisaDecisionView):
+    """
+    ONGOING_VISA -> { AUTHORIZED | REJECTED | OBJECTION | OBSERVATION }
+    """
+
+    def perform_snapshot_creation(self, request, declaration):
+        """
+        Possible de le surcharger si la création du snapshot nécessite un
+        traitement spécial
+        """
+        declaration.create_snapshot(
+            user=request.user,
+            comment=declaration.post_validation_producer_message,
+            expiration_days=declaration.post_validation_expiration_days,
+        )
+        declaration.private_notes = request.data.get("privateNotes", "")
+
+    def get_transition(self, request, declaration):
+        transition_map = {
+            Declaration.DeclarationStatus.AUTHORIZED: "accept_visa_authorize",
+            Declaration.DeclarationStatus.REJECTED: "accept_visa_reject",
+            Declaration.DeclarationStatus.OBJECTION: "accept_visa_object",
+            Declaration.DeclarationStatus.OBSERVATION: "accept_visa_observe",
+        }
+        return transition_map.get(declaration.post_validation_status)
 
 
 # Nous utilisons une Non-deterministic state machine. Lors qu'un.e instructeur.ice demande une
