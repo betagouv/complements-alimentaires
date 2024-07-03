@@ -57,6 +57,22 @@ class DeclarationFlow:
     def refuse_visa(self):
         pass
 
+    @status.transition(source=Status.ONGOING_VISA, target=Status.AUTHORIZED)
+    def accept_visa_authorize(self):
+        pass
+
+    @status.transition(source=Status.ONGOING_VISA, target=Status.REJECTED)
+    def accept_visa_reject(self):
+        pass
+
+    @status.transition(source=Status.ONGOING_VISA, target=Status.OBJECTION)
+    def accept_visa_object(self):
+        pass
+
+    @status.transition(source=Status.ONGOING_VISA, target=Status.OBSERVATION)
+    def accept_visa_observe(self):
+        pass
+
     @status.transition(source=Status.OBSERVATION, target=Status.ABANDONED)
     def abandon(self):
         self.error()

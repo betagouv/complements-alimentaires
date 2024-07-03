@@ -73,6 +73,16 @@ const refuseVisa = async () => {
   }
 }
 
+const acceptVisa = async () => {
+  const url = `/api/v1/declarations/${props.declaration.id}/accept-visa/`
+  const { response } = await useFetch(url, { headers: headers() }).post({ privateNotes: privateNotes.value }).json()
+  $externalResults.value = await handleError(response)
+  if (response.value.ok) {
+    useToaster().addSuccessMessage("Votre décision a été prise en compte")
+    emit("reload-declaration")
+  }
+}
+
 const decisionCategories = computed(() => {
   return [
     {
@@ -82,13 +92,13 @@ const decisionCategories = computed(() => {
       description: `Je suis d'accord pour donner mon visa et signature. La déclaration partirà en état «
           ${postValidationStatus.value} ».`,
       buttonText: "Valider",
-      buttonHandler: null,
+      buttonHandler: acceptVisa,
     },
     {
       title: "Je ne suis pas d'accord",
       icon: "ri-close-circle-fill",
       iconColor: "red",
-      description: `Je ne donne pas mon visa ni signature. La déclaration repartirà en instruction chez
+      description: `Je ne donne pas mon visa ni signature. La déclaration repartira en instruction chez
           ${instructorName.value}.`,
       buttonText: "Refuser",
       buttonHandler: refuseVisa,
