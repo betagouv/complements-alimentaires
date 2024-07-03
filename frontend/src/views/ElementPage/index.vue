@@ -139,7 +139,7 @@ const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))
 const casNumber = computed(() => element.value?.casNumber)
 const einecNumber = computed(() => element.value?.einecNumber)
-const activity = computed(() => element.value?.activity)
+const activity = computed(() => (element.value?.activity ? "Actif" : "Non actif"))
 const status = computed(() =>
   ["autorisé", "non autorisé"].includes(element.value?.status) ? element.value?.status : null
 )
@@ -168,7 +168,7 @@ const historyDataDedup = computed(() => Array.from(new Set(historyData.value.map
 
 // TODO: remove background
 // TODO: affichage du change reason dans l'admin
-const url = computed(() => `/api/v1/${getApiType(type.value)}/${elementId.value}`)
+const url = computed(() => `/api/v1/${getApiType(type.value)}s/${elementId.value}`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
 const getElementFromApi = async () => {

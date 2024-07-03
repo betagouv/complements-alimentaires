@@ -56,9 +56,18 @@ export const getApiType = (type) => {
     case "additive":
     case "active_ingredient":
     case "non_active_ingredient":
-      return "other-ingredients"
+      return "other-ingredient"
     default:
-      return `${type.replace("_", "-")}s`
+      return `${type.replace("_", "-")}`
+  }
+}
+
+export const getActivityNotEditableByType = (type) => {
+  switch (type) {
+    case "plant":
+      return false
+    default:
+      return true
   }
 }
 

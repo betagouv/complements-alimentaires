@@ -7,5 +7,5 @@ class IngredientActivity(models.IntegerChoices):
     Ce sont des équivalents de siccrf_id, qu'il ne faut donc pas modifier si on veut s'assurer de la cohérence des données.
     """
 
-    ACTIVE = 1, "ingrédient actif"
-    NOT_ACTIVE = 0, "ingrédient non actif"
+    ACTIVE = 1, "actif"
+    NOT_ACTIVE = 0, "non actif"

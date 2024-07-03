@@ -16,7 +16,12 @@
       </div>
       <div class="flex grow">
         <div class="grow pl-4 ml-6 sm:border-l self-center">
-          <DsfrCheckbox class="!my-2" v-model="model.active" :label="model.active ? 'Actif' : 'Non actif'" />
+          <DsfrCheckbox
+            class="!my-2"
+            :disabled="model.disabled"
+            v-model="model.active"
+            :label="model.active ? 'Actif' : 'Non actif'"
+          />
         </div>
         <div><DsfrButton secondary @click="$emit('remove', model)">Enlever</DsfrButton></div>
       </div>
