@@ -4,15 +4,13 @@
       class="mb-8"
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Visa / Signature' }]"
     />
-    <div class="border px-4 pb-4 mb-2 sm:flex gap-8 items-baseline filters">
-      <DsfrInputGroup>
-        <DsfrSelect
-          :modelValue="filteredStatus"
-          label="Filtrer par statut"
-          :options="statusFilterOptions"
-          @update:modelValue="updateStatusFilter"
-        />
-      </DsfrInputGroup>
+    <div class="border px-4 pt-4 mb-2 sm:flex gap-8 items-baseline filters">
+      <StatusFilter
+        :exclude="['DRAFT']"
+        class="max-w-2xl"
+        @update:modelValue="updateStatusFilter"
+        v-model="filteredStatus"
+      />
     </div>
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
@@ -39,7 +37,7 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import VisaDeclarationsTable from "./VisaDeclarationsTable"
 import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
-import { statusFilterOptions } from "@/utils/mappings"
+import StatusFilter from "@/components/StatusFilter.vue"
 
 const router = useRouter()
 const route = useRoute()

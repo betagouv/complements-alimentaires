@@ -16,7 +16,7 @@ import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import { useResizeObserver, useDebounceFn } from "@vueuse/core"
 
-const props = defineProps({ data: { type: Array, default: () => [] } })
+const props = defineProps({ data: { type: Object, default: () => {} } })
 const emit = defineEmits("open")
 
 // Les données pour la table
@@ -26,16 +26,15 @@ const headers = computed(() => {
 })
 const rows = computed(() => {
   // Les dates ISO sont sortables par text
-  if (!props.data) return []
-  const sorted = [...props.data].sort((a, b) => b.modificationDate.localeCompare(a.modificationDate))
+  if (!props.data?.results) return []
 
   if (useShortTable.value)
-    return sorted.map((d) => ({
+    return props.data.results.map((d) => ({
       rowAttrs: { class: "cursor-pointer", onClick: () => emit("open", d.id) },
       rowData: [d.name, getStatusTagForCell(d.status)],
     }))
 
-  return sorted.map((d) => ({
+  return props.data.results.map((d) => ({
     rowData: [
       {
         component: "router-link",
