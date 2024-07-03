@@ -98,7 +98,7 @@ const decisionCategories = computed(() => {
       title: "Je ne suis pas d'accord",
       icon: "ri-close-circle-fill",
       iconColor: "red",
-      description: `Je ne donne pas mon visa ni signature. La déclaration repartirà en instruction chez
+      description: `Je ne donne pas mon visa ni signature. La déclaration repartira en instruction chez
           ${instructorName.value}.`,
       buttonText: "Refuser",
       buttonHandler: refuseVisa,
