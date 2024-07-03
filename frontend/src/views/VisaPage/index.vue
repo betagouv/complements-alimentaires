@@ -42,7 +42,7 @@
             :selected="selectedTabIndex === 3"
             :asc="asc"
           >
-            <VisaValidationTab :declaration="declaration" />
+            <VisaValidationTab :declaration="declaration" @reload-declaration="reloadDeclaration" />
           </DsfrTabContent>
         </DsfrTabs>
       </div>
@@ -53,7 +53,7 @@
 <script setup>
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { onMounted, computed, ref } from "vue"
+import { onMounted, computed, ref, nextTick } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
@@ -143,5 +143,11 @@ const takeDeclaration = async () => {
   if (response.value.ok) {
     await executeDeclarationFetch()
   }
+}
+
+const reloadDeclaration = async () => {
+  tabs.value?.selectIndex?.(0)
+  await nextTick()
+  await executeDeclarationFetch()
 }
 </script>

@@ -24,6 +24,7 @@ from .declaration import (
     AwaitingInstructionDeclarationFactory,
     ObservationDeclarationFactory,
     AwaitingVisaDeclarationFactory,
+    OngoingVisaDeclarationFactory,
 )
 from .solicitation import CollaborationInvitationFactory, CoSupervisionClaimFactory, SupervisionClaimFactory
 from .global_roles import InstructionRoleFactory, VisaRoleFactory

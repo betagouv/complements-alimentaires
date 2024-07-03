@@ -17,6 +17,7 @@ from .declaration.declaration import (
     DeclarationObjectWithVisa,
     DeclarationRejectWithVisa,
     DeclarationAuthorizeWithVisa,
+    DeclarationRefuseVisaView,
 )
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
