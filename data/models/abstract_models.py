@@ -39,7 +39,7 @@ class CommonModel(TimeStampable, WithMissingImportBoolean, WithDefaultFields):
             "form_of_supply": IngredientActivity.ACTIVE,
             "active_ingredient": IngredientActivity.ACTIVE,
             # Dans TeleIcare, les substances n'avaient pas de champ activity associé
-            "substances": IngredientActivity.ACTIVE,
+            "substance": IngredientActivity.ACTIVE,
             "non_active_ingredient": IngredientActivity.NOT_ACTIVE,
             # selon la règlementation, arome et additif sont des améliorants
             "aroma": IngredientActivity.NOT_ACTIVE,
