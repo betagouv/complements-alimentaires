@@ -34,10 +34,11 @@
           <DsfrButton tertiary label="Voir" size="sm" @click="modalOpened = true" />
         </div>
       </div>
-      <div>
-        {{ snapshot.user.firstName }} {{ snapshot.user.lastName }} a changé le status à «
-        <span class="font-bold">{{ statusProps[snapshot.status].label }}</span>
-        »
+      <div v-if="actionText">
+        {{ actionText }}
+      </div>
+      <div v-else>
+        {{ fullName }} a changé le status à « {{ statusProps[snapshot.status].label }} »
         <span v-if="!snapshot.comment && !isInValidationState">sans laisser de message</span>
       </div>
     </div>
@@ -58,6 +59,21 @@ const date = computed(
 )
 const modalOpened = ref(false)
 const isInValidationState = computed(() => props.snapshot.status === "AWAITING_VISA")
+const fullName = computed(() => `${props.snapshot.user.firstName} ${props.snapshot.user.lastName}`)
+const actionText = computed(() => {
+  const mapping = {
+    SUBMIT: "a soumis la déclaration pour instruction",
+    OBSERVE_NO_VISA: "a emis des observations",
+    AUTHORIZE_NO_VISA: "a autorisé la déclaration",
+    RESPOND_TO_OBSERVATION: "a répondu aux observations",
+    RESPOND_TO_OBJECTION: "a répondu aux objections",
+    REQUEST_VISA: `a demandé un visa pour passer à l'état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
+    ACCEPT_VISA: `a accepté le visa pour passer à l'état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
+    REFUSE_VISA: `a refusé le visa pour passer à l'état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
+    RETIRE: "a retiré le produit du marché",
+  }
+  return mapping[props.snapshot.action] ? `${fullName.value} ${mapping[props.snapshot.action]}.` : null
+})
 </script>
 
 <style scoped>
