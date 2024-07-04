@@ -17,6 +17,34 @@ class CustomJSONEncoder(DjangoJSONEncoder):
 
 
 class Snapshot(TimeStampable):
+    class SnapshotActions(models.TextChoices):
+        SUBMIT = "SUBMIT", "soumettre pour instruction"
+        TAKE_FOR_INSTRUCTION = "TAKE_FOR_INSTRUCTION", "prendre pour instruction"
+        OBSERVE_NO_VISA = "OBSERVE_NO_VISA", "mettre en observation sans visa"
+        AUTHORIZE_NO_VISA = "AUTHORIZE_NO_VISA", "autoriser sans visa"
+        RESPOND_TO_OBSERVATION = "RESPOND_TO_OBSERVATION", "répondre à une observation"
+        RESPOND_TO_OBJECTION = "RESPOND_TO_OBJECTION", "répondre à une objection"
+        REQUEST_VISA = "REQUEST_VISA", "demander un visa"
+        TAKE_FOR_VISA = "TAKE_FOR_VISA", "prendre pour visa"
+        ACCEPT_VISA = "APPROVE_VISA", "valider le visa"
+        REFUSE_VISA = "REFUSE_VISA", "refuser le visa"
+        RETIRE = "RETIRE", "retirer du marché"
+        ABANDON = "ABANDON", "mettre en abandon"
+        OTHER = "OTHER", "autre"
+
+    action = models.CharField(
+        max_length=50,
+        blank=True,
+        choices=SnapshotActions.choices,
+        default=SnapshotActions.OTHER,
+    )
+    post_validation_status = models.CharField(
+        max_length=50,
+        blank=True,
+        choices=Declaration.DeclarationStatus.choices,
+        default=Declaration.DeclarationStatus.DRAFT,
+        verbose_name="status à assigner après la validation",
+    )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,
