@@ -47,7 +47,7 @@
     />
     <ElementList @remove="removeElement" objectType="substance" :elements="payload.declaredSubstances" />
     <!-- On conserve ce type ingredient déprécié temporairement -->
-    <!-- <ElementList @remove="removeElement" objectType="ingredient" :elements="payload.declaredIngredients" /> -->
+    <ElementList @remove="removeElement" objectType="ingredient" :elements="payload.declaredIngredients" />
 
     <div v-if="allElements.length === 0" class="my-12">
       <v-icon name="ri-information-line" class="mr-1"></v-icon>
