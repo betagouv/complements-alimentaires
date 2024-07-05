@@ -48,6 +48,9 @@ module.exports = {
         "ca-microorganism": "#6E445A",
         "ca-substance": "#465F9D",
         "ca-ingredient": "#8D533E",
+        "ca-aroma": "#a94645",
+        "ca-additive": "#006A6F",
+        "ca-form-of-supply": "#E4794A",
       },
     },
     // DSFR breakpoints taken from here:

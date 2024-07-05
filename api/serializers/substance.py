@@ -37,6 +37,7 @@ class SubstanceSerializer(serializers.ModelSerializer):
             "unit",
             "synonyms",
             "public_comments",
+            "activity",
             "status",
             "history",
         )

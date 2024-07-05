@@ -20,8 +20,35 @@
 
     <ElementList @remove="removeElement" objectType="plant" :elements="payload.declaredPlants" />
     <ElementList @remove="removeElement" objectType="microorganism" :elements="payload.declaredMicroorganisms" />
-    <ElementList @remove="removeElement" objectType="ingredient" :elements="payload.declaredIngredients" />
+    <ElementList
+      @remove="removeElement"
+      objectType="form_of_supply"
+      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'form_of_supply')"
+    />
+    <ElementList
+      @remove="removeElement"
+      objectType="aroma"
+      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'aroma')"
+    />
+    <ElementList
+      @remove="removeElement"
+      objectType="additive"
+      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'additive')"
+    />
+    <ElementList
+      @remove="removeElemenpropertyt"
+      objectType="active_ingredient"
+      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'active_ingredient')"
+    />
+    <ElementList
+      @remove="removeElement"
+      objectType="non_active_ingredient"
+      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'non_active_ingredient')"
+    />
     <ElementList @remove="removeElement" objectType="substance" :elements="payload.declaredSubstances" />
+    <!-- On conserve ce type ingredient déprécié temporairement -->
+    <ElementList @remove="removeElement" objectType="ingredient" :elements="payload.declaredIngredients" />
+
     <div v-if="allElements.length === 0" class="my-12">
       <v-icon name="ri-information-line" class="mr-1"></v-icon>
       Vous n'avez pas encore saisi d'ingrédients pour votre complément alimentaire
@@ -41,6 +68,7 @@
 <script setup>
 import { computed, defineModel } from "vue"
 import { useFetch } from "@vueuse/core"
+import { getApiType, getActivityReadonlyByType } from "@/utils/mappings"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import ElementList from "./ElementList.vue"
 import SubstancesTable from "@/components/SubstancesTable.vue"
@@ -52,8 +80,16 @@ const payload = defineModel()
 const containers = {
   plant: payload.value.declaredPlants,
   microorganism: payload.value.declaredMicroorganisms,
-  ingredient: payload.value.declaredIngredients,
   substance: payload.value.declaredSubstances,
+  // ingredient contient [aromas, addives, form_of_supply, others_ingredients]
+  form_of_supply: payload.value.declaredIngredients,
+  aroma: payload.value.declaredIngredients,
+  additive: payload.value.declaredIngredients,
+  active_ingredient: payload.value.declaredIngredients,
+  non_active_ingredient: payload.value.declaredIngredients,
+  // TODO déprecier après l'import de données extraites en mai 2024
+  // qui contient les types plus précis
+  ingredient: payload.value.declaredIngredients,
 }
 const allElements = computed(() => [].concat(...Object.values(containers)))
 const hasActiveSubstances = computed(() =>
@@ -61,7 +97,7 @@ const hasActiveSubstances = computed(() =>
 )
 
 const selectOption = async (result) => {
-  const item = await fetchElement(result.objectType, result.id)
+  const item = await fetchElement(getApiType(result.objectType), result.id)
   addElement(item, result.objectType)
 }
 
@@ -72,10 +108,12 @@ const removeElement = (element) => {
   })
 }
 const addElement = (item, objectType, newlyAdded = false) => {
-  // Pour l'instant on met `active: true` mais une fois qu'on intègrera les additifs, il faudra
-  // ajouter un peu de logique car les additifs sont par défaut "non actifs". Potentiellement
-  // ils ne pourront jamais devenir "actifs" d'un point de vue métier.
-  const toAdd = newlyAdded ? { ...item, ...{ active: true, new: true } } : { element: item, active: true }
+  // TODO : pour le moment les objets de type `plant` peuvent être ou non actif.
+  // à terme toutes les plantes seront actives et si elles sont non actives c'est que ce sont des support/agent de charge
+  const activityNotEditable = getActivityReadonlyByType(objectType)
+  const toAdd = newlyAdded
+    ? { ...item, ...{ active: item.activity, disabled: activityNotEditable, new: true } }
+    : { element: item, active: item.activity, disabled: activityNotEditable }
   containers[objectType].unshift(toAdd)
 }
 
@@ -83,7 +121,7 @@ const fetchElement = async (type, id) => {
   const { data, response } = await useFetch(`/api/v1/${type}s/${id}`).get().json()
   await handleError(response)
   if (!response.value.ok) return null
-  return { ...data.value, ...{ objectType: type } }
+  return data.value
 }
 </script>
 

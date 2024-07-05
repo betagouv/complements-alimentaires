@@ -33,6 +33,7 @@ class MicroorganismSerializer(serializers.ModelSerializer):
             "synonyms",
             "substances",
             "public_comments",
+            "activity",
             "status",
             "history",
         )

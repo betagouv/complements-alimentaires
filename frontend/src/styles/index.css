@@ -27,8 +27,17 @@
     .icon.icon-substance {
         @apply bg-ca-substance;
     }
-    .icon.icon-ingredient {
+    .icon.icon-active_ingredient, .icon.icon-non_active_ingredient {
         @apply bg-ca-ingredient;
+    }
+    .icon.icon-aroma {
+        @apply bg-ca-aroma;
+    }
+    .icon.icon-additive {
+        @apply bg-ca-additive;
+    }
+    .icon.icon-form_of_supply {
+        @apply bg-ca-form-of-supply;
     }
     /* Je spécifier ici les couleurs pour les tags car Tailwind ne fait pas des classes dynamiques pour le bg */
     /* https://stackoverflow.com/questions/72481680/tailwinds-background-color-is-not-being-applied-when-added-dynamically */
