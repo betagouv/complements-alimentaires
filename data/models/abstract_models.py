@@ -1,6 +1,6 @@
 from data.behaviours import TimeStampable
+from data.choices import IngredientActivity
 
-from .ingredient_activity import IngredientActivity
 from .mixins import WithDefaultFields, WithMissingImportBoolean
 
 

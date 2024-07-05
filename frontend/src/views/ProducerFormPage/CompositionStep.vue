@@ -68,7 +68,7 @@
 <script setup>
 import { computed, defineModel } from "vue"
 import { useFetch } from "@vueuse/core"
-import { getApiType, getActivityNotEditableByType } from "@/utils/mappings"
+import { getApiType, getActivityReadonlyByType } from "@/utils/mappings"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import ElementList from "./ElementList.vue"
 import SubstancesTable from "@/components/SubstancesTable.vue"
@@ -110,7 +110,7 @@ const removeElement = (element) => {
 const addElement = (item, objectType, newlyAdded = false) => {
   // TODO : pour le moment les objets de type `plant` peuvent être ou non actif.
   // à terme toutes les plantes seront actives et si elles sont non actives c'est que ce sont des support/agent de charge
-  const activityNotEditable = getActivityNotEditableByType(objectType)
+  const activityNotEditable = getActivityReadonlyByType(objectType)
   const toAdd = newlyAdded
     ? { ...item, ...{ active: item.activity, disabled: activityNotEditable, new: true } }
     : { element: item, active: item.activity, disabled: activityNotEditable }

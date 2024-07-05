@@ -62,7 +62,7 @@ export const getApiType = (type) => {
   }
 }
 
-export const getActivityNotEditableByType = (type) => {
+export const getActivityReadonlyByType = (type) => {
   switch (type) {
     case "plant":
       return false

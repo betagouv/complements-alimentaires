@@ -6,13 +6,13 @@ from django.core.management import call_command
 from django.db.models import CharField, FloatField, IntegerField, TextField
 from django.test import TestCase
 
+from data.choices import IngredientActivity
 from data.csv_importer import CSVImporter, import_csv_from_filepath
 from data.exceptions import CSVFileError
 from data.models import (
     Effect,
     GalenicFormulation,
     Ingredient,
-    IngredientActivity,
     IngredientStatus,
     IngredientType,
     Microorganism,

@@ -26,7 +26,6 @@ from .declaration import (
 )
 from .solicitation import SupervisionClaim, CoSupervisionClaim, CollaborationInvitation
 from .snapshot import Snapshot
-from .ingredient_activity import IngredientActivity
 
 ELEMENT_MODELS = [
     Ingredient,
