@@ -70,7 +70,7 @@ const actionText = computed(() => {
     REQUEST_VISA: `a demandé un visa pour passer à l'état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
     ACCEPT_VISA: `a accepté le visa pour passer à l'état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
     REFUSE_VISA: `a refusé le visa pour passer à l'état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
-    RETIRE: "a retiré le produit du marché",
+    WITHDRAW: "a retiré le produit du marché",
   }
   return mapping[props.snapshot.action] ? `${fullName.value} ${mapping[props.snapshot.action]}.` : null
 })

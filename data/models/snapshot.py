@@ -28,7 +28,7 @@ class Snapshot(TimeStampable):
         TAKE_FOR_VISA = "TAKE_FOR_VISA", "prendre pour visa"
         ACCEPT_VISA = "APPROVE_VISA", "valider le visa"
         REFUSE_VISA = "REFUSE_VISA", "refuser le visa"
-        RETIRE = "RETIRE", "retirer du marché"
+        WITHDRAW = "WITHDRAW", "retirer du marché"
         ABANDON = "ABANDON", "mettre en abandon"
         OTHER = "OTHER", "autre"
 

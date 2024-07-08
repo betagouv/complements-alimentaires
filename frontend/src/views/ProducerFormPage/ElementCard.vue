@@ -74,7 +74,7 @@
 
 <script setup>
 import { useRootStore } from "@/stores/root"
-import { computed, defineModel } from "vue"
+import { computed } from "vue"
 import { getElementName } from "@/utils/elements"
 
 const model = defineModel()
