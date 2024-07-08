@@ -21,7 +21,7 @@ from api.permissions import (
 from api.serializers import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer
 from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
-from data.models import Company, Declaration, InstructionRole, VisaRole
+from data.models import Company, Declaration, InstructionRole, Snapshot, VisaRole
 
 
 class DeclarationPagination(LimitOffsetPagination):
@@ -156,12 +156,26 @@ class DeclarationFlowView(GenericAPIView):
     serializer_class = DeclarationSerializer
     transition = None
     create_snapshot = False
+    snapshot_action = Snapshot.SnapshotActions.OTHER
+    snapshot_post_validation_status = ""
 
     def get_transition(self, request, declaration):
         """
         À surcharger en cas d'une transisiton dynamique
         """
         return self.transition
+
+    def get_snapshot_action(self, request, declaration):
+        """
+        À surcharger en cas d'une action dynamique
+        """
+        return self.snapshot_action
+
+    def get_snapshot_post_validation_status(self, request, declaration):
+        """
+        À surcharger en cas d'un statut dynamique
+        """
+        return self.snapshot_post_validation_status
 
     def on_transition_success(self, request, declaration):
         """
@@ -179,6 +193,8 @@ class DeclarationFlowView(GenericAPIView):
             user=request.user,
             comment=request.data.get("comment", ""),
             expiration_days=request.data.get("expiration"),
+            action=self.get_snapshot_action(request, declaration),
+            post_validation_status=self.get_snapshot_post_validation_status(request, declaration),
         )
         declaration.private_notes = request.data.get("privateNotes", "")
 
@@ -206,6 +222,7 @@ class DeclarationSubmitView(DeclarationFlowView):
     permission_classes = [IsDeclarationAuthor, IsDeclarant]
     transition = "submit"
     create_snapshot = True
+    snapshot_action = Snapshot.SnapshotActions.SUBMIT
 
 
 class DeclarationTakeForInstructionView(DeclarationFlowView):
@@ -242,6 +259,7 @@ class DeclarationObserveView(DeclarationFlowView):
     permission_classes = [IsInstructor]
     transition = "observe_no_visa"
     create_snapshot = True
+    snapshot_action = Snapshot.SnapshotActions.OBSERVE_NO_VISA
 
     def on_transition_success(self, request, declaration):
         # Envoyer un email au déclarant.e avec le notes de l'observation
@@ -256,6 +274,7 @@ class DeclarationAuthorizeView(DeclarationFlowView):
     permission_classes = [IsInstructor]
     transition = "authorize_no_visa"
     create_snapshot = True
+    snapshot_action = Snapshot.SnapshotActions.AUTHORIZE_NO_VISA
 
     def on_transition_success(self, request, declaration):
         # Envoyer un email au déclarant.e l'informant de l'autorisation
@@ -270,6 +289,7 @@ class DeclarationResubmitView(DeclarationFlowView):
     permission_classes = [IsDeclarationAuthor, IsDeclarant]
     transition = "resubmit"
     create_snapshot = True
+    snapshot_action = Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION
 
 
 class VisaDecisionView(DeclarationFlowView):
@@ -294,15 +314,28 @@ class DeclarationRefuseVisaView(VisaDecisionView):
     """
 
     transition = "refuse_visa"
+    snapshot_action = Snapshot.SnapshotActions.REFUSE_VISA
+
+    def get_snapshot_post_validation_status(self, request, declaration):
+        return declaration.post_validation_status
 
     def perform_snapshot_creation(self, request, declaration):
-        declaration.create_snapshot(user=request.user)
+        declaration.create_snapshot(
+            user=request.user,
+            action=self.get_snapshot_action(request, declaration),
+            post_validation_status=self.get_snapshot_post_validation_status(request, declaration),
+        )
 
 
 class DeclarationAcceptVisaView(VisaDecisionView):
     """
     ONGOING_VISA -> { AUTHORIZED | REJECTED | OBJECTION | OBSERVATION }
     """
+
+    snapshot_action = Snapshot.SnapshotActions.ACCEPT_VISA
+
+    def get_snapshot_post_validation_status(self, request, declaration):
+        return declaration.post_validation_status
 
     def perform_snapshot_creation(self, request, declaration):
         """
@@ -313,6 +346,8 @@ class DeclarationAcceptVisaView(VisaDecisionView):
             user=request.user,
             comment=declaration.post_validation_producer_message,
             expiration_days=declaration.post_validation_expiration_days,
+            action=self.get_snapshot_action(request, declaration),
+            post_validation_status=self.get_snapshot_post_validation_status(request, declaration),
         )
         declaration.private_notes = request.data.get("privateNotes", "")
 
@@ -340,6 +375,7 @@ class VisaRequestFlowView(DeclarationFlowView):
     transition = "request_visa"
     post_validation_status = None
     create_snapshot = True
+    snapshot_action = Snapshot.SnapshotActions.REQUEST_VISA
 
     def perform_snapshot_creation(self, request, declaration):
         """
@@ -348,7 +384,11 @@ class VisaRequestFlowView(DeclarationFlowView):
         pouvoir l'envoyer au producteur si la décision est acceptée par la viseuse.
         On met également les notes privées à destination de l'admnistration dans la déclaration.
         """
-        declaration.create_snapshot(user=request.user)
+        declaration.create_snapshot(
+            user=request.user,
+            action=self.get_snapshot_action(request, declaration),
+            post_validation_status=self.post_validation_status,
+        )
 
     def on_transition_success(self, request, declaration):
         declaration.post_validation_producer_message = request.data.get("comment", "")

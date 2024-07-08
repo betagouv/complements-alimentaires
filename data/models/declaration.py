@@ -145,8 +145,17 @@ class Declaration(Historisable, TimeStampable):
     effects = models.ManyToManyField(Effect, blank=True, verbose_name="objectifs ou effets")
     other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non-listés")
 
-    def create_snapshot(self, user=None, comment="", expiration_days=None):
-        from data.factories import SnapshotFactory  # Sinon on a un import circulaire
+    def create_snapshot(
+        self,
+        user=None,
+        comment="",
+        action=None,
+        post_validation_status="",
+        expiration_days=None,
+    ):
+        # Sinon on a des imports circulaires
+        from data.factories import SnapshotFactory
+        from data.models import Snapshot
 
         SnapshotFactory.create(
             declaration=self,
@@ -155,6 +164,8 @@ class Declaration(Historisable, TimeStampable):
             json_declaration=self.json_representation,
             expiration_days=expiration_days,
             comment=comment,
+            action=action or Snapshot.SnapshotActions.OTHER,
+            post_validation_status=post_validation_status,
         )
 
     @property

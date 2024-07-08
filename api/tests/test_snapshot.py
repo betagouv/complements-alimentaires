@@ -4,11 +4,16 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from data.factories import (
+    CompanyFactory,
     DeclarantRoleFactory,
     InstructionReadyDeclarationFactory,
     InstructionRoleFactory,
+    ObservationDeclarationFactory,
     OngoingInstructionDeclarationFactory,
+    OngoingVisaDeclarationFactory,
+    VisaRoleFactory,
 )
+from data.models import Declaration, Snapshot
 
 from .utils import authenticate
 
@@ -34,6 +39,8 @@ class TestSnapshotApi(APITestCase):
         self.assertEqual(snapshot.declaration, declaration)
         self.assertEqual(snapshot.user, declarant_role.user)
         self.assertEqual(snapshot.comment, "Voici notre nouveau produit")
+        self.assertEqual(snapshot.action, Snapshot.SnapshotActions.SUBMIT)
+        self.assertEqual(snapshot.post_validation_status, "")
 
         # Si on sauvegarde une autre chose (pas le status) on ne devrait pas créer de snapshot
         declaration.name = "new name"
@@ -57,6 +64,8 @@ class TestSnapshotApi(APITestCase):
         snapshot = declaration.snapshots.first()
         self.assertEqual(snapshot.declaration, declaration)
         self.assertEqual(snapshot.user, instructor.user)
+        self.assertEqual(snapshot.action, Snapshot.SnapshotActions.REQUEST_VISA)
+        self.assertEqual(snapshot.post_validation_status, Declaration.DeclarationStatus.OBJECTION)
 
         # Dans le cas d'une requête de visa, les champs `commentaire` et
         # `expiration` ne sont pas marqués directement dans le snapshot, mais
@@ -65,6 +74,165 @@ class TestSnapshotApi(APITestCase):
         self.assertIsNone(snapshot.expiration_days)
         self.assertEqual(declaration.post_validation_producer_message, "J'objecte")
         self.assertEqual(declaration.post_validation_expiration_days, 45)
+        self.assertEqual(declaration.post_validation_status, Declaration.DeclarationStatus.OBJECTION)
+
+    @authenticate
+    def test_snapshot_creation_on_observe(self):
+        instructor = InstructionRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory(author=authenticate.user)
+
+        payload = {"comment": "Ceci est une observation"}
+        response = self.client.post(
+            reverse("api:observe_no_visa", kwargs={"pk": declaration.id}), payload, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Un snapshot devrait être créé
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.snapshots.count(), 1)
+        snapshot = declaration.snapshots.first()
+        self.assertEqual(snapshot.declaration, declaration)
+        self.assertEqual(snapshot.user, instructor.user)
+        self.assertEqual(snapshot.comment, "Ceci est une observation")
+        self.assertEqual(snapshot.action, Snapshot.SnapshotActions.OBSERVE_NO_VISA)
+        self.assertEqual(snapshot.post_validation_status, "")
+
+    @authenticate
+    def test_snapshot_creation_on_authorize(self):
+        instructor = InstructionRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory(author=authenticate.user)
+
+        response = self.client.post(reverse("api:authorize_no_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Un snapshot devrait être créé
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.snapshots.count(), 1)
+        snapshot = declaration.snapshots.first()
+        self.assertEqual(snapshot.declaration, declaration)
+        self.assertEqual(snapshot.user, instructor.user)
+        self.assertEqual(snapshot.action, Snapshot.SnapshotActions.AUTHORIZE_NO_VISA)
+        self.assertEqual(snapshot.post_validation_status, "")
+
+    @authenticate
+    def test_snapshot_creation_on_resubmit(self):
+        company = CompanyFactory()
+        declarant = DeclarantRoleFactory(user=authenticate.user, company=company)
+        declaration = ObservationDeclarationFactory(author=declarant.user, company=company)
+
+        response = self.client.post(reverse("api:resubmit_declaration", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Un snapshot devrait être créé
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.snapshots.count(), 1)
+        snapshot = declaration.snapshots.first()
+        self.assertEqual(snapshot.declaration, declaration)
+        self.assertEqual(snapshot.user, declarant.user)
+        self.assertEqual(snapshot.action, Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION)
+        self.assertEqual(snapshot.post_validation_status, "")
+
+    @authenticate
+    def test_snapshot_creation_on_observe_with_visa(self):
+        instructor = InstructionRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:observe_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Un snapshot devrait être créé
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.snapshots.count(), 1)
+        snapshot = declaration.snapshots.first()
+        self.assertEqual(snapshot.declaration, declaration)
+        self.assertEqual(snapshot.user, instructor.user)
+        self.assertEqual(snapshot.action, Snapshot.SnapshotActions.REQUEST_VISA)
+        self.assertEqual(snapshot.post_validation_status, Declaration.DeclarationStatus.OBSERVATION)
+
+    @authenticate
+    def test_snapshot_creation_on_object_with_visa(self):
+        instructor = InstructionRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:object_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Un snapshot devrait être créé
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.snapshots.count(), 1)
+        snapshot = declaration.snapshots.first()
+        self.assertEqual(snapshot.declaration, declaration)
+        self.assertEqual(snapshot.user, instructor.user)
+        self.assertEqual(snapshot.action, Snapshot.SnapshotActions.REQUEST_VISA)
+        self.assertEqual(snapshot.post_validation_status, Declaration.DeclarationStatus.OBJECTION)
+
+    @authenticate
+    def test_snapshot_creation_on_reject_with_visa(self):
+        instructor = InstructionRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:reject_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Un snapshot devrait être créé
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.snapshots.count(), 1)
+        snapshot = declaration.snapshots.first()
+        self.assertEqual(snapshot.declaration, declaration)
+        self.assertEqual(snapshot.user, instructor.user)
+        self.assertEqual(snapshot.action, Snapshot.SnapshotActions.REQUEST_VISA)
+        self.assertEqual(snapshot.post_validation_status, Declaration.DeclarationStatus.REJECTED)
+
+    @authenticate
+    def test_snapshot_creation_on_authorize_with_visa(self):
+        instructor = InstructionRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:authorize_with_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Un snapshot devrait être créé
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.snapshots.count(), 1)
+        snapshot = declaration.snapshots.first()
+        self.assertEqual(snapshot.declaration, declaration)
+        self.assertEqual(snapshot.user, instructor.user)
+        self.assertEqual(snapshot.action, Snapshot.SnapshotActions.REQUEST_VISA)
+        self.assertEqual(snapshot.post_validation_status, Declaration.DeclarationStatus.AUTHORIZED)
+
+    @authenticate
+    def test_snapshot_creation_on_refuse_visa(self):
+        instructor = VisaRoleFactory(user=authenticate.user)
+        declaration = OngoingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:refuse_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Un snapshot devrait être créé
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.snapshots.count(), 1)
+        snapshot = declaration.snapshots.first()
+        self.assertEqual(snapshot.declaration, declaration)
+        self.assertEqual(snapshot.user, instructor.user)
+        self.assertEqual(snapshot.action, Snapshot.SnapshotActions.REFUSE_VISA)
+        self.assertEqual(snapshot.post_validation_status, Declaration.DeclarationStatus.AUTHORIZED)
+
+    @authenticate
+    def test_snapshot_creation_on_accept_visa(self):
+        instructor = VisaRoleFactory(user=authenticate.user)
+        declaration = OngoingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Un snapshot devrait être créé
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.snapshots.count(), 1)
+        snapshot = declaration.snapshots.first()
+        self.assertEqual(snapshot.declaration, declaration)
+        self.assertEqual(snapshot.user, instructor.user)
+        self.assertEqual(snapshot.action, Snapshot.SnapshotActions.ACCEPT_VISA)
+        self.assertEqual(snapshot.post_validation_status, Declaration.DeclarationStatus.AUTHORIZED)
 
     @authenticate
     def test_snapshot_list_view(self):

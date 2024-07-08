@@ -11,5 +11,14 @@ class SnapshotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Snapshot
 
-        fields = ["creation_date", "comment", "status", "json_declaration", "user", "id"]
+        fields = [
+            "creation_date",
+            "comment",
+            "status",
+            "json_declaration",
+            "user",
+            "id",
+            "action",
+            "post_validation_status",
+        ]
         read_only_fields = fields
