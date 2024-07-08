@@ -36,6 +36,7 @@ export const frontToAPITypesSlugMapping = {
   substance: "substance",
   // déprécié
   "autre-ingredient": "ingredient",
+  ingredient: "ingredient",
 }
 export const getTypeInFrench = (type) => {
   return typesMapping[type] || null
@@ -54,6 +55,7 @@ export const getApiType = (type) => {
     case "additive":
     case "active_ingredient":
     case "non_active_ingredient":
+    case "ingredient":
       return "other-ingredient"
     default:
       return `${type.replace("_", "-")}`

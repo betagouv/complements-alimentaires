@@ -36,7 +36,7 @@
       :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'additive')"
     />
     <ElementList
-      @remove="removeElemenpropertyt"
+      @remove="removeElement"
       objectType="active_ingredient"
       :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'active_ingredient')"
     />
