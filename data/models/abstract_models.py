@@ -1,5 +1,7 @@
 from data.behaviours import TimeStampable
-from .mixins import WithMissingImportBoolean, WithDefaultFields
+from data.choices import IngredientActivity
+
+from .mixins import WithDefaultFields, WithMissingImportBoolean
 
 
 class CommonModel(TimeStampable, WithMissingImportBoolean, WithDefaultFields):
@@ -15,9 +17,32 @@ class CommonModel(TimeStampable, WithMissingImportBoolean, WithDefaultFields):
 
     @property
     def object_type(self):
+        """
+        Dans la base SICCRF, l'activité d'un ingrédient :
+        * était stockée dans une colonne `fctingr`
+        * était assignée à chaque ingrédient individuellement.
+        Nous avons découvert que les activités ne dépendent fait que du type d'ingrédient.
+        """
         return self.__class__.__name__.lower()
 
-    # D'autres champs sont présents dans les CSV d'ingredients mais actuellement non importés
-    # fctingr = models.IntegerField() -> substance, ingredient, plante, micro-organisme
-    # stingsbs = models.IntegerField() -> substance, ingredient, plante, micro-organisme
-    # taing = models.IntegerField() -> ingredient
+    @property
+    def activity(self):
+        """
+        Dans la base SICCRF, l'activité d'un ingrédient :
+        * était stockée dans une colonne `fctingr`
+        * était assignée à chaque ingrédient individuellement.
+        Nous avons découvert que les activités ne dépendent fait que du type d'ingrédient.
+        """
+        TYPE_ACTIVITY_MAPPING = {
+            "plant": IngredientActivity.ACTIVE,
+            "microorganism": IngredientActivity.ACTIVE,
+            "form_of_supply": IngredientActivity.ACTIVE,
+            "active_ingredient": IngredientActivity.ACTIVE,
+            # Dans TeleIcare, les substances n'avaient pas de champ activity associé
+            "substance": IngredientActivity.ACTIVE,
+            "non_active_ingredient": IngredientActivity.NOT_ACTIVE,
+            # selon la règlementation, arome et additif sont des améliorants
+            "aroma": IngredientActivity.NOT_ACTIVE,
+            "additive": IngredientActivity.NOT_ACTIVE,
+        }
+        return TYPE_ACTIVITY_MAPPING[self.object_type]

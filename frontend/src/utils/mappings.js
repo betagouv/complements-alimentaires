@@ -29,7 +29,7 @@ export const frontToAPITypesSlugMapping = {
   plante: "plant",
   "micro-organisme": "microorganism",
   "forme-d-apport": "form_of_supply",
-  arome: "aroma",
+  arôme: "aroma",
   additif: "additive",
   "ingredient-actif": "active_ingredient",
   "ingredient-non-actif": "non_active_ingredient",
@@ -54,9 +54,18 @@ export const getApiType = (type) => {
     case "additive":
     case "active_ingredient":
     case "non_active_ingredient":
-      return "other-ingredients"
+      return "other-ingredient"
     default:
-      return `${type.replace("_", "-")}s`
+      return `${type.replace("_", "-")}`
+  }
+}
+
+export const getActivityReadonlyByType = (type) => {
+  switch (type) {
+    case "plant":
+      return false
+    default:
+      return true
   }
 }
 

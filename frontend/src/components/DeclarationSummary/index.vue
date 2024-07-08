@@ -28,7 +28,26 @@
 
   <SummaryElementList objectType="plant" :elements="payload.declaredPlants" />
   <SummaryElementList objectType="microorganism" :elements="payload.declaredMicroorganisms" />
-  <SummaryElementList objectType="ingredient" :elements="payload.declaredIngredients" />
+  <SummaryElementList
+    objectType="form_of_supply"
+    :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'form_of_supply')"
+  />
+  <SummaryElementList
+    objectType="aroma"
+    :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'aroma')"
+  />
+  <SummaryElementList
+    objectType="additive"
+    :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'additive')"
+  />
+  <SummaryElementList
+    objectType="active_ingredient"
+    :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'active_ingredient')"
+  />
+  <SummaryElementList
+    objectType="non_active_ingredient"
+    :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'non_active_ingredient')"
+  />
   <SummaryElementList objectType="substance" :elements="payload.declaredSubstances" />
 
   <SubstancesTable v-model="payload" readonly />

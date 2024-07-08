@@ -70,6 +70,10 @@
           />
         </ElementColumn>
 
+        <ElementColumn title="Activité" v-if="activity">
+          <ElementTag :label="activity" />
+        </ElementColumn>
+
         <ElementColumn title="Statut" v-if="status">
           <ElementStatusBadge :text="status" />
         </ElementColumn>
@@ -124,7 +128,7 @@ const search = () => {
 const props = defineProps({ urlComponent: String })
 const elementId = computed(() => props.urlComponent.split("--")[0])
 const type = computed(() => unSlugify(props.urlComponent.split("--")[1]))
-const icon = computed(() => getTypeIcon(type))
+const icon = computed(() => getTypeIcon(type.value))
 // Information affichée
 const family = computed(() => element.value?.family?.name)
 const genre = computed(() => element.value?.genre)
@@ -135,7 +139,10 @@ const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))
 const casNumber = computed(() => element.value?.casNumber)
 const einecNumber = computed(() => element.value?.einecNumber)
-const status = computed(() => element.value?.status)
+const activity = computed(() => (element.value?.activity ? "Actif" : "Non actif"))
+const status = computed(() =>
+  ["autorisé", "non autorisé"].includes(element.value?.status) ? element.value?.status : null
+)
 const nutritionalReference = computed(() => {
   if (element.value?.unit && element.value?.nutritionalReference)
     return element.value?.nutritionalReference + " " + element.value?.unit
@@ -161,7 +168,7 @@ const historyDataDedup = computed(() => Array.from(new Set(historyData.value.map
 
 // TODO: remove background
 // TODO: affichage du change reason dans l'admin
-const url = computed(() => `/api/v1/${getApiType(type.value)}/${elementId.value}`)
+const url = computed(() => `/api/v1/${getApiType(type.value)}s/${elementId.value}`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
 const getElementFromApi = async () => {

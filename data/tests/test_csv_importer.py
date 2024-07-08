@@ -6,6 +6,7 @@ from django.core.management import call_command
 from django.db.models import CharField, FloatField, IntegerField, TextField
 from django.test import TestCase
 
+from data.choices import IngredientActivity
 from data.csv_importer import CSVImporter, import_csv_from_filepath
 from data.exceptions import CSVFileError
 from data.models import (
@@ -13,6 +14,7 @@ from data.models import (
     GalenicFormulation,
     Ingredient,
     IngredientStatus,
+    IngredientType,
     Microorganism,
     Plant,
     PlantFamily,
@@ -223,3 +225,45 @@ class CSVImporterTestCase(TestCase):
 
         self.assertEqual(len(Substance.objects.filter(status=IngredientStatus.NOT_AUTHORIZED)), 2)
         self.assertEqual(len(Substance.objects.filter(siccrf_status=2)), 2)
+
+    def test_activity_import(self):
+        """
+        Les activités sont dépendantes des types d'ingrédients
+        """
+        test_path = f"{self.TEST_DIR_PATH}/element_models_creation/"
+        call_command("load_ingredients", "2024-05-06", directory=test_path)
+
+        self.assertTrue(all(obj.activity == IngredientActivity.ACTIVE for obj in Plant.objects.all()))
+        self.assertTrue(all(obj.activity == IngredientActivity.ACTIVE for obj in Microorganism.objects.all()))
+        self.assertTrue(all(obj.activity == IngredientActivity.ACTIVE for obj in Substance.objects.all()))
+
+        self.assertTrue(
+            all(
+                obj.activity == IngredientActivity.ACTIVE
+                for obj in Ingredient.objects.filter(ingredient_type=IngredientType.FORM_OF_SUPPLY)
+            )
+        )
+        self.assertTrue(
+            all(
+                obj.activity == IngredientActivity.NOT_ACTIVE
+                for obj in Ingredient.objects.filter(ingredient_type=IngredientType.AROMA)
+            )
+        )
+        self.assertTrue(
+            all(
+                obj.activity == IngredientActivity.NOT_ACTIVE
+                for obj in Ingredient.objects.filter(ingredient_type=IngredientType.ADDITIVE)
+            )
+        )
+        self.assertTrue(
+            all(
+                obj.activity == IngredientActivity.NOT_ACTIVE
+                for obj in Ingredient.objects.filter(ingredient_type=IngredientType.NON_ACTIVE_INGREDIENT)
+            )
+        )
+        self.assertTrue(
+            all(
+                obj.activity == IngredientActivity.ACTIVE
+                for obj in Ingredient.objects.filter(ingredient_type=IngredientType.ACTIVE_INGREDIENT)
+            )
+        )
