@@ -682,7 +682,7 @@ class TestDeclarationApi(APITestCase):
     @authenticate
     def test_get_all_declarations_visor(self):
         """
-        Un utilisateur ayant le rôle de visa peut récuperer tous les déclarations
+        Un utilisateur ayant le rôle de visa peut récuperer toutes les déclarations
         """
         VisaRoleFactory(user=authenticate.user)
 
