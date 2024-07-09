@@ -23,7 +23,7 @@
       v-if="readonly && payload"
       class="mb-4"
       :type="payload.status === 'AUTHORIZED' ? 'success' : 'info'"
-      :title="`Cette déclaration est en status « ${statusProps[payload.status].label} »`"
+      :title="`Cette déclaration est en statut « ${statusProps[payload.status].label} »`"
     />
     <StepButtons
       class="mb-6 mt-3"

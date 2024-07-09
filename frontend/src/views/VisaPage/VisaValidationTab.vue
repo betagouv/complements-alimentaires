@@ -89,8 +89,7 @@ const decisionCategories = computed(() => {
       title: "Je valide cette décision",
       icon: "ri-checkbox-circle-fill",
       iconColor: "green",
-      description: `Je suis d'accord pour donner mon visa et signature. La déclaration partirà en état «
-          ${postValidationStatus.value} ».`,
+      description: "Je vise cette déclaration et signe.",
       buttonText: "Valider",
       buttonHandler: acceptVisa,
     },
@@ -98,8 +97,7 @@ const decisionCategories = computed(() => {
       title: "Je ne suis pas d'accord",
       icon: "ri-close-circle-fill",
       iconColor: "red",
-      description: `Je ne donne pas mon visa ni signature. La déclaration repartira en instruction chez
-          ${instructorName.value}.`,
+      description: "Je renvoie le dossier en instruction.",
       buttonText: "Refuser",
       buttonHandler: refuseVisa,
     },

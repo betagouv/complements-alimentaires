@@ -59,7 +59,7 @@
             <DsfrInput
               is-textarea
               label-visible
-              label="Motivation de la décision (à destination du professionel)"
+              label="Motivation de la décision (à destination du professionnel)"
               v-if="decisionCategory != 'approve'"
               v-model="comment"
             />
@@ -112,7 +112,7 @@ const decisionCategories = [
     value: "approve",
     title: "Bon pour autorisation",
     icon: "ri-checkbox-circle-fill",
-    description: "La déclaration ne pose pas de problème et peut être autorisé en l'état.",
+    description: "La déclaration ne pose pas de problème et peut être autorisée en l'état.",
     color: "green",
   },
   {

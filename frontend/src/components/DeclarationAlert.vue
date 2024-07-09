@@ -1,7 +1,7 @@
 <template>
   <DsfrAlert
     :type="status === 'AUTHORIZED' ? 'success' : 'info'"
-    :title="`Cette déclaration est en status « ${statusProps[status].label} »`"
+    :title="`Cette déclaration est en statut « ${statusProps[status].label} »`"
   />
 </template>
 

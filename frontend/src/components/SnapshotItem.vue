@@ -38,7 +38,7 @@
         {{ actionText }}
       </div>
       <div v-else>
-        {{ fullName }} a changé le status à « {{ statusProps[snapshot.status].label }} »
+        {{ fullName }} a changé le statut à « {{ statusProps[snapshot.status].label }} »
         <span v-if="!snapshot.comment && !isInValidationState">sans laisser de message</span>
       </div>
     </div>
