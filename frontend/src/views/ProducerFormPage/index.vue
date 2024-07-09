@@ -131,7 +131,7 @@ const readonly = computed(
     payload.value.status !== "OBJECTION"
 )
 
-const showHistory = computed(() => readonly.value || payload.value.status !== "DRAFT")
+const showHistory = computed(() => readonly.value || (!isNewDeclaration.value && payload.value.status !== "DRAFT"))
 
 const components = computed(() => {
   if (readonly.value) return [HistoryTab, SummaryTab]

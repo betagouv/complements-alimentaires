@@ -53,6 +53,9 @@
     .fr-table .fr-tag.OBSERVATION {
         @apply !bg-amber-200;
     }
+    .fr-table .fr-tag.OBJECTION {
+        @apply !bg-orange-200;
+    }
     .fr-table .fr-tag.ABANDONED {
         @apply !bg-red-100;
     }
