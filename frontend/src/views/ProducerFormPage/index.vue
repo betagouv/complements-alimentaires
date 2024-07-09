@@ -53,11 +53,11 @@
 import ProgressSpinner from "@/components/ProgressSpinner"
 import { useRootStore } from "@/stores/root"
 import { ref, computed, watch } from "vue"
-import ProductStep from "./ProductStep"
-import CompositionStep from "./CompositionStep"
-import SummaryStep from "./SummaryStep"
-import AttachmentStep from "./AttachmentStep"
-import NewElementStep from "./NewElementStep"
+import ProductTab from "./ProductTab"
+import CompositionTab from "./CompositionTab"
+import SummaryTab from "./SummaryTab"
+import AttachmentTab from "./AttachmentTab"
+import NewElementTab from "./NewElementTab"
 import HistoryTab from "@/components/HistoryTab"
 import { useFetch } from "@vueuse/core"
 import { useRoute, useRouter } from "vue-router"
@@ -134,9 +134,9 @@ const readonly = computed(
 const showHistory = computed(() => readonly.value || payload.value.status !== "DRAFT")
 
 const components = computed(() => {
-  if (readonly.value) return [HistoryTab, SummaryStep]
-  const baseComponents = [ProductStep, CompositionStep, AttachmentStep, SummaryStep]
-  if (hasNewElements.value) baseComponents.splice(2, 0, NewElementStep)
+  if (readonly.value) return [HistoryTab, SummaryTab]
+  const baseComponents = [ProductTab, CompositionTab, AttachmentTab, SummaryTab]
+  if (hasNewElements.value) baseComponents.splice(2, 0, NewElementTab)
   if (showHistory.value) baseComponents.splice(0, 0, HistoryTab)
   return baseComponents
 })
@@ -150,35 +150,35 @@ const tabTitles = computed(() => {
       tabId: `tab-${idx("HistoryTab")}`,
       panelId: `tab-content-${idx("HistoryTab")}`,
     },
-    SummaryStep: {
+    SummaryTab: {
       title: "Soumettre",
       icon: "ri-mail-send-line",
-      tabId: `tab-${idx("SummaryStep")}`,
-      panelId: `tab-content-${idx("SummaryStep")}`,
+      tabId: `tab-${idx("SummaryTab")}`,
+      panelId: `tab-content-${idx("SummaryTab")}`,
     },
-    ProductStep: {
+    ProductTab: {
       title: "Le produit",
       icon: "ri-capsule-fill",
-      tabId: `tab-${idx("ProductStep")}`,
-      panelId: `tab-content-${idx("ProductStep")}`,
+      tabId: `tab-${idx("ProductTab")}`,
+      panelId: `tab-content-${idx("ProductTab")}`,
     },
-    CompositionStep: {
+    CompositionTab: {
       title: "Composition",
       icon: "ri-test-tube-line",
-      tabId: `tab-${idx("CompositionStep")}`,
-      panelId: `tab-content-${idx("CompositionStep")}`,
+      tabId: `tab-${idx("CompositionTab")}`,
+      panelId: `tab-content-${idx("CompositionTab")}`,
     },
-    AttachmentStep: {
+    AttachmentTab: {
       title: "Pièces jointes",
       icon: "ri-file-text-line",
-      tabId: `tab-${idx("AttachmentStep")}`,
-      panelId: `tab-content-${idx("AttachmentStep")}`,
+      tabId: `tab-${idx("AttachmentTab")}`,
+      panelId: `tab-content-${idx("AttachmentTab")}`,
     },
-    NewElementStep: {
+    NewElementTab: {
       title: "Nouveaux éléments",
       icon: "ri-flask-line",
-      tabId: `tab-${idx("NewElementStep")}`,
-      panelId: `tab-content-${idx("NewElementStep")}`,
+      tabId: `tab-${idx("NewElementTab")}`,
+      panelId: `tab-content-${idx("NewElementTab")}`,
     },
   }
   return components.value.map((x) => titleMap[x.__name])
