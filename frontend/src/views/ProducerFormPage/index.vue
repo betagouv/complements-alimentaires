@@ -1,67 +1,64 @@
 <template>
-  <DsfrBreadcrumb
-    v-if="readonly"
-    class="mb-8 fr-container"
-    :links="[
-      { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-      { to: { name: 'DeclarationsHomePage' }, text: 'Mes déclarations' },
-      { text: 'Détails de la déclaration' },
-    ]"
-  />
-  <div class="bg-blue-france-975 border border-slate-300" v-if="steps.length > 1">
-    <div class="fr-container pt-4 pb-6">
-      <DsfrStepper class="!mb-0" :currentStep="currentStep" :steps="steps" />
+  <div class="fr-container">
+    <DsfrBreadcrumb
+      :links="[
+        { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
+        { to: { name: 'DeclarationsHomePage' }, text: 'Mes déclarations' },
+        { text: isNewDeclaration ? 'Nouvelle déclaration' : 'Détails de ma déclaration' },
+      ]"
+    />
+
+    <div v-if="isFetching" class="flex justify-center items-center min-h-60">
+      <ProgressSpinner />
     </div>
-  </div>
 
-  <div v-if="isFetching" class="flex justify-center items-center min-h-60">
-    <ProgressSpinner />
-  </div>
-
-  <div class="fr-container" v-else>
-    <DsfrAlert
-      v-if="readonly && payload"
-      class="mb-4"
-      :type="payload.status === 'AUTHORIZED' ? 'success' : 'info'"
-      :title="`Cette déclaration est en statut « ${statusProps[payload.status].label} »`"
-    />
-    <StepButtons
-      class="mb-6 mt-3"
-      @next="goForward"
-      @previous="goBackward"
-      :disablePrevious="disablePrevious"
-      :disableNext="disableNext"
-      v-if="steps.length > 1"
-    />
-    <FormWrapper :externalResults="$externalResults">
-      <component
-        :is="components[currentStep - 1]"
-        v-model="payload"
-        @submit="submitPayload"
-        :externalResults="$externalResults"
-        :readonly="readonly"
-      ></component>
-    </FormWrapper>
-    <StepButtons
-      class="mb-3 mt-6"
-      @next="goForward"
-      @previous="goBackward"
-      :disablePrevious="disablePrevious"
-      :disableNext="disableNext"
-      v-if="steps.length > 1"
-    />
+    <div v-else class="mb-4">
+      <DsfrAlert
+        v-if="readonly && payload"
+        class="mb-4"
+        :type="payload.status === 'AUTHORIZED' ? 'success' : 'info'"
+        :title="`Cette déclaration est en statut « ${statusProps[payload.status].label} »`"
+      />
+      <DsfrTabs
+        v-else
+        ref="tabs"
+        :tab-titles="tabTitles"
+        :initialSelectedIndex="parseInt(route.query.tab)"
+        @select-tab="(tab) => router.replace({ query: { tab } })"
+      >
+        <DsfrTabContent
+          v-for="(component, idx) in components"
+          :key="`component-${idx}`"
+          :panelId="`tab-content-${idx}`"
+          :tabId="`tab-${idx}`"
+          :selected="selectedTabIndex === idx"
+          :asc="asc"
+        >
+          <FormWrapper :externalResults="$externalResults">
+            <component
+              :is="component"
+              v-model="payload"
+              @submit="submitPayload"
+              :externalResults="$externalResults"
+              :readonly="readonly"
+              :declarationId="id"
+            ></component>
+          </FormWrapper>
+        </DsfrTabContent>
+      </DsfrTabs>
+    </div>
   </div>
 </template>
 <script setup>
 import ProgressSpinner from "@/components/ProgressSpinner"
 import { useRootStore } from "@/stores/root"
-import { onMounted, ref, computed, watch } from "vue"
+import { ref, computed, watch } from "vue"
 import ProductStep from "./ProductStep"
 import CompositionStep from "./CompositionStep"
 import SummaryStep from "./SummaryStep"
 import AttachmentStep from "./AttachmentStep"
 import NewElementStep from "./NewElementStep"
-import StepButtons from "./StepButtons"
+import HistoryTab from "@/components/HistoryTab"
 import { useFetch } from "@vueuse/core"
 import { useRoute, useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
@@ -71,6 +68,21 @@ import useToaster from "@/composables/use-toaster"
 import { statusProps } from "@/utils/mappings"
 
 const $externalResults = ref({})
+const route = useRoute()
+const router = useRouter()
+
+const selectedTabIndex = ref(parseInt(route.query.tab))
+const asc = ref(true)
+const tabs = ref(null) // Corresponds to the template ref (https://vuejs.org/guide/essentials/template-refs.html#accessing-the-refs)
+const selectTab = async (index) => {
+  if (index === selectedTabIndex.value) return
+  const saveSuccess = await savePayload()
+  if (saveSuccess) {
+    asc.value = selectedTabIndex.value < index
+    selectedTabIndex.value = index
+  }
+  tabs.value?.selectIndex?.(selectedTabIndex.value)
+}
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -112,21 +124,64 @@ const hasNewElements = computed(() => {
     .some((x) => x.new)
 })
 const readonly = computed(
-  () => !isNewDeclaration.value && payload.value.status !== "DRAFT" && payload.value.status !== "OBSERVATION"
+  () =>
+    !isNewDeclaration.value &&
+    payload.value.status !== "DRAFT" &&
+    payload.value.status !== "OBSERVATION" &&
+    payload.value.status !== "OBJECTION"
 )
-const currentStep = ref(null)
-const steps = computed(() => {
-  if (readonly.value) return ["Résumé"]
-  const baseSteps = ["Le produit", "La composition", "Pièces jointes", "Résumé"]
-  if (hasNewElements.value) baseSteps.splice(2, 0, "Nouveaux éléments")
-  return baseSteps
-})
+
+const showHistory = computed(() => readonly.value || payload.value.status !== "DRAFT")
 
 const components = computed(() => {
-  if (readonly.value) return [SummaryStep]
+  if (readonly.value) return [HistoryTab, SummaryStep]
   const baseComponents = [ProductStep, CompositionStep, AttachmentStep, SummaryStep]
   if (hasNewElements.value) baseComponents.splice(2, 0, NewElementStep)
+  if (showHistory.value) baseComponents.splice(0, 0, HistoryTab)
   return baseComponents
+})
+
+const tabTitles = computed(() => {
+  const idx = (x) => components.value.findIndex((y) => y.__name === x)
+  const titleMap = {
+    HistoryTab: {
+      title: "Historique",
+      icon: "ri-chat-3-line",
+      tabId: `tab-${idx("HistoryTab")}`,
+      panelId: `tab-content-${idx("HistoryTab")}`,
+    },
+    SummaryStep: {
+      title: "Soumettre",
+      icon: "ri-mail-send-line",
+      tabId: `tab-${idx("SummaryStep")}`,
+      panelId: `tab-content-${idx("SummaryStep")}`,
+    },
+    ProductStep: {
+      title: "Le produit",
+      icon: "ri-capsule-fill",
+      tabId: `tab-${idx("ProductStep")}`,
+      panelId: `tab-content-${idx("ProductStep")}`,
+    },
+    CompositionStep: {
+      title: "Composition",
+      icon: "ri-test-tube-line",
+      tabId: `tab-${idx("CompositionStep")}`,
+      panelId: `tab-content-${idx("CompositionStep")}`,
+    },
+    AttachmentStep: {
+      title: "Pièces jointes",
+      icon: "ri-file-text-line",
+      tabId: `tab-${idx("AttachmentStep")}`,
+      panelId: `tab-content-${idx("AttachmentStep")}`,
+    },
+    NewElementStep: {
+      title: "Nouveaux éléments",
+      icon: "ri-flask-line",
+      tabId: `tab-${idx("NewElementStep")}`,
+      panelId: `tab-content-${idx("NewElementStep")}`,
+    },
+  }
+  return components.value.map((x) => titleMap[x.__name])
 })
 
 const savePayload = async () => {
@@ -138,8 +193,9 @@ const savePayload = async () => {
   const { response, data } = await useFetch(url, { headers: headers() })[httpMethod](payload).json()
   $externalResults.value = await handleError(response)
   if ($externalResults.value) {
-    useToaster().addErrorMessage("Merci de vérifier les champs en rouge")
+    useToaster().addErrorMessage("Merci de vérifier les champs en rouge pour pouvoir changer d'onglet")
     window.scrollTo(0, 0)
+    return false
   } else {
     payload.value = data.value
     // Une fois sauvegardé on change l'URL pour indiquer qu'on est en train de modifier une déclaration
@@ -158,6 +214,7 @@ const savePayload = async () => {
       id: "declaration-success",
       description: "Votre démarche a été sauvegardée",
     })
+    return true
   }
 }
 
@@ -181,30 +238,8 @@ const submitPayload = async (comment) => {
   }
 }
 
-const goForward = async () => {
-  await savePayload()
-  if (!$externalResults.value) router.push({ query: { step: currentStep.value + 1 } })
-}
-const goBackward = async () => {
-  await savePayload()
-  if (!$externalResults.value) router.push({ query: { step: currentStep.value - 1 } })
-}
-
-const disablePrevious = computed(() => currentStep.value === 1)
-const disableNext = computed(() => currentStep.value === steps.value.length)
-
-const route = useRoute()
-const router = useRouter()
-
-const ensureStepInUrl = () => {
-  // Si c'est une nouvelle déclaration, on doit obligatoirement commencer avec le step 1
-  if (isNewDeclaration.value) router.replace({ query: { step: 1 } })
-
-  if (route.query.step && parseInt(route.query.step) >= 1 && parseInt(route.query.step) <= steps.value.length)
-    currentStep.value = parseInt(route.query.step)
-  else router.replace({ query: { step: 1 } })
-}
-
-onMounted(ensureStepInUrl)
-watch(() => route.query.step, ensureStepInUrl)
+watch(
+  () => route.query.tab,
+  (tab) => selectTab(parseInt(tab))
+)
 </script>

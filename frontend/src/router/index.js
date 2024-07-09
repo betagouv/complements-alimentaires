@@ -164,6 +164,9 @@ const routes = [
       title: "Nouvelle démarche",
       requiredRole: "DeclarantRole",
       authenticationRequired: true,
+      defaultQueryParams: {
+        tab: 0,
+      },
     },
   },
   {
@@ -214,6 +217,9 @@ const routes = [
     meta: {
       title: "Ma déclaration",
       authenticationRequired: true,
+      defaultQueryParams: {
+        tab: 0,
+      },
     },
   },
   {
