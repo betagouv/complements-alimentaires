@@ -79,13 +79,14 @@ import { useRouter } from "vue-router"
 import SummaryModificationButton from "./SummaryModificationButton"
 
 const router = useRouter()
-const { populations, conditions, effects, galenicFormulation } = storeToRefs(useRootStore())
+const { units, populations, conditions, effects, galenicFormulation } = storeToRefs(useRootStore())
 
 const payload = defineModel()
 defineProps({ readonly: Boolean })
 const unitInfo = computed(() => {
   if (!payload.value.unitQuantity) return null
-  return `${payload.value.unitQuantity} ${payload.value.unitMeasurement || "-"}`
+  const unitMeasurement = units.value?.find?.((x) => x.id === payload.value.unitMeasurement)?.name || "-"
+  return `${payload.value.unitQuantity} ${unitMeasurement}`
 })
 
 const galenicFormulationsNames = computed(() => {
