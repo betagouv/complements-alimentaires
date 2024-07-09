@@ -26,7 +26,7 @@ class DeclarationFlow:
     def submit(self):
         self.ensure_validators([validate_number_of_elements, validate_mandatory_fields])
 
-    @status.transition(source=Status.OBSERVATION, target=Status.AWAITING_INSTRUCTION)
+    @status.transition(source={Status.OBSERVATION, Status.OBJECTION}, target=Status.AWAITING_INSTRUCTION)
     def resubmit(self):
         self.ensure_validators([validate_number_of_elements, validate_mandatory_fields])
 

@@ -10,6 +10,7 @@ from data.factories import (
     DeclarantRoleFactory,
     InstructionReadyDeclarationFactory,
     InstructionRoleFactory,
+    ObjectionDeclarationFactory,
     ObservationDeclarationFactory,
     OngoingInstructionDeclarationFactory,
     OngoingVisaDeclarationFactory,
@@ -244,6 +245,21 @@ class TestDeclarationFlow(APITestCase):
         company = CompanyFactory()
         declarant = DeclarantRoleFactory(user=authenticate.user, company=company)
         declaration = ObservationDeclarationFactory(author=declarant.user, company=company)
+
+        response = self.client.post(reverse("api:resubmit_declaration", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+    @authenticate
+    def test_resubmit_objection_declaration(self):
+        """
+        Passage du OBJECTION -> AWAITING_INSTRUCTION
+        """
+        company = CompanyFactory()
+        declarant = DeclarantRoleFactory(user=authenticate.user, company=company)
+        declaration = ObjectionDeclarationFactory(author=declarant.user, company=company)
 
         response = self.client.post(reverse("api:resubmit_declaration", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)

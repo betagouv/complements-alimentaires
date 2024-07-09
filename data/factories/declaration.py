@@ -177,6 +177,12 @@ class ObservationDeclarationFactory(CompleteDeclarationFactory):
     instructor = factory.SubFactory(InstructionRoleFactory)
 
 
+class ObjectionDeclarationFactory(CompleteDeclarationFactory):
+    status = Declaration.DeclarationStatus.OBJECTION
+    author = factory.SubFactory(UserFactory)
+    instructor = factory.SubFactory(InstructionRoleFactory)
+
+
 class AwaitingVisaDeclarationFactory(CompleteDeclarationFactory):
     status = Declaration.DeclarationStatus.AWAITING_VISA
     author = factory.SubFactory(UserFactory)
