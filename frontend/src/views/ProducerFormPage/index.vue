@@ -20,7 +20,7 @@
         :title="`Cette déclaration est en statut « ${statusProps[payload.status].label} »`"
       />
       <DsfrTabs
-        v-else
+        v-if="payload"
         ref="tabs"
         :tab-titles="tabTitles"
         :initialSelectedIndex="parseInt(route.query.tab)"
@@ -151,8 +151,8 @@ const tabTitles = computed(() => {
       panelId: `tab-content-${idx("HistoryTab")}`,
     },
     SummaryTab: {
-      title: "Soumettre",
-      icon: "ri-mail-send-line",
+      title: readonly.value ? "Résumé" : "Soumettre",
+      icon: readonly.value ? "ri-survey-line" : "ri-mail-send-line",
       tabId: `tab-${idx("SummaryTab")}`,
       panelId: `tab-content-${idx("SummaryTab")}`,
     },
