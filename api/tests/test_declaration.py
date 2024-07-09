@@ -23,6 +23,7 @@ from data.factories import (
     SubstanceFactory,
     SubstanceUnitFactory,
     SupervisorRoleFactory,
+    VisaRoleFactory,
 )
 from data.models import Attachment, Declaration
 
@@ -668,13 +669,27 @@ class TestDeclarationApi(APITestCase):
     @authenticate
     def test_get_all_declarations(self):
         """
-        Un utilisateur ayant le rôle d'instruction peut récuperer tous les déclarations
+        Un utilisateur ayant le rôle d'instruction peut récuperer toutes les déclarations
         """
         InstructionRoleFactory(user=authenticate.user)
 
         for _ in range(3):
             DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         response = self.client.get(reverse("api:list_all_declarations"), format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 3)
+
+    @authenticate
+    def test_get_all_declarations_visor(self):
+        """
+        Un utilisateur ayant le rôle de visa peut récuperer toutes les déclarations
+        """
+        VisaRoleFactory(user=authenticate.user)
+
+        for _ in range(3):
+            DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        response = self.client.get(reverse("api:list_all_declarations"), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json()["results"]
         self.assertEqual(len(results), 3)
 

@@ -134,7 +134,7 @@ class GenericDeclarationsListView(ListAPIView):
 
 class OngoingDeclarationsListView(GenericDeclarationsListView):
     serializer_class = SimpleDeclarationSerializer
-    permission_classes = [IsInstructor]
+    permission_classes = [(IsInstructor | IsVisor)]
     ordering_fields = ["creation_date", "modification_date", "name"]
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT)
 

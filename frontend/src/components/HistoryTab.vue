@@ -3,6 +3,10 @@
     <div v-if="isFetching" class="flex justify-center items-center min-h-60">
       <ProgressSpinner />
     </div>
+    <div class="bg-gray-100 rounded p-2 mb-8" v-if="privateNotes">
+      <p class="font-bold my-2">Notes à destination de l'administration</p>
+      <p class="m-0 italic">{{ privateNotes }}</p>
+    </div>
     <div v-if="snapshots && snapshots.length" class="flex flex-col gap-6">
       <SnapshotItem
         v-for="snapshot in snapshots"
@@ -24,7 +28,7 @@ import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import SnapshotItem from "@/components/SnapshotItem"
 
-const props = defineProps(["declarationId"])
+const props = defineProps(["declarationId", "privateNotes"])
 
 const {
   response,
