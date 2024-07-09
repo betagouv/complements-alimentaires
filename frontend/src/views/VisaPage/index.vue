@@ -33,7 +33,7 @@
             <DeclarationSummary :readonly="true" v-model="declaration" />
           </DsfrTabContent>
           <DsfrTabContent panelId="tab-content-2" tabId="tab-2" :selected="selectedTabIndex === 2" :asc="asc">
-            <HistoryTab :declarationId="declaration?.id" />
+            <HistoryTab :declarationId="declaration?.id" :privateNotes="declaration.privateNotes" />
           </DsfrTabContent>
           <DsfrTabContent
             v-if="canInstruct"
