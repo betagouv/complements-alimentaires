@@ -189,6 +189,12 @@ class AwaitingVisaDeclarationFactory(CompleteDeclarationFactory):
     instructor = factory.SubFactory(InstructionRoleFactory)
 
 
+class AuthorizedDeclarationFactory(CompleteDeclarationFactory):
+    status = Declaration.DeclarationStatus.AUTHORIZED
+    author = factory.SubFactory(UserFactory)
+    instructor = factory.SubFactory(InstructionRoleFactory)
+
+
 class OngoingVisaDeclarationFactory(CompleteDeclarationFactory):
     status = Declaration.DeclarationStatus.ONGOING_VISA
     author = factory.SubFactory(UserFactory)

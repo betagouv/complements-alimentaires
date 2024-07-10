@@ -159,6 +159,11 @@ urlpatterns = {
         views.DeclarationAcceptVisaView.as_view(),
         name="accept_visa",
     ),
+    path(
+        "declarations/<int:pk>/withdraw/",
+        views.DeclarationWithdrawView.as_view(),
+        name="withdraw",
+    ),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
