@@ -1,8 +1,9 @@
-from django.contrib import admin
 from django.conf import settings
-from django.conf.urls.static import static
-from django.urls import path, re_path
 from django.conf.urls import include
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import path, re_path
+
 from web.views import VueAppDisplayView
 
 urlpatterns = [
@@ -10,6 +11,7 @@ urlpatterns = [
     path("ckeditor5/", include("django_ckeditor_5.urls"), name="ck_editor_5_upload_file"),
 ]
 urlpatterns.append(re_path(r"", include(("web.urls", "web"), namespace="web")))
+urlpatterns.append(re_path(r"", include("web.auth-urls")))
 urlpatterns.append(re_path(r"^api/v1/", include(("api.urls", "api"), namespace="api")))
 
 if settings.DEBUG:

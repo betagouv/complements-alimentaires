@@ -37,7 +37,7 @@
     {% else %}
     <p>Vous devez être identifié.e et avoir les droits de modifications de la base de donnée ingrédients.</p>
     <div>
-        <a href="{% url 'web:login' %}?next={{request.path}}">S'identifier</a>
+        <a href="{% url 'login' %}?next={{request.path}}">S'identifier</a>
     </div>
     {% endif %}
 {% endblock %}
