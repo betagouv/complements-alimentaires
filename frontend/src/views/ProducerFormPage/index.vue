@@ -22,7 +22,7 @@
       <DsfrTabs
         v-if="payload"
         ref="tabs"
-        :tab-titles="tabTitles"
+        :tab-titles="titles"
         :initialSelectedIndex="parseInt(route.query.tab)"
         @select-tab="(tab) => router.replace({ query: { tab } })"
       >
@@ -67,7 +67,7 @@ import { handleError } from "@/utils/error-handling"
 import FormWrapper from "@/components/FormWrapper"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
-import { statusProps } from "@/utils/mappings"
+import { statusProps, tabTitles } from "@/utils/mappings"
 
 const $externalResults = ref({})
 const route = useRoute()
@@ -145,54 +145,7 @@ const components = computed(() => {
   return baseComponents
 })
 
-const tabTitles = computed(() => {
-  const idx = (x) => components.value.findIndex((y) => y.__name === x)
-  const titleMap = {
-    HistoryTab: {
-      title: "Historique",
-      icon: "ri-chat-3-line",
-      tabId: `tab-${idx("HistoryTab")}`,
-      panelId: `tab-content-${idx("HistoryTab")}`,
-    },
-    SummaryTab: {
-      title: readonly.value ? "Résumé" : "Soumettre",
-      icon: readonly.value ? "ri-survey-line" : "ri-mail-send-line",
-      tabId: `tab-${idx("SummaryTab")}`,
-      panelId: `tab-content-${idx("SummaryTab")}`,
-    },
-    ProductTab: {
-      title: "Le produit",
-      icon: "ri-capsule-fill",
-      tabId: `tab-${idx("ProductTab")}`,
-      panelId: `tab-content-${idx("ProductTab")}`,
-    },
-    CompositionTab: {
-      title: "Composition",
-      icon: "ri-test-tube-line",
-      tabId: `tab-${idx("CompositionTab")}`,
-      panelId: `tab-content-${idx("CompositionTab")}`,
-    },
-    AttachmentTab: {
-      title: "Pièces jointes",
-      icon: "ri-file-text-line",
-      tabId: `tab-${idx("AttachmentTab")}`,
-      panelId: `tab-content-${idx("AttachmentTab")}`,
-    },
-    NewElementTab: {
-      title: "Nouveaux éléments",
-      icon: "ri-flask-line",
-      tabId: `tab-${idx("NewElementTab")}`,
-      panelId: `tab-content-${idx("NewElementTab")}`,
-    },
-    WithdrawalTab: {
-      title: "Retirer du marché",
-      icon: "ri-close-fill",
-      tabId: `tab-${idx("WithdrawalTab")}`,
-      panelId: `tab-content-${idx("WithdrawalTab")}`,
-    },
-  }
-  return components.value.map((x) => titleMap[x.__name])
-})
+const titles = computed(() => tabTitles(components.value, !readonly.value))
 
 const savePayload = async () => {
   const isNewDeclaration = !payload.value.id

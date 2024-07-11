@@ -119,3 +119,76 @@ export const statusProps = {
 }
 
 export const roleNameDisplayNameMapping = { DeclarantRole: "déclarant", SupervisorRole: "gestionnaire" }
+
+export const tabTitles = (components, useSubmission = false) => {
+  const idx = (x) => components.findIndex((y) => (y.name || y.__name) === x)
+  const titleMap = {
+    IdentityTab: {
+      title: "Identité",
+      icon: "ri-shield-user-line",
+      tabId: `tab-${idx("IdentityTab")}`,
+      panelId: `tab-content-${idx("IdentityTab")}`,
+    },
+    DeclarationSummary: {
+      title: "Le produit",
+      icon: "ri-flask-line",
+      tabId: `tab-${idx("DeclarationSummary")}`,
+      panelId: `tab-content-${idx("DeclarationSummary")}`,
+    },
+    DecisionTab: {
+      title: "Décision",
+      icon: "ri-checkbox-circle-line",
+      tabId: `tab-${idx("DecisionTab")}`,
+      panelId: `tab-content-${idx("DecisionTab")}`,
+    },
+    HistoryTab: {
+      title: "Historique",
+      icon: "ri-chat-3-line",
+      tabId: `tab-${idx("HistoryTab")}`,
+      panelId: `tab-content-${idx("HistoryTab")}`,
+    },
+    SummaryTab: {
+      title: useSubmission ? "Soumettre" : "Résumé",
+      icon: useSubmission ? "ri-mail-send-line" : "ri-survey-line",
+      tabId: `tab-${idx("SummaryTab")}`,
+      panelId: `tab-content-${idx("SummaryTab")}`,
+    },
+    ProductTab: {
+      title: "Le produit",
+      icon: "ri-capsule-fill",
+      tabId: `tab-${idx("ProductTab")}`,
+      panelId: `tab-content-${idx("ProductTab")}`,
+    },
+    CompositionTab: {
+      title: "Composition",
+      icon: "ri-test-tube-line",
+      tabId: `tab-${idx("CompositionTab")}`,
+      panelId: `tab-content-${idx("CompositionTab")}`,
+    },
+    AttachmentTab: {
+      title: "Pièces jointes",
+      icon: "ri-file-text-line",
+      tabId: `tab-${idx("AttachmentTab")}`,
+      panelId: `tab-content-${idx("AttachmentTab")}`,
+    },
+    NewElementTab: {
+      title: "Nouveaux éléments",
+      icon: "ri-flask-line",
+      tabId: `tab-${idx("NewElementTab")}`,
+      panelId: `tab-content-${idx("NewElementTab")}`,
+    },
+    WithdrawalTab: {
+      title: "Retirer du marché",
+      icon: "ri-close-fill",
+      tabId: `tab-${idx("WithdrawalTab")}`,
+      panelId: `tab-content-${idx("WithdrawalTab")}`,
+    },
+    VisaValidationTab: {
+      title: "Visa / Signature",
+      icon: "ri-checkbox-circle-line",
+      tabId: `tab-${idx("VisaValidationTab")}`,
+      panelId: `tab-content-${idx("VisaValidationTab")}`,
+    },
+  }
+  return components.map((x) => titleMap[x.__name || x.name])
+}

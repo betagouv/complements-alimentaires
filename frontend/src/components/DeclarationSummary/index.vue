@@ -1,71 +1,77 @@
 <template>
-  <h3 class="fr-h6">
-    Informations sur le produit
-    <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />
-  </h3>
   <div>
-    <SummaryInfoSegment label="Nom du produit" :value="payload.name" />
-    <SummaryInfoSegment label="Marque" :value="payload.brand" />
-    <SummaryInfoSegment label="Gamme" :value="payload.gamme" />
-    <SummaryInfoSegment label="Arôme" :value="payload.flavor" />
-    <SummaryInfoSegment label="Description" :value="payload.description" />
-    <SummaryInfoSegment label="Forme galénique" :value="galenicFormulationsNames" />
-    <SummaryInfoSegment label="Unité de consommation" :value="unitInfo" />
-    <SummaryInfoSegment label="Conditionnements" :value="payload.conditioning" />
-    <SummaryInfoSegment label="Dose journalière recommandée" :value="payload.dailyRecommendedDose" />
-    <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
-    <SummaryInfoSegment label="Mode d'emploi" :value="payload.instructions" />
-    <SummaryInfoSegment label="Mise en garde et avertissement" :value="payload.warnings" />
-    <SummaryInfoSegment label="Populations cible" :value="populationNames" />
-    <SummaryInfoSegment label="Consommation déconseillée" :value="conditionNames" />
-    <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
-  </div>
+    <h3 class="fr-h6">
+      Informations sur le produit
+      <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />
+    </h3>
+    <div>
+      <SummaryInfoSegment label="Nom du produit" :value="payload.name" />
+      <SummaryInfoSegment label="Marque" :value="payload.brand" />
+      <SummaryInfoSegment label="Gamme" :value="payload.gamme" />
+      <SummaryInfoSegment label="Arôme" :value="payload.flavor" />
+      <SummaryInfoSegment label="Description" :value="payload.description" />
+      <SummaryInfoSegment label="Forme galénique" :value="galenicFormulationsNames" />
+      <SummaryInfoSegment label="Unité de consommation" :value="unitInfo" />
+      <SummaryInfoSegment label="Conditionnements" :value="payload.conditioning" />
+      <SummaryInfoSegment label="Dose journalière recommandée" :value="payload.dailyRecommendedDose" />
+      <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
+      <SummaryInfoSegment label="Mode d'emploi" :value="payload.instructions" />
+      <SummaryInfoSegment label="Mise en garde et avertissement" :value="payload.warnings" />
+      <SummaryInfoSegment label="Populations cible" :value="populationNames" />
+      <SummaryInfoSegment label="Consommation déconseillée" :value="conditionNames" />
+      <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
+    </div>
 
-  <h3 class="fr-h6 !mt-8">
-    Composition
-    <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
-  </h3>
+    <h3 class="fr-h6 !mt-8">
+      Composition
+      <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
+    </h3>
 
-  <SummaryElementList objectType="plant" :elements="payload.declaredPlants" />
-  <SummaryElementList objectType="microorganism" :elements="payload.declaredMicroorganisms" />
-  <SummaryElementList
-    objectType="form_of_supply"
-    :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'form_of_supply')"
-  />
-  <SummaryElementList
-    objectType="aroma"
-    :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'aroma')"
-  />
-  <SummaryElementList
-    objectType="additive"
-    :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'additive')"
-  />
-  <SummaryElementList
-    objectType="active_ingredient"
-    :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'active_ingredient')"
-  />
-  <SummaryElementList
-    objectType="non_active_ingredient"
-    :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'non_active_ingredient')"
-  />
-  <SummaryElementList objectType="substance" :elements="payload.declaredSubstances" />
-
-  <SubstancesTable v-model="payload" readonly />
-
-  <h3 class="fr-h6 !mt-8">
-    Pièces jointes
-    <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
-  </h3>
-  <div class="grid grid-cols-12 gap-3 mb-8">
-    <FilePreview
-      class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
-      v-for="(file, index) in payload.attachments"
-      :key="`file-${index}`"
-      :file="file"
-      readonly
+    <SummaryElementList objectType="plant" :elements="payload.declaredPlants" />
+    <SummaryElementList objectType="microorganism" :elements="payload.declaredMicroorganisms" />
+    <SummaryElementList
+      objectType="form_of_supply"
+      :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'form_of_supply')"
     />
+    <SummaryElementList
+      objectType="aroma"
+      :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'aroma')"
+    />
+    <SummaryElementList
+      objectType="additive"
+      :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'additive')"
+    />
+    <SummaryElementList
+      objectType="active_ingredient"
+      :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'active_ingredient')"
+    />
+    <SummaryElementList
+      objectType="non_active_ingredient"
+      :elements="payload.declaredIngredients.filter((obj) => obj.objectType == 'non_active_ingredient')"
+    />
+    <SummaryElementList objectType="substance" :elements="payload.declaredSubstances" />
+
+    <SubstancesTable v-model="payload" readonly />
+
+    <h3 class="fr-h6 !mt-8">
+      Pièces jointes
+      <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
+    </h3>
+    <div class="grid grid-cols-12 gap-3 mb-8">
+      <FilePreview
+        class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
+        v-for="(file, index) in payload.attachments"
+        :key="`file-${index}`"
+        :file="file"
+        readonly
+      />
+    </div>
   </div>
 </template>
+
+<script>
+export default { name: "DeclarationSummary" }
+</script>
 
 <script setup>
 import { computed } from "vue"
