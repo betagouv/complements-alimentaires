@@ -278,3 +278,13 @@ export const RiFileSearchFill = remixIcon(
   "ri-file-search-fill",
   "M16 2l5 5v14.008a.993.993 0 01-.993.992H3.993A1 1 0 013 21.008V2.992C3 2.444 3.445 2 3.993 2H16zm-2.471 12.446l2.21 2.21 1.415-1.413-2.21-2.21a4.002 4.002 0 00-6.276-4.861 4 4 0 004.861 6.274zm-.618-2.032a2 2 0 11-2.828-2.828 2 2 0 012.828 2.828z"
 )
+
+export const RiSurveyLine = remixIcon(
+  "ri-survey-line",
+  "M17 2v2h3.007c.548 0 .993.445.993.993v16.014a.994.994 0 01-.993.993H3.993A.994.994 0 013 21.007V4.993C3 4.445 3.445 4 3.993 4H7V2h10zM7 6H5v14h14V6h-2v2H7V6zm2 10v2H7v-2h2zm0-3v2H7v-2h2zm0-3v2H7v-2h2zm6-6H9v2h6V4z"
+)
+
+export const RiMailSendLine = remixIcon(
+  "ri-mail-send-line",
+  "M22 20.007a1 1 0 01-.992.993H2.992A.993.993 0 012 20.007V19h18V7.3l-8 7.2-10-9V4a1 1 0 011-1h18a1 1 0 011 1v16.007zM4.434 5L12 11.81 19.566 5H4.434zM0 15h8v2H0v-2zm0-5h5v2H0v-2z"
+)

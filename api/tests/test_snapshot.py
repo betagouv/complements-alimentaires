@@ -11,6 +11,7 @@ from data.factories import (
     ObservationDeclarationFactory,
     OngoingInstructionDeclarationFactory,
     OngoingVisaDeclarationFactory,
+    SnapshotFactory,
     VisaRoleFactory,
 )
 from data.models import Declaration, Snapshot
@@ -267,3 +268,62 @@ class TestSnapshotApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
         response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @authenticate
+    def test_snapshot_hide_visa_to_declarants(self):
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        # Une déclaration avec toutes les conditions nécessaires pour l'instruction
+        declaration = InstructionReadyDeclarationFactory(author=authenticate.user, company=company)
+        snapshot = SnapshotFactory(
+            declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.SUBMIT
+        )
+        SnapshotFactory(declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.REQUEST_VISA)
+        SnapshotFactory(declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.REFUSE_VISA)
+
+        # On obtient les snapshots liés à cette déclaration. Cet user n'est pas viseur ni instructeur,
+        # donc les snapshots liés à l'admin ne devraient pas s'afficher
+
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+        self.assertEqual(len(body), 1)
+        self.assertEqual(body[0]["id"], snapshot.id)
+        self.assertEqual(body[0]["comment"], snapshot.comment)
+
+    @authenticate
+    def test_snapshot_show_visa_to_visors(self):
+        VisaRoleFactory(user=authenticate.user)
+
+        # Une déclaration avec toutes les conditions nécessaires pour l'instruction
+        declaration = InstructionReadyDeclarationFactory(author=authenticate.user)
+        SnapshotFactory(declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.SUBMIT)
+        SnapshotFactory(declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.REQUEST_VISA)
+        SnapshotFactory(declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.REFUSE_VISA)
+
+        # On obtient les snapshots liés à cette déclaration. Cet user n'est pas viseur ni instructeur,
+        # donc les snapshots liés à l'admin ne devraient pas s'afficher
+
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+        self.assertEqual(len(body), 3)
+
+    @authenticate
+    def test_snapshot_show_visa_to_instructors(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        # Une déclaration avec toutes les conditions nécessaires pour l'instruction
+        declaration = InstructionReadyDeclarationFactory(author=authenticate.user)
+        SnapshotFactory(declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.SUBMIT)
+        SnapshotFactory(declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.REQUEST_VISA)
+        SnapshotFactory(declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.REFUSE_VISA)
+
+        # On obtient les snapshots liés à cette déclaration. Cet user n'est pas viseur ni instructeur,
+        # donc les snapshots liés à l'admin ne devraient pas s'afficher
+
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+        self.assertEqual(len(body), 3)

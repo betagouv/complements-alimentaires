@@ -1,7 +1,7 @@
 <template>
   <h3 class="fr-h6">
     Informations sur le produit
-    <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
+    <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />
   </h3>
   <div>
     <SummaryInfoSegment label="Nom du produit" :value="payload.name" />
@@ -23,7 +23,7 @@
 
   <h3 class="fr-h6 !mt-8">
     Composition
-    <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
+    <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
   </h3>
 
   <SummaryElementList objectType="plant" :elements="payload.declaredPlants" />
@@ -54,7 +54,7 @@
 
   <h3 class="fr-h6 !mt-8">
     Pièces jointes
-    <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(3))" />
+    <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
   </h3>
   <div class="grid grid-cols-12 gap-3 mb-8">
     <FilePreview
@@ -117,7 +117,7 @@ const conditionNames = computed(() => {
   return payload.value.conditionsNotRecommended.map(findName).join(", ")
 })
 
-const editLink = (step) => ({ query: { step } })
+const editLink = (tab) => ({ query: { tab } })
 </script>
 
 <style scoped>

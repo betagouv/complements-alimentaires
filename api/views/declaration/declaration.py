@@ -158,6 +158,8 @@ class DeclarationFlowView(GenericAPIView):
     create_snapshot = False
     snapshot_action = Snapshot.SnapshotActions.OTHER
     snapshot_post_validation_status = ""
+    from_status = None
+    to_status = None
 
     def get_transition(self, request, declaration):
         """
@@ -200,12 +202,14 @@ class DeclarationFlowView(GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         declaration = self.get_object()
+        self.from_status = declaration.status
         flow = DeclarationFlow(declaration)
         transition_method = getattr(flow, self.get_transition(request, declaration))
         flow_permission_method = getattr(transition_method, "has_permission", None)
         if flow_permission_method and not flow_permission_method(request.user):
             raise PermissionDenied()
         transition_method()
+        self.to_status = declaration.status
         if self.create_snapshot:
             self.perform_snapshot_creation(request, declaration)
         self.on_transition_success(request, declaration)
@@ -283,13 +287,17 @@ class DeclarationAuthorizeView(DeclarationFlowView):
 
 class DeclarationResubmitView(DeclarationFlowView):
     """
-    OBSERVATION -> ONGOING_INSTRUCTION
+    [OBSERVATION, OBJECTION] -> ONGOING_INSTRUCTION
     """
 
     permission_classes = [IsDeclarationAuthor, IsDeclarant]
     transition = "resubmit"
     create_snapshot = True
-    snapshot_action = Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION
+
+    def get_snapshot_action(self, request, declaration):
+        if self.from_status == Declaration.DeclarationStatus.OBSERVATION:
+            return Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION
+        return Snapshot.SnapshotActions.RESPOND_TO_OBJECTION
 
 
 class VisaDecisionView(DeclarationFlowView):

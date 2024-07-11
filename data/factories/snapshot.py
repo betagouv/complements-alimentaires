@@ -15,4 +15,5 @@ class SnapshotFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     status = factory.fuzzy.FuzzyChoice(Declaration.DeclarationStatus)
     comment = factory.Faker("text", max_nb_chars=40)
+    action = Snapshot.SnapshotActions.SUBMIT
     json_declaration = {}
