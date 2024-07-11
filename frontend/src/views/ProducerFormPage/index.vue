@@ -42,6 +42,7 @@
               :externalResults="$externalResults"
               :readonly="readonly"
               :declarationId="id"
+              @withdraw="onWithdrawal"
             ></component>
           </FormWrapper>
         </DsfrTabContent>
@@ -59,6 +60,7 @@ import SummaryTab from "./SummaryTab"
 import AttachmentTab from "./AttachmentTab"
 import NewElementTab from "./NewElementTab"
 import HistoryTab from "@/components/HistoryTab"
+import WithdrawalTab from "@/components/WithdrawalTab"
 import { useFetch } from "@vueuse/core"
 import { useRoute, useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
@@ -76,8 +78,8 @@ const asc = ref(true)
 const tabs = ref(null) // Corresponds to the template ref (https://vuejs.org/guide/essentials/template-refs.html#accessing-the-refs)
 const selectTab = async (index) => {
   if (index === selectedTabIndex.value) return
-  const saveSuccess = await savePayload()
-  if (saveSuccess) {
+  const allowTransition = readonly.value || (await savePayload())
+  if (allowTransition) {
     asc.value = selectedTabIndex.value < index
     selectedTabIndex.value = index
   }
@@ -132,12 +134,14 @@ const readonly = computed(
 )
 
 const showHistory = computed(() => readonly.value || (!isNewDeclaration.value && payload.value.status !== "DRAFT"))
+const showWithdrawal = computed(() => payload.value.status === "AUTHORIZED")
 
 const components = computed(() => {
-  if (readonly.value) return [HistoryTab, SummaryTab]
-  const baseComponents = [ProductTab, CompositionTab, AttachmentTab, SummaryTab]
-  if (hasNewElements.value) baseComponents.splice(2, 0, NewElementTab)
+  const baseComponents = readonly.value ? [SummaryTab] : [ProductTab, CompositionTab, AttachmentTab, SummaryTab]
+
+  if (!readonly.value && hasNewElements.value) baseComponents.splice(2, 0, NewElementTab)
   if (showHistory.value) baseComponents.splice(0, 0, HistoryTab)
+  if (showWithdrawal.value) baseComponents.push(WithdrawalTab)
   return baseComponents
 })
 
@@ -179,6 +183,12 @@ const tabTitles = computed(() => {
       icon: "ri-flask-line",
       tabId: `tab-${idx("NewElementTab")}`,
       panelId: `tab-content-${idx("NewElementTab")}`,
+    },
+    WithdrawalTab: {
+      title: "Retirer du marché",
+      icon: "ri-close-fill",
+      tabId: `tab-${idx("WithdrawalTab")}`,
+      panelId: `tab-content-${idx("WithdrawalTab")}`,
     },
   }
   return components.value.map((x) => titleMap[x.__name])
@@ -237,6 +247,8 @@ const submitPayload = async (comment) => {
     router.replace({ name: "DeclarationsHomePage" })
   }
 }
+
+const onWithdrawal = () => router.replace({ name: "DeclarationsHomePage", query: { status: "WITHDRAWN,AUTHORIZED" } })
 
 watch(
   () => route.query.tab,

@@ -48,6 +48,7 @@ const statusFilterOptions = [
   { value: "ABANDONED", text: "Abandon" },
   { value: "AUTHORIZED", text: "Autorisée" },
   { value: "REJECTED", text: "Refusée" },
+  { value: "WITHDRAWN", text: "Retiré du marché" },
 ]
 const options = statusFilterOptions
   .filter((x) => props.exclude.indexOf(x.value) === -1)

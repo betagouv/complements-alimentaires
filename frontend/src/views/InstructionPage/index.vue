@@ -44,6 +44,15 @@
           >
             <DecisionTab :declaration="declaration" @reload-declaration="reloadDeclaration" />
           </DsfrTabContent>
+          <DsfrTabContent
+            v-else-if="showWithdrawal"
+            panelId="tab-content-3"
+            tabId="tab-3"
+            :selected="selectedTabIndex === 3"
+            :asc="asc"
+          >
+            <WithdrawalTab @withdraw="onWithdrawal" v-model="declaration" />
+          </DsfrTabContent>
         </DsfrTabs>
       </div>
     </div>
@@ -60,9 +69,12 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import DeclarationSummary from "@/components/DeclarationSummary"
 import IdentityTab from "@/components/IdentityTab"
 import HistoryTab from "@/components/HistoryTab"
+import WithdrawalTab from "@/components/WithdrawalTab"
 import DecisionTab from "./DecisionTab"
 import { headers } from "@/utils/data-fetching"
 import DeclarationAlert from "@/components/DeclarationAlert"
+import { useRouter } from "vue-router"
+const router = useRouter()
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -117,6 +129,8 @@ onMounted(async () => {
   isFetching.value = false
 })
 
+const showWithdrawal = computed(() => declaration.value?.status === "AUTHORIZED")
+
 // Tab management
 const tabTitles = computed(() => {
   const tabs = [
@@ -126,6 +140,8 @@ const tabTitles = computed(() => {
   ]
   if (canInstruct.value)
     tabs.push({ title: "Décision", icon: "ri-checkbox-circle-line", tabId: "tab-3", panelId: "tab-content-3" })
+  else if (showWithdrawal.value)
+    tabs.push({ title: "Retirer du marché", icon: "ri-close-fill", tabId: "tab-3", panelId: "tab-content-3" })
   return tabs
 })
 const selectedTabIndex = ref(0)
@@ -150,4 +166,7 @@ const reloadDeclaration = async () => {
   await nextTick()
   await executeDeclarationFetch()
 }
+
+const onWithdrawal = () =>
+  router.replace({ name: "InstructionDeclarations", query: { status: "WITHDRAWN,AUTHORIZED" } })
 </script>

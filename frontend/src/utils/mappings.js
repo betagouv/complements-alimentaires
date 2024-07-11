@@ -112,6 +112,10 @@ export const statusProps = {
     icon: "ri-error-warning-fill",
     label: "Refusée",
   },
+  WITHDRAWN: {
+    icon: "ri-close-fill",
+    label: "Retirée du marché",
+  },
 }
 
 export const roleNameDisplayNameMapping = { DeclarantRole: "déclarant", SupervisorRole: "gestionnaire" }

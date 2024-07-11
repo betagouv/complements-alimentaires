@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { computed, defineModel } from "vue"
+import { computed } from "vue"
 import { useFetch } from "@vueuse/core"
 import { getApiType, getActivityReadonlyByType } from "@/utils/mappings"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
