@@ -77,7 +77,7 @@ import { handleError } from "@/utils/error-handling"
 import SectionTitle from "@/components/SectionTitle"
 
 const payload = defineModel()
-const containers = {
+const containers = computed(() => ({
   plant: payload.value.declaredPlants,
   microorganism: payload.value.declaredMicroorganisms,
   substance: payload.value.declaredSubstances,
@@ -90,8 +90,8 @@ const containers = {
   // TODO déprecier après l'import de données extraites en mai 2024
   // qui contient les types plus précis
   ingredient: payload.value.declaredIngredients,
-}
-const allElements = computed(() => [].concat(...Object.values(containers)))
+}))
+const allElements = computed(() => [].concat(...Object.values(containers.value)))
 const hasActiveSubstances = computed(() =>
   allElements.value.some((x) => x.active && !x.new && x.element?.substances?.length)
 )
@@ -102,7 +102,7 @@ const selectOption = async (result) => {
 }
 
 const removeElement = (element) => {
-  Object.values(containers).forEach((container) => {
+  Object.values(containers.value).forEach((container) => {
     const index = container.indexOf(element)
     if (index > -1) container.splice(index, 1)
   })
@@ -114,7 +114,7 @@ const addElement = (item, objectType, newlyAdded = false) => {
   const toAdd = newlyAdded
     ? { ...item, ...{ active: item.activity, disabled: activityNotEditable, new: true } }
     : { element: item, active: item.activity, disabled: activityNotEditable }
-  containers[objectType].unshift(toAdd)
+  containers.value[objectType].unshift(toAdd)
 }
 
 const fetchElement = async (type, id) => {
