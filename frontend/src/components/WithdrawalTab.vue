@@ -36,7 +36,6 @@ const withdrawDeclaration = async () => {
 
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre produit a été retiré du marché")
-    // router.replace({ name: "DeclarationsHomePage", query: { status: "WITHDRAWN,AUTHORIZED" } })
     emit("withdraw")
   }
 }
