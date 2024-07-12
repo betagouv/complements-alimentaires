@@ -112,8 +112,8 @@ const addElement = (item, objectType, newlyAdded = false) => {
   // à terme toutes les plantes seront actives et si elles sont non actives c'est que ce sont des support/agent de charge
   const activityNotEditable = getActivityReadonlyByType(objectType)
   const toAdd = newlyAdded
-    ? { ...item, ...{ active: item.activity, disabled: activityNotEditable, new: true } }
-    : { element: item, active: item.activity, disabled: activityNotEditable }
+    ? { ...item, ...{ active: !!item.activity, disabled: activityNotEditable, new: true } }
+    : { element: item, active: !!item.activity, disabled: activityNotEditable }
   containers.value[objectType].unshift(toAdd)
 }
 
