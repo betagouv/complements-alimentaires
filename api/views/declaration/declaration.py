@@ -300,6 +300,17 @@ class DeclarationResubmitView(DeclarationFlowView):
         return Snapshot.SnapshotActions.RESPOND_TO_OBJECTION
 
 
+class DeclarationWithdrawView(DeclarationFlowView):
+    """
+    AUTHORIZED -> WITHDRAWN
+    """
+
+    permission_classes = [(IsDeclarationAuthor | IsInstructor | IsVisor)]
+    transition = "withdraw"
+    create_snapshot = True
+    snapshot_action = Snapshot.SnapshotActions.WITHDRAW
+
+
 class VisaDecisionView(DeclarationFlowView):
     permission_classes = [IsVisor]
     create_snapshot = True

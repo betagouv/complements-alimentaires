@@ -73,6 +73,10 @@ class DeclarationFlow:
     def accept_visa_observe(self):
         pass
 
+    @status.transition(source=Status.AUTHORIZED, target=Status.WITHDRAWN)
+    def withdraw(self):
+        pass
+
     @status.transition(source=Status.OBSERVATION, target=Status.ABANDONED)
     def abandon(self):
         self.error()

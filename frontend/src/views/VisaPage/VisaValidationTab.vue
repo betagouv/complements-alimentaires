@@ -55,16 +55,16 @@ import VisaInfoLine from "./VisaInfoLine.vue"
 
 const $externalResults = ref({})
 const emit = defineEmits(["reload-declaration"])
+const declaration = defineModel()
 
-const props = defineProps({ declaration: Object })
-const privateNotes = ref(props.declaration?.privateNotes || "")
+const privateNotes = ref(declaration.value?.privateNotes || "")
 
 const instructorName = computed(
-  () => `${props.declaration?.instructor?.firstName} ${props.declaration?.instructor?.lastName}`
+  () => `${declaration.value?.instructor?.firstName} ${declaration.value?.instructor?.lastName}`
 )
-const postValidationStatus = computed(() => statusProps[props.declaration.postValidationStatus].label)
+const postValidationStatus = computed(() => statusProps[declaration.value.postValidationStatus].label)
 const refuseVisa = async () => {
-  const url = `/api/v1/declarations/${props.declaration.id}/refuse-visa/`
+  const url = `/api/v1/declarations/${declaration.value.id}/refuse-visa/`
   const { response } = await useFetch(url, { headers: headers() }).post({ privateNotes: privateNotes.value }).json()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
@@ -74,7 +74,7 @@ const refuseVisa = async () => {
 }
 
 const acceptVisa = async () => {
-  const url = `/api/v1/declarations/${props.declaration.id}/accept-visa/`
+  const url = `/api/v1/declarations/${declaration.value.id}/accept-visa/`
   const { response } = await useFetch(url, { headers: headers() }).post({ privateNotes: privateNotes.value }).json()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {

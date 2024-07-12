@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from data.factories import (
+    AuthorizedDeclarationFactory,
     AwaitingInstructionDeclarationFactory,
     AwaitingVisaDeclarationFactory,
     CompanyFactory,
@@ -16,7 +17,7 @@ from data.factories import (
     OngoingVisaDeclarationFactory,
     VisaRoleFactory,
 )
-from data.models import Declaration
+from data.models import Declaration, Snapshot
 
 from .utils import authenticate
 
@@ -573,3 +574,57 @@ class TestDeclarationFlow(APITestCase):
         response = self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    @authenticate
+    def test_withdraw(self):
+        """
+        Passage de AUTHORIZED à WITHDRAWN
+        Seulement possible pour les déclarant·e·s de la déclaration en question, ou pour
+        les personnes ayant le rôle visur·se ou instructeur·ice
+        """
+        declaration = AuthorizedDeclarationFactory(author=authenticate.user)
+
+        response = self.client.post(reverse("api:withdraw", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        declaration.refresh_from_db()
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.WITHDRAWN)
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.WITHDRAW)
+
+        declaration = AuthorizedDeclarationFactory()
+        VisaRoleFactory(user=authenticate.user)
+
+        response = self.client.post(reverse("api:withdraw", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.WITHDRAWN)
+
+        declaration = AuthorizedDeclarationFactory()
+        InstructionRoleFactory(user=authenticate.user)
+
+        response = self.client.post(reverse("api:withdraw", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.WITHDRAWN)
+
+    def test_withdraw_unauthoritzed(self):
+        """
+        Passage de AUTHORIZED à WITHDRAWN
+        Pas possible si la personne n'est pas autrice de la déclaration en question
+        """
+        declaration = AuthorizedDeclarationFactory()
+
+        response = self.client.post(reverse("api:withdraw", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
+
+    def test_withdraw_unauthenticated(self):
+        """
+        Passage de AUTHORIZED à WITHDRAWN
+        Pas possible pour les personnes non-authentifiées
+        """
+        declaration = AuthorizedDeclarationFactory()
+
+        response = self.client.post(reverse("api:withdraw", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)

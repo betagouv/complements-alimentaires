@@ -25,24 +25,27 @@
       <div v-if="declaration">
         <DeclarationSummary :readonly="true" v-model="declaration" v-if="isAwaitingInstruction" />
 
-        <DsfrTabs v-else ref="tabs" :tab-titles="tabTitles" :initialSelectedIndex="0" @select-tab="selectTab">
-          <DsfrTabContent panelId="tab-content-0" tabId="tab-0" :selected="selectedTabIndex === 0" :asc="asc">
-            <IdentityTab :user="declarant" :company="company" />
-          </DsfrTabContent>
-          <DsfrTabContent panelId="tab-content-1" tabId="tab-1" :selected="selectedTabIndex === 1" :asc="asc">
-            <DeclarationSummary :readonly="true" v-model="declaration" />
-          </DsfrTabContent>
-          <DsfrTabContent panelId="tab-content-2" tabId="tab-2" :selected="selectedTabIndex === 2" :asc="asc">
-            <HistoryTab :declarationId="declaration?.id" :privateNotes="declaration.privateNotes" />
-          </DsfrTabContent>
+        <DsfrTabs v-else ref="tabs" :tab-titles="titles" :initialSelectedIndex="0" @select-tab="selectTab">
           <DsfrTabContent
-            v-if="canInstruct"
-            panelId="tab-content-3"
-            tabId="tab-3"
-            :selected="selectedTabIndex === 3"
+            v-for="(component, idx) in components"
+            :key="`component-${idx}`"
+            :panelId="`tab-content-${idx}`"
+            :tabId="`tab-${idx}`"
+            :selected="selectedTabIndex === idx"
             :asc="asc"
           >
-            <DecisionTab :declaration="declaration" @reload-declaration="reloadDeclaration" />
+            <component
+              :is="component"
+              v-model="declaration"
+              :externalResults="$externalResults"
+              :readonly="true"
+              :declarationId="declaration?.id"
+              @withdraw="onWithdrawal"
+              :privateNotes="declaration?.privateNotes"
+              :user="declarant"
+              :company="company"
+              @reload-declaration="reloadDeclaration"
+            ></component>
           </DsfrTabContent>
         </DsfrTabs>
       </div>
@@ -60,9 +63,13 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import DeclarationSummary from "@/components/DeclarationSummary"
 import IdentityTab from "@/components/IdentityTab"
 import HistoryTab from "@/components/HistoryTab"
+import WithdrawalTab from "@/components/WithdrawalTab"
 import DecisionTab from "./DecisionTab"
 import { headers } from "@/utils/data-fetching"
 import DeclarationAlert from "@/components/DeclarationAlert"
+import { useRouter } from "vue-router"
+import { tabTitles } from "@/utils/mappings"
+const router = useRouter()
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -117,17 +124,16 @@ onMounted(async () => {
   isFetching.value = false
 })
 
+const showWithdrawal = computed(() => declaration.value?.status === "AUTHORIZED")
+
 // Tab management
-const tabTitles = computed(() => {
-  const tabs = [
-    { title: "Identité", icon: "ri-shield-user-line", tabId: "tab-0", panelId: "tab-content-0" },
-    { title: "Le produit", icon: "ri-flask-line", tabId: "tab-1", panelId: "tab-content-1" },
-    { title: "Historique", icon: "ri-chat-3-line", tabId: "tab-2", panelId: "tab-content-2" },
-  ]
-  if (canInstruct.value)
-    tabs.push({ title: "Décision", icon: "ri-checkbox-circle-line", tabId: "tab-3", panelId: "tab-content-3" })
-  return tabs
+const components = computed(() => {
+  const baseComponents = [IdentityTab, DeclarationSummary, HistoryTab]
+  if (canInstruct.value) baseComponents.push(DecisionTab)
+  else if (showWithdrawal.value) baseComponents.push(WithdrawalTab)
+  return baseComponents
 })
+const titles = computed(() => tabTitles(components.value))
 const selectedTabIndex = ref(0)
 const asc = ref(true) // Je n'aime pas le nommage mais ça vient de ce paramètre : https://vue-dsfr.netlify.app/?path=/docs/composants-dsfrtabs--docs
 const selectTab = (index) => {
@@ -150,4 +156,7 @@ const reloadDeclaration = async () => {
   await nextTick()
   await executeDeclarationFetch()
 }
+
+const onWithdrawal = () =>
+  router.replace({ name: "InstructionDeclarations", query: { status: "WITHDRAWN,AUTHORIZED" } })
 </script>
