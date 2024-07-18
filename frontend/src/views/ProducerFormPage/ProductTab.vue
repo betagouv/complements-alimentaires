@@ -100,7 +100,7 @@
       </div>
       <div class="col-span-2 md:col-span-1 max-w-md">
         <DsfrInputGroup>
-          <DsfrInput v-model="payload.conditioning" label-visible label="Conditionnements" />
+          <DsfrInput v-model="payload.conditioning" label-visible label="Conditionnement" />
         </DsfrInputGroup>
       </div>
     </div>
