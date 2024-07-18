@@ -96,7 +96,7 @@ const decisionCategory = ref(null)
 watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "approve" : null))
 
 const proposal = ref(null)
-const delayDays = ref(30)
+const delayDays = ref(15)
 const comment = ref("")
 const privateNotes = ref(declaration.value?.privateNotes || "")
 
