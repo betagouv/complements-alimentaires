@@ -96,7 +96,7 @@ const decisionCategory = ref(null)
 watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "approve" : null))
 
 const proposal = ref(null)
-const delayDays = ref(30)
+const delayDays = ref(15)
 const comment = ref("")
 const privateNotes = ref(declaration.value?.privateNotes || "")
 
@@ -110,7 +110,7 @@ watch(proposal, (newProposal) => {
 const decisionCategories = [
   {
     value: "approve",
-    title: "Bon pour autorisation",
+    title: "J’envoie l’attestation de déclaration",
     icon: "ri-checkbox-circle-fill",
     description: "La déclaration ne pose pas de problème et peut être autorisée en l'état.",
     color: "green",
@@ -129,7 +129,7 @@ const rejectReasons = [
     title: "Le produit ne répond pas à la définition du complément alimentaire",
     items: [
       "Forme assimilable à un aliment courant",
-      "Recommendations d'emploi incompatibles",
+      "Recommandations d'emploi incompatibles",
       "Composition (source concentrée, ...)",
       "Autre",
     ],

@@ -16,7 +16,7 @@ class DeclarationSnapshotListView(ListAPIView):
         declaration = get_object_or_404(Declaration, pk=self.kwargs[self.lookup_field])
         self.check_object_permissions(self.request, declaration)
         self.check_permissions(self.request)
-        qs = declaration.snapshots.order_by("-creation_date")
+        qs = declaration.snapshots.order_by("creation_date")
         if not IsInstructor().has_permission(self.request, self) and not IsVisor().has_permission(self.request, self):
             qs = qs.exclude(
                 action__in=[

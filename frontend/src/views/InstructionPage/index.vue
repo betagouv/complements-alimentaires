@@ -128,7 +128,7 @@ const showWithdrawal = computed(() => declaration.value?.status === "AUTHORIZED"
 
 // Tab management
 const components = computed(() => {
-  const baseComponents = [IdentityTab, DeclarationSummary, HistoryTab]
+  const baseComponents = [DeclarationSummary, IdentityTab, HistoryTab]
   if (canInstruct.value) baseComponents.push(DecisionTab)
   else if (showWithdrawal.value) baseComponents.push(WithdrawalTab)
   return baseComponents
