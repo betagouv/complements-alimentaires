@@ -129,7 +129,7 @@ const rejectReasons = [
     title: "Le produit ne répond pas à la définition du complément alimentaire",
     items: [
       "Forme assimilable à un aliment courant",
-      "Recommendations d'emploi incompatibles",
+      "Recommandations d'emploi incompatibles",
       "Composition (source concentrée, ...)",
       "Autre",
     ],
