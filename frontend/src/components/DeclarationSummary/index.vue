@@ -8,17 +8,16 @@
       <SummaryInfoSegment label="Nom du produit" :value="payload.name" />
       <SummaryInfoSegment label="Marque" :value="payload.brand" />
       <SummaryInfoSegment label="Gamme" :value="payload.gamme" />
-      <SummaryInfoSegment label="Arôme" :value="payload.flavor" />
       <SummaryInfoSegment label="Description" :value="payload.description" />
-      <SummaryInfoSegment label="Forme galénique" :value="galenicFormulationsNames" />
-      <SummaryInfoSegment label="Unité de consommation" :value="unitInfo" />
-      <SummaryInfoSegment label="Conditionnements" :value="payload.conditioning" />
-      <SummaryInfoSegment label="Dose journalière recommandée" :value="payload.dailyRecommendedDose" />
-      <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
-      <SummaryInfoSegment label="Mode d'emploi" :value="payload.instructions" />
-      <SummaryInfoSegment label="Mise en garde et avertissement" :value="payload.warnings" />
       <SummaryInfoSegment label="Populations cible" :value="populationNames" />
-      <SummaryInfoSegment label="Consommation déconseillée" :value="conditionNames" />
+      <SummaryInfoSegment label="Populations à consommation déconseillée" :value="conditionNames" />
+      <SummaryInfoSegment label="Forme galénique" :value="galenicFormulationsNames" />
+      <SummaryInfoSegment label="Mode d'emploi" :value="payload.instructions" />
+      <SummaryInfoSegment label="Unité de consommation" :value="unitInfo" />
+      <SummaryInfoSegment label="Dose journalière recommandée" :value="payload.dailyRecommendedDose" />
+      <SummaryInfoSegment label="Conditionnements" :value="payload.conditioning" />
+      <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
+      <SummaryInfoSegment label="Mise en garde et avertissement" :value="payload.warnings" />
       <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
     </div>
 
