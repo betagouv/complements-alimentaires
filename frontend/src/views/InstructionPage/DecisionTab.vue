@@ -110,7 +110,7 @@ watch(proposal, (newProposal) => {
 const decisionCategories = [
   {
     value: "approve",
-    title: "Bon pour autorisation",
+    title: "J’envoie l’attestation de déclaration",
     icon: "ri-checkbox-circle-fill",
     description: "La déclaration ne pose pas de problème et peut être autorisée en l'état.",
     color: "green",
