@@ -47,7 +47,11 @@
     />
     <ElementList @remove="removeElement" objectType="substance" :elements="payload.declaredSubstances" />
     <!-- On conserve ce type ingredient déprécié temporairement -->
-    <ElementList @remove="removeElement" objectType="ingredient" :elements="payload.declaredIngredients" />
+    <ElementList
+      @remove="removeElement"
+      objectType="ingredient"
+      :elements="payload.declaredIngredients.filter((obj) => !obj.element.objectType)"
+    />
 
     <div v-if="allElements.length === 0" class="my-12">
       <v-icon name="ri-information-line" class="mr-1"></v-icon>
@@ -91,13 +95,24 @@ const containers = computed(() => ({
   // qui contient les types plus précis
   ingredient: payload.value.declaredIngredients,
 }))
-const allElements = computed(() => [].concat(...Object.values(containers.value)))
+const allElements = computed(() =>
+  [].concat(
+    ...[
+      payload.value.declaredPlants,
+      payload.value.declaredMicroorganisms,
+      payload.value.declaredSubstances,
+      payload.value.declaredIngredients,
+    ]
+  )
+)
 const hasActiveSubstances = computed(() =>
-  allElements.value.some((x) => x.active && !x.new && x.element?.substances?.length)
+  allElements.value.some(
+    (x) => x.active && !x.new && (x.element?.substances?.length || containers.value.substance.indexOf(x) > -1)
+  )
 )
 
 const selectOption = async (result) => {
-  const item = await fetchElement(getApiType(result.objectType), result.id)
+  const item = await fetchElement(getApiType(result.objectType), result.objectType, result.id)
   addElement(item, result.objectType)
 }
 
@@ -117,11 +132,11 @@ const addElement = (item, objectType, newlyAdded = false) => {
   containers.value[objectType].unshift(toAdd)
 }
 
-const fetchElement = async (type, id) => {
-  const { data, response } = await useFetch(`/api/v1/${type}s/${id}`).get().json()
+const fetchElement = async (apiType, type, id) => {
+  const { data, response } = await useFetch(`/api/v1/${apiType}s/${id}`).get().json()
   await handleError(response)
   if (!response.value.ok) return null
-  return data.value
+  return { ...data.value, ...{ objectType: type } }
 }
 </script>
 
