@@ -68,7 +68,7 @@ const actions = [
 ]
 
 // Note : Sur téléicare on ne peux pas ajouter des substances directement
-const types = typesMapping
+const types = Object.assign({}, typesMapping)
 delete types["substance"]
 
 watch(
