@@ -129,7 +129,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "conditioning",
-                    models.TextField(blank=True, verbose_name="conditionnement"),
+                    models.TextField(blank=True, verbose_name="conditionnements"),
                 ),
                 (
                     "daily_recommended_dose",

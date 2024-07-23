@@ -80,6 +80,7 @@ const actionText = computed(() => {
 .initials,
 .comment {
   @apply bg-blue-france-950;
+  white-space: pre-line;
 }
 .right-side .initials,
 .right-side .comment {
