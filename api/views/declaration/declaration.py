@@ -163,7 +163,7 @@ class DeclarationFlowView(GenericAPIView):
 
     def get_transition(self, request, declaration):
         """
-        À surcharger en cas d'une transisiton dynamique
+        À surcharger en cas d'une transition dynamique
         """
         return self.transition
 

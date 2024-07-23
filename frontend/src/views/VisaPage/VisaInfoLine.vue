@@ -4,7 +4,7 @@
       <v-icon class="mr-2" :name="icon" aria-hidden />
       <span>{{ title }}</span>
     </div>
-    <div class="sm:flex-auto">
+    <div class="comment sm:flex-auto">
       {{ text }}
     </div>
   </div>
@@ -13,3 +13,8 @@
 <script setup>
 defineProps(["icon", "title", "text"])
 </script>
+<style scoped>
+.comment {
+  white-space: pre-line;
+}
+</style>
