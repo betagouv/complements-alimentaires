@@ -54,7 +54,7 @@ import useToaster from "@/composables/use-toaster"
 import VisaInfoLine from "./VisaInfoLine.vue"
 
 const $externalResults = ref({})
-const emit = defineEmits(["reload-declaration"])
+const emit = defineEmits(["decision-done"])
 const declaration = defineModel()
 
 const privateNotes = ref(declaration.value?.privateNotes || "")
@@ -69,7 +69,7 @@ const refuseVisa = async () => {
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre décision a été prise en compte")
-    emit("reload-declaration")
+    emit("decision-done")
   }
 }
 
@@ -79,7 +79,7 @@ const acceptVisa = async () => {
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre décision a été prise en compte")
-    emit("reload-declaration")
+    emit("decision-done")
   }
 }
 

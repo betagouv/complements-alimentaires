@@ -90,7 +90,7 @@ import { handleError } from "@/utils/error-handling"
 const $externalResults = ref({})
 const declaration = defineModel()
 
-const emit = defineEmits(["reload-declaration"])
+const emit = defineEmits(["decision-done"])
 
 const decisionCategory = ref(null)
 watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "approve" : null))
@@ -192,7 +192,7 @@ const submitDecision = async () => {
 
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre décision a été prise en compte")
-    emit("reload-declaration")
+    emit("decision-done")
   }
 }
 </script>

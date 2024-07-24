@@ -43,7 +43,7 @@
               :privateNotes="declaration?.privateNotes"
               :user="declarant"
               :company="company"
-              @reload-declaration="reloadDeclaration"
+              @decision-done="onDecisionDone"
             ></component>
           </DsfrTabContent>
         </DsfrTabs>
@@ -55,7 +55,7 @@
 <script setup>
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { onMounted, computed, ref, nextTick } from "vue"
+import { onMounted, computed, ref } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
@@ -66,6 +66,10 @@ import DecisionTab from "./DecisionTab"
 import { headers } from "@/utils/data-fetching"
 import DeclarationAlert from "@/components/DeclarationAlert"
 import { tabTitles } from "@/utils/mappings"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
+const previousRoute = router.getPreviousRoute()
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -144,9 +148,8 @@ const instructDeclaration = async () => {
   }
 }
 
-const reloadDeclaration = async () => {
-  tabs.value?.selectIndex?.(0)
-  await nextTick()
-  await executeDeclarationFetch()
+const onDecisionDone = () => {
+  const previousQuery = previousRoute.value.name === "InstructionDeclarations" ? previousRoute.value.query : {}
+  router.push({ name: "InstructionDeclarations", query: previousQuery })
 }
 </script>
