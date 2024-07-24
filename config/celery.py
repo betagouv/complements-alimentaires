@@ -23,7 +23,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"), overwrite=True)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
-app = Celery("config", broker="redis://localhost:6379/0", backend="redis://localhost:6379/0", include=["config.tasks"])
+app = Celery("config", broker=env("REDIS_URL"), backend=env("REDIS_URL"), include=["config.tasks"])
 app.worker_hijack_root_logger = False
 
 mornings = crontab(hour=10, minute=0, day_of_week="*")
