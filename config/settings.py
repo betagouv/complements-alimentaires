@@ -179,7 +179,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Media and file storage
 DEFAULT_FILE_STORAGE = env("DEFAULT_FILE_STORAGE")
 
-if DEFAULT_FILE_STORAGE == "storages.backends.s3.S3Storage":
+if DEFAULT_FILE_STORAGE == "storages.backends.s3boto3.S3Boto3Storage":
     AWS_ACCESS_KEY_ID = env("CELLAR_KEY")
     AWS_SECRET_ACCESS_KEY = env("CELLAR_SECRET")
     AWS_S3_ENDPOINT_URL = env("CELLAR_HOST")
