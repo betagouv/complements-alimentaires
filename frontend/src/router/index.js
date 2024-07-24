@@ -30,6 +30,7 @@ import VisaDeclarationsPage from "@/views/VisaDeclarationsPage"
 import VisaPage from "@/views/VisaPage"
 import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
 import A11yPage from "@/views/A11yPage.vue"
+import { ref } from "vue"
 
 const routes = [
   {
@@ -356,8 +357,13 @@ const ensureDefaultQueryParams = (route, next) => {
   return false
 }
 
+// This utility function allows us to find the previous route
+const previousRoute = ref(null)
+router.getPreviousRoute = () => previousRoute
+
 router.beforeEach((to, from, next) => {
   const store = useRootStore()
+  previousRoute.value = from
   if (ensureDefaultQueryParams(to, next)) chooseAuthorisedRoute(to, from, next, store)
 })
 
