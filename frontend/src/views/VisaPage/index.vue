@@ -40,7 +40,6 @@
               :externalResults="$externalResults"
               :readonly="true"
               :declarationId="declaration?.id"
-              @withdraw="onWithdrawal"
               :privateNotes="declaration?.privateNotes"
               :user="declarant"
               :company="company"
@@ -63,12 +62,11 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import DeclarationSummary from "@/components/DeclarationSummary"
 import IdentityTab from "@/components/IdentityTab"
 import HistoryTab from "@/components/HistoryTab"
-import WithdrawalTab from "@/components/WithdrawalTab"
 import DeclarationAlert from "@/components/DeclarationAlert"
 import VisaValidationTab from "./VisaValidationTab"
 import { headers } from "@/utils/data-fetching"
-import { useRouter } from "vue-router"
 import { tabTitles } from "@/utils/mappings"
+import { useRouter } from "vue-router"
 
 const router = useRouter()
 const previousRoute = router.getPreviousRoute()
@@ -85,7 +83,6 @@ const props = defineProps({
 
 const isAwaitingVisa = computed(() => declaration.value?.status === "AWAITING_VISA")
 const canInstruct = computed(() => declaration.value?.status === "ONGOING_VISA")
-const showWithdrawal = computed(() => declaration.value?.status === "AUTHORIZED")
 
 // Requêtes
 const isFetching = ref(true)
@@ -131,7 +128,6 @@ onMounted(async () => {
 const components = computed(() => {
   const baseComponents = [IdentityTab, DeclarationSummary, HistoryTab]
   if (canInstruct.value) baseComponents.push(VisaValidationTab)
-  else if (showWithdrawal.value) baseComponents.push(WithdrawalTab)
   return baseComponents
 })
 const titles = computed(() => tabTitles(components.value))
@@ -156,5 +152,4 @@ const onDecisionDone = () => {
   const previousQuery = previousRoute.value.name === "VisaDeclarations" ? previousRoute.value.query : {}
   router.push({ name: "VisaDeclarations", query: previousQuery })
 }
-const onWithdrawal = () => router.replace({ name: "VisaDeclarations", query: { status: "WITHDRAWN,AUTHORIZED" } })
 </script>
