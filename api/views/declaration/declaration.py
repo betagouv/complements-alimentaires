@@ -305,7 +305,7 @@ class DeclarationWithdrawView(DeclarationFlowView):
     AUTHORIZED -> WITHDRAWN
     """
 
-    permission_classes = [(IsDeclarationAuthor | IsInstructor | IsVisor)]
+    permission_classes = [IsDeclarationAuthor]
     transition = "withdraw"
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.WITHDRAW

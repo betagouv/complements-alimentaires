@@ -40,7 +40,6 @@
               :externalResults="$externalResults"
               :readonly="true"
               :declarationId="declaration?.id"
-              @withdraw="onWithdrawal"
               :privateNotes="declaration?.privateNotes"
               :user="declarant"
               :company="company"
@@ -63,12 +62,12 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import DeclarationSummary from "@/components/DeclarationSummary"
 import IdentityTab from "@/components/IdentityTab"
 import HistoryTab from "@/components/HistoryTab"
-import WithdrawalTab from "@/components/WithdrawalTab"
 import DecisionTab from "./DecisionTab"
 import { headers } from "@/utils/data-fetching"
 import DeclarationAlert from "@/components/DeclarationAlert"
-import { useRouter } from "vue-router"
 import { tabTitles } from "@/utils/mappings"
+import { useRouter } from "vue-router"
+
 const router = useRouter()
 const previousRoute = router.getPreviousRoute()
 
@@ -125,13 +124,10 @@ onMounted(async () => {
   isFetching.value = false
 })
 
-const showWithdrawal = computed(() => declaration.value?.status === "AUTHORIZED")
-
 // Tab management
 const components = computed(() => {
   const baseComponents = [DeclarationSummary, IdentityTab, HistoryTab]
   if (canInstruct.value) baseComponents.push(DecisionTab)
-  else if (showWithdrawal.value) baseComponents.push(WithdrawalTab)
   return baseComponents
 })
 const titles = computed(() => tabTitles(components.value))
@@ -156,7 +152,4 @@ const onDecisionDone = () => {
   const previousQuery = previousRoute.value.name === "InstructionDeclarations" ? previousRoute.value.query : {}
   router.push({ name: "InstructionDeclarations", query: previousQuery })
 }
-
-const onWithdrawal = () =>
-  router.replace({ name: "InstructionDeclarations", query: { status: "WITHDRAWN,AUTHORIZED" } })
 </script>
