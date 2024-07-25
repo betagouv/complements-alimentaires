@@ -148,18 +148,17 @@ const rejectReasons = [
   },
   {
     title: "Le dossier n'est pas recevable",
-    items: ["Incohérences entre le dossier et l'étiquetage", "Informations manquantes", "Autre"],
+    items: [
+      "Incohérences entre le dossier et l'étiquetage",
+      "Informations manquantes",
+      "Absence de preuve de reconnaissance mutuelle",
+      "Absence ou non conformité de l'étiquetage",
+      "Autre",
+    ],
   },
   {
     title: "Le complément alimentaire n'est pas acceptable",
-    items: [
-      "Absence de preuve de reconnaissance mutuelle",
-      "Existence d'un risque",
-      "Absence ou non conformité de l'étiquetage",
-      "Absence de preuve",
-      "Incohérence entre le dossier et l'étiquetage",
-      "Autres données manquantes",
-    ],
+    items: ["Existence d'un risque"],
   },
 ]
 
