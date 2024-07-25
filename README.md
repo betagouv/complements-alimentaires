@@ -108,6 +108,8 @@ NEWSLETTER_BREVO_LIST_ID= L'ID de la newsletter de Brevo (précedemment Send In 
 BREVO_API_KEY= La clé API de Brevo
 SENTRY_DSN (optionnel)= Le Data Source Name pour Sentry. Peut être vide.
 MATOMO_ID (optionnel)= L'ID pour le suivi avec Matomo. Compl-alim utilise l'ID 95 pour la prod, en local c'est mieux de le laisser vide
+REDIS_URL= L'instance redis à utiliser pour les tâches asynchrones et le cache des clés API. Par exemple : 'redis://localhost:6379/0'
+REDIS_PREPEND_KEY= Optionnel - Ajout ce string au début de chaque clé Redis. Utile pour partager la même DB Redis sur plusieurs environnements
 ```
 
 #### Créer les différents modèles Django dans la base de données
