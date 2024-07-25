@@ -23,6 +23,13 @@ jobs:
           postgresql user: postgres
           postgresql password: postgres
 
+      - name: Setup Redis
+        uses: zhulik/redis-action@1.1.0
+        with:
+          redis version: "5"
+          number of databases: 1
+
+
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
@@ -52,5 +59,6 @@ jobs:
           DEFAULT_FROM_EMAIL: test@example.com
           CONTACT_EMAIL: test@example.com
           EMAIL_BACKEND: django.core.mail.backends.dummy.EmailBackend
+          REDIS_URL: redis://localhost:6379/0
         run: |
           python3 manage.py test

@@ -77,8 +77,11 @@ django-ckeditor = "6.7.0" # https://github.com/django-ckeditor/django-ckeditor #
 django-ckeditor-5 = "*"   # https://github.com/hvlads/django-ckeditor-5
 django-viewflow = "*"     # https://github.com/viewflow/viewflow
 
-# Dev dependencies (not installed on remote environments)
 unidecode = "^1.3.8"
+celery = "^5.4.0"
+redis = "^5.0.7"
+
+# Dev dependencies (not installed on remote environments)
 [tool.poetry.group.dev.dependencies]
 
 ######################################################################################################################

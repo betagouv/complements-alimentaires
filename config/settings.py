@@ -16,6 +16,7 @@ from pathlib import Path
 
 import environ
 import sentry_sdk
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -134,6 +135,9 @@ DATABASES = {
         "CONN_MAX_AGE": 60,
     }
 }
+
+REDIS_URL = os.getenv("REDIS_URL")
+REDIS_PREPEND_KEY = os.getenv("REDIS_PREPEND_KEY", "")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -362,6 +366,7 @@ if SENTRY_DSN:
         dsn=SENTRY_DSN,
         integrations=[
             DjangoIntegration(),
+            CeleryIntegration(),
         ],
         traces_sample_rate=1.0,
         send_default_pii=False,
