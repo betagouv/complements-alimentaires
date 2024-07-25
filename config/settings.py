@@ -68,7 +68,6 @@ THIRD_PARTY_APPS = [
 ]
 
 PROJECT_APPS = [
-    "icare",
     "config",
     "api",
     "data",
