@@ -1,3 +1,5 @@
+import logging
+
 from django.db.models import F, Func
 from django.db.models.functions import Lower
 from django.shortcuts import get_object_or_404
@@ -21,7 +23,10 @@ from api.permissions import (
 from api.serializers import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer
 from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
+from config import email
 from data.models import Company, Declaration, InstructionRole, Snapshot, VisaRole
+
+logger = logging.getLogger(__name__)
 
 
 class DeclarationPagination(LimitOffsetPagination):
@@ -160,6 +165,19 @@ class DeclarationFlowView(GenericAPIView):
     snapshot_post_validation_status = ""
     from_status = None
     to_status = None
+    brevo_template_id = None  # Remplir avec l'ID du template Brevo si un email doit être envoyé
+
+    def get_brevo_template_id(self, request, declaration):
+        """
+        À surcharger en cas du besoin d'un template email dynamique
+        """
+        return self.brevo_template_id
+
+    def get_brevo_parameters(self, request, declaration):
+        """
+        À surcharger en cas des paramètres spéciaux à envoyer à Brevo
+        """
+        return None
 
     def get_transition(self, request, declaration):
         """
@@ -210,9 +228,21 @@ class DeclarationFlowView(GenericAPIView):
             raise PermissionDenied()
         transition_method()
         self.to_status = declaration.status
+        brevo_template_id = self.get_brevo_template_id(request, declaration)
         if self.create_snapshot:
             self.perform_snapshot_creation(request, declaration)
         self.on_transition_success(request, declaration)
+        if brevo_template_id:
+            try:
+                email.send_sib_template(
+                    brevo_template_id,
+                    self.get_brevo_parameters(request, declaration),
+                    request.user.email,
+                    request.user.get_full_name(),
+                )
+            except Exception as e:
+                logger.error(f"Email not sent on transition {self.get_transition(request, declaration)}")
+                logger.exception(e)
         declaration.save()
         serializer = self.get_serializer(declaration)
         return Response(serializer.data)
@@ -227,6 +257,7 @@ class DeclarationSubmitView(DeclarationFlowView):
     transition = "submit"
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.SUBMIT
+    brevo_template_id = 3
 
 
 class DeclarationTakeForInstructionView(DeclarationFlowView):
@@ -264,10 +295,7 @@ class DeclarationObserveView(DeclarationFlowView):
     transition = "observe_no_visa"
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.OBSERVE_NO_VISA
-
-    def on_transition_success(self, request, declaration):
-        # Envoyer un email au déclarant.e avec le notes de l'observation
-        return super().on_transition_success(request, declaration)
+    brevo_template_id = 4
 
 
 class DeclarationAuthorizeView(DeclarationFlowView):
@@ -279,10 +307,7 @@ class DeclarationAuthorizeView(DeclarationFlowView):
     transition = "authorize_no_visa"
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.AUTHORIZE_NO_VISA
-
-    def on_transition_success(self, request, declaration):
-        # Envoyer un email au déclarant.e l'informant de l'autorisation
-        return super().on_transition_success(request, declaration)
+    brevo_template_id = 6
 
 
 class DeclarationResubmitView(DeclarationFlowView):
@@ -309,6 +334,7 @@ class DeclarationWithdrawView(DeclarationFlowView):
     transition = "withdraw"
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.WITHDRAW
+    brevo_template_id = 8
 
 
 class VisaDecisionView(DeclarationFlowView):
@@ -378,6 +404,15 @@ class DeclarationAcceptVisaView(VisaDecisionView):
             Declaration.DeclarationStatus.OBSERVATION: "accept_visa_observe",
         }
         return transition_map.get(declaration.post_validation_status)
+
+    def get_brevo_template_id(self, request, declaration):
+        template_map = {
+            Declaration.DeclarationStatus.AUTHORIZED: 6,
+            Declaration.DeclarationStatus.REJECTED: 7,
+            Declaration.DeclarationStatus.OBJECTION: 5,
+            Declaration.DeclarationStatus.OBSERVATION: 4,
+        }
+        return template_map.get(declaration.post_validation_status)
 
 
 # Nous utilisons une Non-deterministic state machine. Lors qu'un.e instructeur.ice demande une

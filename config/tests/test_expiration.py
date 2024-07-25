@@ -40,9 +40,9 @@ class TestExpiration(TestCase):
         le temps alloué pour la réponse.
         """
         today = timezone.now()
-        observed_declaration = ObjectionDeclarationFactory()
+        objected_declaration = ObjectionDeclarationFactory()
         snapshot = SnapshotFactory(
-            declaration=observed_declaration,
+            declaration=objected_declaration,
             status=Declaration.DeclarationStatus.OBJECTION,
             expiration_days=5,
         )
@@ -51,8 +51,8 @@ class TestExpiration(TestCase):
         snapshot.save()
         tasks.expire_declarations()
 
-        observed_declaration.refresh_from_db()
-        self.assertEqual(observed_declaration.status, Declaration.DeclarationStatus.ABANDONED)
+        objected_declaration.refresh_from_db()
+        self.assertEqual(objected_declaration.status, Declaration.DeclarationStatus.ABANDONED)
 
     def test_do_not_expire_before_cutoff(self):
         """
