@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from viewflow import fsm
 
+from config import email
 from data.models import Declaration
 
 from .celery import app
@@ -69,10 +70,18 @@ class ExpirationDeclarationFlow:
 @app.task
 def expire_declarations():
     declarations = Declaration.objects.filter(status__in=allowed_statuses)
+    brevo_template_id = 9
     for declaration in declarations:
         flow = ExpirationDeclarationFlow(declaration)
         try:
             flow.abandon()
+            if declaration.author:
+                email.send_sib_template(
+                    brevo_template_id,
+                    None,
+                    declaration.author.email,
+                    declaration.author.get_full_name(),
+                )
         except EarlyExpirationError as _:
             break
         except Exception as _:
