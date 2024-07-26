@@ -83,6 +83,7 @@ redis = "^5.0.7"
 
 # Dev dependencies (not installed on remote environments)
 [tool.poetry.group.dev.dependencies]
+sqlfluff = "*"
 
 ######################################################################################################################
 # Data tools
