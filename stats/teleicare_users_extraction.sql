@@ -68,7 +68,7 @@ FROM (
 
 /* Calcul des contact qui sont aussi administrateur.ice = même nom, adresse mail, téléphone */
 
-/* Tous les courriels reliés à une entreprise :
+/* Tous les emails reliés à une entreprise :
 * soit dans la table ICA_ETABLISSEMENT
 * soit dans la table ICA_CONTACT
  */
@@ -82,11 +82,6 @@ SELECT
     ETAB_SITE_INTERNET,
     ETAB_NUM_ADH_TELE_PROC,
     ETAB_DATE_ADHESION,
-    ADM_NOM,
-    ADM_PRENOM,
-    ADM_FONCTION,
-    ADM_TELECOPIE,
-    ADM_TELEPHONE,
     CTACT_NOM,
     CTACT_PRENOM,
     CTACT_TELEPHONE,
@@ -94,24 +89,77 @@ SELECT
     CTACT_COURRIEL,
     CTACT_TELECOPIE
 FROM ICA_ETABLISSEMENT
-INNER JOIN
-    ICA_ADMINISTRATEUR
-    ON ICA_ETABLISSEMENT.ETAB_IDENT = ICA_ADMINISTRATEUR.ETAB_IDENT
 INNER JOIN ICA_CONTACT ON ICA_ETABLISSEMENT.ETAB_IDENT = ICA_CONTACT.ETAB_IDENT;
 
+
+
+/* Les users actifs et leurs emails */
+/* La vue V_Users sur aspnet_User filtre les user qui ont effectivement un compte ICA_USAGER ou ICA_ADMINISTRATEUR */
+/* Nous créons la vue V_UsersImproved pour extraire les informations nécessaires */
+CREATE VIEW [dbo].[V_UsersForExport]
+AS
+   select u.USR_IDENT as UsrIdent,
+            u.ADM_IDENT as AdmIdent,
+            u.USR_NOM as Nom,
+            u.USR_PRENOM as Prenom,
+            u.USR_FONCTION as Fonction,
+            au.LastActivityDate as LastActivityDate,
+            am.Email as Email,
+            e.ETAB_RAISON_SOCIALE as EtabRaisonSociale,
+            e.ETAB_ENSEIGNE as EtabEnseigne,
+            e.Etab_Siret as EtabSiret,
+            e.Etab_Numero_Tva_Intra as EtabNumeroTvaIntra,
+            e.Etab_Num_Adh_Tele_Proc as EtabNumAdhTeleProc,
+            r.RoleName as RoleAsp
+from ICA_USAGER as u
+                Inner Join Ica_Etablissement as e On u.Etab_Ident = e.Etab_Ident
+                Inner Join Aspnet_Users as au On u.UserId = au.UserId
+                Inner Join Aspnet_Membership as am On au.UserId = am.UserId and au.ApplicationId = am.ApplicationId
+                Inner Join Aspnet_UsersInRoles as uir On uir.UserId = u.UserId
+                Inner Join Aspnet_Roles as r on uir.RoleId = r.RoleId
+UNION
+select null as UsrIdent,
+                a.ADM_IDENT as AdmIdent,
+                a.ADM_NOM as Nom,
+                a.ADM_PRENOM as Prenom,
+                a.ADM_FONCTION as Fonction,
+                au.LastActivityDate as LastActivityDate,
+                am.Email as Email,
+                a.ETAB_IDENT as EtabIdent,
+                e.ETAB_RAISON_SOCIALE as EtabRaisonSociale,
+                e.ETAB_ENSEIGNE as EtabEnseigne,
+                e.Etab_Siret as EtabSiret,
+                e.Etab_Numero_Tva_Intra as EtabNumeroTvaIntra,
+                e.Etab_Num_Adh_Tele_Proc as EtabNumAdhTeleProc,
+                r.RoleName as RoleAsp
+                from ICA_ADMINISTRATEUR as a
+                Inner Join Ica_Etablissement as e On a.Etab_Ident = e.Etab_Ident
+                Inner Join Aspnet_Users as au On a.UserId = au.UserId
+                Inner Join Aspnet_Membership as am On au.UserId = am.UserId and au.ApplicationId = am.ApplicationId
+                Inner Join Aspnet_UsersInRoles as uir On uir.UserId = a.UserId
+                Inner Join Aspnet_Roles as r on uir.RoleId = r.RoleId
+
+
+GO
+
+
+
+
+SELECT COUNT(*) FROM V_UsersForExport
+/* 14020 usagers et administrateurs avec Email non null */
+
+/*Extract via PowerShell des utilisateurs ayant eu une activité ces 2 dernières années */
+SELECT Nom, Prenom, Email, EtabRaisonSociale, EtabEnseigne, EtabSiret, EtabNumeroTvaIntra, Fonction, RoleAsp FROM [TELEICARE].[dbo].[V_UsersForExport] where LASTACTIVITYDATE > '2022-08-01'
+
+
+
+/* Reste à creuser */
 /* Toutes les fonctions liées à une entreprise
 * soit dans la table ICA_ADMINISTRATEUR
-* soit dans la table ICA_CONTACT
+* soit dans la table ICA_CONTACT (table obsolète ?)
 * soit dans la table ICA_USAGER
 */
 
 
 /* Tous les siret liés à une déclaration */
---   join ICA_ETS_CLIENT
--- [ETAB_CLIENT_SIRET]
-
-/* Les users actifs */
--- [aspnet_Users] [LastActivityDate]
-
-
--- [Aspnet_Membership_2021_09_13] [Email]
+-- creuser dans la table ICA_ETS_CLIENT
