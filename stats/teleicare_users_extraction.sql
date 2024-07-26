@@ -95,7 +95,8 @@ INNER JOIN ICA_CONTACT ON ICA_ETABLISSEMENT.ETAB_IDENT = ICA_CONTACT.ETAB_IDENT;
 
 /* Les users actifs et leurs emails */
 /* La vue V_Users sur aspnet_User filtre les user qui ont effectivement un compte ICA_USAGER ou ICA_ADMINISTRATEUR */
-/* Nous créons la vue V_UsersImproved pour extraire les informations nécessaires */
+/* Nous créons la vue V_UsersForExport pour extraire les informations nécessaires */
+/* TODO: Il faudrait rajouter à cette vue les contact des tables ICA_ETABLISSEMENT et ICA_CONTACT */
 CREATE VIEW [dbo].[V_UsersForExport]
 AS
    select u.USR_IDENT as UsrIdent,
@@ -125,7 +126,6 @@ select null as UsrIdent,
                 a.ADM_FONCTION as Fonction,
                 au.LastActivityDate as LastActivityDate,
                 am.Email as Email,
-                a.ETAB_IDENT as EtabIdent,
                 e.ETAB_RAISON_SOCIALE as EtabRaisonSociale,
                 e.ETAB_ENSEIGNE as EtabEnseigne,
                 e.Etab_Siret as EtabSiret,
@@ -150,7 +150,6 @@ SELECT COUNT(*) FROM V_UsersForExport
 
 /*Extract via PowerShell des utilisateurs ayant eu une activité ces 2 dernières années */
 SELECT Nom, Prenom, Email, EtabRaisonSociale, EtabEnseigne, EtabSiret, EtabNumeroTvaIntra, Fonction, RoleAsp FROM [TELEICARE].[dbo].[V_UsersForExport] where LASTACTIVITYDATE > '2022-08-01'
-
 
 
 /* Reste à creuser */
