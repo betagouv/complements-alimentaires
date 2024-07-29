@@ -68,6 +68,20 @@
           <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR (en CFU)" :required="true" />
         </DsfrInputGroup>
       </div>
+      <div v-else-if="(objectType === 'form_of_supply') | 'active_ingredient'" class="ml-12 flex gap-4">
+        <DsfrInputGroup>
+          <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR" :required="true" />
+        </DsfrInputGroup>
+        <DsfrInputGroup class="min-w-20 max-w-24">
+          <DsfrSelect
+            label="Unité"
+            :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
+            v-model="model.unit"
+            defaultUnselectedText=""
+            :required="true"
+          />
+        </DsfrInputGroup>
+      </div>
     </div>
   </div>
 </template>
@@ -88,8 +102,12 @@ const plantParts = computed(() => {
   const parts = model.value.element?.plantParts || store.plantParts
   return parts?.map((x) => ({ text: x.name, value: x.id }))
 })
+// TODO: à terme les form_of_supply auront forcément des substances liées donc cette condition ne sera plus nécessaire
+// TODO: à terme le type active_ingredient n'existera plus, seulement le type ingrédient et la propriété active
 const showFields = computed(
-  () => model.value.active && (props.objectType === "plant" || props.objectType === "microorganism")
+  () =>
+    model.value.active &&
+    ["plant", "microorganism", "active_ingredient", "form_of_supply"].indexOf(props.objectType) >= 0
 )
 
 // TODO: vérifier qu'on ait ces infos en base ou accepter de les avoir en front only
