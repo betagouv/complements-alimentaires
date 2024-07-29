@@ -22,7 +22,7 @@ const plantPartName = computed(() => plantParts.value.find((x) => x.id === model
 
 const elementInfo = computed(() => {
   if (props.objectType === "microorganism")
-    return `Souche : « ${model.value.strain} » | Qté par DJR (en CFU) : ${model.value.quantity}`
+    return `Souche : « ${model.value.strain} » | Qté par DJR (en UFC) : ${model.value.quantity}`
   if (props.objectType === "plant")
     return `Partie utilisée : « ${plantPartName.value} » | Qté par DJR : ${model.value.quantity} ${model.value.unit || ""} | Préparation : ${model.value.preparation}`
   if (props.objectType === "form_of_supply" || props.objectType === "active_ingredient")

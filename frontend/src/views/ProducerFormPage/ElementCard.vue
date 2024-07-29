@@ -65,7 +65,7 @@
           <DsfrInput label-visible label="Souche" v-model="model.strain" :required="true" />
         </DsfrInputGroup>
         <DsfrInputGroup>
-          <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR (en CFU)" :required="true" />
+          <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR (en UFC)" :required="true" />
         </DsfrInputGroup>
       </div>
       <div v-else-if="objectType === 'form_of_supply' || objectType === 'active_ingredient'" class="ml-12 flex gap-4">

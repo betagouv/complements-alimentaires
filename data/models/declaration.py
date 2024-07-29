@@ -251,7 +251,7 @@ class DeclaredMicroorganism(Historisable, Addable):
     new_genre = models.TextField(blank=True, verbose_name="genre du micro-organisme ajoutée manuellement")
 
     souche = models.TextField(blank=True, verbose_name="souche")
-    quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR (en CFU)")
+    quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR (en UFC)")
 
 
 class DeclaredIngredient(Historisable, Addable):
