@@ -171,6 +171,8 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
             "element",
             "new_name",
             "active",
+            "quantity",
+            "unit",
         )
 
     def create(self, validated_data):

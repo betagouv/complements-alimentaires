@@ -25,7 +25,7 @@ const elementInfo = computed(() => {
     return `Souche : « ${model.value.strain} » | Qté par DJR (en CFU) : ${model.value.quantity}`
   if (props.objectType === "plant")
     return `Partie utilisée : « ${plantPartName.value} » | Qté par DJR : ${model.value.quantity} ${model.value.unit || ""} | Préparation : ${model.value.preparation}`
-  if ((props.objectType === "form_of_supply") | (props.objectType === "active_ingredient"))
+  if (props.objectType === "form_of_supply" || props.objectType === "active_ingredient")
     return `Qté par DJR: ${model.value.quantity} ${model.value.unit || ""}`
   return ""
 })

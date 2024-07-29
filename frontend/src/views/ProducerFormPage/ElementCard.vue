@@ -68,7 +68,7 @@
           <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR (en CFU)" :required="true" />
         </DsfrInputGroup>
       </div>
-      <div v-else-if="(objectType === 'form_of_supply') | 'active_ingredient'" class="ml-12 flex gap-4">
+      <div v-else-if="objectType === 'form_of_supply' || objectType === 'active_ingredient'" class="ml-12 flex gap-4">
         <DsfrInputGroup>
           <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR" :required="true" />
         </DsfrInputGroup>
@@ -102,13 +102,19 @@ const plantParts = computed(() => {
   const parts = model.value.element?.plantParts || store.plantParts
   return parts?.map((x) => ({ text: x.name, value: x.id }))
 })
-// TODO: à terme les form_of_supply auront forcément des substances liées donc cette condition ne sera plus nécessaire
-// TODO: à terme le type active_ingredient n'existera plus, seulement le type ingrédient et la propriété active
-const showFields = computed(
-  () =>
+
+const showFields = computed(() => {
+  if (model.value.active && ["plant", "microorganism"].indexOf(props.objectType) >= 0) return true
+  if (
     model.value.active &&
-    ["plant", "microorganism", "active_ingredient", "form_of_supply"].indexOf(props.objectType) >= 0
-)
+    ["active_ingredient", "form_of_supply"].indexOf(props.objectType) >= 0 &&
+    model.value.element.substances.length === 0
+  )
+    // TODO: à terme les form_of_supply auront forcément des substances liées donc cette condition ne sera plus nécessaire
+    // TODO: à terme le type active_ingredient n'existera plus, seulement le type ingrédient et la propriété active
+    return true
+  return false
+})
 
 // TODO: vérifier qu'on ait ces infos en base ou accepter de les avoir en front only
 const preparations = [

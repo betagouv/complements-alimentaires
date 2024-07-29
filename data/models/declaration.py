@@ -266,6 +266,8 @@ class DeclaredIngredient(Historisable, Addable):
     )
     active = models.BooleanField("élément actif", default=True)
     new_name = models.TextField(blank=True, verbose_name="libellé")
+    quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
+    unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
 
 class DeclaredSubstance(Historisable):
