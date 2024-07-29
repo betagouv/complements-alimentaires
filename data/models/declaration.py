@@ -1,7 +1,6 @@
 import json
 
 from django.conf import settings
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
@@ -52,9 +51,6 @@ class Declaration(Historisable, TimeStampable):
         choices=DeclarationStatus.choices,
         default=DeclarationStatus.DRAFT,
         verbose_name="status",
-    )
-    blocking_reasons = ArrayField(
-        models.TextField(), null=True, blank=True, verbose_name="raisons de la dernière décision défavorable"
     )
     post_validation_status = models.CharField(
         max_length=50,
@@ -157,6 +153,7 @@ class Declaration(Historisable, TimeStampable):
         action=None,
         post_validation_status="",
         expiration_days=None,
+        blocking_reasons=None,
     ):
         # Sinon on a des imports circulaires
         from data.factories import SnapshotFactory
@@ -171,6 +168,7 @@ class Declaration(Historisable, TimeStampable):
             comment=comment,
             action=action or Snapshot.SnapshotActions.OTHER,
             post_validation_status=post_validation_status,
+            blocking_reasons=blocking_reasons,
         )
 
     @property

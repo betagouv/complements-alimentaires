@@ -181,7 +181,9 @@ class TestDeclarationFlow(APITestCase):
 
         declaration.refresh_from_db()
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.OBSERVATION)
-        self.assertIn("Forme assimilable à un aliment courant", declaration.blocking_reasons)
+
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertIn("Forme assimilable à un aliment courant", latest_snapshot.blocking_reasons)
 
     @authenticate
     def test_observe_declaration_unauthorized(self):

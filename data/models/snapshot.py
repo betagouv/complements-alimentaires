@@ -1,6 +1,7 @@
 import decimal
 
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
@@ -66,3 +67,6 @@ class Snapshot(TimeStampable):
     expiration_days = models.IntegerField(null=True, blank=True, verbose_name="délai de réponse")
     json_declaration = models.JSONField(verbose_name="données au moment de la création", encoder=CustomJSONEncoder)
     comment = models.TextField("commentaire", blank=True, default="")
+    blocking_reasons = ArrayField(
+        models.TextField(), null=True, blank=True, verbose_name="raisons de la dernière décision défavorable"
+    )

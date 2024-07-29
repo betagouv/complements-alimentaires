@@ -215,6 +215,7 @@ class DeclarationFlowView(GenericAPIView):
             expiration_days=request.data.get("expiration"),
             action=self.get_snapshot_action(request, declaration),
             post_validation_status=self.get_snapshot_post_validation_status(request, declaration),
+            blocking_reasons=request.data.get("reasons"),
         )
         declaration.private_notes = request.data.get("privateNotes", "")
 
@@ -296,12 +297,6 @@ class DeclarationObserveView(DeclarationFlowView):
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.OBSERVE_NO_VISA
     brevo_template_id = 4
-
-    def perform_snapshot_creation(self, request, declaration):
-        return_value = super().perform_snapshot_creation(request, declaration)
-        if request.data.get("reasons"):
-            declaration.blocking_reasons = request.data.get("reasons")
-        return return_value
 
 
 class DeclarationAuthorizeView(DeclarationFlowView):
@@ -449,8 +444,6 @@ class VisaRequestFlowView(DeclarationFlowView):
             action=self.get_snapshot_action(request, declaration),
             post_validation_status=self.post_validation_status,
         )
-        if request.data.get("reasons"):
-            declaration.blocking_reasons = request.data.get("reasons")
 
     def on_transition_success(self, request, declaration):
         declaration.post_validation_producer_message = request.data.get("comment", "")
