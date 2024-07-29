@@ -13,6 +13,12 @@
     </div>
 
     <div v-else class="mb-4">
+      <DsfrCallout class="!p-4" v-if="showReasons">
+        <p class="font-bold my-2">Remarques de l'instruction</p>
+        <ul>
+          <li v-for="reason in data.blockingReasons" :key="reason">{{ reason }}</li>
+        </ul>
+      </DsfrCallout>
       <DsfrAlert
         v-if="readonly && payload"
         class="mb-4"
@@ -207,4 +213,9 @@ watch(
   () => route.query.tab,
   (tab) => selectTab(parseInt(tab))
 )
+
+const showReasons = computed(() => {
+  const concernedStatus = ["OBSERVATION", "OBJECTION", "REJECTED"]
+  return concernedStatus.indexOf(data.value?.status) > -1 && data.value?.blockingReasons
+})
 </script>

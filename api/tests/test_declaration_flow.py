@@ -172,11 +172,16 @@ class TestDeclarationFlow(APITestCase):
         instructor = InstructionRoleFactory(user=authenticate.user)
         declaration = OngoingInstructionDeclarationFactory(instructor=instructor)
 
-        response = self.client.post(reverse("api:observe_no_visa", kwargs={"pk": declaration.id}), format="json")
+        response = self.client.post(
+            reverse("api:observe_no_visa", kwargs={"pk": declaration.id}),
+            {"reasons": ["Forme assimilable à un aliment courant"]},
+            format="json",
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         declaration.refresh_from_db()
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.OBSERVATION)
+        self.assertIn("Forme assimilable à un aliment courant", declaration.blocking_reasons)
 
     @authenticate
     def test_observe_declaration_unauthorized(self):

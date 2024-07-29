@@ -15,6 +15,12 @@
           icon="ri-time-fill"
           :text="declaration.postValidationExpirationDays || '< non spécifié >'"
         />
+        <VisaInfoLine
+          v-if="showReasons"
+          title="Raisons de la décision"
+          icon="ri-edit-line"
+          :text="declaration.blockingReasons.join(', ') || '< non spécifié >'"
+        />
       </div>
     </div>
 
@@ -102,5 +108,10 @@ const decisionCategories = computed(() => {
       buttonHandler: refuseVisa,
     },
   ]
+})
+
+const showReasons = computed(() => {
+  const concernedStatus = ["OBSERVATION", "OBJECTION", "REJECTED"]
+  return concernedStatus.indexOf(declaration.value?.postValidationStatus) > -1 && declaration.value?.blockingReasons
 })
 </script>

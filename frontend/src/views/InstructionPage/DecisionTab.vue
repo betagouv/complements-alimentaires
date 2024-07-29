@@ -209,7 +209,12 @@ const submitDecision = async () => {
 
   const url = `/api/v1/declarations/${declaration.value?.id}/${urlPath}/`
   const { response } = await useFetch(url, { headers: headers() })
-    .post({ comment: comment.value, privateNotes: privateNotes.value })
+    .post({
+      comment: comment.value,
+      privateNotes: privateNotes.value,
+      reasons: reasons.value,
+      expiration: delayDays.value,
+    })
     .json()
   $externalResults.value = await handleError(response)
 
