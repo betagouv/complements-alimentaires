@@ -421,7 +421,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
 
     def get_blocking_reasons(self, obj):
         try:
-            latest_snapshot = obj.snapshots.latest("creation_date")
+            latest_snapshot = obj.snapshots.filter(blocking_reasons__isnull=False).latest("creation_date")
             return latest_snapshot.blocking_reasons
         except Snapshot.DoesNotExist:
             return None
