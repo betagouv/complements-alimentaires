@@ -53,6 +53,12 @@
     <SubstancesTable v-model="payload" readonly />
 
     <h3 class="fr-h6 !mt-8">
+      Adresse sur l'étiquetage
+      <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
+    </h3>
+    <AddressLine :payload="payload" />
+
+    <h3 class="fr-h6 !mt-8">
       Pièces jointes
       <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
     </h3>
@@ -74,6 +80,7 @@ export default { name: "DeclarationSummary" }
 
 <script setup>
 import { computed } from "vue"
+import AddressLine from "@/components/AddressLine"
 import SummaryInfoSegment from "./SummaryInfoSegment"
 import SummaryElementList from "./SummaryElementList"
 import SubstancesTable from "@/components/SubstancesTable"

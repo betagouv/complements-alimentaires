@@ -1,13 +1,6 @@
 <template>
   <div>
-    <SectionTitle title="Déclarant ou déclarante" icon="ri-user-fill" />
-    <p>{{ user.firstName }} {{ user.lastName }}</p>
-    <p>
-      Adresse email :
-      <a :href="`mailto:${user.email}`" target="_blank">{{ user.email }}</a>
-    </p>
-
-    <SectionTitle class="!mt-8" title="Entreprise" icon="ri-home-2-fill" />
+    <SectionTitle title="Entreprise" icon="ri-home-2-fill" />
     <p class="font-bold">{{ company.socialName }}</p>
     <p v-if="company.siret">
       Numéro SIRET : {{ company.siret }}
@@ -28,21 +21,21 @@
     <p v-if="company.address">
       <span>
         Adresse :
-        <address class="inline">
-          {{ company.address }}
-          {{ company.additional_details }}
-          {{ company.postal_code }}
-          {{ company.city }}
-          {{ company.country }}
-          <span v-if="company.cedex">- CEDEX : {{ company.cedex }}</span>
-        </address>
+        <AddressLine class="inline" :payload="company" />
       </span>
+    </p>
+    <SectionTitle class="!mt-8" title="Déclarant ou déclarante" icon="ri-user-fill" />
+    <p>{{ user.firstName }} {{ user.lastName }}</p>
+    <p>
+      Adresse email :
+      <a :href="`mailto:${user.email}`" target="_blank">{{ user.email }}</a>
     </p>
   </div>
 </template>
 
 <script setup>
 import SectionTitle from "@/components/SectionTitle"
+import AddressLine from "@/components/AddressLine"
 defineProps({ user: Object, company: Object })
 </script>
 
