@@ -9,7 +9,7 @@ export const useRootStore = defineStore("root", () => {
   const populations = ref(null)
   const conditions = ref(null)
   const effects = ref(null)
-  const galenicFormulation = ref(null)
+  const galenicFormulations = ref(null)
   const plantParts = ref(null)
   const units = ref(null)
 
@@ -48,9 +48,9 @@ export const useRootStore = defineStore("root", () => {
     const { data } = await useFetch("/api/v1/effects/").json()
     effects.value = otherFieldsAtTheEnd(data.value)
   }
-  const fetchGalenicFormulation = async () => {
-    const { data } = await useFetch("/api/v1/galenic-formulation/").json()
-    galenicFormulation.value = otherFieldsAtTheEnd(data.value)
+  const fetchGalenicFormulations = async () => {
+    const { data } = await useFetch("/api/v1/galenic-formulations/").json()
+    galenicFormulations.value = otherFieldsAtTheEnd(data.value)
   }
   const fetchPlantParts = async () => {
     const { data } = await useFetch("/api/v1/plant-parts/").json()
@@ -65,7 +65,7 @@ export const useRootStore = defineStore("root", () => {
     fetchEffects()
     fetchPopulations()
     fetchPlantParts()
-    fetchGalenicFormulation()
+    fetchGalenicFormulations()
     fetchUnits()
   }
   return {
@@ -79,7 +79,7 @@ export const useRootStore = defineStore("root", () => {
     fetchPopulations,
     fetchConditions,
     fetchEffects,
-    fetchGalenicFormulation,
+    fetchGalenicFormulations,
     fetchDeclarationFieldsData,
     fetchPlantParts,
     fetchUnits,
@@ -87,7 +87,7 @@ export const useRootStore = defineStore("root", () => {
     populations,
     conditions,
     effects,
-    galenicFormulation,
+    galenicFormulations,
     units,
   }
 })

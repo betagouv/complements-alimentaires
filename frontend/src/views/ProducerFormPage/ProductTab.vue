@@ -26,34 +26,37 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'name')">
           <DsfrInput v-model="payload.name" label-visible label="Nom du produit" :required="true" />
         </DsfrInputGroup>
+      </div>
+      <div class="col-span-2 md:col-span-1 max-w-md">
         <DsfrInputGroup>
           <DsfrInput v-model="payload.brand" label-visible label="Marque" />
         </DsfrInputGroup>
       </div>
       <div class="col-span-2 md:col-span-1 max-w-md">
-        <!-- Useless? -->
         <DsfrInputGroup>
           <DsfrInput v-model="payload.gamme" label-visible label="Gamme" />
         </DsfrInputGroup>
-
-        <!-- Useless? -->
+      </div>
+      <div class="col-span-2 md:col-span-1 max-w-md">
         <DsfrInputGroup>
           <DsfrInput v-model="payload.flavor" label-visible label="Arôme" />
         </DsfrInputGroup>
       </div>
       <DsfrInputGroup class="max-w-2xl mt-6">
-        <DsfrInput is-textarea v-model="payload.description" label-visible label="Description" :required="true" />
+        <DsfrInput is-textarea v-model="payload.description" label-visible label="Description" />
       </DsfrInputGroup>
     </div>
     <SectionTitle title="Format" class="!mt-10" sizeTag="h6" icon="ri-capsule-fill" />
     <div class="grid grid-cols-2 gap-4">
-      <DsfrFieldset legend="Forme galénique" legendClass="fr-label !font-normal !pb-0">
+      <DsfrFieldset legend="Forme galénique" legendClass="fr-label !pb-0">
         <div class="flex">
           <div class="max-w-32">
-            <DsfrSelect :options="formulationStates" v-model="galenicFormulationState" defaultUnselectedText="État" />
+            <DsfrSelect label="État" :options="formulationStates" v-model="galenicFormulationState" />
           </div>
           <div class="max-w-md ml-4">
             <DsfrSelect
+              :required="true"
+              label="Forme"
               v-model="payload.galenicFormulation"
               :options="
                 galenicFormulationList?.map((formulation) => ({
@@ -65,12 +68,12 @@
           </div>
         </div>
       </DsfrFieldset>
-      <div class="max-w-2xl">
+      <div class="max-w-2xl pt-0 sm:pt-6">
         <DsfrInput
           v-if="
             payload.galenicFormulation &&
-            galenicFormulation &&
-            getAllIndexesOfRegex(galenicFormulation, /Autre.*(à préciser)/).includes(
+            galenicFormulations &&
+            getAllIndexesOfRegex(galenicFormulations, /Autre.*(à préciser)/).includes(
               parseInt(payload.galenicFormulation)
             )
           "
@@ -83,13 +86,22 @@
 
     <div class="grid grid-cols-2 gap-4">
       <div class="col-span-2 md:col-span-1 max-w-md mt-6">
-        <DsfrFieldset legend="Poids ou volume d'une unité de consommation" legendClass="fr-label !font-normal !pb-0">
+        <DsfrFieldset legend="Poids ou volume d'une unité de consommation" legendClass="fr-label !pb-0">
           <div class="flex">
             <div class="max-w-64">
-              <DsfrInput v-model="payload.unitQuantity" class="max-w-64" :required="true" />
+              <DsfrInput
+                label="Quantité"
+                label-visible
+                v-model="payload.unitQuantity"
+                class="max-w-64"
+                :required="true"
+              />
             </div>
             <div class="max-w-32 ml-4">
               <DsfrSelect
+                label="Unité"
+                label-visible
+                :required="true"
                 :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
                 v-model="payload.unitMeasurement"
                 defaultUnselectedText="Unité"
@@ -98,7 +110,7 @@
           </div>
         </DsfrFieldset>
       </div>
-      <div class="col-span-2 md:col-span-1 max-w-md">
+      <div class="col-span-2 md:col-span-1 max-w-md pt-0 sm:pt-8">
         <DsfrInputGroup>
           <DsfrInput v-model="payload.conditioning" label-visible label="Conditionnement" />
         </DsfrInputGroup>
@@ -178,7 +190,7 @@
       </div>
     </DsfrFieldset>
 
-    <DsfrInputGroup class="max-w-2xl mt-6" v-if="payload.effects && payload.effects.indexOf(otherEffectsId) > -1">
+    <DsfrInputGroup class="max-w-2xl mt-6 pt-8" v-if="payload.effects && payload.effects.indexOf(otherEffectsId) > -1">
       <DsfrInput
         v-model="payload.otherEffects"
         label-visible
@@ -246,15 +258,25 @@ const v$ = useVuelidate(rules, payload, { $externalResults })
 watch($externalResults, () => v$.value.$touch())
 
 const store = useRootStore()
-const { populations, conditions, effects, galenicFormulation, loggedUser } = storeToRefs(store)
+const { populations, conditions, effects, galenicFormulations, loggedUser } = storeToRefs(store)
+
 const galenicFormulationState = ref(null)
+// Peupler la variable du state si la forme galénique est présente déjà dans le payload
+const populateGalenicFormulationState = () => {
+  if (payload.value.galenicFormulation) {
+    const formulation = galenicFormulations.value?.find((x) => x.id === payload.value.galenicFormulation)
+    if (formulation) galenicFormulationState.value = formulation.isLiquid ? "liquid" : "solid"
+  }
+}
+watch(galenicFormulations, populateGalenicFormulationState, { immediate: true })
+
 const otherEffectsId = computed(() => effects.value?.find((effect) => effect.name === "Autre (à préciser)")?.id)
 const galenicFormulationList = computed(() => {
-  if (!galenicFormulationState.value) return galenicFormulation.value
+  if (!galenicFormulationState.value) return galenicFormulations.value
   else {
     const isLiquid = galenicFormulationState.value === "liquid"
     return otherFieldsAtTheEnd(
-      galenicFormulation.value
+      galenicFormulations.value
         ?.filter((formulation) => formulation.isLiquid === isLiquid) // le filter perd l'ordre alphabétique d'origine
         .sort((a, b) => a.name.localeCompare(b.name))
     )
