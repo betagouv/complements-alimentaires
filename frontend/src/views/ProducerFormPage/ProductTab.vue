@@ -132,7 +132,7 @@
     <DsfrInputGroup class="max-w-2xl mt-6">
       <DsfrInput is-textarea v-model="payload.warning" label-visible label="Mise en garde et avertissement" />
     </DsfrInputGroup>
-    <SectionTitle title="Populations cible" class="!mt-10" sizeTag="h6" icon="ri-file-user-fill" />
+    <SectionTitle title="Populations cibles" class="!mt-10" sizeTag="h6" icon="ri-file-user-fill" />
     <DsfrFieldset legend="Population cible" legendClass="fr-label">
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
         <div
