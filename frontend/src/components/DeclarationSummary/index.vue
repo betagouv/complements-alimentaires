@@ -91,7 +91,7 @@ import { useRouter } from "vue-router"
 import SummaryModificationButton from "./SummaryModificationButton"
 
 const router = useRouter()
-const { units, populations, conditions, effects, galenicFormulation } = storeToRefs(useRootStore())
+const { units, populations, conditions, effects, galenicFormulations } = storeToRefs(useRootStore())
 
 const payload = defineModel()
 defineProps({ readonly: Boolean })
@@ -103,11 +103,11 @@ const unitInfo = computed(() => {
 
 const galenicFormulationsNames = computed(() => {
   if (!payload.value.galenicFormulation) return null
-  return galenicFormulation.value?.find((y) => y.id === parseInt(payload.value.galenicFormulation))?.name
+  return galenicFormulations.value?.find((y) => y.id === parseInt(payload.value.galenicFormulation))?.name
 })
 
 const effectsNames = computed(() => {
-  const findName = (id) => effects.value.find((y) => y.id === id)?.name
+  const findName = (id) => effects.value?.find((y) => y.id === id)?.name
   const otherEffects = payload.value.otherEffects
   const allEffects = otherEffects
     ? payload.value.effects.map(findName).concat("Autre (à préciser) : ".concat(otherEffects))
@@ -121,11 +121,11 @@ const effectsNames = computed(() => {
 })
 
 const populationNames = computed(() => {
-  const findName = (id) => populations.value.find((y) => y.id === id)?.name
+  const findName = (id) => populations.value?.find((y) => y.id === id)?.name
   return payload.value.populations.map(findName).join(", ")
 })
 const conditionNames = computed(() => {
-  const findName = (id) => conditions.value.find((y) => y.id === id)?.name
+  const findName = (id) => conditions.value?.find((y) => y.id === id)?.name
   return payload.value.conditionsNotRecommended.map(findName).join(", ")
 })
 
