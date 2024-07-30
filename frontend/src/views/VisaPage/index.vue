@@ -126,8 +126,9 @@ onMounted(async () => {
 
 // Tab management
 const components = computed(() => {
-  const baseComponents = [IdentityTab, DeclarationSummary, HistoryTab]
+  const baseComponents = [DeclarationSummary, HistoryTab]
   if (canInstruct.value) baseComponents.push(VisaValidationTab)
+  baseComponents.push(IdentityTab)
   return baseComponents
 })
 const titles = computed(() => tabTitles(components.value))
