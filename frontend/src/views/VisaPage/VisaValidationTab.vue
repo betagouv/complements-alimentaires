@@ -58,6 +58,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import useToaster from "@/composables/use-toaster"
 import VisaInfoLine from "./VisaInfoLine.vue"
+import { shouldShowReasons } from "@/utils/declaration"
 
 const $externalResults = ref({})
 const emit = defineEmits(["decision-done"])
@@ -110,8 +111,5 @@ const decisionCategories = computed(() => {
   ]
 })
 
-const showReasons = computed(() => {
-  const concernedStatus = ["OBSERVATION", "OBJECTION", "REJECTED"]
-  return concernedStatus.indexOf(declaration.value?.postValidationStatus) > -1 && declaration.value?.blockingReasons
-})
+const showReasons = computed(() => shouldShowReasons(declaration.value))
 </script>

@@ -109,7 +109,7 @@ const rules = computed(() => {
 })
 const declaration = defineModel()
 const proposal = ref(null)
-const delayDays = ref(30)
+const delayDays = ref(15)
 const comment = ref("")
 const reasons = ref([])
 const privateNotes = ref(declaration.value?.privateNotes || "")
