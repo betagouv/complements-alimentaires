@@ -26,21 +26,25 @@
     </div>
     <div v-if="decisionCategory === 'modify'" class="reject-reasons">
       <hr />
-      <div class="mb-8" v-for="reason in rejectReasons" :key="reason.title">
-        <p class="font-bold">{{ reason.title }}</p>
-        <DsfrInputGroup v-for="item in reason.items" :key="item">
-          <DsfrCheckbox :label="item" />
-        </DsfrInputGroup>
-      </div>
+      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reasons')">
+        <div class="mb-8" v-for="reason in rejectReasons" :key="reason.title">
+          <p class="font-bold">{{ reason.title }}</p>
+          <DsfrCheckboxSet
+            v-model="reasons"
+            :options="reason.items.map((x) => ({ label: x, name: x }))"
+            :error-message="firstErrorMsg(v$, 'reason')"
+          />
+        </div>
+      </DsfrInputGroup>
     </div>
     <div v-if="decisionCategory">
       <hr />
       <h3>Décision</h3>
       <DsfrHighlight>
         <template v-slot:default>
-          <div class="sm:flex gap-4">
+          <div class="sm:flex gap-4 mb-4">
             <div class="grow max-w-96">
-              <DsfrInputGroup>
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'proposal')">
                 <DsfrSelect label="Proposition" v-model="proposal" :options="proposalOptions"></DsfrSelect>
               </DsfrInputGroup>
             </div>
@@ -50,21 +54,22 @@
               </DsfrInputGroup>
             </div>
             <div class="content-end" v-if="decisionCategory != 'approve'">
-              <DsfrInputGroup>
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'delayDays')">
                 <DsfrInput v-model="delayDays" label="Délai de réponse (jours)" label-visible />
               </DsfrInputGroup>
             </div>
           </div>
-          <DsfrInputGroup>
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'comment')" v-if="decisionCategory != 'approve'">
             <DsfrInput
               is-textarea
               label-visible
               label="Motivation de la décision (à destination du professionnel)"
-              v-if="decisionCategory != 'approve'"
               v-model="comment"
             />
           </DsfrInputGroup>
-          <DsfrButton label="Soumettre" :disabled="!canSubmitDecision" @click="submitDecision" />
+          <DsfrButton class="" label="Soumettre" @click="submitDecision" />
+
+          <div v-if="firstErrorMsg(v$, 'reasons')">{{ firstErrorMsg(v$, "reasons") }}</div>
         </template>
       </DsfrHighlight>
       <hr />
@@ -82,23 +87,37 @@
 
 <script setup>
 import { ref, computed, watch } from "vue"
+import { useVuelidate } from "@vuelidate/core"
+import { helpers, required } from "@vuelidate/validators"
+import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { handleError } from "@/utils/error-handling"
 
-const $externalResults = ref({})
-const declaration = defineModel()
-
-const emit = defineEmits(["decision-done"])
-
 const decisionCategory = ref(null)
 watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "approve" : null))
 
+const rules = computed(() => {
+  if (decisionCategory.value !== "modify") return {}
+  return {
+    comment: errorRequiredField,
+    reasons: { required: helpers.withMessage("Au moins une raison doit être selectionnée", required) },
+    proposal: errorRequiredField,
+    delayDays: errorRequiredField,
+  }
+})
+const declaration = defineModel()
 const proposal = ref(null)
 const delayDays = ref(15)
 const comment = ref("")
+const reasons = ref([])
 const privateNotes = ref(declaration.value?.privateNotes || "")
+
+const $externalResults = ref({})
+const v$ = useVuelidate(rules, { comment, proposal, reasons, delayDays }, { $externalResults })
+
+const emit = defineEmits(["decision-done"])
 
 const needsVisa = ref(false)
 const mandatoryVisaProposals = ["objection", "rejection"]
@@ -172,8 +191,13 @@ const proposalOptions = computed(() => {
   ]
 })
 
-const canSubmitDecision = computed(() => !!proposal.value && !!delayDays.value)
 const submitDecision = async () => {
+  v$.value.$reset()
+  v$.value.$validate()
+  if (v$.value.$error) {
+    return
+  }
+
   const actions = {
     observation: "observe",
     approve: "authorize",
@@ -185,7 +209,12 @@ const submitDecision = async () => {
 
   const url = `/api/v1/declarations/${declaration.value?.id}/${urlPath}/`
   const { response } = await useFetch(url, { headers: headers() })
-    .post({ comment: comment.value, privateNotes: privateNotes.value })
+    .post({
+      comment: comment.value,
+      privateNotes: privateNotes.value,
+      reasons: reasons.value,
+      expiration: delayDays.value,
+    })
     .json()
   $externalResults.value = await handleError(response)
 

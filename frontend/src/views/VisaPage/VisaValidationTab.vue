@@ -15,6 +15,12 @@
           icon="ri-time-fill"
           :text="declaration.postValidationExpirationDays || '< non spécifié >'"
         />
+        <VisaInfoLine
+          v-if="showReasons"
+          title="Raisons de la décision"
+          icon="ri-edit-line"
+          :text="declaration.blockingReasons.join(', ') || '< non spécifié >'"
+        />
       </div>
     </div>
 
@@ -52,6 +58,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import useToaster from "@/composables/use-toaster"
 import VisaInfoLine from "./VisaInfoLine.vue"
+import { shouldShowReasons } from "@/utils/declaration"
 
 const $externalResults = ref({})
 const emit = defineEmits(["decision-done"])
@@ -103,4 +110,6 @@ const decisionCategories = computed(() => {
     },
   ]
 })
+
+const showReasons = computed(() => shouldShowReasons(declaration.value))
 </script>

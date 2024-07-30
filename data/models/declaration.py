@@ -153,6 +153,7 @@ class Declaration(Historisable, TimeStampable):
         action=None,
         post_validation_status="",
         expiration_days=None,
+        blocking_reasons=None,
     ):
         # Sinon on a des imports circulaires
         from data.factories import SnapshotFactory
@@ -167,6 +168,7 @@ class Declaration(Historisable, TimeStampable):
             comment=comment,
             action=action or Snapshot.SnapshotActions.OTHER,
             post_validation_status=post_validation_status,
+            blocking_reasons=blocking_reasons,
         )
 
     @property
