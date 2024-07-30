@@ -1,13 +1,6 @@
 <template>
   <div>
-    <SectionTitle title="Déclarant ou déclarante" icon="ri-user-fill" />
-    <p>{{ user.firstName }} {{ user.lastName }}</p>
-    <p>
-      Adresse email :
-      <a :href="`mailto:${user.email}`" target="_blank">{{ user.email }}</a>
-    </p>
-
-    <SectionTitle class="!mt-8" title="Entreprise" icon="ri-home-2-fill" />
+    <SectionTitle title="Entreprise" icon="ri-home-2-fill" />
     <p class="font-bold">{{ company.socialName }}</p>
     <p v-if="company.siret">
       Numéro SIRET : {{ company.siret }}
@@ -30,6 +23,12 @@
         Adresse :
         <AddressLine class="inline" :payload="company" />
       </span>
+    </p>
+    <SectionTitle class="!mt-8" title="Déclarant ou déclarante" icon="ri-user-fill" />
+    <p>{{ user.firstName }} {{ user.lastName }}</p>
+    <p>
+      Adresse email :
+      <a :href="`mailto:${user.email}`" target="_blank">{{ user.email }}</a>
     </p>
   </div>
 </template>
