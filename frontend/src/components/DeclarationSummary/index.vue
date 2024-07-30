@@ -9,13 +9,13 @@
       <SummaryInfoSegment label="Marque" :value="payload.brand" />
       <SummaryInfoSegment label="Gamme" :value="payload.gamme" />
       <SummaryInfoSegment label="Description" :value="payload.description" />
-      <SummaryInfoSegment label="Populations cible" :value="populationNames" />
+      <SummaryInfoSegment label="Populations cibles" :value="populationNames" />
       <SummaryInfoSegment label="Populations à consommation déconseillée" :value="conditionNames" />
       <SummaryInfoSegment label="Forme galénique" :value="galenicFormulationsNames" />
       <SummaryInfoSegment label="Mode d'emploi" :value="payload.instructions" />
       <SummaryInfoSegment label="Unité de consommation" :value="unitInfo" />
       <SummaryInfoSegment label="Dose journalière recommandée" :value="payload.dailyRecommendedDose" />
-      <SummaryInfoSegment label="Conditionnements" :value="payload.conditioning" />
+      <SummaryInfoSegment label="Conditionnement" :value="payload.conditioning" />
       <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
       <SummaryInfoSegment label="Mise en garde et avertissement" :value="payload.warnings" />
       <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
