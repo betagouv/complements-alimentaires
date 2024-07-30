@@ -28,14 +28,7 @@
     <p v-if="company.address">
       <span>
         Adresse :
-        <address class="inline">
-          {{ company.address }}
-          {{ company.additional_details }}
-          {{ company.postal_code }}
-          {{ company.city }}
-          {{ company.country }}
-          <span v-if="company.cedex">- CEDEX : {{ company.cedex }}</span>
-        </address>
+        <AddressLine class="inline" :payload="company" />
       </span>
     </p>
   </div>
@@ -43,6 +36,7 @@
 
 <script setup>
 import SectionTitle from "@/components/SectionTitle"
+import AddressLine from "@/components/AddressLine"
 defineProps({ user: Object, company: Object })
 </script>
 
