@@ -68,7 +68,7 @@
           </div>
         </div>
       </DsfrFieldset>
-      <div class="max-w-2xl">
+      <div class="max-w-2xl pt-0 sm:pt-6">
         <DsfrInput
           v-if="
             payload.galenicFormulation &&
