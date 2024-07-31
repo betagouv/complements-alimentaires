@@ -1,6 +1,13 @@
 import factory
 
-from data.models import Declaration, DeclaredIngredient, DeclaredMicroorganism, DeclaredPlant, DeclaredSubstance
+from data.models import (
+    Attachment,
+    Declaration,
+    DeclaredIngredient,
+    DeclaredMicroorganism,
+    DeclaredPlant,
+    DeclaredSubstance,
+)
 
 from .company import CompanyFactory
 from .condition import ConditionFactory
@@ -64,6 +71,14 @@ class DeclaredSubstanceFactory(factory.django.DjangoModelFactory):
     active = factory.Faker("boolean")
 
 
+class AttachmentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Attachment
+
+    type = Attachment.AttachmentType.LABEL
+    file = factory.django.ImageField()
+
+
 class CompleteDeclarationFactory(DeclarationFactory):
     class Meta:
         model = Declaration
@@ -77,6 +92,15 @@ class CompleteDeclarationFactory(DeclarationFactory):
     postal_code = factory.Faker("postcode", locale="FR")
     city = factory.Faker("city", locale="FR")
     country = "FR"
+
+    @factory.post_generation
+    def attachments(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted or isinstance(extracted, list):
+            self.attachments.set(extracted)
+        else:
+            self.attachments.set([AttachmentFactory(declaration=self)])
 
     @factory.post_generation
     def conditions_not_recommended(self, create, extracted, **kwargs):
