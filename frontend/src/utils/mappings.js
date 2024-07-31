@@ -130,7 +130,7 @@ export const tabTitles = (components, useSubmission = false) => {
       panelId: `tab-content-${idx("IdentityTab")}`,
     },
     DeclarationSummary: {
-      title: "Le produit",
+      title: "Produit",
       icon: "ri-flask-line",
       tabId: `tab-${idx("DeclarationSummary")}`,
       panelId: `tab-content-${idx("DeclarationSummary")}`,
@@ -154,7 +154,7 @@ export const tabTitles = (components, useSubmission = false) => {
       panelId: `tab-content-${idx("SummaryTab")}`,
     },
     ProductTab: {
-      title: "Le produit",
+      title: "Produit",
       icon: "ri-capsule-fill",
       tabId: `tab-${idx("ProductTab")}`,
       panelId: `tab-content-${idx("ProductTab")}`,

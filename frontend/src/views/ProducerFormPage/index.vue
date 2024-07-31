@@ -53,11 +53,18 @@
           </FormWrapper>
         </DsfrTabContent>
       </DsfrTabs>
+      <TabStepper
+        :titles="titles"
+        :selectedTabIndex="selectedTabIndex"
+        @back="selectTab(selectedTabIndex - 1)"
+        @forward="selectTab(selectedTabIndex + 1)"
+      />
     </div>
   </div>
 </template>
 <script setup>
 import ProgressSpinner from "@/components/ProgressSpinner"
+import TabStepper from "@/components/TabStepper"
 import { useRootStore } from "@/stores/root"
 import { ref, computed, watch } from "vue"
 import ProductTab from "./ProductTab"

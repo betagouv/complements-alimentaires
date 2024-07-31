@@ -47,12 +47,19 @@
             ></component>
           </DsfrTabContent>
         </DsfrTabs>
+        <TabStepper
+          :titles="titles"
+          :selectedTabIndex="selectedTabIndex"
+          @back="selectTab(selectedTabIndex - 1)"
+          @forward="selectTab(selectedTabIndex + 1)"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import TabStepper from "@/components/TabStepper"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { onMounted, computed, ref } from "vue"
@@ -135,8 +142,10 @@ const titles = computed(() => tabTitles(components.value))
 const selectedTabIndex = ref(0)
 const asc = ref(true) // Je n'aime pas le nommage mais ça vient de ce paramètre : https://vue-dsfr.netlify.app/?path=/docs/composants-dsfrtabs--docs
 const selectTab = (index) => {
+  if (index === selectedTabIndex.value) return
   asc.value = selectedTabIndex.value < index
   selectedTabIndex.value = index
+  tabs.value?.selectIndex?.(selectedTabIndex.value)
 }
 
 const instructDeclaration = async () => {
