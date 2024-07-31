@@ -5,7 +5,7 @@
       <DsfrSelect
         label="Quel type d'ingrédient souhaitez-vous créer ?"
         v-model="model.objectType"
-        :options="types"
+        :options="addableTypes"
         :required="true"
       />
     </DsfrInputGroup>
@@ -67,9 +67,11 @@ const actions = [
   },
 ]
 
+const addableTypes = Object.assign({}, typesMapping)
 // Note : Sur téléicare on ne peux pas ajouter des substances directement
-const types = Object.assign({}, typesMapping)
-delete types["substance"]
+delete addableTypes["ingredient"]
+// Le type "ingredient" est voué à être déprécié, donc on ne permet pas d'en ajouter
+delete addableTypes["substance"]
 
 watch(
   () => model.value.objectType,
