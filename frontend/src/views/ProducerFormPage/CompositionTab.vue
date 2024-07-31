@@ -124,8 +124,9 @@ const removeElement = (element) => {
 }
 const addElement = (item, objectType, newlyAdded = false) => {
   const toAdd = newlyAdded
-    ? { ...item, ...{ active: !!item.activity, new: true } }
-    : { element: item, active: !!item.activity }
+    ? { ...item, ...{ active: !!item.activity, new: true, inactivated: false } }
+    : { element: item, active: !!item.activity, inactivated: false }
+  //  le champ inactivated n'est valable que pour les microorganismes
   containers.value[objectType].unshift(toAdd)
 }
 

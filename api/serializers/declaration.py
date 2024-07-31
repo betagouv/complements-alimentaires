@@ -142,7 +142,8 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
             "new_species",
             "new_genre",
             "active",
-            "souche",
+            "inactivated",
+            "strain",
             "quantity",
         )
 

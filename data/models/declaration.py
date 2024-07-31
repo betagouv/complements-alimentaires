@@ -224,7 +224,7 @@ class DeclaredPlant(Historisable, Addable):
     plant = models.ForeignKey(
         Plant, null=True, blank=True, verbose_name="plante ajoutée par l'utilisateur", on_delete=models.RESTRICT
     )
-    active = models.BooleanField("élément actif", default=True)
+    active = models.BooleanField("ayant une activité physiologique ou nutritionnelle", default=True)
     new_name = models.TextField(blank=True, verbose_name="nom de la plante ajoutée manuellement")
 
     used_part = models.ForeignKey(
@@ -246,11 +246,12 @@ class DeclaredMicroorganism(Historisable, Addable):
         verbose_name="microorganisme ajouté par l'user",
         on_delete=models.RESTRICT,
     )
-    active = models.BooleanField("élément actif", default=True)
+    active = models.BooleanField("ayant une activité physiologique ou nutritionnelle", default=True)
+    inactivated = models.BooleanField("ayant été inactivé (rendu incapable de réplication)", default=False)
     new_species = models.TextField(blank=True, verbose_name="espèce du micro-organisme ajouté manuellement")
     new_genre = models.TextField(blank=True, verbose_name="genre du micro-organisme ajoutée manuellement")
 
-    souche = models.TextField(blank=True, verbose_name="souche")
+    strain = models.TextField(blank=True, verbose_name="souche")
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR (en UFC)")
 
 
@@ -264,7 +265,7 @@ class DeclaredIngredient(Historisable, Addable):
     ingredient = models.ForeignKey(
         Ingredient, null=True, blank=True, verbose_name="ingrédient ajouté par l'user", on_delete=models.RESTRICT
     )
-    active = models.BooleanField("élément actif", default=True)
+    active = models.BooleanField("ayant une activité physiologique ou nutritionnelle", default=True)
     new_name = models.TextField(blank=True, verbose_name="libellé")
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
     unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
@@ -277,7 +278,7 @@ class DeclaredSubstance(Historisable):
         verbose_name=Declaration._meta.verbose_name,
         on_delete=models.CASCADE,
     )
-    active = models.BooleanField("élément actif", default=True)
+    active = models.BooleanField("ayant une activité physiologique ou nutritionnelle", default=True)
     substance = models.ForeignKey(
         Substance, null=True, blank=True, verbose_name="substance ajoutée par l'user", on_delete=models.RESTRICT
     )

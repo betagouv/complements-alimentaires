@@ -64,9 +64,18 @@
         <DsfrInputGroup class="max-w-sm">
           <DsfrInput label-visible label="Souche" v-model="model.strain" :required="true" />
         </DsfrInputGroup>
-        <DsfrInputGroup>
-          <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR (en UFC)" :required="true" />
-        </DsfrInputGroup>
+        <div class="mt-12">
+          <DsfrCheckbox
+            v-model="model.inactivated"
+            :label="model.inactivated ? 'Inactivé' : 'Activé'"
+            hint="L'inactivation rend la réplication impossible"
+          />
+        </div>
+        <div v-if="!model.inactivated">
+          <DsfrInputGroup>
+            <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR (en UFC)" :required="true" />
+          </DsfrInputGroup>
+        </div>
       </div>
       <div v-else-if="objectType === 'form_of_supply' || objectType === 'active_ingredient'" class="ml-12 flex gap-4">
         <DsfrInputGroup>
