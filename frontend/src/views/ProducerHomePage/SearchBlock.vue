@@ -16,7 +16,7 @@
           :chooseFirstAsDefault="false"
         />
         <p class="mt-6">
-          Examples :
+          Exemples :
           <router-link :to="getRouteForTerm('Eucalyptus')">Eucalyptus</router-link>
           ,
           <router-link :to="getRouteForTerm('Carotte')">Carotte</router-link>
