@@ -103,7 +103,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue"
-import { getTypeIcon, getTypeInFrench, getTypeFromFrench, getApiType } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
 import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
@@ -127,7 +127,7 @@ const search = () => {
 // Afin d'améliorer le SEO, l'urlComponent prend la forme id--type--name
 const props = defineProps({ urlComponent: String })
 const elementId = computed(() => props.urlComponent.split("--")[0])
-const type = computed(() => getTypeFromFrench(props.urlComponent.split("--")[1]))
+const type = computed(() => unSlugifyType(props.urlComponent.split("--")[1]))
 const icon = computed(() => getTypeIcon(type.value))
 // Information affichée
 const family = computed(() => element.value?.family?.name)
