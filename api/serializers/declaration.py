@@ -163,6 +163,7 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
 
 class DeclaredIngredientSerializer(serializers.ModelSerializer):
     element = PassthroughIngredientSerializer(required=False, source="ingredient", allow_null=True)
+    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
 
     class Meta:
         model = DeclaredIngredient
