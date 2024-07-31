@@ -25,28 +25,16 @@ export const typesMapping = {
   // qui contient les types plus précis
   ingredient: "Autre ingrédient",
 }
-export const frontToAPITypesSlugMapping = {
-  plante: "plant",
-  "micro-organisme": "microorganism",
-  "forme-d-apport": "form_of_supply",
-  arôme: "aroma",
-  additif: "additive",
-  "ingredient-actif": "active_ingredient",
-  "ingredient-non-actif": "non_active_ingredient",
-  substance: "substance",
-  // déprécié
-  "autre-ingredient": "ingredient",
-  ingredient: "ingredient",
-}
+
 export const getTypeInFrench = (type) => {
   return typesMapping[type] || null
 }
 
-export const slugify = (data) => data?.replaceAll(" ", "-").replaceAll("'", "-").toLowerCase()
-
-export const unSlugify = (typeSlug) => {
-  return frontToAPITypesSlugMapping[typeSlug] || null
+export const getTypeFromFrench = (frenchTerm) => {
+  return Object.keys(typesMapping).find((key) => typesMapping[key].toLowerCase() === frenchTerm.toLowerCase())
 }
+
+export const slugify = (data) => data?.replaceAll(" ", "-").replaceAll("'", "-").toLowerCase()
 
 export const getApiType = (type) => {
   switch (type) {
