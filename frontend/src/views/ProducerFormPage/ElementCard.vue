@@ -18,7 +18,7 @@
         <div class="grow pl-4 ml-6 sm:border-l self-center">
           <DsfrCheckbox
             class="!my-2"
-            :disabled="model.disabled"
+            :disabled="getActivityReadonlyByType(objectType)"
             v-model="model.active"
             :label="model.active ? 'Actif' : 'Non actif'"
           />
@@ -90,6 +90,7 @@
 import { useRootStore } from "@/stores/root"
 import { computed } from "vue"
 import { getElementName } from "@/utils/elements"
+import { getActivityReadonlyByType } from "@/utils/mappings"
 
 const model = defineModel()
 const store = useRootStore()

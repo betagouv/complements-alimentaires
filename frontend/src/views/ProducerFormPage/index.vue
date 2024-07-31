@@ -189,7 +189,7 @@ const submitPayload = async (comment) => {
 
   if ($externalResults.value) {
     // Temporairement, on montrera les messages des champs en haut du formulaire car
-    // ils peuvent être présents dans plusierus steps. Cette UI/UX pourra être amélioré
+    // ils peuvent être présents dans plusieurs steps. Cette UI/UX pourra être amélioré
     // par la suite.
     const fieldErrors = $externalResults.value.fieldErrors.map((x) => Object.values(x)?.[0])
     $externalResults.value.nonFieldErrors.push(...fieldErrors)
