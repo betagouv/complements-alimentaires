@@ -13,6 +13,12 @@
     </div>
 
     <div v-else class="mb-4">
+      <DsfrCallout class="!p-4" v-if="showReasons">
+        <p class="font-bold my-2">Remarques de l'instruction</p>
+        <ul>
+          <li v-for="reason in data.blockingReasons" :key="reason">{{ reason }}</li>
+        </ul>
+      </DsfrCallout>
       <DsfrAlert
         v-if="readonly && payload"
         class="mb-4"
@@ -47,11 +53,18 @@
           </FormWrapper>
         </DsfrTabContent>
       </DsfrTabs>
+      <TabStepper
+        :titles="titles"
+        :selectedTabIndex="selectedTabIndex"
+        @back="selectTab(selectedTabIndex - 1)"
+        @forward="selectTab(selectedTabIndex + 1)"
+      />
     </div>
   </div>
 </template>
 <script setup>
 import ProgressSpinner from "@/components/ProgressSpinner"
+import TabStepper from "@/components/TabStepper"
 import { useRootStore } from "@/stores/root"
 import { ref, computed, watch } from "vue"
 import ProductTab from "./ProductTab"
@@ -66,6 +79,7 @@ import { useRoute, useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
 import FormWrapper from "@/components/FormWrapper"
 import { headers } from "@/utils/data-fetching"
+import { shouldShowReasons } from "@/utils/declaration"
 import useToaster from "@/composables/use-toaster"
 import { statusProps, tabTitles } from "@/utils/mappings"
 
@@ -207,4 +221,6 @@ watch(
   () => route.query.tab,
   (tab) => selectTab(parseInt(tab))
 )
+
+const showReasons = computed(() => shouldShowReasons(data.value))
 </script>

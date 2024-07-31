@@ -9,13 +9,13 @@
       <SummaryInfoSegment label="Marque" :value="payload.brand" />
       <SummaryInfoSegment label="Gamme" :value="payload.gamme" />
       <SummaryInfoSegment label="Description" :value="payload.description" />
-      <SummaryInfoSegment label="Populations cible" :value="populationNames" />
+      <SummaryInfoSegment label="Populations cibles" :value="populationNames" />
       <SummaryInfoSegment label="Populations à consommation déconseillée" :value="conditionNames" />
       <SummaryInfoSegment label="Forme galénique" :value="galenicFormulationsNames" />
       <SummaryInfoSegment label="Mode d'emploi" :value="payload.instructions" />
       <SummaryInfoSegment label="Unité de consommation" :value="unitInfo" />
       <SummaryInfoSegment label="Dose journalière recommandée" :value="payload.dailyRecommendedDose" />
-      <SummaryInfoSegment label="Conditionnements" :value="payload.conditioning" />
+      <SummaryInfoSegment label="Conditionnement" :value="payload.conditioning" />
       <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
       <SummaryInfoSegment label="Mise en garde et avertissement" :value="payload.warnings" />
       <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
@@ -53,6 +53,12 @@
     <SubstancesTable v-model="payload" readonly />
 
     <h3 class="fr-h6 !mt-8">
+      Adresse sur l'étiquetage
+      <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
+    </h3>
+    <AddressLine :payload="payload" />
+
+    <h3 class="fr-h6 !mt-8">
       Pièces jointes
       <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
     </h3>
@@ -74,6 +80,7 @@ export default { name: "DeclarationSummary" }
 
 <script setup>
 import { computed } from "vue"
+import AddressLine from "@/components/AddressLine"
 import SummaryInfoSegment from "./SummaryInfoSegment"
 import SummaryElementList from "./SummaryElementList"
 import SubstancesTable from "@/components/SubstancesTable"
@@ -84,7 +91,7 @@ import { useRouter } from "vue-router"
 import SummaryModificationButton from "./SummaryModificationButton"
 
 const router = useRouter()
-const { units, populations, conditions, effects, galenicFormulation } = storeToRefs(useRootStore())
+const { units, populations, conditions, effects, galenicFormulations } = storeToRefs(useRootStore())
 
 const payload = defineModel()
 defineProps({ readonly: Boolean })
@@ -96,11 +103,11 @@ const unitInfo = computed(() => {
 
 const galenicFormulationsNames = computed(() => {
   if (!payload.value.galenicFormulation) return null
-  return galenicFormulation.value?.find((y) => y.id === parseInt(payload.value.galenicFormulation))?.name
+  return galenicFormulations.value?.find((y) => y.id === parseInt(payload.value.galenicFormulation))?.name
 })
 
 const effectsNames = computed(() => {
-  const findName = (id) => effects.value.find((y) => y.id === id)?.name
+  const findName = (id) => effects.value?.find((y) => y.id === id)?.name
   const otherEffects = payload.value.otherEffects
   const allEffects = otherEffects
     ? payload.value.effects.map(findName).concat("Autre (à préciser) : ".concat(otherEffects))
@@ -114,11 +121,11 @@ const effectsNames = computed(() => {
 })
 
 const populationNames = computed(() => {
-  const findName = (id) => populations.value.find((y) => y.id === id)?.name
+  const findName = (id) => populations.value?.find((y) => y.id === id)?.name
   return payload.value.populations.map(findName).join(", ")
 })
 const conditionNames = computed(() => {
-  const findName = (id) => conditions.value.find((y) => y.id === id)?.name
+  const findName = (id) => conditions.value?.find((y) => y.id === id)?.name
   return payload.value.conditionsNotRecommended.map(findName).join(", ")
 })
 

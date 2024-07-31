@@ -215,6 +215,7 @@ class DeclarationFlowView(GenericAPIView):
             expiration_days=request.data.get("expiration"),
             action=self.get_snapshot_action(request, declaration),
             post_validation_status=self.get_snapshot_post_validation_status(request, declaration),
+            blocking_reasons=request.data.get("reasons"),
         )
         declaration.private_notes = request.data.get("privateNotes", "")
 

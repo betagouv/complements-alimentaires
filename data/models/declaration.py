@@ -131,14 +131,14 @@ class Declaration(Historisable, TimeStampable):
         verbose_name="unité de mesure pour une unité de consommation",
     )
 
-    conditioning = models.TextField(blank=True, verbose_name="conditionnements")
+    conditioning = models.TextField(blank=True, verbose_name="conditionnement")
     daily_recommended_dose = models.TextField(blank=True, verbose_name="dose journalière recommandée")
     minimum_duration = models.TextField(blank=True, verbose_name="durabilité minimale / DLUO (en mois)")
 
     instructions = models.TextField(blank=True, verbose_name="mode d'emploi")
     warning = models.TextField(blank=True, verbose_name="mise en garde et avertissement")
 
-    populations = models.ManyToManyField(Population, blank=True, verbose_name="populations cible")
+    populations = models.ManyToManyField(Population, blank=True, verbose_name="populations cibles")
     conditions_not_recommended = models.ManyToManyField(
         Condition, blank=True, verbose_name="consommation déconseillée"
     )
@@ -153,6 +153,7 @@ class Declaration(Historisable, TimeStampable):
         action=None,
         post_validation_status="",
         expiration_days=None,
+        blocking_reasons=None,
     ):
         # Sinon on a des imports circulaires
         from data.factories import SnapshotFactory
@@ -167,6 +168,7 @@ class Declaration(Historisable, TimeStampable):
             comment=comment,
             action=action or Snapshot.SnapshotActions.OTHER,
             post_validation_status=post_validation_status,
+            blocking_reasons=blocking_reasons,
         )
 
     @property
