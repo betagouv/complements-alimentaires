@@ -66,12 +66,12 @@
         </DsfrInputGroup>
         <div class="mt-12">
           <DsfrCheckbox
-            v-model="model.inactivated"
-            :label="model.inactivated ? 'Inactivé' : 'Activé'"
+            v-model="model.activated"
+            :label="model.activated ? 'Activés' : 'Ces micro-organismes ont été inactivés'"
             hint="L'inactivation rend la réplication impossible"
           />
         </div>
-        <div v-if="!model.inactivated">
+        <div v-if="model.activated">
           <DsfrInputGroup>
             <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR (en UFC)" :required="true" />
           </DsfrInputGroup>

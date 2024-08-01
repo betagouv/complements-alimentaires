@@ -249,7 +249,7 @@ class DeclaredMicroorganism(Historisable, Addable):
         on_delete=models.RESTRICT,
     )
     active = models.BooleanField("ayant une activité physiologique ou nutritionnelle", default=True)
-    inactivated = models.BooleanField("ayant été inactivé (rendu incapable de réplication)", default=False)
+    activated = models.BooleanField("n'ayant pas été inactivé (rendu incapable de réplication)", default=True)
     new_species = models.TextField(blank=True, verbose_name="espèce du micro-organisme ajouté manuellement")
     new_genre = models.TextField(blank=True, verbose_name="genre du micro-organisme ajoutée manuellement")
 
