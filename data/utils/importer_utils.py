@@ -18,7 +18,8 @@ def pre_import_treatments(field, value):
     * nettoyage de valeurs (trim)
     * transformation de valeurs en d'autres valeurs
     """
-
+    if field.name == "siccrf_max_quantity" and clean_value(value, field) is not None:
+        new_fields = {"siccrf_max_quantity": value, "ca_must_specify_quantity": True}
     if field.name == "siccrf_status":
         new_fields = {
             "siccrf_status": clean_value(value, field),
