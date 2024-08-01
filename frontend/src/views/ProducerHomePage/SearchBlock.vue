@@ -43,8 +43,8 @@ const getRouteForTerm = (term) => {
   return { name: "ElementSearchResultsPage", query: { q: term } }
 }
 const goToSelectedOption = (option) => {
-  const type = slugifyType(option.objectType)
-  const urlComponent = `${option?.id}--${type}--${option?.name}`
+  const slugguedType = slugifyType(option.objectType)
+  const urlComponent = `${option?.id}--${slugguedType}--${option?.name}`
   return router.push({ name: "ElementPage", params: { urlComponent } })
 }
 </script>
