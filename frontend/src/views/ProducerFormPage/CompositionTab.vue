@@ -23,34 +23,34 @@
     <ElementList
       @remove="removeElement"
       objectType="form_of_supply"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'form_of_supply')"
+      :elements="payload.declaredIngredients.filter((obj) => obj.element?.objectType == 'form_of_supply')"
     />
     <ElementList
       @remove="removeElement"
       objectType="aroma"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'aroma')"
+      :elements="payload.declaredIngredients.filter((obj) => obj.element?.objectType == 'aroma')"
     />
     <ElementList
       @remove="removeElement"
       objectType="additive"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'additive')"
+      :elements="payload.declaredIngredients.filter((obj) => obj.element?.objectType == 'additive')"
     />
     <ElementList
       @remove="removeElement"
       objectType="active_ingredient"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'active_ingredient')"
+      :elements="payload.declaredIngredients.filter((obj) => obj.element?.objectType == 'active_ingredient')"
     />
     <ElementList
       @remove="removeElement"
       objectType="non_active_ingredient"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'non_active_ingredient')"
+      :elements="payload.declaredIngredients.filter((obj) => obj.element?.objectType == 'non_active_ingredient')"
     />
     <ElementList @remove="removeElement" objectType="substance" :elements="payload.declaredSubstances" />
     <!-- On conserve ce type ingredient déprécié temporairement -->
     <ElementList
       @remove="removeElement"
       objectType="ingredient"
-      :elements="payload.declaredIngredients.filter((obj) => !obj.element.objectType)"
+      :elements="payload.declaredIngredients.filter((obj) => !obj.element?.objectType)"
     />
 
     <div v-if="allElements.length === 0" class="my-12">
@@ -127,7 +127,11 @@ const addElement = (item, objectType, newlyAdded = false) => {
   // à terme toutes les plantes seront actives et si elles sont non actives c'est que ce sont des support/agent de charge
   const activityNotEditable = getActivityReadonlyByType(objectType)
   const toAdd = newlyAdded
-    ? { ...item, ...{ active: getActivityByType(objectType), disabled: activityNotEditable, new: true } }
+    ? {
+        ...item,
+        ...{ active: getActivityByType(objectType), disabled: activityNotEditable, new: true },
+        element: { objectType: objectType },
+      }
     : { element: item, active: !!item.activity, disabled: activityNotEditable }
   containers.value[objectType].unshift(toAdd)
 }
