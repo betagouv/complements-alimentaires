@@ -71,6 +71,21 @@ export const getActivityReadonlyByType = (type) => {
   }
 }
 
+/* Cette fonction n'est utile que pour les ingrédients nouveaux, créés lors de la déclaration
+Pour tous les autres, l'activitée est fournie par le backend */
+export const getActivityByType = (type) => {
+  switch (type) {
+    case "plant":
+    case "micro-organisme":
+    case "active_ingredient":
+    case "substance":
+    case "ingredient":
+      return true
+    default:
+      return true
+  }
+}
+
 export const statusProps = {
   DRAFT: {
     icon: "ri-pencil-fill",
