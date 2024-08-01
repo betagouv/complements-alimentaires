@@ -76,6 +76,9 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         json_errors = response.json()
         self.assertEqual(len(json_errors["nonFieldErrors"]), 1)
+
+        # NOTE: Si ce message d'erreur change, il faudra aussi changer StatusChangeErrorDisplay.vue dans
+        # le frontend car il y a de la logique effectuée avec une comparaison de String
         self.assertEqual("Le complément doit comporter au moins un ingrédient", json_errors["nonFieldErrors"][0])
 
     @authenticate
