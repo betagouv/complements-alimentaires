@@ -18,7 +18,7 @@ const { plantParts } = storeToRefs(useRootStore())
 const model = defineModel()
 const props = defineProps({ objectType: { type: String } })
 
-const plantPartName = computed(() => plantParts.value.find((x) => x.id === model.value.usedPart)?.name || "Aucune")
+const plantPartName = computed(() => plantParts.value?.find((x) => x.id === model.value.usedPart)?.name || "Aucune")
 
 const elementInfo = computed(() => {
   if (props.objectType === "microorganism")
