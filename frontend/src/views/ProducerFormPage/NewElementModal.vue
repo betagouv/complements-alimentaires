@@ -67,11 +67,13 @@ const actions = [
   },
 ]
 
-const addableTypes = Object.assign({}, typesMapping)
-// Note : Sur téléicare on ne peux pas ajouter des substances directement
-delete addableTypes["ingredient"]
-// Le type "ingredient" est voué à être déprécié, donc on ne permet pas d'en ajouter
-delete addableTypes["substance"]
+const addableTypes = computed(() =>
+  Object.keys(typesMapping)
+    // Note : Sur téléicare on ne peux pas ajouter des substances directement
+    // Le type "ingredient" est voué à être déprécié, donc on ne permet pas d'en ajouter
+    .filter((key) => !["ingredient", "substance"].includes(key))
+    .map((key) => ({ text: typesMapping[key], value: key }))
+)
 
 watch(
   () => model.value.objectType,
