@@ -171,6 +171,7 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
             "id",
             "element",
             "new_name",
+            "new_type",
             "active",
         )
 

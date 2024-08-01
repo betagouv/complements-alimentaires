@@ -268,6 +268,7 @@ class DeclaredIngredient(Historisable, Addable):
     )
     active = models.BooleanField("élément actif", default=True)
     new_name = models.TextField(blank=True, verbose_name="libellé")
+    new_type = models.TextField(blank=True, verbose_name="type de l'ingrédient")
 
 
 class DeclaredSubstance(Historisable):

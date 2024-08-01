@@ -23,34 +23,34 @@
     <ElementList
       @remove="removeElement"
       objectType="form_of_supply"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element?.objectType == 'form_of_supply')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'form_of_supply')"
     />
     <ElementList
       @remove="removeElement"
       objectType="aroma"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element?.objectType == 'aroma')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'aroma')"
     />
     <ElementList
       @remove="removeElement"
       objectType="additive"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element?.objectType == 'additive')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'additive')"
     />
     <ElementList
       @remove="removeElement"
       objectType="active_ingredient"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element?.objectType == 'active_ingredient')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'active_ingredient')"
     />
     <ElementList
       @remove="removeElement"
       objectType="non_active_ingredient"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element?.objectType == 'non_active_ingredient')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'non_active_ingredient')"
     />
     <ElementList @remove="removeElement" objectType="substance" :elements="payload.declaredSubstances" />
     <!-- On conserve ce type ingredient déprécié temporairement -->
     <ElementList
       @remove="removeElement"
       objectType="ingredient"
-      :elements="payload.declaredIngredients.filter((obj) => !obj.element?.objectType)"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, null)"
     />
 
     <div v-if="allElements.length === 0" class="my-12">
@@ -111,6 +111,12 @@ const hasActiveSubstances = computed(() =>
   )
 )
 
+const getObjectSubTypeList = (objectList, subType = null) => {
+  return subType
+    ? objectList.filter((obj) => obj.element?.objectType == subType || obj.newType == subType)
+    : objectList.filter((obj) => !obj.element?.objectType && !obj.newType)
+}
+
 const selectOption = async (result) => {
   const item = await fetchElement(getApiType(result.objectType), result.objectType, result.id)
   addElement(item, result.objectType)
@@ -129,8 +135,7 @@ const addElement = (item, objectType, newlyAdded = false) => {
   const toAdd = newlyAdded
     ? {
         ...item,
-        ...{ active: getActivityByType(objectType), disabled: activityNotEditable, new: true },
-        element: { objectType: objectType },
+        ...{ active: getActivityByType(objectType), disabled: activityNotEditable, new: true, newType: objectType },
       }
     : { element: item, active: !!item.activity, disabled: activityNotEditable }
   containers.value[objectType].unshift(toAdd)
