@@ -143,7 +143,8 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
             "new_species",
             "new_genre",
             "active",
-            "souche",
+            "activated",
+            "strain",
             "quantity",
         )
 
@@ -164,6 +165,7 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
 
 class DeclaredIngredientSerializer(serializers.ModelSerializer):
     element = PassthroughIngredientSerializer(required=False, source="ingredient", allow_null=True)
+    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
 
     class Meta:
         model = DeclaredIngredient
@@ -171,7 +173,10 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
             "id",
             "element",
             "new_name",
+            "new_type",
             "active",
+            "quantity",
+            "unit",
         )
 
     def create(self, validated_data):
