@@ -260,6 +260,7 @@ const routes = [
         status: "AWAITING_INSTRUCTION,ONGOING_INSTRUCTION",
         entrepriseDe: "",
         entrepriseA: "",
+        personneAssignée: "",
       },
     },
   },
