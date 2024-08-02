@@ -49,7 +49,7 @@ class DeclarationTestCase(TestCase):
                     json_declared_microorganism["element"]["name"], declared_microorganism.microorganism.name
                 )
                 self.assertEqual(json_declared_microorganism["element"]["id"], declared_microorganism.microorganism.id)
-            self.assertEqual(json_declared_microorganism["souche"], declared_microorganism.souche)
+            self.assertEqual(json_declared_microorganism["strain"], declared_microorganism.strain)
             self.assertEqual(json_declared_microorganism["quantity"], declared_microorganism.quantity)
             self.assertEqual(json_declared_microorganism["active"], declared_microorganism.active)
 

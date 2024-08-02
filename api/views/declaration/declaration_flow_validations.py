@@ -1,4 +1,4 @@
-from data.models import Declaration
+from data.models import Attachment, Declaration
 
 # Les validateurs dans ce fichier retournent une tuple avec les `field_errors` et les
 # `non_field_errors` pour une déclaration.
@@ -30,6 +30,9 @@ def validate_mandatory_fields(declaration) -> tuple[list, list]:
         {field: f"« {Declaration._meta.get_field(field).verbose_name} » ne peut pas être vide"}
         for field in missing_product_fields
     ]
+    has_label = declaration.attachments.filter(type=Attachment.AttachmentType.LABEL).exists()
+    if not has_label:
+        field_errors.append({"attachments": "La demande doit contenir au moins une pièce jointe de l'étiquetage"})
     return (field_errors, non_field_errors)
 
 

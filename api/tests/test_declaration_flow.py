@@ -37,6 +37,18 @@ class TestDeclarationFlow(APITestCase):
         response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        # Si la pièce jointe pour l'étiquetage manque, on ne peut pas continuer
+        missing_field_label = InstructionReadyDeclarationFactory(
+            author=authenticate.user, company=company, attachments=[]
+        )
+        response = self.client.post(
+            reverse("api:submit_declaration", kwargs={"pk": missing_field_label.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        json_errors = response.json()
+        self.assertEqual(len(json_errors["fieldErrors"]), 1)
+        self.assertIn("attachments", json_errors["fieldErrors"][0])
+
         # Si un champ obligatoire pour l'instruction manque, on le spécifie
         missing_field_declaration = InstructionReadyDeclarationFactory(
             author=authenticate.user, daily_recommended_dose="", company=company

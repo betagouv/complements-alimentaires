@@ -42,9 +42,13 @@ export const getTypeInFrench = (type) => {
   return typesMapping[type] || null
 }
 
-export const slugify = (data) => data?.replaceAll(" ", "-").replaceAll("'", "-").toLowerCase()
+export const slugifyType = (type) => {
+  return Object.keys(frontToAPITypesSlugMapping).find(
+    (key) => frontToAPITypesSlugMapping[key].toLowerCase() === type.toLowerCase()
+  )
+}
 
-export const unSlugify = (typeSlug) => {
+export const unSlugifyType = (typeSlug) => {
   return frontToAPITypesSlugMapping[typeSlug] || null
 }
 
