@@ -78,11 +78,12 @@ export const getActivityByType = (type) => {
     case "plant":
     case "micro-organisme":
     case "active_ingredient":
+    case "form_of_supply":
     case "substance":
     case "ingredient":
       return true
     default:
-      return true
+      return false
   }
 }
 
