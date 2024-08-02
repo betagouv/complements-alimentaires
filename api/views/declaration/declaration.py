@@ -20,7 +20,13 @@ from api.permissions import (
     IsSupervisor,
     IsVisor,
 )
-from api.serializers import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer
+from api.serializers import (
+    DeclarationSerializer,
+    DeclarationShortSerializer,
+    SimpleDeclarationSerializer,
+    SimpleInstructorSerializer,
+    SimpleVisorSerializer,
+)
 from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
 from config import email
@@ -36,6 +42,8 @@ class DeclarationPagination(LimitOffsetPagination):
 
 class DeclarationFilterSet(django_filters.FilterSet):
     author = BaseNumberInFilter(field_name="author__id")
+    instructor = BaseNumberInFilter(field_name="instructor__id")
+    visor = BaseNumberInFilter(field_name="visor__id")
     company = BaseNumberInFilter(field_name="company__id")
     company_name_start = django_filters.CharFilter(method="company_name_start__gte")
     company_name_end = django_filters.CharFilter(method="company_name_end__lte")
@@ -47,6 +55,8 @@ class DeclarationFilterSet(django_filters.FilterSet):
             "company",
             "status",
             "author",
+            "instructor",
+            "visor",
             "company_name_start",
             "company_name_end",
         ]
@@ -127,6 +137,33 @@ class DeclarationPagination(LimitOffsetPagination):
     max_limit = 50
 
 
+class InstructionDeclarationPagination(DeclarationPagination):
+    """
+    On ajoute dans le payload les instructrices et viseuses assignées au dossiers afin de pouvoir
+    filtrer par personne assignée.
+    """
+
+    instructors = []
+    visors = []
+
+    def paginate_queryset(self, queryset, request, view=None):
+        self.instructors = InstructionRole.objects.filter(id__in=InstructionRole.objects.values_list("id"))
+        self.visors = VisaRole.objects.filter(id__in=InstructionRole.objects.values_list("id"))
+        return super().paginate_queryset(queryset, request, view)
+
+    def get_paginated_response(self, data):
+        return Response(
+            {
+                "count": self.count,
+                "next": self.get_next_link(),
+                "previous": self.get_previous_link(),
+                "results": data,
+                "instructors": SimpleInstructorSerializer(self.instructors, many=True).data,
+                "visors": SimpleVisorSerializer(self.visors, many=True).data,
+            }
+        )
+
+
 class GenericDeclarationsListView(ListAPIView):
     model = Declaration
     pagination_class = DeclarationPagination
@@ -138,6 +175,7 @@ class GenericDeclarationsListView(ListAPIView):
 
 
 class OngoingDeclarationsListView(GenericDeclarationsListView):
+    pagination_class = InstructionDeclarationPagination
     serializer_class = SimpleDeclarationSerializer
     permission_classes = [(IsInstructor | IsVisor)]
     ordering_fields = ["creation_date", "modification_date", "name"]

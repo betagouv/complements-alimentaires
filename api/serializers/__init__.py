@@ -5,6 +5,7 @@ from .user import (
     CreateUserSerializer,
     ChangePasswordSerializer,
 )
+from .global_roles import SimpleInstructorSerializer, SimpleVisorSerializer
 from .webinar import WebinarSerializer
 from .search_result import SearchResultSerializer
 from .plant import PlantSerializer, PlantPartSerializer

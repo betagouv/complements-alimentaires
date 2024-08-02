@@ -17,6 +17,7 @@ from data.factories import (
     IngredientFactory,
     InstructionRoleFactory,
     MicroorganismFactory,
+    OngoingInstructionDeclarationFactory,
     PlantFactory,
     PlantPartFactory,
     PopulationFactory,
@@ -745,6 +746,81 @@ class TestDeclarationApi(APITestCase):
 
         for result in results:
             self.assertNotIn(result["id"], map(lambda x: x.id, stephane_declarations))
+
+    @authenticate
+    def test_pagination_returns_instructors_and_visors(self):
+        """
+        La réponse à l'appel API contient les instructrices et viseuses assignées
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        emma = InstructionRoleFactory()
+        edouard = InstructionRoleFactory()
+        stephane = InstructionRoleFactory()
+
+        anna = VisaRoleFactory()
+        quentin = VisaRoleFactory()
+        daniel = VisaRoleFactory()
+
+        OngoingInstructionDeclarationFactory(instructor=edouard, visor=anna)
+        OngoingInstructionDeclarationFactory(instructor=emma, visor=quentin)
+        OngoingInstructionDeclarationFactory(instructor=stephane, visor=daniel)
+
+        response = self.client.get(reverse("api:list_all_declarations"), format="json")
+        instructors = response.json()["instructors"]
+        visors = response.json()["visors"]
+
+        for instructor in [emma, edouard, stephane]:
+            json_instructor = next(filter(lambda x: x["id"] == instructor.id, instructors), None)
+            self.assertIsNotNone(json_instructor)
+            self.assertAlmostEqual(json_instructor["name"], instructor.name)
+
+        for visor in [anna, quentin, daniel]:
+            json_visor = next(filter(lambda x: x["id"] == visor.id, visors), None)
+            self.assertIsNotNone(json_visor)
+            self.assertAlmostEqual(json_visor["name"], visor.name)
+
+    @authenticate
+    def test_filter_instructor_all_declarations(self):
+        """
+        Les déclarations peuvent être filtrées par instructrice
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        emma = InstructionRoleFactory()
+        edouard = InstructionRoleFactory()
+        stephane = InstructionRoleFactory()
+
+        emma_declaration = OngoingInstructionDeclarationFactory(instructor=emma)
+        OngoingInstructionDeclarationFactory(instructor=edouard)
+        OngoingInstructionDeclarationFactory(instructor=stephane)
+
+        emma_filter_url = f"{reverse('api:list_all_declarations')}?instructor={emma.id}"
+        response = self.client.get(emma_filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], emma_declaration.id)
+
+    @authenticate
+    def test_filter_visor_all_declarations(self):
+        """
+        Les déclarations peuvent être filtrées par viseuse
+        """
+        VisaRoleFactory(user=authenticate.user)
+
+        emma = VisaRoleFactory()
+        edouard = VisaRoleFactory()
+        stephane = VisaRoleFactory()
+
+        emma_declaration = OngoingInstructionDeclarationFactory(visor=emma)
+        OngoingInstructionDeclarationFactory(visor=edouard)
+        OngoingInstructionDeclarationFactory(visor=stephane)
+
+        emma_filter_url = f"{reverse('api:list_all_declarations')}?visor={emma.id}"
+        response = self.client.get(emma_filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], emma_declaration.id)
 
     @authenticate
     def test_filter_company_all_declarations(self):
