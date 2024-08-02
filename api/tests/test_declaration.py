@@ -270,7 +270,7 @@ class TestDeclarationApi(APITestCase):
                     },
                     "new": False,
                     "active": True,
-                    "souche": "souche",
+                    "strain": "souche",
                     "quantity": "123",
                 },
                 {
@@ -279,7 +279,7 @@ class TestDeclarationApi(APITestCase):
                     "newDescription": "New microorganism description",
                     "new": True,
                     "active": True,
-                    "souche": "Nouvelle souche",
+                    "strain": "Nouvelle souche",
                     "quantity": "345",
                     "authorizationMode": "EU",
                     "euReferenceCountry": "IT",
@@ -303,7 +303,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(existing_declared_microorganism.microorganism, microorganism)
         self.assertEqual(existing_declared_microorganism.active, True)
         self.assertEqual(existing_declared_microorganism.quantity, 123)
-        self.assertEqual(existing_declared_microorganism.souche, "souche")
+        self.assertEqual(existing_declared_microorganism.strain, "souche")
 
         self.assertIsNone(new_declared_microorganism.microorganism)
         self.assertEqual(new_declared_microorganism.new_species, "New microorganism species")
@@ -311,7 +311,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(new_declared_microorganism.new_description, "New microorganism description")
         self.assertEqual(new_declared_microorganism.active, True)
         self.assertEqual(new_declared_microorganism.quantity, 345)
-        self.assertEqual(new_declared_microorganism.souche, "Nouvelle souche")
+        self.assertEqual(new_declared_microorganism.strain, "Nouvelle souche")
 
         self.assertEqual(new_declared_microorganism.authorization_mode, AuthorizationModes.EU)
         self.assertEqual(new_declared_microorganism.eu_reference_country, CountryChoices.ITALY)

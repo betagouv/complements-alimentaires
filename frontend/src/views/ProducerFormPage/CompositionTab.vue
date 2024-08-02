@@ -72,7 +72,7 @@
 <script setup>
 import { computed } from "vue"
 import { useFetch } from "@vueuse/core"
-import { getApiType, getActivityReadonlyByType } from "@/utils/mappings"
+import { getApiType } from "@/utils/mappings"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import ElementList from "./ElementList.vue"
 import SubstancesTable from "@/components/SubstancesTable.vue"
@@ -123,12 +123,10 @@ const removeElement = (element) => {
   })
 }
 const addElement = (item, objectType, newlyAdded = false) => {
-  // TODO : pour le moment les objets de type `plant` peuvent être ou non actif.
-  // à terme toutes les plantes seront actives et si elles sont non actives c'est que ce sont des support/agent de charge
-  const activityNotEditable = getActivityReadonlyByType(objectType)
   const toAdd = newlyAdded
-    ? { ...item, ...{ active: !!item.activity, disabled: activityNotEditable, new: true } }
-    : { element: item, active: !!item.activity, disabled: activityNotEditable }
+    ? { ...item, ...{ active: !!item.activity, new: true, activated: true } }
+    : { element: item, active: !!item.activity, activated: true }
+  //  le champ activated n'est valable que pour les microorganismes
   containers.value[objectType].unshift(toAdd)
 }
 
