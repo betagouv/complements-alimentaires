@@ -23,34 +23,34 @@
     <ElementList
       @remove="removeElement"
       objectType="form_of_supply"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'form_of_supply')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'form_of_supply')"
     />
     <ElementList
       @remove="removeElement"
       objectType="aroma"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'aroma')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'aroma')"
     />
     <ElementList
       @remove="removeElement"
       objectType="additive"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'additive')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'additive')"
     />
     <ElementList
       @remove="removeElement"
       objectType="active_ingredient"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'active_ingredient')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'active_ingredient')"
     />
     <ElementList
       @remove="removeElement"
       objectType="non_active_ingredient"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'non_active_ingredient')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'non_active_ingredient')"
     />
     <ElementList @remove="removeElement" objectType="substance" :elements="payload.declaredSubstances" />
     <!-- On conserve ce type ingredient déprécié temporairement -->
     <ElementList
       @remove="removeElement"
       objectType="ingredient"
-      :elements="payload.declaredIngredients.filter((obj) => !obj.element.objectType)"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, null)"
     />
 
     <div v-if="allElements.length === 0" class="my-12">
@@ -72,7 +72,7 @@
 <script setup>
 import { computed } from "vue"
 import { useFetch } from "@vueuse/core"
-import { getApiType } from "@/utils/mappings"
+import { getApiType, getActivityByType } from "@/utils/mappings"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import ElementList from "./ElementList.vue"
 import SubstancesTable from "@/components/SubstancesTable.vue"
@@ -111,6 +111,12 @@ const hasActiveSubstances = computed(() =>
   )
 )
 
+const getObjectSubTypeList = (objectList, subType = null) => {
+  return subType
+    ? objectList.filter((obj) => obj.element?.objectType == subType || obj.newType == subType)
+    : objectList.filter((obj) => !obj.element?.objectType && !obj.newType)
+}
+
 const selectOption = async (result) => {
   const item = await fetchElement(getApiType(result.objectType), result.objectType, result.id)
   addElement(item, result.objectType)
@@ -124,7 +130,10 @@ const removeElement = (element) => {
 }
 const addElement = (item, objectType, newlyAdded = false) => {
   const toAdd = newlyAdded
-    ? { ...item, ...{ active: !!item.activity, new: true, activated: true } }
+    ? {
+        ...item,
+        ...{ active: getActivityByType(objectType), new: true, activated: true, newType: objectType },
+      }
     : { element: item, active: !!item.activity, activated: true }
   //  le champ activated n'est valable que pour les microorganismes
   containers.value[objectType].unshift(toAdd)
