@@ -148,7 +148,7 @@ class InstructionDeclarationPagination(DeclarationPagination):
 
     def paginate_queryset(self, queryset, request, view=None):
         self.instructors = InstructionRole.objects.filter(id__in=InstructionRole.objects.values_list("id"))
-        self.visors = VisaRole.objects.filter(id__in=InstructionRole.objects.values_list("id"))
+        self.visors = VisaRole.objects.filter(id__in=VisaRole.objects.values_list("id"))
         return super().paginate_queryset(queryset, request, view)
 
     def get_paginated_response(self, data):

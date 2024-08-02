@@ -5,7 +5,7 @@
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Déclarations pour instruction' }]"
     />
     <div class="border px-4 mb-2 md:flex gap-8 items-baseline filters">
-      <DsfrFieldset legend="Nom d'entreprise" class="!mb-0">
+      <DsfrFieldset legend="Nom d'entreprise" class="!mb-0 min-w-48">
         <div class="flex gap-4">
           <DsfrInputGroup>
             <DsfrInput
@@ -27,25 +27,22 @@
           </DsfrInputGroup>
         </div>
       </DsfrFieldset>
-      <DsfrFieldset class="!mb-0">
-        <div class="flex gap-4 md:border-x md:px-8">
-          <DsfrInputGroup>
-            <DsfrSelect
-              label="Personne assignée"
-              :modelValue="assignedInstructor"
-              @update:modelValue="updateInstructorFilter"
-              defaultUnselectedText=""
-              :options="instructorSelectOptions"
-            />
-          </DsfrInputGroup>
-        </div>
-      </DsfrFieldset>
-      <StatusFilter
-        :exclude="['DRAFT']"
-        class="max-w-2xl"
-        @update:modelValue="updateStatusFilter"
-        v-model="filteredStatus"
-      />
+      <div class="min-w-64">
+        <DsfrFieldset class="!mb-0">
+          <div class="md:border-x md:px-8">
+            <DsfrInputGroup>
+              <DsfrSelect
+                label="Personne assignée"
+                :modelValue="assignedInstructor"
+                @update:modelValue="updateInstructorFilter"
+                defaultUnselectedText=""
+                :options="instructorSelectOptions"
+              />
+            </DsfrInputGroup>
+          </div>
+        </DsfrFieldset>
+      </div>
+      <StatusFilter :exclude="['DRAFT']" @update:modelValue="updateStatusFilter" v-model="filteredStatus" />
     </div>
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
@@ -96,7 +93,9 @@ const page = computed(() => parseInt(route.query.page))
 const filteredStatus = computed(() => route.query.status)
 const companyNameStart = computed(() => route.query.entrepriseDe)
 const companyNameEnd = computed(() => route.query.entrepriseA)
-const assignedInstructor = computed(() => route.query.personneAssignée)
+const assignedInstructor = computed(() =>
+  route.query.personneAssignée === "" ? "" : parseInt(route.query.personneAssignée)
+)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 
