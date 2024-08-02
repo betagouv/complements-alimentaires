@@ -13,6 +13,9 @@ from django.db.models import (
 
 from .exceptions import CSVFileError
 
+# from .models.condition import Condition
+from .importer_utils import get_update_or_create_related_object, pre_import_treatments, update_or_create_object
+
 # Import the model
 from .models import (
     Effect,
@@ -31,9 +34,6 @@ from .models import (
     SubstanceSynonym,
     SubstanceUnit,
 )
-
-# from .models.condition import Condition
-from .utils.importer_utils import get_update_or_create_related_object, pre_import_treatments, update_or_create_object
 
 logger = logging.getLogger(__name__)
 

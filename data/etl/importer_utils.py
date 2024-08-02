@@ -18,7 +18,6 @@ def pre_import_treatments(field, value):
     * nettoyage de valeurs (trim)
     * transformation de valeurs en d'autres valeurs
     """
-
     if field.name == "siccrf_status":
         new_fields = {
             "siccrf_status": clean_value(value, field),

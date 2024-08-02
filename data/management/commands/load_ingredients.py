@@ -4,7 +4,7 @@ import os
 
 from django.core.management.base import BaseCommand
 
-from data.csv_importer import import_csv_from_filepath
+from data.etl.csv_importer import import_csv_from_filepath
 from data.exceptions import CSVFileError
 from data.models.plant import Part
 
