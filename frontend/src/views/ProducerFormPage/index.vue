@@ -25,6 +25,7 @@
         :type="payload.status === 'AUTHORIZED' ? 'success' : 'info'"
         :title="`Cette déclaration est en statut « ${statusProps[payload.status].label} »`"
       />
+      <StatusChangeErrorDisplay class="mb-8" :errors="statusChangeErrors" :tabTitles="titles" />
       <DsfrTabs
         v-if="payload"
         ref="tabs"
@@ -64,6 +65,7 @@
 </template>
 <script setup>
 import ProgressSpinner from "@/components/ProgressSpinner"
+import StatusChangeErrorDisplay from "./StatusChangeErrorDisplay"
 import TabStepper from "@/components/TabStepper"
 import { useRootStore } from "@/stores/root"
 import { ref, computed, watch } from "vue"
@@ -83,7 +85,17 @@ import { shouldShowReasons } from "@/utils/declaration"
 import useToaster from "@/composables/use-toaster"
 import { statusProps, tabTitles } from "@/utils/mappings"
 
+// Il y a deux refs qui stockent des erreurs. $externalResults sert
+// lors qu'on sauvegarde la déclaration (POST ou PUT) mais qu'on ne change
+// pas son status. Des erreurs ici empêchent de changer l'onglet. Exemple : lors
+// qu'on ne me pas de nom du produit on ne peut pas avancer.
 const $externalResults = ref({})
+
+// Les erreurs suite à une tentative de changement de statut sont stockés dans
+// ce ref. C'est toujours possible de changer d'onglet pour corriger les erreurs.
+// Exemple : le manque d'une pièce jointe pour l'étiquetage.
+const statusChangeErrors = ref({})
+
 const route = useRoute()
 const router = useRouter()
 
@@ -199,15 +211,9 @@ const submitPayload = async (comment) => {
   const path = payload.value.status === "DRAFT" ? "submit" : "resubmit"
   const url = `/api/v1/declarations/${payload.value.id}/${path}/`
   const { response } = await useFetch(url, { headers: headers() }).post({ comment }).json()
-  $externalResults.value = await handleError(response)
+  statusChangeErrors.value = await handleError(response)
 
-  if ($externalResults.value) {
-    // Temporairement, on montrera les messages des champs en haut du formulaire car
-    // ils peuvent être présents dans plusieurs steps. Cette UI/UX pourra être amélioré
-    // par la suite.
-    const fieldErrors = $externalResults.value.fieldErrors.map((x) => Object.values(x)?.[0])
-    $externalResults.value.nonFieldErrors.push(...fieldErrors)
-    //
+  if (statusChangeErrors.value) {
     window.scrollTo(0, 0)
   } else {
     useToaster().addSuccessMessage("Votre déclaration a été envoyée")
