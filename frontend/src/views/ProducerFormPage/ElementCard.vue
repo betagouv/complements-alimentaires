@@ -18,7 +18,7 @@
         <div class="grow pl-4 ml-6 sm:border-l self-center">
           <DsfrCheckbox
             class="!my-2"
-            :disabled="model.disabled"
+            :disabled="getActivityReadonlyByType(objectType)"
             v-model="model.active"
             :label="model.active ? 'Actif' : 'Non actif'"
           />
@@ -64,8 +64,31 @@
         <DsfrInputGroup class="max-w-sm">
           <DsfrInput label-visible label="Souche" v-model="model.strain" :required="true" />
         </DsfrInputGroup>
+        <div class="mt-12">
+          <DsfrCheckbox
+            v-model="model.activated"
+            :label="model.activated ? 'Activés' : 'Ces micro-organismes ont été inactivés'"
+            hint="L'inactivation rend la réplication impossible"
+          />
+        </div>
+        <div v-if="model.activated">
+          <DsfrInputGroup>
+            <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR (en UFC)" :required="true" />
+          </DsfrInputGroup>
+        </div>
+      </div>
+      <div v-else-if="objectType === 'form_of_supply' || objectType === 'active_ingredient'" class="ml-12 flex gap-4">
         <DsfrInputGroup>
-          <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR (en CFU)" :required="true" />
+          <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR" :required="true" />
+        </DsfrInputGroup>
+        <DsfrInputGroup class="min-w-20 max-w-24">
+          <DsfrSelect
+            label="Unité"
+            :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
+            v-model="model.unit"
+            defaultUnselectedText=""
+            :required="true"
+          />
         </DsfrInputGroup>
       </div>
     </div>
@@ -76,6 +99,7 @@
 import { useRootStore } from "@/stores/root"
 import { computed } from "vue"
 import { getElementName } from "@/utils/elements"
+import { getActivityReadonlyByType } from "@/utils/mappings"
 
 const model = defineModel()
 const store = useRootStore()
@@ -88,9 +112,19 @@ const plantParts = computed(() => {
   const parts = model.value.element?.plantParts || store.plantParts
   return parts?.map((x) => ({ text: x.name, value: x.id }))
 })
-const showFields = computed(
-  () => model.value.active && (props.objectType === "plant" || props.objectType === "microorganism")
-)
+
+const showFields = computed(() => {
+  if (model.value.active && ["plant", "microorganism"].indexOf(props.objectType) >= 0) return true
+  if (
+    model.value.active &&
+    ["active_ingredient", "form_of_supply"].indexOf(props.objectType) >= 0 &&
+    model.value.element.substances.length === 0
+  )
+    // TODO: à terme les form_of_supply auront forcément des substances liées donc cette condition ne sera plus nécessaire
+    // TODO: à terme le type active_ingredient n'existera plus, seulement le type ingrédient et la propriété active
+    return true
+  return false
+})
 
 // TODO: vérifier qu'on ait ces infos en base ou accepter de les avoir en front only
 const preparations = [
