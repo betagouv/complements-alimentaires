@@ -185,8 +185,8 @@ const proposalOptions = computed(() => {
   if (decisionCategory.value === "approve") return [{ text: "Autorisation", value: "autorisation" }]
 
   return [
-    { text: "Objection", value: "objection" },
     { text: "Observation", value: "observation" },
+    { text: "Objection", value: "objection" },
     { text: "Refus", value: "rejection" },
   ]
 })
