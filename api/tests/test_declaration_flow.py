@@ -81,6 +81,28 @@ class TestDeclarationFlow(APITestCase):
         # le frontend car il y a de la logique effectuée avec une comparaison de String
         self.assertEqual("Le complément doit comporter au moins un ingrédient", json_errors["nonFieldErrors"][0])
 
+        # Si un des éléments de la composition manque des informations obligatoires, on ne peut pas soumettre
+        # pour instruction
+        missing_composition_data_declaration = InstructionReadyDeclarationFactory(
+            author=authenticate.user,
+            company=company,
+        )
+        first_declared_plant = missing_composition_data_declaration.declared_plants.first()
+        first_declared_plant.used_part = None
+        first_declared_plant.save()
+        response = self.client.post(
+            reverse("api:submit_declaration", kwargs={"pk": missing_composition_data_declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        json_errors = response.json()
+        self.assertEqual(len(json_errors["nonFieldErrors"]), 1)
+
+        # NOTE: Si ce message d'erreur change, il faudra aussi changer StatusChangeErrorDisplay.vue dans
+        # le frontend car il y a de la logique effectuée avec une comparaison de String
+        self.assertEqual(
+            "Merci de renseigner les informations manquantes des plantes ajoutées", json_errors["nonFieldErrors"][0]
+        )
+
     @authenticate
     def test_submit_declaration_wrong_company(self):
         """
