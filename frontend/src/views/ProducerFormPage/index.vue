@@ -82,7 +82,6 @@ import { useRoute, useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
 import FormWrapper from "@/components/FormWrapper"
 import { headers } from "@/utils/data-fetching"
-import { shouldShowReasons } from "@/utils/declaration"
 import useToaster from "@/composables/use-toaster"
 import { statusProps, tabTitles } from "@/utils/mappings"
 
@@ -229,5 +228,8 @@ watch(
   (tab) => selectTab(parseInt(tab))
 )
 
-const showReasons = computed(() => shouldShowReasons(data.value))
+const showReasons = computed(() => {
+  const concernedStatus = ["OBSERVATION", "OBJECTION", "REJECTED"]
+  return concernedStatus.indexOf(data.value?.status) > -1 && data.value?.blockingReasons
+})
 </script>
