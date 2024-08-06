@@ -336,6 +336,10 @@ class DeclarationObserveView(DeclarationFlowView):
     snapshot_action = Snapshot.SnapshotActions.OBSERVE_NO_VISA
     brevo_template_id = 4
 
+    def on_transition_success(self, request, declaration):
+        declaration.instructor = InstructionRole.objects.get(user=request.user)
+        return super().on_transition_success(request, declaration)
+
 
 class DeclarationAuthorizeView(DeclarationFlowView):
     """
@@ -347,6 +351,10 @@ class DeclarationAuthorizeView(DeclarationFlowView):
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.AUTHORIZE_NO_VISA
     brevo_template_id = 6
+
+    def on_transition_success(self, request, declaration):
+        declaration.instructor = InstructionRole.objects.get(user=request.user)
+        return super().on_transition_success(request, declaration)
 
 
 class DeclarationResubmitView(DeclarationFlowView):
@@ -488,6 +496,7 @@ class VisaRequestFlowView(DeclarationFlowView):
         declaration.post_validation_producer_message = request.data.get("comment", "")
         declaration.post_validation_expiration_days = request.data.get("expiration")
         declaration.private_notes = request.data.get("private_notes", "")
+        declaration.instructor = InstructionRole.objects.get(user=request.user)
 
         if not self.post_validation_status:
             raise Exception("VisaRequestFlowView doit être sous-classée et doit spécifier le post_validation_status")
