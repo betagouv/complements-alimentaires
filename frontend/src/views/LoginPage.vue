@@ -4,10 +4,15 @@
     <FormWrapper :externalResults="$externalResults">
       <SendNewSignupVerificationEmail v-if="showSendNewConfirmationMail" :userId="userIdForNewConfirmationMail" />
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'username')">
-        <DsfrInput v-model="state.username" label="Identifiant" labelVisible />
+        <DsfrInput v-model="state.username" label="Identifiant" labelVisible @keyup.enter="submit" />
       </DsfrInputGroup>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'password')">
-        <DsfrInput :type="showPassword ? 'text' : 'password'" v-model="state.password" labelVisible>
+        <DsfrInput
+          :type="showPassword ? 'text' : 'password'"
+          v-model="state.password"
+          labelVisible
+          @keyup.enter="submit"
+        >
           <template #label>
             <div class="flex items-center justify-between">
               <div>Mot de passe</div>
