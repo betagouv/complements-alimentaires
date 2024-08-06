@@ -48,6 +48,7 @@
           </DsfrTabContent>
         </DsfrTabs>
         <TabStepper
+          v-if="!isAwaitingVisa"
           :titles="titles"
           :selectedTabIndex="selectedTabIndex"
           @back="selectTab(selectedTabIndex - 1)"

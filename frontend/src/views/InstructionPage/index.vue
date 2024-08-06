@@ -14,9 +14,13 @@
     <div v-else>
       <DsfrAlert
         class="mb-4"
-        v-if="isAwaitingInstruction && !declaration.instructor"
+        v-if="isAwaitingInstruction && declaration.instructor.id !== loggedUser.id"
         type="info"
-        title="Cette déclaration n'est pas encore assignée"
+        :title="
+          declaration.instructor && declaration.instructor.firstName
+            ? `Cette déclaration est assignée à ${declaration.instructor.firstName} ${declaration.instructor.lastName}`
+            : 'Cette déclaration n\'est pas encore assignée'
+        "
       >
         <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
         <DsfrButton class="mt-2" label="Instruire" tertiary @click="instructDeclaration" />
@@ -48,6 +52,7 @@
           </DsfrTabContent>
         </DsfrTabs>
         <TabStepper
+          v-if="!isAwaitingInstruction"
           :titles="titles"
           :selectedTabIndex="selectedTabIndex"
           @back="selectTab(selectedTabIndex - 1)"
