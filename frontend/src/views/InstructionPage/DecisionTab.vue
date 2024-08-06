@@ -131,14 +131,14 @@ const decisionCategories = [
     value: "approve",
     title: "J’envoie l’attestation de déclaration",
     icon: "ri-checkbox-circle-fill",
-    description: "La déclaration ne pose pas de problème et peut être autorisée en l'état.",
+    description: "La déclaration est conforme et peut être transmise.",
     color: "green",
   },
   {
     value: "modify",
     title: "Des changements sont nécessaires",
     icon: "ri-close-circle-fill",
-    description: "La déclaration nécessite des ajustements et ne peut pas être autorisée.",
+    description: "La déclaration ne peut pas être transmise en l'état.",
     color: "red",
   },
 ]
