@@ -481,6 +481,7 @@ class VisaRequestFlowView(DeclarationFlowView):
             user=request.user,
             action=self.get_snapshot_action(request, declaration),
             post_validation_status=self.post_validation_status,
+            blocking_reasons=request.data.get("reasons"),
         )
 
     def on_transition_success(self, request, declaration):
