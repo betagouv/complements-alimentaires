@@ -35,7 +35,7 @@ import { headers } from "@/utils/data-fetching"
 import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
 import useToaster from "@/composables/use-toaster"
 import { handleError } from "@/utils/error-handling"
-import { useRouter } from "vue-router"
+import { useRouter, useRoute } from "vue-router"
 import { useRootStore } from "@/stores/root"
 import FormWrapper from "@/components/FormWrapper"
 import SingleItemWrapper from "@/components/SingleItemWrapper"
@@ -43,6 +43,7 @@ import SendNewSignupVerificationEmail from "@/components/SendNewSignupVerificati
 import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
 
 const router = useRouter()
+const route = useRoute()
 const rootStore = useRootStore()
 
 const showPassword = ref(false)
@@ -100,7 +101,7 @@ const submit = async () => {
         title: "Vous êtes connecté",
         description: "Vous êtes connecté à la plateforme Compl'Alim.",
       })
-      router.push({ name: "DashboardPage" })
+      router.push(route.query.next || { name: "DashboardPage" })
     }
   }
 }
