@@ -223,6 +223,31 @@ class TestDeclarationFlow(APITestCase):
         self.assertIn("Forme assimilable à un aliment courant", latest_snapshot.blocking_reasons)
 
     @authenticate
+    def test_observe_someone_elses_declaration(self):
+        """
+        Passage du ONGOING_INSTRUCTION -> OBSERVATION lors qu'une autre instructrice
+        que celle assignée fait l'opération
+        """
+        instructor = InstructionRoleFactory(user=authenticate.user)
+        assigned_instructor = InstructionRoleFactory()
+        declaration = OngoingInstructionDeclarationFactory(instructor=assigned_instructor)
+
+        response = self.client.post(
+            reverse("api:observe_no_visa", kwargs={"pk": declaration.id}),
+            {"reasons": ["Forme assimilable à un aliment courant"]},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+
+        # L'instructeur assigné a changé car c'est lui qui a fait la dernière action
+        self.assertEqual(declaration.instructor, instructor)
+
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(instructor.user, latest_snapshot.user)
+
+    @authenticate
     def test_observe_declaration_unauthorized(self):
         """
         Passage du ONGOING_INSTRUCTION -> OBSERVATION
