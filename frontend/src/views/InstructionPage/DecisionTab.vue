@@ -155,13 +155,14 @@ const rejectReasons = [
   },
   {
     title: "Le produit répond à la définition du médicament",
-    items: ["Par fonction", "Par présentation", "Sevrage tabagique"],
+    items: ["Médicament par fonction", "Médicament par présentation", "Sevrage tabagique"],
   },
   {
     title: "Les procédures ne sont pas respectées",
     items: [
       "Présence d'un Novel Food",
       "Présence d'une forme d'apport en nutriments non autorisée",
+      "Demande en article 17 attendue",
       "Demande en article 18 attendue",
     ],
   },
