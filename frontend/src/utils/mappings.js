@@ -80,7 +80,7 @@ Pour tous les autres, l'activitée est fournie par le backend */
 export const getActivityByType = (type) => {
   switch (type) {
     case "plant":
-    case "micro-organisme":
+    case "microorganism":
     case "active_ingredient":
     case "form_of_supply":
     case "substance":
