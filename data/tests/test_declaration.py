@@ -32,8 +32,7 @@ class DeclarationTestCase(TestCase):
                 self.assertEqual(json_declared_plant["element"]["name"], declared_plant.plant.name)
                 self.assertEqual(json_declared_plant["element"]["id"], declared_plant.plant.id)
             if declared_plant.used_part:
-                self.assertEqual(json_declared_plant["usedPart"]["name"], declared_plant.used_part.name)
-                self.assertEqual(json_declared_plant["usedPart"]["id"], declared_plant.used_part.id)
+                self.assertEqual(json_declared_plant["usedPart"], declared_plant.used_part.id)
             if declared_plant.unit:
                 self.assertEqual(json_declared_plant["unit"], declared_plant.unit.id)
             self.assertEqual(json_declared_plant["quantity"], declared_plant.quantity)

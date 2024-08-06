@@ -2,6 +2,7 @@ import factory
 
 from data.models import (
     Attachment,
+    ComputedSubstance,
     Declaration,
     DeclaredIngredient,
     DeclaredMicroorganism,
@@ -16,7 +17,7 @@ from .galenic_formulation import GalenicFormulationFactory
 from .global_roles import InstructionRoleFactory, VisaRoleFactory
 from .ingredient import IngredientFactory
 from .microorganism import MicroorganismFactory
-from .plant import PlantFactory
+from .plant import PlantFactory, PlantPartFactory
 from .population import PopulationFactory
 from .substance import SubstanceFactory
 from .unit import SubstanceUnitFactory
@@ -44,6 +45,8 @@ class DeclaredPlantFactory(factory.django.DjangoModelFactory):
     plant = factory.SubFactory(PlantFactory)
     quantity = factory.Faker("pyfloat")
     unit = factory.SubFactory(SubstanceUnitFactory)
+    preparation = factory.Faker("text")
+    used_part = factory.SubFactory(PlantPartFactory)
 
 
 class DeclaredMicroorganismFactory(factory.django.DjangoModelFactory):
@@ -53,6 +56,7 @@ class DeclaredMicroorganismFactory(factory.django.DjangoModelFactory):
     microorganism = factory.SubFactory(MicroorganismFactory)
     active = factory.Faker("boolean")
     quantity = factory.Faker("pyfloat")
+    strain = factory.Faker("text")
 
 
 class DeclaredIngredientFactory(factory.django.DjangoModelFactory):
@@ -69,6 +73,15 @@ class DeclaredSubstanceFactory(factory.django.DjangoModelFactory):
 
     substance = factory.SubFactory(SubstanceFactory)
     active = factory.Faker("boolean")
+
+
+class ComputedSubstanceFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ComputedSubstance
+
+    substance = factory.SubFactory(SubstanceFactory)
+    quantity = factory.Faker("pyfloat")
+    unit = factory.SubFactory(SubstanceUnitFactory)
 
 
 class AttachmentFactory(factory.django.DjangoModelFactory):

@@ -51,14 +51,20 @@ const shownErrors = computed(() => {
   // ------
   // L'erreur levée lors qu'il n'y a aucun ingrédient n'est pas lié à un champ
   // spécifique. Ici on l'ajout manuellement au tab « Composition »
-  const emptyCompositionError = "Le complément doit comporter au moins un ingrédient"
-  if (nonFieldErrors && nonFieldErrors.indexOf(emptyCompositionError) > -1)
-    errorObject.find((x) => x.tab === "Composition")?.errors?.push(emptyCompositionError)
+  const compositionErrors = [
+    "Le complément doit comporter au moins un ingrédient",
+    "Merci de renseigner les informations manquantes des plantes ajoutées",
+    "Merci de renseigner les informations manquantes des micro-organismes ajoutées",
+    "Merci de renseigner les informations manquantes dans le tableau des substances",
+  ]
+  for (let i = 0; i < compositionErrors.length; i++)
+    if (nonFieldErrors && nonFieldErrors.indexOf(compositionErrors[i]) > -1)
+      errorObject.find((x) => x.tab === "Composition")?.errors?.push(compositionErrors[i])
 
   // Les autres erreurs non-liées à des champs vont dans l'apparté « Autres »
   errorObject
     .find((x) => x.tab === "Autres")
-    ?.errors?.push(...nonFieldErrors.filter((x) => x !== emptyCompositionError))
+    ?.errors?.push(...nonFieldErrors.filter((x) => compositionErrors.indexOf(x) === -1))
 
   // On montre seulement les appartés qui ont au moins une erreur
   return errorObject.filter((x) => x.errors.length > 0)

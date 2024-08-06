@@ -55,6 +55,7 @@
         </DsfrTabContent>
       </DsfrTabs>
       <TabStepper
+        v-if="payload"
         :titles="titles"
         :selectedTabIndex="selectedTabIndex"
         @back="selectTab(selectedTabIndex - 1)"
