@@ -125,6 +125,7 @@ const routes = [
     component: LoginPage,
     meta: {
       title: "Se connecter",
+      omitIfLoggedIn: true,
     },
   },
   {
@@ -133,6 +134,7 @@ const routes = [
     component: SignupPage,
     meta: {
       title: "S'enregistrer",
+      omitIfLoggedIn: true,
     },
   },
   {
@@ -333,6 +335,10 @@ const chooseAuthorisedRoute = async (to, from, next, store) => {
     // 2) vérifie les règles de redirection
     if (to.meta.home) {
       next({ name: store.loggedUser ? "DashboardPage" : "LandingPage" })
+      return
+    }
+    if (to.meta.omitIfLoggedIn && store.loggedUser) {
+      next(to.query.next || { name: "DashboardPage" })
       return
     }
     const authenticationCheck = !to.meta.authenticationRequired || store.loggedUser

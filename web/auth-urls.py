@@ -1,8 +1,6 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from web.views import RegisterUserView
-
 urlpatterns = [
     path(
         "s-identifier",
@@ -68,5 +66,4 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
-    path("creer-mon-compte", RegisterUserView.as_view(), name="register"),
 ]

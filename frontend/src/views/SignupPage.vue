@@ -84,13 +84,14 @@ import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
 import { useRoute, useRouter } from "vue-router"
 
 const router = useRouter()
+const route = useRoute()
 const showPassword = ref(false)
 
 // Form state & rules
 const state = ref({
-  lastName: "",
-  firstName: "",
-  email: useRoute().query.email || "",
+  lastName: route.query.firstName || "",
+  firstName: route.query.lastName || "",
+  email: route.query.email || "",
   username: "",
   password: "",
 })
