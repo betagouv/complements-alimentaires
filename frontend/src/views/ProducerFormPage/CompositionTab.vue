@@ -64,7 +64,7 @@
         Les substances contenues dans les ingrédients actifs renseignés sont affichées ci-dessous. Veuillez compléter
         leur dosage total.
       </p>
-      <SubstancesTable v-model="payload" />
+      <SubstancesTable :hidePrivateComments="true" v-model="payload" />
     </div>
   </div>
 </template>

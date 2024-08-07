@@ -1,14 +1,18 @@
 <template>
   <li class="border-l-2 border-b pl-4 py-2">
-    <p class="capitalize font-bold mb-0">
-      {{ getElementName(model).toLowerCase() }}
-      <span v-if="model.new" class="self-center ml-2">
-        <DsfrBadge label="Nouvel ingrédient" type="info" small />
-      </span>
-    </p>
-    <div class="mt-1">
-      {{ elementInfo }}
+    <div class="flex content-center">
+      <ElementCommentModal v-model="model" class="mr-2" />
+      <div class="self-center">
+        <p class="capitalize font-bold mb-0">
+          {{ getElementName(model).toLowerCase() }}
+        </p>
+      </div>
+
+      <DsfrBadge v-if="model.new" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
     </div>
+    <p class="my-2">
+      {{ elementInfo }}
+    </p>
   </li>
 </template>
 
@@ -17,6 +21,7 @@ import { computed } from "vue"
 import { getElementName } from "@/utils/elements"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
+import ElementCommentModal from "@/components/ElementCommentModal"
 
 const { plantParts, units } = storeToRefs(useRootStore())
 

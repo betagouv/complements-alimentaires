@@ -5,6 +5,7 @@ from data.models import IngredientStatus, Microorganism, MicroorganismSynonym
 
 from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
+from .utils import PrivateCommentSerializer
 
 
 class MicroorganismSynonymSerializer(serializers.ModelSerializer):
@@ -17,7 +18,7 @@ class MicroorganismSynonymSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class MicroorganismSerializer(serializers.ModelSerializer):
+class MicroorganismSerializer(PrivateCommentSerializer):
     synonyms = MicroorganismSynonymSerializer(many=True, read_only=True, source="microorganismsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
@@ -33,6 +34,7 @@ class MicroorganismSerializer(serializers.ModelSerializer):
             "synonyms",
             "substances",
             "public_comments",
+            "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
             "activity",
             "status",
             "history",

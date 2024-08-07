@@ -17,6 +17,12 @@
         v-for="(row, rowIndex) in rows"
         :key="`row-${rowIndex}`"
       >
+        <div class="sm:table-cell ca-cell">
+          <ElementCommentModal
+            :hidePrivateComments="hidePrivateComments"
+            v-model="payload.computedSubstances[rowIndex]"
+          />
+        </div>
         <!-- Cells contenant l'information de la substance -->
         <div
           class="sm:table-cell ca-cell capitalize"
@@ -52,12 +58,15 @@
 </template>
 
 <script setup>
+// TODO: Convertir dans une DSFRTable
+
 import { computed, watch } from "vue"
+import ElementCommentModal from "@/components/ElementCommentModal"
 
 const payload = defineModel()
-const props = defineProps({ readonly: Boolean })
+const props = defineProps({ readonly: Boolean, hidePrivateComments: Boolean })
 
-const headers = ["Nom", "Num CAS", "Num EINEC", "Ingrédient(s) source", "Qté par DJR", "Unité"]
+const headers = ["", "Nom", "Num CAS", "Num EINEC", "Ingrédient(s) source", "Qté par DJR", "Unité"]
 const rows = computed(() =>
   payload.value.computedSubstances.map((x) => [
     x.substance.name.toLowerCase(),
