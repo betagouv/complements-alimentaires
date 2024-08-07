@@ -1,6 +1,11 @@
 <template>
-  <li>
-    <div class="capitalize">{{ getElementName(model).toLowerCase() }}</div>
+  <li class="border-l-2 border-b pl-4 py-2">
+    <p class="capitalize font-bold mb-0">
+      {{ getElementName(model).toLowerCase() }}
+      <span v-if="model.new" class="self-center ml-2">
+        <DsfrBadge label="Nouvel ingrédient" type="info" small />
+      </span>
+    </p>
     <div class="mt-1">
       {{ elementInfo }}
     </div>
