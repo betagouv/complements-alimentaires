@@ -288,3 +288,17 @@ export const RiMailSendLine = remixIcon(
   "ri-mail-send-line",
   "M22 20.007a1 1 0 01-.992.993H2.992A.993.993 0 012 20.007V19h18V7.3l-8 7.2-10-9V4a1 1 0 011-1h18a1 1 0 011 1v16.007zM4.434 5L12 11.81 19.566 5H4.434zM0 15h8v2H0v-2zm0-5h5v2H0v-2z"
 )
+
+export const RiChat4Line = remixIcon(
+  "ri-chat-4-line",
+  "M5.763 17H20V5H4v13.385L5.763 17zm.692 2L2 22.5V4a1 1 0 011-1h18a1 1 0 011 1v14a1 1 0 01-1 1H6.455z"
+)
+
+export const RiChatOffLine = {
+  name: "ri-chat-off-line",
+  minX: 0,
+  minY: 0,
+  width: 24,
+  height: 24,
+  raw: '<path fill="none" d="M0 0h24v24H0z"/><path d="M2.808 1.393l19.799 19.8-1.415 1.414-3.608-3.608L6.455 19 2 22.5V4c0-.17.042-.329.116-.469l-.723-.723 1.415-1.415zm1.191 4.02L4 18.385 5.763 17h9.821L4 5.412zM21 3a1 1 0 011 1v13.785l-2-2V5L9.213 4.999 7.214 3H21z"/>',
+}

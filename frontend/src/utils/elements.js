@@ -1,4 +1,5 @@
-export const getElementName = (e) => e.element?.name || e.newName || `${e.newGenre} ${e.newSpecies}`
+export const getElementName = (e) =>
+  e.element?.name || e.substance?.name || e.newName || `${e.newGenre} ${e.newSpecies}`
 
 export const getObjectSubTypeList = (objectList, subType = null) => {
   return subType
