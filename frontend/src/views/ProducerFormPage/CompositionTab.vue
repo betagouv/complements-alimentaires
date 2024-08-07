@@ -73,6 +73,7 @@
 import { computed } from "vue"
 import { useFetch } from "@vueuse/core"
 import { getApiType, getActivityByType } from "@/utils/mappings"
+import { getObjectSubTypeList } from "@/utils/elements"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import ElementList from "./ElementList.vue"
 import SubstancesTable from "@/components/SubstancesTable.vue"
@@ -110,12 +111,6 @@ const hasActiveSubstances = computed(() =>
     (x) => x.active && !x.new && (x.element?.substances?.length || containers.value.substance.indexOf(x) > -1)
   )
 )
-
-const getObjectSubTypeList = (objectList, subType = null) => {
-  return subType
-    ? objectList.filter((obj) => obj.element?.objectType == subType || obj.newType == subType)
-    : objectList.filter((obj) => !obj.element?.objectType && !obj.newType)
-}
 
 const selectOption = async (result) => {
   const item = await fetchElement(getApiType(result.objectType), result.objectType, result.id)

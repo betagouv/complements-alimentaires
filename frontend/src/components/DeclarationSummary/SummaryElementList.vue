@@ -7,7 +7,7 @@
       <p class="m-0 font-bold capitalize self-center">{{ getTypeInFrench(objectType) }}s</p>
     </div>
 
-    <ul>
+    <ul class="list-none">
       <SummaryElementItem
         class="mb-2 last:mb-0"
         v-for="(element, index) in elements"

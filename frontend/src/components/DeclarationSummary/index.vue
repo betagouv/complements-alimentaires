@@ -30,26 +30,24 @@
     <SummaryElementList objectType="microorganism" :elements="payload.declaredMicroorganisms" />
     <SummaryElementList
       objectType="form_of_supply"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'form_of_supply')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'form_of_supply')"
     />
-    <SummaryElementList
-      objectType="aroma"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'aroma')"
-    />
+    <SummaryElementList objectType="aroma" :elements="getObjectSubTypeList(payload.declaredIngredients, 'aroma')" />
     <SummaryElementList
       objectType="additive"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'additive')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'additive')"
     />
     <SummaryElementList
       objectType="active_ingredient"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'active_ingredient')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'active_ingredient')"
     />
     <SummaryElementList
       objectType="non_active_ingredient"
-      :elements="payload.declaredIngredients.filter((obj) => obj.element.objectType == 'non_active_ingredient')"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'non_active_ingredient')"
     />
     <SummaryElementList objectType="substance" :elements="payload.declaredSubstances" />
 
+    <p class="font-bold mt-8">Substances contenues dans la composition :</p>
     <SubstancesTable v-model="payload" readonly />
 
     <h3 class="fr-h6 !mt-8">
@@ -79,6 +77,7 @@ export default { name: "DeclarationSummary" }
 </script>
 
 <script setup>
+import { getObjectSubTypeList } from "@/utils/elements"
 import { computed } from "vue"
 import AddressLine from "@/components/AddressLine"
 import SummaryInfoSegment from "./SummaryInfoSegment"
