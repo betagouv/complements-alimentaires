@@ -23,8 +23,7 @@ class CertificateView(GenericAPIView):
     def get(self, request, *args, **kwargs):
         declaration = self.get_object()
         template = get_template(self.get_template_path(declaration))
-        context = {}
-        html = template.render(context)
+        html = template.render(self.get_context(declaration))
 
         response = HttpResponse(content_type="application/pdf")
         filename = self.get_pdf_file_name(declaration)
@@ -39,19 +38,52 @@ class CertificateView(GenericAPIView):
 
     def get_template_path(self, declaration):
         status = Declaration.DeclarationStatus
+        article = 15  # TODO: une fois la distinction faite, il faudra màj cette variable
         if declaration.status in [
             status.AWAITING_INSTRUCTION,
             status.AWAITING_VISA,
             status.ONGOING_INSTRUCTION,
             status.ONGOING_VISA,
         ]:
-            return "certificates/certificate-submitted.html"
+            return f"certificates/certificate-submitted-art-{article}.html"
         if declaration.status in [status.AUTHORIZED, status.WITHDRAWN]:
-            return "certificates/certificate-art-15.html"  # TODO : logic for art 15 / 16
+            return f"certificates/certificate-art-{article}.html"  # TODO : logic for art 15 / 16
         if declaration.status == status.REJECTED:
             return "certificates/certificate-rejected.html"
 
         raise NotFound()
+
+    def get_context(self, declaration):
+        status = Declaration.DeclarationStatus
+        date_statuses = [status.AWAITING_INSTRUCTION, status.AUTHORIZED, status.REJECTED]
+
+        try:
+            date = declaration.snapshots.filter(status__in=date_statuses).latest("creation_date").creation_date
+        except Exception as e:
+            logger.error(f"Error obtaining certificate date for declaration {declaration.id}")
+            logger.exception(e)
+            date = declaration.creation_date
+
+        try:
+            last_submission_date = (
+                declaration.snapshots.filter(status=status.AWAITING_INSTRUCTION).latest("creation_date").creation_date
+            )
+        except Exception as e:
+            logger.error(f"Error obtaining last submission date for declaration {declaration.id}")
+            logger.exception(e)
+            last_submission_date = declaration.creation_date
+
+        return {
+            "date": date,
+            "last_submission_date": last_submission_date,
+            "include_recipient_address": declaration.status == Declaration.DeclarationStatus.REJECTED,
+            "recipient_lines": [
+                declaration.company.social_name,
+                declaration.company.address,
+                f"{declaration.company.city} {declaration.company.country}",
+            ],
+            "declaration": declaration,
+        }
 
     def get_pdf_file_name(self, declaration):
         return f"attestation-{declaration.name}.pdf"

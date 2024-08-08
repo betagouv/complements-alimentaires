@@ -13,7 +13,7 @@
     </div>
 
     <div v-else class="mb-4">
-      <DeclarationAlert v-if="payload" role="instructor" :declaration="payload" />
+      <DeclarationAlert v-if="payload" role="declarant" :declaration="payload" />
 
       <StatusChangeErrorDisplay class="mb-8" :errors="statusChangeErrors" :tabTitles="titles" />
       <DsfrTabs
