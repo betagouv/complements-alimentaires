@@ -21,7 +21,7 @@
         <p>Vous pouvez vous assigner cette déclaration pour visa / signature</p>
         <DsfrButton class="mt-2" label="Prendre pour validation" tertiary @click="takeDeclaration" />
       </DsfrAlert>
-      <DeclarationAlert class="mb-4" v-else-if="!canInstruct" :status="declaration.status" />
+      <DeclarationAlert role="visor" class="mb-4" v-else :declaration="declaration" />
       <div v-if="declaration">
         <DeclarationSummary :readonly="true" v-model="declaration" v-if="isAwaitingVisa" />
 

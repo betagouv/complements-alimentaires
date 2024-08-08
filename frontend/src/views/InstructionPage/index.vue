@@ -25,7 +25,7 @@
         <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
         <DsfrButton class="mt-2" label="Instruire" tertiary @click="instructDeclaration" />
       </DsfrAlert>
-      <DeclarationAlert class="mb-4" v-else-if="!canInstruct" :status="declaration.status" />
+      <DeclarationAlert class="mb-6" v-else-if="!canInstruct" role="instructor" :declaration="declaration" />
       <div v-if="declaration">
         <DeclarationSummary :readonly="true" v-model="declaration" v-if="isAwaitingInstruction" />
 
