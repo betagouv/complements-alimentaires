@@ -41,9 +41,9 @@ const shownErrors = computed(() => {
   const errorObject = Object.keys(tabSections).map((key) => {
     return {
       tab: key,
-      errors: fieldErrors
-        .filter((x) => tabSections[key]?.indexOf(Object.keys(x)[0]) > -1)
-        .map((x) => Object.values(x)?.[0]),
+      errors: fieldErrors.filter
+        ? fieldErrors.filter((x) => tabSections[key]?.indexOf(Object.keys(x)[0]) > -1).map((x) => Object.values(x)?.[0])
+        : [],
     }
   })
 
@@ -62,9 +62,10 @@ const shownErrors = computed(() => {
       errorObject.find((x) => x.tab === "Composition")?.errors?.push(compositionErrors[i])
 
   // Les autres erreurs non-liées à des champs vont dans l'apparté « Autres »
-  errorObject
-    .find((x) => x.tab === "Autres")
-    ?.errors?.push(...nonFieldErrors.filter((x) => compositionErrors.indexOf(x) === -1))
+  if (nonFieldErrors && nonFieldErrors.length)
+    errorObject
+      .find((x) => x.tab === "Autres")
+      ?.errors?.push(...nonFieldErrors.filter((x) => compositionErrors.indexOf(x) === -1))
 
   // On montre seulement les appartés qui ont au moins une erreur
   return errorObject.filter((x) => x.errors.length > 0)
