@@ -3,7 +3,7 @@
     <p v-if="displayData.body">{{ displayData.body }}</p>
     <DsfrButton v-if="displayData.canDownloadCertificate" icon="ri-file-text-line" class="mt-2" secondary>
       <a :href="`/declarations/${declaration.id}/certificate`" target="_blank" rel="noopener noreferrer">
-        Télécharger l'attestation
+        {{ displayData.downloadButtonText || "Télécharger l'attestation" }}
       </a>
     </DsfrButton>
   </DsfrAlert>
@@ -34,30 +34,30 @@ const declarantDisplayData = computed(() => {
     case "AWAITING_INSTRUCTION":
       return {
         type: "info",
-        title: "Accusé d'enregistrement",
-        body: "Votre dossier sera traité dans les meilleurs délais",
+        title: "Votre dossier est en attente",
         canDownloadCertificate: true,
+        downloadButtonText: "Accusé d'enregistrement",
       }
     case "ONGOING_INSTRUCTION":
       return {
         type: "info",
-        title: "Accusé d'enregistrement",
-        body: "Votre dossier sera traité dans les meilleurs délais",
+        title: "Votre dossier est en attente",
         canDownloadCertificate: true,
+        downloadButtonText: "Accusé d'enregistrement",
       }
     case "AWAITING_VISA":
       return {
         type: "info",
-        title: "Accusé d'enregistrement",
-        body: "Votre dossier sera traité dans les meilleurs délais",
+        title: "Votre dossier est en attente",
         canDownloadCertificate: true,
+        downloadButtonText: "Accusé d'enregistrement",
       }
     case "ONGOING_VISA":
       return {
         type: "info",
-        title: "Accusé d'enregistrement",
-        body: "Votre dossier sera traité dans les meilleurs délais",
+        title: "Votre dossier est en attente",
         canDownloadCertificate: true,
+        downloadButtonText: "Accusé d'enregistrement",
       }
     case "OBJECTION":
       return {

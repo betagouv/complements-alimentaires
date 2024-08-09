@@ -8,14 +8,19 @@
     <p>
         La Direction générale de l'alimentation (DGAL) atteste que
         <span style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
-            {{ declaration.company.social_name }}
+            {% if declaration.company %}{{ declaration.company.social_name }}{% endif %}
         </span>
         a effectué, le {{ last_submission_date|date:"l j F Y" }}, la déclaration mentionnée à l’article 15 du décret
         n°2006-352 du 20 mars 2006 relatif aux compléments alimentaires pour le produit :
     </p>
     <p style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
-        {{ declaration.name }}<br />
-        {{ declaration.description }}<br />
+        {{ declaration.name }}
+        {% if declaration.galenic_formulation %}
+        <br />{{ declaration.galenic_formulation.name }}
+        {% endif %}
+        {% if declaration.company %}
+        <br />{{ declaration.company.social_name }}
+        {% endif %}
     </p>
     <p>
         Cette déclaration, acceptée, est enregistrée sous le numéro
@@ -34,7 +39,7 @@
     </p>
     <p style="font-family: 'Marianne-Bold'; font-weight: bold;">
         Cette attestation ne constitue donc pas une garantie de conformité aux dispositions en
-        vigueur ni une autorisation de mise sur le marché..
+        vigueur ni une autorisation de mise sur le marché.
     </p>
     <p>
         Conformément aux dispositions de l’article 17 du règlement (CE) n° 178/2002 établissant les principes généraux
