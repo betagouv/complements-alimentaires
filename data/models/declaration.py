@@ -179,6 +179,10 @@ class Declaration(Historisable, TimeStampable):
         camelized_bytes = CamelCaseJSONRenderer().render(serialized_data)
         return json.loads(camelized_bytes.decode("utf-8"))
 
+    @property
+    def producer_url(self):
+        return f"{'https' if settings.SECURE else 'http'}://{settings.HOSTNAME}/mes-declarations/{self.id}"
+
     def __str__(self):
         return f"Déclaration « {self.name} »"
 
