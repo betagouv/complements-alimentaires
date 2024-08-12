@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
@@ -209,6 +210,18 @@ class Declaration(Historisable, TimeStampable):
             "DECLARATION_ID": self.id,
             "EXPIRATION_DAYS": expiration_days,
         }
+
+    @property
+    def expiration_date(self):
+        expirable_statuses = [Declaration.DeclarationStatus.OBJECTION, Declaration.DeclarationStatus.OBSERVATION]
+        if self.status not in expirable_statuses:
+            return None
+        try:
+            latest_snapshot = self.snapshots.latest("creation_date")
+            expiration_date = latest_snapshot.creation_date + timedelta(days=latest_snapshot.expiration_days)
+            return expiration_date
+        except Exception as _:
+            return None
 
     def __str__(self):
         return f"Déclaration « {self.name} »"
