@@ -183,6 +183,32 @@ class Declaration(Historisable, TimeStampable):
     def producer_url(self):
         return f"{'https' if settings.SECURE else 'http'}://{settings.HOSTNAME}/mes-declarations/{self.id}"
 
+    @property
+    def brevo_parameters(self):
+        """
+        Dictionnaire utilisé dans les différentes communications emails avec
+        l'API Brevo
+        """
+        try:
+            expiration_days = (
+                self.snapshots.filter(
+                    status__in=[
+                        Declaration.DeclarationStatus.OBSERVATION,
+                        Declaration.DeclarationStatus.OBJECTION,
+                    ]
+                )
+                .latest("creation_date")
+                .expiration_days
+            )
+        except Exception as _:
+            expiration_days = ""
+        return {
+            "PRODUCT_NAME": self.name,
+            "COMPANY_NAME": self.company.social_name if self.company else "",
+            "DECLARATION_LINK": self.producer_url,
+            "EXPIRATION_DAYS": expiration_days,
+        }
+
     def __str__(self):
         return f"Déclaration « {self.name} »"
 

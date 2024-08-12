@@ -67,14 +67,6 @@ class ExpirationDeclarationFlow:
             raise EarlyExpirationError()
 
 
-def get_brevo_parameters(declaration):
-    return {
-        "PRODUCT_NAME": declaration.name,
-        "COMPANY_NAME": declaration.company.social_name if declaration.company else "",
-        "DECLARATION_LINK": declaration.producer_url,
-    }
-
-
 @app.task
 def expire_declarations():
     declarations = Declaration.objects.filter(status__in=allowed_statuses)
@@ -86,7 +78,7 @@ def expire_declarations():
             if declaration.author:
                 email.send_sib_template(
                     brevo_template_id,
-                    get_brevo_parameters(declaration),
+                    declaration.brevo_parameters,
                     declaration.author.email,
                     declaration.author.get_full_name(),
                 )
