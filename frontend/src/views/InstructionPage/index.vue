@@ -14,10 +14,10 @@
     <div v-else>
       <DsfrAlert
         class="mb-4"
-        v-if="isAwaitingInstruction && declaration.instructor.id !== loggedUser.id"
+        v-if="isAwaitingInstruction && declaration.instructor?.id !== loggedUser.id"
         type="info"
         :title="
-          declaration.instructor && declaration.instructor.firstName
+          declaration.instructor?.firstName
             ? `Cette déclaration est assignée à ${declaration.instructor.firstName} ${declaration.instructor.lastName}`
             : 'Cette déclaration n\'est pas encore assignée'
         "
