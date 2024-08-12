@@ -30,6 +30,13 @@ from .utils import authenticate
 @override_settings(CONTACT_EMAIL="contact@example.com")
 @mock.patch("config.email.send_sib_template")
 class TestDeclarationFlow(APITestCase):
+    def get_test_brevo_params(self, declaration):
+        return {
+            "PRODUCT_NAME": declaration.name,
+            "COMPANY_NAME": declaration.company.social_name if declaration.company else "",
+            "DECLARATION_LINK": declaration.producer_url,
+        }
+
     @authenticate
     def test_submit_declaration(self, mocked_brevo):
         """
@@ -43,7 +50,10 @@ class TestDeclarationFlow(APITestCase):
         self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
 
         mocked_brevo.assert_called_once_with(
-            template_number, None, authenticate.user.email, authenticate.user.get_full_name()
+            template_number,
+            self.get_test_brevo_params(declaration),
+            authenticate.user.email,
+            authenticate.user.get_full_name(),
         )
 
     @authenticate
@@ -58,7 +68,10 @@ class TestDeclarationFlow(APITestCase):
         self.client.post(reverse("api:observe_no_visa", kwargs={"pk": declaration.id}), format="json")
 
         mocked_brevo.assert_called_once_with(
-            template_number, None, authenticate.user.email, authenticate.user.get_full_name()
+            template_number,
+            self.get_test_brevo_params(declaration),
+            authenticate.user.email,
+            authenticate.user.get_full_name(),
         )
 
     @authenticate
@@ -73,7 +86,10 @@ class TestDeclarationFlow(APITestCase):
         self.client.post(reverse("api:authorize_no_visa", kwargs={"pk": declaration.id}), format="json")
 
         mocked_brevo.assert_called_once_with(
-            template_number, None, authenticate.user.email, authenticate.user.get_full_name()
+            template_number,
+            self.get_test_brevo_params(declaration),
+            authenticate.user.email,
+            authenticate.user.get_full_name(),
         )
 
     @authenticate
@@ -106,7 +122,10 @@ class TestDeclarationFlow(APITestCase):
         self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), format="json")
 
         mocked_brevo.assert_called_once_with(
-            template_number, None, authenticate.user.email, authenticate.user.get_full_name()
+            template_number,
+            self.get_test_brevo_params(declaration),
+            authenticate.user.email,
+            authenticate.user.get_full_name(),
         )
 
     @authenticate
@@ -126,7 +145,10 @@ class TestDeclarationFlow(APITestCase):
         self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), format="json")
 
         mocked_brevo.assert_called_once_with(
-            template_number, None, authenticate.user.email, authenticate.user.get_full_name()
+            template_number,
+            self.get_test_brevo_params(declaration),
+            authenticate.user.email,
+            authenticate.user.get_full_name(),
         )
 
     @authenticate
@@ -146,7 +168,10 @@ class TestDeclarationFlow(APITestCase):
         self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), format="json")
 
         mocked_brevo.assert_called_once_with(
-            template_number, None, authenticate.user.email, authenticate.user.get_full_name()
+            template_number,
+            self.get_test_brevo_params(declaration),
+            authenticate.user.email,
+            authenticate.user.get_full_name(),
         )
 
     @authenticate
@@ -166,7 +191,10 @@ class TestDeclarationFlow(APITestCase):
         self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), format="json")
 
         mocked_brevo.assert_called_once_with(
-            template_number, None, authenticate.user.email, authenticate.user.get_full_name()
+            template_number,
+            self.get_test_brevo_params(declaration),
+            authenticate.user.email,
+            authenticate.user.get_full_name(),
         )
 
     @authenticate
@@ -180,7 +208,10 @@ class TestDeclarationFlow(APITestCase):
         self.client.post(reverse("api:withdraw", kwargs={"pk": declaration.id}), format="json")
 
         mocked_brevo.assert_called_once_with(
-            template_number, None, authenticate.user.email, authenticate.user.get_full_name()
+            template_number,
+            self.get_test_brevo_params(declaration),
+            authenticate.user.email,
+            authenticate.user.get_full_name(),
         )
 
     def test_expire_observed_declaration(self, mocked_brevo):
@@ -201,7 +232,10 @@ class TestDeclarationFlow(APITestCase):
         tasks.expire_declarations()
 
         mocked_brevo.assert_called_once_with(
-            template_number, None, observed_declaration.author.email, observed_declaration.author.get_full_name()
+            template_number,
+            self.get_test_brevo_params(observed_declaration),
+            observed_declaration.author.email,
+            observed_declaration.author.get_full_name(),
         )
 
     def test_expire_objected_declaration(self, mocked_brevo):
@@ -222,5 +256,8 @@ class TestDeclarationFlow(APITestCase):
         tasks.expire_declarations()
 
         mocked_brevo.assert_called_once_with(
-            template_number, None, objected_declaration.author.email, objected_declaration.author.get_full_name()
+            template_number,
+            self.get_test_brevo_params(objected_declaration),
+            objected_declaration.author.email,
+            objected_declaration.author.get_full_name(),
         )
