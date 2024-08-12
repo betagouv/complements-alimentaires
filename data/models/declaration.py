@@ -206,6 +206,7 @@ class Declaration(Historisable, TimeStampable):
             "PRODUCT_NAME": self.name,
             "COMPANY_NAME": self.company.social_name if self.company else "",
             "DECLARATION_LINK": self.producer_url,
+            "DECLARATION_ID": self.id,
             "EXPIRATION_DAYS": expiration_days,
         }
 
