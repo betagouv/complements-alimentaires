@@ -213,11 +213,20 @@ class Declaration(Historisable, TimeStampable):
 
     @property
     def expiration_date(self):
-        expirable_statuses = [Declaration.DeclarationStatus.OBJECTION, Declaration.DeclarationStatus.OBSERVATION]
+        expirable_statuses = [
+            Declaration.DeclarationStatus.OBJECTION,
+            Declaration.DeclarationStatus.OBSERVATION,
+            Declaration.DeclarationStatus.ABANDONED,
+        ]
         if self.status not in expirable_statuses:
             return None
         try:
-            latest_snapshot = self.snapshots.latest("creation_date")
+            latest_snapshot = self.snapshots.filter(
+                status__in=[
+                    Declaration.DeclarationStatus.OBJECTION,
+                    Declaration.DeclarationStatus.OBSERVATION,
+                ]
+            ).latest("creation_date")
             expiration_date = latest_snapshot.creation_date + timedelta(days=latest_snapshot.expiration_days)
             return expiration_date
         except Exception as _:
