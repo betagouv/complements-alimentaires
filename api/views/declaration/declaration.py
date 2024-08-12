@@ -215,7 +215,11 @@ class DeclarationFlowView(GenericAPIView):
         """
         À surcharger en cas des paramètres spéciaux à envoyer à Brevo
         """
-        return None
+        return {
+            "PRODUCT_NAME": declaration.name,
+            "COMPANY_NAME": declaration.company.social_name if declaration.company else "",
+            "DECLARATION_LINK": declaration.producer_url,
+        }
 
     def get_transition(self, request, declaration):
         """
