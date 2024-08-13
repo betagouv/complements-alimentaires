@@ -8,6 +8,8 @@ from rest_framework.test import APITestCase
 
 from data.choices import AuthorizationModes, CountryChoices, FrAuthorizationReasons
 from data.factories import (
+    AwaitingInstructionDeclarationFactory,
+    AwaitingVisaDeclarationFactory,
     CompanyFactory,
     ConditionFactory,
     DeclarantRoleFactory,
@@ -802,6 +804,53 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(results[0]["id"], emma_declaration.id)
 
     @authenticate
+    def test_filter_instructor_not_assigned(self):
+        """
+        Les déclarations peuvent être filtrées par celles qui n'ont pas encore d'instructrice
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        emma = InstructionRoleFactory()
+        edouard = InstructionRoleFactory()
+        stephane = InstructionRoleFactory()
+
+        OngoingInstructionDeclarationFactory(instructor=emma)
+        OngoingInstructionDeclarationFactory(instructor=edouard)
+        OngoingInstructionDeclarationFactory(instructor=stephane)
+        declaration = AwaitingInstructionDeclarationFactory()
+
+        unassigned_filter_url = f"{reverse('api:list_all_declarations')}?instructor=None"
+        response = self.client.get(unassigned_filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
+    def test_filter_instructor_not_assigned_and_assigned(self):
+        """
+        Les déclarations peuvent être filtrées par celles qui n'ont pas encore d'instructrice
+        et par une instructrice en particulier en même temps
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        emma = InstructionRoleFactory()
+        edouard = InstructionRoleFactory()
+        stephane = InstructionRoleFactory()
+
+        emma_declaration = OngoingInstructionDeclarationFactory(instructor=emma)
+        OngoingInstructionDeclarationFactory(instructor=edouard)
+        OngoingInstructionDeclarationFactory(instructor=stephane)
+        unassigned_declaration = AwaitingInstructionDeclarationFactory()
+
+        filter_url = f"{reverse('api:list_all_declarations')}?instructor=None,{emma.id}"
+        response = self.client.get(filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+
+        self.assertIsNotNone(next(filter(lambda x: x["id"] == emma_declaration.id, results), None))
+        self.assertIsNotNone(next(filter(lambda x: x["id"] == unassigned_declaration.id, results), None))
+
+    @authenticate
     def test_filter_visor_all_declarations(self):
         """
         Les déclarations peuvent être filtrées par viseuse
@@ -821,6 +870,53 @@ class TestDeclarationApi(APITestCase):
         results = response.json()["results"]
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["id"], emma_declaration.id)
+
+    @authenticate
+    def test_filter_visor_not_assigned(self):
+        """
+        Les déclarations peuvent être filtrées par celles qui n'ont pas encore de viseuse
+        """
+        VisaRoleFactory(user=authenticate.user)
+
+        emma = VisaRoleFactory()
+        edouard = VisaRoleFactory()
+        stephane = VisaRoleFactory()
+
+        OngoingInstructionDeclarationFactory(visor=emma)
+        OngoingInstructionDeclarationFactory(visor=edouard)
+        OngoingInstructionDeclarationFactory(visor=stephane)
+        declaration = AwaitingVisaDeclarationFactory()
+
+        unassigned_filter_url = f"{reverse('api:list_all_declarations')}?visor=None"
+        response = self.client.get(unassigned_filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
+    def test_filter_visor_not_assigned_and_assigned(self):
+        """
+        Les déclarations peuvent être filtrées par celles qui n'ont pas encore d'instructrice
+        et par une instructrice en particulier en même temps
+        """
+        VisaRoleFactory(user=authenticate.user)
+
+        emma = VisaRoleFactory()
+        edouard = VisaRoleFactory()
+        stephane = VisaRoleFactory()
+
+        emma_declaration = OngoingInstructionDeclarationFactory(visor=emma)
+        OngoingInstructionDeclarationFactory(visor=edouard)
+        OngoingInstructionDeclarationFactory(visor=stephane)
+        unassigned_declaration = AwaitingVisaDeclarationFactory()
+
+        filter_url = f"{reverse('api:list_all_declarations')}?visor=None,{emma.id}"
+        response = self.client.get(filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+
+        self.assertIsNotNone(next(filter(lambda x: x["id"] == emma_declaration.id, results), None))
+        self.assertIsNotNone(next(filter(lambda x: x["id"] == unassigned_declaration.id, results), None))
 
     @authenticate
     def test_filter_company_all_declarations(self):

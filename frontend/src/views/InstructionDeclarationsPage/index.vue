@@ -83,7 +83,8 @@ const limit = 10
 const pages = computed(() => getPagesForPagination(data.value?.count, limit, route.path))
 const allInstructors = computed(() => data.value?.instructors)
 const instructorSelectOptions = computed(() => {
-  const availableInstructors = allInstructors.value?.map((x) => ({ value: x.id, text: x.name })) || []
+  const availableInstructors = allInstructors.value?.map((x) => ({ value: "" + x.id, text: x.name })) || []
+  availableInstructors.unshift({ value: "None", text: "Déclarations non assignées" })
   availableInstructors.unshift({ value: "", text: "Toutes les déclarations" })
   return availableInstructors
 })
@@ -93,9 +94,7 @@ const page = computed(() => parseInt(route.query.page))
 const filteredStatus = computed(() => route.query.status)
 const companyNameStart = computed(() => route.query.entrepriseDe)
 const companyNameEnd = computed(() => route.query.entrepriseA)
-const assignedInstructor = computed(() =>
-  route.query.personneAssignée === "" ? "" : parseInt(route.query.personneAssignée)
-)
+const assignedInstructor = computed(() => route.query.personneAssignée)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 

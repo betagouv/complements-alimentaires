@@ -11,6 +11,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from unidecode import unidecode
 
+from api.exceptions import ProjectAPIException
 from api.permissions import (
     CanAccessIndividualDeclaration,
     CanAccessUserDeclatarions,
@@ -42,8 +43,8 @@ class DeclarationPagination(LimitOffsetPagination):
 
 class DeclarationFilterSet(django_filters.FilterSet):
     author = BaseNumberInFilter(field_name="author__id")
-    instructor = BaseNumberInFilter(field_name="instructor__id")
-    visor = BaseNumberInFilter(field_name="visor__id")
+    instructor = django_filters.CharFilter(method="nullable_instructor")
+    visor = django_filters.CharFilter(method="nullable_visor")
     company = BaseNumberInFilter(field_name="company__id")
     company_name_start = django_filters.CharFilter(method="company_name_start__gte")
     company_name_end = django_filters.CharFilter(method="company_name_end__lte")
@@ -60,6 +61,48 @@ class DeclarationFilterSet(django_filters.FilterSet):
             "company_name_start",
             "company_name_end",
         ]
+
+    def nullable_instructor(self, queryset, value, *args, **kwargs):
+        empty_term = "None"
+        filter_values = args[0].split(",")
+
+        if not filter_values:
+            return queryset
+
+        unassigned_declarations = (
+            queryset.filter(instructor__isnull=True) if empty_term in filter_values else Declaration.objects.none()
+        )
+
+        try:
+            declaration_ids = [int(x.strip()) for x in filter_values if x != empty_term]
+        except Exception as _:
+            raise ProjectAPIException(global_error="Vérifier votre filtre instructeur")
+        filtered_declarations = (
+            queryset.filter(instructor__id__in=declaration_ids) if declaration_ids else Declaration.objects.none()
+        )
+
+        return unassigned_declarations.union(filtered_declarations)
+
+    def nullable_visor(self, queryset, value, *args, **kwargs):
+        empty_term = "None"
+        filter_values = args[0].split(",")
+
+        if not filter_values:
+            return queryset
+
+        unassigned_declarations = (
+            queryset.filter(visor__isnull=True) if empty_term in filter_values else Declaration.objects.none()
+        )
+
+        try:
+            declaration_ids = [int(x.strip()) for x in filter_values if x != empty_term]
+        except Exception as _:
+            raise ProjectAPIException(global_error="Vérifier votre filtre viseur")
+        filtered_declarations = (
+            queryset.filter(visor__id__in=declaration_ids) if declaration_ids else Declaration.objects.none()
+        )
+
+        return unassigned_declarations.union(filtered_declarations)
 
     def company_name_start__gte(self, queryset, value, *args, **kwargs):
         return self._annotate_queryset(queryset).filter(name_unaccented_lower__gte=args[0].lower())
