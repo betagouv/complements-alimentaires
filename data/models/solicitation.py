@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from urllib.parse import urljoin
 
 from django.apps import apps
@@ -12,6 +13,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from api.utils.urls import get_base_url
+from config import email
 from data.utils.type_utils import all_true_or_all_false
 
 from ..behaviours import AutoValidable, TimeStampable
@@ -19,6 +21,8 @@ from ..fields import MultipleChoiceField
 from .company import Company, CompanyRoleClassChoices
 
 User = get_user_model()
+
+logger = logging.getLogger(__name__)
 
 
 def processable_action(func):
@@ -133,49 +137,88 @@ class SupervisionClaim(BaseSolicitation, models.Model):
         )
 
 
-class CoSupervisionClaim(BaseSolicitation, models.Model):
-    """Utilisateur existant qui demande les droits de gestionnaire pour une entreprise qui a déjà des gestionnaires."""
+class CompanyAccessClaim(BaseSolicitation, models.Model):
+    """Utilisateur existant qui demande accès (gestionnaire ou déclarant)
+    pour une entreprise qui a déjà des gestionnaires."""
 
     class Meta:
-        verbose_name = "demande de co-gestion"
-        verbose_name_plural = "demandes de co-gestion"
+        verbose_name = "demande d'accès à une entreprise"
+        verbose_name_plural = "demandes d'accès à une entreprise"
 
     recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, verbose_name="destinataires")
     company = models.ForeignKey(Company, verbose_name=Company._meta.verbose_name, on_delete=models.CASCADE)
+    declarant_role = models.BooleanField(default=False, verbose_name="demande de rôle déclarant")
+    supervisor_role = models.BooleanField(default=False, verbose_name="demande de rôle gestionnaire")
 
     @property
     def description(self):
-        return f"{self.sender.name} a demandé à devenir co-gestionnaire de l'entreprise {self.company.social_name}."
+        role_string = ""
+        if self.declarant_role and self.supervisor_role:
+            role_string = "pour les rôles déclarant et gestionnaire."
+        elif self.declarant_role:
+            role_string = "pour le rôle déclarant."
+        elif self.supervisor_role:
+            role_string = "pour le rôle gestionnaire."
+        return f"Demande d'accès à la compagnie {self.company.social_name} {role_string}"
 
     def create_hook(self):
         recipients = self.company.supervisors.all()
         self.recipients.set(recipients)
-        send_mail(
-            subject="[Compl'Alim] Nouvelle demande de co-gestion",
-            message=f"{self.description} {self.personal_message_for_mail} Veuillez vous rendre sur la plateforme (section : gestion des collaborateurs) pour traiter cette demande.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=recipients.values_list("email", flat=True),
-        )
+        brevo_template_id = 12
+        for recipient in self.recipients.all():
+            try:
+                email.send_sib_template(
+                    brevo_template_id,
+                    {
+                        "REQUESTER_NAME": self.sender.get_full_name(),
+                        "COMPANY_NAME": self.company.social_name,
+                        "REQUEST_LINK": f"{'https' if settings.SECURE else 'http'}://{settings.HOSTNAME}/gestion-des-collaborateurs/{self.company.id}",
+                    },
+                    recipient.email,
+                    recipient.get_full_name(),
+                )
+            except Exception as e:
+                logger.error(f"Email not sent on CompanyAccessClaim creation with id {self.id}")
+                logger.exception(e)
 
     @processable_action
     def accept(self, processor):
-        self.company.supervisors.add(self.sender)
-        login_page_url = urljoin(get_base_url(), "connexion")
-        send_mail(
-            subject="[Compl'Alim] Votre demande de co-gestion a été acceptée",
-            message=f"{processor.name} a accepté que vous deveniez gestionnaire de {self.company.social_name}. Vous pouvez <a href='{login_page_url}'>vous connecter</a> à la plateforme.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[self.sender.email],
-        )
+        if self.supervisor_role:
+            self.company.supervisors.add(self.sender)
+        if self.declarant_role:
+            self.company.declarants.add(self.sender)
+
+        brevo_template_id = 13
+        try:
+            email.send_sib_template(
+                brevo_template_id,
+                {
+                    "REQUESTER_NAME": self.sender.get_full_name(),
+                    "COMPANY_NAME": self.company.social_name,
+                    "DASHBOARD_LINK": f"{'https' if settings.SECURE else 'http'}://{settings.HOSTNAME}/tableau-de-bord?company={self.company.id}",
+                },
+                self.sender.email,
+                self.sender.get_full_name(),
+            )
+        except Exception as e:
+            logger.error(f"Email not sent on CompanyAccessClaim accept action with id {self.id}")
+            logger.exception(e)
 
     @processable_action
     def refuse(self, processor):
-        send_mail(
-            subject="[Compl'Alim] Votre demande de co-gestion a été refusée",
-            message=f"{processor.name} a refusé que vous deveniez gestionnaire de {self.company.social_name}. Contactez directement cette personne pour en savoir plus.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[self.sender.email],
-        )
+        brevo_template_id = 14
+        try:
+            email.send_sib_template(
+                brevo_template_id,
+                {
+                    "COMPANY_NAME": self.company.social_name,
+                },
+                self.sender.email,
+                self.sender.get_full_name(),
+            )
+        except Exception as e:
+            logger.error(f"Email not sent on CompanyAccessClaim refuse action with id {self.id}")
+            logger.exception(e)
 
 
 class CollaborationInvitation(BaseSolicitation, models.Model):

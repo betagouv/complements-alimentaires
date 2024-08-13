@@ -29,7 +29,7 @@ const {
   response,
   execute,
 } = useFetch(
-  `/api/v1/companies/${props.companyId}/co-supervision-claims/`,
+  `/api/v1/companies/${props.companyId}/company-access-claims/`,
   {
     headers: headers(),
   },
@@ -42,7 +42,7 @@ onMounted(async () => {
 })
 
 const process = async (solicitationId, actionName) => {
-  const url = `/api/v1/co-supervision-claims/${solicitationId}/process/`
+  const url = `/api/v1/company-access-claims/${solicitationId}/process/`
   const { response } = await useFetch(url, { headers: headers() }).post({ actionName: actionName }).json()
   await handleError(response)
   if (response.value.ok) {

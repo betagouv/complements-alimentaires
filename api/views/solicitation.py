@@ -11,11 +11,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from data.models import CollaborationInvitation, Company, CoSupervisionClaim
+from data.models import CollaborationInvitation, Company, CompanyAccessClaim
 
 from ..exception_handling import ProjectAPIException
 from ..permissions import IsSolicitationRecipient, IsSupervisor
-from ..serializers import AddNewCollaboratorSerializer, CollaborationInvitationSerializer, CoSupervisionClaimSerializer
+from ..serializers import AddNewCollaboratorSerializer, CollaborationInvitationSerializer, CompanyAccessClaimSerializer
 
 User = get_user_model()
 
@@ -31,22 +31,22 @@ class CollaborationInvitationListView(ListAPIView):
         return CollaborationInvitation.objects.filter(company=company, processor__isnull=True)
 
 
-class CoSupervisionClaimListView(ListAPIView):
-    serializer_class = CoSupervisionClaimSerializer
+class CompanyAccessClaimListView(ListAPIView):
+    serializer_class = CompanyAccessClaimSerializer
 
     def get_queryset(self):
         user = self.request.user
         company = get_object_or_404(Company.objects.filter(supervisors=user), pk=self.kwargs["pk"])
-        return CoSupervisionClaim.objects.filter(recipients=user, company=company, processor__isnull=True)
+        return CompanyAccessClaim.objects.filter(recipients=user, company=company, processor__isnull=True)
 
 
-class ProcessCoSupervisionClaim(APIView):
-    """Effectue une action de traitement sur une demande de co-gestion"""
+class ProcessCompanyAccessClaim(APIView):
+    """Effectue une action de traitement sur une demande d'accès'"""
 
     permission_classes = [IsSolicitationRecipient]
 
     def post(self, request, pk: int, *args, **kwargs):
-        solicitation = get_object_or_404(CoSupervisionClaim, pk=pk)
+        solicitation = get_object_or_404(CompanyAccessClaim, pk=pk)
         self.check_object_permissions(request, solicitation)
         action = getattr(solicitation, request.data.get("action_name", ""), None)
         if action:

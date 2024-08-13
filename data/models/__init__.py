@@ -24,7 +24,7 @@ from .declaration import (
     ComputedSubstance,
     Attachment,
 )
-from .solicitation import SupervisionClaim, CoSupervisionClaim, CollaborationInvitation
+from .solicitation import SupervisionClaim, CompanyAccessClaim, CollaborationInvitation
 from .snapshot import Snapshot
 
 ELEMENT_MODELS = [

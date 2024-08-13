@@ -2,7 +2,7 @@ import random
 
 import factory
 
-from data.models import CollaborationInvitation, CoSupervisionClaim, SupervisionClaim
+from data.models import CollaborationInvitation, CompanyAccessClaim, SupervisionClaim
 from data.models.company import CompanyRoleClassChoices
 
 from .company import CompanyFactory, SupervisorRoleFactory
@@ -36,11 +36,14 @@ class SupervisionClaimFactory(BaseSolicitationFactory):
                 self.recipients.add(UserFactory(is_staff=True))
 
 
-class CoSupervisionClaimFactory(BaseSolicitationFactory):
+class CompanyAccessClaimFactory(BaseSolicitationFactory):
     class Meta:
-        model = CoSupervisionClaim
+        model = CompanyAccessClaim
 
     personal_msg = "Merci d'accepter ma demande pour gérer à vos côtés."
+    declarant_role = True
+    supervisor_role = True
+
     company = factory.SubFactory(CompanyFactory)
 
     @factory.post_generation

@@ -90,7 +90,7 @@ const submitIdentifier = async () => {
         break
       case "registered_and_supervised_by_other":
         emit("changeStep", {
-          name: "Demande de co-gestion d'une entreprise existante",
+          name: "Demande d'accès à une entreprise existante",
           component: "ClaimCoSupervision",
         })
         break
