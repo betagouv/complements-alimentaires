@@ -79,6 +79,8 @@ class DeclarationFlow:
 
     @status.transition(source=Status.OBSERVATION, target=Status.ABANDONED)
     def abandon(self):
+        # Il n'est pas possible d'effectuer un abandon depuis l'API. Pour le FSM qui le prend
+        # en charge, regarder tasks.py.
         self.error()
 
     def ensure_validators(self, validators):

@@ -1,5 +1,5 @@
 import logging
-from datetime import timedelta
+from datetime import datetime, time
 
 from django.utils import timezone
 
@@ -17,7 +17,31 @@ allowed_statuses = [Status.OBJECTION, Status.OBSERVATION]
 
 @app.task
 def send_expiration_reminder():
-    pass
+    """
+    Cette tâche ne doit être effectuée qu'une seule fois par jour, car elle s'appuie sur
+    cette periodicité pour ne pas envoyer des doublons d'email
+    """
+    declarations = Declaration.objects.filter(status__in=allowed_statuses)
+    brevo_template_id = 10
+    send_days_before = 5
+    for declaration in declarations:
+        try:
+            if not declaration.expiration_date:
+                continue
+            end_of_expiration_day = timezone.make_aware(datetime.combine(declaration.expiration_date, time.max))
+            today = timezone.now()
+            delta = end_of_expiration_day - today
+            if delta.days >= send_days_before and delta.days < send_days_before + 1:
+                parameters = {**declaration.brevo_parameters, **{"REMAINING_DAYS": send_days_before}}
+                email.send_sib_template(
+                    brevo_template_id,
+                    parameters,
+                    declaration.author.email,
+                    declaration.author.get_full_name(),
+                )
+
+        except Exception as _:
+            logger.exception(f"Could not send reminder email for declaration f{declaration.id}")
 
 
 class EarlyExpirationError(Exception):
@@ -62,8 +86,7 @@ class ExpirationDeclarationFlow:
             raise Exception()
 
         today = timezone.now()
-        expiration_date = latest_snapshot.creation_date + timedelta(days=latest_snapshot.expiration_days)
-        if today < expiration_date:
+        if today < self.declaration.expiration_date:
             raise EarlyExpirationError()
 
 
