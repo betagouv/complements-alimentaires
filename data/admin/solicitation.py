@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from data.models import CollaborationInvitation, CoSupervisionClaim, SupervisionClaim
+from data.models import CollaborationInvitation, CompanyAccessClaim, SupervisionClaim
 
 
 class BaseSolicitationAdmin:
@@ -30,8 +30,8 @@ class SupervisionClaimAdmin(BaseSolicitationAdmin, WithDisplayRecipients, admin.
     pass
 
 
-@admin.register(CoSupervisionClaim)
-class CoSupervisionClaimAdmin(BaseSolicitationAdmin, WithDisplayRecipients, admin.ModelAdmin):
+@admin.register(CompanyAccessClaim)
+class CompanyAccessClaimAdmin(BaseSolicitationAdmin, WithDisplayRecipients, admin.ModelAdmin):
     pass
 
 

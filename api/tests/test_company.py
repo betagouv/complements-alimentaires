@@ -1,3 +1,7 @@
+from unittest import mock
+
+from django.test.utils import override_settings
+
 from rest_framework import status
 
 from data.factories import (
@@ -242,10 +246,17 @@ class TestAddNewCollaborator(ProjectAPITestCase):
         self.recipient_email = "jean@example.com"
         self.payload = dict(recipient_email=self.recipient_email, roles=["DeclarantRole"])
 
-    def test_add_collaborator_without_account_but_invitation_already_sent_ko(self):
-        # L'invité n'existe pas en base, mais une invitation non traitée a déjà été envoyée.
+    @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
+    @override_settings(CONTACT_EMAIL="contact@example.com")
+    @override_settings(SECURE=True)
+    @override_settings(HOSTNAME="hostname")
+    @mock.patch("config.email.send_sib_template")
+    def test_add_collaborator_without_account_but_invitation_already_sent_ko(self, mocked_brevo):
         self.login(self.adder)
         CollaborationInvitationFactory(recipient_email=self.recipient_email, company=self.company)
+        mocked_brevo.reset_mock()
+
+        # L'invité n'existe pas en base, mais une invitation non traitée a déjà été envoyée.
         response = self.post(self.url(pk=self.company.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -255,21 +266,52 @@ class TestAddNewCollaborator(ProjectAPITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_collaborator_without_account_ok(self):
+        mocked_brevo.assert_not_called()
+
+    @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
+    @override_settings(CONTACT_EMAIL="contact@example.com")
+    @override_settings(SECURE=True)
+    @override_settings(HOSTNAME="hostname")
+    @mock.patch("config.email.send_sib_template")
+    def test_add_collaborator_without_account_ok(self, mocked_brevo):
         # L'invité n'existe pas en base, et aucune invitation n'a été envoyée
         self.login(self.adder)
         response = self.post(self.url(pk=self.company.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("message", response.data)
 
-    def test_add_collaborator_already_a_collaborator_ko(self):
+        template_number = 16
+        mocked_brevo.assert_called_once_with(
+            template_number,
+            {
+                "COMPANY_NAME": self.company.social_name,
+                "SENDER_NAME": self.adder.get_full_name(),
+                "SIGNUP_LINK": f"https://hostname/inscription?email={self.recipient_email}",
+            },
+            self.recipient_email,
+            self.recipient_email,
+        )
+
+    @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
+    @override_settings(CONTACT_EMAIL="contact@example.com")
+    @override_settings(SECURE=True)
+    @override_settings(HOSTNAME="hostname")
+    @mock.patch("config.email.send_sib_template")
+    def test_add_collaborator_already_a_collaborator_ko(self, mocked_brevo):
         # L'invité existe en base et fait déjà partie des collaborateurs de l'entreprise.
         self.login(self.adder)
         DeclarantRoleFactory(user=UserFactory(email=self.recipient_email), company=self.company)
         response = self.post(self.url(pk=self.company.pk), self.payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_add_collaborator_with_account_ok(self):
+        mocked_brevo.assert_not_called()
+
+    @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
+    @override_settings(CONTACT_EMAIL="contact@example.com")
+    @override_settings(SECURE=True)
+    @override_settings(HOSTNAME="hostname")
+    @mock.patch("config.email.send_sib_template")
+    def test_add_collaborator_with_account_ok(self, mocked_brevo):
         # L'invité existe en base mais n'est pas encore collaborateur de l'entreprise.
         self.login(self.adder)
         recipient = UserFactory()
@@ -279,6 +321,18 @@ class TestAddNewCollaborator(ProjectAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("message", response.data)
         self.assertIn(recipient, self.company.collaborators)
+
+        template_number = 18
+        mocked_brevo.assert_called_once_with(
+            template_number,
+            {
+                "SENDER_NAME": self.adder.get_full_name(),
+                "COMPANY_NAME": self.company.social_name,
+                "DASHBOARD_LINK": f"https://hostname/tableau-de-bord?company={self.company.id}",
+            },
+            recipient.email,
+            recipient.get_full_name(),
+        )
 
     def test_add_collaborator_not_logged_ko(self):
         response = self.post(self.url(pk=self.company.pk), self.payload)

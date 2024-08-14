@@ -45,7 +45,7 @@ from .webinar import WebinarView
 
 from .company import (
     CheckCompanyIdentifierView,
-    ClaimCompanyCoSupervisionView,
+    ClaimCompanyAccessView,
     ClaimCompanySupervisionView,
     CompanyCreateView,
     CompanyRetrieveUpdateView,
@@ -55,8 +55,8 @@ from .company import (
     RemoveCompanyRoleView,
 )
 from .solicitation import (
-    ProcessCoSupervisionClaim,
-    CoSupervisionClaimListView,
+    ProcessCompanyAccessClaim,
+    CompanyAccessClaimListView,
     CollaborationInvitationListView,
     AddNewCollaboratorView,
 )

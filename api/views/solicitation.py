@@ -1,7 +1,7 @@
+import logging
+
 from django.apps import apps
-from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
@@ -11,13 +11,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from data.models import CollaborationInvitation, Company, CoSupervisionClaim
+from api.utils.urls import get_base_url
+from config import email
+from data.models import CollaborationInvitation, Company, CompanyAccessClaim
 
 from ..exception_handling import ProjectAPIException
 from ..permissions import IsSolicitationRecipient, IsSupervisor
-from ..serializers import AddNewCollaboratorSerializer, CollaborationInvitationSerializer, CoSupervisionClaimSerializer
+from ..serializers import AddNewCollaboratorSerializer, CollaborationInvitationSerializer, CompanyAccessClaimSerializer
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 class CollaborationInvitationListView(ListAPIView):
@@ -31,22 +34,22 @@ class CollaborationInvitationListView(ListAPIView):
         return CollaborationInvitation.objects.filter(company=company, processor__isnull=True)
 
 
-class CoSupervisionClaimListView(ListAPIView):
-    serializer_class = CoSupervisionClaimSerializer
+class CompanyAccessClaimListView(ListAPIView):
+    serializer_class = CompanyAccessClaimSerializer
 
     def get_queryset(self):
         user = self.request.user
         company = get_object_or_404(Company.objects.filter(supervisors=user), pk=self.kwargs["pk"])
-        return CoSupervisionClaim.objects.filter(recipients=user, company=company, processor__isnull=True)
+        return CompanyAccessClaim.objects.filter(recipients=user, company=company, processor__isnull=True)
 
 
-class ProcessCoSupervisionClaim(APIView):
-    """Effectue une action de traitement sur une demande de co-gestion"""
+class ProcessCompanyAccessClaim(APIView):
+    """Effectue une action de traitement sur une demande d'accès'"""
 
     permission_classes = [IsSolicitationRecipient]
 
     def post(self, request, pk: int, *args, **kwargs):
-        solicitation = get_object_or_404(CoSupervisionClaim, pk=pk)
+        solicitation = get_object_or_404(CompanyAccessClaim, pk=pk)
         self.check_object_permissions(request, solicitation)
         action = getattr(solicitation, request.data.get("action_name", ""), None)
         if action:
@@ -79,9 +82,7 @@ class AddNewCollaboratorView(APIView):
                 company=company, recipient_email=recipient_email, processed_at__isnull=True
             ).exists():
                 raise ProjectAPIException(
-                    field_errors={
-                        "recipient_email": "Une invitation a déjà été envoyée à cette adresse e-mail (peut-être par quelqu'un d'autre)."
-                    }
+                    field_errors={"recipient_email": "Une invitation a déjà été envoyée à cette adresse e-mail."}
                 )
             # Cas B : l'invité n'existe pas en base, et aucune invitation n'a été envoyée
             CollaborationInvitation.objects.create(
@@ -98,16 +99,22 @@ class AddNewCollaboratorView(APIView):
             else:
                 for role_name in roles:
                     role_class = apps.get_model("data", role_name)
-                    role_class.objects.get_or_create(
-                        company=company, user=recipient
-                    )  # le get évite une potentielle erreur
+                    role_class.objects.get_or_create(company=company, user=recipient)
 
-                send_mail(
-                    subject=f"[Compl'Alim] {sender.name} vous a ajouté en tant que collaborateur.",
-                    message=f"{sender.name} vous a ajouté en tant que collaborateur de l'entreprise {company.social_name}.",
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[recipient.email],
-                )
-                return Response(
-                    {"message": f"{recipient.name} a été ajouté à vos collaborateurs. Un e-mail lui a été envoyé."}
-                )
+                try:
+                    brevo_template_id = 18
+                    email.send_sib_template(
+                        brevo_template_id,
+                        {
+                            "SENDER_NAME": sender.get_full_name(),
+                            "COMPANY_NAME": company.social_name,
+                            "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={company.id}",
+                        },
+                        recipient.email,
+                        recipient.get_full_name(),
+                    )
+                except Exception as e:
+                    logger.error(f"Email not sent on AddNewCollaboratorView for recipient {recipient.id}")
+                    logger.exception(e)
+
+                return Response({"message": f"{recipient.name} a été ajouté à vos collaborateurs."})

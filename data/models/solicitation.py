@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from urllib.parse import urljoin
+import logging
 
 from django.apps import apps
 from django.conf import settings
@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from api.utils.urls import get_base_url
+from config import email
 from data.utils.type_utils import all_true_or_all_false
 
 from ..behaviours import AutoValidable, TimeStampable
@@ -19,6 +20,8 @@ from ..fields import MultipleChoiceField
 from .company import Company, CompanyRoleClassChoices
 
 User = get_user_model()
+
+logger = logging.getLogger(__name__)
 
 
 def processable_action(func):
@@ -69,11 +72,6 @@ class BaseSolicitation(AutoValidable, TimeStampable):
                 "Une demande traitée doit l'être par quelqu'un ET à une date spécifiée ET par une action spécifique."
             )
 
-    @property
-    def personal_message_for_mail(self) -> str:
-        """Permet d'ajouter les messages personnels dans le corps d'un message d'email"""
-        return f"Iel a ajouté ce message : «{self.personal_msg}»." if self.personal_msg else ""
-
     def save(self, *args, **kwargs):
         """Surchargée pour appeler un hook optionnel à la création de l'objet, défini dans la classe enfant"""
         is_adding = self._state.adding
@@ -105,16 +103,30 @@ class SupervisionClaim(BaseSolicitation, models.Model):
 
     def create_hook(self):
         recipients = User.objects.filter(is_staff=True)
-        self.recipients.set(recipients)
-        send_mail(
-            subject="[Compl'Alim] Nouvelle demande de gestion d'une entreprise",
-            message=f"{self.description} {self.personal_message_for_mail}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=self.recipients.values_list("email", flat=True),
-        )
+        self.recipients.set(recipients)  # TODO: Je ne pense pas que le self.recipients sert à quelque chose
+        brevo_template_id = 15
+        for recipient in recipients:
+            try:
+                email.send_sib_template(
+                    brevo_template_id,
+                    {
+                        "REQUESTER_NAME": self.sender.get_full_name(),
+                        "COMPANY_NAME": self.company.social_name,
+                        "COMPANY_ID": self.company.id,
+                        "ADMIN_LINK": f"{get_base_url()}admin/",
+                        "PERSONAL_MESSAGE": self.personal_msg,
+                    },
+                    recipient.email,
+                    recipient.get_full_name(),
+                )
+            except Exception as e:
+                logger.error(f"Email not sent on SupervisionClaim creation with id {self.id}")
+                logger.exception(e)
 
     @processable_action
     def accept(self, processor):
+        # TODO : cette action n'est jamais appelé de nulle part. Lors qu'elle le sera il faudra
+        # créer un template Brevo
         self.company.supervisors.add(self.sender)
         send_mail(
             subject="[Compl'Alim] Votre demande de gestion a été acceptée",
@@ -125,6 +137,8 @@ class SupervisionClaim(BaseSolicitation, models.Model):
 
     @processable_action
     def refuse(self, processor):
+        # TODO : cette action n'est jamais appelé de nulle part. Lors qu'elle le sera il faudra
+        # créer un template Brevo
         send_mail(
             subject="[Compl'Alim] Votre demande de gestion a été refusée",
             message=f"L'équipe Compl'Alim a refusé que vous deveniez gestionnaire de {self.company.social_name}. N'hésitez pas à nous contacter pour en savoir plus.",
@@ -133,49 +147,89 @@ class SupervisionClaim(BaseSolicitation, models.Model):
         )
 
 
-class CoSupervisionClaim(BaseSolicitation, models.Model):
-    """Utilisateur existant qui demande les droits de gestionnaire pour une entreprise qui a déjà des gestionnaires."""
+class CompanyAccessClaim(BaseSolicitation, models.Model):
+    """Utilisateur existant qui demande accès (gestionnaire ou déclarant)
+    pour une entreprise qui a déjà des gestionnaires."""
 
     class Meta:
-        verbose_name = "demande de co-gestion"
-        verbose_name_plural = "demandes de co-gestion"
+        verbose_name = "demande d'accès à une entreprise"
+        verbose_name_plural = "demandes d'accès à une entreprise"
 
     recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, verbose_name="destinataires")
     company = models.ForeignKey(Company, verbose_name=Company._meta.verbose_name, on_delete=models.CASCADE)
+    declarant_role = models.BooleanField(default=False, verbose_name="demande de rôle déclarant")
+    supervisor_role = models.BooleanField(default=False, verbose_name="demande de rôle gestionnaire")
 
     @property
     def description(self):
-        return f"{self.sender.name} a demandé à devenir co-gestionnaire de l'entreprise {self.company.social_name}."
+        role_string = ""
+        if self.declarant_role and self.supervisor_role:
+            role_string = "pour les rôles déclarant et gestionnaire."
+        elif self.declarant_role:
+            role_string = "pour le rôle déclarant."
+        elif self.supervisor_role:
+            role_string = "pour le rôle gestionnaire."
+        return f"Demande d'accès à la compagnie {self.company.social_name} {role_string}"
 
     def create_hook(self):
         recipients = self.company.supervisors.all()
         self.recipients.set(recipients)
-        send_mail(
-            subject="[Compl'Alim] Nouvelle demande de co-gestion",
-            message=f"{self.description} {self.personal_message_for_mail} Veuillez vous rendre sur la plateforme (section : gestion des collaborateurs) pour traiter cette demande.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=recipients.values_list("email", flat=True),
-        )
+        brevo_template_id = 12
+        for recipient in self.recipients.all():
+            try:
+                email.send_sib_template(
+                    brevo_template_id,
+                    {
+                        "REQUESTER_NAME": self.sender.get_full_name(),
+                        "COMPANY_NAME": self.company.social_name,
+                        "REQUEST_LINK": f"{get_base_url()}gestion-des-collaborateurs/{self.company.id}",
+                        "PERSONAL_MESSAGE": self.personal_msg,
+                    },
+                    recipient.email,
+                    recipient.get_full_name(),
+                )
+            except Exception as e:
+                logger.error(f"Email not sent on CompanyAccessClaim creation with id {self.id}")
+                logger.exception(e)
 
     @processable_action
     def accept(self, processor):
-        self.company.supervisors.add(self.sender)
-        login_page_url = urljoin(get_base_url(), "connexion")
-        send_mail(
-            subject="[Compl'Alim] Votre demande de co-gestion a été acceptée",
-            message=f"{processor.name} a accepté que vous deveniez gestionnaire de {self.company.social_name}. Vous pouvez <a href='{login_page_url}'>vous connecter</a> à la plateforme.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[self.sender.email],
-        )
+        if self.supervisor_role:
+            self.company.supervisors.add(self.sender)
+        if self.declarant_role:
+            self.company.declarants.add(self.sender)
+
+        brevo_template_id = 13
+        try:
+            email.send_sib_template(
+                brevo_template_id,
+                {
+                    "REQUESTER_NAME": self.sender.get_full_name(),
+                    "COMPANY_NAME": self.company.social_name,
+                    "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={self.company.id}",
+                },
+                self.sender.email,
+                self.sender.get_full_name(),
+            )
+        except Exception as e:
+            logger.error(f"Email not sent on CompanyAccessClaim accept action with id {self.id}")
+            logger.exception(e)
 
     @processable_action
     def refuse(self, processor):
-        send_mail(
-            subject="[Compl'Alim] Votre demande de co-gestion a été refusée",
-            message=f"{processor.name} a refusé que vous deveniez gestionnaire de {self.company.social_name}. Contactez directement cette personne pour en savoir plus.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[self.sender.email],
-        )
+        brevo_template_id = 14
+        try:
+            email.send_sib_template(
+                brevo_template_id,
+                {
+                    "COMPANY_NAME": self.company.social_name,
+                },
+                self.sender.email,
+                self.sender.get_full_name(),
+            )
+        except Exception as e:
+            logger.error(f"Email not sent on CompanyAccessClaim refuse action with id {self.id}")
+            logger.exception(e)
 
 
 class CollaborationInvitation(BaseSolicitation, models.Model):
@@ -203,13 +257,21 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
         return f"{self.sender.name} vous invite à créer un compte Compl'Alim et rejoindre l'entreprise {self.company.social_name}."
 
     def create_hook(self):
-        create_account_page_url = urljoin(get_base_url(), "inscription") + f"?email={self.recipient_email}"
-        send_mail(
-            subject="[Compl'Alim] Invitation à créer votre compte",
-            message=f"{self.description} {self.personal_message_for_mail} Veuillez vous rendre sur <a href='{create_account_page_url}'>la plateforme Compl'Alim</a> pour créer votre compte.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[self.recipient_email],
-        )
+        brevo_template_id = 16
+        try:
+            email.send_sib_template(
+                brevo_template_id,
+                {
+                    "COMPANY_NAME": self.company.social_name,
+                    "SENDER_NAME": self.sender.name,
+                    "SIGNUP_LINK": f"{get_base_url()}inscription?email={self.recipient_email}",
+                },
+                self.recipient_email,
+                self.recipient_email,
+            )
+        except Exception as e:
+            logger.error(f"Email not sent on CollaborationInvitation creation with id {self.id}")
+            logger.exception(e)
 
     @processable_action
     def account_created(self, processor):
@@ -217,9 +279,19 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
         for role_classname in self.roles:
             role_class = apps.get_model("data", role_classname)
             role_class.objects.get_or_create(company=self.company, user=processor)
-        send_mail(
-            subject=f"[Compl'Alim] {processor.name} vous a rejoint en tant que collaborateur.",
-            message=f"Suite à votre invitation, {processor.name} est devenu colloborateur de votre entreprise {self.company.social_name}.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[self.sender.email],
-        )
+
+        try:
+            brevo_template_id = 17
+            email.send_sib_template(
+                brevo_template_id,
+                {
+                    "COMPANY_NAME": self.company.social_name,
+                    "NEW_COLLABORATOR": processor.get_full_name(),
+                    "MEMBERS_LINK": f"{get_base_url()}gestion-des-collaborateurs/{self.company.id}",
+                },
+                self.sender.email,
+                self.sender.get_full_name(),
+            )
+        except Exception as e:
+            logger.error(f"Email not sent on CollaborationInvitation account_created with id {self.id}")
+            logger.exception(e)
