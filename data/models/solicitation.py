@@ -72,11 +72,6 @@ class BaseSolicitation(AutoValidable, TimeStampable):
                 "Une demande traitée doit l'être par quelqu'un ET à une date spécifiée ET par une action spécifique."
             )
 
-    @property
-    def personal_message_for_mail(self) -> str:
-        """Permet d'ajouter les messages personnels dans le corps d'un message d'email"""
-        return f"Iel a ajouté ce message : «{self.personal_msg}»." if self.personal_msg else ""
-
     def save(self, *args, **kwargs):
         """Surchargée pour appeler un hook optionnel à la création de l'objet, défini dans la classe enfant"""
         is_adding = self._state.adding
@@ -119,6 +114,7 @@ class SupervisionClaim(BaseSolicitation, models.Model):
                         "COMPANY_NAME": self.company.social_name,
                         "COMPANY_ID": self.company.id,
                         "ADMIN_LINK": f"{get_base_url()}admin/",
+                        "PERSONAL_MESSAGE": self.personal_msg,
                     },
                     recipient.email,
                     recipient.get_full_name(),
@@ -187,6 +183,7 @@ class CompanyAccessClaim(BaseSolicitation, models.Model):
                         "REQUESTER_NAME": self.sender.get_full_name(),
                         "COMPANY_NAME": self.company.social_name,
                         "REQUEST_LINK": f"{get_base_url()}gestion-des-collaborateurs/{self.company.id}",
+                        "PERSONAL_MESSAGE": self.personal_msg,
                     },
                     recipient.email,
                     recipient.get_full_name(),

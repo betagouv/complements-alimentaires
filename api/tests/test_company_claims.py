@@ -49,6 +49,7 @@ class TestCompanyClaims(APITestCase):
                 "REQUESTER_NAME": authenticate.user.get_full_name(),
                 "COMPANY_NAME": company.social_name,
                 "REQUEST_LINK": f"https://hostname/gestion-des-collaborateurs/{company.id}",
+                "PERSONAL_MESSAGE": "Je voudrais pouvoir déclarer pour votre entreprise",
             },
             supervisor.email,
             supervisor.get_full_name(),
