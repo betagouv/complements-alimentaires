@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from urllib.parse import urljoin
 
 from django.apps import apps
 from django.conf import settings
@@ -109,16 +108,29 @@ class SupervisionClaim(BaseSolicitation, models.Model):
 
     def create_hook(self):
         recipients = User.objects.filter(is_staff=True)
-        self.recipients.set(recipients)
-        send_mail(
-            subject="[Compl'Alim] Nouvelle demande de gestion d'une entreprise",
-            message=f"{self.description} {self.personal_message_for_mail}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=self.recipients.values_list("email", flat=True),
-        )
+        self.recipients.set(recipients)  # TODO: Je ne pense pas que le self.recipients sert à quelque chose
+        brevo_template_id = 15
+        for recipient in recipients:
+            try:
+                email.send_sib_template(
+                    brevo_template_id,
+                    {
+                        "REQUESTER_NAME": self.sender.get_full_name(),
+                        "COMPANY_NAME": self.company.social_name,
+                        "COMPANY_ID": self.company.id,
+                        "ADMIN_LINK": f"{get_base_url()}admin/",
+                    },
+                    recipient.email,
+                    recipient.get_full_name(),
+                )
+            except Exception as e:
+                logger.error(f"Email not sent on SupervisionClaim creation with id {self.id}")
+                logger.exception(e)
 
     @processable_action
     def accept(self, processor):
+        # TODO : cette action n'est jamais appelé de nulle part. Lors qu'elle le sera il faudra
+        # créer un template Brevo
         self.company.supervisors.add(self.sender)
         send_mail(
             subject="[Compl'Alim] Votre demande de gestion a été acceptée",
@@ -129,6 +141,8 @@ class SupervisionClaim(BaseSolicitation, models.Model):
 
     @processable_action
     def refuse(self, processor):
+        # TODO : cette action n'est jamais appelé de nulle part. Lors qu'elle le sera il faudra
+        # créer un template Brevo
         send_mail(
             subject="[Compl'Alim] Votre demande de gestion a été refusée",
             message=f"L'équipe Compl'Alim a refusé que vous deveniez gestionnaire de {self.company.social_name}. N'hésitez pas à nous contacter pour en savoir plus.",
@@ -172,7 +186,7 @@ class CompanyAccessClaim(BaseSolicitation, models.Model):
                     {
                         "REQUESTER_NAME": self.sender.get_full_name(),
                         "COMPANY_NAME": self.company.social_name,
-                        "REQUEST_LINK": f"{'https' if settings.SECURE else 'http'}://{settings.HOSTNAME}/gestion-des-collaborateurs/{self.company.id}",
+                        "REQUEST_LINK": f"{get_base_url()}gestion-des-collaborateurs/{self.company.id}",
                     },
                     recipient.email,
                     recipient.get_full_name(),
@@ -195,7 +209,7 @@ class CompanyAccessClaim(BaseSolicitation, models.Model):
                 {
                     "REQUESTER_NAME": self.sender.get_full_name(),
                     "COMPANY_NAME": self.company.social_name,
-                    "DASHBOARD_LINK": f"{'https' if settings.SECURE else 'http'}://{settings.HOSTNAME}/tableau-de-bord?company={self.company.id}",
+                    "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={self.company.id}",
                 },
                 self.sender.email,
                 self.sender.get_full_name(),
@@ -246,13 +260,21 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
         return f"{self.sender.name} vous invite à créer un compte Compl'Alim et rejoindre l'entreprise {self.company.social_name}."
 
     def create_hook(self):
-        create_account_page_url = urljoin(get_base_url(), "inscription") + f"?email={self.recipient_email}"
-        send_mail(
-            subject="[Compl'Alim] Invitation à créer votre compte",
-            message=f"{self.description} {self.personal_message_for_mail} Veuillez vous rendre sur <a href='{create_account_page_url}'>la plateforme Compl'Alim</a> pour créer votre compte.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[self.recipient_email],
-        )
+        brevo_template_id = 16
+        try:
+            email.send_sib_template(
+                brevo_template_id,
+                {
+                    "COMPANY_NAME": self.company.social_name,
+                    "SENDER_NAME": self.sender.name,
+                    "SIGNUP_LINK": f"{get_base_url()}inscription?email={self.recipient_email}",
+                },
+                self.recipient_email,
+                self.recipient_email,
+            )
+        except Exception as e:
+            logger.error(f"Email not sent on CollaborationInvitation creation with id {self.id}")
+            logger.exception(e)
 
     @processable_action
     def account_created(self, processor):
@@ -260,9 +282,19 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
         for role_classname in self.roles:
             role_class = apps.get_model("data", role_classname)
             role_class.objects.get_or_create(company=self.company, user=processor)
-        send_mail(
-            subject=f"[Compl'Alim] {processor.name} vous a rejoint en tant que collaborateur.",
-            message=f"Suite à votre invitation, {processor.name} est devenu colloborateur de votre entreprise {self.company.social_name}.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[self.sender.email],
-        )
+
+        try:
+            brevo_template_id = 17
+            email.send_sib_template(
+                brevo_template_id,
+                {
+                    "COMPANY_NAME": self.company.social_name,
+                    "NEW_COLLABORATOR": processor.get_full_name(),
+                    "MEMBERS_LINK": f"{get_base_url()}gestion-des-collaborateurs/{self.company.id}",
+                },
+                self.sender.email,
+                self.sender.get_full_name(),
+            )
+        except Exception as e:
+            logger.error(f"Email not sent on CollaborationInvitation account_created with id {self.id}")
+            logger.exception(e)

@@ -3,6 +3,7 @@ from unittest import mock
 from django.test.utils import override_settings
 
 from rest_framework import status
+from rest_framework.test import APITestCase
 
 from data.factories import (
     CollaborationInvitationFactory,
@@ -18,7 +19,8 @@ from .utils import ProjectAPITestCase
 class TestListCollaborationInvitations(ProjectAPITestCase):
     viewname = "list_collaboration_invitation"
 
-    def setUp(self):
+    @mock.patch("config.email.send_sib_template")
+    def setUp(self, _):
         self.user = UserFactory()
         self.company_1 = CompanyFactory()
         self.company_2 = CompanyFactory()
@@ -53,6 +55,35 @@ class TestListCollaborationInvitations(ProjectAPITestCase):
     def test_get_collaboration_invitations_unauthenticated(self):
         response = self.get(self.url(pk=self.company_3.id))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestCollaborationInvitationEmail(APITestCase):
+    @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
+    @override_settings(CONTACT_EMAIL="contact@example.com")
+    @override_settings(SECURE=True)
+    @override_settings(HOSTNAME="hostname")
+    @mock.patch("config.email.send_sib_template")
+    def test_account_created_sends_email(self, mocked_brevo):
+        email = "test@example.com"
+        company = CompanyFactory()
+        sender = SupervisorRoleFactory(user=UserFactory(), company=company)
+
+        invitation = CollaborationInvitationFactory(recipient_email=email, company=company, sender=sender.user)
+        mocked_brevo.reset_mock()
+        recipient = UserFactory(email=email)
+        invitation.account_created(processor=recipient)
+
+        template_number = 17
+        mocked_brevo.assert_called_once_with(
+            template_number,
+            {
+                "COMPANY_NAME": company.social_name,
+                "NEW_COLLABORATOR": recipient.get_full_name(),
+                "MEMBERS_LINK": f"https://hostname/gestion-des-collaborateurs/{company.id}",
+            },
+            sender.user.email,
+            sender.user.get_full_name(),
+        )
 
 
 class TestListCompanyAccessClaims(ProjectAPITestCase):
