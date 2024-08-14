@@ -91,7 +91,7 @@ const submitIdentifier = async () => {
       case "registered_and_supervised_by_other":
         emit("changeStep", {
           name: "Demande d'accès à une entreprise existante",
-          component: "ClaimCoSupervision",
+          component: "ClaimCompanyAccess",
         })
         break
       case "registered_and_unsupervised":

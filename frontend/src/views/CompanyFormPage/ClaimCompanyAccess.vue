@@ -5,7 +5,7 @@
       <strong>{{ company.socialName }}</strong>
       avec le n° {{ company.identifierType.toUpperCase() + " " }}
       <strong>{{ company.identifier }}</strong>
-      existe déjà dans Compl-Alim. Vous pouvez cependant eenvoyer une demande d'accès aux gestionnaires.
+      existe déjà dans Compl-Alim. Vous pouvez cependant envoyer une demande d'accès aux gestionnaires.
 
       <DsfrInputGroup>
         <DsfrCheckbox
