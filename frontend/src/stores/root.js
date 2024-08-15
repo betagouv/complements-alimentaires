@@ -28,7 +28,7 @@ export const useRootStore = defineStore("root", () => {
     // TODO: add error handling here, but weird bug with await and response
   }
 
-  const companies = computed(() => loggedUser.value.companies)
+  const companies = computed(() => loggedUser.value?.companies)
 
   const resetInitialData = () => {
     loggedUser.value = null
