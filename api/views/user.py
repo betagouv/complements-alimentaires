@@ -1,3 +1,4 @@
+import logging
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -20,23 +21,30 @@ from api.serializers import (
     CreateUserSerializer,
     UserSerializer,
 )
+from config import email
 from data.models.solicitation import CollaborationInvitation
 from tokens.models import MagicLinkToken, MagicLinkUsage
 
 from ..utils.urls import get_base_url
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 def _send_verification_mail(user):
     new_token = MagicLinkToken.objects.create(user=user, usage=MagicLinkUsage.VERIFY_EMAIL_ADDRESS)
     verification_url = urljoin(get_base_url(), new_token.as_url(key=new_token.key))
-    send_mail(
-        subject="Vérifiez votre adresse e-mail",
-        message=f"Cliquez sur le lien suivant pour vérifier votre adresse e-mail : {verification_url}",
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[user.email],
-    )
+    brevo_template_id = 19
+    try:
+        email.send_sib_template(
+            brevo_template_id,
+            {"CONFIRMATION_LINK": verification_url},
+            user.email,
+            user.get_full_name(),
+        )
+    except Exception as e:
+        logger.error(f"Email verification email not sent on _send_verification_mail for recipient {user.email}")
+        logger.exception(e)
 
 
 class LoggedUserView(APIView):
