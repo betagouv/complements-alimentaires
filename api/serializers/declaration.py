@@ -277,6 +277,7 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
             "creation_date",
             "instructor",
             "visor",
+            "response_limit_date",
         )
         read_only_fields = fields
 
