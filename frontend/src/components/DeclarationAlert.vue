@@ -1,6 +1,10 @@
 <template>
   <DsfrAlert v-if="displayData" :type="displayData.type" :title="displayData.title">
     <p v-if="displayData.body">{{ displayData.body }}</p>
+    <p v-if="displayData.expirationDate">
+      <v-icon name="ri-error-warning-line"></v-icon>
+      Sans retour de votre part, ce dossier expirera le {{ isoToPrettyDate(displayData.expirationDate) }}.
+    </p>
     <DsfrButton v-if="displayData.canDownloadCertificate" icon="ri-file-text-line" class="mt-2" secondary>
       <a :href="`/declarations/${declaration.id}/certificate`" target="_blank" rel="noopener noreferrer">
         {{ displayData.downloadButtonText || "Télécharger l'attestation" }}
@@ -11,6 +15,7 @@
 
 <script setup>
 import { computed } from "vue"
+import { isoToPrettyDate } from "@/utils/date"
 const props = defineProps({ declaration: Object, role: { type: String, default: "declarant" } })
 
 const displayData = computed(() => {
@@ -63,6 +68,7 @@ const declarantDisplayData = computed(() => {
       return {
         type: "warning",
         title: "Une objection a été emise sur cette déclaration",
+        expirationDate: props.declaration?.expirationDate,
         body: blockingReasons.value,
         canDownloadCertificate: false,
       }
@@ -70,6 +76,7 @@ const declarantDisplayData = computed(() => {
       return {
         type: "warning",
         title: "Une observation a été emise sur cette déclaration",
+        expirationDate: props.declaration?.expirationDate,
         body: blockingReasons.value,
         canDownloadCertificate: false,
       }

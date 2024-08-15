@@ -351,6 +351,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "post_validation_expiration_days",
             "private_notes",
             "blocking_reasons",
+            "expiration_date",
         )
         read_only_fields = (
             "id",
