@@ -1,7 +1,7 @@
 import logging
 
-from django.db.models import F, Func
-from django.db.models.functions import Lower
+from django.db.models import DateTimeField, F, Func, OuterRef, Subquery, Value
+from django.db.models.functions import Coalesce, Lower
 from django.shortcuts import get_object_or_404
 
 from django_filters import rest_framework as django_filters
@@ -207,6 +207,60 @@ class InstructionDeclarationPagination(DeclarationPagination):
         )
 
 
+class InstructionDateOrderingFilter(CamelCaseOrderingFilter):
+    """
+    Pour filtrer par la date limite d'instruction on doit faire un filtre custom car cette date appartient
+    à un autre modèle : le Snapshot.
+    Même si on a la property dans le modèle Declaration, on ne peut pas l'utiliser directement car cette
+    property n'est pas en base de données, elle est déjà dans la couche Django/Python. Pour l'avoir dans la
+    couche DB on doit faire une annotation qui la contient.
+    """
+
+    def get_ordering(self, request, queryset, view):
+        ordering = super().get_ordering(request, queryset, view)
+        fields_to_remove = ("response_limit_date", "-response_limit_date")
+        for field in fields_to_remove:
+            try:
+                ordering.remove(field)
+            except Exception as _:
+                pass
+        return ordering
+
+    def order_by_response_limit(self, request):
+        """
+        Returns tupple :
+        (effectuer un triage par date d'instruction, desc)
+        """
+        return (
+            "responseLimitDate" in request.query_params.get(self.ordering_param, ""),
+            "-responseLimitDate" in request.query_params.get(self.ordering_param, ""),
+        )
+
+    def filter_queryset(self, request, queryset, view):
+        order_by_response_limit, desc = self.order_by_response_limit(request)
+
+        qs = super().filter_queryset(request, queryset, view)
+        if not order_by_response_limit:
+            return qs
+
+        latest_snapshot_subquery = (
+            Snapshot.objects.filter(
+                declaration=OuterRef("pk"), status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+            )
+            .order_by("-creation_date" if order_by_response_limit else "creation_date")
+            .values("creation_date")[:1]
+        )
+
+        # Coalesce est utilisé dans les cas où il n'y aurait pas de valeur de date limite
+        qs = qs.annotate(
+            annotated_response_limit_date=Coalesce(
+                Subquery(latest_snapshot_subquery, output_field=DateTimeField()), Value(None)
+            )
+        ).order_by("annotated_response_limit_date")
+
+        return qs.reverse() if desc else qs
+
+
 class GenericDeclarationsListView(ListAPIView):
     model = Declaration
     pagination_class = DeclarationPagination
@@ -221,7 +275,8 @@ class OngoingDeclarationsListView(GenericDeclarationsListView):
     pagination_class = InstructionDeclarationPagination
     serializer_class = SimpleDeclarationSerializer
     permission_classes = [(IsInstructor | IsVisor)]
-    ordering_fields = ["creation_date", "modification_date", "name"]
+    filter_backends = [django_filters.DjangoFilterBackend, InstructionDateOrderingFilter]
+    ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT)
 
 
