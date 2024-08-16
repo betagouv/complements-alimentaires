@@ -1,16 +1,25 @@
 <template>
   <div ref="container" class="relative">
-    <DsfrInput
-      v-model="searchTerm"
-      :options="autocompleteResults"
-      autocomplete="nothing"
-      @update:searchTerm="$emit('update:searchTerm', $event)"
-      v-bind="$attrs"
-      :required="true"
-      @focus="hasFocus = true"
-      @blur="hasFocus = false"
-      @keydown="checkKeyboardNav($event)"
-    />
+    <div :class="hideSearchButton ? '' : 'flex'">
+      <DsfrInput
+        v-model="searchTerm"
+        :options="autocompleteResults"
+        autocomplete="nothing"
+        @update:searchTerm="$emit('update:searchTerm', $event)"
+        v-bind="$attrs"
+        :required="true"
+        @focus="hasFocus = true"
+        @blur="hasFocus = false"
+        @keydown="checkKeyboardNav($event)"
+      />
+      <DsfrButton
+        v-if="!hideSearchButton"
+        class="max-h-10 mt-2 rounded-r"
+        @click="search"
+        :iconOnly="true"
+        icon="ri-search-line"
+      />
+    </div>
     <ul
       v-show="displayOptions"
       ref="optionsList"
@@ -65,6 +74,10 @@ const props = defineProps({
   chooseFirstAsDefault: {
     type: Boolean,
     default: true,
+  },
+  hideSearchButton: {
+    type: Boolean,
+    default: false,
   },
 })
 
