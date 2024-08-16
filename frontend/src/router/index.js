@@ -263,6 +263,7 @@ const routes = [
         entrepriseDe: "",
         entrepriseA: "",
         personneAssignée: "",
+        triage: "-modificationDate",
       },
     },
   },
