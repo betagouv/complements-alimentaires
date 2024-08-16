@@ -1,6 +1,6 @@
 import logging
 
-from django.db.models import DateTimeField, F, Func, OuterRef, Subquery, Value
+from django.db.models import Case, DateTimeField, F, Func, OuterRef, Subquery, Value, When
 from django.db.models.functions import Coalesce, Lower
 from django.shortcuts import get_object_or_404
 
@@ -237,6 +237,10 @@ class InstructionDateOrderingFilter(CamelCaseOrderingFilter):
         )
 
     def filter_queryset(self, request, queryset, view):
+        """
+        Cette fonction vise à réproduire la property "response_limit_date" du modèle Declaration
+        mais dans la couche DB (avec des querysets) afin de pouvoir filtrer dessus.
+        """
         order_by_response_limit, desc = self.order_by_response_limit(request)
 
         qs = super().filter_queryset(request, queryset, view)
@@ -251,14 +255,30 @@ class InstructionDateOrderingFilter(CamelCaseOrderingFilter):
             .values("creation_date")[:1]
         )
 
-        # Coalesce est utilisé dans les cas où il n'y aurait pas de valeur de date limite
-        qs = qs.annotate(
-            annotated_response_limit_date=Coalesce(
-                Subquery(latest_snapshot_subquery, output_field=DateTimeField()), Value(None)
-            )
-        ).order_by("annotated_response_limit_date")
+        concerned_statuses = [
+            Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
+            Declaration.DeclarationStatus.AWAITING_VISA,
+            Declaration.DeclarationStatus.ONGOING_VISA,
+        ]
 
-        return qs.reverse() if desc else qs
+        # On met toujours les valeurs `None` à la fin pour ne pas devoir changer de page
+        # pour voir les premières déclarations ayant la date remplie
+        order_function = (
+            F("annotated_response_limit_date").desc(nulls_last=True) if desc else F("annotated_response_limit_date")
+        )
+        qs = qs.annotate(
+            annotated_response_limit_date=Case(
+                When(
+                    status__in=concerned_statuses,
+                    then=Coalesce(Subquery(latest_snapshot_subquery, output_field=DateTimeField()), Value(None)),
+                ),
+                default=Value(None),
+                output_field=DateTimeField(),
+            )
+        ).order_by(order_function)
+
+        return qs
 
 
 class GenericDeclarationsListView(ListAPIView):

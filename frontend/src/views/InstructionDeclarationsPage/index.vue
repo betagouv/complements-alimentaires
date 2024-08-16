@@ -82,6 +82,7 @@ import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
 import { DsfrInput } from "@gouvminint/vue-dsfr"
 import StatusFilter from "@/components/StatusFilter.vue"
+import { orderingOptions } from "@/utils/mappings"
 
 const router = useRouter()
 const route = useRoute()
@@ -99,15 +100,6 @@ const instructorSelectOptions = computed(() => {
   availableInstructors.unshift({ value: "", text: "Toutes les déclarations" })
   return availableInstructors
 })
-
-const orderingOptions = [
-  { value: "modificationDate", text: "Date de modification" },
-  { value: "-modificationDate", text: "Date de modification (descendant)" },
-  { value: "name", text: "Nom du produit" },
-  { value: "-name", text: "Nom du produit (descendant)" },
-  { value: "responseLimitDate", text: "Date limite de réponse" },
-  { value: "-responseLimitDate", text: "Date limite de réponse (descendant)" },
-]
 
 // Valeurs obtenus du queryparams
 const page = computed(() => parseInt(route.query.page))

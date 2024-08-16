@@ -212,3 +212,12 @@ export const tabTitles = (components, useSubmission = false) => {
   }
   return components.map((x) => titleMap[x.__name || x.name])
 }
+
+export const orderingOptions = [
+  { value: "modificationDate", text: "Date de modification" },
+  { value: "-modificationDate", text: "Date de modification (descendant)" },
+  { value: "name", text: "Nom du produit" },
+  { value: "-name", text: "Nom du produit (descendant)" },
+  { value: "responseLimitDate", text: "Date limite de réponse" },
+  { value: "-responseLimitDate", text: "Date limite de réponse (descendant)" },
+]

@@ -239,6 +239,14 @@ class Declaration(Historisable, TimeStampable):
         La date limite d'instruction est fixée à deux mois à partir du dernier statut
         "en attente d'instruction"
         """
+        concerned_statuses = [
+            Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
+            Declaration.DeclarationStatus.AWAITING_VISA,
+            Declaration.DeclarationStatus.ONGOING_VISA,
+        ]
+        if self.status not in concerned_statuses:
+            return None
         status = Declaration.DeclarationStatus.AWAITING_INSTRUCTION
         try:
             latest_snapshot = self.snapshots.filter(status=status).latest("creation_date")
