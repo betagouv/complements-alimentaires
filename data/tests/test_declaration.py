@@ -1,6 +1,9 @@
-from django.test import TestCase
+from datetime import datetime
 
-from data.factories import InstructionReadyDeclarationFactory
+from django.test import TestCase
+from django.utils import timezone
+
+from data.factories import AwaitingInstructionDeclarationFactory, InstructionReadyDeclarationFactory, SnapshotFactory
 
 
 class DeclarationTestCase(TestCase):
@@ -71,3 +74,17 @@ class DeclarationTestCase(TestCase):
                 self.assertEqual(json_declared_substance["element"]["name"], declared_substance.substance.name)
                 self.assertEqual(json_declared_substance["element"]["id"], declared_substance.substance.id)
             self.assertEqual(json_declared_substance["active"], declared_substance.active)
+
+    def test_response_limit_date(self):
+        """
+        La date limite d'instruction est de deux mois après le dernier changement de statut
+        vers "en attente d'instruction"
+        """
+        declaration = AwaitingInstructionDeclarationFactory()
+        snapshot = SnapshotFactory(declaration=declaration, status=declaration.status)
+
+        snapshot.creation_date = timezone.make_aware(datetime(2024, 1, 1, 1, 1, 1, 1))
+        snapshot.save()
+
+        response_limit = timezone.make_aware(datetime(2024, 3, 1, 1, 1, 1, 1))
+        self.assertEqual(declaration.response_limit_date, response_limit)

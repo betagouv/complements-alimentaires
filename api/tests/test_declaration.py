@@ -1,7 +1,9 @@
 import base64
 import os
+from datetime import timedelta
 
 from django.urls import reverse
+from django.utils import timezone
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -23,6 +25,7 @@ from data.factories import (
     PlantFactory,
     PlantPartFactory,
     PopulationFactory,
+    SnapshotFactory,
     SubstanceFactory,
     SubstanceUnitFactory,
     SupervisorRoleFactory,
@@ -1121,3 +1124,47 @@ class TestDeclarationApi(APITestCase):
         results = response.json()["results"]
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
+    def test_sort_declarations_by_instruction_limit(self):
+        """
+        Les déclarations peuvent être triées par la date limite d'instruction
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        today = timezone.now()
+
+        declaration_middle = AwaitingInstructionDeclarationFactory()
+        snapshot_middle = SnapshotFactory(declaration=declaration_middle, status=declaration_middle.status)
+        snapshot_middle.creation_date = today - timedelta(days=5)
+        snapshot_middle.save()
+
+        declaration_first = AwaitingInstructionDeclarationFactory()
+        snapshot_first = SnapshotFactory(declaration=declaration_first, status=declaration_first.status)
+        snapshot_first.creation_date = today - timedelta(days=1)
+        snapshot_first.save()
+
+        declaration_last = AwaitingInstructionDeclarationFactory()
+        snapshot_last = SnapshotFactory(declaration=declaration_last, status=declaration_last.status)
+        snapshot_last.creation_date = today - timedelta(days=10)
+        snapshot_last.save()
+
+        # Triage par date limite d'instruction
+        sort_url = f"{reverse('api:list_all_declarations')}?ordering=responseLimitDate"
+        response = self.client.get(sort_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 3)
+
+        self.assertEqual(results[0]["id"], declaration_last.id)
+        self.assertEqual(results[1]["id"], declaration_middle.id)
+        self.assertEqual(results[2]["id"], declaration_first.id)
+
+        # Triage par date limite d'instruction inversé
+        reverse_sort_url = f"{reverse('api:list_all_declarations')}?ordering=-responseLimitDate"
+        response = self.client.get(reverse_sort_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 3)
+
+        self.assertEqual(results[0]["id"], declaration_first.id)
+        self.assertEqual(results[1]["id"], declaration_middle.id)
+        self.assertEqual(results[2]["id"], declaration_last.id)

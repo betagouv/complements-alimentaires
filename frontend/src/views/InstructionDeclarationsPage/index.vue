@@ -43,6 +43,17 @@
         </DsfrFieldset>
       </div>
       <StatusFilter :exclude="['DRAFT']" @update:modelValue="updateStatusFilter" v-model="filteredStatus" />
+      <div class="md:border-l md:px-8">
+        <DsfrInputGroup class="max-w-sm">
+          <DsfrSelect
+            label="Trier par :"
+            defaultUnselectedText=""
+            :modelValue="ordering"
+            @update:modelValue="updateOrdering"
+            :options="orderingOptions"
+          />
+        </DsfrInputGroup>
+      </div>
     </div>
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
@@ -71,6 +82,7 @@ import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
 import { DsfrInput } from "@gouvminint/vue-dsfr"
 import StatusFilter from "@/components/StatusFilter.vue"
+import { orderingOptions } from "@/utils/mappings"
 
 const router = useRouter()
 const route = useRoute()
@@ -95,6 +107,7 @@ const filteredStatus = computed(() => route.query.status)
 const companyNameStart = computed(() => route.query.entrepriseDe)
 const companyNameEnd = computed(() => route.query.entrepriseA)
 const assignedInstructor = computed(() => route.query.personneAssignée)
+const ordering = computed(() => route.query.triage)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 
@@ -103,11 +116,12 @@ const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 const updateCompanyNameStartFilter = (newValue) => updateQuery({ entrepriseDe: newValue })
 const updateCompanyNameEndFilter = (newValue) => updateQuery({ entrepriseA: newValue })
 const updateInstructorFilter = (newValue) => updateQuery({ personneAssignée: newValue })
+const updateOrdering = (newValue) => updateQuery({ triage: newValue })
 
 // Obtention de la donnée via API
 const url = computed(
   () =>
-    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&company_name_start=${companyNameStart.value}&company_name_end=${companyNameEnd.value}&ordering=-modificationDate&instructor=${assignedInstructor.value}`
+    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&company_name_start=${companyNameStart.value}&company_name_end=${companyNameEnd.value}&ordering=${ordering.value}&instructor=${assignedInstructor.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -115,7 +129,7 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
-watch([page, filteredStatus, companyNameStart, companyNameEnd, assignedInstructor], fetchSearchResults)
+watch([page, filteredStatus, companyNameStart, companyNameEnd, assignedInstructor, ordering], fetchSearchResults)
 </script>
 
 <style scoped>

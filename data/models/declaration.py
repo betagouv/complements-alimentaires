@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.db import models
 
+from dateutil.relativedelta import relativedelta
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 
 from data.behaviours import Historisable, TimeStampable
@@ -229,6 +230,28 @@ class Declaration(Historisable, TimeStampable):
             ).latest("creation_date")
             expiration_date = latest_snapshot.creation_date + timedelta(days=latest_snapshot.expiration_days)
             return expiration_date
+        except Exception as _:
+            return None
+
+    @property
+    def response_limit_date(self):
+        """
+        La date limite d'instruction est fixée à deux mois à partir du dernier statut
+        "en attente d'instruction"
+        """
+        concerned_statuses = [
+            Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
+            Declaration.DeclarationStatus.AWAITING_VISA,
+            Declaration.DeclarationStatus.ONGOING_VISA,
+        ]
+        if self.status not in concerned_statuses:
+            return None
+        status = Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+        try:
+            latest_snapshot = self.snapshots.filter(status=status).latest("creation_date")
+            response_limit = latest_snapshot.creation_date + relativedelta(months=2)
+            return response_limit
         except Exception as _:
             return None
 
