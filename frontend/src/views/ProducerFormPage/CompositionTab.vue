@@ -8,6 +8,7 @@
         label-visible
         class="max-w-md grow"
         hint="Tapez au moins trois caractères pour démarrer la recherche"
+        :hideSearchButton="true"
         @selected="selectOption"
       />
       <div class="hidden sm:flex flex-col items-center">

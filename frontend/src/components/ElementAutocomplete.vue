@@ -1,6 +1,6 @@
 <template>
   <div ref="container" class="relative">
-    <div class="flex">
+    <div :class="hideSearchButton ? '' : 'flex'">
       <DsfrInput
         v-model="searchTerm"
         :options="autocompleteResults"
@@ -12,7 +12,13 @@
         @blur="hasFocus = false"
         @keydown="checkKeyboardNav($event)"
       />
-      <DsfrButton class="max-h-10 mt-2 rounded-r" @click="search" :iconOnly="true" icon="ri-search-line" />
+      <DsfrButton
+        v-if="!hideSearchButton"
+        class="max-h-10 mt-2 rounded-r"
+        @click="search"
+        :iconOnly="true"
+        icon="ri-search-line"
+      />
     </div>
     <ul
       v-show="displayOptions"
@@ -68,6 +74,10 @@ const props = defineProps({
   chooseFirstAsDefault: {
     type: Boolean,
     default: true,
+  },
+  hideSearchButton: {
+    type: Boolean,
+    default: false,
   },
 })
 
