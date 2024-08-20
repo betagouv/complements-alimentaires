@@ -96,6 +96,10 @@ export const statusProps = {
     icon: "ri-pencil-fill",
     label: "Brouillon",
   },
+  INSTRUCTION: {
+    icon: "ri-time-fill",
+    label: "Instruction",
+  },
   AWAITING_INSTRUCTION: {
     icon: "ri-time-fill",
     label: "En attente d'instruction",
@@ -126,11 +130,11 @@ export const statusProps = {
   },
   AUTHORIZED: {
     icon: "ri-check-fill",
-    label: "Autorisée",
+    label: "Déclaration finalisée",
   },
   REJECTED: {
     icon: "ri-error-warning-fill",
-    label: "Refusée",
+    label: "Refus",
   },
   WITHDRAWN: {
     icon: "ri-close-fill",
