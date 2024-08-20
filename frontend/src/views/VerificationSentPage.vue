@@ -5,7 +5,7 @@
         Un e-mail vient d'être envoyé à
         <strong>{{ email }}</strong>
         <br />
-        Veuillez cliquez dans le lien à l'intérieur pour vérifier votre adresse e-email et pouvoir utiliser votre
+        Veuillez cliquer dans le lien à l'intérieur pour vérifier votre adresse e-email et pouvoir utiliser votre
         compte.
       </p>
       <SendNewSignupVerificationEmail :userId="userId" />
