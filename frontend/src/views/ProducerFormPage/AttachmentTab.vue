@@ -5,6 +5,7 @@
       <DsfrFileUpload
         label="Merci d'ajouter au moins un fichier image ou PDF correspondant à l'étiquetage."
         :accept="['image/jpeg, image/gif, image/png, application/pdf']"
+        hint="Taille maximale du fichier : 2 Mo"
         @change="addLabelFiles"
         v-model="selectedLabelFile"
       />
@@ -18,6 +19,7 @@
       <DsfrFileUpload
         label="Autres pièces que vous jugez nécessaires pour l'étude du dossier"
         :acceptTypes="['image/jpeg, image/gif, image/png, application/pdf']"
+        hint="Taille maximale du fichier : 2 Mo"
         @change="addOtherFiles"
         v-model="selectedOtherFile"
       />
@@ -39,7 +41,14 @@ const selectedOtherFile = ref(null)
 const addLabelFiles = async (files) => addFiles(files, payload.value.attachments, selectedLabelFile, { type: "LABEL" })
 const addOtherFiles = async (files) => addFiles(files, payload.value.attachments, selectedOtherFile)
 const addFiles = async (files, container, resetModel, defaultData) => {
+  const maxSize = 1048576 * 2
   for (let i = 0; i < files.length; i++) {
+    // Check size
+    const sizeIsValid = parseInt(files[i].size) < maxSize
+    if (!sizeIsValid) {
+      window.alert(`Le fichier ${files[i].name} dépasse la taille limite de 2 Mo`)
+      continue
+    }
     const base64 = await toBase64(files[i])
     container.push({
       ...{
