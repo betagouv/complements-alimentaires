@@ -11,7 +11,7 @@
       <StatusFilter
         :exclude="['DRAFT']"
         class="max-w-2xl"
-        @update:modelValue="updateStatusFilter"
+        @updateFilter="updateStatusFilter"
         v-model="filteredStatus"
       />
     </div>

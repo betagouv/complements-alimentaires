@@ -42,7 +42,7 @@
           </div>
         </DsfrFieldset>
       </div>
-      <StatusFilter :exclude="['DRAFT']" @update:modelValue="updateStatusFilter" v-model="filteredStatus" />
+      <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" v-model="filteredStatus" />
       <div class="md:border-l md:px-8">
         <DsfrInputGroup class="max-w-sm">
           <DsfrSelect

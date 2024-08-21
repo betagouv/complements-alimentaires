@@ -16,7 +16,7 @@
     <div class="border px-4 pt-4 mb-2 sm:flex gap-8 items-baseline filters">
       <StatusFilter
         class="max-w-2xl"
-        @update:modelValue="updateStatusFilter"
+        @updateFilter="updateStatusFilter"
         v-model="filteredStatus"
         :groupInstruction="true"
       />

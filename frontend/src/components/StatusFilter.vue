@@ -28,13 +28,14 @@
 <script setup>
 import { watch, ref, onMounted } from "vue"
 import { statusProps } from "@/utils/mappings"
+const emit = defineEmits(["updateFilter"])
 const statusString = defineModel()
 const props = defineProps({ exclude: { type: Array, default: Array }, groupInstruction: { type: Boolean } })
 const statuses = ref([])
 const opened = ref(false)
 
 onMounted(() => (statuses.value = statusString.value ? statusString.value.split(",") : []))
-watch(statuses, () => (statusString.value = statuses.value.join(",")))
+watch(statuses, () => emit("updateFilter", statuses.value.join(",")))
 
 const baseFilterOptions = [
   { value: "DRAFT", text: "Brouillon" },
