@@ -80,13 +80,14 @@ const supervisorActions = computed(() => [
 
 const declarantActions = [
   {
-    title: "Créer une nouvelle déclaration",
-    description: "Démarrez une nouvelle déclaration pour votre complément alimentaire",
+    title: "Créez une nouvelle déclaration",
+    description: "Déclarez un nouveau produit",
     link: { name: "NewDeclaration" },
   },
   {
     title: "Toutes mes déclarations",
-    description: "Consultez, modifiez ou dupliquez une déclaration que vous avez effectuée",
+    description:
+      "Accédez à l'ensemble de vos dossiers (brouillons, dossiers en cours d'instruction, attestations de déclaration)",
     link: { name: "DeclarationsHomePage" },
   },
 ]
