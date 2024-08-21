@@ -84,6 +84,7 @@ class CSVImporter:
         "FRMGAL": GalenicFormulation,
         "STINGSBS": IngredientStatus,
         "POPRS": Condition,
+        "": Population,
         # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
         # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
         # "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
