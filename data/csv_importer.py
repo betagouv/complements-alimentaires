@@ -15,6 +15,7 @@ from .exceptions import CSVFileError
 
 # Import the model
 from .models import (
+    Condition,
     Effect,
     GalenicFormulation,
     Ingredient,
@@ -31,8 +32,6 @@ from .models import (
     SubstanceSynonym,
     SubstanceUnit,
 )
-
-# from .models.condition import Condition
 from .utils.importer_utils import get_update_or_create_related_object, pre_import_treatments, update_or_create_object
 
 logger = logging.getLogger(__name__)
@@ -45,7 +44,8 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_PLANTE.csv": Plant,
     "REF_ICA_FAMILLE_PLANTE.csv": PlantFamily,
     "REF_ICA_SUBSTANCE_ACTIVE.csv": Substance,
-    "POPULATION.csv": Population,
+    "POPULATION_CIBLE.csv": Population,
+    "REF_ICA_POPULATION_ARISQUE.csv": Condition,
     "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
     "REF_ICA_FORME_GALENIQUE.csv": GalenicFormulation,
     "REF_ICA_UNITE.csv": SubstanceUnit,
@@ -83,12 +83,12 @@ class CSVImporter:
         "OBJEFF": Effect,
         "FRMGAL": GalenicFormulation,
         "STINGSBS": IngredientStatus,
+        "POPRS": Condition,
         # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
         # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
         # "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
         # "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": "",
         # "REF_ICA_PARTIE_UTILE.csv": "",
-        # "POPULATION.csv": "",
     }
 
     # Établi les suffix des champ des csv correspondant aux champs des modèles Django
