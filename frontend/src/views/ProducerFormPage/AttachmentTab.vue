@@ -1,5 +1,6 @@
 <template>
   <div>
+    <DsfrAlert class="mb-4" small type="error" v-if="validationError">{{ validationError }}</DsfrAlert>
     <SectionTitle title="Étiquetage" sizeTag="h6" icon="ri-price-tag-2-fill" />
     <DsfrInputGroup>
       <DsfrFileUpload
@@ -33,8 +34,13 @@
 import { ref, computed } from "vue"
 import FileGrid from "./FileGrid"
 import SectionTitle from "@/components/SectionTitle"
+import { firstErrorMsg } from "@/utils/forms"
 
+const props = defineProps(["externalResults"])
 const payload = defineModel()
+
+const validationError = computed(() => props.externalResults?.[0]?.attachments)
+
 const selectedLabelFile = ref(null)
 const selectedOtherFile = ref(null)
 
