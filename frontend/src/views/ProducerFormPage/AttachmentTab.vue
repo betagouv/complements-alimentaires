@@ -3,10 +3,11 @@
     <SectionTitle title="Étiquetage" sizeTag="h6" icon="ri-price-tag-2-fill" />
     <DsfrInputGroup>
       <DsfrFileUpload
-        label="Merci d'ajouter au moins un fichier image ou PDF correspondant à l'étiquetage."
+        label="Veuillez nous transmettre l'étiquetage de votre produit (format PDF ou image)"
         :accept="['image/jpeg, image/gif, image/png, application/pdf']"
         @change="addLabelFiles"
         v-model="selectedLabelFile"
+        :required="true"
       />
     </DsfrInputGroup>
 
@@ -16,7 +17,7 @@
 
     <DsfrInputGroup>
       <DsfrFileUpload
-        label="Autres pièces que vous jugez nécessaires pour l'étude du dossier"
+        label="Vous pouvez nous transmettre tout autre document que vous jugez utile à l'examen de votre dossier"
         :acceptTypes="['image/jpeg, image/gif, image/png, application/pdf']"
         @change="addOtherFiles"
         v-model="selectedOtherFile"
