@@ -34,7 +34,6 @@
 import { ref, computed } from "vue"
 import FileGrid from "./FileGrid"
 import SectionTitle from "@/components/SectionTitle"
-import { firstErrorMsg } from "@/utils/forms"
 
 const props = defineProps(["externalResults"])
 const payload = defineModel()
