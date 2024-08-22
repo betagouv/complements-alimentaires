@@ -15,7 +15,7 @@ export const getAllIndexesOfRegex = (array, regex) => {
 }
 
 // met les choix "Autre % (à préciser)" en dernier dans la liste
-export const otherFieldsAtTheEnd = (choices) => {
+export const pushOtherChoiceFieldAtTheEnd = (choices) => {
   const otherObjsIds = getAllIndexesOfRegex(choices, /Autre.*(à préciser)/)
   if (otherObjsIds) {
     const otherObjs = choices.filter((obj) => otherObjsIds.includes(obj.id))
