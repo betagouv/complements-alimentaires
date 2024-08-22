@@ -107,9 +107,8 @@ const galenicFormulationsNames = computed(() => {
 
 const effectsNames = computed(() => {
   const findName = (id) => effects.value?.find((y) => y.id === id)?.name
-  const otherEffects = payload.value.otherEffects
-  const allEffects = otherEffects
-    ? payload.value.effects.map(findName).concat("Autre (à préciser) : ".concat(otherEffects))
+  const allEffects = payload.value.otherEffects
+    ? payload.value.effects.map(findName).concat("Autre (à préciser) : ".concat(payload.value.otherEffects))
     : payload.value.effects.map(findName)
 
   const indexOtherEffectLabel = allEffects.indexOf("Autre (à préciser)")
@@ -125,7 +124,17 @@ const populationNames = computed(() => {
 })
 const conditionNames = computed(() => {
   const findName = (id) => conditions.value?.find((y) => y.id === id)?.name
-  return payload.value.conditionsNotRecommended.map(findName).join(", ")
+  const allConditions = payload.value.otherConditions
+    ? payload.value.conditionsNotRecommended
+        .map(findName)
+        .concat("Autre (à préciser) : ".concat(payload.value.otherConditions))
+    : payload.value.conditionsNotRecommended.map(findName)
+
+  const indexOtherConditionLabel = allConditions.indexOf("Autre (à préciser)")
+  if (indexOtherConditionLabel !== -1) {
+    allConditions.splice(indexOtherConditionLabel, 1)
+  }
+  return allConditions.join(", ")
 })
 
 const editLink = (tab) => ({ query: { tab } })

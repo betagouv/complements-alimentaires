@@ -187,6 +187,7 @@
 
     <OtherChoiceField
       :listOfChoices="payload.conditionsNotRecommended"
+      v-model="payload.otherConditions"
       :otherChoiceId="otherConditionId"
       label="Merci de préciser les autres populations à risques ou facteurs de risques"
     ></OtherChoiceField>
@@ -202,6 +203,7 @@
     </DsfrFieldset>
     <OtherChoiceField
       :listOfChoices="payload.effects"
+      v-model="payload.otherEffects"
       :otherChoiceId="otherEffectsId"
       label="Merci de préciser les autres objectifs ou effets"
     ></OtherChoiceField>

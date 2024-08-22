@@ -345,6 +345,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "computed_substances",
             "attachments",
             "other_effects",
+            "other_conditions",
             "instructor",
             "visor",
             "post_validation_status",

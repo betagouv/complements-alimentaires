@@ -144,9 +144,12 @@ class Declaration(Historisable, TimeStampable):
     conditions_not_recommended = models.ManyToManyField(
         Condition, blank=True, verbose_name="consommation déconseillée"
     )
+    other_conditions = models.TextField(
+        blank=True, verbose_name="autres populations à risques ou facteurs de risques non listés"
+    )
 
     effects = models.ManyToManyField(Effect, blank=True, verbose_name="objectifs ou effets")
-    other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non-listés")
+    other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non listés")
 
     def create_snapshot(
         self,
