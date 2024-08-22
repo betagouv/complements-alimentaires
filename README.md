@@ -193,3 +193,5 @@ Telecharger le fichier s3cfg correspondant au bucket
 ```
 s3cmd put <data_directory> s3://csv-data --recursive
 ```
+
+Les serveurs d'env prod/staging/demo utilisent le script clevercloud/post_build_hook.sh pour la récupération des données
