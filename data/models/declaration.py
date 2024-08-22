@@ -121,6 +121,7 @@ class Declaration(Historisable, TimeStampable):
     galenic_formulation = models.ForeignKey(
         GalenicFormulation, verbose_name="forme galénique", null=True, blank=True, on_delete=models.RESTRICT
     )
+    other_galenic_formulation = models.TextField(blank=True, verbose_name="autre forme galénique non listée")
 
     unit_quantity = models.FloatField(
         null=True, blank=True, verbose_name="poids ou volume d'une unité de consommation"
