@@ -208,7 +208,7 @@ const routes = [
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
-        status: "DRAFT,OBSERVATION,OBJECTION",
+        status: "DRAFT,OBSERVATION,OBJECTION,INSTRUCTION",
       },
     },
   },
