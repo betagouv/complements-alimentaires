@@ -31,7 +31,7 @@ const rows = computed(() => {
   if (useShortTable.value)
     return props.data.results.map((d) => ({
       rowAttrs: { class: "cursor-pointer", onClick: () => emit("open", d.id) },
-      rowData: [d.name, getStatusTagForCell(d.status)],
+      rowData: [d.name, getStatusTagForCell(d.status, true)],
     }))
 
   return props.data.results.map((d) => ({
@@ -42,7 +42,7 @@ const rows = computed(() => {
         to: { name: "DeclarationPage", params: { id: d.id } },
       },
       d.brand || "—",
-      getStatusTagForCell(d.status),
+      getStatusTagForCell(d.status, true),
       timeAgo(d.modificationDate),
     ],
   }))

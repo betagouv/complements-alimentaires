@@ -1,7 +1,6 @@
 <template>
   <div>
     <SectionTitle :title="title" :icon="icon" />
-    <p>{{ description }}</p>
     <div v-for="solicitation in solicitations" :key="solicitation.id">
       <div class="flex items-center">
         <v-icon class="size-4" name="ri-chat-download-line" />
@@ -46,7 +45,6 @@ import { isoToPrettyDate, isoToPrettyTime } from "@/utils/date"
 defineProps({
   title: String,
   icon: String,
-  description: String,
   solicitations: Array,
   emptyText: String,
   actions: Array,

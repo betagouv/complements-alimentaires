@@ -42,7 +42,7 @@
           </div>
         </DsfrFieldset>
       </div>
-      <StatusFilter :exclude="['DRAFT']" @update:modelValue="updateStatusFilter" v-model="filteredStatus" />
+      <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" v-model="filteredStatus" />
       <div class="md:border-l md:px-8">
         <DsfrInputGroup class="max-w-sm">
           <DsfrSelect
@@ -61,7 +61,7 @@
     <div v-else-if="hasDeclarations">
       <InstructionDeclarationsTable :data="data" />
     </div>
-    <p v-else class="mb-8">Il n'y a pas encore de déclarations.</p>
+    <p v-else class="mb-8">Aucune déclaration.</p>
     <DsfrPagination
       v-if="showPagination"
       @update:currentPage="updatePage"
