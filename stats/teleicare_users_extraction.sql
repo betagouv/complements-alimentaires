@@ -148,8 +148,15 @@ GO
 SELECT COUNT(*) FROM V_UsersForExport
 /* 14020 usagers et administrateurs avec Email non null */
 
-/*Extract via PowerShell des utilisateurs ayant eu une activité ces 2 dernières années */
-SELECT Nom, Prenom, Email, EtabRaisonSociale, EtabEnseigne, EtabSiret, EtabNumeroTvaIntra, Fonction, RoleAsp FROM [TELEICARE].[dbo].[V_UsersForExport] where LASTACTIVITYDATE > '2022-08-01'
+/*Extract via PowerShell :
+- des gestionnaires depuis le début de téléicare */
+SELECT Nom, Prenom, Email, EtabRaisonSociale, EtabEnseigne, EtabSiret, EtabNumeroTvaIntra, Fonction, RoleAsp FROM [TELEICARE].[dbo].[V_UsersForExport] where RoleAsp = 'Administrateur'
+
+/* - des utilisateurs non gestionnaires ayant eu une activité ces 2 dernières années */
+SELECT Nom, Prenom, Email, EtabRaisonSociale, EtabEnseigne, EtabSiret, EtabNumeroTvaIntra, Fonction, RoleAsp FROM [TELEICARE].[dbo].[V_UsersForExport] where RoleAsp = 'Usager' and LASTACTIVITYDATE > '2022-08-01'
+
+-- deux listes distinctes car certains gestionnaires sont aussi utilisateurs
+-- 10355 total
 
 
 /* Reste à creuser */
