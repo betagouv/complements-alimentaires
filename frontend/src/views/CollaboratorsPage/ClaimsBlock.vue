@@ -4,7 +4,6 @@
     @process="process"
     title="Demandes reçues"
     icon="ri-chat-download-line"
-    description="Visualisez et traitez vos demandes reçues pour rejoindre votre entreprise."
     :solicitations="solicitations"
     emptyText="Vous n'avez actuellement aucune demande en cours."
     :actions="[
