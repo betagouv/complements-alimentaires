@@ -80,6 +80,7 @@
           v-model="payload.otherGalenicFormulation"
           label-visible
           label="Merci de préciser la forme galénique"
+          required="true"
         />
       </div>
     </div>
