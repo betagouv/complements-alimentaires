@@ -191,7 +191,9 @@ python manage.py load_ingredients
 
 Telecharger le fichier s3cfg correspondant au bucket
 ```
+s3cmd setpolicy ./clevercloud/allow_policy.json s3://csv-data
 s3cmd put <data_directory> s3://csv-data --recursive
+s3cmd setpolicy ./clevercloud/deny_policy.json s3://csv-data
 ```
 
 Les serveurs d'env prod/staging/demo utilisent le script clevercloud/post_build_hook.sh pour la récupération des données
