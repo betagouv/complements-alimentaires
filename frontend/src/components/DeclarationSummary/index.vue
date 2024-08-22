@@ -102,6 +102,8 @@ const unitInfo = computed(() => {
 
 const galenicFormulationsNames = computed(() => {
   if (!payload.value.galenicFormulation) return null
+  else if (payload.value.otherGalenicFormulation)
+    return "Autre (à préciser) : ".concat(payload.value.otherGalenicFormulation)
   return galenicFormulations.value?.find((y) => y.id === parseInt(payload.value.galenicFormulation))?.name
 })
 
