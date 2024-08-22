@@ -119,6 +119,7 @@ class CSVImporter:
         "min_age": ["AGE_MIN"],
         "max_age": ["AGE_MAX"],
         "is_defined_by_anses": ["CATEGORIE_ANSES"],
+        "is_liquid": ["LIQUIDE"],
         # Les champs ForeignKey (synonymes)
         "standard_name": ["SBSACT_IDENT", "PLTE_IDENT", "INGA_IDENT", "MORG_IDENT"],
         "siccrf_family": ["FAMPL_IDENT"],
@@ -139,7 +140,7 @@ class CSVImporter:
         "missing_import_data",
         "to_be_entered_in_next_decree",
     ]
-    NEW_FIELDS = ["is_liquid", "long_name"]
+    NEW_FIELDS = ["long_name"]
 
     def __init__(self, file, model, is_relation=False, mapping=None):
         """Initialise un CSVImporter avec le fichier source, le modèle de destination, etc
