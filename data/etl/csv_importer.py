@@ -11,13 +11,10 @@ from django.db.models import (
     ManyToManyField,
 )
 
-from .exceptions import CSVFileError
-
-# from .models.condition import Condition
-from .importer_utils import get_update_or_create_related_object, pre_import_treatments, update_or_create_object
+from ..exceptions import CSVFileError
 
 # Import the model
-from .models import (
+from ..models import (
     Effect,
     GalenicFormulation,
     Ingredient,
@@ -34,6 +31,9 @@ from .models import (
     SubstanceSynonym,
     SubstanceUnit,
 )
+
+# from .models.condition import Condition
+from .utils import get_update_or_create_related_object, pre_import_treatments, update_or_create_object
 
 logger = logging.getLogger(__name__)
 
