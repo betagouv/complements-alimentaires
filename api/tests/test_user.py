@@ -1,4 +1,7 @@
+from unittest import mock
+
 from django.contrib.auth import get_user_model
+from django.test.utils import override_settings
 
 from rest_framework import status
 
@@ -110,7 +113,12 @@ class TestCreateUser(ProjectAPITestCase):
             last_name="Cook", first_name="Tim", email="tim.cook@example.com", username="tcook", password="azerty123$"
         )
 
-    def test_create_user_ok(self):
+    @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
+    @override_settings(CONTACT_EMAIL="contact@example.com")
+    @override_settings(SECURE=True)
+    @override_settings(HOSTNAME="hostname")
+    @mock.patch("config.email.send_sib_template")
+    def test_create_user_ok(self, mocked_brevo):
         response = self.post(self.url(), self.user_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn("id", response.data)
@@ -121,6 +129,12 @@ class TestCreateUser(ProjectAPITestCase):
         self.assertFalse(new_user.is_superuser)
         self.assertFalse(new_user.is_staff)
         self.assertEqual(new_user.get_global_roles(), [])
+
+        template_id = 19
+        self.assertEqual(mocked_brevo.call_count, 1)
+        self.assertEqual(mocked_brevo.call_args_list[0][0][0], template_id)
+        self.assertEqual(mocked_brevo.call_args_list[0][0][2], new_user.email)
+        self.assertEqual(mocked_brevo.call_args_list[0][0][3], new_user.get_full_name())
 
     def test_create_user_with_existing_email(self):
         email = "eren@example.com"

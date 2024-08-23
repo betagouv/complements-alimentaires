@@ -32,11 +32,3 @@ class BaseSolicitationTestCase(TestCase):
         self.solicitation.processed_at = timezone.now()
         with self.assertRaises(ValidationError):
             self.solicitation.save()
-
-    def test_personnal_message(self):
-        # empty personnal message
-        solicitation = SupervisionClaimFactory(personal_msg="")
-        self.assertEqual(solicitation.personal_message_for_mail, "")
-        # non-empty personnal message
-        solicitation = SupervisionClaimFactory(personal_msg="Svp ajoutez-moi !")
-        self.assertEqual(solicitation.personal_message_for_mail, "Iel a ajouté ce message : «Svp ajoutez-moi !».")

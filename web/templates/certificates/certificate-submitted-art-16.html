@@ -1,0 +1,206 @@
+{% extends 'certificates/certificate-base-template.html' %}
+{% block 'body' %}
+<h1 style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
+    ACCUSÉ D'ENREGISTREMENT<br />
+    DE DÉCLARATION D'UN COMPLEMENT ALIMENTAIRE
+</h1>
+<div style="font-size: 1.2em;">
+    <p>
+        Madame, Monsieur,
+    </p>
+    <p>
+        Le {{ last_submission_date|date:"l j F Y" }} vous avez déclaré par voie électronique le produit suivant :
+    </p>
+    <p style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
+        {{ declaration.name }}
+        {% if declaration.galenic_formulation %}
+        <br />{{ declaration.galenic_formulation.name }}
+        {% endif %}
+        {% if declaration.company %}
+        <br />{{ declaration.company.social_name }}
+        {% endif %}
+    </p>
+    <p>
+        Cette déclaration a été effectuée au titre de l’article 16 du décret n°2006-352 du 20 mars 2006 relatif aux
+        compléments alimentaires, pour le compte de la société <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+            {% if declaration.company %}{{ declaration.company.social_name }}{% endif %}
+        </span>.
+    </p>
+    <p>
+        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">Votre dossier porte le numéro : {{ declaration.id }}.</span>
+    </p>
+    <p>
+        Ce numéro unique facilitera le suivi de votre dossier.
+    </p>
+    <p>
+        Nous vous rappelons qu’il est de votre responsabilité de déclarer et mettre en marché un produit conforme à la
+        réglementation applicable aux denrées alimentaires (notamment les règlements (CE) n°178/2002, (UE) n°1169/ 2011 et
+        n°2283/2015).
+    </p>
+    <p>
+        A cet effet, vous voudrez bien transmettre, par mail à l’adresse complement-alimentaire.dgal@agriculture.gouv.fr,
+        l’engagement ci-après, merci d’indiquer en objet "[n°2024-5-1273– Engagement]". Ce document peut également
+        être téléchargé depuis le site de la DGAL à l’adresse suivante :
+        <a href="https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire">
+            https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire.
+        </a>
+    </p>
+    <p>
+        Sauf incomplétude du dossier de déclaration, examen défavorable par nos services, ou contrordre de votre part,
+        votre produit fera l’objet, sous deux mois, d’une attestation de déclaration et d’une inscription à la liste des
+        compléments alimentaires.
+    </p>
+
+    <p>
+        Pour tout renseignement d’ordre général sur le cadre réglementaire applicable aux compléments alimentaires, nous
+        vous invitons à vous rendre sur le site de la DGAL à l’adresse suivante :
+        <a href="https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire">
+            https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire
+        </a>.
+    </p>
+</div>
+<div>
+    <pdf:nextpage />
+</div>
+
+<h1 style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
+    Compléments alimentaires - Engagement de conformité au droit alimentaire
+</h1>
+<div style="font-size: 1.2em">
+    <p style="padding-top: 1cm;">
+        En lien avec la déclaration effectuée au titre de l’article 15 du décret n°2006-352 du 20 mars 2006 relatif aux compléments alimentaires,
+    </p>
+    <p>
+        la société
+        {% if declaration.company %}
+        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+            {{ declaration.company.social_name }}
+        </span>
+        {% endif %}
+    </p>
+    <p>
+        atteste que le produit qu’elle met sur le marché
+    </p>
+    <p style="font-family: 'Marianne-Bold'; font-weight: bold;">
+        {{ declaration.name }}
+        {% if declaration.galenic_formulation %}
+        <br />{{ declaration.galenic_formulation.name }}
+        {% endif %}
+        {% if declaration.company %}
+        <br />{{ declaration.company.social_name }}
+        {% endif %}
+    </p>
+    <p>
+        enregistré sous le numéro <span style="font-family: 'Marianne-Bold'; font-weight: bold;">{{ declaration.id }}</span>
+    </p>
+    <p>
+        répond aux prescriptions du droit alimentaire qui lui sont applicables, notamment les textes précisés en annexe 1
+        du présent engagement (liste non exhaustive).
+    </p>
+    <p style="padding-left: 10cm; padding-top: 1cm;">
+        Le {{ date|date:"l j F Y" }}
+        des aliments
+    </p>
+    <p style="padding-left: 10cm;">
+        {% if declaration.company %}
+        {{ declaration.company.social_name }}
+        {% endif %}
+    </p>
+    <p style="padding-left: 10cm;">
+        Signature
+    </p>
+</div>
+
+<div>
+    <pdf:nextpage />
+</div>
+
+<h1 style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
+    Annexe 1 : prescriptions du droit alimentaire applicables au compléments alimentaires (liste non exhaustive)
+</h1>
+<div style="font-size: 1.2em">
+    <ul>
+        <li>
+            <a href="https://eur-lex.europa.eu/legal-content/FR/TXT/PDF/?uri=CELEX:02002L0046-20220930&from=EN">
+                Directive n°2002/46/CE
+            </a>
+            du Parlement européen et du Conseil du 10 juin 2002 relative au rapprochement
+            des législations des Etats membres concernant les compléments alimentaires et le
+            <a href="https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000638341">
+                décret n°2006-352
+            </a>
+            du 20 mars 2006 relatif aux compléments alimentaires ;
+        </li>
+        <li>
+            <a href="https://eur-lex.europa.eu/legal-content/FR/ALL/?uri=CELEX%3A32002R0178">
+                Règlement (CE) n°178/2002
+            </a>
+            du Parlement européen et du Conseil du 28 janvier 2002 établissant les
+            principes généraux et les prescriptions générales de la législation alimentaire, instituant l'Autorité
+            européenne de sécurité des aliments et fixant des procédures relatives à la sécurité des denrées alimentaires ;
+        </li>
+        <li>
+            <a href="https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=celex%3A32004R0852">
+                Règlement (CE) n°852/2004
+            </a>
+            du parlement européen et du Conseil du 29 avril 2004 relatif à l
+            'hygiène des denrées alimentaires ;
+        </li>
+        <li>
+            <a href="https://eur-lex.europa.eu/legal-content/fr/ALL/?uri=CELEX%3A32006R1881">
+                Règlement (CE) n°1881/2006
+            </a>
+            de la Commission du 19 décembre 2006 portant fixation de teneurs maximales
+            pour certains contaminants dans les denrées alimentaires ;
+        </li>
+        <li>
+            <a href="https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=celex:32006R1924">
+                Règlement (CE) n°1924/2006
+            </a>
+            du Parlement européen et du Conseil du 20 décembre 2006 concernant les
+            allégations nutritionnelles et de santé portant sur les denrées alimentaires;
+        </li>
+        <li>
+            <a href="https://eur-lex.europa.eu/legal-content/FR/ALL/?uri=celex:32006R1925">
+                Règlement (CE) n°1925/2006
+            </a>
+            du Parlement européen et du Conseil du 20 décembre 2006 concernant l'
+            adjonction de vitamines, de minéraux et de certaines autres substances aux denrées alimentaires ;
+        </li>
+        <li>
+            <a href="https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=celex%3A32008R1333">
+                Règlement (CE) n°1333/2008
+            </a>
+            du Parlement européen et du Conseil du 16 décembre 2008 sur les
+            additifs alimentaires ;
+        </li>
+        <li>
+            <a href="https://eur-lex.europa.eu/legal-content/FR/ALL/?uri=CELEX%3A32008R1334">
+                Règlement (CE) n°1334/2008
+            </a>
+            du Parlement européen et du Conseil du 16 décembre 2008 relatif aux
+            arômes et à certains ingrédients alimentaires possédant des propriétés aromatisantes qui sont destinés à
+            être utilisés dans et sur les denrées alimentaires et modifiant le règlement (CEE) n°1601/91 du Conseil, les
+            règlements (CE) n°2232/96 et (CE) n°110/2008 et la directive 2000/13/CE ;
+        </li>
+        <li>
+            <a href="https://eur-lex.europa.eu/legal-content/fr/ALL/?uri=CELEX:32011R1169">
+                Règlement (UE) n°1169/2011
+            </a>
+            du Parlement européen et du Conseil du 25 octobre 2011 concernant l’information
+            des consommateurs sur les denrées alimentaires, modifiant les règlements (CE) n°1924/ 2006 et (CE) n°1925/2006
+            du Parlement européen et du Conseil et abrogeant la directive 87/250/CEE de la Commission, la directive 90/496/CEE
+            du Conseil, la directive 1999/10/CE de la Commission, la directive 2000/13/CE du Parlement européen et du Conseil,
+            les directives 2002/67/CE et 2008/5/CE de la Commission et le règlement (CE) n°608/2004 de la Commission ;
+        </li>
+        <li>
+            <a href="https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=OJ%3AJOL_2015_327_R_0001">
+                Règlement (UE) n°2015/2283
+            </a>
+            du Parlement européen et du Conseil du 25 novembre 2015 relatif aux
+            nouveaux aliments, modifiant le règlement (UE) n°1169/2011 du Parlement européen et du Conseil et abrogeant le
+            règlement (CE) n°258/97 du Parlement européen et du Conseil et le règlement (CE) n°1852/2001 de la Commission
+        </li>
+    </ul>
+</div>
+{% endblock %}

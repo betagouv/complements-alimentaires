@@ -13,18 +13,9 @@
     </div>
 
     <div v-else class="mb-4">
-      <DsfrCallout class="!p-4" v-if="showReasons">
-        <p class="font-bold my-2">Remarques de l'instruction</p>
-        <ul>
-          <li v-for="reason in data.blockingReasons" :key="reason">{{ reason }}</li>
-        </ul>
-      </DsfrCallout>
-      <DsfrAlert
-        v-if="readonly && payload"
-        class="mb-4"
-        :type="payload.status === 'AUTHORIZED' ? 'success' : 'info'"
-        :title="`Cette déclaration est en statut « ${statusProps[payload.status].label} »`"
-      />
+      <DeclarationAlert v-if="payload" role="declarant" :declaration="payload" class="mb-4" />
+
+      <StatusChangeErrorDisplay class="mb-8" :errors="statusChangeErrors" :tabTitles="titles" />
       <DsfrTabs
         v-if="payload"
         ref="tabs"
@@ -54,6 +45,7 @@
         </DsfrTabContent>
       </DsfrTabs>
       <TabStepper
+        v-if="payload"
         :titles="titles"
         :selectedTabIndex="selectedTabIndex"
         @back="selectTab(selectedTabIndex - 1)"
@@ -63,7 +55,9 @@
   </div>
 </template>
 <script setup>
+import DeclarationAlert from "@/components/DeclarationAlert"
 import ProgressSpinner from "@/components/ProgressSpinner"
+import StatusChangeErrorDisplay from "./StatusChangeErrorDisplay"
 import TabStepper from "@/components/TabStepper"
 import { useRootStore } from "@/stores/root"
 import { ref, computed, watch } from "vue"
@@ -79,11 +73,20 @@ import { useRoute, useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
 import FormWrapper from "@/components/FormWrapper"
 import { headers } from "@/utils/data-fetching"
-import { shouldShowReasons } from "@/utils/declaration"
 import useToaster from "@/composables/use-toaster"
-import { statusProps, tabTitles } from "@/utils/mappings"
+import { tabTitles } from "@/utils/mappings"
 
+// Il y a deux refs qui stockent des erreurs. $externalResults sert
+// lors qu'on sauvegarde la déclaration (POST ou PUT) mais qu'on ne change
+// pas son status. Des erreurs ici empêchent de changer l'onglet. Exemple : lors
+// qu'on ne me pas de nom du produit on ne peut pas avancer.
 const $externalResults = ref({})
+
+// Les erreurs suite à une tentative de changement de statut sont stockés dans
+// ce ref. C'est toujours possible de changer d'onglet pour corriger les erreurs.
+// Exemple : le manque d'une pièce jointe pour l'étiquetage.
+const statusChangeErrors = ref({})
+
 const route = useRoute()
 const router = useRouter()
 
@@ -199,15 +202,9 @@ const submitPayload = async (comment) => {
   const path = payload.value.status === "DRAFT" ? "submit" : "resubmit"
   const url = `/api/v1/declarations/${payload.value.id}/${path}/`
   const { response } = await useFetch(url, { headers: headers() }).post({ comment }).json()
-  $externalResults.value = await handleError(response)
+  statusChangeErrors.value = await handleError(response)
 
-  if ($externalResults.value) {
-    // Temporairement, on montrera les messages des champs en haut du formulaire car
-    // ils peuvent être présents dans plusieurs steps. Cette UI/UX pourra être amélioré
-    // par la suite.
-    const fieldErrors = $externalResults.value.fieldErrors.map((x) => Object.values(x)?.[0])
-    $externalResults.value.nonFieldErrors.push(...fieldErrors)
-    //
+  if (statusChangeErrors.value) {
     window.scrollTo(0, 0)
   } else {
     useToaster().addSuccessMessage("Votre déclaration a été envoyée")
@@ -221,6 +218,4 @@ watch(
   () => route.query.tab,
   (tab) => selectTab(parseInt(tab))
 )
-
-const showReasons = computed(() => shouldShowReasons(data.value))
 </script>

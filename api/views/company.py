@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 
 from data.choices import CountryChoices
 from data.models import Company, SupervisorRole
-from data.models.solicitation import CoSupervisionClaim, SupervisionClaim
+from data.models.solicitation import CompanyAccessClaim, SupervisionClaim
 from data.utils.external_utils import SiretData
 from data.validators import validate_siret, validate_vat  # noqa
 
@@ -116,21 +116,23 @@ class ClaimCompanySupervisionView(APIView):
         return Response({})
 
 
-class ClaimCompanyCoSupervisionView(APIView):
-    """Envoi une solicitation aux gestionnaires d'une entreprise pour demander à devenir co-gestionnaire."""
+class ClaimCompanyAccessView(APIView):
+    """Envoi une solicitation aux gestionnaires d'une entreprise pour demander en avoir accès."""
 
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, identifier):
-        company = get_object_or_404(Company, **{_get_identifier_type(request): identifier})
-        if not company.supervisors.exists():  # ne devrait pas arriver, sécurité supplémentaire
+    def post(self, request, pk):
+        company = get_object_or_404(Company, pk=pk)
+        if not company.supervisors.exists():
             raise ProjectAPIException(
                 global_error="Cette entreprise n'a pas de gestionnaire. Votre demande n'a pas été envoyée."
             )
-        CoSupervisionClaim.objects.create(
+        CompanyAccessClaim.objects.create(
             sender=request.user,
             company=company,
             personal_msg=request.data.get("message"),
+            declarant_role=request.data.get("declarant_role"),
+            supervisor_role=request.data.get("supervisor_role"),
         )
         return Response({})
 

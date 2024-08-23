@@ -33,7 +33,35 @@ def validate_mandatory_fields(declaration) -> tuple[list, list]:
     has_label = declaration.attachments.filter(type=Attachment.AttachmentType.LABEL).exists()
     if not has_label:
         field_errors.append({"attachments": "La demande doit contenir au moins une pièce jointe de l'étiquetage"})
+
+    for declared_plant in declaration.declared_plants.all():
+        if not declared_plant_is_complete(declared_plant):
+            non_field_errors += ["Merci de renseigner les informations manquantes des plantes ajoutées"]
+
+    for declared_microorganism in declaration.declared_microorganisms.all():
+        if not declared_microorganism_is_complete(declared_microorganism):
+            non_field_errors += ["Merci de renseigner les informations manquantes des micro-organismes ajoutées"]
+
+    for computed_substance in declaration.computed_substances.all():
+        if not computed_substance_is_complete(computed_substance):
+            non_field_errors += ["Merci de renseigner les informations manquantes dans le tableau des substances"]
     return (field_errors, non_field_errors)
+
+
+def declared_plant_is_complete(plant):
+    if not plant.active:
+        return True
+    return plant.used_part and plant.quantity and plant.unit and plant.preparation
+
+
+def declared_microorganism_is_complete(mo):
+    if not mo.active:
+        return True
+    return mo.strain and (not mo.activated or mo.quantity)
+
+
+def computed_substance_is_complete(substance):
+    return substance.quantity
 
 
 def validate_number_of_elements(declaration) -> tuple[list, list]:

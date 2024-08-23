@@ -1,13 +1,17 @@
 import base64
 import os
+from datetime import timedelta
 
 from django.urls import reverse
+from django.utils import timezone
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from data.choices import AuthorizationModes, CountryChoices, FrAuthorizationReasons
 from data.factories import (
+    AwaitingInstructionDeclarationFactory,
+    AwaitingVisaDeclarationFactory,
     CompanyFactory,
     ConditionFactory,
     DeclarantRoleFactory,
@@ -17,9 +21,11 @@ from data.factories import (
     IngredientFactory,
     InstructionRoleFactory,
     MicroorganismFactory,
+    OngoingInstructionDeclarationFactory,
     PlantFactory,
     PlantPartFactory,
     PopulationFactory,
+    SnapshotFactory,
     SubstanceFactory,
     SubstanceUnitFactory,
     SupervisorRoleFactory,
@@ -747,6 +753,175 @@ class TestDeclarationApi(APITestCase):
             self.assertNotIn(result["id"], map(lambda x: x.id, stephane_declarations))
 
     @authenticate
+    def test_pagination_returns_instructors_and_visors(self):
+        """
+        La réponse à l'appel API contient les instructrices et viseuses assignées
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        emma = InstructionRoleFactory()
+        edouard = InstructionRoleFactory()
+        stephane = InstructionRoleFactory()
+
+        anna = VisaRoleFactory()
+        quentin = VisaRoleFactory()
+        daniel = VisaRoleFactory()
+
+        OngoingInstructionDeclarationFactory(instructor=edouard, visor=anna)
+        OngoingInstructionDeclarationFactory(instructor=emma, visor=quentin)
+        OngoingInstructionDeclarationFactory(instructor=stephane, visor=daniel)
+
+        response = self.client.get(reverse("api:list_all_declarations"), format="json")
+        instructors = response.json()["instructors"]
+        visors = response.json()["visors"]
+
+        for instructor in [emma, edouard, stephane]:
+            json_instructor = next(filter(lambda x: x["id"] == instructor.id, instructors), None)
+            self.assertIsNotNone(json_instructor)
+            self.assertAlmostEqual(json_instructor["name"], instructor.name)
+
+        for visor in [anna, quentin, daniel]:
+            json_visor = next(filter(lambda x: x["id"] == visor.id, visors), None)
+            self.assertIsNotNone(json_visor)
+            self.assertAlmostEqual(json_visor["name"], visor.name)
+
+    @authenticate
+    def test_filter_instructor_all_declarations(self):
+        """
+        Les déclarations peuvent être filtrées par instructrice
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        emma = InstructionRoleFactory()
+        edouard = InstructionRoleFactory()
+        stephane = InstructionRoleFactory()
+
+        emma_declaration = OngoingInstructionDeclarationFactory(instructor=emma)
+        OngoingInstructionDeclarationFactory(instructor=edouard)
+        OngoingInstructionDeclarationFactory(instructor=stephane)
+
+        emma_filter_url = f"{reverse('api:list_all_declarations')}?instructor={emma.id}"
+        response = self.client.get(emma_filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], emma_declaration.id)
+
+    @authenticate
+    def test_filter_instructor_not_assigned(self):
+        """
+        Les déclarations peuvent être filtrées par celles qui n'ont pas encore d'instructrice
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        emma = InstructionRoleFactory()
+        edouard = InstructionRoleFactory()
+        stephane = InstructionRoleFactory()
+
+        OngoingInstructionDeclarationFactory(instructor=emma)
+        OngoingInstructionDeclarationFactory(instructor=edouard)
+        OngoingInstructionDeclarationFactory(instructor=stephane)
+        declaration = AwaitingInstructionDeclarationFactory()
+
+        unassigned_filter_url = f"{reverse('api:list_all_declarations')}?instructor=None"
+        response = self.client.get(unassigned_filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
+    def test_filter_instructor_not_assigned_and_assigned(self):
+        """
+        Les déclarations peuvent être filtrées par celles qui n'ont pas encore d'instructrice
+        et par une instructrice en particulier en même temps
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        emma = InstructionRoleFactory()
+        edouard = InstructionRoleFactory()
+        stephane = InstructionRoleFactory()
+
+        emma_declaration = OngoingInstructionDeclarationFactory(instructor=emma)
+        OngoingInstructionDeclarationFactory(instructor=edouard)
+        OngoingInstructionDeclarationFactory(instructor=stephane)
+        unassigned_declaration = AwaitingInstructionDeclarationFactory()
+
+        filter_url = f"{reverse('api:list_all_declarations')}?instructor=None,{emma.id}"
+        response = self.client.get(filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+
+        self.assertIsNotNone(next(filter(lambda x: x["id"] == emma_declaration.id, results), None))
+        self.assertIsNotNone(next(filter(lambda x: x["id"] == unassigned_declaration.id, results), None))
+
+    @authenticate
+    def test_filter_visor_all_declarations(self):
+        """
+        Les déclarations peuvent être filtrées par viseuse
+        """
+        VisaRoleFactory(user=authenticate.user)
+
+        emma = VisaRoleFactory()
+        edouard = VisaRoleFactory()
+        stephane = VisaRoleFactory()
+
+        emma_declaration = OngoingInstructionDeclarationFactory(visor=emma)
+        OngoingInstructionDeclarationFactory(visor=edouard)
+        OngoingInstructionDeclarationFactory(visor=stephane)
+
+        emma_filter_url = f"{reverse('api:list_all_declarations')}?visor={emma.id}"
+        response = self.client.get(emma_filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], emma_declaration.id)
+
+    @authenticate
+    def test_filter_visor_not_assigned(self):
+        """
+        Les déclarations peuvent être filtrées par celles qui n'ont pas encore de viseuse
+        """
+        VisaRoleFactory(user=authenticate.user)
+
+        emma = VisaRoleFactory()
+        edouard = VisaRoleFactory()
+        stephane = VisaRoleFactory()
+
+        OngoingInstructionDeclarationFactory(visor=emma)
+        OngoingInstructionDeclarationFactory(visor=edouard)
+        OngoingInstructionDeclarationFactory(visor=stephane)
+        declaration = AwaitingVisaDeclarationFactory()
+
+        unassigned_filter_url = f"{reverse('api:list_all_declarations')}?visor=None"
+        response = self.client.get(unassigned_filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
+    def test_filter_visor_not_assigned_and_assigned(self):
+        """
+        Les déclarations peuvent être filtrées par celles qui n'ont pas encore d'instructrice
+        et par une instructrice en particulier en même temps
+        """
+        VisaRoleFactory(user=authenticate.user)
+
+        emma = VisaRoleFactory()
+        edouard = VisaRoleFactory()
+        stephane = VisaRoleFactory()
+
+        emma_declaration = OngoingInstructionDeclarationFactory(visor=emma)
+        OngoingInstructionDeclarationFactory(visor=edouard)
+        OngoingInstructionDeclarationFactory(visor=stephane)
+        unassigned_declaration = AwaitingVisaDeclarationFactory()
+
+        filter_url = f"{reverse('api:list_all_declarations')}?visor=None,{emma.id}"
+        response = self.client.get(filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+
+        self.assertIsNotNone(next(filter(lambda x: x["id"] == emma_declaration.id, results), None))
+        self.assertIsNotNone(next(filter(lambda x: x["id"] == unassigned_declaration.id, results), None))
+
+    @authenticate
     def test_filter_company_all_declarations(self):
         """
         Les déclarations peuvent être filtrées par entreprise
@@ -949,3 +1124,47 @@ class TestDeclarationApi(APITestCase):
         results = response.json()["results"]
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
+    def test_sort_declarations_by_instruction_limit(self):
+        """
+        Les déclarations peuvent être triées par la date limite d'instruction
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        today = timezone.now()
+
+        declaration_middle = AwaitingInstructionDeclarationFactory()
+        snapshot_middle = SnapshotFactory(declaration=declaration_middle, status=declaration_middle.status)
+        snapshot_middle.creation_date = today - timedelta(days=5)
+        snapshot_middle.save()
+
+        declaration_first = AwaitingInstructionDeclarationFactory()
+        snapshot_first = SnapshotFactory(declaration=declaration_first, status=declaration_first.status)
+        snapshot_first.creation_date = today - timedelta(days=1)
+        snapshot_first.save()
+
+        declaration_last = AwaitingInstructionDeclarationFactory()
+        snapshot_last = SnapshotFactory(declaration=declaration_last, status=declaration_last.status)
+        snapshot_last.creation_date = today - timedelta(days=10)
+        snapshot_last.save()
+
+        # Triage par date limite d'instruction
+        sort_url = f"{reverse('api:list_all_declarations')}?ordering=responseLimitDate"
+        response = self.client.get(sort_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 3)
+
+        self.assertEqual(results[0]["id"], declaration_last.id)
+        self.assertEqual(results[1]["id"], declaration_middle.id)
+        self.assertEqual(results[2]["id"], declaration_first.id)
+
+        # Triage par date limite d'instruction inversé
+        reverse_sort_url = f"{reverse('api:list_all_declarations')}?ordering=-responseLimitDate"
+        response = self.client.get(reverse_sort_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 3)
+
+        self.assertEqual(results[0]["id"], declaration_first.id)
+        self.assertEqual(results[1]["id"], declaration_middle.id)
+        self.assertEqual(results[2]["id"], declaration_last.id)

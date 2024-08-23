@@ -1,0 +1,58 @@
+{% extends 'certificates/certificate-base-template.html' %}
+{% block 'body' %}
+<h1 style="font-family: 'Marianne-Bold'; font-weight: bold;">
+    Réf. : n° {{declaration.id}}
+</h1>
+<div style="font-size: 1.2em;">
+    <p>
+        Madame, Monsieur,
+    </p>
+    <p>
+        Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré la mise sur le marché du produit :
+        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+            {{ declaration.name }}
+        </span>
+    <p>
+        Des objections ont été émises à l’égard de cette déclaration. Aucune observation apportée n'a
+        été de nature à remettre en cause les objections opposées à la déclaration
+    </p>
+    <p>
+        Votre déclaration est donc refusée. En application de l’article 20 du décret n°2006-352 du décret du 20 mars 2006,
+        il vous est interdit d’importer pour la mise en libre pratique, de détenir en vue de la vente ou de la distribution à
+        titre gratuit, de mettre en vente, de vendre ou de distribuer à titre gratuit le complément alimentaire cité ci-dessus.
+    </p>
+    <p>
+        Si vous voulez contester la présente décision, vous avez la possibilité de former, dans un délai de deux mois à
+        compter de la présente qui vaut notification, un recours gracieux auprès de mes services. Ce recours est effectué
+        par écrit. Vous devez motiver votre recours (expliquer les raisons de droit et les faits qui vous conduisent à
+        contester la décision) et joindre la présente déclaration de refus ainsi que tous les documents que vous jugerez
+        utiles pour faire réviser la décision. L'absence de décision expresse dans un délai de deux mois vaut rejet de
+        votre demande de recours gracieux.
+    </p>
+    <p>
+        En application de l’article 19 du décret n°2006-352 du 20 mars 2006, vous pouvez aussi contester la légalité de
+        la présente décision devant le tribunal administratif. Ce recours peut être déposé par un écrit ou en ligne via le
+        service Télérecours citoyens
+        (<a href="https://citoyens.telerecours.fr/#/authentication">https://citoyens.telerecours.fr/#/authentication</a>).
+        Comme pour le recours gracieux,
+        vous devez motiver votre requête et joindre la présente déclaration de refus. Ce recours juridictionnel devra être
+        enregistré au greffe de la juridiction compétente au plus tard avant l’expiration du deuxième mois suivant la date
+        de notification de la présente décision. Dans l’hypothèse où vous auriez formé un recours gracieux, la saisine de
+        la juridiction devra intervenir avant un délai de deux mois à compter du rejet de ce premier recours.
+    </p>
+    <p>
+        Le recours, qu’il soit gracieux ou juridictionnel, n’est pas suspensif et ne vous permet pas de mettre sur le marché
+        le complément alimentaire concerné
+    </p>
+    <p>
+        Je vous prie d’agréer, Madame, Monsieur, l’expression de ma considération distinguée.
+    </p>
+    <p style="padding-left: 10cm;">
+        Le Sous-Directeur de la sécurité sanitaire<br />
+        des aliments
+    </p>
+    <p style="padding-left: 10cm;">
+        Éric DUMOULIN
+    </p>
+</div>
+{% endblock %}

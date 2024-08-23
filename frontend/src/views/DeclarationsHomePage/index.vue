@@ -14,7 +14,12 @@
       />
     </div>
     <div class="border px-4 pt-4 mb-2 sm:flex gap-8 items-baseline filters">
-      <StatusFilter class="max-w-2xl" @update:modelValue="updateStatusFilter" v-model="filteredStatus" />
+      <StatusFilter
+        class="max-w-2xl"
+        @updateFilter="updateStatusFilter"
+        v-model="filteredStatus"
+        :groupInstruction="true"
+      />
     </div>
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
@@ -67,10 +72,12 @@ const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQ
 const updateStatusFilter = (status) => updateQuery({ status })
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 
-const url = computed(
-  () =>
-    `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&ordering=-modificationDate`
-)
+const url = computed(() => {
+  let statusQuery = filteredStatus.value
+  if (filteredStatus.value?.indexOf("INSTRUCTION") > -1)
+    statusQuery += `${statusQuery.length ? "," : ""}AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA`
+  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate`
+})
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
   await execute()

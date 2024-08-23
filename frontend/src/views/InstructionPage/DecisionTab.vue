@@ -131,14 +131,14 @@ const decisionCategories = [
     value: "approve",
     title: "J’envoie l’attestation de déclaration",
     icon: "ri-checkbox-circle-fill",
-    description: "La déclaration ne pose pas de problème et peut être autorisée en l'état.",
+    description: "La déclaration est conforme et peut être transmise.",
     color: "green",
   },
   {
     value: "modify",
     title: "Des changements sont nécessaires",
     icon: "ri-close-circle-fill",
-    description: "La déclaration nécessite des ajustements et ne peut pas être autorisée.",
+    description: "La déclaration ne peut pas être transmise en l'état.",
     color: "red",
   },
 ]
@@ -155,13 +155,14 @@ const rejectReasons = [
   },
   {
     title: "Le produit répond à la définition du médicament",
-    items: ["Par fonction", "Par présentation", "Sevrage tabagique"],
+    items: ["Médicament par fonction", "Médicament par présentation", "Sevrage tabagique"],
   },
   {
     title: "Les procédures ne sont pas respectées",
     items: [
       "Présence d'un Novel Food",
       "Présence d'une forme d'apport en nutriments non autorisée",
+      "Demande en article 17 attendue",
       "Demande en article 18 attendue",
     ],
   },
@@ -185,8 +186,8 @@ const proposalOptions = computed(() => {
   if (decisionCategory.value === "approve") return [{ text: "Autorisation", value: "autorisation" }]
 
   return [
-    { text: "Objection", value: "objection" },
     { text: "Observation", value: "observation" },
+    { text: "Objection", value: "objection" },
     { text: "Refus", value: "rejection" },
   ]
 })

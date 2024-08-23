@@ -63,12 +63,12 @@ const onChangeCompany = (id) => router.push({ query: { company: id } })
 const supervisorActions = computed(() => [
   {
     title: "Les déclarations de mon entreprise",
-    description: "Visualisez et gérez les déclarations de votre entreprise",
+    description: "Visualisez les déclarations soumises pour le compte de votre entreprise",
     link: { name: "CompanyDeclarationsPage", params: { id: company.value?.id } },
   },
   {
     title: "Les collaborateurs de mon entreprise",
-    description: "Gérez les différents collaborateurs, leurs rôles, les demandes, et invitez-en des nouveaux",
+    description: "Gérez la liste des utilisateurs ayant le pouvoir de déclarer pour le compte de votre entreprise",
     link: { name: "CollaboratorsPage", params: { id: company.value?.id } },
   },
   {
@@ -80,13 +80,14 @@ const supervisorActions = computed(() => [
 
 const declarantActions = [
   {
-    title: "Créer une nouvelle déclaration",
-    description: "Démarrez une nouvelle déclaration pour votre complément alimentaire",
+    title: "Créez une nouvelle déclaration",
+    description: "Déclarez un nouveau produit",
     link: { name: "NewDeclaration" },
   },
   {
     title: "Toutes mes déclarations",
-    description: "Consultez, modifiez ou dupliquez une déclaration que vous avez effectuée",
+    description:
+      "Accédez à l'ensemble de vos dossiers (brouillons, dossiers en cours d'instruction, attestations de déclaration)",
     link: { name: "DeclarationsHomePage" },
   },
 ]

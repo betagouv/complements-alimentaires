@@ -3,8 +3,17 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from data.factories import IngredientFactory, MicroorganismFactory, PlantFactory, PlantPartFactory, SubstanceFactory
+from data.factories import (
+    IngredientFactory,
+    InstructionRoleFactory,
+    MicroorganismFactory,
+    PlantFactory,
+    PlantPartFactory,
+    SubstanceFactory,
+)
 from data.models import IngredientType
+
+from .utils import authenticate
 
 
 class TestElementsApi(APITestCase):
@@ -17,8 +26,44 @@ class TestElementsApi(APITestCase):
         self.assertEqual(plant.name, body["name"])
         self.assertEqual(plant.id, body["id"])
 
-    def test_get_single_ingredient(self):
+    @authenticate
+    def test_plant_private_comments(self):
+        plant = PlantFactory.create(private_comments="Private")
+        response = self.client.get(reverse("api:single_plant", kwargs={"pk": plant.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+
+        self.assertNotIn("privateComments", body)
+
+        # On les affiche si on a un rôle dans l'administration
+        InstructionRoleFactory(user=authenticate.user)
+        response = self.client.get(reverse("api:single_plant", kwargs={"pk": plant.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+
+        self.assertIn("privateComments", body)
+
+    @authenticate
+    def test_ingredient_private_comments(self):
         ingredient = IngredientFactory.create()
+
+        # Si on ne fait pas partie de l'administration on ne montre pas les commentaires privés
+        response = self.client.get(reverse("api:single_ingredient", kwargs={"pk": ingredient.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+
+        self.assertNotIn("privateComments", body)
+
+        # On les affiche si on a un rôle dans l'administration
+        InstructionRoleFactory(user=authenticate.user)
+        response = self.client.get(reverse("api:single_ingredient", kwargs={"pk": ingredient.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+
+        self.assertIn("privateComments", body)
+
+    def test_get_single_ingredient(self):
+        ingredient = IngredientFactory.create(private_comments="private")
         response = self.client.get(reverse("api:single_ingredient", kwargs={"pk": ingredient.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
@@ -59,6 +104,22 @@ class TestElementsApi(APITestCase):
         self.assertEqual(microorganism.name, body["name"])
         self.assertEqual(microorganism.id, body["id"])
 
+    @authenticate
+    def test_microorganism_private_comments(self):
+        microorganism = MicroorganismFactory.create(private_comments="private")
+        response = self.client.get(reverse("api:single_microorganism", kwargs={"pk": microorganism.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+        self.assertNotIn("privateComments", body)
+
+        # On les affiche si on a un rôle dans l'administration
+        InstructionRoleFactory(user=authenticate.user)
+        response = self.client.get(reverse("api:single_microorganism", kwargs={"pk": microorganism.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+
+        self.assertIn("privateComments", body)
+
     def test_get_single_substance(self):
         substance = SubstanceFactory.create()
         response = self.client.get(reverse("api:single_substance", kwargs={"pk": substance.id}))
@@ -67,6 +128,23 @@ class TestElementsApi(APITestCase):
 
         self.assertEqual(substance.name, body["name"])
         self.assertEqual(substance.id, body["id"])
+
+    @authenticate
+    def test_substance_private_comments(self):
+        substance = SubstanceFactory.create()
+        response = self.client.get(reverse("api:single_substance", kwargs={"pk": substance.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+
+        self.assertNotIn("privateComments", body)
+
+        # On les affiche si on a un rôle dans l'administration
+        InstructionRoleFactory(user=authenticate.user)
+        response = self.client.get(reverse("api:single_substance", kwargs={"pk": substance.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+
+        self.assertIn("privateComments", body)
 
     def test_get_plant_parts(self):
         part_1 = PlantPartFactory.create()

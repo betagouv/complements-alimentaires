@@ -80,7 +80,7 @@ Pour tous les autres, l'activitée est fournie par le backend */
 export const getActivityByType = (type) => {
   switch (type) {
     case "plant":
-    case "micro-organisme":
+    case "microorganism":
     case "active_ingredient":
     case "form_of_supply":
     case "substance":
@@ -95,6 +95,10 @@ export const statusProps = {
   DRAFT: {
     icon: "ri-pencil-fill",
     label: "Brouillon",
+  },
+  INSTRUCTION: {
+    icon: "ri-time-fill",
+    label: "Instruction",
   },
   AWAITING_INSTRUCTION: {
     icon: "ri-time-fill",
@@ -126,11 +130,11 @@ export const statusProps = {
   },
   AUTHORIZED: {
     icon: "ri-check-fill",
-    label: "Autorisée",
+    label: "Déclaration finalisée",
   },
   REJECTED: {
     icon: "ri-error-warning-fill",
-    label: "Refusée",
+    label: "Refus",
   },
   WITHDRAWN: {
     icon: "ri-close-fill",
@@ -212,3 +216,12 @@ export const tabTitles = (components, useSubmission = false) => {
   }
   return components.map((x) => titleMap[x.__name || x.name])
 }
+
+export const orderingOptions = [
+  { value: "modificationDate", text: "Date de modification" },
+  { value: "-modificationDate", text: "Date de modification (descendant)" },
+  { value: "name", text: "Nom du produit" },
+  { value: "-name", text: "Nom du produit (descendant)" },
+  { value: "responseLimitDate", text: "Date limite de réponse" },
+  { value: "-responseLimitDate", text: "Date limite de réponse (descendant)" },
+]

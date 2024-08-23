@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 
-from data.models import CollaborationInvitation, CoSupervisionClaim
+from data.models import CollaborationInvitation, CompanyAccessClaim
 from data.models.company import CompanyRoleClassChoices
 
 
@@ -15,12 +15,12 @@ class CollaborationInvitationSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class CoSupervisionClaimSerializer(serializers.ModelSerializer):
+class CompanyAccessClaimSerializer(serializers.ModelSerializer):
     sender_name = serializers.CharField(source="sender.name")
 
     class Meta:
-        model = CoSupervisionClaim
-        fields = ("id", "creation_date", "sender_name", "description")
+        model = CompanyAccessClaim
+        fields = ("id", "creation_date", "sender_name", "description", "declarant_role", "supervisor_role")
         read_only_fields = fields
 
 

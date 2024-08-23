@@ -1,7 +1,6 @@
 <template>
   <div>
     <DsfrAlert v-if="!readonly">
-      <p class="mb-2">Veuillez vérifier les données ci-dessous avant de procéder à la validation de votre démarche</p>
       <DsfrInputGroup>
         <DsfrInput
           class="!max-w-lg"

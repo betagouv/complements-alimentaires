@@ -1,0 +1,5 @@
+SBSACT_IDENT,STINGSBS_IDENT,TYSUBST_IDENT,UNT_IDENT,SBSACT_LIBELLE,SBSACT_LIBELLE_EN,SBSACT_COMMENTAIRE_PUBLIC,SBSACT_COMMENTAIRE_PUBLIC_EN,SBSACT_COMMENTAIRE_PRIVE,SBSACT_COMMENTAIRE_PRIVE_EN,SBSACT_NUMERO_CAS,SBSACT_SOURCE,SBSACT_SOURCE_EN,SBSACT_QUANTITE_ARENSEIGNER,SBSACT_QTE_MIN,SBSACT_QTE_MAX,SBSACT_NUM_EINECS,SBSACT_APPORT_REF,SBSACT_OBSOLET,SBSACT_ORDRE
+10,2,1,3,vitamine B5,NULL,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,et netus et malesuada fames ac turpis,NULL,NULL,NULL,NULL,1,NULL,NULL,NULL,6,0,NULL
+11,2,1,3,vitamine B6,vitamin B6,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,NULL,NULL,NULL,0,NULL,"12,5",NULL,"1,4",0,NULL
+12,2,1,3,vitamine B7,NULL,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,et netus et malesuada fames ac turpis,NULL,NULL,NULL,NULL,0,NULL,NULL,NULL,6,0,NULL
+13,2,1,3,vitamine B8,Biotin,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora,NULL,NULL,NULL,NULL,1,NULL,24,NULL,"1,4",0,NULL

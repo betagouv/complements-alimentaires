@@ -28,28 +28,39 @@
 <script setup>
 import { watch, ref, onMounted } from "vue"
 import { statusProps } from "@/utils/mappings"
+const emit = defineEmits(["updateFilter"])
 const statusString = defineModel()
-const props = defineProps({ exclude: { type: Array, default: Array } })
+const props = defineProps({ exclude: { type: Array, default: Array }, groupInstruction: { type: Boolean } })
 const statuses = ref([])
 const opened = ref(false)
 
 onMounted(() => (statuses.value = statusString.value ? statusString.value.split(",") : []))
-watch(statuses, () => {
-  statusString.value = statuses.value.join(",")
-})
-const statusFilterOptions = [
+watch(statuses, () => emit("updateFilter", statuses.value.join(",")))
+
+const baseFilterOptions = [
   { value: "DRAFT", text: "Brouillon" },
-  { value: "AWAITING_INSTRUCTION", text: "En attente d'instruction" },
-  { value: "ONGOING_INSTRUCTION", text: "En cours d'instruction" },
-  { value: "AWAITING_VISA", text: "En attente de visa" },
-  { value: "ONGOING_VISA", text: "Visa en cours" },
   { value: "OBJECTION", text: "Objection" },
   { value: "OBSERVATION", text: "Observation" },
   { value: "ABANDONED", text: "Abandon" },
-  { value: "AUTHORIZED", text: "Autorisée" },
-  { value: "REJECTED", text: "Refusée" },
+  { value: "AUTHORIZED", text: "Déclaration finalisée" },
+  { value: "REJECTED", text: "Refus" },
   { value: "WITHDRAWN", text: "Retiré du marché" },
 ]
+const statusFilterOptions = props.groupInstruction
+  ? baseFilterOptions
+      .slice(0, 1)
+      .concat([{ value: "INSTRUCTION", text: "Instruction" }])
+      .concat(baseFilterOptions.slice(1))
+  : baseFilterOptions
+      .slice(0, 1)
+      .concat([
+        { value: "AWAITING_INSTRUCTION", text: "En attente d'instruction" },
+        { value: "ONGOING_INSTRUCTION", text: "En cours d'instruction" },
+        { value: "AWAITING_VISA", text: "En attente de visa" },
+        { value: "ONGOING_VISA", text: "Visa en cours" },
+      ])
+      .concat(baseFilterOptions.slice(1))
+
 const options = statusFilterOptions
   .filter((x) => props.exclude.indexOf(x.value) === -1)
   .map((x) => ({ label: x.text, name: x.value }))

@@ -12,7 +12,7 @@
 
 <script setup>
 import { computed } from "vue"
-import { timeAgo } from "@/utils/date"
+import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
@@ -21,7 +21,7 @@ const { loggedUser } = storeToRefs(useRootStore())
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
-const headers = ["", "Nom du produit", "Entreprise", "État", "Date de modification", "Instruit par"]
+const headers = ["", "Nom du produit", "Entreprise", "État", "Date limite de réponse", "Instruit par"]
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowAttrs: { class: needsAttention(x) ? "font-bold" : "" },
@@ -34,7 +34,7 @@ const rows = computed(() =>
       },
       x.company.socialName,
       getStatusTagForCell(x.status),
-      timeAgo(x.modificationDate),
+      x.responseLimitDate && isoToPrettyDate(x.responseLimitDate),
       x.instructor
         ? `${x.instructor.firstName} ${x.instructor.lastName}`
         : { component: "span", text: "Non-assigné", class: "italic" },

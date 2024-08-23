@@ -1,11 +1,15 @@
 import { statusProps } from "@/utils/mappings"
 
-export const getStatusTagForCell = (status) => ({
-  component: "DsfrTag",
-  label: statusProps[status].label,
-  class: status,
-  icon: statusProps[status].icon,
-})
+export const getStatusTagForCell = (status, groupInstruction = false) => {
+  const instructionStatuses = ["AWAITING_INSTRUCTION", "ONGOING_INSTRUCTION", "AWAITING_VISA", "ONGOING_VISA"]
+  const processedStatus = groupInstruction && instructionStatuses.indexOf(status) > -1 ? "INSTRUCTION" : status
+  return {
+    component: "DsfrTag",
+    label: statusProps[processedStatus].label,
+    class: processedStatus,
+    icon: statusProps[processedStatus].icon,
+  }
+}
 
 export const getPagesForPagination = (count, limit, path) => {
   const totalPages = Math.ceil(count / limit)

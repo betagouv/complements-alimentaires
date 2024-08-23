@@ -3,9 +3,8 @@
     v-if="solicitations"
     title="Invitations envoyées"
     icon="ri-chat-upload-line"
-    description="Visualisez les invitations envoyées par les co-gestionnaires à rejoindre votre entreprise."
     :solicitations="solicitations"
-    emptyText="Il n'y a aucune invitation en cours"
+    emptyText="Vous n'avez envoyé aucune invitation."
     :actions="[]"
     showRecipientEmail
   />

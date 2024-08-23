@@ -8,17 +8,30 @@
       <StatusFilter
         :exclude="['DRAFT']"
         class="max-w-2xl"
-        @update:modelValue="updateStatusFilter"
+        @updateFilter="updateStatusFilter"
         v-model="filteredStatus"
       />
+
+      <div class="md:border-l md:px-8">
+        <DsfrInputGroup class="max-w-sm">
+          <DsfrSelect
+            label="Trier par :"
+            defaultUnselectedText=""
+            :modelValue="ordering"
+            @update:modelValue="updateOrdering"
+            :options="orderingOptions"
+          />
+        </DsfrInputGroup>
+      </div>
     </div>
+
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
     <div v-else-if="hasDeclarations">
       <VisaDeclarationsTable :data="data" />
     </div>
-    <p v-else class="mb-8">Il n'y a pas encore de déclarations.</p>
+    <p v-else class="mb-8">Aucune déclaration.</p>
     <DsfrPagination
       v-if="showPagination"
       @update:currentPage="updatePage"
@@ -38,6 +51,7 @@ import VisaDeclarationsTable from "./VisaDeclarationsTable"
 import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
 import StatusFilter from "@/components/StatusFilter.vue"
+import { orderingOptions } from "@/utils/mappings"
 
 const router = useRouter()
 const route = useRoute()
@@ -52,16 +66,18 @@ const pages = computed(() => getPagesForPagination(data.value.count, limit, rout
 // Valeurs obtenus du queryparams
 const page = computed(() => parseInt(route.query.page))
 const filteredStatus = computed(() => route.query.status)
+const ordering = computed(() => route.query.triage)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 
 const updateStatusFilter = (status) => updateQuery({ status })
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
+const updateOrdering = (newValue) => updateQuery({ triage: newValue })
 
 // Obtention de la donnée via API
 const url = computed(
   () =>
-    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&ordering=-modificationDate`
+    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&ordering=${ordering.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -69,7 +85,7 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
-watch([page, filteredStatus], fetchSearchResults)
+watch([page, filteredStatus, ordering], fetchSearchResults)
 </script>
 
 <style scoped>

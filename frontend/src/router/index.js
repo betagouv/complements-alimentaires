@@ -125,6 +125,7 @@ const routes = [
     component: LoginPage,
     meta: {
       title: "Se connecter",
+      omitIfLoggedIn: true,
     },
   },
   {
@@ -133,6 +134,7 @@ const routes = [
     component: SignupPage,
     meta: {
       title: "S'enregistrer",
+      omitIfLoggedIn: true,
     },
   },
   {
@@ -206,7 +208,7 @@ const routes = [
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
-        status: "DRAFT,OBSERVATION,OBJECTION",
+        status: "DRAFT,OBSERVATION,OBJECTION,INSTRUCTION",
       },
     },
   },
@@ -260,6 +262,8 @@ const routes = [
         status: "AWAITING_INSTRUCTION,ONGOING_INSTRUCTION",
         entrepriseDe: "",
         entrepriseA: "",
+        personneAssignée: "",
+        triage: "-modificationDate",
       },
     },
   },
@@ -287,6 +291,7 @@ const routes = [
         status: "AWAITING_VISA,ONGOING_VISA",
         entrepriseDe: "",
         entrepriseA: "",
+        triage: "-modificationDate",
       },
     },
   },
@@ -334,13 +339,17 @@ const chooseAuthorisedRoute = async (to, from, next, store) => {
       next({ name: store.loggedUser ? "DashboardPage" : "LandingPage" })
       return
     }
+    if (to.meta.omitIfLoggedIn && store.loggedUser) {
+      next(to.query.next || { name: "DashboardPage" })
+      return
+    }
     const authenticationCheck = !to.meta.authenticationRequired || store.loggedUser
     const roleCheck =
       !to.meta.requiredRole ||
       store.companies?.some((c) => c.roles?.some((x) => x.name === to.meta.requiredRole)) ||
       store.loggedUser?.globalRoles?.some((x) => x.name === to.meta.requiredRole)
 
-    authenticationCheck && roleCheck ? next() : next({ name: "LoginPage" })
+    authenticationCheck && roleCheck ? next() : next({ name: "LoginPage", query: { next: to.path } })
   }
 }
 

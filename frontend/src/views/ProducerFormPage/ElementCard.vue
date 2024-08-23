@@ -13,19 +13,24 @@
             <DsfrBadge label="Nouvel ingrédient" type="info" />
           </div>
         </div>
+        <div class="content-center ml-6 pl-4 sm:border-l">
+          <ElementCommentModal v-model="model" :hidePrivateComments="true" />
+        </div>
       </div>
+
       <div class="flex grow">
-        <div class="grow pl-4 ml-6 sm:border-l self-center">
+        <div class="grow sm:pl-4 sm:ml-4 pt-4 sm:border-l self-center">
           <DsfrCheckbox
-            class="!my-2"
             :disabled="getActivityReadonlyByType(objectType)"
             v-model="model.active"
             :label="model.active ? 'Actif' : 'Non actif'"
           />
         </div>
+
         <div><DsfrButton secondary @click="$emit('remove', model)">Enlever</DsfrButton></div>
       </div>
     </div>
+
     <div v-if="showFields">
       <hr class="mt-2" />
       <div v-if="objectType === 'plant'" class="md:ml-12 block sm:flex gap-2 md:gap-4">
@@ -100,6 +105,7 @@ import { useRootStore } from "@/stores/root"
 import { computed } from "vue"
 import { getElementName } from "@/utils/elements"
 import { getActivityReadonlyByType } from "@/utils/mappings"
+import ElementCommentModal from "@/components/ElementCommentModal"
 
 const model = defineModel()
 const store = useRootStore()

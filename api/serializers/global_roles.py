@@ -23,3 +23,17 @@ class VisaRoleSerializer(BaseGlobalRoleSerializer):
     class Meta:
         model = VisaRole
         fields = BaseGlobalRoleSerializer.Meta.fields
+
+
+class SimpleInstructorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InstructionRole
+        fields = ("id", "name")
+        read_only_fields = fields
+
+
+class SimpleVisorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VisaRole
+        fields = ("id", "name")
+        read_only_fields = fields
