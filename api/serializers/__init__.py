@@ -16,6 +16,7 @@ from .population import PopulationSerializer
 from .condition import ConditionSerializer
 from .effect import EffectSerializer
 from .galenic_formulation import GalenicFormulationSerializer
+from .preparation import PreparationSerializer
 from .unit import SubstanceUnitSerializer
 from .autocomplete_item import AutocompleteItemSerializer
 from .declaration import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer

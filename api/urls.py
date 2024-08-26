@@ -24,6 +24,7 @@ urlpatterns = {
     path("conditions/", views.ConditionListView.as_view(), name="condition_list"),
     path("effects/", views.EffectListView.as_view(), name="effect_list"),
     path("galenic-formulations/", views.GalenicFormulationListView.as_view(), name="galenic_formulation_list"),
+    path("preparations/", views.PreparationListView.as_view(), name="preparation_list"),
     path("units/", views.UnitListView.as_view(), name="unit_list"),
     # Authentication
     path("login/", views.LoginView.as_view(), name="login"),
