@@ -58,7 +58,7 @@
         <DsfrInputGroup class="max-w-sm">
           <DsfrSelect
             label="Préparation"
-            :options="store.preparations"
+            :options="store.preparations?.map((preparation) => ({ text: preparation.name, value: preparation.id }))"
             v-model="model.preparation"
             defaultUnselectedText=""
             :required="true"

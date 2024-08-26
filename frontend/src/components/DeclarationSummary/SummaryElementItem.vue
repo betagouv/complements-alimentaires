@@ -23,13 +23,16 @@ import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import ElementCommentModal from "@/components/ElementCommentModal"
 
-const { plantParts, units } = storeToRefs(useRootStore())
+const { plantParts, units, preparations } = storeToRefs(useRootStore())
 
 const model = defineModel()
 const props = defineProps({ objectType: { type: String } })
 
 const plantPartName = computed(() => plantParts.value?.find((x) => x.id === model.value.usedPart)?.name || "Aucune")
 const unitName = computed(() => units.value?.find((x) => x.id === model.value.unit)?.name || "")
+const preparationName = computed(
+  () => preparations.value?.find((x) => x.id === parseInt(model.value.preparation))?.name || ""
+)
 
 const elementInfo = computed(() => {
   if (props.objectType === "microorganism") {
@@ -40,7 +43,7 @@ const elementInfo = computed(() => {
   if (props.objectType === "plant") {
     const used_part_label = `Partie utilisée : « ${plantPartName.value} »`
     const quantity_label = model.value.quantity ? `Qté par DJR : ${model.value.quantity} ${unitName.value}` : null
-    const preparation_label = model.value.preparation ? `Préparation : ${model.value.preparation}` : null
+    const preparation_label = model.value.preparation ? `Préparation : ${preparationName.value}` : null
     return [used_part_label, quantity_label, preparation_label].filter(Boolean).join(` | `)
   }
   if (props.objectType === "form_of_supply" || props.objectType === "active_ingredient")

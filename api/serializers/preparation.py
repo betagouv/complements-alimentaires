@@ -8,8 +8,8 @@ class PreparationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Preparation
         fields = [
-            "name",
             "id",
+            "name",
             "name_en",
         ]
         read_only_fields = fields

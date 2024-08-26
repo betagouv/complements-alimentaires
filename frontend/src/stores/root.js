@@ -55,7 +55,7 @@ export const useRootStore = defineStore("root", () => {
   }
   const fetchPreparations = async () => {
     const { data } = await useFetch("/api/v1/preparations/").json()
-    preparations.value = otherFieldsAtTheEnd(data.value)
+    preparations.value = data.value
   }
   const fetchPlantParts = async () => {
     const { data } = await useFetch("/api/v1/plant-parts/").json()
