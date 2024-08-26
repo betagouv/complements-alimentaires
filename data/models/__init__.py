@@ -12,6 +12,7 @@ from .population import Population
 from .condition import Condition
 from .effect import Effect
 from .galenic_formulation import GalenicFormulation
+from .preparation import Preparation
 from .unit import SubstanceUnit
 from .ingredient_status import IngredientStatus
 from .global_roles import InstructionRole, VisaRole
@@ -41,4 +42,4 @@ ELEMENT_MODELS = [
     SubstanceUnit,
 ]
 
-DECLARATION_MODELS = [Condition, Effect, GalenicFormulation, Population]
+DECLARATION_MODELS = [Condition, Effect, GalenicFormulation, Population, Preparation]

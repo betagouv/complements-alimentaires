@@ -27,6 +27,7 @@ from .models import (
     PlantPart,
     PlantSynonym,
     Population,
+    Preparation,
     Substance,
     SubstanceSynonym,
     SubstanceUnit,
@@ -49,6 +50,7 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
     "REF_ICA_FORME_GALENIQUE.csv": GalenicFormulation,
     "REF_ICA_UNITE.csv": SubstanceUnit,
+    "REF_ICA_TYPE_PREPARATION.csv": Preparation,
     # Les fichiers csv avec les Foreign Keys
     "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": IngredientSynonym,
     "REF_ICA_PLANTE_SYNONYME.csv": PlantSynonym,
@@ -82,6 +84,7 @@ class CSVImporter:
         "UNT": SubstanceUnit,
         "OBJEFF": Effect,
         "FRMGAL": GalenicFormulation,
+        "TYPPREP": Preparation,
         "STINGSBS": IngredientStatus,
         # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
         # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
