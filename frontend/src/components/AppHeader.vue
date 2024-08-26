@@ -2,9 +2,9 @@
   <DsfrHeader :logo-text="logoText" :quickLinks="quickLinks">
     <template #operator>
       <div class="flex items-center">
-        <a href="/">
+        <router-link :to="{ name: 'LandingPage' }">
           <img :src="require('@/assets/logo.svg')" alt="Logo Compl'Alim" class="h-20" />
-        </a>
+        </router-link>
 
         <DsfrBadge v-if="environment === 'dev'" :label="environment" type="info" />
         <DsfrBadge v-if="environment === 'demo'" :label="environment" type="new" />
