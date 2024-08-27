@@ -58,7 +58,7 @@
         <DsfrInputGroup class="max-w-sm">
           <DsfrSelect
             label="Préparation"
-            :options="preparations"
+            :options="store.preparations?.map((preparation) => ({ text: preparation.name, value: preparation.id }))"
             v-model="model.preparation"
             defaultUnselectedText=""
             :required="true"
@@ -131,34 +131,4 @@ const showFields = computed(() => {
     return true
   return false
 })
-
-// TODO: vérifier qu'on ait ces infos en base ou accepter de les avoir en front only
-const preparations = [
-  "Alcoolature",
-  "Autre extrait fluide",
-  "Autre extrait sec",
-  "Autre macérât",
-  "Baume",
-  "Distillation",
-  "Extrait au CO2 supercritique",
-  "Extrait fluide alcoolique",
-  "Extrait fluide aqueux",
-  "Extrait fluide hydroalcoolique",
-  "Extrait fluide hydroglycériné",
-  "Extrait mou",
-  "Extrait sec alcoolique",
-  "Extrait sec aqueux",
-  "Extrait sec hydroalcoolique",
-  "Extrait sec hydroglycériné",
-  "Hydrolât (eau florale)",
-  "Macérât alcoolique",
-  "Macérât aqueux",
-  "Macérât huileux",
-  "Macérât hydroalcoolique",
-  "Macérât hydroglycériné",
-  "Oléorésine et gomme-oléorésine",
-  "Poudre (de plantes séchées ou broyées)",
-  "Pression à froid",
-  "Teinture",
-]
 </script>
