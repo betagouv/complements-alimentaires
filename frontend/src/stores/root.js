@@ -1,7 +1,7 @@
 import { defineStore } from "pinia"
 import { useFetch } from "@vueuse/core"
 import { ref, computed } from "vue"
-import { otherFieldsAtTheEnd } from "@/utils/forms"
+import { pushOtherChoiceFieldAtTheEnd } from "@/utils/forms"
 
 export const useRootStore = defineStore("root", () => {
   const loggedUser = ref(null)
@@ -42,15 +42,15 @@ export const useRootStore = defineStore("root", () => {
   }
   const fetchConditions = async () => {
     const { data } = await useFetch("/api/v1/conditions/").json()
-    conditions.value = data.value
+    conditions.value = pushOtherChoiceFieldAtTheEnd(data.value)
   }
   const fetchEffects = async () => {
     const { data } = await useFetch("/api/v1/effects/").json()
-    effects.value = otherFieldsAtTheEnd(data.value)
+    effects.value = pushOtherChoiceFieldAtTheEnd(data.value)
   }
   const fetchGalenicFormulations = async () => {
     const { data } = await useFetch("/api/v1/galenic-formulations/").json()
-    galenicFormulations.value = otherFieldsAtTheEnd(data.value)
+    galenicFormulations.value = pushOtherChoiceFieldAtTheEnd(data.value)
   }
   const fetchPlantParts = async () => {
     const { data } = await useFetch("/api/v1/plant-parts/").json()

@@ -121,6 +121,7 @@ class Declaration(Historisable, TimeStampable):
     galenic_formulation = models.ForeignKey(
         GalenicFormulation, verbose_name="forme galénique", null=True, blank=True, on_delete=models.RESTRICT
     )
+    other_galenic_formulation = models.TextField(blank=True, verbose_name="autre forme galénique non listée")
 
     unit_quantity = models.FloatField(
         null=True, blank=True, verbose_name="poids ou volume d'une unité de consommation"
@@ -144,9 +145,12 @@ class Declaration(Historisable, TimeStampable):
     conditions_not_recommended = models.ManyToManyField(
         Condition, blank=True, verbose_name="consommation déconseillée"
     )
+    other_conditions = models.TextField(
+        blank=True, verbose_name="autres populations à risques ou facteurs de risques non listés"
+    )
 
     effects = models.ManyToManyField(Effect, blank=True, verbose_name="objectifs ou effets")
-    other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non-listés")
+    other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non listés")
 
     def create_snapshot(
         self,
