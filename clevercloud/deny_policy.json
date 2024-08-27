@@ -1,0 +1,15 @@
+{
+  "Id": "Policy1587216857769",
+  "Statement": [
+    {
+      "Action": [
+        "*"
+      ],
+      "Effect": "Deny",
+      "Principal": "*",
+      "Resource": "arn:aws:s3:::csv-data/*",
+      "Sid": "Stmt1587216727444"
+    }
+  ],
+  "Version": "2012-10-17"
+}

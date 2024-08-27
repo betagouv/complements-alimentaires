@@ -80,6 +80,7 @@
           v-model="payload.otherGalenicFormulation"
           label-visible
           label="Merci de préciser la forme galénique"
+          required="true"
         />
       </div>
     </div>
@@ -144,7 +145,7 @@
     <DsfrInputGroup class="max-w-2xl mt-6">
       <DsfrInput is-textarea v-model="payload.warning" label-visible label="Mise en garde et avertissement" />
     </DsfrInputGroup>
-    <SectionTitle title="Populations cibles" class="!mt-10" sizeTag="h6" icon="ri-file-user-fill" />
+    <SectionTitle title="Populations cibles et à risque" class="!mt-10" sizeTag="h6" icon="ri-file-user-fill" />
     <DsfrFieldset legend="Population cible" legendClass="fr-label">
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
         <div
@@ -163,7 +164,11 @@
       </div>
     </DsfrFieldset>
 
-    <DsfrFieldset legend="Consommation déconseillée" legendClass="fr-label">
+    <DsfrFieldset
+      legend="Population à risque, facteurs de risque"
+      hint="La consommation du complément alimentaire est déconseillée pour ces populations."
+      legendClass="fr-label"
+    >
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
         <div
           v-for="condition in conditions"
@@ -180,6 +185,14 @@
         </div>
       </div>
     </DsfrFieldset>
+
+    <OtherChoiceField
+      :listOfChoices="payload.conditionsNotRecommended"
+      v-model="payload.otherConditions"
+      :otherChoiceId="otherConditionId"
+      label="Merci de préciser les autres populations à risques ou facteurs de risques"
+    ></OtherChoiceField>
+
     <SectionTitle title="Objectifs / effets" class="!mt-10" sizeTag="h6" icon="ri-focus-2-fill" />
     <DsfrFieldset>
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
@@ -189,15 +202,13 @@
         </div>
       </div>
     </DsfrFieldset>
+    <OtherChoiceField
+      :listOfChoices="payload.effects"
+      v-model="payload.otherEffects"
+      :otherChoiceId="otherEffectsId"
+      label="Merci de préciser les autres objectifs ou effets"
+    ></OtherChoiceField>
 
-    <DsfrInputGroup class="max-w-2xl mt-6 pt-8" v-if="payload.effects && payload.effects.indexOf(otherEffectsId) > -1">
-      <DsfrInput
-        v-model="payload.otherEffects"
-        label-visible
-        label="Merci de préciser les autres objectifs ou effets"
-        :required="true"
-      />
-    </DsfrInputGroup>
     <SectionTitle title="Adresse sur l'étiquetage" class="!mt-10" sizeTag="h6" icon="ri-home-2-fill" />
     <div class="max-w-2xl mb-8 address-form">
       <DsfrInputGroup>
@@ -238,8 +249,9 @@ import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useVuelidate } from "@vuelidate/core"
 import { firstErrorMsg } from "@/utils/forms"
-import { otherFieldsAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
+import { pushOtherChoiceFieldAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
 import CountryField from "@/components/fields/CountryField.vue"
+import OtherChoiceField from "@/components/fields/OtherChoiceField"
 import SectionTitle from "@/components/SectionTitle"
 
 const payload = defineModel()
@@ -270,12 +282,13 @@ const populateGalenicFormulationState = () => {
 }
 watch(galenicFormulations, populateGalenicFormulationState, { immediate: true })
 
+const otherConditionId = computed(() => conditions.value?.find((effect) => effect.name === "Autre (à préciser)")?.id)
 const otherEffectsId = computed(() => effects.value?.find((effect) => effect.name === "Autre (à préciser)")?.id)
 const galenicFormulationList = computed(() => {
   if (!galenicFormulationState.value) return galenicFormulations.value
   else {
     const isLiquid = galenicFormulationState.value === "liquid"
-    return otherFieldsAtTheEnd(
+    return pushOtherChoiceFieldAtTheEnd(
       galenicFormulations.value
         ?.filter((formulation) => formulation.isLiquid === isLiquid) // le filter perd l'ordre alphabétique d'origine
         .sort((a, b) => a.name.localeCompare(b.name))
