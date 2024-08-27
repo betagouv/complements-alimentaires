@@ -1,0 +1,17 @@
+{
+  "Id": "Policy1587216857769",
+  "Statement": [
+    {
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      "Effect": "Allow",
+      "Principal": "*",
+      "Resource": "arn:aws:s3:::csv-data/*",
+      "Sid": "Stmt1587216727444"
+    }
+  ],
+  "Version": "2012-10-17"
+}
