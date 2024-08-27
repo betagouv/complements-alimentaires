@@ -13,5 +13,5 @@ else
     mkdir csv-data/$DATE/
     s3cmd get s3://csv-data/$DATE/ --recursive csv-data/$DATE/
     # import those files to database (django models)
-    python $APP_ID/manage.py load_ingredients -d csv-data/$DATE $DATE
+    python ~/$APP_ID/manage.py load_ingredients -d csv-data/$DATE $DATE
 fi
