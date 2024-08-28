@@ -3,7 +3,13 @@ from datetime import datetime
 from django.test import TestCase
 from django.utils import timezone
 
-from data.factories import AwaitingInstructionDeclarationFactory, InstructionReadyDeclarationFactory, SnapshotFactory
+from data.factories import (
+    AwaitingInstructionDeclarationFactory,
+    DeclaredPlantFactory,
+    InstructionReadyDeclarationFactory,
+    SnapshotFactory,
+)
+from data.models import Declaration
 
 
 class DeclarationTestCase(TestCase):
@@ -88,3 +94,74 @@ class DeclarationTestCase(TestCase):
 
         response_limit = timezone.make_aware(datetime(2024, 3, 1, 1, 1, 1, 1))
         self.assertEqual(declaration.response_limit_date, response_limit)
+
+    def test_article_empty(self):
+        declaration = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+        )
+
+        self.assertIsNone(declaration.article)
+        self.assertEqual(declaration.calculated_article, "")
+        self.assertEqual(declaration.overriden_article, "")
+
+    def test_article_empty_after_delete(self):
+        declaration = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+        )
+        declared_plant = DeclaredPlantFactory(new=False, declaration=declaration)
+        declared_plant.delete()
+        declaration.refresh_from_db()
+
+        self.assertIsNone(declaration.article)
+        self.assertEqual(declaration.calculated_article, "")
+        self.assertEqual(declaration.overriden_article, "")
+
+    def test_article_15(self):
+        declaration = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+        )
+        DeclaredPlantFactory(new=False, declaration=declaration)
+        declaration.refresh_from_db()
+
+        self.assertEqual(declaration.article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration.overriden_article, "")
+
+    def test_article_16(self):
+        declaration = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+        )
+        DeclaredPlantFactory(new=True, declaration=declaration)
+        declaration.refresh_from_db()
+
+        self.assertEqual(declaration.article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration.overriden_article, "")
+
+    def test_article_change(self):
+        declaration = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+        )
+        declared_plant = DeclaredPlantFactory(new=True, declaration=declaration)
+        declared_plant.new = False
+        declared_plant.save()
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration.overriden_article, "")
