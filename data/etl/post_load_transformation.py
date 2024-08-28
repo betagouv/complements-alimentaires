@@ -17,22 +17,42 @@ TextField.register_lookup(LowerValue)
 
 def substance_ingredient_deduplication():
     """Transformation post-loading"""
-    # extract des doublons
-    delete_ingredient_that_are_substances()
-    # delete_substances_that_are_ingredients()
+    # suppression des doublons
+    delete_ingredients_that_are_substances()
+    delete_substances_that_are_ingredients()
+    delete_ingredients_and_substances_that_are_microorganism()
     # transform_duplicated_substances_into_synonyms()
     # indique le nombre de doublons supprimés
 
 
-def delete_ingredient_that_are_substances():
+def delete_ingredients_that_are_substances():
     # Les ingrédients qui ont un doublon substance avec un n° CAS sont supprimés
-    # les ingredients qui ont une substance associée
-    # * et qui a un numero CAS
     Ingredient.objects.filter(
         is_obsolete=False,
         name__lower__in=Substance.objects.exclude(Q(is_obsolete=True) | Q(cas_number="")).values_list(
             "name__lower", flat=True
         ),
+    ).update(ca_is_obsolete=True)
+    # TODO : check des status
+    # TODO : check des commentaires privés/publics
+
+    # Les ingrédients qui ont un doublon substance qui est un métabolite de plante sont supprimés
+    Ingredient.objects.filter(
+        is_obsolete=False,
+        name__lower__in=Substance.objects.exclude(Q(is_obsolete=True) | Q(plant=None)).values_list(
+            "name__lower", flat=True
+        ),
+    ).update(ca_is_obsolete=True)
+
+    # Les ingrédients qui ont un doublon sustance et dont le nom se termine par -ase sont des enzyme
+    enzym_suffix = ["ase$"]
+
+    Ingredient.objects.filter(
+        is_obsolete=False,
+        name__lower__regex="|".join(enzym_suffix),
+        name__lower__in=Substance.objects.filter(
+            is_obsolete=False, name__lower__regex="|".join(enzym_suffix)
+        ).values_list("name__lower", flat=True),
     ).update(ca_is_obsolete=True)
 
     # Les ingrédients qui ont un doublon sustance et dont le nom se termine par -ose/oses sont des glucides
@@ -69,14 +89,30 @@ def delete_ingredient_that_are_substances():
         ).values_list("name__lower", flat=True),
     ).update(ca_is_obsolete=True)
 
-
-# def delete_substances_that_are_ingredients():
-
-# def substance_is_plant_metabolite()
+    # TODO Les ingrédients qui sont des acides aminées dont la liste est connue
+    # TODO Les ingrédients qui commencent par L- R- beta- gamma
 
 
-# def soft_delete(object, model):
-#     model_object, created = model.objects.update_or_create(**object_definition, defaults=default_extra_fields)
+def delete_substances_that_are_ingredients():
+    # Les substances qui ont un doublon ingrédient et qui commencent par huile*, lait* ou miel sont supprimées
+    animal_or_vegetal_product_prefix = ["^huile", "^lait", "^miel", "^beurre", "^hydrolysat", "^cartilage", "^extrait"]
+    Substance.objects.filter(
+        is_obsolete=False,
+        name__lower__regex="|".join(animal_or_vegetal_product_prefix),
+        name__lower__in=Ingredient.objects.filter(
+            is_obsolete=False, name__lower__regex="|".join(animal_or_vegetal_product_prefix)
+        ).values_list("name__lower", flat=True),
+    ).update(ca_is_obsolete=True)
 
-#     model.ca_is_obsolete = True
-#     update_change_reason(model_object, change_message)
+
+def delete_ingredients_and_substances_that_are_microorganism():
+    microorganism_suffix = ["inactivé$"]
+    Ingredient.objects.filter(
+        is_obsolete=False,
+        name__lower__regex="|".join(microorganism_suffix),
+    ).update(ca_is_obsolete=True)
+
+    Substance.objects.filter(
+        is_obsolete=False,
+        name__lower__regex="|".join(microorganism_suffix),
+    ).update(ca_is_obsolete=True)
