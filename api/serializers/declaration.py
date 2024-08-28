@@ -255,6 +255,14 @@ class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
         )
         read_only_fields = ("file",)
 
+    def validate_file(self, file):
+        size_limit = 1048576 * 2
+        if file.size > size_limit:
+            raise ProjectAPIException(
+                field_errors=[{"attachments": "La pièce jointe dépasse la taille limite de 2 Mo"}]
+            )
+        return file
+
 
 class SimpleDeclarationSerializer(serializers.ModelSerializer):
     instructor = SimpleUserSerializer(read_only=True, source="instructor.user")
@@ -345,6 +353,8 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "computed_substances",
             "attachments",
             "other_effects",
+            "other_galenic_formulation",
+            "other_conditions",
             "instructor",
             "visor",
             "post_validation_status",

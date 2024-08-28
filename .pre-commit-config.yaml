@@ -15,6 +15,7 @@ repos:
       - id: check-vcs-permalinks
       - id: detect-private-key
       - id: end-of-file-fixer
+        exclude: '.csv$'
       - id: trailing-whitespace
     repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0

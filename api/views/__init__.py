@@ -23,6 +23,7 @@ from .declaration.declaration import (
 )
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
+from .preparation import PreparationListView
 from .ingredient import IngredientRetrieveView
 from .microorganism import MicroorganismRetrieveView
 from .newsletter import SubscribeNewsletter

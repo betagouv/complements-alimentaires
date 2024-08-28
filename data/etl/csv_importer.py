@@ -15,6 +15,7 @@ from ..exceptions import CSVFileError
 
 # Import the model
 from ..models import (
+    Condition,
     Effect,
     GalenicFormulation,
     Ingredient,
@@ -27,12 +28,11 @@ from ..models import (
     PlantPart,
     PlantSynonym,
     Population,
+    Preparation,
     Substance,
     SubstanceSynonym,
     SubstanceUnit,
 )
-
-# from .models.condition import Condition
 from .utils import get_update_or_create_related_object, pre_import_treatments, update_or_create_object
 
 logger = logging.getLogger(__name__)
@@ -45,10 +45,12 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_PLANTE.csv": Plant,
     "REF_ICA_FAMILLE_PLANTE.csv": PlantFamily,
     "REF_ICA_SUBSTANCE_ACTIVE.csv": Substance,
-    "POPULATION.csv": Population,
+    "POPULATION_CIBLE.csv": Population,
+    "REF_ICA_POPULATION_ARISQUE.csv": Condition,
     "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
     "REF_ICA_FORME_GALENIQUE.csv": GalenicFormulation,
     "REF_ICA_UNITE.csv": SubstanceUnit,
+    "REF_ICA_TYPE_PREPARATION.csv": Preparation,
     # Les fichiers csv avec les Foreign Keys
     "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": IngredientSynonym,
     "REF_ICA_PLANTE_SYNONYME.csv": PlantSynonym,
@@ -82,13 +84,15 @@ class CSVImporter:
         "UNT": SubstanceUnit,
         "OBJEFF": Effect,
         "FRMGAL": GalenicFormulation,
+        "TYPPREP": Preparation,
         "STINGSBS": IngredientStatus,
+        "POPRS": Condition,
+        "": Population,
         # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
         # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
         # "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
         # "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": "",
         # "REF_ICA_PARTIE_UTILE.csv": "",
-        # "POPULATION.csv": "",
     }
 
     # Établi les suffix des champ des csv correspondant aux champs des modèles Django
@@ -118,6 +122,7 @@ class CSVImporter:
         "min_age": ["AGE_MIN"],
         "max_age": ["AGE_MAX"],
         "is_defined_by_anses": ["CATEGORIE_ANSES"],
+        "is_liquid": ["LIQUIDE"],
         # Les champs ForeignKey (synonymes)
         "standard_name": ["SBSACT_IDENT", "PLTE_IDENT", "INGA_IDENT", "MORG_IDENT"],
         "siccrf_family": ["FAMPL_IDENT"],
@@ -138,7 +143,7 @@ class CSVImporter:
         "missing_import_data",
         "to_be_entered_in_next_decree",
     ]
-    NEW_FIELDS = ["is_liquid", "long_name"]
+    NEW_FIELDS = ["long_name"]
 
     def __init__(self, file, model, is_relation=False, mapping=None):
         """Initialise un CSVImporter avec le fichier source, le modèle de destination, etc
