@@ -22,6 +22,7 @@ from .models import (
     IngredientStatus,
     IngredientSynonym,
     Microorganism,
+    MicroorganismSynonym,
     Part,
     Plant,
     PlantFamily,
@@ -54,6 +55,7 @@ CSV_TO_MODEL_MAPPING = {
     # Les fichiers csv avec les Foreign Keys
     "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": IngredientSynonym,
     "REF_ICA_PLANTE_SYNONYME.csv": PlantSynonym,
+    "REF_ICA_MICROORG_SYNONYME.csv": MicroorganismSynonym,
     "REF_ICA_SUBSTANCE_ACTIVE_SYNONYME.csv": SubstanceSynonym,
     # Les csv avec les relations ManyToMany
     "REF_ICA_AUTREING_SUBSTACTIVE.csv": Ingredient,
@@ -79,6 +81,7 @@ class CSVImporter:
         "SBSACT": Substance,
         "SYNAO": IngredientSynonym,
         "SYNPLA": PlantSynonym,
+        "SYNMO": MicroorganismSynonym,
         "SYNSBSTA": SubstanceSynonym,
         "FAMPL": PlantFamily,
         "UNT": SubstanceUnit,
