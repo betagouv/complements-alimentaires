@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import timedelta
 
 from django.conf import settings
@@ -29,6 +30,8 @@ from data.models import (
     VisaRole,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class Declaration(Historisable, TimeStampable):
     class Meta:
@@ -53,9 +56,10 @@ class Declaration(Historisable, TimeStampable):
         INCOMPATIBLE_RECOMMENDATIONS = "INCOMPATIBLE_RECOMMENDATIONS", "Recommandations d'emploi incompatibles"
 
     class Article(models.TextChoices):
-        ARTICLE_15 = "15", "Article 15"
-        ARTICLE_15_WARNING = "15_WARNING", "Article 15 Vigilance"
-        ARTICLE_16 = "16", "Article 16"
+        ARTICLE_15 = "ART_15", "Article 15"
+        ARTICLE_15_WARNING = "ART_15_WARNING", "Article 15 Vigilance"
+        ARTICLE_16 = "ART_16", "Article 16"
+        ARTICLE_17 = "ART_17", "Article 17"
 
     status = models.CharField(
         max_length=50,
@@ -169,7 +173,7 @@ class Declaration(Historisable, TimeStampable):
             Case(When(calculated_article="", then=Value(None)), default="calculated_article"),
             Value(None),
         ),
-        output_field=models.TextField(verbose_name="article"),
+        output_field=models.TextField(verbose_name="article", null=True),
         db_persist=True,
     )
 
@@ -289,29 +293,38 @@ class Declaration(Historisable, TimeStampable):
         afin de mettre à jour l'article de la déclaration.
         Ces signals sont dans la fonction « update_article » de ce même fichier.
         """
-        current_calculated_article = self.calculated_article
-        new_calculated_article = current_calculated_article
-        composition_items = (
-            self.declared_plants,
-            self.declared_microorganisms,
-            self.declared_substances,
-            self.declared_ingredients,
-        )
-        empty_composition = all(not x.exists() for x in composition_items)
-        has_new_items = not empty_composition and any(
-            x.filter(new=True).exists() for x in composition_items if issubclass(x.model, Addable)
-        )
+        try:
+            current_calculated_article = self.calculated_article
+            new_calculated_article = current_calculated_article
+            composition_items = (
+                self.declared_plants,
+                self.declared_microorganisms,
+                self.declared_substances,
+                self.declared_ingredients,
+            )
+            empty_composition = all(not x.exists() for x in composition_items)
+            has_new_items = any(x.filter(new=True).exists() for x in composition_items if issubclass(x.model, Addable))
+            surpasses_max_dose = any(
+                x.quantity > x.substance.max_quantity
+                for x in self.computed_substances.all()
+                if x.substance.max_quantity and x.substance.unit == x.unit
+            )
 
-        if empty_composition:
-            new_calculated_article = ""
-        elif has_new_items:
-            new_calculated_article = Declaration.Article.ARTICLE_16
-        else:
-            new_calculated_article = Declaration.Article.ARTICLE_15
+            if empty_composition:
+                new_calculated_article = ""
+            elif surpasses_max_dose:
+                new_calculated_article = Declaration.Article.ARTICLE_17
+            elif has_new_items:
+                new_calculated_article = Declaration.Article.ARTICLE_16
+            else:
+                new_calculated_article = Declaration.Article.ARTICLE_15
 
-        if new_calculated_article != current_calculated_article:
-            self.calculated_article = new_calculated_article
-            self.save()
+            if new_calculated_article != current_calculated_article:
+                self.calculated_article = new_calculated_article
+                self.save()
+        except Exception as e:
+            logger.error("Error calculating article")
+            logger.exception(e)
 
 
 # Les modèles commençant par `Declared` représentent des éléments ajoutés par l'utilisateur.ice dans sa
@@ -490,5 +503,6 @@ class Attachment(Historisable):
 @receiver((post_save, post_delete), sender=DeclaredMicroorganism)
 @receiver((post_save, post_delete), sender=DeclaredSubstance)
 @receiver((post_save, post_delete), sender=DeclaredIngredient)
+@receiver((post_save, post_delete), sender=ComputedSubstance)
 def update_article(sender, instance, *args, **kwargs):
     instance.declaration.assign_article()

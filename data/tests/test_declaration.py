@@ -5,9 +5,11 @@ from django.utils import timezone
 
 from data.factories import (
     AwaitingInstructionDeclarationFactory,
+    ComputedSubstanceFactory,
     DeclaredPlantFactory,
     InstructionReadyDeclarationFactory,
     SnapshotFactory,
+    SubstanceFactory,
 )
 from data.models import Declaration
 
@@ -101,6 +103,7 @@ class DeclarationTestCase(TestCase):
             declared_microorganisms=[],
             declared_substances=[],
             declared_ingredients=[],
+            computed_substances=[],
         )
 
         self.assertIsNone(declaration.article)
@@ -113,6 +116,7 @@ class DeclarationTestCase(TestCase):
             declared_microorganisms=[],
             declared_substances=[],
             declared_ingredients=[],
+            computed_substances=[],
         )
         declared_plant = DeclaredPlantFactory(new=False, declaration=declaration)
         declared_plant.delete()
@@ -128,6 +132,7 @@ class DeclarationTestCase(TestCase):
             declared_microorganisms=[],
             declared_substances=[],
             declared_ingredients=[],
+            computed_substances=[],
         )
         DeclaredPlantFactory(new=False, declaration=declaration)
         declaration.refresh_from_db()
@@ -136,12 +141,30 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration.overriden_article, "")
 
+    def test_article_15_override(self):
+        declaration = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+        )
+        DeclaredPlantFactory(new=False, declaration=declaration)
+        declaration.overriden_article = Declaration.Article.ARTICLE_16
+        declaration.save()
+        declaration.refresh_from_db()
+
+        self.assertEqual(declaration.article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration.overriden_article, Declaration.Article.ARTICLE_16)
+
     def test_article_16(self):
         declaration = InstructionReadyDeclarationFactory(
             declared_plants=[],
             declared_microorganisms=[],
             declared_substances=[],
             declared_ingredients=[],
+            computed_substances=[],
         )
         DeclaredPlantFactory(new=True, declaration=declaration)
         declaration.refresh_from_db()
@@ -156,6 +179,7 @@ class DeclarationTestCase(TestCase):
             declared_microorganisms=[],
             declared_substances=[],
             declared_ingredients=[],
+            computed_substances=[],
         )
         declared_plant = DeclaredPlantFactory(new=True, declaration=declaration)
         declared_plant.new = False
@@ -164,4 +188,20 @@ class DeclarationTestCase(TestCase):
         declaration.refresh_from_db()
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration.overriden_article, "")
+
+    def test_article_17(self):
+        declaration = InstructionReadyDeclarationFactory(
+            computed_substances=[],
+        )
+        substance = SubstanceFactory(ca_max_quantity=1.0)
+        ComputedSubstanceFactory(
+            substance=substance,
+            unit=substance.unit,
+            quantity=1.2,
+            declaration=declaration,
+        )
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.article, Declaration.Article.ARTICLE_17)
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_17)
         self.assertEqual(declaration.overriden_article, "")
