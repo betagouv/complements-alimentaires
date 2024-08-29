@@ -228,7 +228,7 @@ export const orderingOptions = [
 
 export const articleOptions = [
   { value: "ART_15", text: "Article 15", shortText: "15" },
-  { value: "ARTICLE_15_WARNING", text: "Article 15 vigilance", shortText: "15 vig." },
+  { value: "ART_15_WARNING", text: "Article 15 vigilance", shortText: "15 vig." },
   { value: "ART_16", text: "Article 16", shortText: "16" },
   { value: "ART_17", text: "Article 17", shortText: "17" },
 ]

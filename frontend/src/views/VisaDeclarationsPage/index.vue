@@ -23,6 +23,18 @@
           />
         </DsfrInputGroup>
       </div>
+      <div class="md:border-l md:pl-4 min-w-36">
+        <DsfrInputGroup class="max-w-sm">
+          <DsfrSelect
+            label="Article"
+            defaultUnselectedText=""
+            :modelValue="article"
+            @update:modelValue="updateArticle"
+            :options="articleSelectOptions"
+            class="!text-sm"
+          />
+        </DsfrInputGroup>
+      </div>
     </div>
 
     <div v-if="isFetching" class="flex justify-center my-10">
@@ -51,10 +63,16 @@ import VisaDeclarationsTable from "./VisaDeclarationsTable"
 import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
 import StatusFilter from "@/components/StatusFilter.vue"
-import { orderingOptions } from "@/utils/mappings"
+import { orderingOptions, articleOptions } from "@/utils/mappings"
 
 const router = useRouter()
 const route = useRoute()
+
+const excludeArticles = ["ART_17", "ART_15_WARNING"]
+const articleSelectOptions = [
+  ...articleOptions.filter((x) => excludeArticles.indexOf(x.value) == -1),
+  ...[{ value: "", text: "Tous" }],
+]
 
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
@@ -67,17 +85,19 @@ const pages = computed(() => getPagesForPagination(data.value.count, limit, rout
 const page = computed(() => parseInt(route.query.page))
 const filteredStatus = computed(() => route.query.status)
 const ordering = computed(() => route.query.triage)
+const article = computed(() => route.query.article)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 
 const updateStatusFilter = (status) => updateQuery({ status })
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 const updateOrdering = (newValue) => updateQuery({ triage: newValue })
+const updateArticle = (newValue) => updateQuery({ article: newValue })
 
 // Obtention de la donnée via API
 const url = computed(
   () =>
-    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&ordering=${ordering.value}`
+    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&ordering=${ordering.value}&article=${article.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -85,7 +105,7 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
-watch([page, filteredStatus, ordering], fetchSearchResults)
+watch([page, filteredStatus, ordering, article], fetchSearchResults)
 </script>
 
 <style scoped>

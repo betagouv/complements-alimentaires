@@ -4,12 +4,12 @@
       class="mb-8"
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Déclarations pour instruction' }]"
     />
-    <div class="border px-4 mb-2 md:flex gap-8 items-baseline filters">
-      <DsfrFieldset legend="Nom d'entreprise" class="!mb-0 min-w-48">
+    <div class="border px-4 mb-2 md:flex gap-4 items-baseline filters">
+      <DsfrFieldset legend="Nom d'entreprise" class="!mb-0 min-w-44">
         <div class="flex gap-4">
           <DsfrInputGroup>
             <DsfrInput
-              class="max-w-20"
+              class="max-w-16 !text-sm"
               label="De :"
               :modelValue="companyNameStart"
               label-visible
@@ -18,7 +18,7 @@
           </DsfrInputGroup>
           <DsfrInputGroup>
             <DsfrInput
-              class="max-w-20"
+              class="max-w-16 !text-sm"
               label="À :"
               :modelValue="companyNameEnd"
               label-visible
@@ -27,9 +27,9 @@
           </DsfrInputGroup>
         </div>
       </DsfrFieldset>
-      <div class="min-w-64">
+      <div class="min-w-60">
         <DsfrFieldset class="!mb-0">
-          <div class="md:border-x md:px-8">
+          <div class="md:border-x md:px-4">
             <DsfrInputGroup>
               <DsfrSelect
                 label="Personne assignée"
@@ -37,13 +37,14 @@
                 @update:modelValue="updateInstructorFilter"
                 defaultUnselectedText=""
                 :options="instructorSelectOptions"
+                class="!text-sm"
               />
             </DsfrInputGroup>
           </div>
         </DsfrFieldset>
       </div>
       <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" v-model="filteredStatus" />
-      <div class="md:border-l md:px-8">
+      <div class="md:border-l md:pl-4">
         <DsfrInputGroup class="max-w-sm">
           <DsfrSelect
             label="Trier par :"
@@ -51,6 +52,19 @@
             :modelValue="ordering"
             @update:modelValue="updateOrdering"
             :options="orderingOptions"
+            class="!text-sm"
+          />
+        </DsfrInputGroup>
+      </div>
+      <div class="md:border-l md:pl-4 min-w-36">
+        <DsfrInputGroup class="max-w-sm">
+          <DsfrSelect
+            label="Article"
+            defaultUnselectedText=""
+            :modelValue="article"
+            @update:modelValue="updateArticle"
+            :options="articleSelectOptions"
+            class="!text-sm"
           />
         </DsfrInputGroup>
       </div>
@@ -82,10 +96,16 @@ import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
 import { DsfrInput } from "@gouvminint/vue-dsfr"
 import StatusFilter from "@/components/StatusFilter.vue"
-import { orderingOptions } from "@/utils/mappings"
+import { orderingOptions, articleOptions } from "@/utils/mappings"
 
 const router = useRouter()
 const route = useRoute()
+
+const excludeArticles = ["ART_17", "ART_15_WARNING"]
+const articleSelectOptions = [
+  ...articleOptions.filter((x) => excludeArticles.indexOf(x.value) == -1),
+  ...[{ value: "", text: "Tous" }],
+]
 
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
@@ -108,6 +128,7 @@ const companyNameStart = computed(() => route.query.entrepriseDe)
 const companyNameEnd = computed(() => route.query.entrepriseA)
 const assignedInstructor = computed(() => route.query.personneAssignée)
 const ordering = computed(() => route.query.triage)
+const article = computed(() => route.query.article)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 
@@ -117,11 +138,12 @@ const updateCompanyNameStartFilter = (newValue) => updateQuery({ entrepriseDe: n
 const updateCompanyNameEndFilter = (newValue) => updateQuery({ entrepriseA: newValue })
 const updateInstructorFilter = (newValue) => updateQuery({ personneAssignée: newValue })
 const updateOrdering = (newValue) => updateQuery({ triage: newValue })
+const updateArticle = (newValue) => updateQuery({ article: newValue })
 
 // Obtention de la donnée via API
 const url = computed(
   () =>
-    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&company_name_start=${companyNameStart.value}&company_name_end=${companyNameEnd.value}&ordering=${ordering.value}&instructor=${assignedInstructor.value}`
+    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&company_name_start=${companyNameStart.value}&company_name_end=${companyNameEnd.value}&ordering=${ordering.value}&instructor=${assignedInstructor.value}&article=${article.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -129,7 +151,10 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
-watch([page, filteredStatus, companyNameStart, companyNameEnd, assignedInstructor, ordering], fetchSearchResults)
+watch(
+  [page, filteredStatus, companyNameStart, companyNameEnd, assignedInstructor, ordering, article],
+  fetchSearchResults
+)
 </script>
 
 <style scoped>
