@@ -308,6 +308,7 @@ class Declaration(Historisable, TimeStampable):
                 x.quantity > x.substance.max_quantity
                 for x in self.computed_substances.all()
                 if x.substance.max_quantity and x.substance.unit == x.unit
+                # TODO: vérifier si ce cas est possible, sinon enlever l'unit du ComputedSubstance
             )
 
             if empty_composition:
