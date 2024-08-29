@@ -22,6 +22,7 @@ from .models import (
     IngredientStatus,
     IngredientSynonym,
     Microorganism,
+    MicroorganismSynonym,
     Part,
     Plant,
     PlantFamily,
@@ -54,24 +55,23 @@ CSV_TO_MODEL_MAPPING = {
     # Les fichiers csv avec les Foreign Keys
     "REF_ICA_INGREDIENT_AUTRE_SYNONYME.csv": IngredientSynonym,
     "REF_ICA_PLANTE_SYNONYME.csv": PlantSynonym,
+    "REF_ICA_MICROORG_SYNONYME.csv": MicroorganismSynonym,
     "REF_ICA_SUBSTANCE_ACTIVE_SYNONYME.csv": SubstanceSynonym,
     # Les csv avec les relations ManyToMany
     "REF_ICA_AUTREING_SUBSTACTIVE.csv": Ingredient,
     "REF_ICA_PLANTE_SUBSTANCE.csv": Plant,
-    "REF_ICA_MOORG_SUBSTANCE.csv": "à récuperer",
+    "REF_ICA_MICROORG_SUBSTACTIVE.csv": Microorganism,
     "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": Part,
     "REF_ICA_PARTIE_UTILE.csv": Part,
 }
 
 # Le fichier REF_ICA_PARTIE_PL_A_SURVEILLER n'est pas traité comme une relation car il correspond à un model à part entière
-RELATION_CSV = [
-    "REF_ICA_AUTREING_SUBSTACTIVE.csv",
-    "REF_ICA_PLANTE_SUBSTANCE.csv",
-]
+RELATION_CSV = ["REF_ICA_AUTREING_SUBSTACTIVE.csv", "REF_ICA_PLANTE_SUBSTANCE.csv", "REF_ICA_MICROORG_SUBSTACTIVE.csv"]
 
 
 class CSVImporter:
     PREFIX_TO_MODEL_MAPPING = {
+        # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
         "INGA": Ingredient,
         "MORG": Microorganism,
         "PPLAN": PlantPart,
@@ -79,6 +79,7 @@ class CSVImporter:
         "SBSACT": Substance,
         "SYNAO": IngredientSynonym,
         "SYNPLA": PlantSynonym,
+        "SYNMO": MicroorganismSynonym,
         "SYNSBSTA": SubstanceSynonym,
         "FAMPL": PlantFamily,
         "UNT": SubstanceUnit,
@@ -88,9 +89,6 @@ class CSVImporter:
         "STINGSBS": IngredientStatus,
         "POPRS": Condition,
         "": Population,
-        # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
-        # "REF_ICA_AUTREING_SUBSTACTIVE.csv": "INGA",
-        # "REF_ICA_PLANTE_SUBSTANCE.csv": "PLTE",
         # "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": "",
         # "REF_ICA_PARTIE_UTILE.csv": "",
     }
