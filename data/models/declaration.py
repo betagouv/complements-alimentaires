@@ -1,8 +1,13 @@
 import json
+import logging
 from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Case, Value, When
+from django.db.models.functions import Coalesce
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
 
 from dateutil.relativedelta import relativedelta
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
@@ -24,6 +29,8 @@ from data.models import (
     SubstanceUnit,
     VisaRole,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class Declaration(Historisable, TimeStampable):
@@ -47,6 +54,12 @@ class Declaration(Historisable, TimeStampable):
         MISSING_DATA = "MISSING_DATA", "Le dossier manque des données nécessaires"
         MEDICINE = "MEDICINE", "Le complément répond à la définition du médicament"
         INCOMPATIBLE_RECOMMENDATIONS = "INCOMPATIBLE_RECOMMENDATIONS", "Recommandations d'emploi incompatibles"
+
+    class Article(models.TextChoices):
+        ARTICLE_15 = "ART_15", "Article 15"
+        ARTICLE_15_WARNING = "ART_15_WARNING", "Article 15 Vigilance"
+        ARTICLE_16 = "ART_16", "Article 16"
+        ARTICLE_17 = "ART_17", "Article 17"
 
     status = models.CharField(
         max_length=50,
@@ -151,6 +164,18 @@ class Declaration(Historisable, TimeStampable):
 
     effects = models.ManyToManyField(Effect, blank=True, verbose_name="objectifs ou effets")
     other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non listés")
+
+    calculated_article = models.TextField("article calculé automatiquement", blank=True, choices=Article)
+    overriden_article = models.TextField("article manuellement spécifié", blank=True, choices=Article)
+    article = models.GeneratedField(
+        expression=Coalesce(
+            Case(When(overriden_article="", then=Value(None)), default="overriden_article"),
+            Case(When(calculated_article="", then=Value(None)), default="calculated_article"),
+            Value(None),
+        ),
+        output_field=models.TextField(verbose_name="article", null=True),
+        db_persist=True,
+    )
 
     def create_snapshot(
         self,
@@ -261,6 +286,46 @@ class Declaration(Historisable, TimeStampable):
 
     def __str__(self):
         return f"Déclaration « {self.name} »"
+
+    def assign_article(self):
+        """
+        Cette fonction est appelée depuis les signals post_save et post_delete des objets calulated_<type>
+        afin de mettre à jour l'article de la déclaration.
+        Ces signals sont dans la fonction « update_article » de ce même fichier.
+        """
+        try:
+            current_calculated_article = self.calculated_article
+            new_calculated_article = current_calculated_article
+            composition_items = (
+                self.declared_plants,
+                self.declared_microorganisms,
+                self.declared_substances,
+                self.declared_ingredients,
+            )
+            empty_composition = all(not x.exists() for x in composition_items)
+            has_new_items = any(x.filter(new=True).exists() for x in composition_items if issubclass(x.model, Addable))
+            surpasses_max_dose = any(
+                x.quantity > x.substance.max_quantity
+                for x in self.computed_substances.all()
+                if x.substance.max_quantity and x.substance.unit == x.unit
+                # TODO: vérifier si ce cas est possible, sinon enlever l'unit du ComputedSubstance
+            )
+
+            if empty_composition:
+                new_calculated_article = ""
+            elif surpasses_max_dose:
+                new_calculated_article = Declaration.Article.ARTICLE_17
+            elif has_new_items:
+                new_calculated_article = Declaration.Article.ARTICLE_16
+            else:
+                new_calculated_article = Declaration.Article.ARTICLE_15
+
+            if new_calculated_article != current_calculated_article:
+                self.calculated_article = new_calculated_article
+                self.save()
+        except Exception as e:
+            logger.error("Error calculating article")
+            logger.exception(e)
 
 
 # Les modèles commençant par `Declared` représentent des éléments ajoutés par l'utilisateur.ice dans sa
@@ -433,3 +498,12 @@ class Attachment(Historisable):
         null=True, blank=True, upload_to="declaration-attachments/%Y/%m/%d/", verbose_name="pièce jointe"
     )
     name = models.TextField("nom du fichier", blank=True)
+
+
+@receiver((post_save, post_delete), sender=DeclaredPlant)
+@receiver((post_save, post_delete), sender=DeclaredMicroorganism)
+@receiver((post_save, post_delete), sender=DeclaredSubstance)
+@receiver((post_save, post_delete), sender=DeclaredIngredient)
+@receiver((post_save, post_delete), sender=ComputedSubstance)
+def update_article(sender, instance, *args, **kwargs):
+    instance.declaration.assign_article()
