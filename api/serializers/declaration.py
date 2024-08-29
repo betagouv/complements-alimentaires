@@ -322,6 +322,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
+            "article",
             "status",
             "author",
             "company",
@@ -367,6 +368,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             "id",
+            "article",
             "status",
             "author",
             "instructor",

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <ArticleInfoRow v-model="payload" v-if="showArticle" class="mb-2" />
     <h3 class="fr-h6">
       Informations sur le produit
       <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />
@@ -82,6 +83,7 @@ import { computed } from "vue"
 import AddressLine from "@/components/AddressLine"
 import SummaryInfoSegment from "./SummaryInfoSegment"
 import SummaryElementList from "./SummaryElementList"
+import ArticleInfoRow from "./ArticleInfoRow"
 import SubstancesTable from "@/components/SubstancesTable"
 import FilePreview from "@/components/FilePreview"
 import { useRootStore } from "@/stores/root"
@@ -93,7 +95,7 @@ const router = useRouter()
 const { units, populations, conditions, effects, galenicFormulations } = storeToRefs(useRootStore())
 
 const payload = defineModel()
-defineProps({ readonly: Boolean })
+defineProps({ readonly: Boolean, showArticle: Boolean })
 const unitInfo = computed(() => {
   if (!payload.value.unitQuantity) return null
   const unitMeasurement = units.value?.find?.((x) => x.id === payload.value.unitMeasurement)?.name || "-"
