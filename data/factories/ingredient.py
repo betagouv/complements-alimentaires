@@ -20,6 +20,8 @@ class IngredientFactory(factory.django.DjangoModelFactory):
     siccrf_status = IngredientStatus.AUTHORIZED
     to_be_entered_in_next_decree = False
     ingredient_type = IngredientType.ACTIVE_INGREDIENT
+    siccrf_is_obsolete = False
+    ca_is_obsolete = False
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):
