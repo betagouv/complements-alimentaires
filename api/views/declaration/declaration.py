@@ -317,6 +317,25 @@ class CompanyDeclarationsListView(GenericDeclarationsListView):
         return company.declarations.exclude(status=Declaration.DeclarationStatus.DRAFT)
 
 
+class ArticleChangeView(GenericAPIView):
+    permission_classes = [(IsInstructor | IsVisor)]
+    serializer_class = DeclarationSerializer
+    queryset = Declaration.objects.all()
+
+    def post(self, request, pk):
+        declaration = self.get_object()
+        new_article = request.data.get("article", "")
+
+        if new_article not in Declaration.Article:
+            raise ProjectAPIException(global_error="Merci de spécifier un article valide")
+
+        declaration.overriden_article = Declaration.Article(new_article)
+        declaration.save()
+        declaration.refresh_from_db()
+        serializer = self.get_serializer(declaration)
+        return Response(serializer.data)
+
+
 class DeclarationFlowView(GenericAPIView):
     queryset = Declaration.objects.all()
     serializer_class = DeclarationSerializer

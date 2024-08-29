@@ -12,9 +12,14 @@
       </DsfrInputGroup>
     </DsfrModal>
 
-    <div v-if="!payload.article">Article inconnu</div>
+    <DsfrBadge type="warning" label="Article inconnu" v-if="!payload.article" />
     <DsfrBadge no-icon v-else :label="articleOptions.find((x) => x.value === payload.article)?.text" />
-    <DsfrButton size="sm" tertiary label="Changer l'article" @click="articleModalOpened = true" />
+    <DsfrButton
+      size="sm"
+      tertiary
+      :label="!!payload.article ? 'Changer l\'article' : 'Renseigner l\'article'"
+      @click="articleModalOpened = true"
+    />
   </div>
 </template>
 

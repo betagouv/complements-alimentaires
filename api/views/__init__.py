@@ -20,6 +20,7 @@ from .declaration.declaration import (
     DeclarationRefuseVisaView,
     DeclarationAcceptVisaView,
     DeclarationWithdrawView,
+    ArticleChangeView,
 )
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
