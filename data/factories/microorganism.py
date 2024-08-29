@@ -20,6 +20,8 @@ class MicroorganismFactory(factory.django.DjangoModelFactory):
     ca_species = factory.Faker("text", max_nb_chars=20)
     siccrf_status = IngredientStatus.AUTHORIZED
     to_be_entered_in_next_decree = False
+    siccrf_is_obsolete = False
+    ca_is_obsolete = False
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):
