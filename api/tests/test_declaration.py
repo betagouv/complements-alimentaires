@@ -1048,6 +1048,23 @@ class TestDeclarationApi(APITestCase):
         self.assertIn("Zebra Ltd", returned_companies)
 
     @authenticate
+    def test_filter_by_article(self):
+        """
+        Les déclarations peuvent être filtrées par article
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        art_15 = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+        AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_16)
+        AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_17)
+
+        # Filtrage pour obtenir les déclarations en article 15
+        url = f"{reverse('api:list_all_declarations')}?article=ART_15"
+        response = self.client.get(url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], art_15.id)
+
+    @authenticate
     def test_sort_declarations_by_name(self):
         """
         Les déclarations peuvent être triées par nom

@@ -50,6 +50,10 @@ class DeclarationFilterSet(django_filters.FilterSet):
     company_name_end = django_filters.CharFilter(method="company_name_end__lte")
     status = django_filters.CharFilter(method="status__in")
 
+    # Une fois https://github.com/carltongibson/django-filter/issues/1673 on peut
+    # enlever cette ligne
+    article = django_filters.CharFilter()
+
     class Meta:
         model = Declaration
         fields = [
@@ -60,6 +64,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
             "visor",
             "company_name_start",
             "company_name_end",
+            "article",
         ]
 
     def nullable_instructor(self, queryset, value, *args, **kwargs):

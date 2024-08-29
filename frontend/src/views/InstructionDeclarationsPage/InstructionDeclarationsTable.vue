@@ -16,12 +16,13 @@ import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
+import { articleOptions } from "@/utils/mappings"
 
 const { loggedUser } = storeToRefs(useRootStore())
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
-const headers = ["", "Nom du produit", "Entreprise", "État", "Date limite de réponse", "Instruit par"]
+const headers = ["", "Nom du produit", "Entreprise", "État", "Date limite de réponse", "Instruit par", "Article"]
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowAttrs: { class: needsAttention(x) ? "font-bold" : "" },
@@ -38,6 +39,7 @@ const rows = computed(() =>
       x.instructor
         ? `${x.instructor.firstName} ${x.instructor.lastName}`
         : { component: "span", text: "Non-assigné", class: "italic" },
+      x.article ? articleOptions.find((y) => y.value === x.article)?.shortText : "",
     ],
   }))
 )
