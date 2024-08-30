@@ -7,4 +7,4 @@ from data.models import Population
 class PopulationListView(ListAPIView):
     model = Population
     serializer_class = PopulationSerializer
-    queryset = Population.objects.filter(missing_import_data=False)
+    queryset = Population.up_to_date_objects.filter(missing_import_data=False)

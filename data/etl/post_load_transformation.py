@@ -40,8 +40,8 @@ def delete_ingredients_that_are_substances():
     # TODO Les ingrédients qui commencent par L- R- beta- gamma
 
     # Les ingrédients qui ont un doublon substance avec un n° CAS sont supprimés
-    qs_with_CAS = Ingredient.objects.filter(
-        name__lower__in=Substance.objects.exclude(Q(is_obsolete=True) | Q(cas_number="")).values_list(
+    qs_with_CAS = Ingredient.up_to_date_objects.filter(
+        name__lower__in=Substance.up_to_date_objects.exclude(Q(is_obsolete=True) | Q(cas_number="")).values_list(
             "name__lower", flat=True
         ),
     )
@@ -49,8 +49,8 @@ def delete_ingredients_that_are_substances():
     # TODO : check des commentaires privés/publics
 
     # Les ingrédients qui ont un doublon substance qui est un métabolite de plante sont supprimés
-    qs_metabolite = Ingredient.objects.filter(
-        name__lower__in=Substance.objects.exclude(Q(is_obsolete=True) | Q(plant=None)).values_list(
+    qs_metabolite = Ingredient.up_to_date_objects.filter(
+        name__lower__in=Substance.up_to_date_objects.exclude(Q(is_obsolete=True) | Q(plant=None)).values_list(
             "name__lower", flat=True
         ),
     )
@@ -58,9 +58,9 @@ def delete_ingredients_that_are_substances():
     # Les ingrédients qui ont un doublon sustance et dont le nom se termine par -ase sont des enzyme
     enzym_suffix = ["ase$"]
 
-    qs_enzym = Ingredient.objects.filter(
+    qs_enzym = Ingredient.up_to_date_objects.filter(
         name__lower__regex="|".join(enzym_suffix),
-        name__lower__in=Substance.objects.filter(name__lower__regex="|".join(enzym_suffix)).values_list(
+        name__lower__in=Substance.up_to_date_objects.filter(name__lower__regex="|".join(enzym_suffix)).values_list(
             "name__lower", flat=True
         ),
     )
@@ -68,9 +68,9 @@ def delete_ingredients_that_are_substances():
     # Les ingrédients qui ont un doublon sustance et dont le nom se termine par -ose/oses sont des glucides
     ose_suffix = ["ose$", "oses$"]
 
-    qs_ose = Ingredient.objects.filter(
+    qs_ose = Ingredient.up_to_date_objects.filter(
         name__lower__regex="|".join(ose_suffix),
-        name__lower__in=Substance.objects.filter(name__lower__regex="|".join(ose_suffix)).values_list(
+        name__lower__in=Substance.up_to_date_objects.filter(name__lower__regex="|".join(ose_suffix)).values_list(
             "name__lower", flat=True
         ),
     )
@@ -78,18 +78,18 @@ def delete_ingredients_that_are_substances():
     # Les ingrédients qui ont un doublon sustance et dont le nom se termine par -ate/-ates sont des bases conjuguées
     # Une base conjuguée contient un acide et ses sels. L'acide est considéré comme substance mais pas sa base conjuguée ?
     qs_ate = ate_suffix = ["ate$", "ates$"]
-    Ingredient.objects.filter(
+    Ingredient.up_to_date_objects.filter(
         name__lower__regex="|".join(ate_suffix),
-        name__lower__in=Substance.objects.filter(name__lower__regex="|".join(ate_suffix)).values_list(
+        name__lower__in=Substance.up_to_date_objects.filter(name__lower__regex="|".join(ate_suffix)).values_list(
             "name__lower", flat=True
         ),
     )
 
     # Les ingrédients qui ont un doublon sustance et dont le nom commence par acide -/acides - sont des substances
     acide_prefix = ["^acide ", "^acides"]
-    qs_acide = Ingredient.objects.filter(
+    qs_acide = Ingredient.up_to_date_objects.filter(
         name__lower__regex="|".join(acide_prefix),
-        name__lower__in=Substance.objects.filter(name__lower__regex="|".join(acide_prefix)).values_list(
+        name__lower__in=Substance.up_to_date_objects.filter(name__lower__regex="|".join(acide_prefix)).values_list(
             "name__lower", flat=True
         ),
     )
@@ -104,9 +104,9 @@ def delete_substances_that_are_ingredients():
 
     # Les substances qui ont un doublon ingrédient et qui commencent par huile*, lait* ou miel sont supprimées
     animal_or_vegetal_product_prefix = ["^huile", "^lait", "^miel", "^beurre", "^hydrolysat", "^cartilage", "^extrait"]
-    qs = Substance.objects.filter(
+    qs = Substance.up_to_date_objects.filter(
         name__lower__regex="|".join(animal_or_vegetal_product_prefix),
-        name__lower__in=Ingredient.objects.filter(
+        name__lower__in=Ingredient.up_to_date_objects.filter(
             name__lower__regex="|".join(animal_or_vegetal_product_prefix)
         ).values_list("name__lower", flat=True),
     )
@@ -116,11 +116,11 @@ def delete_substances_that_are_ingredients():
 
 def delete_ingredients_and_substances_that_are_microorganism():
     microorganism_suffix = ["inactivé$"]
-    qs_ingredients = Ingredient.objects.filter(
+    qs_ingredients = Ingredient.up_to_date_objects.filter(
         name__lower__regex="|".join(microorganism_suffix),
     )
 
-    qs_substances = Substance.objects.filter(
+    qs_substances = Substance.up_to_date_objects.filter(
         name__lower__regex="|".join(microorganism_suffix),
     )
     qs_total = qs_ingredients | qs_substances

@@ -338,6 +338,7 @@ def import_csv_from_filepath(csv_filepath, export_date):
 
     with open(csv_filepath, mode="rb") as csv_file:
         csv_importer = CSVImporter(csv_file, model, is_relation=is_relation)
+        logger.info(f"Import de {csv_filename} dans le modèle {model.__name__} en cours.")
         updated_models = csv_importer.import_csv(export_date)
         logger.info(
             f"Import de {csv_filename} dans le modèle {model.__name__} terminé : {csv_importer.nb_line_in_success} objets importés, {csv_importer.nb_objects_created} objets créés."
