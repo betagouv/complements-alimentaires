@@ -1,6 +1,5 @@
 from django.db.models import Q, TextField, Transform
 
-# from simple_history.utils import update_change_reason
 from ..models import Ingredient, Substance
 
 
