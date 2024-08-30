@@ -7,4 +7,4 @@ from data.models import Preparation
 class PreparationListView(ListAPIView):
     model = Preparation
     serializer_class = PreparationSerializer
-    queryset = Preparation.objects.filter(missing_import_data=False, siccrf_is_obsolete=False)
+    queryset = Preparation.objects.filter(missing_import_data=False)

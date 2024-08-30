@@ -16,6 +16,8 @@ class PlantPartFactory(factory.django.DjangoModelFactory):
     ca_name = factory.Faker("text", max_nb_chars=10)
     siccrf_name_en = factory.Faker("text", max_nb_chars=10)
     siccrf_id = factory.Sequence(lambda n: n + 1)
+    siccrf_is_obsolete = False
+    ca_is_obsolete = False
 
 
 class PlantFamilyFactory(factory.django.DjangoModelFactory):
