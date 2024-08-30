@@ -5,7 +5,7 @@ from django.apps import apps
 from django.shortcuts import render
 from django.views.generic import FormView
 
-from data.csv_importer import CSVImporter
+from data.etl.csv_importer import CSVImporter
 from web.forms import FileUploadForm
 
 logger = logging.getLogger(__name__)

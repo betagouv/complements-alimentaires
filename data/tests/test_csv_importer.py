@@ -7,7 +7,8 @@ from django.db.models import CharField, FloatField, IntegerField, TextField
 from django.test import TestCase
 
 from data.choices import IngredientActivity
-from data.csv_importer import CSVImporter, import_csv_from_filepath
+from data.etl.csv_importer import CSVImporter, import_csv_from_filepath
+from data.etl.utils import clean_value
 from data.exceptions import CSVFileError
 from data.models import (
     Effect,
@@ -22,7 +23,6 @@ from data.models import (
     Substance,
     SubstanceUnit,
 )
-from data.utils.importer_utils import clean_value
 
 
 class CSVImporterTestCase(TestCase):
