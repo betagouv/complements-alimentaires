@@ -77,8 +77,8 @@ def delete_ingredients_that_are_substances():
 
     # Les ingrédients qui ont un doublon sustance et dont le nom se termine par -ate/-ates sont des bases conjuguées
     # Une base conjuguée contient un acide et ses sels. L'acide est considéré comme substance mais pas sa base conjuguée ?
-    qs_ate = ate_suffix = ["ate$", "ates$"]
-    Ingredient.up_to_date_objects.filter(
+    ate_suffix = ["ate$", "ates$"]
+    qs_ate = Ingredient.up_to_date_objects.filter(
         name__lower__regex="|".join(ate_suffix),
         name__lower__in=Substance.up_to_date_objects.filter(name__lower__regex="|".join(ate_suffix)).values_list(
             "name__lower", flat=True
@@ -93,7 +93,6 @@ def delete_ingredients_that_are_substances():
             "name__lower", flat=True
         ),
     )
-
     ingredients_to_delete = qs_with_CAS | qs_metabolite | qs_enzym | qs_ose | qs_ate | qs_acide
     ingredients_to_delete.update(ca_is_obsolete=True)
     return len(ingredients_to_delete)
@@ -123,6 +122,6 @@ def delete_ingredients_and_substances_that_are_microorganism():
     qs_substances = Substance.up_to_date_objects.filter(
         name__lower__regex="|".join(microorganism_suffix),
     )
-    qs_total = qs_ingredients | qs_substances
-    qs_total.update(ca_is_obsolete=True)
-    return len(qs_total)
+    qs_ingredients.update(ca_is_obsolete=True)
+    qs_substances.update(ca_is_obsolete=True)
+    return len(qs_ingredients) + len(qs_substances)
