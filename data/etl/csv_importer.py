@@ -12,8 +12,6 @@ from django.db.models import (
     ManyToManyField,
 )
 
-from ..exceptions import CSVFileError
-
 # Import the model
 from ..models import (
     Condition,
@@ -35,6 +33,7 @@ from ..models import (
     SubstanceSynonym,
     SubstanceUnit,
 )
+from .exceptions import CSVFileError
 from .utils import get_update_or_create_related_object, pre_import_treatments, update_or_create_object
 
 logger = logging.getLogger(__name__)

@@ -9,8 +9,8 @@ from django.db import transaction
 from django.utils import timezone
 
 from data.etl.csv_importer import import_csv_from_filepath
+from data.etl.exceptions import CSVFileError
 from data.etl.post_load_transformation import deduplicate_substances_ingredients
-from data.exceptions import CSVFileError
 from data.models.plant import Part
 
 logger = logging.getLogger(__name__)
