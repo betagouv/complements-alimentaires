@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.db.models import Q, TextField, Transform
 
 # from simple_history.utils import update_change_reason
@@ -15,8 +16,12 @@ TextField.register_lookup(LowerValue)
 # TODO : générer un mapping des doublons pour la conversion future des CA déclarés
 
 
+@transaction.atomic
 def substance_ingredient_deduplication():
-    """Transformation post-loading"""
+    """
+    Fonction qui déduplique les ingrédients.
+    Elle est executée de manière atomique : si une erreur advient aucune opération n'est enregistrée.
+    """
     # suppression des doublons
     delete_ingredients_that_are_substances()
     delete_substances_that_are_ingredients()

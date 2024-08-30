@@ -5,6 +5,7 @@ import os
 import pathlib
 from functools import cached_property
 
+from django.db import transaction
 from django.db.models import (
     ForeignKey,
     GeneratedField,
@@ -323,6 +324,7 @@ class CSVImporter:
         return list(self.linked_models.values())
 
 
+@transaction.atomic
 def import_csv_from_filepath(csv_filepath, export_date):
     """Cette fonction utilise la classe CSVImporter en devinant d'abord :
     * si le fichier importé représente une relation
