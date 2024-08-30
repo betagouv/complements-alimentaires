@@ -27,7 +27,7 @@
       </DsfrAlert>
       <DeclarationAlert class="mb-6" v-else-if="!canInstruct" role="instructor" :declaration="declaration" />
       <div v-if="declaration">
-        <DeclarationSummary :readonly="true" v-model="declaration" v-if="isAwaitingInstruction" />
+        <DeclarationSummary :showArticle="true" :readonly="true" v-model="declaration" v-if="isAwaitingInstruction" />
 
         <DsfrTabs v-else ref="tabs" :tab-titles="titles" :initialSelectedIndex="0" @select-tab="selectTab">
           <DsfrTabContent
@@ -48,6 +48,7 @@
               :user="declarant"
               :company="company"
               @decision-done="onDecisionDone"
+              :showArticle="true"
             ></component>
           </DsfrTabContent>
         </DsfrTabs>
