@@ -33,7 +33,6 @@ def substance_ingredient_deduplication():
 def delete_ingredients_that_are_substances():
     # Les ingrédients qui ont un doublon substance avec un n° CAS sont supprimés
     Ingredient.objects.filter(
-        is_obsolete=False,
         name__lower__in=Substance.objects.exclude(Q(is_obsolete=True) | Q(cas_number="")).values_list(
             "name__lower", flat=True
         ),
@@ -43,7 +42,6 @@ def delete_ingredients_that_are_substances():
 
     # Les ingrédients qui ont un doublon substance qui est un métabolite de plante sont supprimés
     Ingredient.objects.filter(
-        is_obsolete=False,
         name__lower__in=Substance.objects.exclude(Q(is_obsolete=True) | Q(plant=None)).values_list(
             "name__lower", flat=True
         ),
@@ -53,22 +51,20 @@ def delete_ingredients_that_are_substances():
     enzym_suffix = ["ase$"]
 
     Ingredient.objects.filter(
-        is_obsolete=False,
         name__lower__regex="|".join(enzym_suffix),
-        name__lower__in=Substance.objects.filter(
-            is_obsolete=False, name__lower__regex="|".join(enzym_suffix)
-        ).values_list("name__lower", flat=True),
+        name__lower__in=Substance.objects.filter(name__lower__regex="|".join(enzym_suffix)).values_list(
+            "name__lower", flat=True
+        ),
     ).update(ca_is_obsolete=True)
 
     # Les ingrédients qui ont un doublon sustance et dont le nom se termine par -ose/oses sont des glucides
     ose_suffix = ["ose$", "oses$"]
 
     Ingredient.objects.filter(
-        is_obsolete=False,
         name__lower__regex="|".join(ose_suffix),
-        name__lower__in=Substance.objects.filter(
-            is_obsolete=False, name__lower__regex="|".join(ose_suffix)
-        ).values_list("name__lower", flat=True),
+        name__lower__in=Substance.objects.filter(name__lower__regex="|".join(ose_suffix)).values_list(
+            "name__lower", flat=True
+        ),
     ).update(ca_is_obsolete=True)
 
     # Les ingrédient en 3 mots "*ate de *" qui ont un doublon sustance sont des formes d'apport
@@ -77,21 +73,19 @@ def delete_ingredients_that_are_substances():
     # Une base conjuguée contient un acide et ses sels. L'acide est considéré comme substance mais pas sa base conjuguée ?
     ate_suffix = ["ate$", "ates$"]
     Ingredient.objects.filter(
-        is_obsolete=False,
         name__lower__regex="|".join(ate_suffix),
-        name__lower__in=Substance.objects.filter(
-            is_obsolete=False, name__lower__regex="|".join(ate_suffix)
-        ).values_list("name__lower", flat=True),
+        name__lower__in=Substance.objects.filter(name__lower__regex="|".join(ate_suffix)).values_list(
+            "name__lower", flat=True
+        ),
     ).update(ca_is_obsolete=True)
 
     # Les ingrédients qui ont un doublon sustance et dont le nom commence par acide -/acides - sont des substances
     acide_prefix = ["^acide ", "^acides"]
     Ingredient.objects.filter(
-        is_obsolete=False,
         name__lower__regex="|".join(acide_prefix),
-        name__lower__in=Substance.objects.filter(
-            is_obsolete=False, name__lower__regex="|".join(acide_prefix)
-        ).values_list("name__lower", flat=True),
+        name__lower__in=Substance.objects.filter(name__lower__regex="|".join(acide_prefix)).values_list(
+            "name__lower", flat=True
+        ),
     ).update(ca_is_obsolete=True)
 
     # TODO Les ingrédients qui sont des acides aminées dont la liste est connue
@@ -102,10 +96,9 @@ def delete_substances_that_are_ingredients():
     # Les substances qui ont un doublon ingrédient et qui commencent par huile*, lait* ou miel sont supprimées
     animal_or_vegetal_product_prefix = ["^huile", "^lait", "^miel", "^beurre", "^hydrolysat", "^cartilage", "^extrait"]
     Substance.objects.filter(
-        is_obsolete=False,
         name__lower__regex="|".join(animal_or_vegetal_product_prefix),
         name__lower__in=Ingredient.objects.filter(
-            is_obsolete=False, name__lower__regex="|".join(animal_or_vegetal_product_prefix)
+            name__lower__regex="|".join(animal_or_vegetal_product_prefix)
         ).values_list("name__lower", flat=True),
     ).update(ca_is_obsolete=True)
 
@@ -113,11 +106,9 @@ def delete_substances_that_are_ingredients():
 def delete_ingredients_and_substances_that_are_microorganism():
     microorganism_suffix = ["inactivé$"]
     Ingredient.objects.filter(
-        is_obsolete=False,
         name__lower__regex="|".join(microorganism_suffix),
     ).update(ca_is_obsolete=True)
 
     Substance.objects.filter(
-        is_obsolete=False,
         name__lower__regex="|".join(microorganism_suffix),
     ).update(ca_is_obsolete=True)
