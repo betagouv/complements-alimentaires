@@ -65,14 +65,16 @@ export const useRootStore = defineStore("root", () => {
     const { data } = await useFetch("/api/v1/units/").json()
     units.value = data.value
   }
-  const fetchDeclarationFieldsData = () => {
-    fetchConditions()
-    fetchEffects()
-    fetchPopulations()
-    fetchPlantParts()
-    fetchGalenicFormulations()
-    fetchPreparations()
-    fetchUnits()
+  // Appel groupé des fieldDdata
+  const fetchDeclarationFieldsData = async () => {
+    const { data } = await useFetch("/api/v1/declarationFieldData/").json()
+    populations.value = data.value.populations
+    conditions.value = pushOtherChoiceFieldAtTheEnd(data.value.conditions)
+    effects.value = pushOtherChoiceFieldAtTheEnd(data.value.effects)
+    galenicFormulations.value = pushOtherChoiceFieldAtTheEnd(data.value.galenicFormulations)
+    preparations.value = data.value.preparations
+    plantParts.value = data.value.plantParts
+    units.value = data.value.units
   }
   return {
     loggedUser,
