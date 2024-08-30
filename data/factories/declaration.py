@@ -192,6 +192,17 @@ class CompleteDeclarationFactory(DeclarationFactory):
             for _ in range(3):
                 self.declared_substances.add(DeclaredSubstanceFactory(declaration=self))
 
+    @factory.post_generation
+    def computed_substances(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted or isinstance(extracted, list):
+            for computed_substance in extracted:
+                self.computed_substances.add(computed_substance)
+        else:
+            for _ in range(3):
+                self.computed_substances.add(ComputedSubstanceFactory(declaration=self))
+
 
 class InstructionReadyDeclarationFactory(CompleteDeclarationFactory):
     author = factory.SubFactory(UserFactory)

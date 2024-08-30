@@ -1,7 +1,21 @@
+from django.db import models
+
 from data.behaviours import TimeStampable
 from data.choices import IngredientActivity
 
 from .mixins import WithDefaultFields, WithMissingImportBoolean
+
+
+# Remplace le manager par défaut pour filtrer tous les modèles ayant un champ `is_obsolete`
+class CommonModelManager(models.Manager):
+    def __init__(self, *args, **kwargs):
+        self.avoid_obsolete = kwargs.pop("avoid_obsolete", False)
+        super().__init__(*args, **kwargs)
+
+    def get_queryset(self):
+        if self.avoid_obsolete:
+            return super().get_queryset().filter(is_obsolete=False)
+        return super().get_queryset().all()
 
 
 class CommonModel(TimeStampable, WithMissingImportBoolean, WithDefaultFields):
@@ -46,3 +60,6 @@ class CommonModel(TimeStampable, WithMissingImportBoolean, WithDefaultFields):
             "additive": IngredientActivity.NOT_ACTIVE,
         }
         return TYPE_ACTIVITY_MAPPING[self.object_type]
+
+    objects = CommonModelManager(avoid_obsolete=True)
+    all_objects = CommonModelManager()

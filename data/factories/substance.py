@@ -23,6 +23,8 @@ class SubstanceFactory(factory.django.DjangoModelFactory):
     unit = factory.SubFactory(SubstanceUnitFactory)
     siccrf_status = IngredientStatus.AUTHORIZED
     to_be_entered_in_next_decree = False
+    siccrf_is_obsolete = False
+    ca_is_obsolete = False
 
 
 class SubstanceSynonymFactory(factory.django.DjangoModelFactory):
