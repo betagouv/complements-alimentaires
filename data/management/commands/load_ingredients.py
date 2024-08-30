@@ -9,7 +9,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from data.etl.csv_importer import import_csv_from_filepath
-from data.etl.post_load_transformation import substance_ingredient_deduplication
+from data.etl.post_load_transformation import deduplicate_substances_ingredients
 from data.exceptions import CSVFileError
 from data.models.plant import Part
 
@@ -71,14 +71,14 @@ class Command(BaseCommand):
                         check_for_incomplete_data(model)
 
                 # transform une fois tous les fichiers importés
-                substance_ingredient_deduplication()
+                deduplicate_substances_ingredients()
 
                 logger.info(f"Import et déduplication executées en {self.elapsed_time()}\n")
         except Exception as e:  # noqa
             exc_type, exc_value, exc_traceback = sys.exc_info()
             formatted_excption = traceback.format_exception(exc_type, exc_value, exc_traceback)
             for line in formatted_excption:
-                logger.info(line, ending="")
+                logger.info(line)
             raise CommandError(
                 "Une exception imprévue est arrivée. L'import et la déduplication ont avorté, l'état de la base de données reste inchangé\n"
             )
