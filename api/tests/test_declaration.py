@@ -16,6 +16,7 @@ from data.factories import (
     ConditionFactory,
     DeclarantRoleFactory,
     DeclarationFactory,
+    DeclaredPlantFactory,
     EffectFactory,
     GalenicFormulationFactory,
     IngredientFactory,
@@ -1048,6 +1049,23 @@ class TestDeclarationApi(APITestCase):
         self.assertIn("Zebra Ltd", returned_companies)
 
     @authenticate
+    def test_filter_by_article(self):
+        """
+        Les déclarations peuvent être filtrées par article
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        art_15 = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+        AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_16)
+        AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_17)
+
+        # Filtrage pour obtenir les déclarations en article 15
+        url = f"{reverse('api:list_all_declarations')}?article=ART_15"
+        response = self.client.get(url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], art_15.id)
+
+    @authenticate
     def test_sort_declarations_by_name(self):
         """
         Les déclarations peuvent être triées par nom
@@ -1168,3 +1186,58 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(results[0]["id"], declaration_first.id)
         self.assertEqual(results[1]["id"], declaration_middle.id)
         self.assertEqual(results[2]["id"], declaration_last.id)
+
+    @authenticate
+    def test_update_article(self):
+        """
+        Les viseuses ou instructrices peuvent changer l'article d'une déclaration
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        art_15 = AwaitingInstructionDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+        )
+        DeclaredPlantFactory(new=False, declaration=art_15)
+
+        art_15.refresh_from_db()
+        self.assertEqual(art_15.article, Declaration.Article.ARTICLE_15)
+
+        # Une instructrice peut surcharger l'article
+
+        url = reverse("api:update_article", kwargs={"pk": art_15.id})
+        payload = {"article": "ART_16"}
+        response = self.client.post(url, payload)
+        result = response.json()
+        self.assertEqual(result["article"], "ART_16")
+
+        art_15.refresh_from_db()
+        self.assertEqual(art_15.article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(art_15.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(art_15.overriden_article, Declaration.Article.ARTICLE_16)
+
+    @authenticate
+    def test_update_article_unauthorized(self):
+        """
+        Les viseuses ou instructrices peuvent changer l'article d'une déclaration
+        """
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+        art_15 = AwaitingInstructionDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+            company=company,
+            author=authenticate.user,
+        )
+        DeclaredPlantFactory(new=False, declaration=art_15)
+
+        url = reverse("api:update_article", kwargs={"pk": art_15.id})
+
+        payload = {"article": "ART_16"}
+        response = self.client.post(url, payload)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

@@ -14,10 +14,19 @@
 import { computed } from "vue"
 import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
+import { articleOptions } from "@/utils/mappings"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
-const headers = ["Nom du produit", "Entreprise", "État", "Date limite de réponse", "Instruit par", "Visé par"]
+const headers = [
+  "Nom du produit",
+  "Entreprise",
+  "État",
+  "Date limite de réponse",
+  "Instruit par",
+  "Visé par",
+  "Article",
+]
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
@@ -35,6 +44,7 @@ const rows = computed(() =>
       x.visor
         ? `${x.visor.firstName} ${x.visor.lastName}`
         : { component: "span", text: "Non-assigné", class: "italic" },
+      x.article ? articleOptions.find((y) => y.value === x.article)?.shortText : "",
     ],
   }))
 )

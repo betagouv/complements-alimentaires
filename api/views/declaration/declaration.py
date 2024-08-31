@@ -50,6 +50,10 @@ class DeclarationFilterSet(django_filters.FilterSet):
     company_name_end = django_filters.CharFilter(method="company_name_end__lte")
     status = django_filters.CharFilter(method="status__in")
 
+    # Une fois https://github.com/carltongibson/django-filter/issues/1673 on peut
+    # enlever cette ligne
+    article = django_filters.CharFilter()
+
     class Meta:
         model = Declaration
         fields = [
@@ -60,6 +64,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
             "visor",
             "company_name_start",
             "company_name_end",
+            "article",
         ]
 
     def nullable_instructor(self, queryset, value, *args, **kwargs):
@@ -310,6 +315,25 @@ class CompanyDeclarationsListView(GenericDeclarationsListView):
             Company.objects.filter(supervisors=self.request.user, pk=self.kwargs[self.lookup_field])
         )
         return company.declarations.exclude(status=Declaration.DeclarationStatus.DRAFT)
+
+
+class ArticleChangeView(GenericAPIView):
+    permission_classes = [(IsInstructor | IsVisor)]
+    serializer_class = DeclarationSerializer
+    queryset = Declaration.objects.all()
+
+    def post(self, request, pk):
+        declaration = self.get_object()
+        new_article = request.data.get("article", "")
+
+        if new_article not in Declaration.Article:
+            raise ProjectAPIException(global_error="Merci de spécifier un article valide")
+
+        declaration.overriden_article = Declaration.Article(new_article)
+        declaration.save()
+        declaration.refresh_from_db()
+        serializer = self.get_serializer(declaration)
+        return Response(serializer.data)
 
 
 class DeclarationFlowView(GenericAPIView):

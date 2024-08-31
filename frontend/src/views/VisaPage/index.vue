@@ -23,7 +23,7 @@
       </DsfrAlert>
       <DeclarationAlert role="visor" class="mb-4" v-else :declaration="declaration" />
       <div v-if="declaration">
-        <DeclarationSummary :readonly="true" v-model="declaration" v-if="isAwaitingVisa" />
+        <DeclarationSummary :showArticle="true" :readonly="true" v-model="declaration" v-if="isAwaitingVisa" />
 
         <DsfrTabs v-else ref="tabs" :tab-titles="titles" :initialSelectedIndex="0" @select-tab="selectTab">
           <DsfrTabContent
@@ -36,6 +36,7 @@
           >
             <component
               :is="component"
+              :showArticle="true"
               v-model="declaration"
               :externalResults="$externalResults"
               :readonly="true"

@@ -286,6 +286,7 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
             "instructor",
             "visor",
             "response_limit_date",
+            "article",
         )
         read_only_fields = fields
 
@@ -321,6 +322,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
+            "article",
             "status",
             "author",
             "company",
@@ -366,6 +368,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             "id",
+            "article",
             "status",
             "author",
             "instructor",
