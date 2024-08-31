@@ -38,7 +38,12 @@ class CertificateView(GenericAPIView):
 
     def get_template_path(self, declaration):
         status = Declaration.DeclarationStatus
-        article = 15  # TODO: une fois la distinction faite, il faudra màj cette variable
+        article_map = {
+            Declaration.Article.ARTICLE_15: 15,
+            Declaration.Article.ARTICLE_15_WARNING: 15,
+            Declaration.Article.ARTICLE_16: 16,
+        }
+        article = article_map.get(declaration.article, 15)
         if declaration.status in [
             status.AWAITING_INSTRUCTION,
             status.AWAITING_VISA,
@@ -47,7 +52,7 @@ class CertificateView(GenericAPIView):
         ]:
             return f"certificates/certificate-submitted-art-{article}.html"
         if declaration.status in [status.AUTHORIZED, status.WITHDRAWN]:
-            return f"certificates/certificate-art-{article}.html"  # TODO : logic for art 15 / 16
+            return f"certificates/certificate-art-{article}.html"
         if declaration.status == status.REJECTED:
             return "certificates/certificate-rejected.html"
 
