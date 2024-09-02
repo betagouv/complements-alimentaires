@@ -61,7 +61,7 @@ def declared_microorganism_is_complete(mo):
 
 
 def computed_substance_is_complete(substance):
-    return substance.quantity
+    return substance.quantity is not None
 
 
 def validate_number_of_elements(declaration) -> tuple[list, list]:
