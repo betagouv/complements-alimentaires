@@ -63,3 +63,4 @@ from .solicitation import (
     AddNewCollaboratorView,
 )
 from .snapshot import DeclarationSnapshotListView
+from .grouped_views import DeclarationFieldsGroupedView
