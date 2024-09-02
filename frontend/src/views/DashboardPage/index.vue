@@ -117,6 +117,7 @@ const onboardingActions = [
   {
     title: "Contactez notre équipe",
     description: "Une question ? Contactez-nous",
+    link: { name: "ContactForm" },
   },
 ]
 
@@ -130,6 +131,11 @@ const userActions = [
     title: "Nouvelle entreprise",
     description: "Créez ou rejoignez une nouvelle entreprise",
     link: { name: "CompanyFormPage" },
+  },
+  {
+    title: "Contactez notre équipe",
+    description: "Une question ? Contactez-nous",
+    link: { name: "ContactForm" },
   },
 ]
 </script>
