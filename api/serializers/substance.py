@@ -42,6 +42,7 @@ class SubstanceSerializer(PrivateCommentSerializer):
             "activity",
             "status",
             "history",
+            "object_type",
         )
         read_only_fields = fields
 
