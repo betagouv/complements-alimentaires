@@ -25,6 +25,7 @@ from data.models import (
     Plant,
     PlantPart,
     Population,
+    Preparation,
     Substance,
     SubstanceUnit,
     VisaRole,
@@ -379,7 +380,9 @@ class DeclaredPlant(Historisable, Addable):
     )
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
     unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
-    preparation = models.TextField(blank=True, verbose_name="préparation")
+    preparation = models.ForeignKey(
+        Preparation, null=True, blank=True, verbose_name="préparation", on_delete=models.RESTRICT
+    )
 
 
 class DeclaredMicroorganism(Historisable, Addable):
