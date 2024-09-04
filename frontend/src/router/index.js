@@ -30,6 +30,7 @@ import VisaDeclarationsPage from "@/views/VisaDeclarationsPage"
 import VisaPage from "@/views/VisaPage"
 import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
 import A11yPage from "@/views/A11yPage.vue"
+import ContactForm from "@/views/ContactForm"
 import { ref } from "vue"
 
 const routes = [
@@ -49,6 +50,11 @@ const routes = [
     path: "/entreprises",
     name: "ProducerHomePage",
     component: ProducerHomePage,
+  },
+  {
+    path: "/contactez-nous",
+    name: "ContactForm",
+    component: ContactForm,
   },
   {
     path: "/blog",
