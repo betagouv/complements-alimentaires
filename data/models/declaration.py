@@ -3,6 +3,7 @@ import logging
 from datetime import timedelta
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Case, Value, When
 from django.db.models.functions import Coalesce
@@ -341,6 +342,10 @@ class Addable(models.Model):
     new = models.BooleanField(default=False)
     new_description = models.TextField(blank=True, verbose_name="description")
 
+    first_ocurrence = models.BooleanField(
+        default=False, verbose_name="Est-ce que cet ingrédient a été rajouté en base suite à cette déclaration ?"
+    )
+
     authorization_mode = models.CharField(
         choices=AuthorizationModes.choices,
         blank=True,
@@ -359,6 +364,14 @@ class Addable(models.Model):
     eu_details = models.TextField(
         "information additionnelle sur l'autorisation dans un autre pays européen", blank=True
     )
+
+    def clean(self):
+        # L'ingrédient ne peut pas être `new` et avoir `first_ocurrence` à true. Le vrai ingrédient
+        # doit être référencé dans l'Addable et donc ne pas être nouveau.
+        if self.new and self.first_ocurrence:
+            raise ValidationError(
+                {"first_ocurrence": "Un nouvel ingrédient ne peut pas être le premier à être ajouté en base."}
+            )
 
 
 class DeclaredPlant(Historisable, Addable):
