@@ -1,11 +1,16 @@
 import datetime
 import logging
 import os
+import sys
+import traceback
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
+from django.utils import timezone
 
 from data.etl.csv_importer import import_csv_from_filepath
-from data.exceptions import CSVFileError
+from data.etl.exceptions import CSVFileError
+from data.etl.post_load_transformation import deduplicate_substances_ingredients
 from data.models.plant import Part
 
 logger = logging.getLogger(__name__)
@@ -19,6 +24,12 @@ def check_for_incomplete_data(model):
 
 class Command(BaseCommand):
     help = "Load the ingredients from the csv files given by SICCRF"
+    _start_time = None
+
+    def elapsed_time(self):
+        if self._start_time is None:
+            return None
+        return timezone.now() - self._start_time
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -36,17 +47,38 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        directory_relative_path = options.get("directory")
-        files = os.listdir(directory_relative_path)
-        export_date = options.get("date")
-        models_to_check = set()
-        for file in files:
-            try:
-                updated_models = import_csv_from_filepath(os.path.join(directory_relative_path, file), export_date)
-                models_to_check = models_to_check.union(updated_models)
-            except CSVFileError as e:
-                logger.error(e.message)
+        try:
+            with transaction.atomic():
+                logger.info("Début de l'import des csv de référe ce de TeleIcare et déduplication\n")
+                self._start_time = timezone.now()
 
-        for model in models_to_check:
-            if model != Part:
-                check_for_incomplete_data(model)
+                directory_relative_path = options.get("directory")
+                files = os.listdir(directory_relative_path)
+                export_date = options.get("date")
+                models_to_check = set()
+                # load et transform fichier par fichier
+                for file in files:
+                    try:
+                        updated_models = import_csv_from_filepath(
+                            os.path.join(directory_relative_path, file), export_date
+                        )
+                        models_to_check = models_to_check.union(updated_models)
+                    except CSVFileError as e:
+                        logger.error(e.message)
+
+                for model in models_to_check:
+                    if model != Part:
+                        check_for_incomplete_data(model)
+
+                # transform une fois tous les fichiers importés
+                deduplicate_substances_ingredients()
+
+                logger.info(f"Import et déduplication executées en {self.elapsed_time()}\n")
+        except Exception as e:  # noqa
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            formatted_excption = traceback.format_exception(exc_type, exc_value, exc_traceback)
+            for line in formatted_excption:
+                logger.info(line)
+            raise CommandError(
+                "Une exception imprévue est arrivée. L'import et la déduplication ont avorté, l'état de la base de données reste inchangé\n"
+            )

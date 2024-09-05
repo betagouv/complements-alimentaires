@@ -7,4 +7,4 @@ from data.models import Effect
 class EffectListView(ListAPIView):
     model = Effect
     serializer_class = EffectSerializer
-    queryset = Effect.objects.filter(missing_import_data=False)
+    queryset = Effect.up_to_date_objects.filter(missing_import_data=False)

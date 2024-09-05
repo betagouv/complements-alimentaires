@@ -8,8 +8,8 @@ from django.test import TestCase
 
 from data.choices import IngredientActivity
 from data.etl.csv_importer import CSVImporter, import_csv_from_filepath
+from data.etl.exceptions import CSVFileError
 from data.etl.utils import clean_value
-from data.exceptions import CSVFileError
 from data.models import (
     Effect,
     GalenicFormulation,

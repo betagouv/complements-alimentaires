@@ -1,6 +1,8 @@
 from difflib import SequenceMatcher
+
 from django.db.models import F
-from data.models import Plant, Microorganism, Ingredient, Substance, IngredientStatus
+
+from data.models import Ingredient, IngredientStatus, Microorganism, Plant, Substance
 
 
 def search_elements(query, deduplicate=False, exclude_not_authorized=False):
@@ -16,9 +18,13 @@ def search_elements(query, deduplicate=False, exclude_not_authorized=False):
 
 
 def _get_plants(query, deduplicate, exclude_not_authorized):
-    plant_qs = Plant.objects.filter(name__unaccent__icontains=query).distinct().annotate(autocomplete_match=F("name"))
+    plant_qs = (
+        Plant.up_to_date_objects.filter(name__unaccent__icontains=query)
+        .distinct()
+        .annotate(autocomplete_match=F("name"))
+    )
     plant_synonym_qs = (
-        Plant.objects.filter(plantsynonym__name__unaccent__icontains=query)
+        Plant.up_to_date_objects.filter(plantsynonym__name__unaccent__icontains=query)
         .distinct()
         .annotate(autocomplete_match=F("plantsynonym__name"))
     )
@@ -27,10 +33,12 @@ def _get_plants(query, deduplicate, exclude_not_authorized):
 
 def _get_microorganisms(query, deduplicate, exclude_not_authorized):
     microorganism_qs = (
-        Microorganism.objects.filter(name__unaccent__icontains=query).distinct().annotate(autocomplete_match=F("name"))
+        Microorganism.up_to_date_objects.filter(name__unaccent__icontains=query)
+        .distinct()
+        .annotate(autocomplete_match=F("name"))
     )
     microorganism_synonym_qs = (
-        Microorganism.objects.filter(microorganismsynonym__name__unaccent__icontains=query)
+        Microorganism.up_to_date_objects.filter(microorganismsynonym__name__unaccent__icontains=query)
         .distinct()
         .annotate(autocomplete_match=F("microorganismsynonym__name"))
     )
@@ -39,10 +47,12 @@ def _get_microorganisms(query, deduplicate, exclude_not_authorized):
 
 def _get_ingredients(query, deduplicate, exclude_not_authorized):
     ingredient_qs = (
-        Ingredient.objects.filter(name__unaccent__icontains=query).distinct().annotate(autocomplete_match=F("name"))
+        Ingredient.up_to_date_objects.filter(name__unaccent__icontains=query)
+        .distinct()
+        .annotate(autocomplete_match=F("name"))
     )
     ingredient_synonym_qs = (
-        Ingredient.objects.filter(ingredientsynonym__name__unaccent__icontains=query)
+        Ingredient.up_to_date_objects.filter(ingredientsynonym__name__unaccent__icontains=query)
         .distinct()
         .annotate(autocomplete_match=F("ingredientsynonym__name"))
     )
@@ -51,10 +61,12 @@ def _get_ingredients(query, deduplicate, exclude_not_authorized):
 
 def _get_substances(query, deduplicate, exclude_not_authorized):
     substance_qs = (
-        Substance.objects.filter(name__unaccent__icontains=query).distinct().annotate(autocomplete_match=F("name"))
+        Substance.up_to_date_objects.filter(name__unaccent__icontains=query)
+        .distinct()
+        .annotate(autocomplete_match=F("name"))
     )
     substance_synonym_qs = (
-        Substance.objects.filter(substancesynonym__name__unaccent__icontains=query)
+        Substance.up_to_date_objects.filter(substancesynonym__name__unaccent__icontains=query)
         .distinct()
         .annotate(autocomplete_match=F("substancesynonym__name"))
     )

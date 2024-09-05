@@ -15,7 +15,7 @@ class IngredientTestCase(TestCase):
             ]
             all_objs = non_obsolete_objs + [obsolete_obj]
 
-            qs_without_obsolete = ingredient_factory._meta.model.objects.all()
+            qs_without_obsolete = ingredient_factory._meta.model.up_to_date_objects.all()
             self.assertQuerySetEqual(qs_without_obsolete, non_obsolete_objs, ordered=False)
-            qs_with_obsolete = ingredient_factory._meta.model.all_objects.all()
+            qs_with_obsolete = ingredient_factory._meta.model.objects.all()
             self.assertQuerySetEqual(qs_with_obsolete, all_objs, ordered=False)
