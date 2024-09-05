@@ -6,6 +6,7 @@ from .microorganism import MicroorganismFactory, MicroorganismSynonymFactory
 from .plant import PlantFactory, PlantPartFactory, PlantSynonymFactory, PlantFamilyFactory
 from .webinar import WebinarFactory
 from .population import PopulationFactory
+from .preparation import PreparationFactory
 from .condition import ConditionFactory
 from .company import (
     CompanyFactory,

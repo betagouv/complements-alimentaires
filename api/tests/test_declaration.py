@@ -26,6 +26,7 @@ from data.factories import (
     PlantFactory,
     PlantPartFactory,
     PopulationFactory,
+    PreparationFactory,
     SnapshotFactory,
     SubstanceFactory,
     SubstanceUnitFactory,
@@ -169,6 +170,8 @@ class TestDeclarationApi(APITestCase):
         plant_part = PlantPartFactory()
         plant.plant_parts.add(plant_part)
         unit = SubstanceUnitFactory()
+        preparation_teinture = PreparationFactory(ca_name="Teinture")
+        preparation_autre = PreparationFactory(ca_name="Autre macérât")
 
         payload = {
             "name": "Name",
@@ -183,7 +186,7 @@ class TestDeclarationApi(APITestCase):
                     "active": True,
                     "usedPart": plant_part.id,
                     "quantity": "123",
-                    "preparation": "Teinture",
+                    "preparation": preparation_teinture.id,
                     "unit": unit.id,
                 },
                 {
@@ -193,7 +196,7 @@ class TestDeclarationApi(APITestCase):
                     "active": True,
                     "usedPart": plant_part.id,
                     "quantity": "890",
-                    "preparation": "Autre",
+                    "preparation": preparation_autre.id,
                     "unit": unit.id,
                 },
             ],
@@ -215,7 +218,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(existing_declared_plant.used_part, plant_part)
         self.assertEqual(existing_declared_plant.quantity, 123)
         self.assertEqual(existing_declared_plant.unit, unit)
-        self.assertEqual(existing_declared_plant.preparation, "Teinture")
+        self.assertEqual(existing_declared_plant.preparation.name, "Teinture")
 
         self.assertIsNone(new_declared_plant.plant)
         self.assertEqual(new_declared_plant.new_name, "New plant name")
@@ -224,7 +227,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(new_declared_plant.used_part, plant_part)
         self.assertEqual(new_declared_plant.quantity, 890)
         self.assertEqual(existing_declared_plant.unit, unit)
-        self.assertEqual(new_declared_plant.preparation, "Autre")
+        self.assertEqual(new_declared_plant.preparation.name, "Autre macérât")
 
     @authenticate
     def test_create_declaration_unknown_plant(self):
