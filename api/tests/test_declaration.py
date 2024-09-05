@@ -183,7 +183,7 @@ class TestDeclarationApi(APITestCase):
                     "active": True,
                     "usedPart": plant_part.id,
                     "quantity": "123",
-                    "preparation": "Teinture",
+                    "preparation": "26",
                     "unit": unit.id,
                 },
                 {
@@ -193,7 +193,7 @@ class TestDeclarationApi(APITestCase):
                     "active": True,
                     "usedPart": plant_part.id,
                     "quantity": "890",
-                    "preparation": "Autre",
+                    "preparation": "5",
                     "unit": unit.id,
                 },
             ],
@@ -224,7 +224,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(new_declared_plant.used_part, plant_part)
         self.assertEqual(new_declared_plant.quantity, 890)
         self.assertEqual(existing_declared_plant.unit, unit)
-        self.assertEqual(new_declared_plant.preparation, "Autre")
+        self.assertEqual(new_declared_plant.preparation, "Autre macérât")
 
     @authenticate
     def test_create_declaration_unknown_plant(self):

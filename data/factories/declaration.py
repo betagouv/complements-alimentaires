@@ -19,6 +19,7 @@ from .ingredient import IngredientFactory
 from .microorganism import MicroorganismFactory
 from .plant import PlantFactory, PlantPartFactory
 from .population import PopulationFactory
+from .preparation import PreparationFactory
 from .substance import SubstanceFactory
 from .unit import SubstanceUnitFactory
 from .user import UserFactory
@@ -45,7 +46,7 @@ class DeclaredPlantFactory(factory.django.DjangoModelFactory):
     plant = factory.SubFactory(PlantFactory)
     quantity = factory.Faker("pyfloat")
     unit = factory.SubFactory(SubstanceUnitFactory)
-    preparation = factory.Faker("text")
+    preparation = factory.SubFactory(PreparationFactory)
     used_part = factory.SubFactory(PlantPartFactory)
 
 
