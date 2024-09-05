@@ -381,6 +381,9 @@ class DeclaredPlant(Historisable, Addable):
     unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
     preparation = models.TextField(blank=True, verbose_name="préparation")
 
+    def __str__(self):
+        return f"{self.new_name or self.plant.name}"
+
 
 class DeclaredMicroorganism(Historisable, Addable):
     declaration = models.ForeignKey(
@@ -401,6 +404,11 @@ class DeclaredMicroorganism(Historisable, Addable):
     strain = models.TextField(blank=True, verbose_name="souche")
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR (en UFC)")
 
+    def __str__(self):
+        if self.new:
+            return f"{self.new_species} {self.new_genre}"
+        return f"{self.microorganism.new_species} {self.microorganism.new_genre}"
+
 
 class DeclaredIngredient(Historisable, Addable):
     declaration = models.ForeignKey(
@@ -418,6 +426,9 @@ class DeclaredIngredient(Historisable, Addable):
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
     unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
+    def __str__(self):
+        return f"{self.new_name or self.ingredient.name}"
+
 
 class DeclaredSubstance(Historisable):
     declaration = models.ForeignKey(
@@ -430,6 +441,9 @@ class DeclaredSubstance(Historisable):
     substance = models.ForeignKey(
         Substance, null=True, blank=True, verbose_name="substance ajoutée par l'user", on_delete=models.RESTRICT
     )
+
+    def __str__(self):
+        return f"{self.substance.name}"
 
 
 # Les substances détectées au moment de faire la déclaration seront ici, avec la valeur de la quantité

@@ -1,7 +1,14 @@
 from django import forms
 from django.contrib import admin
 
-from data.models import Declaration, Snapshot
+from data.models import (
+    Declaration,
+    DeclaredIngredient,
+    DeclaredMicroorganism,
+    DeclaredPlant,
+    DeclaredSubstance,
+    Snapshot,
+)
 
 
 class SnapshotInline(admin.TabularInline):
@@ -13,6 +20,117 @@ class SnapshotInline(admin.TabularInline):
 
     def has_add_permission(self, request, object):
         return False
+
+
+# Declared Plants inline
+
+
+class DeclaredPlantInlineForm(forms.ModelForm):
+    class Meta:
+        widgets = {
+            "new_name": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+            "new_description": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+        }
+
+
+class DeclaredPlantInline(admin.StackedInline):
+    model = DeclaredPlant
+    form = DeclaredPlantInlineForm
+    can_delete = True
+    fields = (
+        "plant",
+        "used_part",
+        "quantity",
+        "unit",
+        "preparation",
+        "new",
+        "new_name",
+        "new_description",
+    )
+    extra = 0
+
+    def has_add_permission(self, request, object):
+        return True
+
+
+# Declared Microorganisms inline
+
+
+class DeclaredMicroorganismInlineForm(forms.ModelForm):
+    class Meta:
+        widgets = {
+            "new_species": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+            "new_genre": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+            "new_description": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+            "strain": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+            "quantity": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+        }
+
+
+class DeclaredMicroorganismInline(admin.StackedInline):
+    model = DeclaredMicroorganism
+    form = DeclaredMicroorganismInlineForm
+    can_delete = True
+    fields = (
+        "microorganism",
+        "active",
+        "activated",
+        "strain",
+        "quantity",
+        "new",
+        "new_species",
+        "new_genre",
+        "new_description",
+    )
+    extra = 0
+
+    def has_add_permission(self, request, object):
+        return True
+
+
+# Declared Ingredients inline
+
+
+class DeclaredIngredientInlineForm(forms.ModelForm):
+    class Meta:
+        widgets = {
+            "new_name": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+            "new_description": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+            "quantity": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+        }
+
+
+class DeclaredIngredientInline(admin.StackedInline):
+    model = DeclaredIngredient
+    form = DeclaredIngredientInlineForm
+    can_delete = True
+    fields = (
+        "ingredient",
+        "active",
+        "quantity",
+        "unit",
+        "new",
+        "new_name",
+        "new_type",
+        "new_description",
+    )
+    extra = 0
+
+    def has_add_permission(self, request, object):
+        return True
+
+
+# Declared Substances inline
+
+
+class DeclaredSubstanceInline(admin.StackedInline):
+    model = DeclaredSubstance
+    can_delete = True
+    fields = ("substance",)
+    extra = 0
+
+    def has_add_permission(self, request, object):
+        return True
 
 
 class DeclarationForm(forms.ModelForm):
@@ -47,7 +165,13 @@ class DeclarationAdmin(admin.ModelAdmin):
     form = DeclarationForm
     list_display = ("name", "status", "company", "author")
     list_filter = ("status", "company", "author")
-    inlines = (SnapshotInline,)
+    inlines = (
+        DeclaredPlantInline,
+        DeclaredMicroorganismInline,
+        DeclaredIngredientInline,
+        DeclaredSubstanceInline,
+        SnapshotInline,
+    )
 
     fieldsets = (
         (
