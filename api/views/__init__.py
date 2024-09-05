@@ -64,3 +64,4 @@ from .solicitation import (
 )
 from .snapshot import DeclarationSnapshotListView
 from .grouped_views import DeclarationFieldsGroupedView
+from .contact import ContactView

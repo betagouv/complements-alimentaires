@@ -124,7 +124,7 @@ const showFields = computed(() => {
   if (
     model.value.active &&
     ["active_ingredient", "form_of_supply"].indexOf(props.objectType) >= 0 &&
-    model.value.element.substances.length === 0
+    !model.value.element?.substances?.length
   )
     // TODO: à terme les form_of_supply auront forcément des substances liées donc cette condition ne sera plus nécessaire
     // TODO: à terme le type active_ingredient n'existera plus, seulement le type ingrédient et la propriété active

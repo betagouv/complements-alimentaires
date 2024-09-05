@@ -171,6 +171,8 @@ urlpatterns = {
         views.DeclarationWithdrawView.as_view(),
         name="withdraw",
     ),
+    # Contact
+    path("contact/", views.ContactView.as_view(), name="contact"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
