@@ -384,6 +384,12 @@ class DeclaredPlant(Historisable, Addable):
         Preparation, null=True, blank=True, verbose_name="préparation", on_delete=models.RESTRICT
     )
 
+    def __str__(self):
+        if self.new_name:
+            return f"-NEW- {self.new_name}"
+        else:
+            return self.plant.name
+
 
 class DeclaredMicroorganism(Historisable, Addable):
     declaration = models.ForeignKey(

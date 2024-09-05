@@ -9,6 +9,7 @@ from .substance import SubstanceAdmin
 from .plant import PlantAdmin
 from .microorganism import MicroorganismAdmin
 from .population import Population
+from .preparation import Preparation
 from .condition import Condition
 from .effect import Effect
 from .galenic_formulation import GalenicFormulation
