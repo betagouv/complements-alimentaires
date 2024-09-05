@@ -362,6 +362,10 @@ class Addable(models.Model):
 
 
 class DeclaredPlant(Historisable, Addable):
+    class Meta:
+        verbose_name = "plante déclarée"
+        verbose_name_plural = "plantes déclarées"
+
     declaration = models.ForeignKey(
         Declaration,
         related_name="declared_plants",
@@ -386,6 +390,10 @@ class DeclaredPlant(Historisable, Addable):
 
 
 class DeclaredMicroorganism(Historisable, Addable):
+    class Meta:
+        verbose_name = "microorganisme déclaré"
+        verbose_name_plural = "microorganismes déclarés"
+
     declaration = models.ForeignKey(
         Declaration, related_name="declared_microorganisms", verbose_name="déclaration", on_delete=models.CASCADE
     )
@@ -407,10 +415,14 @@ class DeclaredMicroorganism(Historisable, Addable):
     def __str__(self):
         if self.new:
             return f"{self.new_species} {self.new_genre}"
-        return f"{self.microorganism.new_species} {self.microorganism.new_genre}"
+        return f"{self.microorganism.species} {self.microorganism.genus}"
 
 
 class DeclaredIngredient(Historisable, Addable):
+    class Meta:
+        verbose_name = "ingredient déclaré"
+        verbose_name_plural = "ingredients déclarés"
+
     declaration = models.ForeignKey(
         Declaration,
         related_name="declared_ingredients",
@@ -431,6 +443,10 @@ class DeclaredIngredient(Historisable, Addable):
 
 
 class DeclaredSubstance(Historisable):
+    class Meta:
+        verbose_name = "substance déclarée"
+        verbose_name_plural = "substances déclarées"
+
     declaration = models.ForeignKey(
         Declaration,
         related_name="declared_substances",
