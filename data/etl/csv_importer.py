@@ -5,13 +5,12 @@ import os
 import pathlib
 from functools import cached_property
 
+from django.db import transaction
 from django.db.models import (
     ForeignKey,
     GeneratedField,
     ManyToManyField,
 )
-
-from ..exceptions import CSVFileError
 
 # Import the model
 from ..models import (
@@ -34,6 +33,7 @@ from ..models import (
     SubstanceSynonym,
     SubstanceUnit,
 )
+from .exceptions import CSVFileError
 from .utils import get_update_or_create_related_object, pre_import_treatments, update_or_create_object
 
 logger = logging.getLogger(__name__)
@@ -321,6 +321,7 @@ class CSVImporter:
         return list(self.linked_models.values())
 
 
+@transaction.atomic
 def import_csv_from_filepath(csv_filepath, export_date):
     """Cette fonction utilise la classe CSVImporter en devinant d'abord :
     * si le fichier importé représente une relation

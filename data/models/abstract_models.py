@@ -61,5 +61,5 @@ class CommonModel(TimeStampable, WithMissingImportBoolean, WithDefaultFields):
         }
         return TYPE_ACTIVITY_MAPPING[self.object_type]
 
-    objects = CommonModelManager(avoid_obsolete=True)
-    all_objects = CommonModelManager()
+    objects = CommonModelManager()
+    up_to_date_objects = CommonModelManager(avoid_obsolete=True)

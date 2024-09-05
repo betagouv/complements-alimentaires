@@ -7,4 +7,4 @@ from data.models import Condition
 class ConditionListView(ListAPIView):
     model = Condition
     serializer_class = ConditionSerializer
-    queryset = Condition.objects.filter(missing_import_data=False)
+    queryset = Condition.up_to_date_objects.filter(missing_import_data=False)
