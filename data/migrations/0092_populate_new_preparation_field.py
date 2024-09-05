@@ -8,8 +8,11 @@ def replace_textfield_by_foreign_key(apps, schema_editor):
     Preparation = apps.get_model('data', 'Preparation')
     DeclaredPlant = apps.get_model('data', 'DeclaredPlant')
     for dPlant in DeclaredPlant.objects.all():
-        preparation = Preparation.objects.get(name=dPlant.preparation_old)
-        dPlant.preparation = preparation
+        if dPlant.preparation_old:
+            preparation = Preparation.objects.get(name=dPlant.preparation_old)
+            dPlant.preparation = preparation
+        else:
+            dPlant.preparation = None
         dPlant.save()
 
 
