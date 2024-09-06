@@ -422,19 +422,20 @@ class DeclaredIngredient(Historisable, Addable):
         Ingredient, null=True, blank=True, verbose_name="ingrédient ajouté par l'user", on_delete=models.RESTRICT
     )
     active = models.BooleanField("ayant une activité physiologique ou nutritionnelle", default=True)
-    new_name = models.TextField(blank=True, verbose_name="libellé")
+    new_name = models.TextField(blank=True, verbose_name="nom de l'ingrédient ajouté manuellement")
     new_type = models.TextField(blank=True, verbose_name="type de l'ingrédient")
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
     unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
 
-class DeclaredSubstance(Historisable):
+class DeclaredSubstance(Historisable, Addable):
     declaration = models.ForeignKey(
         Declaration,
         related_name="declared_substances",
         verbose_name=Declaration._meta.verbose_name,
         on_delete=models.CASCADE,
     )
+    new_name = models.TextField(blank=True, verbose_name="nom de la substance ajoutée manuellement")
     active = models.BooleanField("ayant une activité physiologique ou nutritionnelle", default=True)
     substance = models.ForeignKey(
         Substance, null=True, blank=True, verbose_name="substance ajoutée par l'user", on_delete=models.RESTRICT
