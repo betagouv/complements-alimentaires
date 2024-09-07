@@ -1,8 +1,6 @@
 import datetime
 import logging
 import os
-import sys
-import traceback
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
@@ -75,10 +73,7 @@ class Command(BaseCommand):
 
                 logger.info(f"Import et déduplication executées en {self.elapsed_time()}\n")
         except Exception as e:  # noqa
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            formatted_excption = traceback.format_exception(exc_type, exc_value, exc_traceback)
-            for line in formatted_excption:
-                logger.info(line)
+            logger.exception(e)
             raise CommandError(
                 "Une exception imprévue est arrivée. L'import et la déduplication ont avorté, l'état de la base de données reste inchangé\n"
             )
