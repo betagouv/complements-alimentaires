@@ -407,9 +407,6 @@ class DeclaredPlant(Historisable, Addable):
         else:
             return self.plant.name
 
-    def __str__(self):
-        return f"{self.new_name or self.plant.name}"
-
 
 class DeclaredMicroorganism(Historisable, Addable):
     class Meta:
