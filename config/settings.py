@@ -181,9 +181,19 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Media and file storage
-DEFAULT_FILE_STORAGE = env("DEFAULT_FILE_STORAGE")
 
-if DEFAULT_FILE_STORAGE == "storages.backends.s3boto3.S3Boto3Storage":
+default_file_storage = env("DEFAULT_FILE_STORAGE")
+
+STORAGES = {
+    "default": {
+        "BACKEND": default_file_storage,
+    },
+    "staticfiles": {
+        "BACKEND": env("STATICFILES_STORAGE"),
+    },
+}
+
+if default_file_storage == "storages.backends.s3.S3Storage":
     AWS_ACCESS_KEY_ID = env("CELLAR_KEY")
     AWS_SECRET_ACCESS_KEY = env("CELLAR_SECRET")
     AWS_S3_ENDPOINT_URL = env("CELLAR_HOST")
@@ -194,7 +204,6 @@ if DEFAULT_FILE_STORAGE == "storages.backends.s3boto3.S3Boto3Storage":
 MEDIA_ROOT = env("MEDIA_ROOT", default=os.path.join(BASE_DIR, "media"))
 MEDIA_URL = "/media/"
 
-STATICFILES_STORAGE = env("STATICFILES_STORAGE")
 SESSION_COOKIE_AGE = 31536000
 SESSION_COOKIE_SECURE = env("SECURE", cast=bool)
 SESSION_COOKIE_HTTPONLY = True
@@ -279,7 +288,7 @@ customColorPalette = [
     {"color": "hsl(207, 90%, 54%)", "label": "Blue"},
 ]
 
-if DEFAULT_FILE_STORAGE == "storages.backends.s3.S3Storage":
+if default_file_storage == "storages.backends.s3.S3Storage":
     CKEDITOR_5_FILE_STORAGE = "data.storage.FileUploadS3Storage"
 else:
     CKEDITOR_5_FILE_STORAGE = "data.storage.FileUploadFileSystemStorage"
