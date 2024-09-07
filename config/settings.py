@@ -186,7 +186,7 @@ default_file_storage = env("DEFAULT_FILE_STORAGE")
 
 STORAGES = {
     "default": {
-        "BACKEND": env("DEFAULT_FILE_STORAGE"),
+        "BACKEND": default_file_storage,
     },
     "staticfiles": {
         "BACKEND": env("STATICFILES_STORAGE"),
