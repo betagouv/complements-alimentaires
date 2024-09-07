@@ -3,6 +3,7 @@ import logging
 from datetime import timedelta
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Case, Value, When
 from django.db.models.functions import Coalesce
@@ -342,6 +343,10 @@ class Addable(models.Model):
     new = models.BooleanField(default=False)
     new_description = models.TextField(blank=True, verbose_name="description")
 
+    first_ocurrence = models.BooleanField(
+        default=False, verbose_name="Est-ce que cet ingrédient a été rajouté en base suite à cette déclaration ?"
+    )
+
     authorization_mode = models.CharField(
         choices=AuthorizationModes.choices,
         blank=True,
@@ -361,8 +366,20 @@ class Addable(models.Model):
         "information additionnelle sur l'autorisation dans un autre pays européen", blank=True
     )
 
+    def clean(self):
+        # L'ingrédient ne peut pas être `new` et avoir `first_ocurrence` à true. Le vrai ingrédient
+        # doit être référencé dans l'Addable et donc ne pas être nouveau.
+        if self.new and self.first_ocurrence:
+            raise ValidationError(
+                {"first_ocurrence": "Un nouvel ingrédient ne peut pas être le premier à être ajouté en base."}
+            )
+
 
 class DeclaredPlant(Historisable, Addable):
+    class Meta:
+        verbose_name = "plante déclarée"
+        verbose_name_plural = "plantes déclarées"
+
     declaration = models.ForeignKey(
         Declaration,
         related_name="declared_plants",
@@ -392,6 +409,10 @@ class DeclaredPlant(Historisable, Addable):
 
 
 class DeclaredMicroorganism(Historisable, Addable):
+    class Meta:
+        verbose_name = "microorganisme déclaré"
+        verbose_name_plural = "microorganismes déclarés"
+
     declaration = models.ForeignKey(
         Declaration, related_name="declared_microorganisms", verbose_name="déclaration", on_delete=models.CASCADE
     )
@@ -410,8 +431,17 @@ class DeclaredMicroorganism(Historisable, Addable):
     strain = models.TextField(blank=True, verbose_name="souche")
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR (en UFC)")
 
+    def __str__(self):
+        if self.new:
+            return f"{self.new_species} {self.new_genre}"
+        return f"{self.microorganism.species} {self.microorganism.genus}"
+
 
 class DeclaredIngredient(Historisable, Addable):
+    class Meta:
+        verbose_name = "ingredient déclaré"
+        verbose_name_plural = "ingredients déclarés"
+
     declaration = models.ForeignKey(
         Declaration,
         related_name="declared_ingredients",
@@ -427,8 +457,15 @@ class DeclaredIngredient(Historisable, Addable):
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
     unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
+    def __str__(self):
+        return f"{self.new_name or self.ingredient.name}"
+
 
 class DeclaredSubstance(Historisable):
+    class Meta:
+        verbose_name = "substance déclarée"
+        verbose_name_plural = "substances déclarées"
+
     declaration = models.ForeignKey(
         Declaration,
         related_name="declared_substances",
@@ -439,6 +476,9 @@ class DeclaredSubstance(Historisable):
     substance = models.ForeignKey(
         Substance, null=True, blank=True, verbose_name="substance ajoutée par l'user", on_delete=models.RESTRICT
     )
+
+    def __str__(self):
+        return f"{self.substance.name}"
 
 
 # Les substances détectées au moment de faire la déclaration seront ici, avec la valeur de la quantité
