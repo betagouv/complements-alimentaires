@@ -132,7 +132,7 @@ def delete_substances_that_are_ingredients():
 
 
 def delete_ingredients_and_substances_that_are_microorganism():
-    microorganism_suffix = ["inactivé$"]
+    microorganism_suffix = ["inactivé$", "inactivés$"]
     qs_ingredients = Ingredient.objects.filter(
         name__lower__regex="|".join(microorganism_suffix),
     )
