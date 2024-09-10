@@ -62,7 +62,7 @@ const AdminInfoLines = computed(() => {
     { title: "Dénomination sociale", val: company.value.socialName },
     { title: "Nom commercial", val: company.value.commercialName },
     company.value.siret ? { title: "N° SIRET", val: company.value.siret } : null,
-    company.value.vat ? { title: "N° VAT", val: company.value.vat } : null,
+    company.value.vat ? { title: "N° TVA", val: company.value.vat } : null,
     {
       title: "Adresse",
       val: displayableAddress(company.value),
