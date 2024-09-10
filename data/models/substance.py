@@ -1,15 +1,36 @@
 from django.db import models
 from django.db.models import F, Value
 from django.db.models.functions import Coalesce, NullIf
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
 
 from simple_history.models import HistoricalRecords
 
 from data.behaviours import Historisable, TimeStampable
 
 from .abstract_models import CommonModel
+from .ingredient import IngredientType
 from .ingredient_status import WithStatus
 from .mixins import WithComments, WithMissingImportBoolean
 from .unit import SubstanceUnit
+
+
+class SubstanceType(models.IntegerChoices):
+    """
+    enzymes, vitamines, minéraux, acide aminés, acide gras, métabolite
+    """
+
+    VITAMIN = 1, "Vitamine"
+    MINERAL = 2, "Minéral"
+    SECONDARY_METABOLITE = 3, "Métabolite secondaire de plante"
+    CARBOHYDRATE = 4, "Glucide"
+    ENZYME = (
+        5,
+        "Enzyme",
+    )
+    # pas encore de règle connue par nous pour les déterminer de manière fiable
+    # LIPID = 3, "Lipides"
+    # AMINO_ACID = 4, "Acide aminé"
 
 
 class Substance(CommonModel, WithComments, WithStatus):
@@ -100,6 +121,12 @@ class Substance(CommonModel, WithComments, WithStatus):
         on_delete=models.CASCADE,
         verbose_name="unité des quantités spécifiées (quantité max, apport de référence)",
     )
+    substance_types = models.ArrayField(
+        models.IntegerField(null=True, choices=SubstanceType.choices),
+        null=True,
+        verbose_name="type(s) de la substance",
+    )
+
     history = HistoricalRecords(
         inherit=True,
         excluded_fields=[
@@ -122,6 +149,33 @@ class Substance(CommonModel, WithComments, WithStatus):
     def name_en(self):
         return self.siccrf_name_en
 
+    def assign_substance_type(self):
+        """
+        Cette fontion permet de mettre à jour le type de substance.
+        Elle est appelée dès que l'un des champs de substance est modifié.
+        Sauf pour les metabolites secondaires, les vitamines et les minéraux, la liste n'est pas exhaustive.
+        """
+        list_of_type = []
+
+        if all(
+            [ingredient.ingredient_type == IngredientType.FORM_OF_SUPPLY for ingredient in self.ingredient_set.all()]
+        ):
+            if self.name.startswith("vitamine"):
+                list_of_type.append(SubstanceType.VITAMIN)
+            else:
+                list_of_type.append(SubstanceType.MINERAL)
+        if len(self.plant_set.all()) != 0:
+            list_of_type.append(SubstanceType.SECONDARY_METABOLITE)
+
+        # ces conditions sont indicatives de ce qu'une substance est un ose, ase, etc mais pas extensives
+        if self.name.endswith("ose"):
+            list_of_type.append(SubstanceType.CARBOHYDRATE)
+        elif self.name.endswith("ase"):
+            list_of_type.append(SubstanceType.ENZYME)
+
+        self.substance_types = list_of_type
+        self.save()
+
 
 class SubstanceSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
     class Meta:
@@ -143,3 +197,8 @@ class SubstanceSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
     @property
     def is_obsolete(self):
         return self.siccrf_is_obsolete
+
+
+@receiver((post_save, post_delete), sender=Substance)
+def update_substance_type(sender, instance, *args, **kwargs):
+    instance.substance.assign_substance_type()
