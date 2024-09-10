@@ -8,7 +8,7 @@
     <hr class="mt-4 pb-1" />
     <DsfrInputGroup>
       <DsfrRadioButton
-        name="authorizationMode"
+        :name="`authorizationMode-${uid}`"
         hint="Cet ingrédient est autorisé ou utilisable en France"
         v-model="model.authorizationMode"
         value="FR"
@@ -22,7 +22,7 @@
       </DsfrRadioButton>
 
       <DsfrRadioButton
-        name="authorizationMode"
+        :name="`authorizationMode-${uid}`"
         hint="Cet ingrédient n'est pas autorisée en France mais l'est dans un autre pays de l'UE ou EEE (déclaré au titre de l'article 16 du décret 2006-352)"
         v-model="model.authorizationMode"
         value="EU"
@@ -41,7 +41,7 @@
         <DsfrInputGroup>
           <DsfrRadioButtonSet
             v-model="model.frReason"
-            name="frReason"
+            :name="`frReason-${uid}`"
             legend="Raison de l'ajout manuel"
             :options="additionReasons"
           ></DsfrRadioButtonSet>
@@ -97,8 +97,11 @@
 <script setup>
 import CountryField from "@/components/fields/CountryField"
 import { getElementName } from "@/utils/elements"
+import { getCurrentInstance } from "vue"
 
 const model = defineModel()
+const { uid } = getCurrentInstance()
+
 const additionReasons = [
   {
     label: "Usage établi",
