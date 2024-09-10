@@ -5,8 +5,7 @@
         Un e-mail vient d'être envoyé à
         <strong>{{ email }}</strong>
         <br />
-        Veuillez cliquer dans le lien à l'intérieur pour vérifier votre adresse e-email et pouvoir utiliser votre
-        compte.
+        Veuillez cliquer dans le lien à l'intérieur pour vérifier votre adresse e-mail et pouvoir utiliser votre compte.
       </p>
       <SendNewSignupVerificationEmail :userId="userId" />
     </DsfrCallout>
