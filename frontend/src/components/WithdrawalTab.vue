@@ -2,13 +2,13 @@
   <div>
     <h2>Retirer du marché</h2>
     <p>
-      Votre produit « {{ declaration.name }} » a été authorisé. Vous pouvez néanmoins déclarer son arrêt de
+      Votre produit « {{ declaration.name }} » a été autorisé. Vous pouvez néanmoins déclarer son arrêt de
       commercialisation en cliquant ci-dessous. Veuillez noter que cette opération est irreversible.
     </p>
     <DsfrButton secondary label="Retirer ce complément" @click="confirmationModalOpened = true" />
 
     <DsfrModal title="Veuillez confirmer" :opened="confirmationModalOpened" @close="confirmationModalOpened = false">
-      <p>Êtes vous sur de vouloir retirer ce produit du marché ?</p>
+      <p>Êtes-vous sûr de vouloir retirer ce produit du marché ?</p>
       <div class="flex gap-4">
         <DsfrButton secondary label="Non" @click="confirmationModalOpened = false" />
         <DsfrButton label="Oui, je veux le retirer" @click="withdrawDeclaration" />
