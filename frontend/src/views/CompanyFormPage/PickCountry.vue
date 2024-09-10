@@ -24,7 +24,7 @@ const emit = defineEmits(["changeStep"])
 const country = ref(undefined)
 
 const onCountrySelected = (selectedOption) => {
-  const identifierType = selectedOption == "FR" ? "siret" : "vat"
+  const identifierType = selectedOption == "FR" ? "siret" : "tva"
   company.value.country = selectedOption
   company.value.identifierType = identifierType
   emit("changeStep", {

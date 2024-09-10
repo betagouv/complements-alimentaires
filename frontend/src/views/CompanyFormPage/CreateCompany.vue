@@ -36,7 +36,7 @@ const initialState = ref({
   city: company.value.siretData?.city || "",
   cedex: company.value.siretData?.cedex || "",
   country: company.value.country,
-  // on passe soit un numéro de SIRET, soit de VAT dans le payload
+  // on passe soit un numéro de SIRET, soit de TVA dans le payload
   [company.value.identifierType]: company.value.identifier,
   // activities
   activities: [],
