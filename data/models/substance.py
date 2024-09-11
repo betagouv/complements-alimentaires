@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import F, Value
 from django.db.models.functions import Coalesce, NullIf
@@ -9,8 +10,8 @@ from simple_history.models import HistoricalRecords
 from data.behaviours import Historisable, TimeStampable
 
 from .abstract_models import CommonModel
-from .ingredient import IngredientType
 from .ingredient_status import WithStatus
+from .ingredient_type import IngredientType
 from .mixins import WithComments, WithMissingImportBoolean
 from .unit import SubstanceUnit
 
@@ -121,7 +122,7 @@ class Substance(CommonModel, WithComments, WithStatus):
         on_delete=models.CASCADE,
         verbose_name="unité des quantités spécifiées (quantité max, apport de référence)",
     )
-    substance_types = models.ArrayField(
+    substance_types = ArrayField(
         models.IntegerField(null=True, choices=SubstanceType.choices),
         null=True,
         verbose_name="type(s) de la substance",
