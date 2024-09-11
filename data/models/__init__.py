@@ -4,7 +4,8 @@ from .webinar import Webinar
 from .company import Company, SupervisorRole, DeclarantRole
 
 # Elements specific models
-from .ingredient import Ingredient, IngredientType, IngredientSynonym
+from .ingredient import Ingredient, IngredientSynonym
+from .ingredient_type import IngredientType
 from .microorganism import Microorganism, MicroorganismSynonym
 from .plant import Plant, PlantSynonym, PlantPart, PlantFamily, Part
 from .substance import Substance, SubstanceSynonym
