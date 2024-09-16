@@ -141,6 +141,7 @@ class Substance(CommonModel, WithComments, WithStatus):
             "nutritional_reference",
             "status",
             "siccrf_status",
+            "substance_types",
         ],
     )
 
@@ -148,7 +149,7 @@ class Substance(CommonModel, WithComments, WithStatus):
     def name_en(self):
         return self.siccrf_name_en
 
-    def compute_substance_type(self):
+    def compute_substance_types(self):
         """
         Cette fontion permet de mettre à jour le type de substance.
         Elle est appelée dès que l'un des champs de substance est modifié.
@@ -178,7 +179,7 @@ class Substance(CommonModel, WithComments, WithStatus):
 
         # Calcul après la sauvegarde initiale
         if not self.substance_types:
-            self.substance_types = self.compute_substance_type()
+            self.substance_types = self.compute_substance_types()
 
             # Mise à jour sans appeler save() à nouveau
             # super().save(update_fields={"substance_types": self.substance_types})

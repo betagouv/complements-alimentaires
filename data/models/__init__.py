@@ -54,5 +54,5 @@ DECLARATION_MODELS = [Condition, Effect, GalenicFormulation, Population, Prepara
 @receiver((post_save, post_delete), sender=Plant)
 def update_substance_type(sender, instance, *args, **kwargs):
     for substance in instance.substances.all():
-        substance.substance_types = substance.compute_substance_type()
+        substance.substance_types = substance.compute_substance_types()
         Substance.objects.filter(pk=substance.pk).update(substance_types=substance.substance_types)
