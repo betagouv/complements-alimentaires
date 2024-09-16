@@ -24,13 +24,15 @@ class IngredientFactory(factory.django.DjangoModelFactory):
     ca_is_obsolete = False
 
     @factory.post_generation
-    def substances(self, created, extracted, **kwargs):
-        if created:
-            for _ in range(random.randint(1, 4)):
-                self.substances.add(SubstanceFactory.create())
-        elif extracted:
+    def substances(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted or isinstance(extracted, list):
             for substance in extracted:
                 self.substances.add(substance)
+        else:
+            for _ in range(random.randint(1, 4)):
+                self.substances.add(SubstanceFactory.create())
 
 
 class IngredientSynonymFactory(factory.django.DjangoModelFactory):

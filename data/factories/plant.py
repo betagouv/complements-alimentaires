@@ -45,17 +45,19 @@ class PlantFactory(factory.django.DjangoModelFactory):
     to_be_entered_in_next_decree = False
 
     @factory.post_generation
-    def substances(self, created, extracted, **kwargs):
-        if created:
-            for _ in range(random.randint(1, 4)):
-                self.substances.add(SubstanceFactory.create())
-        elif extracted:
+    def substances(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted or isinstance(extracted, list):
             for substance in extracted:
                 self.substances.add(substance)
+        else:
+            for _ in range(random.randint(1, 4)):
+                self.substances.add(SubstanceFactory.create())
 
     @factory.post_generation
-    def plant_parts(self, created, extracted, **kwargs):
-        if created:
+    def plant_parts(self, create, extracted, **kwargs):
+        if create:
             for _ in range(random.randint(1, 4)):
                 self.plant_parts.add(PlantPartFactory.create())
         elif extracted:

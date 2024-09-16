@@ -26,9 +26,11 @@ class IngredientTestCase(TestCase):
         """
         Les substances ont leur type calculés correctement
         """
+        # les glucides
         ose = SubstanceFactory.create(ca_name="pulpose")
         self.assertIn(SubstanceType.CARBOHYDRATE, ose.substance_types)
 
+        # les enzymes
         ase = SubstanceFactory.create(ca_name="pulpase")
         self.assertIn(SubstanceType.ENZYME, ase.substance_types)
 
@@ -36,25 +38,31 @@ class IngredientTestCase(TestCase):
         vitamine = SubstanceFactory.create(ca_name="vitamine Z")
 
         ingredient_supplying_vitamine = IngredientFactory.create(
-            ca_name="vitamine Z supply", ingredient_type=IngredientType.FORM_OF_SUPPLY
+            ca_name="vitamine Z form of supply", ingredient_type=IngredientType.FORM_OF_SUPPLY, substances=[]
         )
         ingredient_supplying_vitamine.substances.add(vitamine)
-        plant_supplying_vitamine = PlantFactory.create(ca_name="vitamine Z supply")
+        plant_supplying_vitamine = PlantFactory.create(ca_name="plant supplying vitamine Z", substances=[])
         plant_supplying_vitamine.substances.add(vitamine)
+        vitamine.refresh_from_db()
 
         self.assertIn(SubstanceType.VITAMIN, vitamine.substance_types)
         self.assertIn(SubstanceType.SECONDARY_METABOLITE, vitamine.substance_types)
 
+        # les minéraux
         mineral = SubstanceFactory.create(ca_name="sirum")
         ingredient_supplying_mineral = IngredientFactory.create(
-            ca_name="sirum supply", ingredient_type=IngredientType.FORM_OF_SUPPLY, substances=(mineral)
+            ca_name="sirum supply", ingredient_type=IngredientType.FORM_OF_SUPPLY, substances=[]
         )
         ingredient_supplying_mineral.substances.add(mineral)
+        mineral.refresh_from_db()
 
         self.assertIn(SubstanceType.MINERAL, mineral.substance_types)
 
+        # les sans types
         nothing = SubstanceFactory.create(ca_name="nothing")
         _ = IngredientFactory.create(
-            ca_name="sirum supply", ingredient_type=IngredientType.ACTIVE_INGREDIENT, substances=(nothing)
+            ca_name="sirum supply", ingredient_type=IngredientType.ACTIVE_INGREDIENT, substances=[]
         )
+        ingredient_supplying_mineral.substances.add(nothing)
+
         self.assertEqual(nothing.substance_types, [])
