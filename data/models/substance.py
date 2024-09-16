@@ -2,8 +2,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import F, Value
 from django.db.models.functions import Coalesce, NullIf
-from django.db.models.signals import post_delete, post_save
-from django.dispatch import receiver
 
 from simple_history.models import HistoricalRecords
 
@@ -150,18 +148,17 @@ class Substance(CommonModel, WithComments, WithStatus):
     def name_en(self):
         return self.siccrf_name_en
 
-    def assign_substance_type(self):
+    def compute_substance_type(self):
         """
         Cette fontion permet de mettre à jour le type de substance.
         Elle est appelée dès que l'un des champs de substance est modifié.
         Sauf pour les metabolites secondaires, les vitamines et les minéraux, la liste n'est pas exhaustive.
         """
         list_of_type = []
-
-        if all(
+        if len(self.ingredient_set.all()) != 0 and all(
             [ingredient.ingredient_type == IngredientType.FORM_OF_SUPPLY for ingredient in self.ingredient_set.all()]
         ):
-            if self.name.startswith("vitamine"):
+            if self.siccrf_name.startswith("vitamine") or self.ca_name.startswith("vitamine"):
                 list_of_type.append(SubstanceType.VITAMIN)
             else:
                 list_of_type.append(SubstanceType.MINERAL)
@@ -169,13 +166,23 @@ class Substance(CommonModel, WithComments, WithStatus):
             list_of_type.append(SubstanceType.SECONDARY_METABOLITE)
 
         # ces conditions sont indicatives de ce qu'une substance est un ose, ase, etc mais pas extensives
-        if self.name.endswith("ose"):
+        if self.siccrf_name.endswith("ose") or self.ca_name.endswith("ose"):
             list_of_type.append(SubstanceType.CARBOHYDRATE)
-        elif self.name.endswith("ase"):
+        elif self.siccrf_name.endswith("ase") or self.ca_name.endswith("ase"):
             list_of_type.append(SubstanceType.ENZYME)
 
-        self.substance_types = list_of_type
-        self.save()
+        return list_of_type
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Calcul après la sauvegarde initiale
+        if not self.substance_types:
+            self.substance_types = self.compute_substance_type()
+
+            # Mise à jour sans appeler save() à nouveau
+            # super().save(update_fields={"substance_types": self.substance_types})
+            Substance.objects.filter(pk=self.pk).update(substance_types=self.substance_types)
 
 
 class SubstanceSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
@@ -198,8 +205,3 @@ class SubstanceSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
     @property
     def is_obsolete(self):
         return self.siccrf_is_obsolete
-
-
-@receiver((post_save, post_delete), sender=Substance)
-def update_substance_type(sender, instance, *args, **kwargs):
-    instance.substance.assign_substance_type()
