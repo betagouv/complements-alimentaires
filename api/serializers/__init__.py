@@ -4,6 +4,7 @@ from .user import (
     CollaboratorSerializer,
     CreateUserSerializer,
     ChangePasswordSerializer,
+    SimpleUserSerializer,
 )
 from .global_roles import SimpleInstructorSerializer, SimpleVisorSerializer
 from .webinar import WebinarSerializer

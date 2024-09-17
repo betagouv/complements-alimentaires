@@ -215,6 +215,8 @@ const routes = [
       defaultQueryParams: {
         page: 1,
         status: "DRAFT,OBSERVATION,OBJECTION,INSTRUCTION",
+        company: "",
+        author: "",
       },
     },
   },
@@ -252,6 +254,8 @@ const routes = [
       defaultQueryParams: {
         page: 1,
         status: "INSTRUCTION,OBJECTION,OBSERVATION,ABANDONED,AUTHORIZED,WITHDRAWN",
+        company: "",
+        author: "",
       },
     },
   },

@@ -29,7 +29,7 @@ const rows = computed(() =>
       },
       x.company.socialName,
       `${x.author.firstName} ${x.author.lastName}`,
-      getStatusTagForCell(x.status),
+      getStatusTagForCell(x.status, true),
       timeAgo(x.creationDate),
       timeAgo(x.modificationDate),
     ],

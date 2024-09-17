@@ -604,13 +604,14 @@ class TestDeclarationApi(APITestCase):
     @authenticate
     def test_retrieve_update_declaration_list(self):
         """
-        Un user peut récupérer ses propres déclarations
+        Un user peut récupérer ses propres déclarations et celles des entreprises pour lesquelles
+        iel a des droits.
         """
 
         declarant_role = DeclarantRoleFactory(user=authenticate.user)
         company = declarant_role.company
         user_declaration_1 = DeclarationFactory.create(author=authenticate.user, company=company)
-        user_declaration_2 = DeclarationFactory.create(author=authenticate.user, company=company)
+        company_declaration_1 = DeclarationFactory.create(company=company)
 
         other_declaration = DeclarationFactory.create()
 
@@ -621,7 +622,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(len(declarations), 2)
         ids = map(lambda x: x["id"], declarations)
         self.assertIn(user_declaration_1.id, ids)
-        self.assertIn(user_declaration_2.id, ids)
+        self.assertIn(company_declaration_1.id, ids)
         self.assertNotIn(other_declaration.id, ids)
 
     @authenticate
