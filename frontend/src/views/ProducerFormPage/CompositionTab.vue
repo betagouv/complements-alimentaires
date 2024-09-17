@@ -61,9 +61,10 @@
 
     <div v-show="hasActiveSubstances">
       <hr class="mt-4" />
-      <h3 class="fr-h6 !mb-4 !mt-6">Dosage totale des substances actives</h3>
-      <p class="mb-2">Les substances contenues dans les ingrédients actifs renseignés sont affichées ci-dessous.</p>
-      <p>Veuillez compléter leur dosage total.</p>
+      <DsfrCallout
+        title="Dosage totale des substances actives"
+        content="Les substances contenues dans les ingrédients actifs renseignés sont affichées ci-dessous. Veuillez compléter leur dosage total."
+      />
       <SubstancesTable :hidePrivateComments="true" v-model="payload" />
     </div>
   </div>
