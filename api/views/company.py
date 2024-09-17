@@ -49,7 +49,7 @@ def _get_identifier_type(request) -> str:
     """Helper pour récupérer le type de numéro d'identification (tva ou siret) depuis la requête."""
 
     identifier_type = request.query_params.get("identifierType", None)
-    if identifier_type not in ["siret", "tva"]:
+    if identifier_type not in ["siret", "vat"]:
         raise ProjectAPIException(global_error="Le paramètre `identifierType` doit être `siret` ou `tva`")
     return identifier_type
 
