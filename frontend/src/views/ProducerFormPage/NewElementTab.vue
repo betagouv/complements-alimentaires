@@ -8,6 +8,7 @@
     <NewElementList objectType="plant" :elements="newPlants" />
     <NewElementList objectType="microorganism" :elements="newMicroorganisms" />
     <NewElementList objectType="ingredient" :elements="newIngredients" />
+    <NewElementList objectType="substance" :elements="newSubstances" />
   </div>
 </template>
 
@@ -21,4 +22,5 @@ const payload = defineModel()
 const newPlants = computed(() => payload.value.declaredPlants.filter((x) => x.new))
 const newMicroorganisms = computed(() => payload.value.declaredMicroorganisms.filter((x) => x.new))
 const newIngredients = computed(() => payload.value.declaredIngredients.filter((x) => x.new))
+const newSubstances = computed(() => payload.value.declaredSubstances.filter((x) => x.new))
 </script>

@@ -461,7 +461,7 @@ class DeclaredIngredient(Historisable, Addable):
         return f"{self.new_name or self.ingredient.name}"
 
 
-class DeclaredSubstance(Historisable):
+class DeclaredSubstance(Historisable, Addable):
     class Meta:
         verbose_name = "substance déclarée"
         verbose_name_plural = "substances déclarées"

@@ -86,6 +86,7 @@ const elements = computed(() =>
   )
 )
 const activeElements = computed(() => elements.value.filter((x) => x.active && !x.new))
+// const activeElements = computed(() => elements.value.filter((x) => x.objectType == "substance" || (x.active && !x.new)))
 
 const sourceElements = (substance) => {
   const sources = activeElements.value.filter(
