@@ -1,5 +1,9 @@
 <template>
   <div>
+    <SectionTitle title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" />
+    <DeclarationSummary v-model="payload" :readonly="readonly" />
+    <hr />
+    <h2>Soumettre</h2>
     <DsfrAlert v-if="!readonly">
       <DsfrInputGroup>
         <DsfrInput
@@ -12,9 +16,6 @@
       </DsfrInputGroup>
       <DsfrButton @click="emit('submit', comment)" label="Soumettre ma démarche" />
     </DsfrAlert>
-
-    <SectionTitle class="!mt-8" title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" />
-    <DeclarationSummary v-model="payload" :readonly="readonly" />
   </div>
 </template>
 

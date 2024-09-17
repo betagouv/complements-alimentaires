@@ -13,6 +13,7 @@
         class="max-w-2xl"
         @updateFilter="updateStatusFilter"
         v-model="filteredStatus"
+        :groupInstruction="true"
       />
     </div>
     <div v-if="isFetching" class="flex justify-center my-10">
