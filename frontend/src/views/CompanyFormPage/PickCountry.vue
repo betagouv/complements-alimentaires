@@ -24,11 +24,12 @@ const emit = defineEmits(["changeStep"])
 const country = ref(undefined)
 
 const onCountrySelected = (selectedOption) => {
-  const identifierType = selectedOption == "FR" ? "siret" : "tva"
+  // l'identifierType envoyé en payload est la version en anglais
+  const identifierTypeInFrench = selectedOption == "FR" ? "siret" : "tva"
   company.value.country = selectedOption
-  company.value.identifierType = identifierType
+  company.value.identifierType = selectedOption == "FR" ? "siret" : "vat"
   emit("changeStep", {
-    name: `Identification par n° ${identifierType.toUpperCase()}`,
+    name: `Identification par n° ${identifierTypeInFrench.toUpperCase()}`,
     component: "Identification",
   })
 }
