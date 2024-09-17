@@ -155,8 +155,10 @@ class Substance(CommonModel, WithComments, WithStatus):
         Elle est appelée dès que l'un des champs de substance est modifié.
         Sauf pour les metabolites secondaires, les vitamines et les minéraux, la liste n'est pas exhaustive.
         """
+
         list_of_type = []
-        if len(self.ingredient_set.all()) != 0 and all(
+
+        if len(self.ingredient_set.all()) != 0 and any(
             [ingredient.ingredient_type == IngredientType.FORM_OF_SUPPLY for ingredient in self.ingredient_set.all()]
         ):
             if self.siccrf_name.startswith("vitamine") or self.ca_name.startswith("vitamine"):
