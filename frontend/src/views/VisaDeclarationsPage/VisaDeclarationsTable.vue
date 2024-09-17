@@ -19,6 +19,7 @@ import { articleOptions } from "@/utils/mappings"
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
 const headers = [
+  "ID",
   "Nom du produit",
   "Entreprise",
   "État",
@@ -30,6 +31,7 @@ const headers = [
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
+      x.id,
       {
         component: "router-link",
         text: x.name,

@@ -22,12 +22,13 @@ const { loggedUser } = storeToRefs(useRootStore())
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
-const headers = ["", "Nom du produit", "Entreprise", "État", "Date limite de réponse", "Instruit par", "Article"]
+const headers = ["", "ID", "Nom du produit", "Entreprise", "État", "Date limite de réponse", "Instruit par", "Article"]
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowAttrs: { class: needsAttention(x) ? "font-bold" : "" },
     rowData: [
       needsAttention(x) ? { component: "div", class: "h-3 w-3 rounded-full bg-orange-400" } : "",
+      x.id,
       {
         component: "router-link",
         text: x.name,

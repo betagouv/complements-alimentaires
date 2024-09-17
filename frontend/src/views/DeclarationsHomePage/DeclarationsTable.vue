@@ -15,6 +15,8 @@ import { computed, ref } from "vue"
 import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import { useResizeObserver, useDebounceFn } from "@vueuse/core"
+import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 const emit = defineEmits("open")
@@ -22,8 +24,13 @@ const emit = defineEmits("open")
 // Les données pour la table
 const headers = computed(() => {
   if (useShortTable.value) return ["Nom", "État"]
-  return ["Nom du produit", "Marque", "État", "Date de modification"]
+  return ["ID", "Nom du produit", "Entreprise", "État", "Date de modification"]
 })
+
+const store = useRootStore()
+const { loggedUser } = storeToRefs(store)
+const getCompanyWithId = (id) => loggedUser.value.companies?.find((x) => x.id === id)?.socialName
+
 const rows = computed(() => {
   // Les dates ISO sont sortables par text
   if (!props.data?.results) return []
@@ -36,12 +43,13 @@ const rows = computed(() => {
 
   return props.data.results.map((d) => ({
     rowData: [
+      d.id,
       {
         component: "router-link",
         text: d.name,
         to: { name: "DeclarationPage", params: { id: d.id } },
       },
-      d.brand || "—",
+      getCompanyWithId(d.company) || "Inconnue",
       getStatusTagForCell(d.status, true),
       timeAgo(d.modificationDate),
     ],
