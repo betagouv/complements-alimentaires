@@ -5,6 +5,7 @@ from rest_framework.test import APITestCase
 
 from data.factories import (
     IngredientFactory,
+    IngredientSynonymFactory,
     MicroorganismFactory,
     MicroorganismSynonymFactory,
     PlantFactory,
@@ -13,6 +14,7 @@ from data.factories import (
     SubstanceSynonymFactory,
 )
 from data.models.ingredient_status import IngredientStatus
+from data.models.ingredient_type import IngredientType
 
 
 class TestAutocomplete(APITestCase):
@@ -124,3 +126,32 @@ class TestAutocomplete(APITestCase):
         self.assertTrue(authorized_substance.name in returned_names)
         self.assertTrue(to_be_authorized_plant.name in returned_names)
         self.assertEqual(len(returned_names), 2)
+
+    def test_filter_substance_that_are_brought_by_form_of_supply(self):
+        """
+        Substance with types "Mineral" or "Vitamine" should not be returned by autocomplete
+        """
+        autocomplete_term = "vitamine"
+
+        substance_not_to_be_returned = SubstanceFactory.create(
+            ca_name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED
+        )
+        ingredient_form_of_supply = IngredientFactory.create(
+            ca_name="L-Ascorbate de zinc",
+            siccrf_status=IngredientStatus.AUTHORIZED,
+            ingredient_type=IngredientType.FORM_OF_SUPPLY,
+        )
+        ingredient_form_of_supply.substances.add(substance_not_to_be_returned)
+        IngredientSynonymFactory.create(name="Vitamine C", standard_name=ingredient_form_of_supply)
+
+        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})
+        # import pdb
+
+        # pdb.set_trace()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()
+        returned_names = [result.get("name") for result in results]
+
+        self.assertFalse(substance_not_to_be_returned.name in returned_names)
+        self.assertTrue(ingredient_form_of_supply.name in returned_names)
+        self.assertEqual(len(returned_names), 1)
