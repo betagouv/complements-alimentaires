@@ -1,6 +1,6 @@
 import logging
 
-from django.db.models import Case, DateTimeField, F, Func, OuterRef, Subquery, Value, When
+from django.db.models import Case, DateTimeField, F, Func, OuterRef, Q, Subquery, Value, When
 from django.db.models.functions import Coalesce, Lower
 from django.shortcuts import get_object_or_404
 
@@ -26,12 +26,13 @@ from api.serializers import (
     DeclarationShortSerializer,
     SimpleDeclarationSerializer,
     SimpleInstructorSerializer,
+    SimpleUserSerializer,
     SimpleVisorSerializer,
 )
 from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
 from config import email
-from data.models import Company, Declaration, InstructionRole, Snapshot, VisaRole
+from data.models import Company, Declaration, InstructionRole, Snapshot, User, VisaRole
 
 logger = logging.getLogger(__name__)
 
@@ -138,10 +139,36 @@ class DeclarationFilterSet(django_filters.FilterSet):
         return queryset.filter(status__in=args[0].split(","))
 
 
+class UserDeclarationPagination(DeclarationPagination):
+    """
+    On ajoute dans le payload les instructrices et viseuses assignées au dossiers afin de pouvoir
+    filtrer par personne assignée.
+    """
+
+    authors = []
+
+    def paginate_queryset(self, queryset, request, view=None):
+        original_queryset = view.get_queryset()
+        authors_ids = original_queryset.values_list("author", flat=True).distinct().order_by()
+        self.authors = (User.objects.get(pk=x) for x in authors_ids if User.objects.filter(pk=x).exists())
+        return super().paginate_queryset(queryset, request, view)
+
+    def get_paginated_response(self, data):
+        return Response(
+            {
+                "count": self.count,
+                "next": self.get_next_link(),
+                "previous": self.get_previous_link(),
+                "results": data,
+                "authors": SimpleUserSerializer(self.authors, many=True).data,
+            }
+        )
+
+
 class UserDeclarationsListCreateApiView(ListCreateAPIView):
     model = Declaration
-    permission_classes = [IsDeclarant, CanAccessUserDeclatarions]
-    pagination_class = DeclarationPagination
+    permission_classes = [CanAccessUserDeclatarions]
+    pagination_class = UserDeclarationPagination
     filter_backends = [
         django_filters.DjangoFilterBackend,
         CamelCaseOrderingFilter,
@@ -149,7 +176,10 @@ class UserDeclarationsListCreateApiView(ListCreateAPIView):
     filterset_class = DeclarationFilterSet
 
     def get_queryset(self):
-        return self.request.user.declarations
+        companies = list(
+            self.request.user.declarable_companies.all().union(self.request.user.supervisable_companies.all())
+        )
+        return Declaration.objects.filter(Q(author=self.request.user) | Q(company__in=companies))
 
     def perform_create(self, serializer):
         # Lors de la création, des validations concernant l'objet créé doivent être faits ici

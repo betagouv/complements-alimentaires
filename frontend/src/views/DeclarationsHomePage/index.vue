@@ -14,8 +14,36 @@
       />
     </div>
     <div class="border px-4 pt-4 mb-2 sm:flex gap-8 items-baseline filters">
+      <DsfrFieldset class="!mb-0">
+        <div class="md:pl-4">
+          <DsfrInputGroup>
+            <DsfrSelect
+              label="Entreprise"
+              :modelValue="company"
+              @update:modelValue="updateCompany"
+              defaultUnselectedText="Toutes"
+              :options="companiesOptions"
+              class="!text-sm"
+            />
+          </DsfrInputGroup>
+        </div>
+      </DsfrFieldset>
+      <DsfrFieldset class="!mb-0">
+        <div class="md:border-x md:px-4">
+          <DsfrInputGroup>
+            <DsfrSelect
+              label="Personne assignée"
+              :modelValue="author"
+              @update:modelValue="updateAuthor"
+              defaultUnselectedText="Toutes"
+              :options="authorOptions"
+              class="!text-sm"
+            />
+          </DsfrInputGroup>
+        </div>
+      </DsfrFieldset>
       <StatusFilter
-        class="max-w-2xl"
+        class="max-w-xl"
         @updateFilter="updateStatusFilter"
         v-model="filteredStatus"
         :groupInstruction="true"
@@ -26,7 +54,7 @@
     </div>
     <DeclarationsTable :data="data" v-else-if="hasDeclarations" />
     <div v-else class="mb-8">
-      <p>Vous n'avez pas encore créé des déclarations.</p>
+      <p>Vous n'avez pas encore des déclarations avec ces filtres.</p>
       <DsfrButton icon="ri-capsule-fill" label="Créer ma première déclaration" @click="createNewDeclaration" />
     </div>
     <DsfrPagination
@@ -55,10 +83,25 @@ const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
 const router = useRouter()
 const route = useRoute()
+const company = computed(() => (route.query.company ? parseInt(route.query.company) : ""))
+const author = computed(() => (route.query.author ? parseInt(route.query.author) : ""))
 
 const hasDeclarations = computed(() => !!data.value?.results?.length)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 const offset = computed(() => (page.value - 1) * limit)
+
+const authorOptions = computed(() => {
+  const allAuthors = data.value?.authors.map((x) => ({ value: x.id, text: `${x.firstName} ${x.lastName}` })) || []
+  const emptyOption = { value: "", text: "Toutes" }
+  allAuthors.unshift(emptyOption)
+  return allAuthors
+})
+const companiesOptions = computed(() => {
+  const companies = loggedUser.value.companies?.map((x) => ({ value: x.id, text: x.socialName })) || []
+  const emptyOption = { value: "", text: "Toutes" }
+  companies.unshift(emptyOption)
+  return companies
+})
 
 const limit = 10
 const pages = computed(() => getPagesForPagination(data.value.count, limit, route.path))
@@ -71,12 +114,14 @@ const createNewDeclaration = () => router.push({ name: "NewDeclaration" })
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 const updateStatusFilter = (status) => updateQuery({ status })
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
+const updateCompany = (newValue) => updateQuery({ company: newValue })
+const updateAuthor = (newValue) => updateQuery({ author: newValue })
 
 const url = computed(() => {
   let statusQuery = filteredStatus.value
   if (filteredStatus.value?.indexOf("INSTRUCTION") > -1)
     statusQuery += `${statusQuery.length ? "," : ""}AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA`
-  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate`
+  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate&company=${company.value}&author=${author.value}`
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -84,5 +129,5 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
-watch([page, filteredStatus], fetchSearchResults)
+watch([page, filteredStatus, company, author], fetchSearchResults)
 </script>

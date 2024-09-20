@@ -448,6 +448,9 @@ class DeclarationSerializer(serializers.ModelSerializer):
 
 
 class DeclarationShortSerializer(serializers.ModelSerializer):
+    author = SimpleUserSerializer(read_only=True)
+    company = SimpleCompanySerializer(read_only=True)
+
     class Meta:
         model = Declaration
         fields = (

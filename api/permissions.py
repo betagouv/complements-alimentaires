@@ -16,10 +16,22 @@ class CanAccessUser(permissions.BasePermission):
 
 class CanAccessUserDeclatarions(permissions.BasePermission):
     """
-    Un.e utilisateur.ice peut seulement avoir accès à ces propres déclarations. Cette
-    permission vérifie que le paramètre dans l'URL `user_pk` corresponde à l'objet
-    `user` de la requête.
+    Un.e utilisateur.ice peut avoir accès aux :
+    - déclarations créées par iel même
+    - déclarations d'une des compagnies pour lesquelles iel a droit de déclaration
+    - déclarations d'une des compagnies pour lesquelles iel a droit de supervision
     """
+
+    def has_object_permission(self, request, view, obj):  # obj est une déclaration
+        created_by_user = obj.author == request.user
+        if created_by_user:  # Pour éviter les requêtes successives si on n'a pas besoin
+            return True
+
+        user_has_company_roles = (
+            obj.company in request.user.declarable_companies.all()
+            or obj.company in request.user.supervisable_companies.all()
+        )
+        return user_has_company_roles
 
     def has_permission(self, request, view):
         return view.kwargs["user_pk"] == request.user.id
