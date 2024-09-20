@@ -355,7 +355,7 @@ CKEDITOR_5_CONFIGS = {
                 {"model": "heading3", "view": "h3", "title": "Heading 3", "class": "ck-heading_heading3"},
             ]
         },
-        "htmlSupport": {"allow": [{"name": "/.*/", "attributes": True, "classes": True, "styles": True}]},
+        "htmlSupport": {"allow": [{"name": "/.*/", "attributes": {"id": True}}]},
     },
     "list": {
         "properties": {
