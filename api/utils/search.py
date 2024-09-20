@@ -7,7 +7,9 @@ from data.models.substance import Substance, SubstanceType
 
 
 def search_elements(query, deduplicate=False, exclude_not_authorized=False, exclude_vitamines_minerals=False):
-    plants = _get_plants(query, deduplicate, exclude_not_authorized)
+    # Les plantes non autorisées peuvent être ajoutées en infimes quantités dans les elixirs
+    # elles sont donc systématiquement renvoyées
+    plants = _get_plants(query, deduplicate, exclude_not_authorized=False)
     microorganisms = _get_microorganisms(query, deduplicate, exclude_not_authorized)
     ingredients = _get_ingredients(query, deduplicate, exclude_not_authorized)
     substances = _get_substances(query, deduplicate, exclude_not_authorized, exclude_vitamines_minerals)
