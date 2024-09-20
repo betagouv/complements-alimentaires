@@ -18,8 +18,8 @@ export const typesMapping = {
   form_of_supply: "Forme d'apport", // nutrient: "Nutriment"
   aroma: "Arôme",
   additive: "Additif",
-  active_ingredient: "Ingredient actif",
-  non_active_ingredient: "Ingredient non actif", // TODO : merger ces 2 types en 1 et n'utiliser que le label "actif"/"inactif"
+  active_ingredient: "Autre ingredient actif",
+  non_active_ingredient: "Autre ingredient non actif", // TODO : merger ces 2 types en 1 et n'utiliser que le label "actif"/"inactif"
   substance: "Substance",
   // TODO: déprecier après l'import de données extraites en mai 2024
   // qui contient les types plus précis
