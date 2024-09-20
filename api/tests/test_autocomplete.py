@@ -145,9 +145,7 @@ class TestAutocomplete(APITestCase):
         IngredientSynonymFactory.create(name="Vitamine C", standard_name=ingredient_form_of_supply)
 
         response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})
-        # import pdb
 
-        # pdb.set_trace()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json()
         returned_names = [result.get("name") for result in results]
