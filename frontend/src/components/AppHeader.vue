@@ -36,11 +36,11 @@ const navItems = [
   },
   {
     to: "/entreprises",
-    text: "Entreprises",
+    text: "Recherche ingrédients",
   },
   {
     to: "/blog",
-    text: "Blog",
+    text: "Ressources",
   },
 ]
 const loggedOnlyNavItems = [
