@@ -140,6 +140,7 @@ class CSVImporter:
         "modification_date",
         "missing_import_data",
         "to_be_entered_in_next_decree",
+        "substance_types",
     ]
     NEW_FIELDS = ["long_name"]
 

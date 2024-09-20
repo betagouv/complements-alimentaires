@@ -2,14 +2,15 @@ from difflib import SequenceMatcher
 
 from django.db.models import F
 
-from data.models import Ingredient, IngredientStatus, Microorganism, Plant, Substance
+from data.models import Ingredient, IngredientStatus, Microorganism, Plant
+from data.models.substance import Substance, SubstanceType
 
 
-def search_elements(query, deduplicate=False, exclude_not_authorized=False):
+def search_elements(query, deduplicate=False, exclude_not_authorized=False, exclude_vitamines_minerals=False):
     plants = _get_plants(query, deduplicate, exclude_not_authorized)
     microorganisms = _get_microorganisms(query, deduplicate, exclude_not_authorized)
     ingredients = _get_ingredients(query, deduplicate, exclude_not_authorized)
-    substances = _get_substances(query, deduplicate, exclude_not_authorized)
+    substances = _get_substances(query, deduplicate, exclude_not_authorized, exclude_vitamines_minerals)
 
     results = plants + microorganisms + ingredients + substances
     results.sort(key=lambda x: SequenceMatcher(None, x.autocomplete_match, query).ratio(), reverse=True)
@@ -59,7 +60,7 @@ def _get_ingredients(query, deduplicate, exclude_not_authorized):
     return _get_element_list(ingredient_qs, ingredient_synonym_qs, deduplicate, exclude_not_authorized)
 
 
-def _get_substances(query, deduplicate, exclude_not_authorized):
+def _get_substances(query, deduplicate, exclude_not_authorized, exclude_vitamines_minerals=False):
     substance_qs = (
         Substance.up_to_date_objects.filter(name__unaccent__icontains=query)
         .distinct()
@@ -70,6 +71,12 @@ def _get_substances(query, deduplicate, exclude_not_authorized):
         .distinct()
         .annotate(autocomplete_match=F("substancesynonym__name"))
     )
+    if exclude_vitamines_minerals:
+        substance_qs = substance_qs.exclude(substance_types__overlap=[SubstanceType.VITAMIN, SubstanceType.MINERAL])
+        substance_synonym_qs = substance_synonym_qs.exclude(
+            substance_types__overlap=[SubstanceType.VITAMIN, SubstanceType.MINERAL]
+        )
+
     return _get_element_list(substance_qs, substance_synonym_qs, deduplicate, exclude_not_authorized)
 
 
