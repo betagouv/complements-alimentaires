@@ -37,15 +37,6 @@
         réglementation applicable aux denrées alimentaires (notamment les règlements (CE) n°178/2002, (UE) n°1169/ 2011 et
         n°2283/2015).
     </p>
-    <p>
-        A cet effet, vous voudrez bien transmettre, par mail à l’adresse complement-alimentaire.dgal@agriculture.gouv.fr,
-        l’engagement ci-après, merci d’indiquer en objet "[n°2024-5-1273– Engagement]". Ce document peut également
-        être téléchargé depuis le site de la DGAL à l’adresse suivante :
-        <a href="https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire">
-            https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire.
-        </a>
-    </p>
-    <p>
         Sauf incomplétude du dossier de déclaration, examen défavorable par nos services, ou contrordre de votre part,
         votre produit fera l’objet, sous deux mois, d’une attestation de déclaration et d’une inscription à la liste des
         compléments alimentaires.
@@ -57,57 +48,6 @@
         <a href="https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire">
             https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire
         </a>.
-    </p>
-</div>
-<div>
-    <pdf:nextpage />
-</div>
-
-<h1 style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
-    Compléments alimentaires - Engagement de conformité au droit alimentaire
-</h1>
-<div style="font-size: 1.2em">
-    <p style="padding-top: 1cm;">
-        En lien avec la déclaration effectuée au titre de l’article 15 du décret n°2006-352 du 20 mars 2006 relatif aux compléments alimentaires,
-    </p>
-    <p>
-        la société
-        {% if declaration.company %}
-        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
-            {{ declaration.company.social_name }}
-        </span>
-        {% endif %}
-    </p>
-    <p>
-        atteste que le produit qu’elle met sur le marché
-    </p>
-    <p style="font-family: 'Marianne-Bold'; font-weight: bold;">
-        {{ declaration.name }}
-        {% if declaration.galenic_formulation %}
-        <br />{{ declaration.galenic_formulation.name }}
-        {% endif %}
-        {% if declaration.company %}
-        <br />{{ declaration.company.social_name }}
-        {% endif %}
-    </p>
-    <p>
-        enregistré sous le numéro <span style="font-family: 'Marianne-Bold'; font-weight: bold;">{{ declaration.id }}</span>
-    </p>
-    <p>
-        répond aux prescriptions du droit alimentaire qui lui sont applicables, notamment les textes précisés en annexe 1
-        du présent engagement (liste non exhaustive).
-    </p>
-    <p style="padding-left: 10cm; padding-top: 1cm;">
-        Le {{ date|date:"l j F Y" }}
-        des aliments
-    </p>
-    <p style="padding-left: 10cm;">
-        {% if declaration.company %}
-        {{ declaration.company.social_name }}
-        {% endif %}
-    </p>
-    <p style="padding-left: 10cm;">
-        Signature
     </p>
 </div>
 
