@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from data.choices import CountryChoices
-from data.models import Company, SupervisorRole
+from data.models import Company, DeclarantRole, SupervisorRole
 from data.models.solicitation import CompanyAccessClaim, SupervisionClaim
 from data.utils.external_utils import SiretData
 from data.validators import validate_siret, validate_vat  # noqa
@@ -147,6 +147,7 @@ class CompanyCreateView(CreateAPIView):
     def perform_create(self, serializer):
         new_company = serializer.save()
         SupervisorRole.objects.create(company=new_company, user=self.request.user)
+        DeclarantRole.objects.create(company=new_company, user=self.request.user)
         return new_company
 
 
