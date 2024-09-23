@@ -14,7 +14,15 @@
           :isTextarea="true"
         />
       </DsfrInputGroup>
-      <DsfrButton @click="emit('submit', comment)" label="Soumettre ma démarche" />
+      <hr />
+      <DsfrInputGroup>
+        <DsfrCheckbox
+          hint="Engagement de conformité au droit alimentaire"
+          label="J'atteste que ce produit répond aux prescriptions du droit alimentaire qui lui sont applicables"
+          v-model="conformityEngaged"
+        />
+      </DsfrInputGroup>
+      <DsfrButton :disabled="!conformityEngaged" @click="emit('submit', comment)" label="Soumettre ma démarche" />
     </DsfrAlert>
   </div>
 </template>
@@ -23,6 +31,8 @@
 import { ref } from "vue"
 import DeclarationSummary from "@/components/DeclarationSummary"
 import SectionTitle from "@/components/SectionTitle"
+
+const conformityEngaged = ref(false)
 
 const payload = defineModel()
 const emit = defineEmits(["submit"])
