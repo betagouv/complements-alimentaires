@@ -81,7 +81,6 @@ import SubstancesTable from "@/components/SubstancesTable.vue"
 import NewElementModal from "./NewElementModal.vue"
 import { handleError } from "@/utils/error-handling"
 import SectionTitle from "@/components/SectionTitle"
-import useToaster from "@/composables/use-toaster"
 
 const payload = defineModel()
 const containers = computed(() => ({
@@ -126,11 +125,6 @@ const removeElement = (element) => {
   })
 }
 const addElement = (item, objectType, newlyAdded = false) => {
-  const itemExists = item.id && allElements.value.find((x) => x.element?.id === item.id)
-  if (itemExists) {
-    useToaster().addSuccessMessage("L'ingrédient est déjà présent dans votre composition.")
-    return
-  }
   const toAdd = newlyAdded
     ? {
         ...item,
