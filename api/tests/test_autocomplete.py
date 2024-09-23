@@ -103,7 +103,7 @@ class TestAutocomplete(APITestCase):
 
     def test_status_of_autocomplete_result(self):
         """
-        Elements with status "Non autorisé" should not be returned by autocomplete
+        Elements with status "Non autorisé" should not be returned by autocomplete except Plants
         """
         autocomplete_term = "ephedra"
 
@@ -111,7 +111,15 @@ class TestAutocomplete(APITestCase):
         authorized_substance = SubstanceFactory.create(ca_name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED)
         SubstanceSynonymFactory.create(name="Ephedra", standard_name=authorized_substance)
 
-        forbidden_plant = PlantFactory.create(ca_name="Ephedra", siccrf_status=IngredientStatus.NOT_AUTHORIZED)
+        forbidden_plant = PlantFactory.create(
+            ca_name="Ephedra sepervirens", siccrf_status=IngredientStatus.NOT_AUTHORIZED
+        )
+        forbidden_ingredient = IngredientFactory.create(
+            ca_name="Ephedra ingredient", siccrf_status=IngredientStatus.NOT_AUTHORIZED
+        )
+        forbidden_substance = SubstanceFactory.create(
+            ca_name="Ephedra ine", siccrf_status=IngredientStatus.NOT_AUTHORIZED
+        )
 
         to_be_authorized_plant = PlantFactory.create(
             ca_name="Ephedralite", siccrf_status=IngredientStatus.AUTHORIZED, to_be_entered_in_next_decree=True
@@ -122,10 +130,12 @@ class TestAutocomplete(APITestCase):
         results = response.json()
         returned_names = [result.get("name") for result in results]
 
-        self.assertFalse(forbidden_plant.name in returned_names)
+        self.assertFalse(forbidden_ingredient.name in returned_names)
+        self.assertFalse(forbidden_substance.name in returned_names)
+        self.assertTrue(forbidden_plant.name in returned_names)
         self.assertTrue(authorized_substance.name in returned_names)
         self.assertTrue(to_be_authorized_plant.name in returned_names)
-        self.assertEqual(len(returned_names), 2)
+        self.assertEqual(len(returned_names), 3)
 
     def test_filter_substance_that_are_brought_by_form_of_supply(self):
         """

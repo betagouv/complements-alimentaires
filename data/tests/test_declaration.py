@@ -8,10 +8,12 @@ from data.factories import (
     ComputedSubstanceFactory,
     DeclaredPlantFactory,
     InstructionReadyDeclarationFactory,
+    PlantFactory,
     SnapshotFactory,
     SubstanceFactory,
 )
 from data.models import Declaration
+from data.models.ingredient_status import IngredientStatus
 
 
 class DeclarationTestCase(TestCase):
@@ -149,6 +151,7 @@ class DeclarationTestCase(TestCase):
             declared_ingredients=[],
             computed_substances=[],
         )
+        # La PlantFactory utilisée dans DeclaredPlantFactory a par défaut un status = AUTHORIZED
         DeclaredPlantFactory(new=False, declaration=declaration)
         declaration.overriden_article = Declaration.Article.ARTICLE_16
         declaration.save()
@@ -159,19 +162,40 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration.overriden_article, Declaration.Article.ARTICLE_16)
 
     def test_article_16(self):
-        declaration = InstructionReadyDeclarationFactory(
+        """
+        Teste si l'article 16 est bien assigné pour :
+        - un nouvel ingrédient ajouté
+        - un ingrédient non autorisé ajouté
+        """
+        declaration_new = InstructionReadyDeclarationFactory(
             declared_plants=[],
             declared_microorganisms=[],
             declared_substances=[],
             declared_ingredients=[],
             computed_substances=[],
         )
-        DeclaredPlantFactory(new=True, declaration=declaration)
-        declaration.refresh_from_db()
+        DeclaredPlantFactory(new=True, declaration=declaration_new)
+        declaration_new.refresh_from_db()
 
-        self.assertEqual(declaration.article, Declaration.Article.ARTICLE_16)
-        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_16)
-        self.assertEqual(declaration.overriden_article, "")
+        self.assertEqual(declaration_new.article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_new.calculated_article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_new.overriden_article, "")
+
+        declaration_not_autorized = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+        )
+        plant_not_autorized = PlantFactory(ca_status=IngredientStatus.NOT_AUTHORIZED)
+        DeclaredPlantFactory(plant=plant_not_autorized, declaration=declaration_not_autorized)
+
+        declaration_not_autorized.refresh_from_db()
+
+        self.assertEqual(declaration_not_autorized.article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_not_autorized.calculated_article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_not_autorized.overriden_article, "")
 
     def test_article_change(self):
         declaration = InstructionReadyDeclarationFactory(
