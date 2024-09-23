@@ -36,11 +36,11 @@
         </div>
 
         <!-- Cells des inputs (communes à toutes les substances) -->
-        <div class="sm:table-cell ca-cell">
+        <div class="sm:table-cell ca-cell sm:max-w-16">
           <div class="sm:hidden ca-xs-title">
             Quantité par DJR (en {{ payload.computedSubstances[rowIndex].substance.unit }})
           </div>
-          <DsfrInputGroup class="max-w-28" v-if="!props.readonly">
+          <DsfrInputGroup v-if="!props.readonly">
             <DsfrInput
               v-model="payload.computedSubstances[rowIndex].quantity"
               label="Quantité par DJR"
@@ -66,14 +66,9 @@ import ElementCommentModal from "@/components/ElementCommentModal"
 const payload = defineModel()
 const props = defineProps({ readonly: Boolean, hidePrivateComments: Boolean })
 
-const headers = ["", "Nom", "Num CAS", "Num EINEC", "Ingrédient(s) source", "Qté par DJR", "Unité"]
+const headers = ["", "Nom", "Ingrédient(s) source", "Qté totale par DJR", "Unité"]
 const rows = computed(() =>
-  payload.value.computedSubstances.map((x) => [
-    x.substance.name.toLowerCase(),
-    x.substance.casNumber || "-",
-    x.substance.einecNumber || "-",
-    sourceElements(x.substance),
-  ])
+  payload.value.computedSubstances.map((x) => [x.substance.name.toLowerCase(), sourceElements(x.substance)])
 )
 
 const elements = computed(() =>

@@ -4,15 +4,44 @@
       class="mb-8"
       :links="[
         { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { text: `Les déclarations de l'entreprise ${company.socialName}` },
+        { text: 'Les déclarations de mon entreprise' },
       ]"
     />
     <div class="border px-4 pt-4 pb-0 mb-2 sm:flex gap-8 items-baseline filters">
+      <DsfrFieldset class="!mb-0">
+        <div class="md:pl-4">
+          <DsfrInputGroup>
+            <DsfrSelect
+              label="Entreprise"
+              :modelValue="company"
+              @update:modelValue="updateCompany"
+              defaultUnselectedText="Toutes"
+              :options="companiesOptions"
+              class="!text-sm"
+            />
+          </DsfrInputGroup>
+        </div>
+      </DsfrFieldset>
+      <DsfrFieldset class="!mb-0">
+        <div class="md:border-x md:px-4">
+          <DsfrInputGroup>
+            <DsfrSelect
+              label="Personne assignée"
+              :modelValue="author"
+              @update:modelValue="updateAuthor"
+              defaultUnselectedText="Toutes"
+              :options="authorOptions"
+              class="!text-sm"
+            />
+          </DsfrInputGroup>
+        </div>
+      </DsfrFieldset>
       <StatusFilter
         :exclude="['DRAFT']"
-        class="max-w-2xl"
+        class="max-w-xl"
         @updateFilter="updateStatusFilter"
         v-model="filteredStatus"
+        :groupInstruction="true"
       />
     </div>
     <div v-if="isFetching" class="flex justify-center my-10">
@@ -46,8 +75,20 @@ import StatusFilter from "@/components/StatusFilter.vue"
 const route = useRoute()
 const store = useRootStore()
 const router = useRouter()
-const { companies } = storeToRefs(store)
-const company = computed(() => companies.value?.find((c) => +c.id === +route.params.id))
+const { companies, loggedUser } = storeToRefs(store)
+
+const authorOptions = computed(() => {
+  const allAuthors = data.value?.authors.map((x) => ({ value: x.id, text: `${x.firstName} ${x.lastName}` })) || []
+  const emptyOption = { value: "", text: "Toutes" }
+  allAuthors.unshift(emptyOption)
+  return allAuthors
+})
+const companiesOptions = computed(() => {
+  const allCompanies = companies.value?.map((x) => ({ value: x.id, text: x.socialName })) || []
+  const emptyOption = { value: "", text: "Toutes" }
+  allCompanies.unshift(emptyOption)
+  return allCompanies
+})
 
 const limit = 10
 const hasDeclarations = computed(() => data.value?.count > 0)
@@ -57,20 +98,26 @@ const offset = computed(() => (page.value - 1) * limit)
 // Valeurs obtenus du queryparams
 const page = computed(() => parseInt(route.query.page))
 const filteredStatus = computed(() => route.query.status)
+const company = computed(() => (route.query.company ? parseInt(route.query.company) : ""))
+const author = computed(() => (route.query.author ? parseInt(route.query.author) : ""))
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 const updateStatusFilter = (status) => updateQuery({ status })
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
+const updateCompany = (newValue) => updateQuery({ company: newValue })
+const updateAuthor = (newValue) => updateQuery({ author: newValue })
 
-const url = computed(
-  () =>
-    `/api/v1/companies/${company.value?.id}/declarations/?&limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}`
-)
+const url = computed(() => {
+  let statusQuery = filteredStatus.value
+  if (filteredStatus.value?.indexOf("INSTRUCTION") > -1)
+    statusQuery += `${statusQuery.length ? "," : ""}AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA`
+  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate&company=${company.value}&author=${author.value}`
+})
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
 }
 
-watch([page, filteredStatus], fetchSearchResults)
+watch([page, filteredStatus, company, author], fetchSearchResults)
 </script>

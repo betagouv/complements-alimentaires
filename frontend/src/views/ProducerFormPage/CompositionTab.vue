@@ -60,11 +60,11 @@
     </div>
 
     <div v-show="hasActiveSubstances">
-      <h3 class="fr-h6 !mb-4 !mt-6">Substances</h3>
-      <p>
-        Les substances contenues dans les ingrédients actifs renseignés sont affichées ci-dessous. Veuillez compléter
-        leur dosage total.
-      </p>
+      <hr class="mt-4" />
+      <DsfrCallout
+        title="Dosage total des substances actives"
+        content="Ce tableau présente les substances actives identifiées dans les ingrédients que vous avez sélectionnés. Une même substance pouvant être introduite par plusieurs sources, nous vous demandons de renseigner pour chaque substance la quantité totale par dose journalière recommandée (DJR)."
+      />
       <SubstancesTable :hidePrivateComments="true" v-model="payload" />
     </div>
   </div>

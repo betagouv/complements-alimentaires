@@ -215,6 +215,8 @@ const routes = [
       defaultQueryParams: {
         page: 1,
         status: "DRAFT,OBSERVATION,OBJECTION,INSTRUCTION",
+        company: "",
+        author: "",
       },
     },
   },
@@ -251,7 +253,9 @@ const routes = [
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
-        status: "AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA,OBJECTION,OBSERVATION",
+        status: "INSTRUCTION,OBJECTION,OBSERVATION,ABANDONED,AUTHORIZED,WITHDRAWN",
+        company: "",
+        author: "",
       },
     },
   },

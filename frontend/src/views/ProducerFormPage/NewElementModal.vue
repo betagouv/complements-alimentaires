@@ -71,7 +71,7 @@ const addableTypes = computed(() =>
   Object.keys(typesMapping)
     // Note : Sur téléicare on ne peux pas ajouter des substances directement
     // Le type "ingredient" est voué à être déprécié, donc on ne permet pas d'en ajouter
-    .filter((key) => !["ingredient"].includes(key))
+    .filter((key) => !["ingredient", "aroma"].includes(key))
     .map((key) => ({ text: typesMapping[key], value: key }))
 )
 

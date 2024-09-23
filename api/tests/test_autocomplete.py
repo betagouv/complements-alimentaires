@@ -5,6 +5,7 @@ from rest_framework.test import APITestCase
 
 from data.factories import (
     IngredientFactory,
+    IngredientSynonymFactory,
     MicroorganismFactory,
     MicroorganismSynonymFactory,
     PlantFactory,
@@ -13,6 +14,7 @@ from data.factories import (
     SubstanceSynonymFactory,
 )
 from data.models.ingredient_status import IngredientStatus
+from data.models.ingredient_type import IngredientType
 
 
 class TestAutocomplete(APITestCase):
@@ -101,7 +103,7 @@ class TestAutocomplete(APITestCase):
 
     def test_status_of_autocomplete_result(self):
         """
-        Elements with status "Non autorisé" should not be returned by autocomplete
+        Elements with status "Non autorisé" should not be returned by autocomplete except Plants
         """
         autocomplete_term = "ephedra"
 
@@ -109,7 +111,15 @@ class TestAutocomplete(APITestCase):
         authorized_substance = SubstanceFactory.create(ca_name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED)
         SubstanceSynonymFactory.create(name="Ephedra", standard_name=authorized_substance)
 
-        forbidden_plant = PlantFactory.create(ca_name="Ephedra", siccrf_status=IngredientStatus.NOT_AUTHORIZED)
+        forbidden_plant = PlantFactory.create(
+            ca_name="Ephedra sepervirens", siccrf_status=IngredientStatus.NOT_AUTHORIZED
+        )
+        forbidden_ingredient = IngredientFactory.create(
+            ca_name="Ephedra ingredient", siccrf_status=IngredientStatus.NOT_AUTHORIZED
+        )
+        forbidden_substance = SubstanceFactory.create(
+            ca_name="Ephedra ine", siccrf_status=IngredientStatus.NOT_AUTHORIZED
+        )
 
         to_be_authorized_plant = PlantFactory.create(
             ca_name="Ephedralite", siccrf_status=IngredientStatus.AUTHORIZED, to_be_entered_in_next_decree=True
@@ -120,7 +130,36 @@ class TestAutocomplete(APITestCase):
         results = response.json()
         returned_names = [result.get("name") for result in results]
 
-        self.assertFalse(forbidden_plant.name in returned_names)
+        self.assertFalse(forbidden_ingredient.name in returned_names)
+        self.assertFalse(forbidden_substance.name in returned_names)
+        self.assertTrue(forbidden_plant.name in returned_names)
         self.assertTrue(authorized_substance.name in returned_names)
         self.assertTrue(to_be_authorized_plant.name in returned_names)
-        self.assertEqual(len(returned_names), 2)
+        self.assertEqual(len(returned_names), 3)
+
+    def test_filter_substance_that_are_brought_by_form_of_supply(self):
+        """
+        Substance with types "Mineral" or "Vitamine" should not be returned by autocomplete
+        """
+        autocomplete_term = "vitamine"
+
+        substance_not_to_be_returned = SubstanceFactory.create(
+            ca_name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED
+        )
+        ingredient_form_of_supply = IngredientFactory.create(
+            ca_name="L-Ascorbate de zinc",
+            siccrf_status=IngredientStatus.AUTHORIZED,
+            ingredient_type=IngredientType.FORM_OF_SUPPLY,
+        )
+        ingredient_form_of_supply.substances.add(substance_not_to_be_returned)
+        IngredientSynonymFactory.create(name="Vitamine C", standard_name=ingredient_form_of_supply)
+
+        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()
+        returned_names = [result.get("name") for result in results]
+
+        self.assertFalse(substance_not_to_be_returned.name in returned_names)
+        self.assertTrue(ingredient_form_of_supply.name in returned_names)
+        self.assertEqual(len(returned_names), 1)

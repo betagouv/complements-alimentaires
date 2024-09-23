@@ -31,6 +31,7 @@ from data.models import (
     SubstanceUnit,
     VisaRole,
 )
+from data.models.ingredient_status import IngredientStatus
 
 logger = logging.getLogger(__name__)
 
@@ -305,6 +306,15 @@ class Declaration(Historisable, TimeStampable):
                 self.declared_ingredients,
             )
             empty_composition = all(not x.exists() for x in composition_items)
+            # cela ne devrait être possible que pour les plantes qui même non autorisées peuvent être ajoutées en infime quantité dans des elixirs
+
+            has_not_authorized_items = (
+                any(self.declared_plants.filter(plant__status=IngredientStatus.NOT_AUTHORIZED))
+                or any(self.declared_microorganisms.filter(microorganism__status=IngredientStatus.NOT_AUTHORIZED))
+                or any(self.declared_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
+                or any(self.declared_ingredients.filter(ingredient__status=IngredientStatus.NOT_AUTHORIZED))
+            )
+
             has_new_items = any(x.filter(new=True).exists() for x in composition_items if issubclass(x.model, Addable))
             surpasses_max_dose = any(
                 x.quantity > x.substance.max_quantity
@@ -317,6 +327,8 @@ class Declaration(Historisable, TimeStampable):
                 new_calculated_article = ""
             elif surpasses_max_dose:
                 new_calculated_article = Declaration.Article.ARTICLE_17
+            elif has_not_authorized_items:
+                new_calculated_article = Declaration.Article.ARTICLE_16
             elif has_new_items:
                 new_calculated_article = Declaration.Article.ARTICLE_16
             else:

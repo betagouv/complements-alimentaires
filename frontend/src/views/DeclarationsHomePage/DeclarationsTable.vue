@@ -22,8 +22,9 @@ const emit = defineEmits("open")
 // Les données pour la table
 const headers = computed(() => {
   if (useShortTable.value) return ["Nom", "État"]
-  return ["Nom du produit", "Marque", "État", "Date de modification"]
+  return ["ID", "Nom du produit", "Entreprise", "Déclarant·e", "État", "Date de modification"]
 })
+
 const rows = computed(() => {
   // Les dates ISO sont sortables par text
   if (!props.data?.results) return []
@@ -36,12 +37,14 @@ const rows = computed(() => {
 
   return props.data.results.map((d) => ({
     rowData: [
+      d.id,
       {
         component: "router-link",
         text: d.name,
         to: { name: "DeclarationPage", params: { id: d.id } },
       },
-      d.brand || "—",
+      d.company?.socialName || "Inconnue",
+      d.author ? `${d.author.firstName} ${d.author.lastName}` : "",
       getStatusTagForCell(d.status, true),
       timeAgo(d.modificationDate),
     ],

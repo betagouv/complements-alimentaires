@@ -64,7 +64,11 @@ const supervisorActions = computed(() => [
   {
     title: "Les déclarations de mon entreprise",
     description: "Visualisez les déclarations soumises pour le compte de votre entreprise",
-    link: { name: "CompanyDeclarationsPage", params: { id: company.value?.id } },
+    link: {
+      name: "CompanyDeclarationsPage",
+      params: { id: company.value?.id },
+      query: { company: company.value?.id },
+    },
   },
   {
     title: "Les collaborateurs de mon entreprise",
@@ -88,7 +92,7 @@ const declarantActions = [
     title: "Toutes mes déclarations",
     description:
       "Accédez à l'ensemble de vos dossiers (brouillons, dossiers en cours d'instruction, attestations de déclaration)",
-    link: { name: "DeclarationsHomePage" },
+    link: { name: "DeclarationsHomePage", query: { author: loggedUser.value?.id } },
   },
 ]
 

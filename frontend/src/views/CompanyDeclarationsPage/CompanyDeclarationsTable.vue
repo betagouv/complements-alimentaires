@@ -17,17 +17,19 @@ import { getStatusTagForCell } from "@/utils/components"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
-const headers = ["Nom du produit", "Auteur", "État", "Date de création", "Date de modification"]
+const headers = ["ID", "Nom du produit", "Entreprise", "Auteur", "État", "Date de création", "Date de modification"]
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
+      x.id,
       {
         component: "router-link",
         text: x.name,
         to: { name: "DeclarationPage", params: { id: x.id } }, // TODO Change to a more enteprisey view
       },
+      x.company.socialName,
       `${x.author.firstName} ${x.author.lastName}`,
-      getStatusTagForCell(x.status),
+      getStatusTagForCell(x.status, true),
       timeAgo(x.creationDate),
       timeAgo(x.modificationDate),
     ],
