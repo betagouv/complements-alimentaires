@@ -42,7 +42,7 @@
           </div>
           <div v-if="props.readonly">{{ payload.computedSubstances[rowIndex].quantity }}</div>
           <DsfrInputGroup v-else-if="askForQuantity(payload.computedSubstances[rowIndex].substance)">
-            <DsfrInput
+            <NumberField
               v-model="payload.computedSubstances[rowIndex].quantity"
               label="Quantité par DJR"
               :required="true"
@@ -64,6 +64,7 @@
 
 import { computed, watch } from "vue"
 import ElementCommentModal from "@/components/ElementCommentModal"
+import NumberField from "@/components/NumberField"
 
 const payload = defineModel()
 const props = defineProps({ readonly: Boolean, hidePrivateComments: Boolean })
