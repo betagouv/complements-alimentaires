@@ -202,6 +202,7 @@ class DeclaredSubstanceSerializer(serializers.ModelSerializer):
             "element",
             "new_name",
             "active",
+            "quantity",
         )
 
     def create(self, validated_data):

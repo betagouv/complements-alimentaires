@@ -489,6 +489,7 @@ class DeclaredSubstance(Historisable, Addable):
     )
     active = models.BooleanField("ayant une activité physiologique ou nutritionnelle", default=True)
     new_name = models.TextField(blank=True, verbose_name="libellé")
+    quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
 
     def __str__(self):
         return f"{self.new_name or self.substance.name}"

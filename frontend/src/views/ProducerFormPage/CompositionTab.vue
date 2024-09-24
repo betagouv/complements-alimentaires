@@ -134,6 +134,7 @@ const addElement = (item, objectType, newlyAdded = false) => {
   const toAdd = newlyAdded
     ? {
         ...item,
+        // newType n'est enregistré que pour les ingrédients du modèle otherIngredient (additif, forme d'apport, autre ingrédient)
         ...{ active: getActivityByType(objectType), new: true, activated: true, newType: objectType },
       }
     : { element: item, active: !!item.activity, activated: true }
