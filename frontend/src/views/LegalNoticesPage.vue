@@ -16,7 +16,7 @@
     <h2>Directeur de la publication</h2>
     <address>
       <p>
-        Ministère de l’Agriculture et de la Souveraineté Alimentaire
+        Ministère de l’Agriculture, de la Souveraineté Alimentaire et de la Forêt
         <br />
         Direction Générale de l’Alimentation
         <br />
