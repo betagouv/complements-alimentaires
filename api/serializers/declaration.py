@@ -203,6 +203,7 @@ class DeclaredSubstanceSerializer(serializers.ModelSerializer):
             "new_name",
             "active",
             "quantity",
+            "unit",
         )
 
     def create(self, validated_data):
