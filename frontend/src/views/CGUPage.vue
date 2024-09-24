@@ -8,8 +8,9 @@
     </p>
     <h2>Présentation</h2>
     <p>
-      « Compl'Alim » (ci-après dénommé « le Service ») est mis en œuvre par le ministère de l’Agriculture qui s’appuie
-      sur l’expertise de la Direction interministérielle du numérique dans le cadre d’une délégation de gestion.
+      « Compl'Alim » (ci-après dénommé « le Service ») est mis en œuvre par le ministère de l’Agriculture, de la
+      Souveraineté Alimentaire et de la Forêt qui s’appuie sur l’expertise de la Direction interministérielle du
+      numérique dans le cadre d’une délégation de gestion.
     </p>
     <p>
       Le Service est destiné à accompagner les acteurs du secteur des compléments alimentaires (ci-après abrégé « CA »)
@@ -32,7 +33,7 @@
     <h2>Mentions légales</h2>
     <ul>
       <li>Éditeur : L'Incubateur de services numériques de la Direction Interministérielle du Numérique (DINUM).</li>
-      <li>Directeur de la publication : Ministère de l’Agriculture et de la Souveraineté Alimentaire.</li>
+      <li>Directeur de la publication : Ministère de l’Agriculture, de la Souveraineté Alimentaire et de la Forêt.</li>
       <li>Prestataire d'hébergement : Clevercloud, 3 rue de l'Allier, 44000 Nantes, France.</li>
     </ul>
     <p>
@@ -72,14 +73,14 @@
       conservées jusqu’à la fin de fonctionnement du Service, notamment pour répondre aux besoins statistiques.
     </p>
     <p>
-      Le ministère de l’Agriculture s'engage à prendre toutes précautions utiles pour préserver la sécurité des données
-      collectées auprès de l'usager, et notamment empêcher qu'elles soient déformées et endommagées ou que des tiers non
-      autorisés y aient accès.
+      Le ministère de l’Agriculture, de la Souveraineté Alimentaire et de la Forêt s'engage à prendre toutes précautions
+      utiles pour préserver la sécurité des données collectées auprès de l'usager, et notamment empêcher qu'elles soient
+      déformées et endommagées ou que des tiers non autorisés y aient accès.
     </p>
     <p>
-      Le ministère de l’agriculture garantit aux usagers du Service les droits d'accès, de rectification et d'opposition
-      sur leurs données à caractère personnel, prévus par la loi n° 78-17 du 6 janvier 1978 relative à l'informatique
-      aux fichiers et aux libertés.
+      Le ministère de l’Agriculture, de la Souveraineté Alimentaire et de la Forêt garantit aux usagers du Service les
+      droits d'accès, de rectification et d'opposition sur leurs données à caractère personnel, prévus par la loi n°
+      78-17 du 6 janvier 1978 relative à l'informatique aux fichiers et aux libertés.
     </p>
     <p>
       Pour plus d’informations sur le traitement des données à caractère personnel l’utilisateur est invité à se référer
@@ -122,18 +123,20 @@
     <p>
       Le Service est développé conformément à l’état de l’art. Toutefois, il n’est pas garanti qu’il soit exempt
       d’anomalies ou d'erreurs. Le service est donc mis à disposition sans garantie sur sa disponibilité et ses
-      performances. A ce titre, le ministère de l’Agriculture ne peut être tenu responsable des pertes et/ou préjudices,
-      de quelque nature qu’ils soient, qui pourraient être causés à la suite d’un dysfonctionnement ou une
-      indisponibilité du service. De telles situations n'ouvriront droit à aucune compensation financière.
+      performances. A ce titre, le ministère de l’Agriculture, de la Souveraineté Alimentaire et de la Forêt ne peut
+      être tenu responsable des pertes et/ou préjudices, de quelque nature qu’ils soient, qui pourraient être causés à
+      la suite d’un dysfonctionnement ou une indisponibilité du service. De telles situations n'ouvriront droit à aucune
+      compensation financière.
     </p>
     <p>
       L’utilisateur s’engage à respecter les présentes CGU et la législation en vigueur. Il s’engage notamment à ne
       fournir, dans le cadre de l'utilisation du Service, que des informations exactes, à jour et complètes.
     </p>
     <p>
-      Dans l'hypothèse où l'usager ne s'acquitte pas de ses engagements, le ministère de l’Agriculture se réserve le
-      droit de suspendre ou résilier le service pour cet usager sans préjudice des éventuelles actions en responsabilité
-      pénale et civile qui pourraient être engagées à son encontre.
+      Dans l'hypothèse où l'usager ne s'acquitte pas de ses engagements, le ministère de l’Agriculture, de la
+      Souveraineté Alimentaire et de la Forêt se réserve le droit de suspendre ou résilier le service pour cet usager
+      sans préjudice des éventuelles actions en responsabilité pénale et civile qui pourraient être engagées à son
+      encontre.
     </p>
     <h2>Modification et évolution du Service</h2>
     <p>
