@@ -60,8 +60,8 @@ def declared_microorganism_is_complete(mo):
     return mo.strain and (not mo.activated or mo.quantity)
 
 
-def computed_substance_is_complete(substance):
-    return substance.quantity is not None
+def computed_substance_is_complete(computed_substance):
+    return computed_substance.quantity is not None if computed_substance.substance.must_specify_quantity else True
 
 
 def validate_number_of_elements(declaration) -> tuple[list, list]:

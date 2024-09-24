@@ -62,5 +62,6 @@ class SubstanceShortSerializer(PrivateCommentSerializer):
             "max_quantity",
             "public_comments",
             "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
+            "must_specify_quantity",
         )
         read_only_fields = fields
