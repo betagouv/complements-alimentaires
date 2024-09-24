@@ -197,9 +197,10 @@ class DeclaredSubstanceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DeclaredSubstance
-        fields = (
+        fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
             "element",
+            "new_name",
             "active",
         )
 

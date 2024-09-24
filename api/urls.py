@@ -11,7 +11,7 @@ urlpatterns = {
     path("subscribe-newsletter/", views.SubscribeNewsletter.as_view(), name="subscribe_newsletter"),
     path("report-issue/", views.ReportIssue.as_view(), name="report_issue"),
     path("webinars/", views.WebinarView.as_view(), name="webinar_list"),
-    # Elements
+    # Ingredients
     path("search/", views.SearchView.as_view(), name="search"),
     path("plants/<int:pk>", views.PlantRetrieveView.as_view(), name="single_plant"),
     path("plant-parts/", views.PlantPartListView.as_view(), name="plant_part_list"),
@@ -113,7 +113,7 @@ urlpatterns = {
         views.ArticleChangeView.as_view(),
         name="update_article",
     ),
-    # Flow de la délcaration (state machine)
+    # Flow de la déclaration (state machine)
     path("declarations/<int:pk>/submit/", views.DeclarationSubmitView.as_view(), name="submit_declaration"),
     path(
         "declarations/<int:pk>/take-for-instruction/",
