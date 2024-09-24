@@ -40,7 +40,7 @@
           <div class="sm:hidden ca-xs-title">
             Quantité par DJR (en {{ payload.computedSubstances[rowIndex].substance.unit }})
           </div>
-          <DsfrInputGroup v-if="!props.readonly">
+          <DsfrInputGroup v-if="askForQuantity(payload.computedSubstances[rowIndex].substance)">
             <DsfrInput
               v-model="payload.computedSubstances[rowIndex].quantity"
               label="Quantité par DJR"
@@ -50,7 +50,9 @@
           <div v-else>{{ payload.computedSubstances[rowIndex].quantity }}</div>
         </div>
         <div class="hidden sm:table-cell fr-text-alt ca-cell font-italic">
-          {{ payload.computedSubstances[rowIndex].substance.unit }}
+          <span v-if="askForQuantity(payload.computedSubstances[rowIndex].substance)">
+            {{ payload.computedSubstances[rowIndex].substance.unit }}
+          </span>
         </div>
       </div>
     </div>
@@ -70,6 +72,11 @@ const headers = ["", "Nom", "Ingrédient(s) source", "Qté totale par DJR", "Uni
 const rows = computed(() =>
   payload.value.computedSubstances.map((x) => [x.substance.name.toLowerCase(), sourceElements(x.substance)])
 )
+
+const askForQuantity = (substance) => {
+  if (props.readonly) return false
+  return substance.mustSpecifyQuantity
+}
 
 const elements = computed(() =>
   [].concat(
