@@ -45,6 +45,8 @@ ALLOWED_HOSTS = [x.strip() for x in env("ALLOWED_HOSTS", cast=list)]
 
 ENVIRONMENT = env("ENVIRONMENT")
 
+ENABLE_SILK = env("ENABLE_SILK", cast=bool)
+
 # Application definition
 
 DJANGO_APPS = [
@@ -67,6 +69,9 @@ THIRD_PARTY_APPS = [
     "phonenumber_field",
 ]
 
+if ENABLE_SILK:
+    THIRD_PARTY_APPS.append("silk")
+
 PROJECT_APPS = [
     "config",
     "api",
@@ -87,6 +92,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
 ]
+
+if ENABLE_SILK:
+    MIDDLEWARE.append("silk.middleware.SilkyMiddleware")
 
 CSRF_COOKIE_NAME = "csrftoken"
 ROOT_URLCONF = "config.urls"
