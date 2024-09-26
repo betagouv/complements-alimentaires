@@ -111,6 +111,7 @@ MATOMO_ID (optionnel)= L'ID pour le suivi avec Matomo. Compl-alim utilise l'ID 9
 REDIS_URL= L'instance redis à utiliser pour les tâches asynchrones et le cache des clés API. Par exemple : 'redis://localhost:6379/0'
 REDIS_PREPEND_KEY= Optionnel - Ajout ce string au début de chaque clé Redis. Utile pour partager la même DB Redis sur plusieurs environnements
 S3CFG_FILE_URI= Optionnel - Url de téléchargement du fichier de config s3cmd
+ENABLE_SILK= `True` pour activer le profiling via [django-silk](https://github.com/jazzband/django-silk) ou `False` autrement
 ```
 
 #### Créer les différents modèles Django dans la base de données

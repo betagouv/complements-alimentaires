@@ -379,6 +379,30 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "private_notes",
         )
 
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """
+        Pre-chargement des données nécessaires pour éviter des soucis de prod
+        http://ses4j.github.io/2015/11/23/optimizing-slow-django-rest-framework-performance/
+        """
+        queryset = queryset.select_related(
+            "author",
+            "company",
+            "unit_measurement",
+            "galenic_formulation",
+        )
+
+        queryset = queryset.prefetch_related(
+            "declared_plants__plant__substances__unit",
+            "declared_plants__plant__plant_parts",
+            "declared_microorganisms__microorganism__substances__unit",
+            "declared_ingredients__ingredient__substances__unit",
+            "declared_substances__substance__unit",
+            "computed_substances__substance__unit",
+            "attachments",
+        )
+        return queryset
+
     def create(self, validated_data):
         # DRF ne gère pas automatiquement la création des nested-fields :
         # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
