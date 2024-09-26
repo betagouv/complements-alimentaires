@@ -45,7 +45,7 @@ ALLOWED_HOSTS = [x.strip() for x in env("ALLOWED_HOSTS", cast=list)]
 
 ENVIRONMENT = env("ENVIRONMENT")
 
-ENABLE_SILK = env("ENABLE_SILK", cast=bool)
+ENABLE_SILK = env("ENABLE_SILK", cast=bool, default=False)
 
 # Application definition
 
