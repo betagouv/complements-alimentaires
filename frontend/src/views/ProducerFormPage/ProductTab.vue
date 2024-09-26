@@ -51,7 +51,7 @@
       <DsfrFieldset legend="Forme galénique" legendClass="fr-label !pb-0">
         <div class="flex">
           <div class="max-w-32">
-            <DsfrSelect label="État" :options="formulationStates" v-model="galenicFormulationState" />
+            <DsfrSelect :required="true" label="État" :options="formulationStates" v-model="galenicFormulationState" />
           </div>
           <div class="max-w-md ml-4">
             <DsfrSelect
