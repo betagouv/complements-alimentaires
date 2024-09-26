@@ -125,17 +125,17 @@ const removeElement = (element) => {
   })
 }
 const addElement = (item, objectType, newlyAdded = false) => {
-  var toAdd = newlyAdded
+  const toAdd = newlyAdded
     ? {
         ...item,
         // newType n'est enregistré que pour les ingrédients du modèle otherIngredient (additif, forme d'apport, autre ingrédient)
-        ...{ active: getActivityByType(objectType), new: true, activated: true, newType: objectType },
+        ...{ active: getActivityByType(objectType), new: true, newType: objectType },
       }
     : { element: item, active: !!item.activity }
   //  le champ `activated` n'est valable que pour les microorganismes
   if (objectType == "microorganism") toAdd.activated = true
   //  le champ `unit` n'est valable que pour les substances
-  if (objectType == "substance") toAdd.unit = item.unitId
+  if (objectType == "substance" && !newlyAdded) toAdd.unit = item.unitId
   containers.value[objectType].unshift(toAdd)
 }
 
