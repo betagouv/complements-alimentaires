@@ -4,8 +4,9 @@
     <h1>Politique de confidentialité</h1>
     <h2>Traitement des données à caractère personnel</h2>
     <p>
-      La présente plateforme Compl'Alim est à l’initiative du Ministère de l’agriculture (Direction Générale de
-      l’Alimentation), qui est responsable de traitement des données à caractère personnel collectées par la plateforme.
+      La présente plateforme Compl'Alim est à l’initiative du Ministère de l’Agriculture, de la Souveraineté Alimentaire
+      et de la Forêt (Direction Générale de l’Alimentation), qui est responsable de traitement des données à caractère
+      personnel collectées par la plateforme.
     </p>
     <h2>Finalités</h2>
     <p>
@@ -144,7 +145,7 @@
     <p>Par voie postale :</p>
     <address>
       <p>
-        Ministère de l’Agriculture et de la Souveraineté Alimentaire
+        Ministère de l’Agriculture, de la Souveraineté Alimentaire et de la Forêt
         <br />
         Direction Générale de l’Alimentation
         <br />

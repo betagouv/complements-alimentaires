@@ -4,6 +4,7 @@
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'identifier')">
         <DsfrInput
           :label="`Numéro de ${company.identifierType.toUpperCase()}`"
+          :hint="company.identifierType.toUpperCase() !== 'SIRET' ? 'Merci d\'utiliser des majuscules' : ''"
           v-model="identifier"
           required
           labelVisible

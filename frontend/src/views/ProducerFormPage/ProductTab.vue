@@ -51,7 +51,7 @@
       <DsfrFieldset legend="Forme galénique" legendClass="fr-label !pb-0">
         <div class="flex">
           <div class="max-w-32">
-            <DsfrSelect label="État" :options="formulationStates" v-model="galenicFormulationState" />
+            <DsfrSelect :required="true" label="État" :options="formulationStates" v-model="galenicFormulationState" />
           </div>
           <div class="max-w-md ml-4">
             <DsfrSelect
@@ -90,7 +90,7 @@
         <DsfrFieldset legend="Poids ou volume d'une unité de consommation" legendClass="fr-label !pb-0">
           <div class="flex">
             <div class="max-w-64">
-              <DsfrInput
+              <NumberField
                 label="Quantité"
                 label-visible
                 v-model="payload.unitQuantity"
@@ -253,6 +253,7 @@ import { pushOtherChoiceFieldAtTheEnd, getAllIndexesOfRegex } from "@/utils/form
 import CountryField from "@/components/fields/CountryField.vue"
 import OtherChoiceField from "@/components/fields/OtherChoiceField"
 import SectionTitle from "@/components/SectionTitle"
+import NumberField from "@/components/NumberField"
 
 const payload = defineModel()
 const props = defineProps(["externalResults"])

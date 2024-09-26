@@ -63,7 +63,7 @@
       <hr class="mt-4" />
       <DsfrCallout
         title="Dosage total des substances actives"
-        content="Ce tableau présente les substances actives identifiées dans les ingrédients que vous avez sélectionnés. Une même substance pouvant être introduite par plusieurs sources, nous vous demandons de renseigner pour chaque substance la quantité totale par dose journalière recommandée (DJR)."
+        content="Ce tableau présente les substances actives identifiées dans les ingrédients que vous avez sélectionnés. Une même substance pouvant être introduite par plusieurs sources, la quantité totale par dose journalière recommandée (DJR) est demandée pour certaines substances faisant l'objet d'une règlementation spécifique ou impliquant un risque."
       />
       <SubstancesTable :hidePrivateComments="true" v-model="payload" />
     </div>
@@ -81,7 +81,6 @@ import SubstancesTable from "@/components/SubstancesTable.vue"
 import NewElementModal from "./NewElementModal.vue"
 import { handleError } from "@/utils/error-handling"
 import SectionTitle from "@/components/SectionTitle"
-import useToaster from "@/composables/use-toaster"
 
 const payload = defineModel()
 const containers = computed(() => ({
@@ -126,11 +125,6 @@ const removeElement = (element) => {
   })
 }
 const addElement = (item, objectType, newlyAdded = false) => {
-  const itemExists = item.id && allElements.value.find((x) => x.element?.id === item.id)
-  if (itemExists) {
-    useToaster().addSuccessMessage("L'ingrédient est déjà présent dans votre composition.")
-    return
-  }
   const toAdd = newlyAdded
     ? {
         ...item,

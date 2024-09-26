@@ -44,7 +44,7 @@
           />
         </DsfrInputGroup>
         <DsfrInputGroup class="max-w-28">
-          <DsfrInput label="Qté par DJR" v-model="model.quantity" label-visible :required="true" />
+          <NumberField label="Qté par DJR" v-model="model.quantity" label-visible :required="true" />
         </DsfrInputGroup>
         <DsfrInputGroup class="min-w-20 max-w-24">
           <DsfrSelect
@@ -78,7 +78,7 @@
         </div>
         <div v-if="model.activated">
           <DsfrInputGroup>
-            <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR (en UFC)" :required="true" />
+            <NumberField label-visible v-model="model.quantity" label="Qté par DJR (en UFC)" :required="true" />
           </DsfrInputGroup>
         </div>
       </div>
@@ -103,7 +103,7 @@
       </div>
       <div v-else-if="objectType === 'form_of_supply' || objectType === 'active_ingredient'" class="ml-12 flex gap-4">
         <DsfrInputGroup>
-          <DsfrInput label-visible v-model="model.quantity" label="Qté par DJR" :required="true" />
+          <NumberField label-visible v-model="model.quantity" label="Qté par DJR" :required="true" />
         </DsfrInputGroup>
         <DsfrInputGroup class="min-w-20 max-w-24">
           <DsfrSelect
@@ -120,6 +120,7 @@
 </template>
 
 <script setup>
+import NumberField from "@/components/NumberField"
 import { useRootStore } from "@/stores/root"
 import { computed } from "vue"
 import { getElementName } from "@/utils/elements"

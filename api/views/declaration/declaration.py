@@ -203,7 +203,11 @@ class DeclarationRetrieveUpdateView(RetrieveUpdateAPIView):
     model = Declaration
     serializer_class = DeclarationSerializer
     permission_classes = [CanAccessIndividualDeclaration]
-    queryset = Declaration.objects.all()
+
+    def get_queryset(self):
+        queryset = Declaration.objects.all()
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
 
 
 class Unaccent(Func):
@@ -350,7 +354,11 @@ class CompanyDeclarationsListView(GenericDeclarationsListView):
 class ArticleChangeView(GenericAPIView):
     permission_classes = [(IsInstructor | IsVisor)]
     serializer_class = DeclarationSerializer
-    queryset = Declaration.objects.all()
+
+    def get_queryset(self):
+        queryset = Declaration.objects.all()
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
 
     def post(self, request, pk):
         declaration = self.get_object()
@@ -367,7 +375,6 @@ class ArticleChangeView(GenericAPIView):
 
 
 class DeclarationFlowView(GenericAPIView):
-    queryset = Declaration.objects.all()
     serializer_class = DeclarationSerializer
     transition = None
     create_snapshot = False
@@ -376,6 +383,11 @@ class DeclarationFlowView(GenericAPIView):
     from_status = None
     to_status = None
     brevo_template_id = None  # Remplir avec l'ID du template Brevo si un email doit être envoyé
+
+    def get_queryset(self):
+        queryset = Declaration.objects.all()
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)
+        return queryset
 
     def get_brevo_template_id(self, request, declaration):
         """
