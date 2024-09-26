@@ -173,7 +173,9 @@ const savePayload = async () => {
   const { response, data } = await useFetch(url, { headers: headers() })[httpMethod](payload).json()
   $externalResults.value = await handleError(response)
   if ($externalResults.value) {
-    useToaster().addErrorMessage("Merci de vérifier les champs en rouge pour pouvoir changer d'onglet")
+    useToaster().addErrorMessage(
+      "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis pour pouvoir changer d'onglet"
+    )
     window.scrollTo(0, 0)
     return false
   } else {
