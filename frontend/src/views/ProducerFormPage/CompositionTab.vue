@@ -128,10 +128,14 @@ const addElement = (item, objectType, newlyAdded = false) => {
   const toAdd = newlyAdded
     ? {
         ...item,
-        ...{ active: getActivityByType(objectType), new: true, activated: true, newType: objectType },
+        // newType n'est enregistré que pour les ingrédients du modèle otherIngredient (additif, forme d'apport, autre ingrédient)
+        ...{ active: getActivityByType(objectType), new: true, newType: objectType },
       }
-    : { element: item, active: !!item.activity, activated: true }
-  //  le champ activated n'est valable que pour les microorganismes
+    : { element: item, active: !!item.activity }
+  //  le champ `activated` n'est valable que pour les microorganismes
+  if (objectType == "microorganism") toAdd.activated = true
+  //  le champ `unit` n'est valable que pour les substances
+  if (objectType == "substance" && !newlyAdded) toAdd.unit = item.unitId
   containers.value[objectType].unshift(toAdd)
 }
 

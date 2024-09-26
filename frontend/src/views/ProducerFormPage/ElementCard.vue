@@ -82,6 +82,25 @@
           </DsfrInputGroup>
         </div>
       </div>
+      <div v-else-if="objectType === 'substance'" class="ml-12 flex gap-4">
+        <DsfrInputGroup class="max-w-28">
+          <DsfrInput label="Qté par DJR" v-model="model.quantity" label-visible :required="true" />
+        </DsfrInputGroup>
+        <div class="mt-12" v-if="model.element?.unit">
+          {{ model.element.unit }}
+        </div>
+        <div v-else>
+          <DsfrInputGroup class="min-w-20 max-w-24">
+            <DsfrSelect
+              label="Unité"
+              :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
+              v-model="model.unit"
+              defaultUnselectedText=""
+              :required="true"
+            />
+          </DsfrInputGroup>
+        </div>
+      </div>
       <div v-else-if="objectType === 'form_of_supply' || objectType === 'active_ingredient'" class="ml-12 flex gap-4">
         <DsfrInputGroup>
           <NumberField label-visible v-model="model.quantity" label="Qté par DJR" :required="true" />
@@ -124,7 +143,7 @@ const showFields = computed(() => {
   if (model.value.active && ["plant", "microorganism"].indexOf(props.objectType) >= 0) return true
   if (
     model.value.active &&
-    ["active_ingredient", "form_of_supply"].indexOf(props.objectType) >= 0 &&
+    ["active_ingredient", "form_of_supply", "substance"].indexOf(props.objectType) >= 0 &&
     !model.value.element?.substances?.length
   )
     // TODO: à terme les form_of_supply auront forcément des substances liées donc cette condition ne sera plus nécessaire

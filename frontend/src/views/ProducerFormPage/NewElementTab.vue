@@ -7,7 +7,19 @@
     </p>
     <NewElementList objectType="plant" :elements="newPlants" />
     <NewElementList objectType="microorganism" :elements="newMicroorganisms" />
-    <NewElementList objectType="ingredient" :elements="newIngredients" />
+    <NewElementList objectType="form_of_supply" :elements="getObjectSubTypeList(newIngredients, 'form_of_supply')" />
+    <NewElementList objectType="aroma" :elements="getObjectSubTypeList(newIngredients, 'aroma')" />
+    <NewElementList objectType="additive" :elements="getObjectSubTypeList(newIngredients, 'additive')" />
+    <NewElementList
+      objectType="active_ingredient"
+      :elements="getObjectSubTypeList(newIngredients, 'active_ingredient')"
+    />
+    <NewElementList
+      objectType="non_active_ingredient"
+      :elements="getObjectSubTypeList(newIngredients, 'non_active_ingredient')"
+    />
+
+    <NewElementList objectType="substance" :elements="newSubstances" />
   </div>
 </template>
 
@@ -15,10 +27,12 @@
 import { computed } from "vue"
 import NewElementList from "./NewElementList"
 import SectionTitle from "@/components/SectionTitle"
+import { getObjectSubTypeList } from "@/utils/elements"
 
 const payload = defineModel()
 
 const newPlants = computed(() => payload.value.declaredPlants.filter((x) => x.new))
 const newMicroorganisms = computed(() => payload.value.declaredMicroorganisms.filter((x) => x.new))
 const newIngredients = computed(() => payload.value.declaredIngredients.filter((x) => x.new))
+const newSubstances = computed(() => payload.value.declaredSubstances.filter((x) => x.new))
 </script>

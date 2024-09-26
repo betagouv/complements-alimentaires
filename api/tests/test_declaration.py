@@ -461,7 +461,16 @@ class TestDeclarationApi(APITestCase):
                         "name": substance.name,
                     },
                     "active": True,
-                }
+                },
+                {
+                    "newName": "New substance name",
+                    "newDescription": "New substance description",
+                    "new": True,
+                    "active": True,
+                    "authorizationMode": "FR",
+                    "frReason": "NOVEL_FOOD",
+                    "frDetails": "Je le veux",
+                },
             ],
         }
 
@@ -471,12 +480,21 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         declaration = Declaration.objects.get(pk=response.json()["id"])
 
-        self.assertEqual(declaration.declared_substances.count(), 1)
+        self.assertEqual(declaration.declared_substances.count(), 2)
 
         existing_declared_substance = declaration.declared_substances.first()
+        new_declared_substance = declaration.declared_substances.get(new=True)
 
         self.assertEqual(existing_declared_substance.substance, substance)
         self.assertEqual(existing_declared_substance.active, True)
+
+        self.assertIsNone(new_declared_substance.substance)
+        self.assertEqual(new_declared_substance.new_name, "New substance name")
+        self.assertEqual(new_declared_substance.new_description, "New substance description")
+        self.assertEqual(new_declared_substance.active, True)
+        self.assertEqual(new_declared_substance.authorization_mode, AuthorizationModes.FR)
+        self.assertEqual(new_declared_substance.fr_reason, FrAuthorizationReasons.NOVEL_FOOD)
+        self.assertEqual(new_declared_substance.fr_details, "Je le veux")
 
     @authenticate
     def test_create_declaration_unknown_substance(self):

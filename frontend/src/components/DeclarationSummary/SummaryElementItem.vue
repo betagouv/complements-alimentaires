@@ -46,8 +46,13 @@ const elementInfo = computed(() => {
     const preparation_label = model.value.preparation ? `Préparation : ${preparationName.value}` : null
     return [used_part_label, quantity_label, preparation_label].filter(Boolean).join(` | `)
   }
-  if (props.objectType === "form_of_supply" || props.objectType === "active_ingredient")
-    return model.value.quantity ? `Qté par DJR: ${model.value.quantity} ${unitName.value}` : ""
+
+  if (
+    props.objectType === "form_of_supply" ||
+    props.objectType === "active_ingredient" ||
+    props.objectType === "substance"
+  )
+    return model.value.quantity ? `Qté par DJR: ${model.value.quantity} ${unitName.value}` : null
   return ""
 })
 </script>

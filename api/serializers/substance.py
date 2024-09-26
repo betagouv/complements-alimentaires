@@ -20,6 +20,7 @@ class SubstanceSynonymSerializer(serializers.ModelSerializer):
 class SubstanceSerializer(PrivateCommentSerializer):
     synonyms = SubstanceSynonymSerializer(many=True, read_only=True, source="substancesynonym_set")
     unit = serializers.CharField(read_only=True, source="unit.name")
+    unit_id = serializers.IntegerField(read_only=True, source="unit.id")
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
     history = HistoricalRecordField(read_only=True)
 
@@ -36,6 +37,7 @@ class SubstanceSerializer(PrivateCommentSerializer):
             "max_quantity",
             "nutritional_reference",
             "unit",
+            "unit_id",
             "synonyms",
             "public_comments",
             "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
