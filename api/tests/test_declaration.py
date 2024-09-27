@@ -660,6 +660,23 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
+    def test_retrieve_company_declaration(self):
+        """
+        Un user peut récupérer les informations complètes d'une déclaration de sa
+        compagnie
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+        company_declaration = DeclarationFactory(company=company)
+        other_declaration = DeclarationFactory()
+
+        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": company_declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": other_declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
     def test_private_notes(self):
         """
         Seulement les roles Instruction et Visa peuvent voir les notes privées

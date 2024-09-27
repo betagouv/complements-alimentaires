@@ -92,10 +92,11 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):  # obj: Declaration
         is_author = IsDeclarationAuthor().has_object_permission(request, view, obj)
+        is_from_same_company = obj.company in request.user.declarable_companies.all()
         is_instructor = IsInstructor().has_permission(request, view)
         is_declarant = IsDeclarant().has_object_permission(request, view, obj)
         is_draft = obj.status == Declaration.DeclarationStatus.DRAFT
         if request.method in permissions.SAFE_METHODS:
-            return is_author or (is_instructor and not is_draft)
+            return is_author or is_from_same_company or (is_instructor and not is_draft)
 
-        return is_author and is_declarant
+        return (is_author or is_from_same_company) and is_declarant
