@@ -40,6 +40,7 @@
               :readonly="readonly"
               :declarationId="id"
               @withdraw="onWithdrawal"
+              :hideInstructionDetails="true"
             ></component>
           </FormWrapper>
         </DsfrTabContent>
