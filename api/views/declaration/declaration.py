@@ -15,6 +15,7 @@ from api.exceptions import ProjectAPIException
 from api.permissions import (
     CanAccessIndividualDeclaration,
     CanAccessUserDeclatarions,
+    CanTakeAuthorship,
     IsDeclarant,
     IsDeclarationAuthor,
     IsInstructor,
@@ -349,6 +350,21 @@ class CompanyDeclarationsListView(GenericDeclarationsListView):
             Company.objects.filter(supervisors=self.request.user, pk=self.kwargs[self.lookup_field])
         )
         return company.declarations.exclude(status=Declaration.DeclarationStatus.DRAFT)
+
+
+class DeclarationTakeAuthorshipView(GenericAPIView):
+    serializer_class = SimpleDeclarationSerializer
+    permission_classes = [CanTakeAuthorship]
+    queryset = Declaration.objects.all()
+
+    def post(self, request, pk):
+        declaration = self.get_object()
+
+        declaration.author = request.user
+        declaration.save()
+        declaration.refresh_from_db()
+        serializer = self.get_serializer(declaration)
+        return Response(serializer.data)
 
 
 class ArticleChangeView(GenericAPIView):

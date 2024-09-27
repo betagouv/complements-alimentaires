@@ -20,6 +20,7 @@ from .declaration.declaration import (
     DeclarationRefuseVisaView,
     DeclarationAcceptVisaView,
     DeclarationWithdrawView,
+    DeclarationTakeAuthorshipView,
     ArticleChangeView,
 )
 from .effect import EffectListView

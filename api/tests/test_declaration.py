@@ -1280,3 +1280,33 @@ class TestDeclarationApi(APITestCase):
         payload = {"article": "ART_16"}
         response = self.client.post(url, payload)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_take_ownership(self):
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+        declaration = AwaitingInstructionDeclarationFactory(company=company)
+
+        self.assertNotEqual(declaration.author, authenticate.user)
+
+        url = reverse("api:take_authorship", kwargs={"pk": declaration.id})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.author, authenticate.user)
+
+    @authenticate
+    def test_take_ownership_unauthorized(self):
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+        declaration = AwaitingInstructionDeclarationFactory()
+
+        self.assertNotEqual(declaration.author, authenticate.user)
+
+        url = reverse("api:take_authorship", kwargs={"pk": declaration.id})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.author, authenticate.user)

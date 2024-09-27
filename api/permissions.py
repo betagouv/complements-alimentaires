@@ -100,3 +100,13 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
             return is_author or is_from_same_company or (is_instructor and not is_draft)
 
         return (is_author or is_from_same_company) and is_declarant
+
+
+class CanTakeAuthorship(permissions.BasePermission):
+    message = "Vous ne pouvez pas vous assigner cette déclaration"
+
+    def has_object_permission(self, request, view, obj):  # obj: Declaration
+        is_from_same_company = obj.company in request.user.declarable_companies.all()
+        is_declarant = IsDeclarant().has_object_permission(request, view, obj)
+
+        return is_from_same_company and is_declarant
