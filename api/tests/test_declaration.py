@@ -1298,4 +1298,15 @@ class TestDeclarationApi(APITestCase):
 
     @authenticate
     def test_take_ownership_unauthorized(self):
-        pass
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+        declaration = AwaitingInstructionDeclarationFactory()
+
+        self.assertNotEqual(declaration.author, authenticate.user)
+
+        url = reverse("api:take_authorship", kwargs={"pk": declaration.id})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.author, authenticate.user)
