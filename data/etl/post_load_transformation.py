@@ -147,7 +147,7 @@ def delete_ingredients_and_substances_that_are_microorganism():
 
 
 def check_all_fields_are_the_same(object_to_delete, object_to_keep):
-    fields_to_check = ["status", "public_comments", "private_comments"]
+    fields_to_check = ["status", "siccrf_public_comments", "siccrf_private_comments"]
     new_fields = {}
     for field_name in fields_to_check:
         object_to_delete_field = getattr(object_to_delete, field_name)
@@ -171,8 +171,16 @@ def check_all_fields_are_the_same(object_to_delete, object_to_keep):
                     # si le status est différent mais que la différence n'est pas significative, on ne change rien
                     pass
             else:
-                new_fields[f"ca_{field_name}"] = (
-                    f"{object_to_keep_field} \n Ancien champ de {object_to_delete._meta.model.__name__} : {object_to_delete_field}"
-                )
+                new_field_name = field_name.replace("siccrf_", "ca_")
+                if object_to_delete_field != "":
+                    if object_to_keep_field == "":
+                        new_fields[new_field_name] = object_to_delete_field
+                    else:
+                        new_fields[new_field_name] = (
+                            f"{object_to_keep_field} \n Ancien champ de {object_to_delete._meta.model.__name__} : {object_to_delete_field}"
+                        )
+                else:
+                    # reset les anciens doublons de commentaires
+                    new_fields[new_field_name] = ""
 
     return new_fields
