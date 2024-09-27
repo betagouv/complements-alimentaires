@@ -15,6 +15,16 @@
     <div v-else class="mb-4">
       <DeclarationAlert v-if="payload" role="declarant" :declaration="payload" class="mb-4" />
 
+      <DsfrAlert
+        class="mb-4"
+        v-if="payload.author !== loggedUser.id"
+        type="info"
+        title="Cette déclaration est gérée par une autre personne"
+      >
+        <p>Vous pouvez néanmoins vous l'assigner en cliquant ci-dessous</p>
+        <DsfrButton class="mt-2" label="Prendre cette déclaration" tertiary @click="takeDeclaration" />
+      </DsfrAlert>
+
       <StatusChangeErrorDisplay class="mb-8" :errors="statusChangeErrors" :tabTitles="titles" />
       <DsfrTabs
         v-if="payload"
@@ -60,6 +70,7 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import StatusChangeErrorDisplay from "./StatusChangeErrorDisplay"
 import TabStepper from "@/components/TabStepper"
 import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
 import { ref, computed, watch } from "vue"
 import ProductTab from "./ProductTab"
 import CompositionTab from "./CompositionTab"
@@ -104,6 +115,7 @@ const selectTab = async (index) => {
 }
 
 const store = useRootStore()
+const { loggedUser } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 
 const props = defineProps({
@@ -167,7 +179,7 @@ const titles = computed(() => tabTitles(components.value, !readonly.value))
 const savePayload = async () => {
   const isNewDeclaration = !payload.value.id
   const url = isNewDeclaration
-    ? `/api/v1/users/${store.loggedUser.id}/declarations/`
+    ? `/api/v1/users/${loggedUser.value.id}/declarations/`
     : `/api/v1/declarations/${payload.value.id}`
   const httpMethod = isNewDeclaration ? "post" : "put"
   const { response, data } = await useFetch(url, { headers: headers() })[httpMethod](payload).json()
@@ -212,6 +224,12 @@ const submitPayload = async (comment) => {
     useToaster().addSuccessMessage("Votre déclaration a été envoyée")
     router.replace({ name: "DeclarationsHomePage" })
   }
+}
+
+const takeDeclaration = async () => {
+  const url = `/api/v1/declarations/${payload.value.id}/take-authorship/`
+  await useFetch(url, { headers: headers() }).post()
+  execute()
 }
 
 const onWithdrawal = () => router.replace({ name: "DeclarationsHomePage", query: { status: "WITHDRAWN,AUTHORIZED" } })
