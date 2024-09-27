@@ -13,6 +13,7 @@
         :key="`snapshot-${snapshot.id}`"
         :snapshot="snapshot"
         :rightSide="showOnRight(snapshot)"
+        :hideInstructionDetails="hideInstructionDetails"
       />
     </div>
     <div v-else>
@@ -23,21 +24,35 @@
 
 <script setup>
 import { useFetch } from "@vueuse/core"
-import { onMounted } from "vue"
+import { onMounted, computed } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import SnapshotItem from "@/components/SnapshotItem"
 
-const props = defineProps(["declarationId", "privateNotes"])
+const props = defineProps(["declarationId", "privateNotes", "hideInstructionDetails"])
 
-const {
-  response,
-  data: snapshots,
-  execute,
-  isFetching,
-} = useFetch(() => `/api/v1/declarations/${props.declarationId}/snapshots/`, { immediate: false })
+const { response, data, execute, isFetching } = useFetch(
+  () => `/api/v1/declarations/${props.declarationId}/snapshots/`,
+  { immediate: false }
+)
   .get()
   .json()
+
+const snapshots = computed(() => {
+  if (props.hideInstructionDetails) {
+    const allowedActions = [
+      "SUBMIT",
+      "OBSERVE_NO_VISA",
+      "AUTHORIZE_NO_VISA",
+      "RESPOND_TO_OBSERVATION",
+      "RESPOND_TO_OBJECTION",
+      "WITHDRAW",
+      "ABANDON",
+    ]
+    return data.value?.filter((x) => allowedActions.indexOf(x.action) > -1)
+  }
+  return data.value
+})
 
 onMounted(async () => {
   await execute()

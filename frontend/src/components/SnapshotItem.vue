@@ -13,7 +13,8 @@
       <DeclarationSummary :readonly="true" v-model="snapshot.jsonDeclaration" />
     </DsfrModal>
     <div class="initials rounded-full min-w-12 w-12 h-12 flex items-center justify-center">
-      {{ initials }}
+      <v-icon v-if="hideInstructionDetails && isAdministrativeAction" name="ri-user-fill" aria-hidden />
+      <span v-else>{{ initials }}</span>
     </div>
     <div class="max-w-xl">
       <div :class="`flex ${rightSide ? 'justify-end' : 'justify-start'}`">
@@ -51,7 +52,20 @@ import { statusProps } from "@/utils/mappings"
 import { isoToPrettyDate, isoToPrettyTime } from "@/utils/date"
 import DeclarationSummary from "@/components/DeclarationSummary"
 
-const props = defineProps({ snapshot: Object, rightSide: Boolean })
+const props = defineProps({ snapshot: Object, rightSide: Boolean, hideInstructionDetails: Boolean })
+
+const isAdministrativeAction = computed(() => {
+  const instructionActions = [
+    "TAKE_FOR_INSTRUCTION",
+    "OBSERVE_NO_VISA",
+    "AUTHORIZE_NO_VISA",
+    "REQUEST_VISA",
+    "TAKE_FOR_VISA",
+    "ACCEPT_VISA",
+    "REFUSE_VISA",
+  ]
+  return instructionActions.indexOf(props.snapshot.action) > -1
+})
 
 const initials = computed(() => `${props.snapshot.user.firstName?.[0]}${props.snapshot.user.lastName?.[0]}`)
 const date = computed(
@@ -59,7 +73,10 @@ const date = computed(
 )
 const modalOpened = ref(false)
 const isInValidationState = computed(() => props.snapshot.status === "AWAITING_VISA")
-const fullName = computed(() => `${props.snapshot.user.firstName} ${props.snapshot.user.lastName}`)
+const fullName = computed(() => {
+  if (props.hideInstructionDetails && isAdministrativeAction.value) return "L'administration"
+  return `${props.snapshot.user.firstName} ${props.snapshot.user.lastName}`
+})
 const actionText = computed(() => {
   const mapping = {
     SUBMIT: "a soumis la déclaration pour instruction",
