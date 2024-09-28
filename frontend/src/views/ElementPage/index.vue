@@ -168,7 +168,7 @@ const historyDataDedup = computed(() => Array.from(new Set(historyData.value.map
 
 // TODO: remove background
 // TODO: affichage du change reason dans l'admin
-const url = computed(() => `/api/v1/${getApiType(type.value)}s/${elementId.value}`)
+const url = computed(() => `/api/v1/${getApiType(type.value)}s/${elementId.value}?history=true`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
 const getElementFromApi = async () => {
