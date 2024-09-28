@@ -20,3 +20,17 @@ class PrivateCommentSerializer(serializers.ModelSerializer):
         if not can_see_private_comments:
             repr.pop("private_comments", None)
         return repr
+
+
+class HistoricalModelSerializer(serializers.ModelSerializer):
+    """
+    Si le serializer contient un champ "history", ce champ sera conditionné à
+    `context.history`. Ceci permet de ne pas requeter la table de simple-history
+    à moins que ça soit explicitement requis par la view.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if not self.context.get("history", None):
+            self.fields.pop("history", None)

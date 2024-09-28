@@ -396,12 +396,12 @@ class DeclarationSerializer(serializers.ModelSerializer):
         )
 
         queryset = queryset.prefetch_related(
-            "declared_plants__plant__substances__unit",
-            "declared_plants__plant__plant_parts",
-            "declared_microorganisms__microorganism__substances__unit",
-            "declared_ingredients__ingredient__substances__unit",
-            "declared_substances__substance__unit",
-            "computed_substances__substance__unit",
+            "declared_plants__plant__substances",
+            "declared_plants__plant",
+            "declared_microorganisms__microorganism__substances",
+            "declared_ingredients__ingredient__substances",
+            "declared_substances__substance",
+            "computed_substances__substance",
             "attachments",
         )
         return queryset

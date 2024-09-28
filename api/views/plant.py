@@ -1,9 +1,12 @@
-from rest_framework.generics import RetrieveAPIView, ListAPIView
+from rest_framework.generics import ListAPIView
+
+from api.serializers import PlantPartSerializer, PlantSerializer
 from data.models import Plant, PlantPart
-from api.serializers import PlantSerializer, PlantPartSerializer
+
+from .utils import IngredientRetrieveView
 
 
-class PlantRetrieveView(RetrieveAPIView):
+class PlantRetrieveView(IngredientRetrieveView):
     model = Plant
     queryset = Plant.objects.filter(missing_import_data=False)
     serializer_class = PlantSerializer

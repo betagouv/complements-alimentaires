@@ -26,6 +26,18 @@ class TestElementsApi(APITestCase):
         self.assertEqual(plant.name, body["name"])
         self.assertEqual(plant.id, body["id"])
 
+    def test_get_single_plant_history(self):
+        plant = PlantFactory.create()
+        response = self.client.get(f"{reverse('api:single_plant', kwargs={'pk': plant.id})}?history=true")
+        body = response.json()
+
+        self.assertIn("history", body)
+
+        response = self.client.get(reverse("api:single_plant", kwargs={"pk": plant.id}))
+        body = response.json()
+
+        self.assertNotIn("history", body)
+
     @authenticate
     def test_plant_private_comments(self):
         plant = PlantFactory.create(private_comments="Private")
@@ -71,6 +83,18 @@ class TestElementsApi(APITestCase):
         self.assertEqual(ingredient.name, body["name"])
         self.assertEqual(ingredient.id, body["id"])
 
+    def test_get_single_ingredient_history(self):
+        ingredient = IngredientFactory.create()
+        response = self.client.get(f"{reverse('api:single_ingredient', kwargs={'pk': ingredient.id})}?history=true")
+        body = response.json()
+
+        self.assertIn("history", body)
+
+        response = self.client.get(reverse("api:single_ingredient", kwargs={"pk": ingredient.id}))
+        body = response.json()
+
+        self.assertNotIn("history", body)
+
     def test_get_single_ingredient_with_right_type(self):
         """
         Le modèle (table) ingrédient à un champ `ingredient_type`.
@@ -104,6 +128,20 @@ class TestElementsApi(APITestCase):
         self.assertEqual(microorganism.name, body["name"])
         self.assertEqual(microorganism.id, body["id"])
 
+    def test_get_single_microorganism_history(self):
+        microorganism = MicroorganismFactory.create()
+        response = self.client.get(
+            f"{reverse('api:single_microorganism', kwargs={'pk': microorganism.id})}?history=true"
+        )
+        body = response.json()
+
+        self.assertIn("history", body)
+
+        response = self.client.get(reverse("api:single_microorganism", kwargs={"pk": microorganism.id}))
+        body = response.json()
+
+        self.assertNotIn("history", body)
+
     @authenticate
     def test_microorganism_private_comments(self):
         microorganism = MicroorganismFactory.create(private_comments="private")
@@ -128,6 +166,18 @@ class TestElementsApi(APITestCase):
 
         self.assertEqual(substance.name, body["name"])
         self.assertEqual(substance.id, body["id"])
+
+    def test_get_single_substance_history(self):
+        substance = SubstanceFactory.create()
+        response = self.client.get(f"{reverse('api:single_substance', kwargs={'pk': substance.id})}?history=true")
+        body = response.json()
+
+        self.assertIn("history", body)
+
+        response = self.client.get(reverse("api:single_substance", kwargs={"pk": substance.id}))
+        body = response.json()
+
+        self.assertNotIn("history", body)
 
     @authenticate
     def test_substance_private_comments(self):

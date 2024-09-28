@@ -5,7 +5,7 @@ from data.models import Ingredient, IngredientStatus, IngredientSynonym
 
 from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
-from .utils import PrivateCommentSerializer
+from .utils import HistoricalModelSerializer, PrivateCommentSerializer
 
 
 class IngredientSynonymSerializer(serializers.ModelSerializer):
@@ -18,7 +18,7 @@ class IngredientSynonymSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class IngredientSerializer(PrivateCommentSerializer):
+class IngredientSerializer(HistoricalModelSerializer, PrivateCommentSerializer):
     synonyms = IngredientSynonymSerializer(many=True, read_only=True, source="ingredientsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
