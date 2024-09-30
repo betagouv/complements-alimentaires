@@ -122,7 +122,7 @@
 <script setup>
 import NumberField from "@/components/NumberField"
 import { useRootStore } from "@/stores/root"
-import { computed } from "vue"
+import { computed, watch } from "vue"
 import { getElementName } from "@/utils/elements"
 import { getActivityReadonlyByType } from "@/utils/mappings"
 import ElementCommentModal from "@/components/ElementCommentModal"
@@ -150,5 +150,14 @@ const showFields = computed(() => {
     // TODO: à terme le type active_ingredient n'existera plus, seulement le type ingrédient et la propriété active
     return true
   return false
+})
+
+// Reset de l'unité si le microorganism est inactivé
+watch(model.value.quantity, () => {
+  if (model.value.element?.unit) {
+    model.value.unit = model.value.element.unit
+    console.log(model.value.element.name + model.value.unit)
+    console.log(model.value)
+  }
 })
 </script>
