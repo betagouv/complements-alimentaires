@@ -259,6 +259,9 @@ class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
         read_only_fields = ("file",)
 
     def validate_file(self, file):
+        if not file:
+            return None
+
         size_limit = 1048576 * 2
         if file.size > size_limit:
             raise ProjectAPIException(
