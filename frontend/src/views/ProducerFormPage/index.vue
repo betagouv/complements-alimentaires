@@ -106,7 +106,7 @@ const selectedTabIndex = ref(parseInt(route.query.tab))
 const asc = ref(true)
 const tabs = ref(null) // Corresponds to the template ref (https://vuejs.org/guide/essentials/template-refs.html#accessing-the-refs)
 const selectTab = async (index) => {
-  if (index === selectedTabIndex.value) return
+  if (requestInProgress.value || index === selectedTabIndex.value) return
   const allowTransition = readonly.value || (await savePayload())
   if (allowTransition) {
     asc.value = selectedTabIndex.value < index
@@ -114,6 +114,8 @@ const selectTab = async (index) => {
   }
   tabs.value?.selectIndex?.(selectedTabIndex.value)
 }
+
+const requestInProgress = ref(false)
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -183,7 +185,9 @@ const savePayload = async () => {
     ? `/api/v1/users/${loggedUser.value.id}/declarations/`
     : `/api/v1/declarations/${payload.value.id}`
   const httpMethod = isNewDeclaration ? "post" : "put"
+  requestInProgress.value = true
   const { response, data } = await useFetch(url, { headers: headers() })[httpMethod](payload).json()
+  requestInProgress.value = false
   $externalResults.value = await handleError(response)
   if ($externalResults.value) {
     useToaster().addErrorMessage(
@@ -214,9 +218,14 @@ const savePayload = async () => {
 }
 
 const submitPayload = async (comment) => {
+  if (requestInProgress.value) return
   const path = payload.value.status === "DRAFT" ? "submit" : "resubmit"
   const url = `/api/v1/declarations/${payload.value.id}/${path}/`
+
+  requestInProgress.value = true
   const { response } = await useFetch(url, { headers: headers() }).post({ comment }).json()
+  requestInProgress.value = false
+
   statusChangeErrors.value = await handleError(response)
 
   if (statusChangeErrors.value) {
