@@ -23,10 +23,6 @@ where cnt > 1
 
 -- Déduplication
 -- declaration_to_dedup_ids = liste provenant de la requête SQL
--- ce script est très lent à cause du delete() Django qui n'appelle pas directement le detele SQL
--- https://vladcalin.ro/djangos-delete-is-harmful/
--- pour un prochain fix, faire en sql sera plus efficace.
-
 
 import time
 for declaration_to_dedup in Declaration.objects.filter(id__in=declaration_to_dedup_ids):
@@ -44,7 +40,10 @@ for declaration_to_dedup in Declaration.objects.filter(id__in=declaration_to_ded
         all_objects_ids.pop(0)
         # supprimer les autres
         print(f'suppression de {len(declaration_to_dedup.computed_substances.filter(id__in=all_objects_ids))} sur {nb_initial} pour la substance {Substance.objects.get(pk=subst_id)}')
-        declaration_to_dedup.computed_substances.filter(id__in=all_objects_ids).delete()
+        # delete() sur plus de 100 objets est très lent, on utilise _raw_delete à la place, qui n'effectue pas les signals post_save (update_article)
+        # https://vladcalin.ro/djangos-delete-is-harmful/
+        to_delete_qs = declaration_to_dedup.computed_substances.filter(id__in=all_objects_ids)
+        to_delete_qs._raw_delete(to_delete_qs.db)
     time.sleep(1)
     total = declaration_to_dedup.declared_substances.all().values_list('substance_id', flat=True)
     nb_total = len(total)
