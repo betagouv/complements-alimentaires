@@ -638,7 +638,7 @@ class TestDeclarationApi(APITestCase):
         declarations = response.json()["results"]
 
         self.assertEqual(len(declarations), 2)
-        ids = map(lambda x: x["id"], declarations)
+        ids = list(map(lambda x: x["id"], declarations))
         self.assertIn(user_declaration_1.id, ids)
         self.assertIn(company_declaration_1.id, ids)
         self.assertNotIn(other_declaration.id, ids)
@@ -1185,7 +1185,7 @@ class TestDeclarationApi(APITestCase):
             reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": draft_declaration.id})
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(len(list(Declaration.objects.filter(id=draft_declaration.id))), 1)
+        self.assertEqual(len(list(Declaration.objects.filter(id=draft_declaration.id))), 0)
 
     @authenticate
     def test_delete_non_draft_declaration(self):
@@ -1199,7 +1199,7 @@ class TestDeclarationApi(APITestCase):
             reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id})
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(len(list(Declaration.objects.filter(id=declaration.id))), 0)
+        self.assertEqual(len(list(Declaration.objects.filter(id=declaration.id))), 1)
 
     @authenticate
     def test_supervisor_declarations_list_view(self):
