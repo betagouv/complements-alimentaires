@@ -16,11 +16,16 @@
       </DsfrInputGroup>
       <hr />
       <DsfrInputGroup>
-        <DsfrCheckbox
-          hint="Engagement de conformité au droit alimentaire"
-          label="J'atteste que ce produit répond aux prescriptions du droit alimentaire qui lui sont applicables"
-          v-model="conformityEngaged"
-        />
+        <DsfrCheckbox v-model="conformityEngaged">
+          <template v-slot:label>
+            <span>
+              J'atteste que ce produit répond aux prescriptions du droit alimentaire qui lui sont applicables.
+            </span>
+            <router-link :to="{ name: 'CompliancePage' }" target="_blank">
+              Informations supplémentaires sur la conformité au droit alimentaire.
+            </router-link>
+          </template>
+        </DsfrCheckbox>
       </DsfrInputGroup>
       <DsfrButton :disabled="!conformityEngaged" @click="emit('submit', comment)" label="Soumettre ma démarche" />
     </DsfrAlert>
