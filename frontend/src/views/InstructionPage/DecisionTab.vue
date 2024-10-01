@@ -55,7 +55,12 @@
             </div>
             <div class="content-end" v-if="decisionCategory != 'approve'">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'delayDays')">
-                <DsfrInput v-model="delayDays" label="Délai de réponse (jours)" label-visible />
+                <DsfrInput
+                  :disabled="disableDelayDays"
+                  v-model="delayDays"
+                  label="Délai de réponse (jours)"
+                  label-visible
+                />
               </DsfrInputGroup>
             </div>
           </div>
@@ -104,7 +109,7 @@ const rules = computed(() => {
     comment: errorRequiredField,
     reasons: { required: helpers.withMessage("Au moins une raison doit être selectionnée", required) },
     proposal: errorRequiredField,
-    delayDays: errorRequiredField,
+    delayDays: proposal.value !== "rejection" ? errorRequiredField : {},
   }
 })
 const declaration = defineModel()
@@ -122,8 +127,12 @@ const emit = defineEmits(["decision-done"])
 const needsVisa = ref(false)
 const mandatoryVisaProposals = ["objection", "rejection"]
 const disableVisaCheckbox = computed(() => !proposal.value || mandatoryVisaProposals.indexOf(proposal.value) > -1)
+const disableDelayDays = computed(() => proposal.value === "rejection")
 watch(proposal, (newProposal) => {
   if (mandatoryVisaProposals.indexOf(newProposal) > -1) needsVisa.value = true
+  if (newProposal === "objection") delayDays.value = 30
+  else if (newProposal === "rejection") delayDays.value = null
+  else delayDays.value = 15
 })
 
 const decisionCategories = [
