@@ -8,6 +8,8 @@
       ]"
     />
 
+    <DeletionModal @delete="deleteDeclaration" v-if="payload.status === 'DRAFT'" />
+
     <div v-if="isFetching" class="flex justify-center items-center min-h-60">
       <ProgressSpinner />
     </div>
@@ -78,6 +80,7 @@ import CompositionTab from "./CompositionTab"
 import SummaryTab from "./SummaryTab"
 import AttachmentTab from "./AttachmentTab"
 import NewElementTab from "./NewElementTab"
+import DeletionModal from "./DeletionModal"
 import HistoryTab from "@/components/HistoryTab"
 import WithdrawalTab from "@/components/WithdrawalTab"
 import { useFetch } from "@vueuse/core"
@@ -234,6 +237,15 @@ const submitPayload = async (comment) => {
     useToaster().addSuccessMessage("Votre déclaration a été envoyée")
     router.replace({ name: "DeclarationsHomePage" })
   }
+}
+
+const deleteDeclaration = async () => {
+  if (requestInProgress.value) return
+  requestInProgress.value = true
+  console.log("deleteDeclaration")
+  useToaster().addSuccessMessage("Votre déclaration a été supprimée")
+  requestInProgress.value = false
+  // router.replace({ name: "DeclarationsHomePage" })
 }
 
 const takeDeclaration = async () => {
