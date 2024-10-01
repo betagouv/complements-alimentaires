@@ -8,7 +8,7 @@
       ]"
     />
 
-    <DeletionModal @delete="deleteDeclaration" v-if="payload.status === 'DRAFT'" />
+    <DeletionModal @delete="deleteDeclaration" v-if="payload.status === 'DRAFT' && payload.author === loggedUser.id" />
 
     <div v-if="isFetching" class="flex justify-center items-center min-h-60">
       <ProgressSpinner />
@@ -240,12 +240,19 @@ const submitPayload = async (comment) => {
 }
 
 const deleteDeclaration = async () => {
-  if (requestInProgress.value) return
+  if (requestInProgress.value || !payload.value.status === "DRAFT") return
+  const url = `/api/v1/declarations/${payload.value.id}`
   requestInProgress.value = true
-  console.log("deleteDeclaration")
-  useToaster().addSuccessMessage("Votre déclaration a été supprimée")
+  const { response } = await useFetch(url, { headers: headers() }).delete().json()
   requestInProgress.value = false
-  // router.replace({ name: "DeclarationsHomePage" })
+
+  statusChangeErrors.value = await handleError(response)
+  if (statusChangeErrors.value) {
+    window.scrollTo(0, 0)
+  } else {
+    useToaster().addSuccessMessage("Votre déclaration a été supprimée")
+    router.replace({ name: "DeclarationsHomePage" })
+  }
 }
 
 const takeDeclaration = async () => {

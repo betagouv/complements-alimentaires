@@ -102,7 +102,11 @@ urlpatterns = {
         name="list_create_declaration",
     ),
     path("declarations/", views.OngoingDeclarationsListView.as_view(), name="list_all_declarations"),
-    path("declarations/<int:pk>", views.DeclarationRetrieveUpdateView.as_view(), name="retrieve_update_declaration"),
+    path(
+        "declarations/<int:pk>",
+        views.DeclarationRetrieveUpdateDestroyView.as_view(),
+        name="retrieve_update_destroy_declaration",
+    ),
     path(
         "declarations/<int:pk>/snapshots/",
         views.DeclarationSnapshotListView.as_view(),
