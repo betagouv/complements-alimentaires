@@ -23,13 +23,19 @@ where cnt > 1
 
 -- Déduplication
 -- declaration_to_dedup_ids = liste provenant de la requête SQL
+-- ce script est très lent à cause du delete() Django qui n'appelle pas directement le detele SQL
+-- https://vladcalin.ro/djangos-delete-is-harmful/
+-- pour un prochain fix, faire en sql sera plus efficace.
+
+
 import time
 for declaration_to_dedup in Declaration.objects.filter(id__in=declaration_to_dedup_ids):
+    print(f"------------>> déduplication de {declaration_to_dedup}")
     total = declaration_to_dedup.computed_substances.all().values_list('substance_id', flat=True)
     nb_total = len(total)
     substances_id = list(total.distinct())
     nb_distinct = len(substances_id)
-    print(f'->> déduplication de {declaration_to_dedup} : {nb_total - nb_distinct} sur {nb_total}')
+    print(f'->> déduplication de {nb_total - nb_distinct} sur {nb_total} computed substances')
     # conserver une seule version de chaque substance avec ses autres champs (active, quantity, unit)
     for subst_id in substances_id:
         all_objects_ids = list(declaration_to_dedup.computed_substances.filter(substance_id=subst_id).values_list("id", flat=True))
@@ -37,6 +43,40 @@ for declaration_to_dedup in Declaration.objects.filter(id__in=declaration_to_ded
         # pop le premier pour le conserver
         all_objects_ids.pop(0)
         # supprimer les autres
-        # declaration_to_dedup.computed_substances.filter(id__in=all_objects_ids).delete()
         print(f'suppression de {len(declaration_to_dedup.computed_substances.filter(id__in=all_objects_ids))} sur {nb_initial} pour la substance {Substance.objects.get(pk=subst_id)}')
-        time.sleep(3)
+        declaration_to_dedup.computed_substances.filter(id__in=all_objects_ids).delete()
+    time.sleep(1)
+    total = declaration_to_dedup.declared_substances.all().values_list('substance_id', flat=True)
+    nb_total = len(total)
+    substances_id = list(total.distinct())
+    nb_distinct = len(substances_id)
+    print(f'->> déduplication de {nb_total - nb_distinct} sur {nb_total} declared substances')
+    # conserver une seule version de chaque substance avec ses autres champs (active, quantity, unit)
+    for subst_id in substances_id:
+        # not a new substance
+        if subst_id:
+            all_objects_ids = list(declaration_to_dedup.declared_substances.filter(substance_id=subst_id).values_list("id", flat=True))
+            nb_initial = len(all_objects_ids)
+            # pop le premier pour le conserver
+            all_objects_ids.pop(0)
+            # supprimer les autres
+            print(f'suppression de {len(declaration_to_dedup.declared_substances.filter(id__in=all_objects_ids))} sur {nb_initial} pour la substance {Substance.objects.get(pk=subst_id)}')
+            declaration_to_dedup.declared_substances.filter(id__in=all_objects_ids).delete()
+
+    time.sleep(1)
+    total = declaration_to_dedup.declared_ingredients.all().values_list('ingredient_id', flat=True)
+    nb_total = len(total)
+    ingredients_id = list(total.distinct())
+    nb_distinct = len(ingredients_id)
+    print(f'->> déduplication de {nb_total - nb_distinct} sur {nb_total} ingredient')
+    # conserver une seule version de chaque substance avec ses autres champs (active, quantity, unit)
+    for ingr_id in ingredients_id:
+        # not a new ingredient
+        if ingr_id:
+            all_objects_ids = list(declaration_to_dedup.declared_ingredients.filter(ingredient_id=ingr_id).values_list("id", flat=True))
+            nb_initial = len(all_objects_ids)
+            # pop le premier pour le conserver
+            all_objects_ids.pop(0)
+            # supprimer les autres
+            print(f'suppression de {len(declaration_to_dedup.declared_ingredients.filter(id__in=all_objects_ids))} sur {nb_initial} pour lingredient {Ingredient.objects.get(pk=ingr_id)}')
+            declaration_to_dedup.declared_ingredients.filter(id__in=all_objects_ids).delete()
