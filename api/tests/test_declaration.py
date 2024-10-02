@@ -1240,6 +1240,7 @@ class TestDeclarationApi(APITestCase):
             computed_substances=[],
         )
         DeclaredPlantFactory(new=False, declaration=art_15)
+        art_15.save()
 
         art_15.refresh_from_db()
         self.assertEqual(art_15.article, Declaration.Article.ARTICLE_15)
