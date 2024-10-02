@@ -193,6 +193,7 @@ class DeclarationTestCase(TestCase):
         plant_not_autorized = PlantFactory(ca_status=IngredientStatus.NOT_AUTHORIZED)
         DeclaredPlantFactory(plant=plant_not_autorized, declaration=declaration_not_autorized)
 
+        declaration_not_autorized.save()
         declaration_not_autorized.refresh_from_db()
 
         self.assertEqual(declaration_not_autorized.article, Declaration.Article.ARTICLE_16)
@@ -211,6 +212,7 @@ class DeclarationTestCase(TestCase):
         declared_plant.new = False
         declared_plant.save()
 
+        declaration.save()
         declaration.refresh_from_db()
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
