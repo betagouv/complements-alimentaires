@@ -19,7 +19,7 @@
 
       <DsfrAlert
         class="mb-4"
-        v-if="payload.author !== loggedUser.id"
+        v-if="payload.author && payload.author !== loggedUser.id"
         type="info"
         title="Cette déclaration est gérée par une autre personne"
       >
