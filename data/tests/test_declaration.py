@@ -137,6 +137,7 @@ class DeclarationTestCase(TestCase):
             computed_substances=[],
         )
         DeclaredPlantFactory(new=False, declaration=declaration)
+        declaration.save()
         declaration.refresh_from_db()
 
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_15)
@@ -175,6 +176,7 @@ class DeclarationTestCase(TestCase):
             computed_substances=[],
         )
         DeclaredPlantFactory(new=True, declaration=declaration_new)
+        declaration_new.save()
         declaration_new.refresh_from_db()
 
         self.assertEqual(declaration_new.article, Declaration.Article.ARTICLE_16)
@@ -225,6 +227,7 @@ class DeclarationTestCase(TestCase):
             quantity=1.2,
             declaration=declaration,
         )
+        declaration.save()
         declaration.refresh_from_db()
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_17)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_17)
