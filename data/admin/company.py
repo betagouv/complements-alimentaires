@@ -5,14 +5,28 @@ from ..models.company import Company, DeclarantRole, SupervisorRole
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
-    pass
+    search_fields = (
+        "social_name",
+        "commercial_name",
+        "vat",
+        "siret",
+    )
 
 
 @admin.register(SupervisorRole)
 class SupervisorRoleAdmin(admin.ModelAdmin):
-    pass
+    search_fields = (
+        "user__first_name",
+        "user__last_name",
+        "company__social_name",
+    )
 
 
 @admin.register(DeclarantRole)
 class DeclarantRoleAdmin(admin.ModelAdmin):
-    pass
+    search_fields = (
+        "user__first_name",
+        "user__last_name",
+        "company__social_name",
+        "company__commercial_name",
+    )

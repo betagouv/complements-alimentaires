@@ -175,6 +175,13 @@ class DeclarationAdmin(admin.ModelAdmin):
         DeclaredSubstanceInline,
         SnapshotInline,
     )
+    search_fields = (
+        "name",
+        "author__first_name",
+        "author__last_name",
+        "company__social_name",
+        "company__commercial_name",
+    )
 
     fieldsets = (
         (

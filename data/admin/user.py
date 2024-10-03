@@ -13,3 +13,10 @@ class UserAdmin(UserAdmin):
     add_fieldsets = UserAdmin.add_fieldsets + (
         (None, {"fields": ("email", "first_name", "last_name", "phone_number")}),
     )
+
+    search_fields = (
+        "first_name",
+        "last_name",
+        "email",
+        "username",
+    )
