@@ -480,6 +480,7 @@ class DeclarationFlowView(GenericAPIView):
         brevo_template_id = self.get_brevo_template_id(request, declaration)
         if self.create_snapshot:
             self.perform_snapshot_creation(request, declaration)
+        declaration.assign_calculated_article()
         self.on_transition_success(request, declaration)
         if brevo_template_id:
             try:

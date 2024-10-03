@@ -1280,9 +1280,10 @@ class TestDeclarationApi(APITestCase):
             computed_substances=[],
         )
         DeclaredPlantFactory(new=False, declaration=art_15)
+        art_15.assign_calculated_article()
         art_15.save()
-
         art_15.refresh_from_db()
+
         self.assertEqual(art_15.article, Declaration.Article.ARTICLE_15)
 
         # Une instructrice peut surcharger l'article
@@ -1301,7 +1302,8 @@ class TestDeclarationApi(APITestCase):
     @authenticate
     def test_update_article_unauthorized(self):
         """
-        Les viseuses ou instructrices peuvent changer l'article d'une déclaration
+        Les viseuses ou instructrices peuvent changer l'article d'une déclaration, non pas
+        les déclarant·e·s
         """
         company = CompanyFactory()
         DeclarantRoleFactory(user=authenticate.user, company=company)
