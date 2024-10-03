@@ -153,11 +153,12 @@ const showFields = computed(() => {
 })
 
 // Reset de l'unité si le microorganism est inactivé
-watch(model.value.quantity, () => {
-  if (model.value.element?.unit) {
-    model.value.unit = model.value.element.unit
-    console.log(model.value.element.name + model.value.unit)
-    console.log(model.value)
+watch(
+  () => model.value.activated,
+  (activatedField) => {
+    if (activatedField == false) {
+      model.value.quantity = null
+    }
   }
-})
+)
 </script>
