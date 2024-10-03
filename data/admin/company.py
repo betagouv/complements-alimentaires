@@ -19,6 +19,7 @@ class SupervisorRoleAdmin(admin.ModelAdmin):
         "user__first_name",
         "user__last_name",
         "company__social_name",
+        "company__commercial_name",
     )
 
 
