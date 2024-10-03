@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Case, Value, When
 from django.db.models.functions import Coalesce
-from django.db.models.signals import post_delete, post_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from dateutil.relativedelta import relativedelta
@@ -564,10 +564,6 @@ class Attachment(Historisable):
     name = models.TextField("nom du fichier", blank=True)
 
 
-@receiver((post_save, post_delete), sender=DeclaredPlant)
-@receiver((post_save, post_delete), sender=DeclaredMicroorganism)
-@receiver((post_save, post_delete), sender=DeclaredSubstance)
-@receiver((post_save, post_delete), sender=DeclaredIngredient)
-@receiver((post_save, post_delete), sender=ComputedSubstance)
+@receiver((post_save), sender=Declaration)
 def update_article(sender, instance, *args, **kwargs):
-    instance.declaration.assign_article()
+    instance.assign_article()

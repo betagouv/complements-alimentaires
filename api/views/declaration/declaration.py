@@ -6,7 +6,12 @@ from django.shortcuts import get_object_or_404
 
 from django_filters import rest_framework as django_filters
 from rest_framework.exceptions import NotFound, PermissionDenied
-from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import (
+    GenericAPIView,
+    ListAPIView,
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from unidecode import unidecode
@@ -200,7 +205,7 @@ class UserDeclarationsListCreateApiView(ListCreateAPIView):
         return DeclarationShortSerializer
 
 
-class DeclarationRetrieveUpdateView(RetrieveUpdateAPIView):
+class DeclarationRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     model = Declaration
     serializer_class = DeclarationSerializer
     permission_classes = [CanAccessIndividualDeclaration]
@@ -209,6 +214,11 @@ class DeclarationRetrieveUpdateView(RetrieveUpdateAPIView):
         queryset = Declaration.objects.all()
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
+
+    def perform_destroy(self, instance):
+        if instance.status == Declaration.DeclarationStatus.DRAFT:
+            return super().perform_destroy(instance)
+        raise ProjectAPIException(global_error="Les déclarations en cours ne peuvent pas être supprimées.")
 
 
 class Unaccent(Func):

@@ -8,6 +8,8 @@
       ]"
     />
 
+    <DeletionModal @delete="deleteDeclaration" v-if="payload.status === 'DRAFT' && payload.author === loggedUser.id" />
+
     <div v-if="isFetching" class="flex justify-center items-center min-h-60">
       <ProgressSpinner />
     </div>
@@ -17,7 +19,7 @@
 
       <DsfrAlert
         class="mb-4"
-        v-if="payload.author !== loggedUser.id"
+        v-if="payload.author && payload.author !== loggedUser.id"
         type="info"
         title="Cette déclaration est gérée par une autre personne"
       >
@@ -78,6 +80,7 @@ import CompositionTab from "./CompositionTab"
 import SummaryTab from "./SummaryTab"
 import AttachmentTab from "./AttachmentTab"
 import NewElementTab from "./NewElementTab"
+import DeletionModal from "./DeletionModal"
 import HistoryTab from "@/components/HistoryTab"
 import WithdrawalTab from "@/components/WithdrawalTab"
 import { useFetch } from "@vueuse/core"
@@ -106,7 +109,7 @@ const selectedTabIndex = ref(parseInt(route.query.tab))
 const asc = ref(true)
 const tabs = ref(null) // Corresponds to the template ref (https://vuejs.org/guide/essentials/template-refs.html#accessing-the-refs)
 const selectTab = async (index) => {
-  if (index === selectedTabIndex.value) return
+  if (requestInProgress.value || index === selectedTabIndex.value) return
   const allowTransition = readonly.value || (await savePayload())
   if (allowTransition) {
     asc.value = selectedTabIndex.value < index
@@ -114,6 +117,8 @@ const selectTab = async (index) => {
   }
   tabs.value?.selectIndex?.(selectedTabIndex.value)
 }
+
+const requestInProgress = ref(false)
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -183,7 +188,9 @@ const savePayload = async () => {
     ? `/api/v1/users/${loggedUser.value.id}/declarations/`
     : `/api/v1/declarations/${payload.value.id}`
   const httpMethod = isNewDeclaration ? "post" : "put"
+  requestInProgress.value = true
   const { response, data } = await useFetch(url, { headers: headers() })[httpMethod](payload).json()
+  requestInProgress.value = false
   $externalResults.value = await handleError(response)
   if ($externalResults.value) {
     useToaster().addErrorMessage(
@@ -214,15 +221,36 @@ const savePayload = async () => {
 }
 
 const submitPayload = async (comment) => {
+  if (requestInProgress.value) return
   const path = payload.value.status === "DRAFT" ? "submit" : "resubmit"
   const url = `/api/v1/declarations/${payload.value.id}/${path}/`
+
+  requestInProgress.value = true
   const { response } = await useFetch(url, { headers: headers() }).post({ comment }).json()
+  requestInProgress.value = false
+
   statusChangeErrors.value = await handleError(response)
 
   if (statusChangeErrors.value) {
     window.scrollTo(0, 0)
   } else {
     useToaster().addSuccessMessage("Votre déclaration a été envoyée")
+    router.replace({ name: "DeclarationsHomePage" })
+  }
+}
+
+const deleteDeclaration = async () => {
+  if (requestInProgress.value || !payload.value.status === "DRAFT") return
+  const url = `/api/v1/declarations/${payload.value.id}`
+  requestInProgress.value = true
+  const { response } = await useFetch(url, { headers: headers() }).delete().json()
+  requestInProgress.value = false
+
+  statusChangeErrors.value = await handleError(response)
+  if (statusChangeErrors.value) {
+    window.scrollTo(0, 0)
+  } else {
+    useToaster().addSuccessMessage("Votre déclaration a été supprimée")
     router.replace({ name: "DeclarationsHomePage" })
   }
 }

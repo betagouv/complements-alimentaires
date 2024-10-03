@@ -620,7 +620,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(saved_certificate_authority_image, green_image_base_64)
 
     @authenticate
-    def test_retrieve_update_declaration_list(self):
+    def test_retrieve_update_destroy_declaration_list(self):
         """
         Un user peut récupérer ses propres déclarations et celles des entreprises pour lesquelles
         iel a des droits.
@@ -638,7 +638,7 @@ class TestDeclarationApi(APITestCase):
         declarations = response.json()["results"]
 
         self.assertEqual(len(declarations), 2)
-        ids = map(lambda x: x["id"], declarations)
+        ids = list(map(lambda x: x["id"], declarations))
         self.assertIn(user_declaration_1.id, ids)
         self.assertIn(company_declaration_1.id, ids)
         self.assertNotIn(other_declaration.id, ids)
@@ -653,10 +653,14 @@ class TestDeclarationApi(APITestCase):
         user_declaration = DeclarationFactory(author=authenticate.user, company=company)
         other_declaration = DeclarationFactory()
 
-        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": user_declaration.id}))
+        response = self.client.get(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": user_declaration.id})
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": other_declaration.id}))
+        response = self.client.get(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": other_declaration.id})
+        )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
@@ -670,10 +674,14 @@ class TestDeclarationApi(APITestCase):
         company_declaration = DeclarationFactory(company=company)
         other_declaration = DeclarationFactory()
 
-        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": company_declaration.id}))
+        response = self.client.get(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": company_declaration.id})
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": other_declaration.id}))
+        response = self.client.get(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": other_declaration.id})
+        )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
@@ -684,13 +692,13 @@ class TestDeclarationApi(APITestCase):
         DeclarantRoleFactory(user=authenticate.user)
         declaration = DeclarationFactory(author=authenticate.user)
 
-        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": declaration.id}))
+        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
         json_declaration = response.json()
         self.assertFalse("privateNotes" in json_declaration)
 
         # On essaie à nouveau cette fois ci en étant aussi instructeur·ice
         InstructionRoleFactory(user=authenticate.user)
-        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": declaration.id}))
+        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
         json_declaration = response.json()
         self.assertTrue("privateNotes" in json_declaration)
         self.assertEqual(json_declaration["privateNotes"], declaration.private_notes)
@@ -706,7 +714,9 @@ class TestDeclarationApi(APITestCase):
 
         payload = {"name": "New name", "company": user_declaration.company.id}
         response = self.client.put(
-            reverse("api:retrieve_update_declaration", kwargs={"pk": user_declaration.id}), payload, format="json"
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": user_declaration.id}),
+            payload,
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         user_declaration.refresh_from_db()
@@ -1143,7 +1153,7 @@ class TestDeclarationApi(APITestCase):
         declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         InstructionRoleFactory(user=authenticate.user)
 
-        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": declaration.id}))
+        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @authenticate
@@ -1158,8 +1168,38 @@ class TestDeclarationApi(APITestCase):
         results = response.json()["results"]
         self.assertEqual(len(results), 0)
 
-        response = self.client.get(reverse("api:retrieve_update_declaration", kwargs={"pk": draft_declaration.id}))
+        response = self.client.get(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": draft_declaration.id})
+        )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_delete_declaration(self):
+        """
+        Les déclarations en mode brouillon peuvent être supprimées
+        """
+        draft_declaration = DeclarationFactory(status=Declaration.DeclarationStatus.DRAFT, author=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user, company=draft_declaration.company)
+
+        response = self.client.delete(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": draft_declaration.id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(list(Declaration.objects.filter(id=draft_declaration.id))), 0)
+
+    @authenticate
+    def test_delete_non_draft_declaration(self):
+        """
+        Les déclarations en mode brouillon peuvent être supprimées
+        """
+        declaration = AwaitingInstructionDeclarationFactory(author=authenticate.user)
+        DeclarantRoleFactory(user=authenticate.user, company=declaration.company)
+
+        response = self.client.delete(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(list(Declaration.objects.filter(id=declaration.id))), 1)
 
     @authenticate
     def test_supervisor_declarations_list_view(self):
@@ -1240,6 +1280,7 @@ class TestDeclarationApi(APITestCase):
             computed_substances=[],
         )
         DeclaredPlantFactory(new=False, declaration=art_15)
+        art_15.save()
 
         art_15.refresh_from_db()
         self.assertEqual(art_15.article, Declaration.Article.ARTICLE_15)

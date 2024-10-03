@@ -4,7 +4,7 @@ from .blog import BlogPostsView, BlogPostView
 from .condition import ConditionListView
 from .declaration.declaration import (
     UserDeclarationsListCreateApiView,
-    DeclarationRetrieveUpdateView,
+    DeclarationRetrieveUpdateDestroyView,
     DeclarationSubmitView,
     OngoingDeclarationsListView,
     CompanyDeclarationsListView,

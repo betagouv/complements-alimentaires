@@ -31,6 +31,7 @@ import VisaPage from "@/views/VisaPage"
 import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
 import A11yPage from "@/views/A11yPage.vue"
 import ContactForm from "@/views/ContactForm"
+import CompliancePage from "@/views/CompliancePage"
 import { ref } from "vue"
 
 const routes = [
@@ -316,6 +317,15 @@ const routes = [
       title: "Visa",
       requiredRole: "VisaRole",
       authenticationRequired: true,
+    },
+  },
+  {
+    path: "/conformite",
+    props: true,
+    name: "CompliancePage",
+    component: CompliancePage,
+    meta: {
+      title: "Conformité au droit alimentaire",
     },
   },
   {
