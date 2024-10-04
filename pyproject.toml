@@ -57,6 +57,7 @@ ipdb = "*"              # https://github.com/gotcha/ipdb
 factory-boy = "*"       # https://github.com/FactoryBoy/factory_boy
 requests-mock = "*"     # https://github.com/jamielennox/requests-mock
 django-extensions = "*" # https://github.com/django-extensions/django-extensions
+django-silk = "^5.2.0"
 
 ######################################################################################################################
 # Front-end related
@@ -82,7 +83,12 @@ celery = "^5.4.0"
 redis = "^5.1.0"
 
 xhtml2pdf = "^0.2.16"
-django-silk = "^5.2.0"
+bs4 = "^0.0.2"
+
+
+######################################################################################################################
+# Dépendances en environnement de dev
+#########################
 [tool.poetry.group.dev.dependencies]
 sqlfluff = "*"
 

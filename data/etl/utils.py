@@ -5,6 +5,7 @@ from django.db.models import (
     TextField,
 )
 
+from bs4 import BeautifulSoup  # pip install beautifulsoup4
 from simple_history.exceptions import NotHistoricalModelError
 from simple_history.utils import update_change_reason
 
@@ -77,8 +78,17 @@ def clean_value(value, field):
         if value is None:
             return ""
         else:
-            return value.strip()
+            return clean_text(value.strip())
     return value
+
+
+def clean_text(dirty_text):
+    """Certaines données entrées en commentaires publics ou privés notamment contiennent des codes hexa de caractères"""
+    # Parse the HTML
+    soup = BeautifulSoup(dirty_text, "html.parser")
+
+    # Get the text without HTML tags
+    return soup.get_text()
 
 
 def update_or_create_object(model, object_definition, default_extra_fields, change_message):
