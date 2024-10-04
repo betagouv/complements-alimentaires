@@ -509,7 +509,11 @@ class ComputedSubstance(Historisable):
         on_delete=models.CASCADE,
     )
     substance = models.ForeignKey(
-        Substance, null=True, blank=True, verbose_name="substance ajoutée par l'user", on_delete=models.RESTRICT
+        Substance,
+        null=True,
+        blank=True,
+        verbose_name="substance ajoutée automatiquement car apportée par un ingrédient",
+        on_delete=models.RESTRICT,
     )
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
     unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)

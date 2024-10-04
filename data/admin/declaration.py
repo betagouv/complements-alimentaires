@@ -2,6 +2,7 @@ from django import forms
 from django.contrib import admin
 
 from data.models import (
+    ComputedSubstance,
     Declaration,
     DeclaredIngredient,
     DeclaredMicroorganism,
@@ -136,6 +137,20 @@ class DeclaredSubstanceInline(admin.StackedInline):
         return True
 
 
+# Computed Substance inline
+
+
+class ComputedSubstanceInline(admin.TabularInline):
+    model = ComputedSubstance
+    can_delete = False
+    fields = ("substance", "quantity", "unit")
+    readonly_fields = fields
+    extra = 0
+
+    def has_add_permission(self, request, object):
+        return False
+
+
 class DeclarationForm(forms.ModelForm):
     class Meta:
         widgets = {
@@ -173,6 +188,7 @@ class DeclarationAdmin(admin.ModelAdmin):
         DeclaredMicroorganismInline,
         DeclaredIngredientInline,
         DeclaredSubstanceInline,
+        ComputedSubstanceInline,
         SnapshotInline,
     )
     search_fields = (
