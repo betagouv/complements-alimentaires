@@ -175,7 +175,10 @@ def check_all_fields_are_the_same(object_to_delete, object_to_keep):
                 if object_to_delete_field != "":
                     if object_to_keep_field == "":
                         new_fields[new_field_name] = object_to_delete_field
-                    if object_to_keep_field == object_to_keep_field:
+                    if (
+                        object_to_delete_field == object_to_keep_field
+                        or object_to_delete_field in object_to_keep_field
+                    ):
                         pass
                     else:
                         new_fields[new_field_name] = (
