@@ -1,7 +1,7 @@
 IDENT,LIBELLE,AGE_MIN,AGE_MAX,CATEGORIE_ANSES
 1,Population générale,,,0
-2,Nourrissons de moins de 6 mois,0,0.5,1
-3,Nourrissons de 6 mois et plus,0.5,1,1
+2,Nourrissons de 0 à 5 mois,0,0.5,1
+3,Nourrissons de 6 à 11 mois,0.5,1,1
 4,Enfants en bas âge de 1 à 3 ans,1,3,1
 5,Enfants de 4 à 10 ans,4,10,1
 6,Adolescents de 11 à 17 ans,11,17,1
