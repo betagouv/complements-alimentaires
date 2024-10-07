@@ -5,7 +5,7 @@ from django.db.models import (
     TextField,
 )
 
-from bs4 import BeautifulSoup  # pip install beautifulsoup4
+from bs4 import BeautifulSoup
 from simple_history.exceptions import NotHistoricalModelError
 from simple_history.utils import update_change_reason
 
