@@ -108,21 +108,7 @@ class DeclarationTestCase(TestCase):
             computed_substances=[],
         )
 
-        self.assertIsNone(declaration.article)
-        self.assertEqual(declaration.calculated_article, "")
-        self.assertEqual(declaration.overriden_article, "")
-
-    def test_article_empty_after_delete(self):
-        declaration = InstructionReadyDeclarationFactory(
-            declared_plants=[],
-            declared_microorganisms=[],
-            declared_substances=[],
-            declared_ingredients=[],
-            computed_substances=[],
-        )
-        declared_plant = DeclaredPlantFactory(new=False, declaration=declaration)
-        declared_plant.delete()
-        declaration.refresh_from_db()
+        declaration.assign_calculated_article()
 
         self.assertIsNone(declaration.article)
         self.assertEqual(declaration.calculated_article, "")
@@ -137,8 +123,7 @@ class DeclarationTestCase(TestCase):
             computed_substances=[],
         )
         DeclaredPlantFactory(new=False, declaration=declaration)
-        declaration.save()
-        declaration.refresh_from_db()
+        declaration.assign_calculated_article()
 
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
@@ -155,8 +140,7 @@ class DeclarationTestCase(TestCase):
         # La PlantFactory utilisée dans DeclaredPlantFactory a par défaut un status = AUTHORIZED
         DeclaredPlantFactory(new=False, declaration=declaration)
         declaration.overriden_article = Declaration.Article.ARTICLE_16
-        declaration.save()
-        declaration.refresh_from_db()
+        declaration.assign_calculated_article()
 
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
@@ -176,8 +160,7 @@ class DeclarationTestCase(TestCase):
             computed_substances=[],
         )
         DeclaredPlantFactory(new=True, declaration=declaration_new)
-        declaration_new.save()
-        declaration_new.refresh_from_db()
+        declaration_new.assign_calculated_article()
 
         self.assertEqual(declaration_new.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_new.calculated_article, Declaration.Article.ARTICLE_16)
@@ -193,8 +176,7 @@ class DeclarationTestCase(TestCase):
         plant_not_autorized = PlantFactory(ca_status=IngredientStatus.NOT_AUTHORIZED)
         DeclaredPlantFactory(plant=plant_not_autorized, declaration=declaration_not_autorized)
 
-        declaration_not_autorized.save()
-        declaration_not_autorized.refresh_from_db()
+        declaration_not_autorized.assign_calculated_article()
 
         self.assertEqual(declaration_not_autorized.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_not_autorized.calculated_article, Declaration.Article.ARTICLE_16)
@@ -210,10 +192,9 @@ class DeclarationTestCase(TestCase):
         )
         declared_plant = DeclaredPlantFactory(new=True, declaration=declaration)
         declared_plant.new = False
-        declared_plant.save()
 
-        declaration.save()
-        declaration.refresh_from_db()
+        declaration.assign_calculated_article()
+
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration.overriden_article, "")
@@ -229,8 +210,8 @@ class DeclarationTestCase(TestCase):
             quantity=1.2,
             declaration=declaration,
         )
-        declaration.save()
-        declaration.refresh_from_db()
+        declaration.assign_calculated_article()
+
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_17)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_17)
         self.assertEqual(declaration.overriden_article, "")
