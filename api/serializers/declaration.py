@@ -70,7 +70,7 @@ class DeclaredListSerializer(serializers.ListSerializer):
 
         declared_items = []
 
-        # Les nouveaux éléments déclarés seront sauvegardés dans la DB. Ceux déjà présents
+        # Les nouveaux ingrédients déclarés seront sauvegardés dans la DB. Ceux déjà présents
         # seront mis à jour.
         for item in validated_data:
             element = instance_mapping.get(item.get("id"), None)
