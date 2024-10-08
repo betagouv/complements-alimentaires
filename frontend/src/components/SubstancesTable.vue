@@ -40,7 +40,16 @@
           <div class="sm:hidden ca-xs-title">
             Quantité par DJR (en {{ payload.computedSubstances[rowIndex].substance.unit }})
           </div>
-          <div v-if="props.readonly">{{ payload.computedSubstances[rowIndex].quantity }}</div>
+          <div
+            :class="{
+              '!text-red-marianne-425 font-bold':
+                payload.computedSubstances[rowIndex].quantity >=
+                payload.computedSubstances[rowIndex].substance.maxQuantity,
+            }"
+            v-if="props.readonly"
+          >
+            {{ payload.computedSubstances[rowIndex].quantity }}
+          </div>
           <DsfrInputGroup v-else-if="askForQuantity(payload.computedSubstances[rowIndex].substance)">
             <NumberField
               v-model="payload.computedSubstances[rowIndex].quantity"
