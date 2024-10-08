@@ -196,7 +196,7 @@ export const tabTitles = (components, useSubmission = false) => {
       panelId: `tab-content-${idx("AttachmentTab")}`,
     },
     NewElementTab: {
-      title: "Nouveaux éléments",
+      title: "Nouveaux ingrédients",
       icon: "ri-flask-line",
       tabId: `tab-${idx("NewElementTab")}`,
       panelId: `tab-content-${idx("NewElementTab")}`,
