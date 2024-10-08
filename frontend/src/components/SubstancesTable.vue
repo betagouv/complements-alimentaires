@@ -49,6 +49,14 @@
             v-if="props.readonly"
           >
             {{ payload.computedSubstances[rowIndex].quantity }}
+            <span
+              v-if="
+                payload.computedSubstances[rowIndex].quantity >=
+                payload.computedSubstances[rowIndex].substance.maxQuantity
+              "
+            >
+              pour {{ payload.computedSubstances[rowIndex].substance.maxQuantity }} maximum autorisés
+            </span>
           </div>
           <DsfrInputGroup v-else-if="askForQuantity(payload.computedSubstances[rowIndex].substance)">
             <NumberField
