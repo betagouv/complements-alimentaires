@@ -61,9 +61,9 @@ parso==0.8.4 ; python_version >= "3.11" and python_version < "3.12.dev0"
 pexpect==4.9.0 ; python_version >= "3.11" and python_version < "3.12.dev0" and (sys_platform != "win32" and sys_platform != "emscripten")
 phonenumbers==8.13.47 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 pillow==10.4.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
-platformdirs==4.3.6 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
+platformdirs==4.2.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 pre-commit==4.0.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
-prompt-toolkit==3.0.48 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
+prompt-toolkit==3.0.43 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 psycopg2==2.9.9 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 ptyprocess==0.7.0 ; python_version >= "3.11" and python_version < "3.12.dev0" and (sys_platform != "win32" and sys_platform != "emscripten")
 pure-eval==0.2.3 ; python_version >= "3.11" and python_version < "3.12.dev0"
