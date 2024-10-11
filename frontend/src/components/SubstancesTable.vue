@@ -126,7 +126,7 @@ watch(
     // Ajouter les nouvelles substances
     newSubstances.forEach((newSubstance) => {
       if (!payload.value.computedSubstances.find((x) => x.substance.id === newSubstance.id))
-        payload.value.computedSubstances.push({ substance: newSubstance })
+        payload.value.computedSubstances.push({ substance: newSubstance, unit: newSubstance.unitId })
     })
 
     // Enlever les substances disparues
