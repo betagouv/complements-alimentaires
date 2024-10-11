@@ -43,16 +43,18 @@
           <div
             :class="{
               '!text-red-marianne-425 font-bold':
+                payload.computedSubstances[rowIndex].substance.maxQuantity &&
                 payload.computedSubstances[rowIndex].quantity >=
-                payload.computedSubstances[rowIndex].substance.maxQuantity,
+                  payload.computedSubstances[rowIndex].substance.maxQuantity,
             }"
             v-if="props.readonly"
           >
             {{ payload.computedSubstances[rowIndex].quantity }}
             <span
               v-if="
+                payload.computedSubstances[rowIndex].substance.maxQuantity &&
                 payload.computedSubstances[rowIndex].quantity >=
-                payload.computedSubstances[rowIndex].substance.maxQuantity
+                  payload.computedSubstances[rowIndex].substance.maxQuantity
               "
             >
               pour {{ payload.computedSubstances[rowIndex].substance.maxQuantity }} maximum autorisés
