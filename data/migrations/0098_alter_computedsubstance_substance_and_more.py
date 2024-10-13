@@ -14,14 +14,29 @@ class Migration(migrations.Migration):
     ]
 
     def set_unit(apps, schema_editor):
+        """Set unit and recompute article (thanks to signal)"""
         DeclaredSubstance = apps.get_model("data", "DeclaredSubstance")
+        ComputedSubstance = apps.get_model("data", "ComputedSubstance")
         Declaration = apps.get_model("data", "Declaration")
         for declared_substance in DeclaredSubstance.objects.all().iterator():
-            if declared_substance.substance:
+            if declared_substance.substance and declared_substance.quantity:
                 declared_substance.unit = declared_substance.substance.unit
                 declared_substance.save()
-                if declared_substance.quantity and declared_substance.quantity > declared_substance.substance.max_quantity:
-                    Declaration.objects.get(id=declared_substance.declaration_id).calculated_article = Declaration.Article.ANSES_REFERAL
+
+                if declared_substance.quantity and computed_substance.substance.max_quantity and declared_substance.quantity > declared_substance.substance.max_quantity:
+                    declaration = Declaration.objects.get(id=declared_substance.declaration_id)
+                    declaration.calculated_article = "ANSES_REFERAL"
+                    declaration.save()
+        for computed_substance in ComputedSubstance.objects.all().iterator():
+            if computed_substance.substance and computed_substance.quantity:
+                computed_substance.unit = computed_substance.substance.unit
+                computed_substance.save()
+                if computed_substance.quantity and computed_substance.substance.max_quantity and computed_substance.quantity > computed_substance.substance.max_quantity:
+                    declaration = Declaration.objects.get(id=declared_substance.declaration_id)
+                    declaration.calculated_article = "ANSES_REFERAL"
+                    declaration.save()
+                                    
+
 
     def reverse_set_unit(apps, schema_editor):
         pass
