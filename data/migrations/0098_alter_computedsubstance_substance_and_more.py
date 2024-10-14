@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 declared_substance.unit = declared_substance.substance.unit
                 declared_substance.save()
 
-                if declared_substance.quantity and computed_substance.substance.max_quantity and declared_substance.quantity > declared_substance.substance.max_quantity:
+                if declared_substance.quantity and declared_substance.substance.max_quantity and declared_substance.quantity > declared_substance.substance.max_quantity:
                     declaration = Declaration.objects.get(id=declared_substance.declaration_id)
                     declaration.calculated_article = "ANSES_REFERAL"
                     declaration.save()
