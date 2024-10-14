@@ -858,13 +858,13 @@ django-js-asset = ">=2.0"
 
 [[package]]
 name = "django-ckeditor-5"
-version = "0.2.13"
+version = "0.2.14"
 description = "CKEditor 5 for Django."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "django_ckeditor_5-0.2.13-py3-none-any.whl", hash = "sha256:0850402680fb6b9dc255b1883910173ed37cc28906712558008f1d5a29045e6f"},
-    {file = "django_ckeditor_5-0.2.13.tar.gz", hash = "sha256:76fa26bdd65842262be7deb1b4cdb419cb080c89c62e0af933dfdd035b13b688"},
+    {file = "django_ckeditor_5-0.2.14-py3-none-any.whl", hash = "sha256:ed3be0c0381a181e013507ed39a89d73d8a8da9cde670915f071b3dde6b93c56"},
+    {file = "django_ckeditor_5-0.2.14.tar.gz", hash = "sha256:bc7709588077a12feb934373d4091bb38c1ed7b4ec7867fcda4896600c0a2f3c"},
 ]
 
 [package.dependencies]
