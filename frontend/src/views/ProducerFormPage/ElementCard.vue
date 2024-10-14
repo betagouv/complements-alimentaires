@@ -84,7 +84,7 @@
       </div>
       <div v-else-if="objectType === 'substance'" class="ml-12 flex gap-4">
         <DsfrInputGroup class="max-w-28">
-          <DsfrInput label="Qté par DJR" v-model="model.quantity" label-visible :required="true" />
+          <NumberField label="Qté par DJR" v-model="model.quantity" label-visible :required="true" />
         </DsfrInputGroup>
         <div class="mt-12" v-if="model.element?.unit">
           {{ model.element.unit }}
