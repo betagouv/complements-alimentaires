@@ -40,7 +40,26 @@
           <div class="sm:hidden ca-xs-title">
             Quantité par DJR (en {{ payload.computedSubstances[rowIndex].substance.unit }})
           </div>
-          <div v-if="props.readonly">{{ payload.computedSubstances[rowIndex].quantity }}</div>
+          <div
+            :class="{
+              '!text-red-marianne-425 font-bold':
+                payload.computedSubstances[rowIndex].substance.maxQuantity &&
+                payload.computedSubstances[rowIndex].quantity >=
+                  payload.computedSubstances[rowIndex].substance.maxQuantity,
+            }"
+            v-if="props.readonly"
+          >
+            {{ payload.computedSubstances[rowIndex].quantity }}
+            <span
+              v-if="
+                payload.computedSubstances[rowIndex].substance.maxQuantity &&
+                payload.computedSubstances[rowIndex].quantity >=
+                  payload.computedSubstances[rowIndex].substance.maxQuantity
+              "
+            >
+              pour {{ payload.computedSubstances[rowIndex].substance.maxQuantity }} maximum autorisés
+            </span>
+          </div>
           <DsfrInputGroup v-else-if="askForQuantity(payload.computedSubstances[rowIndex].substance)">
             <NumberField
               v-model="payload.computedSubstances[rowIndex].quantity"
@@ -107,7 +126,7 @@ watch(
     // Ajouter les nouvelles substances
     newSubstances.forEach((newSubstance) => {
       if (!payload.value.computedSubstances.find((x) => x.substance.id === newSubstance.id))
-        payload.value.computedSubstances.push({ substance: newSubstance })
+        payload.value.computedSubstances.push({ substance: newSubstance, unit: newSubstance.unitId })
     })
 
     // Enlever les substances disparues

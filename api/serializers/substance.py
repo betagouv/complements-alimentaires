@@ -51,6 +51,7 @@ class SubstanceSerializer(HistoricalModelSerializer, PrivateCommentSerializer):
 
 class SubstanceShortSerializer(PrivateCommentSerializer):
     unit = serializers.CharField(read_only=True, source="unit.name")
+    unit_id = serializers.IntegerField(read_only=True, source="unit.id")
 
     class Meta:
         model = Substance
@@ -61,6 +62,7 @@ class SubstanceShortSerializer(PrivateCommentSerializer):
             "cas_number",
             "einec_number",
             "unit",
+            "unit_id",
             "max_quantity",
             "public_comments",
             "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
