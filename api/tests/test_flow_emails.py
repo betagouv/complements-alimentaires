@@ -45,8 +45,8 @@ class TestDeclarationFlow(APITestCase):
         mocked_brevo.assert_called_once_with(
             template_number,
             declaration.brevo_parameters,
-            authenticate.user.email,
-            authenticate.user.get_full_name(),
+            declaration.author.email,
+            declaration.author.get_full_name(),
         )
 
     @authenticate
@@ -63,8 +63,8 @@ class TestDeclarationFlow(APITestCase):
         mocked_brevo.assert_called_once_with(
             template_number,
             declaration.brevo_parameters,
-            authenticate.user.email,
-            authenticate.user.get_full_name(),
+            declaration.author.email,
+            declaration.author.get_full_name(),
         )
 
     @authenticate
@@ -81,8 +81,8 @@ class TestDeclarationFlow(APITestCase):
         mocked_brevo.assert_called_once_with(
             template_number,
             declaration.brevo_parameters,
-            authenticate.user.email,
-            authenticate.user.get_full_name(),
+            declaration.author.email,
+            declaration.author.get_full_name(),
         )
 
     @authenticate
@@ -117,8 +117,8 @@ class TestDeclarationFlow(APITestCase):
         mocked_brevo.assert_called_once_with(
             template_number,
             declaration.brevo_parameters,
-            authenticate.user.email,
-            authenticate.user.get_full_name(),
+            declaration.author.email,
+            declaration.author.get_full_name(),
         )
 
     @authenticate
@@ -140,8 +140,8 @@ class TestDeclarationFlow(APITestCase):
         mocked_brevo.assert_called_once_with(
             template_number,
             declaration.brevo_parameters,
-            authenticate.user.email,
-            authenticate.user.get_full_name(),
+            declaration.author.email,
+            declaration.author.get_full_name(),
         )
 
     @authenticate
@@ -163,8 +163,8 @@ class TestDeclarationFlow(APITestCase):
         mocked_brevo.assert_called_once_with(
             template_number,
             declaration.brevo_parameters,
-            authenticate.user.email,
-            authenticate.user.get_full_name(),
+            declaration.author.email,
+            declaration.author.get_full_name(),
         )
 
     @authenticate
@@ -186,8 +186,8 @@ class TestDeclarationFlow(APITestCase):
         mocked_brevo.assert_called_once_with(
             template_number,
             declaration.brevo_parameters,
-            authenticate.user.email,
-            authenticate.user.get_full_name(),
+            declaration.author.email,
+            declaration.author.get_full_name(),
         )
 
     @authenticate
@@ -203,8 +203,8 @@ class TestDeclarationFlow(APITestCase):
         mocked_brevo.assert_called_once_with(
             template_number,
             declaration.brevo_parameters,
-            authenticate.user.email,
-            authenticate.user.get_full_name(),
+            declaration.author.email,
+            declaration.author.get_full_name(),
         )
 
     def test_expire_observed_declaration(self, mocked_brevo):
