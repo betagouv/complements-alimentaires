@@ -30,6 +30,7 @@ from .declaration import (
     AuthorizedDeclarationFactory,
     DeclaredPlantFactory,
     ComputedSubstanceFactory,
+    AttachmentFactory,
 )
 from .solicitation import CollaborationInvitationFactory, CompanyAccessClaimFactory, SupervisionClaimFactory
 from .global_roles import InstructionRoleFactory, VisaRoleFactory

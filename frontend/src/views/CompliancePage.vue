@@ -54,9 +54,9 @@ const items = [
     link: "https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=celex%3A32004R0852",
   },
   {
-    title: "Règlement (CE) n°1881/2006",
-    body: "de la Commission du 19 décembre 2006 portant fixation de teneurs maximales pour certains contaminants dans les denrées alimentaires.",
-    link: "https://eur-lex.europa.eu/legal-content/fr/ALL/?uri=CELEX%3A32006R1881",
+    title: "Règlement (UE) n°2023/915",
+    body: "du Règlement (UE) 2023/915 de la Commission du 25 avril 2023 concernant les teneurs maximales pour certains contaminants dans les denrées alimentaires et abrogeant le règlement (CE) no 1881/2006 (Texte présentant de l’intérêt pour l’EEE)",
+    link: "https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX%3A32023R0915",
   },
   {
     title: "Règlement (CE) n°1924/2006",
