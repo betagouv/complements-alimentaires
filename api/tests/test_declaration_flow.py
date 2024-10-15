@@ -3,7 +3,9 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from data.choices import AuthorizationModes
 from data.factories import (
+    AttachmentFactory,
     AuthorizedDeclarationFactory,
     AwaitingInstructionDeclarationFactory,
     AwaitingVisaDeclarationFactory,
@@ -17,7 +19,7 @@ from data.factories import (
     OngoingVisaDeclarationFactory,
     VisaRoleFactory,
 )
-from data.models import Declaration, Snapshot
+from data.models import Attachment, Declaration, Snapshot
 
 from .utils import authenticate
 
@@ -102,6 +104,32 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(
             "Merci de renseigner les informations manquantes des plantes ajoutées", json_errors["nonFieldErrors"][0]
         )
+
+    @authenticate
+    def test_submit_declaration_eu_mode(self):
+        """
+        Passage du DRAFT -> AWAITING_INSTRUCTION
+        En cas de nouvel ingrédient avec `authorization_mode == "EU"` on a besoin d'une
+        pièce jointe non-étiquetage de plus.
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        declaration = InstructionReadyDeclarationFactory(author=authenticate.user, company=company)
+        plant = declaration.declared_plants.first()
+        plant.new = True
+        plant.authorization_mode = AuthorizationModes.EU
+        plant.save()
+
+        response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # L'ajout d'une pièce jointe non-étiquetage débloque la situation
+        eu_proof = AttachmentFactory(type=Attachment.AttachmentType.REGULATORY_PROOF, declaration=declaration)
+        eu_proof.save()
+
+        response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @authenticate
     def test_submit_declaration_wrong_company(self):

@@ -41,7 +41,7 @@ def validate_mandatory_fields(declaration) -> tuple[list, list]:
     substances = list(declaration.declared_substances.all())
 
     all_ingredients = [] + plants + microorganisms + substances + ingredients
-    needs_eu_proof = any(x.authorization_mode == AuthorizationModes.EU for x in all_ingredients)
+    needs_eu_proof = any(x.authorization_mode == AuthorizationModes.EU and x.new for x in all_ingredients)
     if needs_eu_proof and not declaration.attachments.exclude(type=Attachment.AttachmentType.LABEL).exists():
         field_errors.append(
             {
