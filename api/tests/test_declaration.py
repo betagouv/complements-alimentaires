@@ -1105,7 +1105,7 @@ class TestDeclarationApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
         art_15 = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
         AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_16)
-        AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_17)
+        AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ANSES_REFERAL)
 
         # Filtrage pour obtenir les déclarations en article 15
         url = f"{reverse('api:list_all_declarations')}?article=ART_15"

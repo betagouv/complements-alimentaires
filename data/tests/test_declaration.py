@@ -199,7 +199,7 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration.overriden_article, "")
 
-    def test_article_17(self):
+    def test_article_anses_referal(self):
         declaration = InstructionReadyDeclarationFactory(
             computed_substances=[],
         )
@@ -212,6 +212,6 @@ class DeclarationTestCase(TestCase):
         )
         declaration.assign_calculated_article()
 
-        self.assertEqual(declaration.article, Declaration.Article.ARTICLE_17)
-        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_17)
+        self.assertEqual(declaration.article, Declaration.Article.ANSES_REFERAL)
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ANSES_REFERAL)
         self.assertEqual(declaration.overriden_article, "")

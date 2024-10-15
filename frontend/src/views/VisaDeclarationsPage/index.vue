@@ -68,7 +68,7 @@ import { orderingOptions, articleOptions } from "@/utils/mappings"
 const router = useRouter()
 const route = useRoute()
 
-const excludeArticles = ["ART_17", "ART_15_WARNING"]
+const excludeArticles = ["ART_15_WARNING"]
 const articleSelectOptions = [
   ...articleOptions.filter((x) => excludeArticles.indexOf(x.value) == -1),
   ...[{ value: "", text: "Tous" }],

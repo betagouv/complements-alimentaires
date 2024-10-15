@@ -60,7 +60,8 @@ class Declaration(Historisable, TimeStampable):
         ARTICLE_15 = "ART_15", "Article 15"
         ARTICLE_15_WARNING = "ART_15_WARNING", "Article 15 Vigilance"
         ARTICLE_16 = "ART_16", "Article 16"
-        ARTICLE_17 = "ART_17", "Article 17"
+        # ARTICLE_17 = "ART_17", "Article 17" # Article 17 et 18 sont pour le moment regroupés sous le label "nécessite saisine ANSES"
+        ANSES_REFERAL = "ANSES_REFERAL", "nécessite saisine ANSES"
 
     status = models.CharField(
         max_length=50,
@@ -304,6 +305,7 @@ class Declaration(Historisable, TimeStampable):
             empty_composition = all(not x.exists() for x in composition_items)
             # cela ne devrait être possible que pour les plantes qui même non autorisées peuvent être ajoutées en infime quantité dans des elixirs
 
+            # TODO ajouter la vérification sur les computed_substances aussi
             has_not_authorized_items = (
                 any(self.declared_plants.filter(plant__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_microorganisms.filter(microorganism__status=IngredientStatus.NOT_AUTHORIZED))
@@ -322,8 +324,10 @@ class Declaration(Historisable, TimeStampable):
             if empty_composition:
                 self.calculated_article = ""
             elif surpasses_max_dose:
-                self.calculated_article = Declaration.Article.ARTICLE_17
-            elif has_not_authorized_items or has_new_items:
+                self.calculated_article = Declaration.Article.ANSES_REFERAL
+            elif has_not_authorized_items:
+                self.calculated_article = Declaration.Article.ARTICLE_16
+            elif has_new_items:
                 self.calculated_article = Declaration.Article.ARTICLE_16
             else:
                 self.calculated_article = Declaration.Article.ARTICLE_15
@@ -500,7 +504,11 @@ class ComputedSubstance(Historisable):
         on_delete=models.CASCADE,
     )
     substance = models.ForeignKey(
-        Substance, null=True, blank=True, verbose_name="substance ajoutée par l'user", on_delete=models.RESTRICT
+        Substance,
+        null=True,
+        blank=True,
+        verbose_name="substance ajoutée automatiquement car apportée par un ingrédient",
+        on_delete=models.RESTRICT,
     )
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
     unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
