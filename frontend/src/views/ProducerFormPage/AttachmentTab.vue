@@ -19,11 +19,12 @@
 
     <DsfrInputGroup>
       <DsfrFileUpload
-        label="Vous pouvez nous transmettre tout autre document que vous jugez utile à l'examen de votre dossier"
+        :label="otherAttachmentsLabel"
         :acceptTypes="['image/jpeg, image/gif, image/png, application/pdf']"
         hint="Taille maximale du fichier : 2 Mo"
         @change="addOtherFiles"
         v-model="selectedOtherFile"
+        :required="needsEuProof"
       />
     </DsfrInputGroup>
 
@@ -38,6 +39,27 @@ import SectionTitle from "@/components/SectionTitle"
 
 const props = defineProps(["externalResults"])
 const payload = defineModel()
+
+const needsEuProof = computed(() => {
+  return []
+    .concat(
+      payload.value.declaredPlants,
+      payload.value.declaredMicroorganisms,
+      payload.value.declaredIngredients,
+      payload.value.declaredSubstances
+    )
+    .filter((x) => x.new)
+    .some((x) => x.authorizationMode === "EU")
+})
+
+const otherAttachmentsLabel = computed(() => {
+  let label = ""
+  if (needsEuProof.value)
+    label +=
+      "Merci de fournir la pièce jointe du texte qui permette de justifier de l’application du principe de reconnaissance mutuelle (obligation art 16.2°.c) du décret 2006-352.\n"
+  label += "Vous pouvez nous transmettre tout autre document que vous jugez utile à l'examen de votre dossier."
+  return label
+})
 
 const validationError = computed(() => props.externalResults?.[0]?.attachments)
 
