@@ -481,13 +481,13 @@ class DeclarationFlowView(GenericAPIView):
         if self.create_snapshot:
             self.perform_snapshot_creation(request, declaration)
         self.on_transition_success(request, declaration)
-        if brevo_template_id:
+        if brevo_template_id and declaration.author:
             try:
                 email.send_sib_template(
                     brevo_template_id,
                     self.get_brevo_parameters(request, declaration),
-                    request.user.email,
-                    request.user.get_full_name(),
+                    declaration.author.email,
+                    declaration.author.get_full_name(),
                 )
             except Exception as e:
                 logger.error(f"Email not sent on transition {self.get_transition(request, declaration)}")
