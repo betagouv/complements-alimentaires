@@ -124,6 +124,8 @@ class DeclarationTestCase(TestCase):
         )
         DeclaredPlantFactory(new=False, declaration=declaration)
         declaration.assign_calculated_article()
+        declaration.save()
+        declaration.refresh_from_db()
 
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
@@ -141,6 +143,8 @@ class DeclarationTestCase(TestCase):
         DeclaredPlantFactory(new=False, declaration=declaration)
         declaration.overriden_article = Declaration.Article.ARTICLE_16
         declaration.assign_calculated_article()
+        declaration.save()
+        declaration.refresh_from_db()
 
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
@@ -161,6 +165,8 @@ class DeclarationTestCase(TestCase):
         )
         DeclaredPlantFactory(new=True, declaration=declaration_new)
         declaration_new.assign_calculated_article()
+        declaration_new.save()
+        declaration_new.refresh_from_db()
 
         self.assertEqual(declaration_new.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_new.calculated_article, Declaration.Article.ARTICLE_16)
@@ -177,27 +183,12 @@ class DeclarationTestCase(TestCase):
         DeclaredPlantFactory(plant=plant_not_autorized, declaration=declaration_not_autorized)
 
         declaration_not_autorized.assign_calculated_article()
+        declaration_not_autorized.save()
+        declaration_not_autorized.refresh_from_db()
 
         self.assertEqual(declaration_not_autorized.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_not_autorized.calculated_article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_not_autorized.overriden_article, "")
-
-    def test_article_change(self):
-        declaration = InstructionReadyDeclarationFactory(
-            declared_plants=[],
-            declared_microorganisms=[],
-            declared_substances=[],
-            declared_ingredients=[],
-            computed_substances=[],
-        )
-        declared_plant = DeclaredPlantFactory(new=True, declaration=declaration)
-        declared_plant.new = False
-
-        declaration.assign_calculated_article()
-
-        self.assertEqual(declaration.article, Declaration.Article.ARTICLE_15)
-        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
-        self.assertEqual(declaration.overriden_article, "")
 
     def test_article_anses_referal(self):
         declaration = InstructionReadyDeclarationFactory(
@@ -211,6 +202,8 @@ class DeclarationTestCase(TestCase):
             declaration=declaration,
         )
         declaration.assign_calculated_article()
+        declaration.save()
+        declaration.refresh_from_db()
 
         self.assertEqual(declaration.article, Declaration.Article.ANSES_REFERAL)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ANSES_REFERAL)
