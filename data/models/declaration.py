@@ -309,15 +309,16 @@ class Declaration(Historisable, TimeStampable):
             empty_composition = all(not x.exists() for x in composition_items)
             # cela ne devrait être possible que pour les plantes qui même non autorisées peuvent être ajoutées en infime quantité dans des elixirs
 
-            # TODO ajouter la vérification sur les computed_substances aussi
             has_not_authorized_items = (
                 any(self.declared_plants.filter(plant__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_microorganisms.filter(microorganism__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
+                or any(self.computed_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_ingredients.filter(ingredient__status=IngredientStatus.NOT_AUTHORIZED))
             )
 
             has_new_items = any(x.filter(new=True).exists() for x in composition_items if issubclass(x.model, Addable))
+
             surpasses_max_dose = any(
                 x.quantity > x.substance.max_quantity
                 for x in self.computed_substances.all()
