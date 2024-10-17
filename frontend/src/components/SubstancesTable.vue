@@ -43,7 +43,8 @@
           <div
             :class="{
               '!text-red-marianne-425 font-bold':
-                payload.computedSubstances[rowIndex].substance.maxQuantity &&
+                (payload.computedSubstances[rowIndex].substance.maxQuantity ||
+                  payload.computedSubstances[rowIndex].substance.maxQuantity === 0) &&
                 payload.computedSubstances[rowIndex].quantity >=
                   payload.computedSubstances[rowIndex].substance.maxQuantity,
             }"
@@ -52,7 +53,8 @@
             {{ payload.computedSubstances[rowIndex].quantity }}
             <span
               v-if="
-                payload.computedSubstances[rowIndex].substance.maxQuantity &&
+                (payload.computedSubstances[rowIndex].substance.maxQuantity ||
+                  payload.computedSubstances[rowIndex].substance.maxQuantity === 0) &&
                 payload.computedSubstances[rowIndex].quantity >=
                   payload.computedSubstances[rowIndex].substance.maxQuantity
               "
