@@ -293,9 +293,11 @@ class Declaration(Historisable, TimeStampable):
 
     def assign_article(self):
         """
-        Cette fonction est appelée depuis les signals post_save et post_delete des objets calulated_<type>
-        afin de mettre à jour l'article de la déclaration.
+        Cette fonction est appelée depuis les signals post_save et post_delete de la déclaration.
         Ces signals sont dans la fonction « update_article » de ce même fichier.
+        Ce sont les particularités des ingrédients et substances contenues dans la composition qui déterminent les articles.
+        Dans le cas où plusieurs ingrédients impliqueraient plusieurs articles, certains articles prennent la priorité sur d'autres :
+        saisine ANSES (ART_17 et ART_18) > ART_16 > ART_15
         """
         try:
             current_calculated_article = self.calculated_article
