@@ -144,12 +144,13 @@ const status = computed(() =>
   ["autorisé", "non autorisé"].includes(element.value?.status) ? element.value?.status : null
 )
 const nutritionalReference = computed(() => {
-  if (element.value?.unit && element.value?.nutritionalReference)
+  if (element.value?.unit && (element.value?.nutritionalReference || element.value.nutritionalReference == 0))
     return element.value?.nutritionalReference + " " + element.value?.unit
   else return null
 })
 const maxQuantity = computed(() => {
-  if (element.value?.unit && element.value?.maxQuantity) return element.value?.maxQuantity + " " + element.value?.unit
+  if (element.value?.unit && (element.value?.maxQuantity || element.value.maxQuantity == 0))
+    return element.value?.maxQuantity + " " + element.value?.unit
   else return null
 })
 const description = computed(() => element.value?.description)
