@@ -159,7 +159,7 @@ const rejectReasons = [
       "Forme assimilable à un aliment courant",
       "Recommandations d'emploi incompatibles",
       "Composition (source concentrée, ...)",
-      "Autre",
+      "Autre raison pour laquelle le produit ne répond pas à la définition du complément alimentaire",
     ],
   },
   {
@@ -182,7 +182,7 @@ const rejectReasons = [
       "Informations manquantes",
       "Absence de preuve de reconnaissance mutuelle",
       "Absence ou non conformité de l'étiquetage",
-      "Autre",
+      "Autre motif d'irrecevabilité",
     ],
   },
   {
