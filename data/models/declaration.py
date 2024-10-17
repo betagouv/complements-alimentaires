@@ -293,9 +293,11 @@ class Declaration(Historisable, TimeStampable):
 
     def assign_article(self):
         """
-        Cette fonction est appelée depuis les signals post_save et post_delete des objets calulated_<type>
-        afin de mettre à jour l'article de la déclaration.
+        Cette fonction est appelée depuis les signals post_save et post_delete de la déclaration.
         Ces signals sont dans la fonction « update_article » de ce même fichier.
+        Ce sont les particularités des ingrédients et substances contenues dans la composition qui déterminent les articles.
+        Dans le cas où plusieurs ingrédients impliqueraient plusieurs articles, certains articles prennent la priorité sur d'autres :
+        saisine ANSES (ART_17 et ART_18) > ART_16 > ART_15
         """
         try:
             current_calculated_article = self.calculated_article
@@ -309,20 +311,24 @@ class Declaration(Historisable, TimeStampable):
             empty_composition = all(not x.exists() for x in composition_items)
             # cela ne devrait être possible que pour les plantes qui même non autorisées peuvent être ajoutées en infime quantité dans des elixirs
 
-            # TODO ajouter la vérification sur les computed_substances aussi
             has_not_authorized_items = (
                 any(self.declared_plants.filter(plant__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_microorganisms.filter(microorganism__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
+                or any(self.computed_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_ingredients.filter(ingredient__status=IngredientStatus.NOT_AUTHORIZED))
             )
 
             has_new_items = any(x.filter(new=True).exists() for x in composition_items if issubclass(x.model, Addable))
+
             surpasses_max_dose = any(
                 x.quantity > x.substance.max_quantity
                 for x in self.computed_substances.all()
                 if x.quantity and x.substance.max_quantity and x.substance.unit == x.unit
-                # TODO: vérifier si ce cas est possible, sinon enlever l'unit du ComputedSubstance
+            ) or any(
+                x.quantity > x.substance.max_quantity
+                for x in self.declared_substances.all()
+                if x.quantity and x.substance.max_quantity and x.substance.unit == x.unit
             )
 
             if empty_composition:
