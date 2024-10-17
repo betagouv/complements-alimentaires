@@ -324,11 +324,11 @@ class Declaration(Historisable, TimeStampable):
             surpasses_max_dose = any(
                 x.quantity > x.substance.max_quantity
                 for x in self.computed_substances.all()
-                if x.quantity and x.substance.max_quantity and x.substance.unit == x.unit
+                if x.quantity is not None and x.substance.max_quantity is not None and x.substance.unit == x.unit
             ) or any(
                 x.quantity > x.substance.max_quantity
                 for x in self.declared_substances.all()
-                if x.quantity and x.substance.max_quantity and x.substance.unit == x.unit
+                if x.quantity is not None and x.substance.max_quantity is not None and x.substance.unit == x.unit
             )
 
             if empty_composition:
