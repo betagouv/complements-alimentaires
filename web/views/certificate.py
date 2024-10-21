@@ -53,6 +53,8 @@ class CertificateView(GenericAPIView):
             return f"certificates/certificate-submitted-art-{article}.html"
         if declaration.status in [status.AUTHORIZED, status.WITHDRAWN]:
             return f"certificates/certificate-art-{article}.html"
+        if declaration.status == status.OBJECTION:
+            return "certificates/certificate-objected.html"
         if declaration.status == status.REJECTED:
             return "certificates/certificate-rejected.html"
 
