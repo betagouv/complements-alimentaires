@@ -8,10 +8,10 @@ class CanAccessUser(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):  # obj: User
         user = request.user
-        is_instructor = IsInstructor().has_permission(request, view)
+        is_agent = IsInstructor().has_permission(request, view) or IsVisor().has_permission(request, view)
         if user.is_authenticated and user == obj:
             return True
-        return request.method in permissions.SAFE_METHODS and is_instructor
+        return request.method in permissions.SAFE_METHODS and is_agent
 
 
 class CanAccessUserDeclatarions(permissions.BasePermission):
@@ -79,11 +79,13 @@ class IsVisor(permissions.BasePermission):
         return request.user.is_authenticated and VisaRole.objects.filter(user=request.user).exists()
 
 
-class IsSupervisorOrInstructor(permissions.BasePermission):
+class IsSupervisorOrAgent(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):  # obj: Company (for supervisor)
         user = request.user
         return user.is_authenticated and (
-            IsSupervisor().has_object_permission(request, view, obj) or IsInstructor().has_permission(request, view)
+            IsSupervisor().has_object_permission(request, view, obj)
+            or IsInstructor().has_permission(request, view)
+            or IsVisor().has_permission(request, view)
         )
 
 
@@ -93,11 +95,11 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):  # obj: Declaration
         is_author = IsDeclarationAuthor().has_object_permission(request, view, obj)
         is_from_same_company = obj.company in request.user.declarable_companies.all()
-        is_instructor = IsInstructor().has_permission(request, view)
+        is_agent = IsInstructor().has_permission(request, view) or IsVisor().has_permission(request, view)
         is_declarant = IsDeclarant().has_object_permission(request, view, obj)
         is_draft = obj.status == Declaration.DeclarationStatus.DRAFT
         if request.method in permissions.SAFE_METHODS:
-            return is_author or is_from_same_company or (is_instructor and not is_draft)
+            return is_author or is_from_same_company or (is_agent and not is_draft)
 
         return (is_author or is_from_same_company) and is_declarant
 
