@@ -1,7 +1,7 @@
 {% extends 'certificates/certificate-base-template.html' %}
 {% block 'body' %}
 <h1 style="font-family: 'Marianne-Bold'; font-weight: bold;">
-    Réf. : n° {{declaration.id}}
+    Réf. : Dossier n° {{declaration.id}}
 </h1>
 <div style="font-size: 1.2em;">
     <p>
@@ -10,7 +10,7 @@
     <p>
         Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré la mise sur le marché du produit :
         <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
-            {{ declaration.name }}
+            {{ declaration.name }} / {{ declaration.galenic_formulation }}
         </span>
     <p>
         Des objections ont été émises à l’égard de cette déclaration. Toutefois, les éléments apportés

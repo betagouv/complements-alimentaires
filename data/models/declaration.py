@@ -207,6 +207,16 @@ class Declaration(Historisable, TimeStampable):
         )
 
     @property
+    def blocking_reasons(self):
+        from data.models import Snapshot
+
+        try:
+            latest_snapshot = self.snapshots.filter(blocking_reasons__isnull=False).latest("creation_date")
+            return latest_snapshot.blocking_reasons
+        except Snapshot.DoesNotExist:
+            return None
+
+    @property
     def json_representation(self):
         from api.serializers import DeclarationSerializer
 

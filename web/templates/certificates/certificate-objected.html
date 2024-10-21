@@ -1,7 +1,7 @@
 {% extends 'certificates/certificate-base-template.html' %}
 {% block 'body' %}
 <h1 style="font-family: 'Marianne-Bold'; font-weight: bold;">
-    Réf. : n° {{declaration.id}}
+    Réf. : Dossier n° {{declaration.id}}
 </h1>
 <div style="font-size: 1.2em;">
     <p>
@@ -10,13 +10,17 @@
     <p>
         Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré la mise sur le marché du produit :
         <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
-            {{ declaration.name }}
+            {{ declaration.name }} / {{ declaration.galenic_formulation }}
         </span>
     <p>
-        L’examen de cette déclaration soulève les objections suivantes, qui la rendent irrecevable:
-        <span style="font-family: 'Marianne-Bold'; font-weight: bold;"></span>
-            {{ declaration.objection }}
+        L’examen de cette déclaration soulève les objections suivantes, qui la rendent irrecevable :
+        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+            <br>
+            {% for reason in declaration.blocking_reasons %}
+                - {{ reason }}<br>
+            {% endfor %}
         </span>
+
     </p>
     <p>
         Vous disposez d’un délai de 30 jours francs, à compter de la date de réception de la présente lettre, pour régulariser votre déclaration ou me faire part de vos observations.
