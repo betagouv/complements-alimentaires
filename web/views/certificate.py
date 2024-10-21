@@ -42,6 +42,7 @@ class CertificateView(GenericAPIView):
             Declaration.Article.ARTICLE_15: 15,
             Declaration.Article.ARTICLE_15_WARNING: 15,
             Declaration.Article.ARTICLE_16: 16,
+            Declaration.Article.ANSES_REFERAL: "anses",
         }
         article = article_map.get(declaration.article, 15)
         if declaration.status in [
