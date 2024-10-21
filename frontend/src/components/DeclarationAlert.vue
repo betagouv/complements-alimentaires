@@ -70,7 +70,7 @@ const declarantDisplayData = computed(() => {
         title: "Une objection a été emise sur cette déclaration",
         expirationDate: props.declaration?.expirationDate,
         body: blockingReasons.value,
-        canDownloadCertificate: false,
+        canDownloadCertificate: true,
       }
     case "OBSERVATION":
       return {
