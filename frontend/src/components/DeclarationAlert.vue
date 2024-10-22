@@ -67,15 +67,15 @@ const declarantDisplayData = computed(() => {
     case "OBJECTION":
       return {
         type: "warning",
-        title: "Une objection a été emise sur cette déclaration",
+        title: "Une objection a été émise sur cette déclaration",
         expirationDate: props.declaration?.expirationDate,
         body: blockingReasons.value,
-        canDownloadCertificate: false,
+        canDownloadCertificate: true,
       }
     case "OBSERVATION":
       return {
         type: "warning",
-        title: "Une observation a été emise sur cette déclaration",
+        title: "Une observation a été émise sur cette déclaration",
         expirationDate: props.declaration?.expirationDate,
         body: blockingReasons.value,
         canDownloadCertificate: false,
@@ -125,14 +125,14 @@ const instructorDisplayData = computed(() => {
     case "OBJECTION":
       return {
         type: "info",
-        title: "Une objection a été emise sur cette déclaration",
+        title: "Une objection a été émise sur cette déclaration",
         body: blockingReasons.value,
-        canDownloadCertificate: false,
+        canDownloadCertificate: true,
       }
     case "OBSERVATION":
       return {
         type: "warning",
-        title: "Une observation a été emise sur cette déclaration",
+        title: "Une observation a été émise sur cette déclaration",
         body: blockingReasons.value,
         canDownloadCertificate: false,
       }
@@ -181,14 +181,14 @@ const visorDisplayData = computed(() => {
     case "OBJECTION":
       return {
         type: "info",
-        title: "Une objection a été emise sur cette déclaration",
+        title: "Une objection a été émise sur cette déclaration",
         body: blockingReasons.value,
-        canDownloadCertificate: false,
+        canDownloadCertificate: true,
       }
     case "OBSERVATION":
       return {
         type: "warning",
-        title: "Une observation a été emise sur cette déclaration",
+        title: "Une observation a été émise sur cette déclaration",
         body: blockingReasons.value,
         canDownloadCertificate: false,
       }

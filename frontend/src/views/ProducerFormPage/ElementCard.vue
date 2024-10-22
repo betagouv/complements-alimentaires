@@ -38,7 +38,7 @@
           <DsfrSelect
             label="Partie utilisée"
             defaultUnselectedText=""
-            v-model="model.usedPart"
+            v-model.number="model.usedPart"
             :options="plantParts"
             :required="true"
           />
@@ -50,7 +50,7 @@
           <DsfrSelect
             label="Unité"
             :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
-            v-model="model.unit"
+            v-model.number="model.unit"
             defaultUnselectedText=""
             :required="true"
           />
@@ -59,7 +59,7 @@
           <DsfrSelect
             label="Préparation"
             :options="store.preparations?.map((preparation) => ({ text: preparation.name, value: preparation.id }))"
-            v-model="model.preparation"
+            v-model.number="model.preparation"
             defaultUnselectedText=""
             :required="true"
           />
@@ -94,7 +94,7 @@
             <DsfrSelect
               label="Unité"
               :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
-              v-model="model.unit"
+              v-model.number="model.unit"
               defaultUnselectedText=""
               :required="true"
             />
@@ -109,7 +109,7 @@
           <DsfrSelect
             label="Unité"
             :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
-            v-model="model.unit"
+            v-model.number="model.unit"
             defaultUnselectedText=""
             :required="true"
           />

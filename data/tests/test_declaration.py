@@ -7,6 +7,7 @@ from data.factories import (
     AwaitingInstructionDeclarationFactory,
     ComputedSubstanceFactory,
     DeclaredPlantFactory,
+    DeclaredSubstanceFactory,
     InstructionReadyDeclarationFactory,
     PlantFactory,
     SnapshotFactory,
@@ -191,7 +192,7 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration_not_autorized.overriden_article, "")
 
     def test_article_anses_referal(self):
-        declaration = InstructionReadyDeclarationFactory(
+        declaration_with_computed_substance_max_exceeded = InstructionReadyDeclarationFactory(
             computed_substances=[],
         )
         substance = SubstanceFactory(ca_max_quantity=1.0)
@@ -199,12 +200,31 @@ class DeclarationTestCase(TestCase):
             substance=substance,
             unit=substance.unit,
             quantity=1.2,
-            declaration=declaration,
+            declaration=declaration_with_computed_substance_max_exceeded,
         )
-        declaration.assign_calculated_article()
-        declaration.save()
-        declaration.refresh_from_db()
+        declaration_with_computed_substance_max_exceeded.assign_calculated_article()
+        declaration_with_computed_substance_max_exceeded.save()
+        declaration_with_computed_substance_max_exceeded.refresh_from_db()
+        self.assertEqual(declaration_with_computed_substance_max_exceeded.article, Declaration.Article.ANSES_REFERAL)
+        self.assertEqual(
+            declaration_with_computed_substance_max_exceeded.calculated_article, Declaration.Article.ANSES_REFERAL
+        )
+        self.assertEqual(declaration_with_computed_substance_max_exceeded.overriden_article, "")
 
-        self.assertEqual(declaration.article, Declaration.Article.ANSES_REFERAL)
-        self.assertEqual(declaration.calculated_article, Declaration.Article.ANSES_REFERAL)
-        self.assertEqual(declaration.overriden_article, "")
+        declaration_with_declared_substance_max_exceeded = InstructionReadyDeclarationFactory(
+            computed_substances=[],
+        )
+        DeclaredSubstanceFactory(
+            substance=substance,
+            unit=substance.unit,
+            quantity=1.2,
+            declaration=declaration_with_declared_substance_max_exceeded,
+        )
+        declaration_with_declared_substance_max_exceeded.assign_calculated_article()
+        declaration_with_declared_substance_max_exceeded.save()
+        declaration_with_declared_substance_max_exceeded.refresh_from_db()
+        self.assertEqual(declaration_with_declared_substance_max_exceeded.article, Declaration.Article.ANSES_REFERAL)
+        self.assertEqual(
+            declaration_with_declared_substance_max_exceeded.calculated_article, Declaration.Article.ANSES_REFERAL
+        )
+        self.assertEqual(declaration_with_declared_substance_max_exceeded.overriden_article, "")

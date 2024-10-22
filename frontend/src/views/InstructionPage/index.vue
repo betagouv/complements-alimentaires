@@ -139,9 +139,8 @@ onMounted(async () => {
 
 // Tab management
 const components = computed(() => {
-  const baseComponents = [DeclarationSummary, HistoryTab]
+  const baseComponents = [IdentityTab, DeclarationSummary, HistoryTab]
   if (canInstruct.value) baseComponents.push(DecisionTab)
-  baseComponents.push(IdentityTab)
   return baseComponents
 })
 const titles = computed(() => tabTitles(components.value))

@@ -27,7 +27,7 @@
     <div v-if="decisionCategory === 'modify'" class="reject-reasons">
       <hr />
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reasons')">
-        <div class="mb-8" v-for="reason in rejectReasons" :key="reason.title">
+        <div class="mb-8" v-for="reason in blockingReasons" :key="reason.title">
           <p class="font-bold">{{ reason.title }}</p>
           <DsfrCheckboxSet
             v-model="reasons"
@@ -152,14 +152,14 @@ const decisionCategories = [
   },
 ]
 
-const rejectReasons = [
+const blockingReasons = [
   {
     title: "Le produit ne répond pas à la définition du complément alimentaire",
     items: [
       "Forme assimilable à un aliment courant",
       "Recommandations d'emploi incompatibles",
       "Composition (source concentrée, ...)",
-      "Autre",
+      "Autre raison pour laquelle le produit ne répond pas à la définition du complément alimentaire",
     ],
   },
   {
@@ -182,7 +182,7 @@ const rejectReasons = [
       "Informations manquantes",
       "Absence de preuve de reconnaissance mutuelle",
       "Absence ou non conformité de l'étiquetage",
-      "Autre",
+      "Autre motif d'irrecevabilité",
     ],
   },
   {
