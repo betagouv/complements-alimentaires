@@ -82,12 +82,7 @@
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <!-- Date de dernière mise à jour de la donnée -->
-      <DsfrAccordion
-        title="Historique de l'ingrédient"
-        id="accordion-history"
-        :expanded-id="expandedId"
-        @expand="(id) => (expandedId = id)"
-      >
+      <DsfrAccordion title="Historique de l'ingrédient" id="accordion-history">
         <DsfrTable :rows="historyDataDedup"></DsfrTable>
       </DsfrAccordion>
     </div>
@@ -182,7 +177,6 @@ const getElementFromApi = async () => {
 }
 
 const searchPageSource = ref(null)
-const expandedId = ref(null)
 
 const breadcrumbLinks = computed(() => {
   const links = [{ to: "/", text: "Accueil" }]
