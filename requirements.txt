@@ -31,6 +31,7 @@ django-ckeditor==6.7.0 ; python_version >= "3.11.dev0" and python_version < "3.1
 django-environ==0.11.2 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 django-extensions==3.2.3 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 django-filter==24.3 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
+django-hijack==3.6.2 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 django-js-asset==2.2.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 django-phonenumber-field[phonenumbers]==8.0.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
 django-silk==5.2.0 ; python_version >= "3.11.dev0" and python_version < "3.12.dev0"
