@@ -1,7 +1,7 @@
 {% extends 'certificates/certificate-base-template.html' %}
 {% block 'body' %}
 <h1 style="font-family: 'Marianne-Bold'; font-weight: bold;">
-    Réf. : n° {{declaration.id}}
+    Réf. : Dossier n° {{declaration.id}}
 </h1>
 <div style="font-size: 1.2em;">
     <p>
@@ -10,14 +10,14 @@
     <p>
         Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré la mise sur le marché du produit :
         <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
-            {{ declaration.name }}
+            {{ declaration.name }} / {{ declaration.galenic_formulation }}
         </span>
     <p>
-        Des objections ont été émises à l’égard de cette déclaration. Aucune observation apportée n'a
-        été de nature à remettre en cause les objections opposées à la déclaration
+        Des objections ont été émises à l’égard de cette déclaration. Toutefois, les éléments apportés
+        à cette occasion ne sont pas de nature à remettre en cause les objections opposées à la déclaration.
     </p>
     <p>
-        Votre déclaration est donc refusée. En application de l’article 20 du décret n°2006-352 du décret du 20 mars 2006,
+        Votre déclaration est donc refusée. En application de l’article 20 du décret n°2006-352 du 20 mars 2006,
         il vous est interdit d’importer pour la mise en libre pratique, de détenir en vue de la vente ou de la distribution à
         titre gratuit, de mettre en vente, de vendre ou de distribuer à titre gratuit le complément alimentaire cité ci-dessus.
     </p>

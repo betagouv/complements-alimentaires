@@ -19,7 +19,6 @@ from data.models import (
     Plant,
     PlantPart,
     Population,
-    Snapshot,
     Substance,
     SubstanceUnit,
 )
@@ -322,7 +321,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
     computed_substances = DeclaredListSerializer(child=ComputedSubstanceSerializer(), required=False)
     attachments = DeclaredListSerializer(child=AttachmentSerializer(), required=False)
     name = serializers.CharField(allow_blank=False, required=True)
-    blocking_reasons = serializers.SerializerMethodField(read_only=True)
+    blocking_reasons = serializers.ListField(read_only=True)
 
     class Meta:
         model = Declaration
@@ -468,13 +467,6 @@ class DeclarationSerializer(serializers.ModelSerializer):
         if not can_see_private_notes:
             ret.pop("private_notes")
         return ret
-
-    def get_blocking_reasons(self, obj):
-        try:
-            latest_snapshot = obj.snapshots.filter(blocking_reasons__isnull=False).latest("creation_date")
-            return latest_snapshot.blocking_reasons
-        except Snapshot.DoesNotExist:
-            return None
 
 
 class DeclarationShortSerializer(serializers.ModelSerializer):
