@@ -7,8 +7,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Case, Value, When
 from django.db.models.functions import Coalesce
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 from dateutil.relativedelta import relativedelta
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
@@ -301,17 +299,13 @@ class Declaration(Historisable, TimeStampable):
     def __str__(self):
         return f"Déclaration « {self.name} »"
 
-    def assign_article(self):
+    def assign_calculated_article(self):
         """
-        Cette fonction est appelée depuis les signals post_save et post_delete de la déclaration.
-        Ces signals sont dans la fonction « update_article » de ce même fichier.
-        Ce sont les particularités des ingrédients et substances contenues dans la composition qui déterminent les articles.
-        Dans le cas où plusieurs ingrédients impliqueraient plusieurs articles, certains articles prennent la priorité sur d'autres :
-        saisine ANSES (ART_17 et ART_18) > ART_16 > ART_15
+        Peuple l'article calculé pour cette déclaration.
+        La fonction ne sauvegarde pas la déclaration en base. L'appelant doit le faire en cas de besoin.
+        Cette décision a été prise pour éviter d'avoir des sauvegardes inutiles.
         """
         try:
-            current_calculated_article = self.calculated_article
-            new_calculated_article = current_calculated_article
             composition_items = (
                 self.declared_plants,
                 self.declared_microorganisms,
@@ -342,19 +336,16 @@ class Declaration(Historisable, TimeStampable):
             )
 
             if empty_composition:
-                new_calculated_article = ""
+                self.calculated_article = ""
             elif surpasses_max_dose:
-                new_calculated_article = Declaration.Article.ANSES_REFERAL
+                self.calculated_article = Declaration.Article.ANSES_REFERAL
             elif has_not_authorized_items:
-                new_calculated_article = Declaration.Article.ARTICLE_16
+                self.calculated_article = Declaration.Article.ARTICLE_16
             elif has_new_items:
-                new_calculated_article = Declaration.Article.ARTICLE_16
+                self.calculated_article = Declaration.Article.ARTICLE_16
             else:
-                new_calculated_article = Declaration.Article.ARTICLE_15
+                self.calculated_article = Declaration.Article.ARTICLE_15
 
-            if new_calculated_article != current_calculated_article:
-                self.calculated_article = new_calculated_article
-                self.save()
         except Exception as e:
             logger.error("Error calculating article")
             logger.exception(e)
@@ -584,8 +575,3 @@ class Attachment(Historisable):
         null=True, blank=True, upload_to="declaration-attachments/%Y/%m/%d/", verbose_name="pièce jointe"
     )
     name = models.TextField("nom du fichier", blank=True)
-
-
-@receiver((post_save), sender=Declaration)
-def update_article(sender, instance, *args, **kwargs):
-    instance.assign_article()
