@@ -10,14 +10,14 @@ from rest_framework.exceptions import NotFound
 from rest_framework.generics import GenericAPIView
 from xhtml2pdf import pisa
 
-from api.permissions import IsDeclarationAuthor
+from api.permissions import CanAccessIndividualDeclaration
 from data.models import Declaration
 
 logger = logging.getLogger(__name__)
 
 
 class CertificateView(GenericAPIView):
-    permission_classes = [IsDeclarationAuthor]
+    permission_classes = [CanAccessIndividualDeclaration]
     queryset = Declaration.objects.all()
 
     def get(self, request, *args, **kwargs):

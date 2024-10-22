@@ -20,7 +20,7 @@ from data.utils.external_utils import SiretData
 from data.validators import validate_siret, validate_vat  # noqa
 
 from ..exception_handling import ProjectAPIException
-from ..permissions import IsSupervisor, IsSupervisorOrInstructor
+from ..permissions import IsSupervisor, IsSupervisorOrAgent
 from ..serializers import CollaboratorSerializer, CompanySerializer
 
 User = get_user_model()
@@ -159,7 +159,7 @@ class CompanyRetrieveUpdateView(RetrieveUpdateAPIView):
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
-            return [IsAuthenticated(), IsSupervisorOrInstructor()]
+            return [IsAuthenticated(), IsSupervisorOrAgent()]
         else:
             return [IsAuthenticated(), IsSupervisor()]
 
