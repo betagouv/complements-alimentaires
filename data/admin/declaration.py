@@ -49,6 +49,7 @@ class DeclaredPlantInline(admin.StackedInline):
         "new_name",
         "new_description",
     )
+    autocomplete_fields = ("plant",)
     extra = 0
 
     def has_add_permission(self, request, object):
@@ -75,7 +76,6 @@ class DeclaredMicroorganismInline(admin.StackedInline):
     can_delete = True
     fields = (
         "microorganism",
-        "active",
         "activated",
         "strain",
         "quantity",
@@ -85,6 +85,8 @@ class DeclaredMicroorganismInline(admin.StackedInline):
         "new_genre",
         "new_description",
     )
+    autocomplete_fields = ("microorganism",)
+
     extra = 0
 
     def has_add_permission(self, request, object):
@@ -118,6 +120,7 @@ class DeclaredIngredientInline(admin.StackedInline):
         "new_type",
         "new_description",
     )
+    autocomplete_fields = ("ingredient",)
     extra = 0
 
     def has_add_permission(self, request, object):
@@ -130,7 +133,8 @@ class DeclaredIngredientInline(admin.StackedInline):
 class DeclaredSubstanceInline(admin.StackedInline):
     model = DeclaredSubstance
     can_delete = True
-    fields = ("substance",)
+    fields = ("substance", "quantity", "unit")
+    autocomplete_fields = ("substance",)
     extra = 0
 
     def has_add_permission(self, request, object):
@@ -144,11 +148,12 @@ class ComputedSubstanceInline(admin.TabularInline):
     model = ComputedSubstance
     can_delete = False
     fields = ("substance", "quantity", "unit")
+    autocomplete_fields = ("substance",)
     readonly_fields = fields
     extra = 0
 
     def has_add_permission(self, request, object):
-        return False
+        return True
 
 
 class DeclarationForm(forms.ModelForm):
