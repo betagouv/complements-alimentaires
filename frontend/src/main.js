@@ -1,7 +1,5 @@
 import { createApp } from "vue"
 import "./styles/index.css"
-import * as icons from "./icons.js"
-import { OhVueIcon, addIcons } from "oh-vue-icons"
 import VueMatomo from "vue-matomo"
 import "@gouvfr/dsfr/dist/dsfr.min.css" // Import des styles du DSFR
 import "@gouvminint/vue-dsfr/styles" // Import des styles globaux propre à VueDSFR
@@ -11,13 +9,8 @@ import App from "./App.vue"
 import router from "./router"
 import { createPinia } from "pinia"
 
-addIcons(...Object.values({ icons }))
 const pinia = createPinia()
-
-const app = createApp(App)
-  .use(router)
-  .use(pinia)
-  .use(VueDsfr, { icons: Object.values(icons) })
+const app = createApp(App).use(router).use(pinia).use(VueDsfr)
 
 if (window.MATOMO_ID)
   app.use(VueMatomo, {
@@ -32,5 +25,4 @@ if (window.MATOMO_ID)
     userId: undefined,
   })
 
-app.component("v-icon", OhVueIcon)
 app.mount("#app")
