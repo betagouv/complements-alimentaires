@@ -32,16 +32,17 @@
         v-if="payload"
         ref="tabs"
         :tab-titles="titles"
-        :initialSelectedIndex="parseInt(route.query.tab)"
-        @select-tab="(tab) => router.replace({ query: { tab } })"
+        v-model="selectedTabIndex"
+        @update:modelValue="selectTab"
       >
+        <div class="absolute opacity-50 bg-slate-200 inset-0 z-10 flex justify-center pt-20" v-if="requestInProgress">
+          <ProgressSpinner />
+        </div>
         <DsfrTabContent
           v-for="(component, idx) in components"
           :key="`component-${idx}`"
           :panelId="`tab-content-${idx}`"
           :tabId="`tab-${idx}`"
-          :selected="selectedTabIndex === idx"
-          :asc="asc"
         >
           <FormWrapper :externalResults="$externalResults">
             <component
@@ -105,17 +106,18 @@ const statusChangeErrors = ref({})
 const route = useRoute()
 const router = useRouter()
 
+const previouslySelectedTabIndex = ref(parseInt(route.query.tab))
 const selectedTabIndex = ref(parseInt(route.query.tab))
-const asc = ref(true)
-const tabs = ref(null) // Corresponds to the template ref (https://vuejs.org/guide/essentials/template-refs.html#accessing-the-refs)
+
 const selectTab = async (index) => {
-  if (requestInProgress.value || index === selectedTabIndex.value) return
+  if (requestInProgress.value) return
   const allowTransition = readonly.value || (await savePayload())
   if (allowTransition) {
-    asc.value = selectedTabIndex.value < index
-    selectedTabIndex.value = index
+    router.replace({ query: { tab: index } })
+    previouslySelectedTabIndex.value = index
+  } else {
+    selectedTabIndex.value = previouslySelectedTabIndex.value
   }
-  tabs.value?.selectIndex?.(selectedTabIndex.value)
 }
 
 const requestInProgress = ref(false)
@@ -265,6 +267,6 @@ const onWithdrawal = () => router.replace({ name: "DeclarationsHomePage", query:
 
 watch(
   () => route.query.tab,
-  (tab) => selectTab(parseInt(tab))
+  (tab) => (selectedTabIndex.value = parseInt(tab))
 )
 </script>
