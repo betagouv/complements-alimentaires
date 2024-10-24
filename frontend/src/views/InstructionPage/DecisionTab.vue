@@ -31,7 +31,7 @@
           <p class="font-bold">{{ reason.title }}</p>
           <DsfrCheckboxSet
             v-model="reasons"
-            :options="reason.items.map((x) => ({ label: x, name: x }))"
+            :options="reason.items.map((x) => ({ label: x, value: x }))"
             :error-message="firstErrorMsg(v$, 'reason')"
           />
         </div>
