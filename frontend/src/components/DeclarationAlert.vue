@@ -71,6 +71,7 @@ const declarantDisplayData = computed(() => {
         expirationDate: props.declaration?.expirationDate,
         body: blockingReasons.value,
         canDownloadCertificate: true,
+        downloadButtonText: "Télécharger le courrier d'objection",
       }
     case "OBSERVATION":
       return {
