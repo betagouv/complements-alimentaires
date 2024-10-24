@@ -1,7 +1,8 @@
 const { defineConfig } = require("@vue/cli-service")
 const BundleTracker = require("webpack-bundle-tracker")
 const debug = !process.env.DEBUG || process.env.DEBUG === "True"
-const publicPath = debug ? "http://127.0.0.1:8080/" : "/static/"
+const FRONTEND_URL = "http://localhost:8080"
+const publicPath = debug ? FRONTEND_URL : "/static/"
 
 module.exports = defineConfig({
   transpileDependencies: true,
@@ -19,12 +20,12 @@ module.exports = defineConfig({
   chainWebpack: (config) => {
     config.optimization.splitChunks(false)
 
-    config.plugin("BundleTracker").use(BundleTracker, [{ path: "../frontend/", filename: "webpack-stats.json" }])
+    config.plugin("BundleTracker").use(BundleTracker)
 
     config.resolve.alias.set("__STATIC__", "static")
 
     config.devServer
-      .host("127.0.0.1")
+      .host("0.0.0.0")
       .port(8080)
       .hot(true)
       .https(false)
