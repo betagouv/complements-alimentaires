@@ -18,6 +18,7 @@ class CountryChoices(models.TextChoices):
     SPAIN = "ES", "Espagne"
     ESTONIA = "EE", "Estonie"
     FINLAND = "FI", "Finlande"
+    GREAT_BRITAIN = "GB", "Grande-Bretagne"
     GREECE = "GR", "Grèce"
     HUNGARY = "HU", "Hongrie"
     IRELAND = "IE", "Irlande"
@@ -37,6 +38,7 @@ class CountryChoices(models.TextChoices):
     SLOVAKIA = "SK", "Slovaquie"
     SLOVENIA = "SI", "Slovénie"
     SWEDEN = "SE", "Suède"
+    SWITZERLAND = "CH", "Suisse"
     CZECH_REPUBLIC = "CZ", "République Tchèque"
 
 
