@@ -1,0 +1,174 @@
+{
+  "name": "liste-des-complements-alimentaires-declares",
+  "type": "table",
+  "path": "/home/qloridant/Downloads/liste-des-complements-alimentaires-declares.csv",
+  "scheme": "file",
+  "format": "csv",
+  "mediatype": "text/csv",
+  "encoding": "utf-8-sig",
+  "dialect": {
+    "csv": {
+      "delimiter": ";"
+    }
+  },
+  "schema": {
+    "fields": [
+      {
+        "name": "id",
+        "title": "Identifiant",
+        "example": "3211",
+        "description": "Identifiant unique permettant de référencer une déclaration d'un complément alimentaire",
+        "type": "integer"
+      },
+      {
+        "name": "date_acceptation",
+        "title": "Date acceptation",
+        "example": "2024-01-27",
+        "descrpition": "Date acceptation du complément alimentaire. Le délai de traitement va dépendre du cadre juridique dans lequel tombe le complément alimentaire. ",
+        "type": "date"
+      },
+      {
+        "name": "nom_commercial",
+        "title": "Nom commercial",
+        "example": "Compl'Alimentaires",
+        "description": "Nom commercial du produit fourni par le fabricant",
+        "type": "string",
+        "constraints":
+          {
+            "required": "True"
+          }
+      },
+      {
+        "name": "marque",
+        "title": "Marque",
+        "example": "",
+        "description": "Marque du fabricant sous laquelle est vendue le complément alimentaire",
+        "type": "string"
+      },
+      {
+        "name": "nom_fabricant",
+        "title": "Nom fabricant",
+        "example": "",
+        "description": "Nom de l'entreprise ayant fabriqué le complément alimentaire",
+        "type": "string"
+        
+      },
+      {
+        "name": "siret_fabricant",
+        "title": "Siret fabricant",
+        "example": "11007001800012",
+        "type": "string",
+        "constraints": {
+          "pattern": "^[0-9]{14}$",
+          "required": true
+        }
+      },
+      {
+        "name": "nom_responsable_etiquetage",
+        "type": "string"
+      },
+      {
+        "name": "siret_responsable_etiquetage",
+        "type": "integer"
+      },
+      {
+        "name": "article_reference",
+        "title": "Article de référence",
+        "description": "Réference de l'article juridique qui encadre la déclaration du produit. La déclaration du complément ne suit pas la même procédure en fonction de l'article dans lequel il tombe",
+        "type": "string",
+        "example": "15",
+        "constraints": 
+          {
+            "enum": ["15", "16", "17", "18"],
+            "required": "True"
+          }
+      },
+      {
+        "name": "forme_galenique",
+        "title": "Forme galénique",
+        "description": "La forme galénique correspond à la forme sous laquelle le médicament se présente (comprimé, gélule, sirop, collyre, crème, solution injectable, etc.). Elle est spécialement conçue pour la voie d’administration à laquelle le médicament est destiné. (source : sante.gouv.fr)",
+        "type": "string",
+        "example": "Sirop",
+        "constraints": {
+            "required": "True"
+          }
+      },
+      {
+        "name": "dose_journaliere",
+        "title": "Dose journalière",
+        "description": "Dose journalière recommandée   # TODO : ajouter unité de consommation ?",
+        "type": "string",
+        "example": "16 gouttes",
+        "constraints": {
+          "required": "True"
+        }
+      },
+      {
+        "name": "mode_emploi",
+        "title": "Mode Emploi",
+        "description": "Recommandation d'emploi fournies par le fabricant",
+        "type": "string",
+        "example": "4 gouttes 4 fois par jour dans un verre d'eau"
+      },
+      {
+        "name": "mises_en_garde",
+        "title": "Mises en garde",
+        "description": "Mise en garde fournies par le fabricant",
+        "example": "Ne pas dépasser la dose journalière recommandée. Tenir hors de portée des jeunes enfants. Ne peut se substituer à un régime alimentaire varié.",
+        "type": "string"
+      },
+      {
+        "name": "gamme",
+        "title": "Gamme",
+        "description": "Gamme de la marque du fabricant dans laquelle le produit est vendu",
+        "example": "Premium",
+        "type": "string"
+      },
+      {
+        "name": "aromes",
+        "title": "Arômes",
+        "description": "Arome fournis par le fabricant",
+        "example": "Orange",
+        "type": "string"
+      },
+      {
+        "name": "facteurs_risques",
+        "title": "facteurs_ risques",
+        "description": "",
+        "example": "Hypertension, Maladie rénale",
+        "type": "array"
+      },
+      {
+        "name": "populations_cibles",
+        "title": "Population cibles",
+        "description": "Les populations ciblées par le complément alimentaire déclaré. Le fabricant choisi parmi une liste fournie par Compl'Alim",
+        "example": "Femmes enceintes, Femmes allaitantes",
+        "type": "array"
+      },
+      {
+        "name": "plantes",
+        "type": "string"
+      },
+      {
+        "name": "familles_plantes",
+        "type": "string"
+      },
+      {
+        "name": "parties_plantes",
+        "type": "string"
+      },
+      {
+        "name": "micro_organisme",
+        "type": "string"
+      },
+      {
+        "name": "autres_ingredients",
+        "type": "string"
+      },
+      {
+        "name": "objectif_effet",
+        "type": "string"
+      }
+    ]
+  }
+}
