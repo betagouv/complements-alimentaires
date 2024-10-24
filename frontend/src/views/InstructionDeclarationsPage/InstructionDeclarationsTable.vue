@@ -27,7 +27,7 @@ const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowAttrs: { class: needsAttention(x) ? "font-bold" : "" },
     rowData: [
-      needsAttention(x) ? { component: "div", class: "h-3 w-3 rounded-full bg-orange-400" } : "",
+      needsAttention(x) ? { component: "div", class: `h-3 w-3 rounded-full ${circleColor(x)}` } : "",
       x.id,
       {
         component: "router-link",
@@ -49,6 +49,8 @@ const needsAttention = (declaration) =>
   !!declaration.instructor &&
   declaration.instructor.id === loggedUser.value.id &&
   declaration.status === "AWAITING_INSTRUCTION"
+
+const circleColor = (declaration) => (declaration.visaRefused ? "bg-red-500" : "bg-orange-400")
 </script>
 
 <style scoped>

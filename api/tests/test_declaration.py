@@ -23,6 +23,7 @@ from data.factories import (
     InstructionRoleFactory,
     MicroorganismFactory,
     OngoingInstructionDeclarationFactory,
+    OngoingVisaDeclarationFactory,
     PlantFactory,
     PlantPartFactory,
     PopulationFactory,
@@ -1353,3 +1354,16 @@ class TestDeclarationApi(APITestCase):
 
         declaration.refresh_from_db()
         self.assertNotEqual(declaration.author, authenticate.user)
+
+    @authenticate
+    def test_visa_refusal_field(self):
+        VisaRoleFactory(user=authenticate.user)
+        declaration = OngoingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:refuse_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(reverse("api:list_all_declarations"), format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertTrue(results[0]["visaRefused"])
