@@ -275,6 +275,15 @@ class Declaration(Historisable, TimeStampable):
             return None
 
     @property
+    def visa_refused(self):
+        from data.models import Snapshot
+
+        return (
+            self.status == Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+            and self.snapshots.latest("creation_date").action == Snapshot.SnapshotActions.REFUSE_VISA
+        )
+
+    @property
     def response_limit_date(self):
         """
         La date limite d'instruction est fixée à deux mois à partir du dernier statut
