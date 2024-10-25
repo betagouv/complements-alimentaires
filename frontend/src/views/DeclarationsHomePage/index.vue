@@ -52,7 +52,7 @@
         </div>
       </DsfrFieldset>
       <div class="md:border-r md:pr-4">
-        <PaginationSizeSelect modelValue="limit" @update:modelValue="updateLimit" />
+        <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
       </div>
       <StatusFilter
         class="max-w-lg"
