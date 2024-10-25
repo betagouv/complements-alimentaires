@@ -3,8 +3,10 @@ from django.db import models
 
 class CountryChoices(models.TextChoices):
     """
-    Each country is represented by a two-letter country code (ISO 3166-1 alpha-2) and its name in French.
-    Note that "Irlande du Nord" does not have an official ISO country code because it is part of the United Kingdom.
+    Ces pays font partie de l'espace économique européen et sont sélectionnables lors d'un article 16.
+    Cette liste n'est donc pas exhaustive de tous les pays du monde.
+    Chaque pays est representé par son code de deux chars ISO 3166-1 alpha-2
+    L'Irlande du Nord n'a pas un code ISO officiel car il fait partie du Royaume-Uni.
     """
 
     FRANCE = "FR", "France"
@@ -18,7 +20,6 @@ class CountryChoices(models.TextChoices):
     SPAIN = "ES", "Espagne"
     ESTONIA = "EE", "Estonie"
     FINLAND = "FI", "Finlande"
-    GREAT_BRITAIN = "GB", "Grande-Bretagne"
     GREECE = "GR", "Grèce"
     HUNGARY = "HU", "Hongrie"
     IRELAND = "IE", "Irlande"
@@ -38,7 +39,6 @@ class CountryChoices(models.TextChoices):
     SLOVAKIA = "SK", "Slovaquie"
     SLOVENIA = "SI", "Slovénie"
     SWEDEN = "SE", "Suède"
-    SWITZERLAND = "CH", "Suisse"
     CZECH_REPUBLIC = "CZ", "République Tchèque"
 
 
