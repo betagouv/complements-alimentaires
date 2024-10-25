@@ -11,6 +11,7 @@
           :text="declaration.postValidationProducerMessage || '< sans commentaire >'"
         />
         <VisaInfoLine
+          v-if="showExpirationDays"
           title="Délai de réponse"
           icon="ri-time-fill"
           :text="declaration.postValidationExpirationDays || '< non spécifié >'"
@@ -67,6 +68,10 @@ const privateNotes = ref(declaration.value?.privateNotes || "")
 
 const instructorName = computed(
   () => `${declaration.value?.instructor?.firstName} ${declaration.value?.instructor?.lastName}`
+)
+const showExpirationDays = computed(
+  () =>
+    declaration.value.postValidationStatus === "OBJECTION" || declaration.value.postValidationStatus === "OBSERVATION"
 )
 const postValidationStatus = computed(() => statusProps[declaration.value.postValidationStatus].label)
 const refuseVisa = async () => {
