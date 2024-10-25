@@ -38,7 +38,7 @@
         </div>
       </DsfrFieldset>
       <DsfrFieldset class="!mb-0">
-        <div class="md:border-x md:px-4">
+        <div class="md:border-x md:px-4 min-w-44">
           <DsfrInputGroup>
             <DsfrSelect
               label="Personne assignée"
@@ -51,7 +51,7 @@
           </DsfrInputGroup>
         </div>
       </DsfrFieldset>
-      <div class="md:border-r md:pr-4">
+      <div class="md:border-r md:pr-4 min-w-48">
         <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
       </div>
       <StatusFilter

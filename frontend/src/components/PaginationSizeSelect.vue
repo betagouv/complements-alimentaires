@@ -1,7 +1,7 @@
 <template>
   <DsfrInputGroup>
     <DsfrSelect
-      label="Items per page"
+      label="Déclarations per page"
       :options="options"
       @update:modelValue="(val) => emit('update:modelValue', val)"
       :modelValue="limit"

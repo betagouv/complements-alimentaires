@@ -12,7 +12,7 @@
         v-model="filteredStatus"
       />
 
-      <div class="md:border-l md:px-8">
+      <div class="md:border-l md:pl-4">
         <DsfrInputGroup class="max-w-sm">
           <DsfrSelect
             label="Trier par"
@@ -23,7 +23,7 @@
           />
         </DsfrInputGroup>
       </div>
-      <div class="md:border-l md:pl-4 min-w-36">
+      <div class="md:border-l md:pl-4 min-w-48">
         <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
       </div>
       <div class="md:border-l md:pl-4 min-w-36">

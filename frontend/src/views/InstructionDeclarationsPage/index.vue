@@ -44,31 +44,34 @@
         </DsfrFieldset>
       </div>
       <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" v-model="filteredStatus" />
-      <div class="md:border-l md:pl-4 min-w-36">
-        <DsfrInputGroup class="max-w-sm">
-          <DsfrSelect
-            label="Trier par"
-            defaultUnselectedText=""
-            :modelValue="ordering"
-            @update:modelValue="updateOrdering"
-            :options="orderingOptions"
-            class="!text-sm"
-          />
-        </DsfrInputGroup>
+      <div>
+        <div class="md:border-l md:pl-4 min-w-36 flex flex-row gap-4">
+          <DsfrInputGroup class="max-w-sm">
+            <DsfrSelect
+              label="Trier par"
+              defaultUnselectedText=""
+              :modelValue="ordering"
+              @update:modelValue="updateOrdering"
+              :options="orderingOptions"
+              class="!text-sm"
+            />
+          </DsfrInputGroup>
 
-        <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
-      </div>
-      <div class="md:border-l md:pl-4 min-w-36">
-        <DsfrInputGroup class="max-w-sm">
-          <DsfrSelect
-            label="Article"
-            defaultUnselectedText=""
-            :modelValue="article"
-            @update:modelValue="updateArticle"
-            :options="articleSelectOptions"
-            class="!text-sm"
-          />
-        </DsfrInputGroup>
+          <DsfrInputGroup class="max-w-sm">
+            <DsfrSelect
+              label="Article"
+              defaultUnselectedText=""
+              :modelValue="article"
+              @update:modelValue="updateArticle"
+              :options="articleSelectOptions"
+              class="!text-sm"
+            />
+          </DsfrInputGroup>
+        </div>
+
+        <div class="md:border-l md:pl-4 min-w-36 pb-2">
+          <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
+        </div>
       </div>
     </div>
     <div v-if="isFetching" class="flex justify-center my-10">
@@ -167,5 +170,8 @@ watch(
 }
 .filters :deep(.fr-input-group) {
   @apply mb-0 mt-2;
+}
+.filters :deep(.fr-select-group) {
+  @apply mb-2;
 }
 </style>
