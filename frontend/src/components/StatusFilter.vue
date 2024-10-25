@@ -38,30 +38,30 @@ onMounted(() => (statuses.value = statusString.value ? statusString.value.split(
 watch(statuses, () => emit("updateFilter", statuses.value.join(",")))
 
 const baseFilterOptions = [
-  { value: "DRAFT", text: "Brouillon" },
-  { value: "OBJECTION", text: "Objection" },
-  { value: "OBSERVATION", text: "Observation" },
-  { value: "ABANDONED", text: "Abandon" },
-  { value: "AUTHORIZED", text: "Déclaration finalisée" },
-  { value: "REJECTED", text: "Refus" },
-  { value: "WITHDRAWN", text: "Retiré du marché" },
+  { value: "DRAFT", label: "Brouillon" },
+  { value: "OBJECTION", label: "Objection" },
+  { value: "OBSERVATION", label: "Observation" },
+  { value: "ABANDONED", label: "Abandon" },
+  { value: "AUTHORIZED", label: "Déclaration finalisée" },
+  { value: "REJECTED", label: "Refus" },
+  { value: "WITHDRAWN", label: "Retiré du marché" },
 ]
 const statusFilterOptions = props.groupInstruction
   ? baseFilterOptions
       .slice(0, 1)
-      .concat([{ value: "INSTRUCTION", text: "Instruction" }])
+      .concat([{ value: "INSTRUCTION", label: "Instruction" }])
       .concat(baseFilterOptions.slice(1))
   : baseFilterOptions
       .slice(0, 1)
       .concat([
-        { value: "AWAITING_INSTRUCTION", text: "En attente d'instruction" },
-        { value: "ONGOING_INSTRUCTION", text: "En cours d'instruction" },
-        { value: "AWAITING_VISA", text: "En attente de visa" },
-        { value: "ONGOING_VISA", text: "Visa en cours" },
+        { value: "AWAITING_INSTRUCTION", label: "En attente d'instruction" },
+        { value: "ONGOING_INSTRUCTION", label: "En cours d'instruction" },
+        { value: "AWAITING_VISA", label: "En attente de visa" },
+        { value: "ONGOING_VISA", label: "Visa en cours" },
       ])
       .concat(baseFilterOptions.slice(1))
 
 const options = statusFilterOptions
   .filter((x) => props.exclude.indexOf(x.value) === -1)
-  .map((x) => ({ label: x.text, name: x.value }))
+  .map((x) => ({ label: x.label, value: x.value }))
 </script>
