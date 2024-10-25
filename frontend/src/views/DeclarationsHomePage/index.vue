@@ -38,7 +38,7 @@
         </div>
       </DsfrFieldset>
       <DsfrFieldset class="!mb-0">
-        <div class="md:border-x md:px-4">
+        <div class="md:border-x md:px-4 min-w-44">
           <DsfrInputGroup>
             <DsfrSelect
               label="Personne assignée"
@@ -51,8 +51,11 @@
           </DsfrInputGroup>
         </div>
       </DsfrFieldset>
+      <div class="md:border-r md:pr-4 min-w-48">
+        <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
+      </div>
       <StatusFilter
-        class="max-w-xl"
+        class="max-w-lg"
         @updateFilter="updateStatusFilter"
         v-model="filteredStatus"
         :groupInstruction="true"
@@ -86,7 +89,8 @@ import { useFetch } from "@vueuse/core"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { getPagesForPagination } from "@/utils/components"
-import StatusFilter from "@/components/StatusFilter.vue"
+import PaginationSizeSelect from "@/components/PaginationSizeSelect"
+import StatusFilter from "@/components/StatusFilter"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -97,7 +101,7 @@ const author = computed(() => (route.query.author ? parseInt(route.query.author)
 
 const hasDeclarations = computed(() => !!data.value?.results?.length)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
-const offset = computed(() => (page.value - 1) * limit)
+const offset = computed(() => (page.value - 1) * limit.value)
 
 const authorOptions = computed(() => {
   const allAuthors = data.value?.authors.map((x) => ({ value: x.id, text: `${x.firstName} ${x.lastName}` })) || []
@@ -112,11 +116,11 @@ const companiesOptions = computed(() => {
   return companies
 })
 
-const limit = 10
-const pages = computed(() => getPagesForPagination(data.value.count, limit, route.path))
+const pages = computed(() => getPagesForPagination(data.value.count, limit.value, route.path))
 
 const page = computed(() => parseInt(route.query.page))
 const filteredStatus = computed(() => route.query.status)
+const limit = computed(() => route.query.limit)
 
 const createNewDeclaration = () => router.push({ name: "NewDeclaration" })
 
@@ -125,12 +129,13 @@ const updateStatusFilter = (status) => updateQuery({ status })
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 const updateCompany = (newValue) => updateQuery({ company: newValue })
 const updateAuthor = (newValue) => updateQuery({ author: newValue })
+const updateLimit = (newValue) => updateQuery({ limit: newValue, page: 1 })
 
 const url = computed(() => {
   let statusQuery = filteredStatus.value
   if (filteredStatus.value?.indexOf("INSTRUCTION") > -1)
     statusQuery += `${statusQuery.length ? "," : ""}AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA`
-  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate&company=${company.value}&author=${author.value}`
+  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit.value}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate&company=${company.value}&author=${author.value}`
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -138,5 +143,5 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
-watch([page, filteredStatus, company, author], fetchSearchResults)
+watch([page, filteredStatus, company, author, limit], fetchSearchResults)
 </script>
