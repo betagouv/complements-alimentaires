@@ -64,12 +64,12 @@ const v$ = useVuelidate(rules, state, { $externalResults })
 const selectableRoles = [
   {
     label: roleNameDisplayNameMapping.DeclarantRole,
-    name: "DeclarantRole",
+    value: "DeclarantRole",
     hint: "permet au collaborateur de créer et gérer ses propres déclarations.",
   },
   {
     label: roleNameDisplayNameMapping.SupervisorRole,
-    name: "SupervisorRole",
+    value: "SupervisorRole",
     hint: "permet au collaborateur de gérer l'ensemble de l'entreprise (les déclarations existantes, les collaborateurs, et l'entreprise elle-même).",
   },
 ]

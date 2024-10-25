@@ -29,14 +29,12 @@
       <div v-if="declaration">
         <DeclarationSummary :showArticle="true" :readonly="true" v-model="declaration" v-if="isAwaitingInstruction" />
 
-        <DsfrTabs v-else ref="tabs" :tab-titles="titles" :initialSelectedIndex="0" @select-tab="selectTab">
+        <DsfrTabs v-else v-model="selectedTabIndex" ref="tabs" :tab-titles="titles">
           <DsfrTabContent
             v-for="(component, idx) in components"
             :key="`component-${idx}`"
             :panelId="`tab-content-${idx}`"
             :tabId="`tab-${idx}`"
-            :selected="selectedTabIndex === idx"
-            :asc="asc"
           >
             <component
               :is="component"
@@ -56,8 +54,8 @@
           v-if="!isAwaitingInstruction"
           :titles="titles"
           :selectedTabIndex="selectedTabIndex"
-          @back="selectTab(selectedTabIndex - 1)"
-          @forward="selectTab(selectedTabIndex + 1)"
+          @back="selectedTabIndex -= 1"
+          @forward="selectedTabIndex += 1"
         />
       </div>
     </div>
@@ -88,7 +86,6 @@ const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 const $externalResults = ref({})
-const tabs = ref(null) // Corresponds to the template ref (https://vuejs.org/guide/essentials/template-refs.html#accessing-the-refs)
 
 const props = defineProps({
   declarationId: String,
@@ -145,13 +142,6 @@ const components = computed(() => {
 })
 const titles = computed(() => tabTitles(components.value))
 const selectedTabIndex = ref(0)
-const asc = ref(true) // Je n'aime pas le nommage mais ça vient de ce paramètre : https://vue-dsfr.netlify.app/?path=/docs/composants-dsfrtabs--docs
-const selectTab = (index) => {
-  if (index === selectedTabIndex.value) return
-  asc.value = selectedTabIndex.value < index
-  selectedTabIndex.value = index
-  tabs.value?.selectIndex?.(selectedTabIndex.value)
-}
 
 const instructDeclaration = async () => {
   const url = `/api/v1/declarations/${props.declarationId}/take-for-instruction/`

@@ -7,21 +7,20 @@
         votre dossier.
       </p>
 
-      <DsfrAccordionsGroup>
-        <li v-for="tabSection in shownErrors" :key="tabSection.tab">
-          <DsfrAccordion
-            :title="`${tabSection.tab} (${tabSection.errors.length} erreur${tabSection.errors.length > 1 ? 's' : ''})`"
-            :expanded-id="accordionExpansion[tabSection.tab]"
-            @expand="accordionExpansion[tabSection.tab] = $event"
-          >
-            <router-link :to="routeForTab(tabSection.tab)">Aller dans l'onglet « {{ tabSection.tab }} »</router-link>
-            <ul>
-              <li v-for="error in tabSection.errors" :key="error">
-                {{ error }}
-              </li>
-            </ul>
-          </DsfrAccordion>
-        </li>
+      <DsfrAccordionsGroup v-model="activeAccordion">
+        <DsfrAccordion
+          v-for="tabSection in shownErrors"
+          :key="tabSection.tab"
+          :title="`${tabSection.tab} (${tabSection.errors.length} erreur${tabSection.errors.length > 1 ? 's' : ''})`"
+          :id="tabSection.tab"
+        >
+          <router-link :to="routeForTab(tabSection.tab)">Aller dans l'onglet « {{ tabSection.tab }} »</router-link>
+          <ul>
+            <li v-for="error in tabSection.errors" :key="error">
+              {{ error }}
+            </li>
+          </ul>
+        </DsfrAccordion>
       </DsfrAccordionsGroup>
     </DsfrAlert>
   </div>
@@ -30,7 +29,7 @@
 <script setup>
 import { computed, ref } from "vue"
 const props = defineProps({ errors: Object, tabTitles: Array })
-const accordionExpansion = ref({})
+const activeAccordion = ref(-1)
 
 const shownErrors = computed(() => {
   const fieldErrors = props.errors?.fieldErrors
