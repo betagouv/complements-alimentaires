@@ -920,13 +920,13 @@ Django = ">=4.2"
 
 [[package]]
 name = "django-hijack"
-version = "3.6.2"
+version = "3.7.0"
 description = "Enable users to hijack (=login as) and work on behalf of another user."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "django_hijack-3.6.2-py3-none-any.whl", hash = "sha256:8e36b136fd5a60c2f01606837e406877d6260610bffc3219f6fe0a5d56018fab"},
-    {file = "django_hijack-3.6.2.tar.gz", hash = "sha256:c300bbf4de81d5240fc468038d76fb3729dea053743ac6f9aea994c1f9ba2870"},
+    {file = "django_hijack-3.7.0-py3-none-any.whl", hash = "sha256:bcc849fc9ee5bc17cce409121ed51c0cf9b11782a7a3a0be10cdc83425734e29"},
+    {file = "django_hijack-3.7.0.tar.gz", hash = "sha256:c665cf2d011adb8213b232522051159146f352d7274ea147066fd831ccf5fecc"},
 ]
 
 [package.dependencies]
@@ -934,7 +934,7 @@ django = ">=4.2"
 
 [package.extras]
 docs = ["mkdocs (==1.6.1)"]
-lint = ["msgcheck (==4.0.0)", "ruff (==0.7.0)"]
+lint = ["msgcheck (==4.1.0)", "ruff (==0.7.1)"]
 test = ["pytest", "pytest-cov", "pytest-django"]
 
 [[package]]
@@ -3721,4 +3721,4 @@ test = ["coverage (>=5.3)", "tomli (>=2.0.1)", "tox"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.*"
-content-hash = "cbc5d3ef0dfb3101217027b0aaa5959d84fd93ec1d8ff7a1c44cc952c3aa5ab9"
+content-hash = "d740e78329ec7d570e84f3f88fa6c28ffe29f899b9f9192a1b6790ba3bc9012b"
