@@ -27,7 +27,7 @@
           </DsfrInputGroup>
         </div>
       </DsfrFieldset>
-      <div class="min-w-60">
+      <div class="min-w-52">
         <DsfrFieldset class="!mb-0">
           <div class="md:border-x md:px-4">
             <DsfrInputGroup>
@@ -44,29 +44,34 @@
         </DsfrFieldset>
       </div>
       <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" v-model="filteredStatus" />
-      <div class="md:border-l md:pl-4">
-        <DsfrInputGroup class="max-w-sm">
-          <DsfrSelect
-            label="Trier par :"
-            defaultUnselectedText=""
-            :modelValue="ordering"
-            @update:modelValue="updateOrdering"
-            :options="orderingOptions"
-            class="!text-sm"
-          />
-        </DsfrInputGroup>
-      </div>
-      <div class="md:border-l md:pl-4 min-w-36">
-        <DsfrInputGroup class="max-w-sm">
-          <DsfrSelect
-            label="Article"
-            defaultUnselectedText=""
-            :modelValue="article"
-            @update:modelValue="updateArticle"
-            :options="articleSelectOptions"
-            class="!text-sm"
-          />
-        </DsfrInputGroup>
+      <div>
+        <div class="md:border-l md:pl-4 min-w-36 flex flex-row gap-4">
+          <DsfrInputGroup class="max-w-sm">
+            <DsfrSelect
+              label="Trier par"
+              defaultUnselectedText=""
+              :modelValue="ordering"
+              @update:modelValue="updateOrdering"
+              :options="orderingOptions"
+              class="!text-sm"
+            />
+          </DsfrInputGroup>
+
+          <DsfrInputGroup class="max-w-sm">
+            <DsfrSelect
+              label="Article"
+              defaultUnselectedText=""
+              :modelValue="article"
+              @update:modelValue="updateArticle"
+              :options="articleSelectOptions"
+              class="!text-sm"
+            />
+          </DsfrInputGroup>
+        </div>
+
+        <div class="md:border-l md:pl-4 min-w-36 pb-2">
+          <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
+        </div>
       </div>
     </div>
     <div v-if="isFetching" class="flex justify-center my-10">
@@ -97,6 +102,7 @@ import { getPagesForPagination } from "@/utils/components"
 import { DsfrInput } from "@gouvminint/vue-dsfr"
 import StatusFilter from "@/components/StatusFilter.vue"
 import { orderingOptions, articleOptions } from "@/utils/mappings"
+import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 
 const router = useRouter()
 const route = useRoute()
@@ -109,10 +115,9 @@ const articleSelectOptions = [
 
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
-const offset = computed(() => (page.value - 1) * limit)
+const offset = computed(() => (page.value - 1) * limit.value)
 
-const limit = 10
-const pages = computed(() => getPagesForPagination(data.value?.count, limit, route.path))
+const pages = computed(() => getPagesForPagination(data.value?.count, limit.value, route.path))
 const allInstructors = computed(() => data.value?.instructors)
 const instructorSelectOptions = computed(() => {
   const availableInstructors = allInstructors.value?.map((x) => ({ value: "" + x.id, text: x.name })) || []
@@ -129,6 +134,7 @@ const companyNameEnd = computed(() => route.query.entrepriseA)
 const assignedInstructor = computed(() => route.query.personneAssignée)
 const ordering = computed(() => route.query.triage)
 const article = computed(() => route.query.article)
+const limit = computed(() => route.query.limit)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 
@@ -139,11 +145,12 @@ const updateCompanyNameEndFilter = (newValue) => updateQuery({ entrepriseA: newV
 const updateInstructorFilter = (newValue) => updateQuery({ personneAssignée: newValue })
 const updateOrdering = (newValue) => updateQuery({ triage: newValue })
 const updateArticle = (newValue) => updateQuery({ article: newValue })
+const updateLimit = (newValue) => updateQuery({ limit: newValue, page: 1 })
 
 // Obtention de la donnée via API
 const url = computed(
   () =>
-    `/api/v1/declarations/?limit=${limit}&offset=${offset.value}&status=${filteredStatus.value || ""}&company_name_start=${companyNameStart.value}&company_name_end=${companyNameEnd.value}&ordering=${ordering.value}&instructor=${assignedInstructor.value}&article=${article.value}`
+    `/api/v1/declarations/?limit=${limit.value}&offset=${offset.value}&status=${filteredStatus.value || ""}&company_name_start=${companyNameStart.value}&company_name_end=${companyNameEnd.value}&ordering=${ordering.value}&instructor=${assignedInstructor.value}&article=${article.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -152,7 +159,7 @@ const fetchSearchResults = async () => {
 }
 
 watch(
-  [page, filteredStatus, companyNameStart, companyNameEnd, assignedInstructor, ordering, article],
+  [page, filteredStatus, companyNameStart, companyNameEnd, assignedInstructor, ordering, article, limit],
   fetchSearchResults
 )
 </script>
@@ -163,5 +170,8 @@ watch(
 }
 .filters :deep(.fr-input-group) {
   @apply mb-0 mt-2;
+}
+.filters :deep(.fr-select-group) {
+  @apply mb-2;
 }
 </style>

@@ -116,32 +116,32 @@ const v$ = useVuelidate(rules, state, { $externalResults })
 const allActivities = [
   {
     label: "Fabricant",
-    name: "FABRICANT",
+    value: "FABRICANT",
     hint: "Le fabricant est responsable de la production des compléments alimentaires.",
   },
   {
     label: "Façonnier",
-    name: "FAÇONNIER",
+    value: "FAÇONNIER",
     hint: "Le façonnier (ou sous-traitant) produit des compléments alimentaires pour le compte d'autres marques.",
   },
   {
     label: "Importateur",
-    name: "IMPORTATEUR",
+    value: "IMPORTATEUR",
     hint: "L'importateur est responsable de l'introduction de compléments alimentaires provenant d'un pays hors UE, sur le marché français.",
   },
   {
     label: "Introducteur",
-    name: "INTRODUCTEUR",
+    value: "INTRODUCTEUR",
     hint: "L'introducteur est responsable de l'introduction de compléments alimentaires provenant d'un pays de l'UE, sur le marché français.",
   },
   {
     label: "Conseil",
-    name: "CONSEIL",
+    value: "CONSEIL",
     hint: "Ce rôle peut être tenu par des organismes spécialisés (type cabinet de conseil) qui fournissent des expertises et des conseils aux autres acteurs de la chaîne.",
   },
   {
     label: "Distributeur",
-    name: "DISTRIBUTEUR",
+    value: "DISTRIBUTEUR",
     hint: "Le distributeur achète des compléments alimentaires pour les revendre aux détaillants ou directement aux consommateurs.",
   },
 ]
