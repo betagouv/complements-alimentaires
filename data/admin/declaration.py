@@ -40,6 +40,7 @@ class DeclaredPlantInline(admin.StackedInline):
     can_delete = True
     fields = (
         "plant",
+        "active",
         "used_part",
         "quantity",
         "unit",
@@ -149,7 +150,6 @@ class ComputedSubstanceInline(admin.TabularInline):
     can_delete = False
     fields = ("substance", "quantity", "unit")
     autocomplete_fields = ("substance",)
-    readonly_fields = fields
     extra = 0
 
     def has_add_permission(self, request, object):
