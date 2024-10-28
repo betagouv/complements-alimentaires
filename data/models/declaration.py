@@ -215,11 +215,13 @@ class Declaration(Historisable, TimeStampable):
             return None
 
     @property
-    def last_comment(self):
+    def last_administration_comment(self):
         from data.models import Snapshot
 
         try:
-            latest_snapshot = self.snapshots.filter(comment__isnull=False).latest("creation_date")
+            latest_snapshot = self.snapshots.filter(
+                comment__isnull=False, action__in=["OBSERVE_NO_VISA", "APPROVE_VISA"]
+            ).latest("creation_date")
             return latest_snapshot.comment
         except Snapshot.DoesNotExist:
             return None
@@ -311,8 +313,6 @@ class Declaration(Historisable, TimeStampable):
 
     def assign_calculated_article(self):
         """
-        Cette fonction est appelée depuis les signals post_save et post_delete de la déclaration.
-        Ces signals sont dans la fonction « update_article » de ce même fichier.
         Ce sont les particularités des ingrédients et substances contenues dans la composition qui déterminent les articles.
         Dans le cas où plusieurs ingrédients impliqueraient plusieurs articles, certains articles prennent la priorité sur d'autres :
         saisine ANSES (ART_17 et ART_18) > ART_16 > ART_15
