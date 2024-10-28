@@ -210,7 +210,7 @@ const submitDecision = async () => {
 
   const actions = {
     observation: "observe",
-    approve: "authorize",
+    autorisation: "authorize",
     objection: "object",
     rejection: "reject",
   }
