@@ -115,7 +115,7 @@ const rules = computed(() => {
 const declaration = defineModel()
 const proposal = ref(null)
 const delayDays = ref(15)
-const comment = ref("")
+const comment = ref(declaration.value?.lastAdministrationComment || "")
 const reasons = ref([])
 const privateNotes = ref(declaration.value?.privateNotes || "")
 

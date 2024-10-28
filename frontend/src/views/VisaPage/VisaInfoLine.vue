@@ -5,7 +5,9 @@
       <span>{{ title }}</span>
     </div>
     <div class="comment sm:flex-auto">
-      {{ text }}
+      <slot name="value">
+        {{ text }}
+      </slot>
     </div>
   </div>
 </template>
@@ -16,5 +18,8 @@ defineProps(["icon", "title", "text"])
 <style scoped>
 .comment {
   white-space: pre-line;
+}
+.comment :deep(.fr-input-group) {
+  @apply !mt-0;
 }
 </style>
