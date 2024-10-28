@@ -62,16 +62,22 @@
               pour {{ payload.computedSubstances[rowIndex].substance.maxQuantity }} maximum autorisés
             </span>
           </div>
-          <DsfrInputGroup v-else-if="askForQuantity(payload.computedSubstances[rowIndex].substance)">
+          <DsfrInputGroup>
             <NumberField
               v-model="payload.computedSubstances[rowIndex].quantity"
               label="Quantité par DJR"
-              :required="true"
+              :required="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
             />
+            <div
+              class="!text-neutral-500 mt-1"
+              v-if="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
+            >
+              * champ obligatoire
+            </div>
           </DsfrInputGroup>
         </div>
         <div class="hidden sm:table-cell fr-text-alt ca-cell font-italic">
-          <span v-if="askForQuantity(payload.computedSubstances[rowIndex].substance)">
+          <span>
             {{ payload.computedSubstances[rowIndex].substance.unit }}
           </span>
         </div>
@@ -94,8 +100,6 @@ const headers = ["", "Nom", "Ingrédient(s) source", "Qté totale par DJR", "Uni
 const rows = computed(() =>
   payload.value.computedSubstances.map((x) => [x.substance.name.toLowerCase(), sourceElements(x.substance)])
 )
-
-const askForQuantity = (substance) => substance.mustSpecifyQuantity
 
 const elements = computed(() =>
   [].concat(
