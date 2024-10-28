@@ -215,6 +215,18 @@ class Declaration(Historisable, TimeStampable):
             return None
 
     @property
+    def last_administration_comment(self):
+        from data.models import Snapshot
+
+        try:
+            latest_snapshot = self.snapshots.filter(
+                comment__isnull=False, action__in=["OBSERVE_NO_VISA", "APPROVE_VISA"]
+            ).latest("creation_date")
+            return latest_snapshot.comment
+        except Snapshot.DoesNotExist:
+            return None
+
+    @property
     def json_representation(self):
         from api.serializers import DeclarationSerializer
 
@@ -313,6 +325,9 @@ class Declaration(Historisable, TimeStampable):
         Peuple l'article calculé pour cette déclaration.
         La fonction ne sauvegarde pas la déclaration en base. L'appelant doit le faire en cas de besoin.
         Cette décision a été prise pour éviter d'avoir des sauvegardes inutiles.
+        Ce sont les particularités des ingrédients et substances contenues dans la composition qui déterminent les articles.
+        Dans le cas où plusieurs ingrédients impliqueraient plusieurs articles, certains articles prennent la priorité sur d'autres :
+        saisine ANSES (ART_17 et ART_18) > ART_16 > ART_15
         """
         try:
             composition_items = (
