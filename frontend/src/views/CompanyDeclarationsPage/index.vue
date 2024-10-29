@@ -68,6 +68,7 @@ import { useRootStore } from "@/stores/root"
 import { computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
+import { getPagesForPagination } from "@/utils/components"
 import CompanyDeclarationsTable from "./CompanyDeclarationsTable"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import StatusFilter from "@/components/StatusFilter.vue"
@@ -94,6 +95,8 @@ const limit = 10
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 const offset = computed(() => (page.value - 1) * limit)
+
+const pages = computed(() => getPagesForPagination(data.value.count, limit, route.path))
 
 // Valeurs obtenus du queryparams
 const page = computed(() => parseInt(route.query.page))

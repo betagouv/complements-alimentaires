@@ -144,14 +144,22 @@ const payload = ref({
   computedSubstances: [],
   attachments: [],
 })
-const { response, data, isFetching, execute } = useFetch(`/api/v1/declarations/${props.id}`, { immediate: false })
+const { response, data, isFetching, execute } = useFetch(`/api/v1/declarations/${props.id || route.query.duplicate}`, {
+  immediate: false,
+})
   .get()
   .json()
 
-if (!isNewDeclaration.value) execute()
+if (!isNewDeclaration.value || route.query.duplicate) execute()
 
 watch(response, () => handleError(response))
-watch(data, () => (payload.value = data.value))
+watch(data, () => {
+  const shouldDuplicate = route.query.duplicate && !props.id
+  if (shouldDuplicate) {
+    performDuplication(data.value)
+    useToaster().addSuccessMessage("Votre déclaration a été dupliquée. Merci de renseigner les pièces jointes.")
+  } else payload.value = data.value
+})
 
 const hasNewElements = computed(() => {
   return []
@@ -270,4 +278,52 @@ watch(
   () => route.query.tab,
   (tab) => (selectedTabIndex.value = parseInt(tab))
 )
+
+const performDuplication = (originalDeclaration) => {
+  // Prendre uniquement les champs pertinents. C'est préférable d'utiliser une
+  // whitelist pour s'assurer qu'un champ non souhaité ne se faufile pas dans la
+  // duplication
+  const fieldsToKeep = [
+    "company",
+    "address",
+    "additionalDetails",
+    "postalCode",
+    "city",
+    "cedex",
+    "country",
+    "name",
+    "brand",
+    "gamme",
+    "flavor",
+    "description",
+    "galenicFormulation",
+    "unitQuantity",
+    "unitMeasurement",
+    "conditioning",
+    "dailyRecommendedDose",
+    "minimumDuration",
+    "instructions",
+    "warning",
+    "populations",
+    "conditionsNotRecommended",
+    "effects",
+    "declaredPlants",
+    "declaredMicroorganisms",
+    "declaredIngredients",
+    "declaredSubstances",
+    "computedSubstances",
+    "otherEffects",
+    "otherGalenicFormulation",
+    "otherConditions",
+  ]
+
+  fieldsToKeep.forEach((x) => (payload.value[x] = originalDeclaration[x]))
+
+  // Enlever les IDs des éléments de la composition
+  payload.value.declaredPlants.forEach((x) => delete x.id)
+  payload.value.declaredMicroorganisms.forEach((x) => delete x.id)
+  payload.value.declaredSubstances.forEach((x) => delete x.id)
+  payload.value.declaredIngredients.forEach((x) => delete x.id)
+  payload.value.computedSubstances.forEach((x) => delete x.id)
+}
 </script>
