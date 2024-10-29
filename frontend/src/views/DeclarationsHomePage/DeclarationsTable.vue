@@ -22,7 +22,7 @@ const emit = defineEmits("open")
 // Les données pour la table
 const headers = computed(() => {
   if (useShortTable.value) return ["Nom", "État"]
-  return ["ID", "Nom du produit", "Entreprise", "Déclarant·e", "État", "Date de modification"]
+  return ["ID", "Nom du produit", "Entreprise", "Déclarant·e", "État", "Date de modification", ""]
 })
 
 const rows = computed(() => {
@@ -41,12 +41,18 @@ const rows = computed(() => {
       {
         component: "router-link",
         text: d.name,
+        class: "font-medium",
         to: { name: "DeclarationPage", params: { id: d.id } },
       },
       d.company?.socialName || "Inconnue",
       d.author ? `${d.author.firstName} ${d.author.lastName}` : "",
       getStatusTagForCell(d.status, true),
       timeAgo(d.modificationDate),
+      {
+        component: "router-link",
+        text: "Dupliquer",
+        to: { name: "NewDeclaration", query: { duplicate: d.id } },
+      },
     ],
   }))
 })
