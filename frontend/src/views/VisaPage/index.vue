@@ -52,6 +52,7 @@
           :selectedTabIndex="selectedTabIndex"
           @back="selectedTabIndex -= 1"
           @forward="selectedTabIndex += 1"
+          :removeSaveLabel="true"
         />
       </div>
     </div>

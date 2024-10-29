@@ -64,6 +64,7 @@
         :selectedTabIndex="selectedTabIndex"
         @back="selectTab(selectedTabIndex - 1)"
         @forward="selectTab(selectedTabIndex + 1)"
+        :removeSaveLabel="readonly"
       />
     </div>
   </div>
