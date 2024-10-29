@@ -61,7 +61,7 @@ const isAdministrativeAction = computed(() => {
     "AUTHORIZE_NO_VISA",
     "REQUEST_VISA",
     "TAKE_FOR_VISA",
-    "ACCEPT_VISA",
+    "APPROVE_VISA",
     "REFUSE_VISA",
   ]
   return instructionActions.indexOf(props.snapshot.action) > -1
@@ -85,7 +85,7 @@ const actionText = computed(() => {
     RESPOND_TO_OBSERVATION: "a répondu aux observations",
     RESPOND_TO_OBJECTION: "a répondu aux objections",
     REQUEST_VISA: `a demandé un visa pour passer à l'état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
-    ACCEPT_VISA: `a accepté le visa pour passer à l'état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
+    APPROVE_VISA: `a mis la déclaration en état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
     REFUSE_VISA: `a refusé le visa pour passer à l'état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
     WITHDRAW: "a retiré le produit du marché",
   }

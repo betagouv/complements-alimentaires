@@ -218,10 +218,18 @@ class Declaration(Historisable, TimeStampable):
     def last_administration_comment(self):
         from data.models import Snapshot
 
+        admin_actions = [
+            Snapshot.SnapshotActions.OBSERVE_NO_VISA,
+            Snapshot.SnapshotActions.AUTHORIZE_NO_VISA,
+            Snapshot.SnapshotActions.REQUEST_VISA,
+            Snapshot.SnapshotActions.ACCEPT_VISA,
+            Snapshot.SnapshotActions.REFUSE_VISA,
+        ]
+
         try:
-            latest_snapshot = self.snapshots.filter(
-                comment__isnull=False, action__in=["OBSERVE_NO_VISA", "APPROVE_VISA"]
-            ).latest("creation_date")
+            latest_snapshot = self.snapshots.filter(comment__isnull=False, action__in=admin_actions).latest(
+                "creation_date"
+            )
             return latest_snapshot.comment
         except Snapshot.DoesNotExist:
             return None

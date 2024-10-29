@@ -626,6 +626,7 @@ class DeclarationRefuseVisaView(VisaDecisionView):
         declaration.create_snapshot(
             user=request.user,
             action=self.get_snapshot_action(request, declaration),
+            comment=request.data.get("comment", declaration.post_validation_producer_message),
             post_validation_status=self.get_snapshot_post_validation_status(request, declaration),
         )
 
@@ -647,7 +648,7 @@ class DeclarationAcceptVisaView(VisaDecisionView):
         """
         declaration.create_snapshot(
             user=request.user,
-            comment=declaration.post_validation_producer_message,
+            comment=request.data.get("comment", declaration.post_validation_producer_message),
             expiration_days=declaration.post_validation_expiration_days,
             action=self.get_snapshot_action(request, declaration),
             post_validation_status=self.get_snapshot_post_validation_status(request, declaration),

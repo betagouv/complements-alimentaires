@@ -5,11 +5,18 @@
       <div class="border p-2">
         <VisaInfoLine title="Instructeur·ice" :text="instructorName" icon="ri-account-circle-line" />
         <VisaInfoLine title="Décision" :text="postValidationStatus" icon="ri-focus-2-fill" />
-        <VisaInfoLine
-          title="Message au déclarant·e"
-          icon="ri-chat-3-line"
-          :text="declaration.postValidationProducerMessage || '< sans commentaire >'"
-        />
+        <VisaInfoLine title="Message au déclarant·e" icon="ri-chat-3-line">
+          <template v-slot:value>
+            <DsfrInputGroup>
+              <DsfrInput
+                is-textarea
+                label="Motivation de la décision (à destination du professionnel)"
+                v-model="producerMessage"
+                class="!mt-0"
+              />
+            </DsfrInputGroup>
+          </template>
+        </VisaInfoLine>
         <VisaInfoLine
           v-if="showExpirationDays"
           title="Délai de réponse"
@@ -64,6 +71,8 @@ const $externalResults = ref({})
 const emit = defineEmits(["decision-done"])
 const declaration = defineModel()
 
+const producerMessage = ref(declaration.value.postValidationProducerMessage)
+
 const privateNotes = ref(declaration.value?.privateNotes || "")
 
 const instructorName = computed(
@@ -76,7 +85,9 @@ const showExpirationDays = computed(
 const postValidationStatus = computed(() => statusProps[declaration.value.postValidationStatus].label)
 const refuseVisa = async () => {
   const url = `/api/v1/declarations/${declaration.value.id}/refuse-visa/`
-  const { response } = await useFetch(url, { headers: headers() }).post({ privateNotes: privateNotes.value }).json()
+  const { response } = await useFetch(url, { headers: headers() })
+    .post({ privateNotes: privateNotes.value, comment: producerMessage.value })
+    .json()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre décision a été prise en compte")
@@ -86,7 +97,9 @@ const refuseVisa = async () => {
 
 const acceptVisa = async () => {
   const url = `/api/v1/declarations/${declaration.value.id}/accept-visa/`
-  const { response } = await useFetch(url, { headers: headers() }).post({ privateNotes: privateNotes.value }).json()
+  const { response } = await useFetch(url, { headers: headers() })
+    .post({ privateNotes: privateNotes.value, comment: producerMessage.value })
+    .json()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre décision a été prise en compte")

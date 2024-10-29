@@ -46,6 +46,7 @@ const snapshots = computed(() => {
       "AUTHORIZE_NO_VISA",
       "RESPOND_TO_OBSERVATION",
       "RESPOND_TO_OBJECTION",
+      "APPROVE_VISA",
       "WITHDRAW",
       "ABANDON",
     ]

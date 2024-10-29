@@ -371,6 +371,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "private_notes",
             "blocking_reasons",
             "expiration_date",
+            "last_administration_comment",
         )
         read_only_fields = (
             "id",
