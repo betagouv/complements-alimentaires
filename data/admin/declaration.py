@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib import admin
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import (
     ComputedSubstance,
     Declaration,
@@ -184,7 +186,7 @@ class DeclarationForm(forms.ModelForm):
 
 
 @admin.register(Declaration)
-class DeclarationAdmin(admin.ModelAdmin):
+class DeclarationAdmin(SimpleHistoryAdmin):
     form = DeclarationForm
     list_display = ("name", "status", "company", "author")
     list_filter = ("status", "company", "author")
