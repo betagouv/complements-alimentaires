@@ -147,7 +147,7 @@
     </DsfrInputGroup>
     <SectionTitle title="Populations cibles et à risque" class="!mt-10" sizeTag="h6" icon="ri-file-user-fill" />
     <DsfrFieldset legend="Population cible" legendClass="fr-label">
-      <div v-if="populations" class="grid sm:grid-flow-col sm:grid-rows-6 lg:grid-rows-4 gap-4 fr-checkbox-group input">
+      <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
         <div
           v-for="population in populations"
           :key="`effect-${population.id}`"
