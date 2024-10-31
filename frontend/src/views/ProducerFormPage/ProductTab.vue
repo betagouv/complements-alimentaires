@@ -142,9 +142,6 @@
     <DsfrInputGroup class="max-w-2xl mt-6">
       <DsfrInput v-model="payload.instructions" label-visible label="Mode d'emploi" />
     </DsfrInputGroup>
-    <DsfrInputGroup class="max-w-2xl mt-6">
-      <DsfrInput is-textarea v-model="payload.warning" label-visible label="Mise en garde et avertissement" />
-    </DsfrInputGroup>
     <SectionTitle title="Populations cibles et à risque" class="!mt-10" sizeTag="h6" icon="ri-file-user-fill" />
     <DsfrFieldset legend="Population cible" legendClass="fr-label">
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
@@ -192,6 +189,10 @@
       :otherChoiceId="otherConditionId"
       label="Merci de préciser les autres populations à risques ou facteurs de risques"
     ></OtherChoiceField>
+
+    <DsfrInputGroup class="max-w-2xl mt-6">
+      <DsfrInput is-textarea v-model="payload.warning" label-visible label="Mise en garde et avertissement" />
+    </DsfrInputGroup>
 
     <SectionTitle title="Objectifs / effets" class="!mt-10" sizeTag="h6" icon="ri-focus-2-fill" />
     <DsfrFieldset>
