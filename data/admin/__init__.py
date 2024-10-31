@@ -20,6 +20,8 @@ from .global_roles import InstructionRoleAdmin
 from data.models import PlantPart, PlantFamily
 from simple_history.admin import SimpleHistoryAdmin
 
+from django.contrib.auth.models import Group
+
 
 @admin.register(PlantPart)
 class PlantPartAdmin(SimpleHistoryAdmin):
@@ -37,3 +39,4 @@ def get_admin_header():
 
 admin.site.site_header = get_admin_header()
 admin.site.site_title = get_admin_header()
+admin.site.unregister(Group)
