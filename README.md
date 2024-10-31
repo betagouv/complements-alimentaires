@@ -81,12 +81,14 @@ avec `git commit -m 'my message' --no-verify`.
 
 ### Installation avec docker (_méthode 3_)
 
-`docker compose build`
-`docker compose up`
-`docker compose run -rm server bash`
-`python manage.py migrate`
-`python manage.py createsuperuser`
-`python manage.py load_ingredients YYYY-MM-dd` avec la date d'aujourd'hui
+```
+docker compose build
+docker compose up
+docker compose run -rm server bash
+python manage.py migrate
+```
+
+[Suivre les instructions](#import-de-données-initiales-fixtures) pour initialiser la BDD et créer un super user.
 
 ## Configuration du projet
 
@@ -192,10 +194,10 @@ Vous pouvez aussi créer votre propre compte administrateur avec la commande :
 python manage.py createsuperuser
 ```
 
-Vous pouvez aussi charger des éléments (ingrédients, substances, etc.) dans la base avec cette commande :
+Vous pouvez aussi charger des éléments (ingrédients, substances, etc.) dans la base avec la commande suivante. Demander à un membre de l'équipe pour le `zip` avec les données.
 
 ```
-python manage.py load_ingredients
+python manage.py load_ingredients YYYY-MM-dd -d=<path vers le dossier avec les données>
 ```
 
 ## Envoi des données au bucket s3 pour récupération par les serveurs
