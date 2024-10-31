@@ -157,7 +157,7 @@ watch(data, () => {
   const shouldDuplicate = route.query.duplicate && !props.id
   if (shouldDuplicate) {
     performDuplication(data.value)
-    useToaster().addSuccessMessage("Votre déclaration a été dupliquée. Merci de renseigner les pièces jointes.")
+    savePayload("Votre déclaration a été dupliquée. Merci de renseigner les pièces jointes.")
   } else payload.value = data.value
 })
 
@@ -193,7 +193,7 @@ const components = computed(() => {
 
 const titles = computed(() => tabTitles(components.value, !readonly.value))
 
-const savePayload = async () => {
+const savePayload = async (successMessage = "Votre démarche a été sauvegardée") => {
   const isNewDeclaration = !payload.value.id
   const url = isNewDeclaration
     ? `/api/v1/users/${loggedUser.value.id}/declarations/`
@@ -225,7 +225,7 @@ const savePayload = async () => {
     useToaster().addMessage({
       type: "success",
       id: "declaration-success",
-      description: "Votre démarche a été sauvegardée",
+      description: successMessage,
     })
     return true
   }
