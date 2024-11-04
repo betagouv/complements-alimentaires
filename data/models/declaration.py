@@ -338,16 +338,16 @@ class Declaration(Historisable, TimeStampable):
         saisine ANSES (ART_17 et ART_18) > ART_16 > ART_15
         """
         try:
-            composition_items = (
+            composition_ingredients = (
                 self.declared_plants,
                 self.declared_microorganisms,
                 self.declared_substances,
                 self.declared_ingredients,
             )
-            empty_composition = all(not x.exists() for x in composition_items)
+            empty_composition = all(not x.exists() for x in composition_ingredients)
             # cela ne devrait être possible que pour les plantes qui même non autorisées peuvent être ajoutées en infime quantité dans des elixirs
 
-            has_not_authorized_items = (
+            has_not_authorized_ingredients = (
                 any(self.declared_plants.filter(plant__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_microorganisms.filter(microorganism__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
@@ -355,7 +355,9 @@ class Declaration(Historisable, TimeStampable):
                 or any(self.declared_ingredients.filter(ingredient__status=IngredientStatus.NOT_AUTHORIZED))
             )
 
-            has_new_items = any(x.filter(new=True).exists() for x in composition_items if issubclass(x.model, Addable))
+            has_new_ingredients = any(
+                x.filter(new=True).exists() for x in composition_ingredients if issubclass(x.model, Addable)
+            )
 
             surpasses_max_dose = any(
                 x.quantity > x.substance.max_quantity
@@ -384,9 +386,9 @@ class Declaration(Historisable, TimeStampable):
                 self.calculated_article = ""
             elif surpasses_max_dose:
                 self.calculated_article = Declaration.Article.ANSES_REFERAL
-            elif has_not_authorized_items:
+            elif has_not_authorized_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
-            elif has_new_items:
+            elif has_new_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
             elif (
                 # has_risky_ingredients
