@@ -975,18 +975,18 @@ phonenumberslite = ["phonenumberslite (>=7.0.2)"]
 
 [[package]]
 name = "django-silk"
-version = "5.2.0"
+version = "5.3.0"
 description = "Silky smooth profiling for the Django Framework"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "django_silk-5.2.0-py3-none-any.whl", hash = "sha256:b3f01ccbf46611073603a6ac2b84f578bde978ad44785f42994c3d6f81398fdc"},
-    {file = "django_silk-5.2.0.tar.gz", hash = "sha256:39ddeda80469d5495d1cbb53590a9bdd4ce30a7474dc16ac26b6cbc0d9521f50"},
+    {file = "django_silk-5.3.0-py3-none-any.whl", hash = "sha256:d4b91695132ff1ef375a598155b2b035d415a9fc5fb9ecca9648132d868a85da"},
+    {file = "django_silk-5.3.0.tar.gz", hash = "sha256:b17fe57e6b4c89ccc8dfc974bf4caf08d7d297c51acf60c71ab8eaad1d0986b5"},
 ]
 
 [package.dependencies]
 autopep8 = "*"
-Django = ">=3.2"
+Django = ">=4.2"
 gprof2dot = ">=2017.09.19"
 sqlparse = "*"
 
@@ -3721,4 +3721,4 @@ test = ["coverage (>=5.3)", "tomli (>=2.0.1)", "tox"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.*"
-content-hash = "d740e78329ec7d570e84f3f88fa6c28ffe29f899b9f9192a1b6790ba3bc9012b"
+content-hash = "dba61b2897ecd18e1797067b09db38037bf173ece6bcb16e57587d6634c5ea56"
