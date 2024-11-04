@@ -49,27 +49,35 @@ const loggedOnlyNavItems = [
 ]
 
 const quickLinks = computed(() => {
+  const links = []
+  if (environment === "dev" && store.loggedUser)
+    links.push({
+      label: "Changer utilisateurice",
+      to: `http://${window.location.host}/admin/data/user`,
+      icon: "ri-user-line",
+    })
   if (store.loggedUser)
-    return [
-      {
-        label: "Se déconnecter",
-        icon: "ri-logout-circle-line",
-        button: true,
-        onClick: () => logOut(),
-      },
-    ]
+    links.push({
+      label: "Se déconnecter",
+      icon: "ri-logout-circle-line",
+      button: true,
+      onClick: () => logOut(),
+    })
   else
-    return [
-      {
-        label: "Se connecter",
-        icon: "ri-login-circle-line",
-        to: "/connexion",
-      },
-      {
-        label: "S'enregistrer",
-        icon: "ri-account-circle-line",
-        to: "/inscription",
-      },
-    ]
+    links.push(
+      ...[
+        {
+          label: "Se connecter",
+          icon: "ri-login-circle-line",
+          to: "/connexion",
+        },
+        {
+          label: "S'enregistrer",
+          icon: "ri-account-circle-line",
+          to: "/inscription",
+        },
+      ]
+    )
+  return links
 })
 </script>
