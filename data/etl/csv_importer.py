@@ -121,6 +121,7 @@ class CSVImporter:
         "max_age": ["AGE_MAX"],
         "is_defined_by_anses": ["CATEGORIE_ANSES"],
         "is_liquid": ["LIQUIDE"],
+        "contains_alcohol": ["AVEC_ALCOOL"],
         # Les champs ForeignKey (synonymes)
         "standard_name": ["SBSACT_IDENT", "PLTE_IDENT", "INGA_IDENT", "MORG_IDENT"],
         "siccrf_family": ["FAMPL_IDENT"],

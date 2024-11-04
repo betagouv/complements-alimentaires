@@ -1,4 +1,4 @@
-"FRMGAL_IDENT","FRMGAL_LIBELLE","FRMGAL_LIBELLE_EN","FRMGAL_ORDRE","FRMGAL_OBSOLET","FRMGAL_LIQUIDE"
+"FRMGAL_IDENT","FRMGAL_LIBELLE","FRMGAL_LIBELLE_EN","FRMGAL_ORDRE","FRMGAL_OBSOLET","FRMGAL_LIQUIDE", "FRMGAL_AVEC_ALCOOL"
 1,"Ampoule","Bulb",,"False","True"
 2,"Autre forme liquide (à préciser)","Other liquid form (specify)",,"False","True"
 3,"Autre forme solide (à préciser)","Other solid form (specify)",,"False","False"

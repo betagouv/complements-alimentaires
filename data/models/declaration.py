@@ -373,6 +373,13 @@ class Declaration(Historisable, TimeStampable):
                 and x.substance.unit == x.unit
             )
 
+            # has_risky_ingredients =
+            # Les populations cibles qui sont définies par l'ANSES et utilisées dans les avertissements
+            # et contre-indications sont considérées comme étant à surveiller avec vigilance lorsqu'utilisées comme population cible
+            has_risky_target_population = any(x for x in self.populations if x.is_defined_by_anses)
+            has_risky_preparation = any(x for x in self.populations if x.contains_alcohol)
+            # has_risky_galenic_formulation = any(x for x in self.galenic_formulation)
+
             if empty_composition:
                 self.calculated_article = ""
             elif surpasses_max_dose:
@@ -381,6 +388,12 @@ class Declaration(Historisable, TimeStampable):
                 self.calculated_article = Declaration.Article.ARTICLE_16
             elif has_new_items:
                 self.calculated_article = Declaration.Article.ARTICLE_16
+            elif (
+                # has_risky_ingredients
+                has_risky_target_population | has_risky_preparation
+                # | has_risky_galenic_formulation
+            ):
+                self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
             else:
                 self.calculated_article = Declaration.Article.ARTICLE_15
 
