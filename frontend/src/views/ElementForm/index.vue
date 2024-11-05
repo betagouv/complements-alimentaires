@@ -24,6 +24,9 @@
             <!-- Question: multiselect or single? -->
             <DsfrSelect v-model="state.caFamily" label="Famille de la plante" :options="plantFamilies" required />
           </DsfrInputGroup>
+          <DsfrInputGroup v-if="formForType.genre">
+            <DsfrInput v-model="state.genre" label="Genre" labelVisible />
+          </DsfrInputGroup>
           <DsfrInputGroup v-if="formForType.function">
             <!-- Question: multiselect or single? -->
             <!-- Question: do we have this in the DB? -->
@@ -208,7 +211,7 @@ const formQuestions = {
   },
 }
 const formForType = computed(() => {
-  return formQuestions.substance // TODO: choose based on type
+  return formQuestions.microorganism // TODO: choose based on type
 })
 
 const plantFamilies = [] // TODO: fetch options from DB
