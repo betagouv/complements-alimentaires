@@ -27,6 +27,12 @@
           <DsfrInputGroup v-if="formForType.genre">
             <DsfrInput v-model="state.genre" label="Genre" labelVisible />
           </DsfrInputGroup>
+          <DsfrInputGroup v-if="formForType.ingredientType">
+            <!-- Question: multiselect or single? -->
+            <!-- Question: do we have this in the DB? -->
+            <DsfrSelect v-model="state.ingredientType" label="Type ingrédient" :options="ingredientTypes" required />
+          </DsfrInputGroup>
+          <!-- TODO: sort out row col wrapping for default -->
           <DsfrInputGroup v-if="formForType.function">
             <!-- Question: multiselect or single? -->
             <!-- Question: do we have this in the DB? -->
@@ -211,12 +217,13 @@ const formQuestions = {
   },
 }
 const formForType = computed(() => {
-  return formQuestions.microorganism // TODO: choose based on type
+  return formQuestions.default // TODO: choose based on type
 })
 
 const plantFamilies = [] // TODO: fetch options from DB
 const functions = [] // TODO: fetch options from DB
 const substanceTypes = [] // TODO: fetch options from DB
+const ingredientTypes = [] // TODO: fetch options from DB
 
 const synonyms = [
   { label: "Example", type: "Nom en anglais" },
