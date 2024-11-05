@@ -101,7 +101,7 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return is_author or is_from_same_company or (is_agent and not is_draft)
 
-        return (is_author or is_from_same_company) and is_declarant
+        return ((is_author or is_from_same_company) and is_declarant) or (is_agent and not is_draft)
 
 
 class CanTakeAuthorship(permissions.BasePermission):

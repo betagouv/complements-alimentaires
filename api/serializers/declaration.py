@@ -312,11 +312,9 @@ class DeclarationSerializer(serializers.ModelSerializer):
         if not is_instructor and not is_visor:
             self.fields.pop("private_notes_instruction")
             self.fields.pop("private_notes_visa")
-
-        if is_instructor:
-            self.fields["private_notes_instruction"].read_only = False
-        if is_visor:
-            self.fields["private_notes_visa"].read_only = False
+        else:
+            self.fields["private_notes_instruction"].read_only = not is_instructor
+            self.fields["private_notes_visa"].read_only = not is_visor
 
     instructor = SimpleUserSerializer(read_only=True, source="instructor.user")
     visor = SimpleUserSerializer(read_only=True, source="visor.user")
