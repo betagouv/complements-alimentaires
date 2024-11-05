@@ -34,6 +34,7 @@ import A11yPage from "@/views/A11yPage.vue"
 import ContactForm from "@/views/ContactForm"
 import CompliancePage from "@/views/CompliancePage"
 import DeclaredElementPage from "@/views/DeclaredElementPage"
+import ElementForm from "@/views/ElementForm"
 import MandatedCompaniesPage from "@/views/MandatedCompaniesPage"
 import FaqPage from "@/views/FaqPage"
 import { ref } from "vue"
@@ -99,6 +100,16 @@ const routes = [
       title: "Demande d'ajout d'ingrédient",
       requiredRole: "InstructionRole",
       authenticationRequired: true,
+    },
+  },
+  {
+    path: "/element-detail/:urlComponent",
+    name: "ElementForm",
+    component: ElementForm,
+    props: true,
+    meta: {
+      authenticationRequired: true,
+      requiredRole: "InstructionRole",
     },
   },
   {
