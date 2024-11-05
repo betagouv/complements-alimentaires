@@ -32,15 +32,6 @@
       </div>
     </div>
 
-    <DsfrInputGroup>
-      <DsfrInput
-        v-model="privateNotes"
-        is-textarea
-        label-visible
-        label="Notes de l'expert (à destination de l'administration)"
-      />
-    </DsfrInputGroup>
-
     <div class="grid grid-cols-2 gap-10">
       <div class="border p-4" v-for="decision in decisionCategories" :key="decision.title">
         <h6 class="font-bold">
@@ -73,8 +64,6 @@ const declaration = defineModel()
 
 const producerMessage = ref(declaration.value.postValidationProducerMessage)
 
-const privateNotes = ref(declaration.value?.privateNotes || "")
-
 const instructorName = computed(
   () => `${declaration.value?.instructor?.firstName} ${declaration.value?.instructor?.lastName}`
 )
@@ -85,9 +74,7 @@ const showExpirationDays = computed(
 const postValidationStatus = computed(() => statusProps[declaration.value.postValidationStatus].label)
 const refuseVisa = async () => {
   const url = `/api/v1/declarations/${declaration.value.id}/refuse-visa/`
-  const { response } = await useFetch(url, { headers: headers() })
-    .post({ privateNotes: privateNotes.value, comment: producerMessage.value })
-    .json()
+  const { response } = await useFetch(url, { headers: headers() }).post({ comment: producerMessage.value }).json()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre décision a été prise en compte")
@@ -97,9 +84,7 @@ const refuseVisa = async () => {
 
 const acceptVisa = async () => {
   const url = `/api/v1/declarations/${declaration.value.id}/accept-visa/`
-  const { response } = await useFetch(url, { headers: headers() })
-    .post({ privateNotes: privateNotes.value, comment: producerMessage.value })
-    .json()
+  const { response } = await useFetch(url, { headers: headers() }).post({ comment: producerMessage.value }).json()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre décision a été prise en compte")

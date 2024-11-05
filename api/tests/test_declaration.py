@@ -686,7 +686,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
-    def test_private_notes(self):
+    def test_private_notes_instruction(self):
         """
         Seulement les roles Instruction et Visa peuvent voir les notes privées
         """
@@ -695,14 +695,17 @@ class TestDeclarationApi(APITestCase):
 
         response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
         json_declaration = response.json()
-        self.assertFalse("privateNotes" in json_declaration)
+        self.assertFalse("privateNotesInstruction" in json_declaration)
+        self.assertFalse("privateNotesVisa" in json_declaration)
 
         # On essaie à nouveau cette fois ci en étant aussi instructeur·ice
         InstructionRoleFactory(user=authenticate.user)
         response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
         json_declaration = response.json()
-        self.assertTrue("privateNotes" in json_declaration)
-        self.assertEqual(json_declaration["privateNotes"], declaration.private_notes)
+        self.assertTrue("privateNotesInstruction" in json_declaration)
+        self.assertTrue("privateNotesVisa" in json_declaration)
+        self.assertEqual(json_declaration["privateNotesInstruction"], declaration.private_notes_instruction)
+        self.assertEqual(json_declaration["privateNotesVisa"], declaration.private_notes_visa)
 
     @authenticate
     def test_update_single_declaration(self):
