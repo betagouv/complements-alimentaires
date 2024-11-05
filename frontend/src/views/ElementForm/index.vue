@@ -17,6 +17,9 @@
           <DsfrInputGroup>
             <DsfrInput v-model="state.caName" :label="formForType.name.label" required labelVisible />
           </DsfrInputGroup>
+          <DsfrInputGroup v-if="formForType.nameEn">
+            <DsfrInput v-model="state.caNameEn" :label="formForType.nameEn.label" labelVisible />
+          </DsfrInputGroup>
           <DsfrInputGroup v-if="formForType.family">
             <!-- Question: multiselect or single? -->
             <DsfrSelect v-model="state.caFamily" label="Famille de la plante" :options="plantFamilies" required />
@@ -25,6 +28,11 @@
             <!-- Question: multiselect or single? -->
             <!-- Question: do we have this in the DB? -->
             <DsfrSelect v-model="state.function" label="Fonction de l'ingrédient" :options="functions" required />
+          </DsfrInputGroup>
+          <DsfrInputGroup v-if="formForType.substanceType">
+            <!-- Question: multiselect or single? -->
+            <!-- Question: do we have this in the DB? -->
+            <DsfrSelect v-model="state.substanceType" label="Type de substance" :options="substanceTypes" required />
           </DsfrInputGroup>
 
           <DsfrToggleSwitch
@@ -35,6 +43,20 @@
             label-left
             class="self-center"
           />
+        </div>
+        <div class="flex gap-x-4 -mb-4">
+          <DsfrInputGroup v-if="formForType.einecsNumber">
+            <DsfrInput v-model="state.einecsNumber" label="Numéro EINECS" labelVisible />
+          </DsfrInputGroup>
+          <DsfrInputGroup v-if="formForType.casNumber">
+            <DsfrInput v-model="state.casNumber" label="Numéro CAS" labelVisible />
+          </DsfrInputGroup>
+          <DsfrInputGroup v-if="formForType.source">
+            <DsfrInput v-model="state.source" label="Source" labelVisible />
+          </DsfrInputGroup>
+          <DsfrInputGroup v-if="formForType.sourceEn">
+            <DsfrInput v-model="state.sourceEn" label="Source en anglais" labelVisible />
+          </DsfrInputGroup>
         </div>
         <DsfrInputGroup>
           <DsfrInput v-model="state.description" label="Description" labelVisible />
@@ -81,9 +103,7 @@
             ></DsfrTag>
           </div>
         </div>
-        <!-- usedParts: true,
-        activeSubstances: true,
-        // population cible: true for everyone also not yet in our database -->
+        <p><i>Population cible et à risque en construction</i></p>
       </DsfrFieldset>
       <DsfrFieldset legend="Commentaire à destination du public" legendClass="fr-h4">
         <div class="flex">
@@ -188,11 +208,12 @@ const formQuestions = {
   },
 }
 const formForType = computed(() => {
-  return formQuestions.plant // TODO: choose based on type
+  return formQuestions.substance // TODO: choose based on type
 })
 
 const plantFamilies = [] // TODO: fetch options from DB
 const functions = [] // TODO: fetch options from DB
+const substanceTypes = [] // TODO: fetch options from DB
 
 const synonyms = [
   { label: "Example", type: "Nom en anglais" },
