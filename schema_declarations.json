@@ -1,174 +1,209 @@
 {
-  "name": "liste-des-complements-alimentaires-declares",
-  "type": "table",
-  "path": "/home/qloridant/Downloads/liste-des-complements-alimentaires-declares.csv",
-  "scheme": "file",
-  "format": "csv",
-  "mediatype": "text/csv",
-  "encoding": "utf-8-sig",
   "dialect": {
     "csv": {
       "delimiter": ";"
     }
   },
+  "encoding": "utf-8-sig",
+  "format": "csv",
+  "mediatype": "text/csv",
+  "name": "liste-des-complements-alimentaires-declares",
   "schema": {
     "fields": [
       {
+        "constraints": {
+          "required": "True"
+        },
+        "description": "Identifiant unique permettant de référencer une déclaration d'un complément alimentaire",
+        "example": "3211",
         "name": "id",
         "title": "Identifiant",
-        "example": "3211",
-        "description": "Identifiant unique permettant de référencer une déclaration d'un complément alimentaire",
         "type": "integer"
       },
       {
+        "constraints": {
+          "required": "True"
+        },
+        "description": "Date acceptation du complément alimentaire.",
+        "example": "2024-01-27",
         "name": "date_acceptation",
         "title": "Date acceptation",
-        "example": "2024-01-27",
-        "descrpition": "Date acceptation du complément alimentaire. Le délai de traitement va dépendre du cadre juridique dans lequel tombe le complément alimentaire. ",
         "type": "date"
       },
       {
+        "constraints": {
+          "required": "True"
+        },
+        "description": "Nom commercial du produit (fourni par le fabricant)",
+        "example": "Compl'Alimentaires",
         "name": "nom_commercial",
         "title": "Nom commercial",
-        "example": "Compl'Alimentaires",
-        "description": "Nom commercial du produit fourni par le fabricant",
-        "type": "string",
-        "constraints":
-          {
-            "required": "True"
-          }
+        "type": "string"
       },
       {
+        "description": "Marque du fabricant sous laquelle est vendue le complément alimentaire (fournie par le fabricant)",
+        "example": "Nutra Power",
         "name": "marque",
         "title": "Marque",
-        "example": "",
-        "description": "Marque du fabricant sous laquelle est vendue le complément alimentaire",
         "type": "string"
       },
       {
+        "description": "Gamme de la marque du fabricant dans laquelle le produit est vendu (fournie par le fabricant)",
+        "example": "Premium",
+        "name": "gamme",
+        "title": "Gamme",
+        "type": "string"
+      },
+      {
+        "constraints": {
+          "required": "True"
+        },
+        "description": "Nom de l'entreprise ayant fabriqué le complément alimentaire",
+        "example": "",
         "name": "nom_fabricant",
         "title": "Nom fabricant",
-        "example": "",
-        "description": "Nom de l'entreprise ayant fabriqué le complément alimentaire",
         "type": "string"
-        
       },
       {
-        "name": "siret_fabricant",
-        "title": "Siret fabricant",
-        "example": "11007001800012",
-        "type": "string",
         "constraints": {
           "pattern": "^[0-9]{14}$",
           "required": true
-        }
-      },
-      {
-        "name": "nom_responsable_etiquetage",
-        "type": "string"
-      },
-      {
-        "name": "siret_responsable_etiquetage",
+        },
+        "example": "11007001800012",
+        "name": "siret_fabricant",
+        "title": "Siret fabricant",
         "type": "integer"
       },
       {
+        "constraints": {
+          "enum": [
+            "15",
+            "16",
+            "17",
+            "18"
+          ],
+          "required": "True"
+        },
+        "description": "Réference de l'article juridique qui encadre la déclaration du produit. La déclaration du complément ne suit pas la même procédure en fonction de l'article dans lequel il tombe. Voir sur : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000638341",
+        "example": "15",
         "name": "article_reference",
         "title": "Article de référence",
-        "description": "Réference de l'article juridique qui encadre la déclaration du produit. La déclaration du complément ne suit pas la même procédure en fonction de l'article dans lequel il tombe",
-        "type": "string",
-        "example": "15",
-        "constraints": 
-          {
-            "enum": ["15", "16", "17", "18"],
-            "required": "True"
-          }
+        "type": "integer"
       },
       {
-        "name": "forme_galenique",
-        "title": "Forme galénique",
-        "description": "La forme galénique correspond à la forme sous laquelle le médicament se présente (comprimé, gélule, sirop, collyre, crème, solution injectable, etc.). Elle est spécialement conçue pour la voie d’administration à laquelle le médicament est destiné. (source : sante.gouv.fr)",
-        "type": "string",
-        "example": "Sirop",
-        "constraints": {
-            "required": "True"
-          }
-      },
-      {
-        "name": "dose_journaliere",
-        "title": "Dose journalière",
-        "description": "Dose journalière recommandée   # TODO : ajouter unité de consommation ?",
-        "type": "string",
-        "example": "16 gouttes",
         "constraints": {
           "required": "True"
-        }
+        },
+        "description": "La forme galénique correspond à la forme sous laquelle le complément alimentaire se présente (comprimé, gélule, sirop...). Elle est spécialement conçue pour la voie d’administration à laquelle le médicament est destiné. (source : sante.gouv.fr)",
+        "example": "Sirop",
+        "name": "forme_galenique",
+        "title": "Forme galénique",
+        "type": "string"
       },
       {
+        "constraints": {
+          "required": "True"
+        },
+        "description": "Dose journalière recommandée (DJR) (fournie par le fabricant). Les quantités des composants sont renseignées par DJR.",
+        "example": "16 gouttes",
+        "name": "dose_journaliere",
+        "title": "Dose journalière",
+        "type": "string"
+      },
+      {
+        "description": "Recommandation d'emploi (fournies par le fabricant)",
+        "example": "4 gouttes 4 fois par jour dans un verre d'eau",
         "name": "mode_emploi",
         "title": "Mode Emploi",
-        "description": "Recommandation d'emploi fournies par le fabricant",
-        "type": "string",
-        "example": "4 gouttes 4 fois par jour dans un verre d'eau"
+        "type": "string"
       },
       {
+        "description": "Mise en garde et avertissement (fournies par le fabricant). Certains avertissements doivent obligatoirement être notés sur l'étiquettage.",
+        "example": "Ne pas dépasser la dose journalière recommandée. Tenir hors de portée des jeunes enfants. Ne peut se substituer à un régime alimentaire varié.",
         "name": "mises_en_garde",
         "title": "Mises en garde",
-        "description": "Mise en garde fournies par le fabricant",
-        "example": "Ne pas dépasser la dose journalière recommandée. Tenir hors de portée des jeunes enfants. Ne peut se substituer à un régime alimentaire varié.",
         "type": "string"
       },
       {
-        "name": "gamme",
-        "title": "Gamme",
-        "description": "Gamme de la marque du fabricant dans laquelle le produit est vendu",
-        "example": "Premium",
-        "type": "string"
+        "description": "Objectifs du complément alimentaire (fourni par le fabricant)",
+        "name": "objectif_effet",
+        "type": "array"
       },
       {
+        "description": "Arômes (fourni par le fabricant)",
+        "example": "Orange",
         "name": "aromes",
         "title": "Arômes",
-        "description": "Arome fournis par le fabricant",
-        "example": "Orange",
         "type": "string"
       },
       {
-        "name": "facteurs_risques",
-        "title": "facteurs_ risques",
-        "description": "",
+        "description": "La consommation du complément alimentaire est déconseillée pour les populations présentant ce ou ces facteurs",
         "example": "Hypertension, Maladie rénale",
+        "name": "facteurs_risques",
+        "title": "facteurs_risques",
         "type": "array"
       },
       {
-        "name": "populations_cibles",
-        "title": "Population cibles",
         "description": "Les populations ciblées par le complément alimentaire déclaré. Le fabricant choisi parmi une liste fournie par Compl'Alim",
         "example": "Femmes enceintes, Femmes allaitantes",
+        "name": "populations_cibles",
+        "title": "Population cibles",
         "type": "array"
       },
       {
+        "description": "Liste des plantes actives composants le complément alimentaire. Pour chaque plante nous retrouvons son nom en latin, sa famille, la partie utilisée ainsi que la quantité par DJR.",
+        "example": "{'nom': 'Juglans regia L.', 'partie': 'Fleur', 'preparation': 'Alcoolat', 'quantité_par_djr': '2', 'unité': 'ml'}",
         "name": "plantes",
-        "type": "string"
+        "title": "Plantes",
+        "type": "array"
       },
       {
-        "name": "familles_plantes",
-        "type": "string"
+        "description": "Liste des plantes/autres ingrédients inactifs composants le complément alimentaire. Pour chaque plante nous retrouvons son nom en latin, sa famille et la partie utilisée",
+        "example": "carotte, miel, fibre",
+        "name": "ingredients_inactifs",
+        "title": "Ingrédients inactifs",
+        "type": "array"
       },
       {
-        "name": "parties_plantes",
-        "type": "string"
-      },
-      {
+        "description": "Micro organismes composants le complément alimentaire. Si le micro-organisme a été inactivé, il n'est pas nécessaire de renseigner la quantité.",
+        "example": "{'genre': 'Lactobacillus', 'espèce': 'lactis', 'souche': '', 'quantité_par_djr': '2', 'unité': 'cfu', 'inactivé': 'True'}",
         "name": "micro_organisme",
-        "type": "string"
+        "type": "array"
       },
       {
-        "name": "autres_ingredients",
-        "type": "string"
+        "description": "Additifs",
+        "example": "E416",
+        "name": "additifs",
+        "type": "array"
       },
       {
-        "name": "objectif_effet",
-        "type": "string"
+        "description": "Nutriments (ou forme d'apports)",
+        "example": "Cyanocobalamine",
+        "name": "nutriments",
+        "type": "array"
+      },
+      {
+        "description": "Autres ingredients actifs",
+        "example": "dextrine",
+        "name": "autres_ingredients_actifs",
+        "title": "Autres ingredients actifs",
+        "type": "array"
+      },
+      {
+        "description": "Substances (composant actif)",
+        "example": "['nom': 'cafféine', 'quantité_par_djr': '2', 'unité': 'ml']",
+        "name": "substances",
+        "type": "array"
+      },
+      {
+        "description": "Code barre",
+        "example": "3178530410105",
+        "name": "code_barre",
+        "title": "Code barre",
+        "type": "integer"
       }
     ]
-  }
+  },
+  "scheme": "file",
+  "type": "table"
 }
