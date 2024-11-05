@@ -58,6 +58,29 @@
           // description is true for every type -->
       </DsfrFieldset>
       <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4">
+        <div v-if="formForType.usedParts" class="flex items-center my-4">
+          <DsfrMultiselect v-model="state.usedParts" :options="usedParts" label="Partie(s) utilisée(s)" search />
+          <div class="ml-4">
+            <DsfrTag v-for="id in state.usedParts" :key="id" :label="optionLabel(usedParts, id)" class="mx-1"></DsfrTag>
+          </div>
+        </div>
+        <div v-if="formForType.activeSubstances" class="flex items-center my-4">
+          <!-- TODO: option to create new active substance -->
+          <DsfrMultiselect
+            v-model="state.activeSubstances"
+            :options="activeSubstances"
+            label="Substances actives"
+            search
+          />
+          <div class="ml-4">
+            <DsfrTag
+              v-for="id in state.activeSubstances"
+              :key="id"
+              :label="optionLabel(activeSubstances, id)"
+              class="mx-1"
+            ></DsfrTag>
+          </div>
+        </div>
         <!-- usedParts: true,
         activeSubstances: true,
         // population cible: true for everyone also not yet in our database -->
@@ -74,7 +97,7 @@
 </template>
 
 <script setup>
-import { /*ref, */ computed /*, watch*/ } from "vue"
+import { ref, computed /*, watch*/ } from "vue"
 import { getTypeIcon, getTypeInFrench, unSlugifyType /*, getApiType*/ } from "@/utils/mappings"
 // import { firstErrorMsg } from "@/utils/forms"
 // import { useRoute, useRouter } from "vue-router"
@@ -94,7 +117,10 @@ const breadcrumbLinks = computed(() => {
   return links
 })
 
-const state = {} // TODO: prefill with existing data if modifying
+const state = ref({
+  usedParts: [],
+  activeSubstances: [],
+}) // TODO: prefill with existing data if modifying
 
 const isFetching = false // TODO: set to true when fetching data or sending update, see CompanyForm
 
@@ -161,4 +187,17 @@ const synonyms = [
   { label: "Example", type: "Nom en anglais" },
   { label: "Cassius", type: "Nom en latin" },
 ]
+
+const usedParts = [
+  { label: "Root", id: 1 },
+  { label: "Leaf", id: 2 },
+]
+const activeSubstances = [
+  { label: "Ex 1", id: 1 },
+  { label: "Ex 2", id: 2 },
+]
+
+const optionLabel = (options, id) => {
+  return options.find((o) => o.id === id)?.label || "Inconnu"
+}
 </script>
