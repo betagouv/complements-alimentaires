@@ -85,7 +85,18 @@
         activeSubstances: true,
         // population cible: true for everyone also not yet in our database -->
       </DsfrFieldset>
-      <DsfrFieldset legend="Commentaire à destination du public" legendClass="fr-h4"></DsfrFieldset>
+      <DsfrFieldset legend="Commentaire à destination du public" legendClass="fr-h4">
+        <div class="flex">
+          <DsfrInput label="Commentaire" v-model="state.publicComment" :isTextarea="true" />
+          <div class="mt-2">
+            <DsfrCheckbox
+              v-model="state.copyPublicCommentToPrivate"
+              name="copy-comment"
+              label="Copier dans les notes internes"
+            />
+          </div>
+        </div>
+      </DsfrFieldset>
       <div class="flex gap-x-2 mt-4">
         <!-- Question: cancel button? -->
         <!-- Question: use DsfrButtonGroup? -->
