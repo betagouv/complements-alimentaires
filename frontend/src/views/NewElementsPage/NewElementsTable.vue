@@ -14,6 +14,7 @@
 import { computed } from "vue"
 import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
+import { getTypeInFrench } from "@/utils/mappings"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
@@ -30,7 +31,7 @@ const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
       x.name,
-      x.type,
+      getTypeInFrench(x.type),
       "à faire",
       x.declaration.creationDate && isoToPrettyDate(x.declaration.creationDate),
       getStatusTagForCell(x.declaration.status),
