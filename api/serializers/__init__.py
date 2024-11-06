@@ -24,7 +24,7 @@ from .declaration import (
     DeclarationSerializer,
     DeclarationShortSerializer,
     SimpleDeclarationSerializer,
-    DeclaredPlantSerializer,
+    DeclaredElementSerializer,
 )
 from .company import CompanySerializer
 from .solicitation import CollaborationInvitationSerializer, CompanyAccessClaimSerializer, AddNewCollaboratorSerializer

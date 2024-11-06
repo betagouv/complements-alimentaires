@@ -1,11 +1,18 @@
 from rest_framework.generics import ListAPIView
-from data.models import DeclaredPlant
-from api.serializers import DeclaredPlantSerializer
+from data.models import DeclaredPlant, DeclaredSubstance, DeclaredIngredient, DeclaredMicroorganism
+from api.serializers import DeclaredElementSerializer
+from itertools import chain
 
 
 class DeclaredIngredientsView(ListAPIView):
-    serializer_class = DeclaredPlantSerializer
+    serializer_class = DeclaredElementSerializer
 
     def get_queryset(self):
-        return DeclaredPlant.objects.all()
-        # return list(itertools.chain(Tweet.objects.all(), Article.objects.all()))
+        return list(
+            chain(
+                DeclaredPlant.objects.all(),
+                DeclaredSubstance.objects.all(),
+                DeclaredIngredient.objects.all(),
+                DeclaredMicroorganism.objects.all(),
+            )
+        )

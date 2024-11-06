@@ -17,6 +17,7 @@ from data.factories import (
     DeclarantRoleFactory,
     DeclarationFactory,
     DeclaredPlantFactory,
+    DeclaredSubstanceFactory,
     EffectFactory,
     GalenicFormulationFactory,
     IngredientFactory,
@@ -1380,9 +1381,10 @@ class TestDeclaredIngredientsApi(APITestCase):
         for _ in range(3):
             declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
             DeclaredPlantFactory(new=True, declaration=declaration)
+            DeclaredSubstanceFactory(new=True, declaration=declaration)
             # TODO: check filtering out not new ingredients
 
         response = self.client.get(reverse("api:list_all_declared_ingredients"), format="json")
         # TODO: pagination
         results = response.json()
-        self.assertEqual(len(results), 3)
+        self.assertEqual(len(results), 6)
