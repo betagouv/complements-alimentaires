@@ -1372,9 +1372,10 @@ class TestDeclarationApi(APITestCase):
 
 class TestDeclaredIngredientsApi(APITestCase):
     @authenticate
-    def test_get_declared_plants(self):
+    def test_get_declared_elements(self):
         """
         Les instructrices peuvent voir une liste de toutes les demandes de nouveaux ingredients
+        Tous types confondus
         """
         InstructionRoleFactory(user=authenticate.user)
 
@@ -1382,9 +1383,10 @@ class TestDeclaredIngredientsApi(APITestCase):
             declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
             DeclaredPlantFactory(new=True, declaration=declaration)
             DeclaredSubstanceFactory(new=True, declaration=declaration)
-            # TODO: check filtering out not new ingredients
+            # don't return not new ones
+            DeclaredPlantFactory(new=False, declaration=declaration)
 
-        response = self.client.get(reverse("api:list_all_declared_ingredients"), format="json")
+        response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
         # TODO: pagination
         results = response.json()
         self.assertEqual(len(results), 6)

@@ -10,9 +10,9 @@ class DeclaredIngredientsView(ListAPIView):
     def get_queryset(self):
         return list(
             chain(
-                DeclaredPlant.objects.all(),
-                DeclaredSubstance.objects.all(),
-                DeclaredIngredient.objects.all(),
-                DeclaredMicroorganism.objects.all(),
+                DeclaredPlant.objects.filter(new=True),
+                DeclaredSubstance.objects.filter(new=True),
+                DeclaredIngredient.objects.filter(new=True),
+                DeclaredMicroorganism.objects.filter(new=True),
             )
         )
