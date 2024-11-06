@@ -1367,3 +1367,22 @@ class TestDeclarationApi(APITestCase):
         results = response.json()["results"]
         self.assertEqual(len(results), 1)
         self.assertTrue(results[0]["visaRefused"])
+
+
+class TestDeclaredIngredientsApi(APITestCase):
+    @authenticate
+    def test_get_declared_plants(self):
+        """
+        Les instructrices peuvent voir une liste de toutes les demandes de nouveaux ingredients
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        for _ in range(3):
+            declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+            DeclaredPlantFactory(new=True, declaration=declaration)
+            # TODO: check filtering out not new ingredients
+
+        response = self.client.get(reverse("api:list_all_declared_ingredients"), format="json")
+        # TODO: pagination
+        results = response.json()
+        self.assertEqual(len(results), 3)

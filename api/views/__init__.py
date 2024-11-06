@@ -23,6 +23,7 @@ from .declaration.declaration import (
     DeclarationTakeAuthorshipView,
     ArticleChangeView,
 )
+from .declaration.declared_ingredients import DeclaredIngredientsView
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
 from .preparation import PreparationListView
