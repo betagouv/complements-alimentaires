@@ -496,6 +496,7 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
 class DeclaredElementSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.SerializerMethodField()
+    type = serializers.CharField()
     declaration = DeclarationShortSerializer()
 
     def get_name(self, obj):

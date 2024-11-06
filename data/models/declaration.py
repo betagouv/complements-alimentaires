@@ -466,6 +466,10 @@ class DeclaredPlant(Historisable, Addable):
         else:
             return self.plant.name
 
+    @property
+    def type(self):
+        return "plant"
+
 
 class DeclaredMicroorganism(Historisable, Addable):
     class Meta:
@@ -495,6 +499,10 @@ class DeclaredMicroorganism(Historisable, Addable):
             return f"{self.new_species} {self.new_genre}"
         return f"{self.microorganism.species} {self.microorganism.genus}"
 
+    @property
+    def type(self):
+        return "microorganism"
+
 
 class DeclaredIngredient(Historisable, Addable):
     class Meta:
@@ -519,6 +527,10 @@ class DeclaredIngredient(Historisable, Addable):
     def __str__(self):
         return f"{self.new_name or self.ingredient.name}"
 
+    @property
+    def type(self):
+        return "ingredient"
+
 
 class DeclaredSubstance(Historisable, Addable):
     class Meta:
@@ -541,6 +553,10 @@ class DeclaredSubstance(Historisable, Addable):
 
     def __str__(self):
         return f"{self.new_name or self.substance.name}"
+
+    @property
+    def type(self):
+        return "substance"
 
 
 # Les substances détectées au moment de faire la déclaration seront ici, avec la valeur de la quantité
