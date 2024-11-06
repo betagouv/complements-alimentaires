@@ -2,7 +2,7 @@
   <DsfrTable
     ref="table"
     class="w-full"
-    title="Toutes les déclarations"
+    title="Liste de demandes en attente"
     :headers="headers"
     :rows="rows"
     :no-caption="true"
@@ -14,43 +14,34 @@
 import { computed } from "vue"
 import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
-import { useRootStore } from "@/stores/root"
-import { storeToRefs } from "pinia"
-import { articleOptions } from "@/utils/mappings"
-
-const { loggedUser } = storeToRefs(useRootStore())
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
-const headers = ["", "ID", "Nom du produit", "Entreprise", "État", "Date limite de réponse", "Instruit par", "Article"]
+const headers = [
+  "Nom de l'ingrédient",
+  "Type d'ingrédient",
+  "Authorisation marché FR ou EU",
+  "Date de demande d'ajout",
+  "Statut de la déclaration",
+  "",
+]
+// const headers = ["", "ID", "Nom du produit", "Entreprise", "État", "Date limite de réponse", "Instruit par", "Article"]
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
-    rowAttrs: { class: needsAttention(x) ? "font-bold" : "" },
     rowData: [
-      needsAttention(x) ? { component: "div", class: `h-3 w-3 rounded-full ${circleColor(x)}` } : "",
-      x.id,
+      x.name,
+      x.type,
+      "à faire",
+      x.creationDate && isoToPrettyDate(x.creationDate),
+      getStatusTagForCell(x.declaration.status),
       {
         component: "router-link",
-        text: x.name,
-        to: { name: "InstructionPage", params: { declarationId: x.id } },
+        text: x.declaration.name,
+        to: { name: "InstructionPage", params: { declarationId: x.declaration.id } },
       },
-      x.company.socialName,
-      getStatusTagForCell(x.status),
-      x.responseLimitDate && isoToPrettyDate(x.responseLimitDate),
-      x.instructor
-        ? `${x.instructor.firstName} ${x.instructor.lastName}`
-        : { component: "span", text: "Non-assigné", class: "italic" },
-      x.article ? articleOptions.find((y) => y.value === x.article)?.shortText : "",
     ],
   }))
 )
-
-const needsAttention = (declaration) =>
-  !!declaration.instructor &&
-  declaration.instructor.id === loggedUser.value.id &&
-  declaration.status === "AWAITING_INSTRUCTION"
-
-const circleColor = (declaration) => (declaration.visaRefused ? "bg-red-500" : "bg-orange-400")
 </script>
 
 <style scoped>
