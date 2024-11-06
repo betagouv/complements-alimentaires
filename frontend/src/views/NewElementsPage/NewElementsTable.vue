@@ -32,7 +32,7 @@ const rows = computed(() =>
       x.name,
       x.type,
       "à faire",
-      x.creationDate && isoToPrettyDate(x.creationDate),
+      x.declaration.creationDate && isoToPrettyDate(x.declaration.creationDate),
       getStatusTagForCell(x.declaration.status),
       {
         component: "router-link",
