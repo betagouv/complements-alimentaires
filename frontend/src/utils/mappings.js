@@ -239,3 +239,12 @@ export const typeOptions = [
   { value: "substance", text: "Substance" },
   { value: "ingredient", text: "Autre ingrédient" },
 ]
+
+export const authorizationModesMapping = {
+  FR: "Utilisable en France",
+  EU: "Autorisé dans un État membre de l'UE ou EEE",
+}
+
+export const getAuthorizationModeInFrench = (type) => {
+  return authorizationModesMapping[type] || null
+}

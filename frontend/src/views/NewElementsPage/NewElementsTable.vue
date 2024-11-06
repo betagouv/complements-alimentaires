@@ -14,7 +14,7 @@
 import { computed } from "vue"
 import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
-import { getTypeInFrench } from "@/utils/mappings"
+import { getTypeInFrench, getAuthorizationModeInFrench } from "@/utils/mappings"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
@@ -26,15 +26,15 @@ const headers = [
   "Statut de la déclaration",
   "",
 ]
-// const headers = ["", "ID", "Nom du produit", "Entreprise", "État", "Date limite de réponse", "Instruit par", "Article"]
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
       x.name,
       getTypeInFrench(x.type),
-      "à faire",
+      getAuthorizationModeInFrench(x.authorizationMode),
       x.declaration.creationDate && isoToPrettyDate(x.declaration.creationDate),
       getStatusTagForCell(x.declaration.status),
+      // TODO: replace with link to request view
       {
         component: "router-link",
         text: x.declaration.name,
