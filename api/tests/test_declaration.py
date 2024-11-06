@@ -18,6 +18,8 @@ from data.factories import (
     DeclarationFactory,
     DeclaredPlantFactory,
     DeclaredSubstanceFactory,
+    DeclaredMicroorganismFactory,
+    DeclaredIngredientFactory,
     EffectFactory,
     GalenicFormulationFactory,
     IngredientFactory,
@@ -1383,11 +1385,13 @@ class TestDeclaredIngredientsApi(APITestCase):
         for _ in range(3):
             DeclaredPlantFactory(new=True, declaration=declaration)
             DeclaredSubstanceFactory(new=True, declaration=declaration)
+            DeclaredMicroorganismFactory(new=True, declaration=declaration)
+            DeclaredIngredientFactory(new=True, declaration=declaration)
             # don't return not new ones
             DeclaredPlantFactory(new=False, declaration=declaration)
 
         response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
         results = response.json()
-        self.assertEqual(results["count"], 6)
+        self.assertEqual(results["count"], 12)
         result = results["results"][0]
         self.assertEqual(result["declaration"]["id"], declaration.id)
