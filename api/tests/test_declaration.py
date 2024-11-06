@@ -1387,6 +1387,5 @@ class TestDeclaredIngredientsApi(APITestCase):
             DeclaredPlantFactory(new=False, declaration=declaration)
 
         response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
-        # TODO: pagination
         results = response.json()
-        self.assertEqual(len(results), 6)
+        self.assertEqual(results["count"], 6)
