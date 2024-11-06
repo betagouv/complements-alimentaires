@@ -8,7 +8,7 @@
       </div>
     </div>
     <div class="fr-container">
-      <p>
+      <p class="mt-6">
         <v-icon :name="icon" />
         {{ typeName }}
       </p>
@@ -227,7 +227,7 @@ const formQuestions = {
   },
 }
 const formForType = computed(() => {
-  return formQuestions.default // TODO: choose based on type
+  return formQuestions[type.value] || formQuestions.default
 })
 
 const plantFamilies = [] // TODO: fetch options from DB
