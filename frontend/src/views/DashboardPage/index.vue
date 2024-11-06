@@ -102,6 +102,11 @@ const instructionActions = [
     description: "Accédez à la liste des déclarations Compl'Alim",
     link: { name: "InstructionDeclarations" },
   },
+  {
+    title: "Liste des nouvels ingrédients",
+    description: "Accédez à la liste des nouvels ingrédients Compl'Alim",
+    link: { name: "NewElementsPage" },
+  },
 ]
 
 const visorActions = [

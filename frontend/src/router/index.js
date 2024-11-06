@@ -25,6 +25,7 @@ import VerificationSentPage from "@/views/VerificationSentPage"
 import DeclarationsHomePage from "@/views/DeclarationsHomePage"
 import CollaboratorsPage from "@/views/CollaboratorsPage"
 import InstructionDeclarationsPage from "@/views/InstructionDeclarationsPage"
+import NewElementsPage from "@/views/NewElementsPage"
 import InstructionPage from "@/views/InstructionPage"
 import VisaDeclarationsPage from "@/views/VisaDeclarationsPage"
 import VisaPage from "@/views/VisaPage"
@@ -267,6 +268,26 @@ const routes = [
     component: InstructionDeclarationsPage,
     meta: {
       title: "Instruction",
+      requiredRole: "InstructionRole",
+      authenticationRequired: true,
+      defaultQueryParams: {
+        page: 1,
+        status: "AWAITING_INSTRUCTION,ONGOING_INSTRUCTION",
+        entrepriseDe: "",
+        entrepriseA: "",
+        personneAssignée: "",
+        triage: "-modificationDate",
+        article: "",
+        limit: "10",
+      },
+    },
+  },
+  {
+    path: "/nouvels-ingredients",
+    name: "NewElementsPage",
+    component: NewElementsPage,
+    meta: {
+      title: "Nouvels ingrédients",
       requiredRole: "InstructionRole",
       authenticationRequired: true,
       defaultQueryParams: {
