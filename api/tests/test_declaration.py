@@ -1379,8 +1379,8 @@ class TestDeclaredIngredientsApi(APITestCase):
         """
         InstructionRoleFactory(user=authenticate.user)
 
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         for _ in range(3):
-            declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
             DeclaredPlantFactory(new=True, declaration=declaration)
             DeclaredSubstanceFactory(new=True, declaration=declaration)
             # don't return not new ones
@@ -1389,3 +1389,5 @@ class TestDeclaredIngredientsApi(APITestCase):
         response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
         results = response.json()
         self.assertEqual(results["count"], 6)
+        result = results["results"][0]
+        self.assertEqual(result["declaration"]["id"], declaration.id)

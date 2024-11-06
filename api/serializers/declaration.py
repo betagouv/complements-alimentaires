@@ -218,10 +218,6 @@ class DeclaredSubstanceSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class DeclaredElementSerializer(serializers.Serializer):
-    new_name = serializers.CharField()
-
-
 class ComputedSubstanceSerializer(serializers.ModelSerializer):
     substance = PassthroughSubstanceSerializer()
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
@@ -495,3 +491,8 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
             "modification_date",
         )
         read_only_fields = fields
+
+
+class DeclaredElementSerializer(serializers.Serializer):
+    new_name = serializers.CharField()
+    declaration = DeclarationShortSerializer()
