@@ -46,7 +46,7 @@
 
           <DsfrToggleSwitch
             v-model="state.authorised"
-            label="Authoriser l'ingrédient"
+            label="Autorisation de l’ingrédient"
             activeText="Authorisé"
             inactiveText="Non authorisé"
             label-left
