@@ -23,13 +23,12 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue"
+import { computed, onMounted, watch } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import ActionGrid from "./ActionGrid"
 import RoleBarBlock from "./RoleBarBlock"
-import { useRoute } from "vue-router"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 const store = useRootStore()
 const router = useRouter()
@@ -50,13 +49,15 @@ const isSupervisorForActiveCompany = computed(() => company.value?.roles?.some((
 // const isDeclarantForActiveCompany = computed(() => company.value?.roles?.some((x) => x.name === "DeclarantRole"))
 
 // Sélectionne une entreprise si l'user est un superviseur et qu'on n'a pas le queryparam
-onMounted(() => {
+const redirectIfInvalidCompany = () => {
   const hasInvalidCompanyParam = route.query.company && !company.value
   if (hasInvalidCompanyParam || !route.query.company) {
     const query = companies.value?.length ? { company: companies.value[0].id } : {}
     router.replace({ query })
   }
-})
+}
+onMounted(redirectIfInvalidCompany)
+watch(route, redirectIfInvalidCompany)
 
 const onChangeCompany = (id) => router.push({ query: { company: id } })
 

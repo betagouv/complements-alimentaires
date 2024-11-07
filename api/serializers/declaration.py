@@ -298,6 +298,24 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
 
 
 class DeclarationSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        context = kwargs.get("context", {})
+        request = context.get("request")
+        view = context.get("view")
+        if not request or not view:
+            return
+
+        is_instructor = IsInstructor().has_permission(request, view)
+        is_visor = IsVisor().has_permission(request, view)
+        if not is_instructor and not is_visor:
+            self.fields.pop("private_notes_instruction")
+            self.fields.pop("private_notes_visa")
+        else:
+            self.fields["private_notes_instruction"].read_only = not is_instructor
+            self.fields["private_notes_visa"].read_only = not is_visor
+
     instructor = SimpleUserSerializer(read_only=True, source="instructor.user")
     visor = SimpleUserSerializer(read_only=True, source="visor.user")
     author = serializers.PrimaryKeyRelatedField(read_only=True, allow_null=True)
@@ -322,6 +340,8 @@ class DeclarationSerializer(serializers.ModelSerializer):
     computed_substances = DeclaredListSerializer(child=ComputedSubstanceSerializer(), required=False)
     attachments = DeclaredListSerializer(child=AttachmentSerializer(), required=False)
     name = serializers.CharField(allow_blank=False, required=True)
+    private_notes_instruction = serializers.CharField(allow_blank=True, required=False)
+    private_notes_visa = serializers.CharField(allow_blank=True, required=False)
     blocking_reasons = serializers.ListField(read_only=True)
 
     class Meta:
@@ -368,7 +388,8 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "post_validation_status",
             "post_validation_producer_message",
             "post_validation_expiration_days",
-            "private_notes",
+            "private_notes_instruction",
+            "private_notes_visa",
             "blocking_reasons",
             "expiration_date",
             "last_administration_comment",
@@ -383,7 +404,8 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "post_validation_status",
             "post_validation_producer_message",
             "post_validation_expiration_days",
-            "private_notes",
+            "private_notes_instruction",
+            "private_notes_visa",
         )
 
     @staticmethod
@@ -451,24 +473,6 @@ class DeclarationSerializer(serializers.ModelSerializer):
                     serializer.create(declared_elements)
 
         return declaration
-
-    def to_representation(self, obj):
-        """
-        On surcharge cette méthode pour assurer que les notes privées ne soient pas
-        sérialisées si la personne ne fait pas partie de l'administration
-        """
-        ret = super().to_representation(obj)
-        request = self.context.get("request")
-        view = self.context.get("view")
-        can_see_private_notes = (
-            request
-            and view
-            and (IsVisor().has_permission(request, view) or IsInstructor().has_permission(request, view))
-        )
-
-        if not can_see_private_notes:
-            ret.pop("private_notes")
-        return ret
 
 
 class DeclarationShortSerializer(serializers.ModelSerializer):
