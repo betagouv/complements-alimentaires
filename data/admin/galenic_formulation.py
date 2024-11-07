@@ -34,6 +34,7 @@ class GalenicFormulationAdmin(admin.ModelAdmin):
     list_display = [
         "name",
         "modification_date",
+        "is_risky",
     ]
     list_filter = (
         "is_obsolete",

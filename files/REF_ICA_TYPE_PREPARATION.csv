@@ -1,4 +1,4 @@
-"TYPPREP_IDENT","TYPPREP_LIBELLE","TYPPREP_LIBELLE_EN","TYPPREP_ORDRE","TYPPREP_OBSOLET","TYPPREP_EST_SOLVANT", "TYPPREP_AVEC_ALCOOL"
+"TYPPREP_IDENT","TYPPREP_LIBELLE","TYPPREP_LIBELLE_EN","TYPPREP_ORDRE","TYPPREP_OBSOLET","TYPPREP_EST_SOLVANT","TYPPREP_AVEC_ALCOOL"
 1,"Alcoolat","Alcoholate",,"False","False","True"
 2,"Alcoolature","Alcoholature",,"False","False","True"
 3,"Autre extrait fluide","Other liquid extract",,"False","False","False"

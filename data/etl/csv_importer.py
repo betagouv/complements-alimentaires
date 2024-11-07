@@ -142,9 +142,8 @@ class CSVImporter:
         "missing_import_data",
         "to_be_entered_in_next_decree",
         "substance_types",
-        "is_risky",
     ]
-    NEW_FIELDS = ["long_name"]
+    NEW_FIELDS = ["long_name", "is_risky"]
 
     def __init__(self, file, model, is_relation=False, mapping=None):
         """Initialise un CSVImporter avec le fichier source, le modèle de destination, etc
