@@ -87,4 +87,4 @@ class WithIsRiskyBoolean(models.Model):
     class Meta:
         abstract = True
 
-    is_risky = models.BooleanField(default=False, verbose_name="implication d'une vigilance lors de l'instruction ?")
+    is_risky = models.BooleanField(default=False, verbose_name="nécessite une instruction manuelle et vigilante ?")
