@@ -494,6 +494,7 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
 
 
 class DeclaredElementSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
     name = serializers.SerializerMethodField()
     declaration = DeclarationShortSerializer()
 
