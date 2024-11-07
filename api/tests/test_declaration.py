@@ -1372,16 +1372,17 @@ class TestDeclarationApi(APITestCase):
         self.assertTrue(results[0]["visaRefused"])
 
 
-class TestDeclaredIngredientsApi(APITestCase):
+class TestDeclaredElementsApi(APITestCase):
     @authenticate
     def test_get_declared_elements(self):
         """
         Les instructrices peuvent voir une liste de toutes les demandes de nouveaux ingredients
-        Tous types confondus
+        Tous types confondus. Ignorer les déclarations en brouillon
         """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        draft = DeclarationFactory(status=Declaration.DeclarationStatus.DRAFT)
         for _ in range(3):
             DeclaredPlantFactory(new=True, declaration=declaration)
             DeclaredSubstanceFactory(new=True, declaration=declaration)
@@ -1389,6 +1390,8 @@ class TestDeclaredIngredientsApi(APITestCase):
             DeclaredIngredientFactory(new=True, declaration=declaration)
             # don't return not new ones
             DeclaredPlantFactory(new=False, declaration=declaration)
+            # don't return ones attached to draft declarations
+            DeclaredIngredientFactory(new=True, declaration=draft)
 
         response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
         results = response.json()
