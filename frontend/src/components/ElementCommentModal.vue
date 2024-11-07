@@ -25,20 +25,27 @@
         </ul>
       </div>
     </DsfrModal>
-    <button @click="infoModalOpened = true" :disabled="!hasInformationToShow">
-      <v-icon
-        :name="hasInformationToShow ? 'ri-chat-4-line' : 'ri-chat-off-line'"
-        :color="hasInformationToShow ? 'rgb(0, 0, 145)' : '#AAA'"
-      ></v-icon>
-    </button>
+    <DsfrTooltip ref="tooltip" :onHover="true" :content="tooltipContent" class="tooltip-comments">
+      <button @click="infoModalOpened = true" :disabled="!hasInformationToShow">
+        <v-icon
+          :name="hasInformationToShow ? 'ri-chat-4-line' : 'ri-chat-off-line'"
+          :color="hasInformationToShow ? 'rgb(0, 0, 145)' : '#AAA'"
+        ></v-icon>
+      </button>
+    </DsfrTooltip>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { computed, ref, useTemplateRef, onMounted } from "vue"
 import { getElementName } from "@/utils/elements"
 
 const model = defineModel()
+const tooltip = useTemplateRef("tooltip")
+
+// Enlève le comportement par défaut de scroller vers le haut lors du click du DsfrTootlip
+// en ajoutant un preventDefault du click
+onMounted(() => tooltip.value?.$el?.nextElementSibling?.addEventListener?.("click", (e) => e.preventDefault()))
 
 // Le backend sérialise les  commentaires privés seulement si l'utilisateur.ice
 // fait partie de l'administartion. Néanmoins, il y a des contextes où on ne
@@ -54,6 +61,14 @@ const elementName = computed(() => {
 const maxQuantity = computed(() => element.value?.maxQuantity)
 const constitutingSubstances = computed(() => element.value?.substances)
 
+const tooltipContent = computed(() => {
+  let content = ""
+  if (element.value?.publicComments) content += `Commentaires :\n\n${element.value?.publicComments}`
+  if (element.value?.privateComments && !props.hidePrivateComments)
+    content += `\n\nCommentaires privés :\n\n${element.value?.privateComments}`
+  return content || "Pas de commentaires"
+})
+
 const infoModalOpened = ref(false)
 const hasInformationToShow = computed(
   () =>
@@ -63,3 +78,13 @@ const hasInformationToShow = computed(
     constitutingSubstances.value?.length
 )
 </script>
+
+<style scoped>
+/* Il est nécessaire de surcharger certains styles di DSFRTooltip car un element a[href] est ajouté */
+div :deep(.tooltip-comments) {
+  @apply !bg-none;
+  @apply !flex;
+  @apply !w-full;
+  @apply !justify-center;
+}
+</style>
