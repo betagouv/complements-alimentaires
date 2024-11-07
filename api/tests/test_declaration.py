@@ -685,24 +685,27 @@ class TestDeclarationApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    @authenticate
-    def test_private_notes(self):
-        """
-        Seulement les roles Instruction et Visa peuvent voir les notes privées
-        """
-        DeclarantRoleFactory(user=authenticate.user)
-        declaration = DeclarationFactory(author=authenticate.user)
+    # @authenticate
+    # def test_private_notes_instruction(self):
+    #     """
+    #     Seulement les roles Instruction et Visa peuvent voir les notes privées
+    #     """
+    #     DeclarantRoleFactory(user=authenticate.user)
+    #     declaration = DeclarationFactory(author=authenticate.user)
 
-        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
-        json_declaration = response.json()
-        self.assertFalse("privateNotes" in json_declaration)
+    #     response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
+    #     json_declaration = response.json()
+    #     self.assertFalse("privateNotesInstruction" in json_declaration)
+    #     self.assertFalse("privateNotesVisa" in json_declaration)
 
-        # On essaie à nouveau cette fois ci en étant aussi instructeur·ice
-        InstructionRoleFactory(user=authenticate.user)
-        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
-        json_declaration = response.json()
-        self.assertTrue("privateNotes" in json_declaration)
-        self.assertEqual(json_declaration["privateNotes"], declaration.private_notes)
+    #     # On essaie à nouveau cette fois ci en étant aussi instructeur·ice
+    #     InstructionRoleFactory(user=authenticate.user)
+    #     response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
+    #     json_declaration = response.json()
+    #     self.assertTrue("privateNotesInstruction" in json_declaration)
+    #     self.assertTrue("privateNotesVisa" in json_declaration)
+    #     self.assertEqual(json_declaration["privateNotesInstruction"], declaration.private_notes_instruction)
+    #     self.assertEqual(json_declaration["privateNotesVisa"], declaration.private_notes_visa)
 
     @authenticate
     def test_update_single_declaration(self):
@@ -722,6 +725,106 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         user_declaration.refresh_from_db()
         self.assertEqual(user_declaration.name, "New name")
+
+    @authenticate
+    def test_private_comments_user(self):
+        """
+        Un usager ne peut ni visualiser ni modifier les champs des notes privées
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+        declaration = DeclarationFactory(
+            author=authenticate.user, company=company, status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+        )
+
+        # Un usager sans rôles instruction ou visa ne peut pas visualiser les notes privées
+        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
+        json_declaration = response.json()
+        self.assertFalse("privateNotesInstruction" in json_declaration)
+        self.assertFalse("privateNotesVisa" in json_declaration)
+
+        # Un usager sans rôles instruction ou visa ne peut pas modifier les notes privées
+        response = self.client.patch(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            {"privateNotesInstruction": "modified by user"},
+            format="json",
+        )
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.private_notes_instruction, "modified by user")
+
+        response = self.client.patch(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            {"privateNotesVisa": "modified by user"},
+            format="json",
+        )
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.private_notes_visa, "modified by user")
+
+    @authenticate
+    def test_private_comments_instruction(self):
+        """
+        Une instructrice peut voir les champs de notes privées et modifier le champ
+        private_notes_instruction
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+        # Une instructrice peut visualiser les notes privées
+        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
+        json_declaration = response.json()
+        self.assertTrue("privateNotesInstruction" in json_declaration)
+        self.assertTrue("privateNotesVisa" in json_declaration)
+
+        # Une instructrice peut modifier les notes privées de l'instruction
+        response = self.client.patch(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            {"privateNotesInstruction": "modified by instructor"},
+            format="json",
+        )
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.private_notes_instruction, "modified by instructor")
+
+        # Une instructrice ne peut pas modifier les notes privées du visa
+        response = self.client.patch(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            {"privateNotesVisa": "modified by instructor"},
+            format="json",
+        )
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.private_notes_visa, "modified by instructor")
+
+    @authenticate
+    def test_private_comments_visa(self):
+        """
+        Une viseuse peut voir les champs de notes privées et modifier le champ
+        private_notes_visa
+        """
+        VisaRoleFactory(user=authenticate.user)
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+        # Une viseuse peut visualiser les notes privées
+        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
+        json_declaration = response.json()
+        self.assertTrue("privateNotesInstruction" in json_declaration)
+        self.assertTrue("privateNotesVisa" in json_declaration)
+
+        # Une viseuse ne peut pas modifier les notes privées de l'instruction
+        response = self.client.patch(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            {"privateNotesInstruction": "modified by visor"},
+            format="json",
+        )
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.private_notes_instruction, "modified by visor")
+
+        # Une instructrice peut modifier les notes privées du visa
+        response = self.client.patch(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            {"privateNotesVisa": "modified by visor"},
+            format="json",
+        )
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.private_notes_visa, "modified by visor")
 
     @authenticate
     def test_get_all_declarations(self):

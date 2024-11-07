@@ -465,7 +465,6 @@ class DeclarationFlowView(GenericAPIView):
             post_validation_status=self.get_snapshot_post_validation_status(request, declaration),
             blocking_reasons=request.data.get("reasons"),
         )
-        declaration.private_notes = request.data.get("privateNotes", "")
 
     def post(self, request, *args, **kwargs):
         declaration = self.get_object()
@@ -607,7 +606,6 @@ class VisaDecisionView(DeclarationFlowView):
         declaration.post_validation_producer_message = ""
         declaration.post_validation_status = ""
         declaration.post_validation_expiration_days = None
-        declaration.private_notes = request.data.get("private_notes", "")
         return super().on_transition_success(request, declaration)
 
 
@@ -653,7 +651,6 @@ class DeclarationAcceptVisaView(VisaDecisionView):
             action=self.get_snapshot_action(request, declaration),
             post_validation_status=self.get_snapshot_post_validation_status(request, declaration),
         )
-        declaration.private_notes = request.data.get("privateNotes", "")
 
     def get_transition(self, request, declaration):
         transition_map = {
@@ -707,7 +704,6 @@ class VisaRequestFlowView(DeclarationFlowView):
     def on_transition_success(self, request, declaration):
         declaration.post_validation_producer_message = request.data.get("comment", "")
         declaration.post_validation_expiration_days = request.data.get("expiration")
-        declaration.private_notes = request.data.get("private_notes", "")
         declaration.instructor = InstructionRole.objects.get(user=request.user)
 
         if not self.post_validation_status:
