@@ -108,7 +108,10 @@ class Declaration(Historisable, TimeStampable):
         related_name="declarations",
     )
 
-    private_notes = models.TextField("notes à destination de l'administration", blank=True, default="")
+    private_notes_instruction = models.TextField(
+        "notes de l'instruction à destination de l'administration", blank=True, default=""
+    )
+    private_notes_visa = models.TextField("notes du visa à destination de l'administration", blank=True, default="")
     company = models.ForeignKey(
         Company, null=True, on_delete=models.SET_NULL, verbose_name="entreprise", related_name="declarations"
     )
