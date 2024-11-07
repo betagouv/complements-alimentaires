@@ -390,7 +390,7 @@ class Declaration(Historisable, TimeStampable):
                     x
                     for x in self.declared_plants.filter(new=False)
                     if x.plant.is_risky
-                    if x.plant.preparation.contains_alcohol
+                    or x.preparation.contains_alcohol
                     or re.match(r"dérivés hydroxyanthracéniques|dérivés anthracéniques|HAD", x.plant.name)
                 )
                 or any(x for x in self.declared_microorganisms.filter(new=False) if x.microorganism.is_risky)

@@ -107,11 +107,7 @@ import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 const router = useRouter()
 const route = useRoute()
 
-const excludeArticles = ["ART_15_WARNING"]
-const articleSelectOptions = [
-  ...articleOptions.filter((x) => excludeArticles.indexOf(x.value) == -1),
-  ...[{ value: "", text: "Tous" }],
-]
+const articleSelectOptions = [...articleOptions, ...[{ value: "", text: "Tous" }]]
 
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)

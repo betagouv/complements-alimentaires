@@ -12,6 +12,7 @@ from data.factories import (
     InstructionReadyDeclarationFactory,
     PlantFactory,
     PopulationFactory,
+    PreparationFactory,
     SnapshotFactory,
     SubstanceFactory,
 )
@@ -149,6 +150,21 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration_with_risky_substance.article, Declaration.Article.ARTICLE_15_WARNING)
         self.assertEqual(declaration_with_risky_substance.calculated_article, Declaration.Article.ARTICLE_15_WARNING)
         self.assertEqual(declaration_with_risky_substance.overriden_article, "")
+
+        declaration_with_risky_prepared_plant = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+        )
+        DeclaredPlantFactory(
+            preparation=PreparationFactory(contains_alcohol=True), declaration=declaration_with_risky_prepared_plant
+        )
+        declaration_with_risky_prepared_plant.assign_calculated_article()
+        declaration_with_risky_prepared_plant.save()
+        declaration_with_risky_prepared_plant.refresh_from_db()
+        self.assertEqual(declaration_with_risky_prepared_plant.article, Declaration.Article.ARTICLE_15_WARNING)
+        self.assertEqual(
+            declaration_with_risky_prepared_plant.calculated_article, Declaration.Article.ARTICLE_15_WARNING
+        )
+        self.assertEqual(declaration_with_risky_prepared_plant.overriden_article, "")
 
         risky_galenic_formulation = GalenicFormulationFactory(is_risky=True)
         declaration_with_risky_galenic_formulation = InstructionReadyDeclarationFactory(
