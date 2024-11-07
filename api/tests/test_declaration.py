@@ -1398,3 +1398,14 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(results["count"], 12)
         result = results["results"][0]
         self.assertEqual(result["declaration"]["id"], declaration.id)
+
+    @authenticate
+    def test_get_single_declared_plant(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        plant = DeclaredPlantFactory(declaration=declaration)
+
+        response = self.client.get(reverse("api:declared_plant", kwargs={"pk": plant.id}), format="json")
+        body = response.json()
+        self.assertEqual(body["id"], plant.id)

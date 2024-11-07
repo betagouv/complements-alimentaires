@@ -19,7 +19,12 @@ urlpatterns = {
     path("microorganisms/<int:pk>", views.MicroorganismRetrieveView.as_view(), name="single_microorganism"),
     path("substances/<int:pk>", views.SubstanceRetrieveView.as_view(), name="single_substance"),
     path("elements/autocomplete/", views.AutocompleteView.as_view(), name="substance_autocomplete"),
+    # Declared elements
     path("declared-elements/", views.DeclaredElementsView.as_view(), name="list_new_declared_elements"),
+    path("declared-elements/plants/<int:pk>", views.DeclaredPlantView.as_view(), name="declared_plant"),
+    # path("declared-elements/other-ingredients/<int:pk>", views.IngredientRetrieveView.as_view(), name="single_ingredient"),
+    # path("declared-elements/microorganisms/<int:pk>", views.MicroorganismRetrieveView.as_view(), name="single_microorganism"),
+    # path("declared-elements/substances/<int:pk>", views.SubstanceRetrieveView.as_view(), name="single_substance"),
     # References
     path("populations/", views.PopulationListView.as_view(), name="population_list"),
     path("conditions/", views.ConditionListView.as_view(), name="condition_list"),

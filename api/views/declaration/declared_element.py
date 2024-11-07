@@ -1,7 +1,7 @@
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from data.models import DeclaredPlant, DeclaredSubstance, DeclaredIngredient, DeclaredMicroorganism, Declaration
-from api.serializers import DeclaredElementSerializer
+from api.serializers import DeclaredElementSerializer, DeclaredPlantSerializer
 from itertools import chain
 
 
@@ -29,3 +29,8 @@ class DeclaredElementsView(ListAPIView):
                 DeclaredMicroorganism.objects.filter(new=True).exclude(declaration__status__in=closed_statuses),
             )
         )
+
+
+class DeclaredPlantView(RetrieveAPIView):
+    serializer_class = DeclaredPlantSerializer
+    queryset = DeclaredPlant.objects.all()

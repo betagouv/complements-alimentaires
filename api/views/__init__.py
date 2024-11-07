@@ -23,7 +23,7 @@ from .declaration.declaration import (
     DeclarationTakeAuthorshipView,
     ArticleChangeView,
 )
-from .declaration.declared_element import DeclaredElementsView
+from .declaration.declared_element import DeclaredElementsView, DeclaredPlantView
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
 from .preparation import PreparationListView
