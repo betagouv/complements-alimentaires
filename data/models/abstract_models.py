@@ -3,7 +3,8 @@ from django.db import models
 from data.behaviours import TimeStampable
 from data.choices import IngredientActivity
 
-from .mixins import WithComments, WithDefaultFields, WithIsRiskyBoolean, WithMissingImportBoolean, WithStatus
+from .ingredient_status import WithStatus
+from .mixins import WithComments, WithDefaultFields, WithIsRiskyBoolean, WithMissingImportBoolean
 
 
 # Remplace le manager par défaut pour filtrer tous les modèles ayant un champ `is_obsolete`

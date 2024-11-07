@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from datetime import timedelta
 
 from django.conf import settings
@@ -375,12 +376,27 @@ class Declaration(Historisable, TimeStampable):
                 and x.substance.unit == x.unit
             )
 
-            # has_risky_ingredients =
+            has_risky_ingredients = (
+                any(
+                    x
+                    for x in self.declared_ingredients
+                    if x.is_risky or re.match(r"([^A-Za-z]+|^)vin([^A-Za-z]+|$)|alcool|vinaigre", x)
+                )
+                # Les plantes ayant public_comments ~* 'la concentration en <nom de substance> est à surveiller' n'impliquent d'obligation règlementaire
+                or any(
+                    x
+                    for x in self.declared_plants
+                    if x.is_risky or re.match(r"dérivés hydroxyanthracéniques|dérivés anthracéniques|HAD", x)
+                )
+                or any(x for x in self.declared_microorganisms if x.is_risky)
+                or any(x for x in self.declared_substances if x.is_risky)
+                or any(x for x in self.computed_substances if x.is_risky)
+            )
             # Les populations cibles qui sont définies par l'ANSES et utilisées dans les avertissements
             # et contre-indications sont considérées comme étant à surveiller avec vigilance lorsqu'utilisées comme population cible
             has_risky_target_population = any(x for x in self.populations if x.is_defined_by_anses)
             has_risky_preparation = any(x for x in self.populations if x.contains_alcohol)
-            # has_risky_galenic_formulation = any(x for x in self.galenic_formulation)
+            has_risky_galenic_formulation = any(x for x in self.galenic_formulation if x.is_risky)
 
             if empty_composition:
                 self.calculated_article = ""
@@ -391,9 +407,10 @@ class Declaration(Historisable, TimeStampable):
             elif has_new_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
             elif (
-                # has_risky_ingredients
-                has_risky_target_population | has_risky_preparation
-                # | has_risky_galenic_formulation
+                has_risky_ingredients
+                | has_risky_target_population
+                | has_risky_preparation
+                | has_risky_galenic_formulation
             ):
                 self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
             else:
