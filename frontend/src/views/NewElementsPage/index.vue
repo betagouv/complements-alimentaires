@@ -1,11 +1,16 @@
 <template>
-  <div class="fr-container">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Demandes d\'ajout d\'ingrédient' }]"
-    />
-    <h1 class="fr-h4">Liste des demandes en attente d'ajout d'ingrédients</h1>
-    <div class="border px-4 py-2 mb-2 md:flex gap-4 items-baseline filters">
+  <div>
+    <DsfrNotice title="En cours de construction" desc="Plus de fonctionnalités à venir bientôt !" />
+    <div class="fr-container">
+      <DsfrBreadcrumb
+        class="mb-8"
+        :links="[
+          { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
+          { text: 'Demandes d\'ajout d\'ingrédient' },
+        ]"
+      />
+      <h1 class="fr-h4">Liste des demandes en attente d'ajout d'ingrédients</h1>
+      <!-- <div class="border px-4 py-2 mb-2 md:flex gap-4 items-baseline filters">
       <div class="flex gap-4">
         <DsfrInputGroup>
           <DsfrInput
@@ -42,21 +47,22 @@
           <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
         </div>
       </div>
+    </div> -->
+      <div v-if="isFetching" class="flex justify-center my-10">
+        <ProgressSpinner />
+      </div>
+      <div v-else-if="hasRequests">
+        <NewElementsTable :data="data" />
+      </div>
+      <p v-else class="mb-8">Aucune demande.</p>
+      <DsfrPagination
+        v-if="showPagination"
+        @update:currentPage="updatePage"
+        :pages="pages"
+        :current-page="page - 1"
+        :truncLimit="5"
+      />
     </div>
-    <div v-if="isFetching" class="flex justify-center my-10">
-      <ProgressSpinner />
-    </div>
-    <div v-else-if="hasRequests">
-      <NewElementsTable :data="data" />
-    </div>
-    <p v-else class="mb-8">Aucune demande.</p>
-    <DsfrPagination
-      v-if="showPagination"
-      @update:currentPage="updatePage"
-      :pages="pages"
-      :current-page="page - 1"
-      :truncLimit="5"
-    />
   </div>
 </template>
 
