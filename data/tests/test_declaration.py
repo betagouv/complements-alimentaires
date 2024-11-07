@@ -8,8 +8,10 @@ from data.factories import (
     ComputedSubstanceFactory,
     DeclaredPlantFactory,
     DeclaredSubstanceFactory,
+    GalenicFormulationFactory,
     InstructionReadyDeclarationFactory,
     PlantFactory,
+    PopulationFactory,
     SnapshotFactory,
     SubstanceFactory,
 )
@@ -131,6 +133,48 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration.overriden_article, "")
+
+    def test_article_15_warning(self):
+        declaration_with_risky_substance = InstructionReadyDeclarationFactory(
+            computed_substances=[],
+        )
+        substance = SubstanceFactory(is_risky=True)
+        ComputedSubstanceFactory(
+            substance=substance,
+            declaration=declaration_with_risky_substance,
+        )
+        declaration_with_risky_substance.assign_calculated_article()
+        declaration_with_risky_substance.save()
+        declaration_with_risky_substance.refresh_from_db()
+        self.assertEqual(declaration_with_risky_substance.article, Declaration.Article.ARTICLE_15_WARNING)
+        self.assertEqual(declaration_with_risky_substance.calculated_article, Declaration.Article.ARTICLE_15_WARNING)
+        self.assertEqual(declaration_with_risky_substance.overriden_article, "")
+
+        risky_galenic_formulation = GalenicFormulationFactory(is_risky=True)
+        declaration_with_risky_galenic_formulation = InstructionReadyDeclarationFactory(
+            galenic_formulation=risky_galenic_formulation,
+        )
+
+        declaration_with_risky_galenic_formulation.assign_calculated_article()
+        declaration_with_risky_galenic_formulation.save()
+        declaration_with_risky_galenic_formulation.refresh_from_db()
+        self.assertEqual(declaration_with_risky_galenic_formulation.article, Declaration.Article.ARTICLE_15_WARNING)
+        self.assertEqual(
+            declaration_with_risky_galenic_formulation.calculated_article, Declaration.Article.ARTICLE_15_WARNING
+        )
+        self.assertEqual(declaration_with_risky_galenic_formulation.overriden_article, "")
+
+        risky_target_population = PopulationFactory(is_defined_by_anses=True)
+        declaration_with_risky_population = InstructionReadyDeclarationFactory(
+            populations=[risky_target_population],
+        )
+
+        declaration_with_risky_population.assign_calculated_article()
+        declaration_with_risky_population.save()
+        declaration_with_risky_population.refresh_from_db()
+        self.assertEqual(declaration_with_risky_population.article, Declaration.Article.ARTICLE_15_WARNING)
+        self.assertEqual(declaration_with_risky_population.calculated_article, Declaration.Article.ARTICLE_15_WARNING)
+        self.assertEqual(declaration_with_risky_population.overriden_article, "")
 
     def test_article_15_override(self):
         declaration = InstructionReadyDeclarationFactory(

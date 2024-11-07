@@ -378,28 +378,28 @@ class Declaration(Historisable, TimeStampable):
                 and x.substance.max_quantity is not None
                 and x.substance.unit == x.unit
             )
-
             has_risky_ingredients = (
                 any(
                     x
-                    for x in self.declared_ingredients
-                    if x.is_risky or re.match(r"([^A-Za-z]+|^)vin([^A-Za-z]+|$)|alcool|vinaigre", x)
+                    for x in self.declared_ingredients.filter(new=False)
+                    if x.ingredient.is_risky
+                    or re.match(r"([^A-Za-z]+|^)vin([^A-Za-z]+|$)|alcool|vinaigre", x.ingredient.name)
                 )
                 # Les plantes ayant public_comments ~* 'la concentration en <nom de substance> est à surveiller' n'impliquent d'obligation règlementaire
                 or any(
                     x
-                    for x in self.declared_plants
-                    if x.is_risky or re.match(r"dérivés hydroxyanthracéniques|dérivés anthracéniques|HAD", x)
+                    for x in self.declared_plants.filter(new=False)
+                    if x.plant.is_risky
+                    if x.plant.preparation.contains_alcohol
+                    or re.match(r"dérivés hydroxyanthracéniques|dérivés anthracéniques|HAD", x.plant.name)
                 )
-                or any(x for x in self.declared_microorganisms if x.is_risky)
-                or any(x for x in self.declared_substances if x.is_risky)
-                or any(x for x in self.computed_substances if x.is_risky)
+                or any(x for x in self.declared_microorganisms.filter(new=False) if x.microorganism.is_risky)
+                or any(x for x in self.declared_substances.filter(new=False) if x.substance.is_risky)
+                or any(x for x in self.computed_substances.all() if x.substance.is_risky)
             )
             # Les populations cibles qui sont définies par l'ANSES et utilisées dans les avertissements
             # et contre-indications sont considérées comme étant à surveiller avec vigilance lorsqu'utilisées comme population cible
-            has_risky_target_population = any(x for x in self.populations if x.is_defined_by_anses)
-            has_risky_preparation = any(x for x in self.populations if x.contains_alcohol)
-            has_risky_galenic_formulation = any(x for x in self.galenic_formulation if x.is_risky)
+            has_risky_target_population = any(x for x in self.populations.all() if x.is_defined_by_anses)
 
             if empty_composition:
                 self.calculated_article = ""
@@ -409,12 +409,7 @@ class Declaration(Historisable, TimeStampable):
                 self.calculated_article = Declaration.Article.ARTICLE_16
             elif has_new_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
-            elif (
-                has_risky_ingredients
-                | has_risky_target_population
-                | has_risky_preparation
-                | has_risky_galenic_formulation
-            ):
+            elif has_risky_ingredients | has_risky_target_population | self.galenic_formulation.is_risky:
                 self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
             else:
                 self.calculated_article = Declaration.Article.ARTICLE_15
