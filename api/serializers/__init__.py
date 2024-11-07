@@ -26,6 +26,9 @@ from .declaration import (
     SimpleDeclarationSerializer,
     DeclaredElementSerializer,
     DeclaredPlantSerializer,
+    DeclaredMicroorganismSerializer,
+    DeclaredSubstanceSerializer,
+    DeclaredIngredientSerializer,
 )
 from .company import CompanySerializer
 from .solicitation import CollaborationInvitationSerializer, CompanyAccessClaimSerializer, AddNewCollaboratorSerializer
