@@ -16,15 +16,20 @@
       />
       <div class="grid grid-cols-2 gap-4">
         <div class="bg-grey-975 py-4 px-4 mb-8">
-          <p>Plante</p>
+          <p class="mt-6">
+            <v-icon :name="icon" />
+            {{ typeName }}
+          </p>
+          <!-- TODO: flag for authorisation -->
           <div v-for="(info, idx) in request" :key="idx" class="grid grid-cols-2">
             <p>
               <b>{{ info.label }}</b>
             </p>
             <p>{{ info.text }}</p>
           </div>
+          <!-- TODO: potentially link to reglementation -->
           <div class="grid justify-items-end">
-            <!-- TODO:  -->
+            <!-- TODO: link to decla -->
             <router-link>
               Voir la déclaration
               <v-icon icon="ri-arrow-right-line"></v-icon>
@@ -37,8 +42,8 @@
 </template>
 
 <script setup>
-// import { ref, computed, watch } from "vue"
-// import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
+import { computed } from "vue"
+import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
 // import { useRoute, useRouter } from "vue-router"
 // import { useFetch } from "@vueuse/core"
 // import { handleError } from "@/utils/error-handling"
@@ -47,11 +52,9 @@
 // const router = useRouter()
 // const notFound = ref(false)
 
-// const searchTerm = ref(null)
-// const search = () => {
-//   if (searchTerm.value.length < 3) window.alert("Veuillez saisir au moins trois caractères")
-//   else router.push({ name: "ElementSearchResultsPage", query: { q: searchTerm.value } })
-// }
+const props = defineProps({ type: String, id: Number })
+const icon = computed(() => getTypeIcon(props.type))
+const typeName = computed(() => getTypeInFrench(props.type))
 
 const request = [
   // TODO: authorisation
