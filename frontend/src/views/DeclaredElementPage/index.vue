@@ -1,14 +1,35 @@
 <template>
   <div>
-    <!-- bandeau construction -->
     <DsfrNotice title="Page en construction" />
-    <!-- bandeau nouvel ingredient -->
-    <!-- breadcrumbs -->
+    <DsfrNotice
+      title="NOUVEL INGRÉDIENT"
+      desc="Ingrédient non intégré dans la base de donnée et en attente de validation. "
+    />
     <div class="fr-container">
-      <h1>Nouvel ingrédient</h1>
-      <div class="flex">
-        <div class="bg-grey-975">
+      <!-- TODO: add link to declaration in between -->
+      <DsfrBreadcrumb
+        class="mb-8"
+        :links="[
+          { to: { name: 'InstructionDeclarations' }, text: 'Déclarations pour instruction' },
+          { text: 'Demande d\'ajout d\'ingrédient' },
+        ]"
+      />
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-grey-975 py-4 px-4 mb-8">
           <p>Plante</p>
+          <div v-for="(info, idx) in request" :key="idx" class="grid grid-cols-2">
+            <p>
+              <b>{{ info.label }}</b>
+            </p>
+            <p>{{ info.text }}</p>
+          </div>
+          <div class="grid justify-items-end">
+            <!-- TODO:  -->
+            <router-link>
+              Voir la déclaration
+              <v-icon icon="ri-arrow-right-line"></v-icon>
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -31,6 +52,23 @@
 //   if (searchTerm.value.length < 3) window.alert("Veuillez saisir au moins trois caractères")
 //   else router.push({ name: "ElementSearchResultsPage", query: { q: searchTerm.value } })
 // }
+
+const request = [
+  // TODO: authorisation
+  {
+    label: "Nom",
+    text: "Quelque chose",
+  },
+  {
+    label: "Description",
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed leo odio, lobortis eget justo ac.",
+  },
+  {
+    label: "Pays de référence",
+    text: "Lorem ipsum",
+  },
+  // TODO: source reglementaire
+]
 
 // // Afin d'améliorer le SEO, l'urlComponent prend la forme id--type--name
 // const props = defineProps({ urlComponent: String })

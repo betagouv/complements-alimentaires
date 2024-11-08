@@ -93,7 +93,7 @@ const routes = [
     component: DeclaredElementPage,
     props: true,
     meta: {
-      title: "Nouvel ingrédient",
+      title: "Demande d'ajout d'ingrédient",
       requiredRole: "InstructionRole",
       authenticationRequired: true,
     },
