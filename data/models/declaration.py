@@ -390,12 +390,16 @@ class Declaration(Historisable, TimeStampable):
                     x
                     for x in self.declared_plants.filter(new=False)
                     if x.plant.is_risky
-                    or x.preparation.contains_alcohol
+                    or (x.preparation and x.preparation.contains_alcohol)
                     or re.match(r"dérivés hydroxyanthracéniques|dérivés anthracéniques|HAD", x.plant.name)
                 )
-                or any(x for x in self.declared_microorganisms.filter(new=False) if x.microorganism.is_risky)
-                or any(x for x in self.declared_substances.filter(new=False) if x.substance.is_risky)
-                or any(x for x in self.computed_substances.all() if x.substance.is_risky)
+                or any(
+                    x
+                    for x in self.declared_microorganisms.filter(new=False)
+                    if x.microorganism and x.microorganism.is_risky
+                )
+                or any(x for x in self.declared_substances.filter(new=False) if x.substance and x.substance.is_risky)
+                or any(x for x in self.computed_substances.all() if x.substance and x.substance.is_risky)
             )
             # Les populations cibles qui sont définies par l'ANSES et utilisées dans les avertissements
             # et contre-indications sont considérées comme étant à surveiller avec vigilance lorsqu'utilisées comme population cible
@@ -409,7 +413,11 @@ class Declaration(Historisable, TimeStampable):
                 self.calculated_article = Declaration.Article.ARTICLE_16
             elif has_new_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
-            elif has_risky_ingredients | has_risky_target_population | self.galenic_formulation.is_risky:
+            elif (
+                has_risky_ingredients
+                or has_risky_target_population
+                or (self.galenic_formulation and self.galenic_formulation.is_risky)
+            ):
                 self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
             else:
                 self.calculated_article = Declaration.Article.ARTICLE_15
