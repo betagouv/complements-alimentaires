@@ -32,6 +32,7 @@ import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
 import A11yPage from "@/views/A11yPage.vue"
 import ContactForm from "@/views/ContactForm"
 import CompliancePage from "@/views/CompliancePage"
+import DeclaredElementPage from "@/views/DeclaredElementPage"
 import { ref } from "vue"
 
 const routes = [
@@ -85,6 +86,17 @@ const routes = [
     name: "ElementPage",
     component: ElementPage,
     props: true,
+  },
+  {
+    path: "/nouvel-element/:type/:id",
+    name: "DeclaredElementPage",
+    component: DeclaredElementPage,
+    props: true,
+    meta: {
+      title: "Nouvel ingrédient",
+      requiredRole: "InstructionRole",
+      authenticationRequired: true,
+    },
   },
   {
     path: "/mentions-legales",
