@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from datetime import timedelta
 
 from django.conf import settings
@@ -341,16 +342,16 @@ class Declaration(Historisable, TimeStampable):
         saisine ANSES (ART_17 et ART_18) > ART_16 > ART_15
         """
         try:
-            composition_items = (
+            composition_ingredients = (
                 self.declared_plants,
                 self.declared_microorganisms,
                 self.declared_substances,
                 self.declared_ingredients,
             )
-            empty_composition = all(not x.exists() for x in composition_items)
+            empty_composition = all(not x.exists() for x in composition_ingredients)
             # cela ne devrait être possible que pour les plantes qui même non autorisées peuvent être ajoutées en infime quantité dans des elixirs
 
-            has_not_authorized_items = (
+            has_not_authorized_ingredients = (
                 any(self.declared_plants.filter(plant__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_microorganisms.filter(microorganism__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
@@ -358,7 +359,9 @@ class Declaration(Historisable, TimeStampable):
                 or any(self.declared_ingredients.filter(ingredient__status=IngredientStatus.NOT_AUTHORIZED))
             )
 
-            has_new_items = any(x.filter(new=True).exists() for x in composition_items if issubclass(x.model, Addable))
+            has_new_ingredients = any(
+                x.filter(new=True).exists() for x in composition_ingredients if issubclass(x.model, Addable)
+            )
 
             surpasses_max_dose = any(
                 x.quantity > x.substance.max_quantity
@@ -375,15 +378,39 @@ class Declaration(Historisable, TimeStampable):
                 and x.substance.max_quantity is not None
                 and x.substance.unit == x.unit
             )
+            has_risky_ingredients = (
+                any(
+                    x
+                    for x in self.declared_ingredients.filter(new=False)
+                    if x.ingredient.is_risky
+                    or re.match(r"([^A-Za-z]+|^)vin([^A-Za-z]+|$)|alcool|vinaigre", x.ingredient.name)
+                )
+                # Les plantes ayant public_comments ~* 'la concentration en <nom de substance> est à surveiller' n'impliquent d'obligation règlementaire
+                or any(
+                    x
+                    for x in self.declared_plants.filter(new=False)
+                    if x.plant.is_risky
+                    or x.preparation.contains_alcohol
+                    or re.match(r"dérivés hydroxyanthracéniques|dérivés anthracéniques|HAD", x.plant.name)
+                )
+                or any(x for x in self.declared_microorganisms.filter(new=False) if x.microorganism.is_risky)
+                or any(x for x in self.declared_substances.filter(new=False) if x.substance.is_risky)
+                or any(x for x in self.computed_substances.all() if x.substance.is_risky)
+            )
+            # Les populations cibles qui sont définies par l'ANSES et utilisées dans les avertissements
+            # et contre-indications sont considérées comme étant à surveiller avec vigilance lorsqu'utilisées comme population cible
+            has_risky_target_population = any(x for x in self.populations.all() if x.is_defined_by_anses)
 
             if empty_composition:
                 self.calculated_article = ""
             elif surpasses_max_dose:
                 self.calculated_article = Declaration.Article.ANSES_REFERAL
-            elif has_not_authorized_items:
+            elif has_not_authorized_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
-            elif has_new_items:
+            elif has_new_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
+            elif has_risky_ingredients | has_risky_target_population | self.galenic_formulation.is_risky:
+                self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
             else:
                 self.calculated_article = Declaration.Article.ARTICLE_15
 

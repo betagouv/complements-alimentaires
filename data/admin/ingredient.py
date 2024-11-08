@@ -9,7 +9,7 @@ from .abstract_admin import ElementAdminWithChangeReason
 
 class IngredientSynonymInline(admin.TabularInline):
     model = IngredientSynonym
-    extra = 1
+    extra = 0
 
     formfield_overrides = {
         models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
@@ -18,7 +18,7 @@ class IngredientSynonymInline(admin.TabularInline):
 
 class SubstanceInlineAdmin(admin.TabularInline):
     model = Ingredient.substances.through
-    extra = 1
+    extra = 0
 
 
 class IngredientForm(forms.ModelForm):
@@ -38,8 +38,8 @@ class IngredientAdmin(ElementAdminWithChangeReason):
         SubstanceInlineAdmin,
         IngredientSynonymInline,
     )
-    list_display = ("name", "status")
-    list_filter = ("is_obsolete", "status")
+    list_display = ("name", "status", "is_risky")
+    list_filter = ("is_obsolete", "status", "is_risky")
     readonly_fields = (
         "name",
         "is_obsolete",

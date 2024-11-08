@@ -121,6 +121,7 @@ class CSVImporter:
         "max_age": ["AGE_MAX"],
         "is_defined_by_anses": ["CATEGORIE_ANSES"],
         "is_liquid": ["LIQUIDE"],
+        "contains_alcohol": ["AVEC_ALCOOL"],
         # Les champs ForeignKey (synonymes)
         "standard_name": ["SBSACT_IDENT", "PLTE_IDENT", "INGA_IDENT", "MORG_IDENT"],
         "siccrf_family": ["FAMPL_IDENT"],
@@ -142,7 +143,7 @@ class CSVImporter:
         "to_be_entered_in_next_decree",
         "substance_types",
     ]
-    NEW_FIELDS = ["long_name"]
+    NEW_FIELDS = ["long_name", "is_risky"]
 
     def __init__(self, file, model, is_relation=False, mapping=None):
         """Initialise un CSVImporter avec le fichier source, le modèle de destination, etc

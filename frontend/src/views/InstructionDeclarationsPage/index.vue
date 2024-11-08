@@ -44,29 +44,32 @@
         </DsfrFieldset>
       </div>
       <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" v-model="filteredStatus" />
-      <div>
+      <div class="min-w-96">
         <div class="md:border-l md:pl-4 min-w-36 flex flex-row gap-4">
-          <DsfrInputGroup class="max-w-sm">
-            <DsfrSelect
-              label="Trier par"
-              defaultUnselectedText=""
-              :modelValue="ordering"
-              @update:modelValue="updateOrdering"
-              :options="orderingOptions"
-              class="!text-sm"
-            />
-          </DsfrInputGroup>
-
-          <DsfrInputGroup class="max-w-sm">
-            <DsfrSelect
-              label="Article"
-              defaultUnselectedText=""
-              :modelValue="article"
-              @update:modelValue="updateArticle"
-              :options="articleSelectOptions"
-              class="!text-sm"
-            />
-          </DsfrInputGroup>
+          <div class="w-2/4">
+            <DsfrInputGroup>
+              <DsfrSelect
+                label="Trier par"
+                defaultUnselectedText=""
+                :modelValue="ordering"
+                @update:modelValue="updateOrdering"
+                :options="orderingOptions"
+                class="!text-sm"
+              />
+            </DsfrInputGroup>
+          </div>
+          <div class="w-2/4">
+            <DsfrInputGroup>
+              <DsfrSelect
+                label="Article"
+                defaultUnselectedText=""
+                :modelValue="article"
+                @update:modelValue="updateArticle"
+                :options="articleSelectOptions"
+                class="!text-sm"
+              />
+            </DsfrInputGroup>
+          </div>
         </div>
 
         <div class="md:border-l md:pl-4 min-w-36 pb-2">
@@ -107,11 +110,7 @@ import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 const router = useRouter()
 const route = useRoute()
 
-const excludeArticles = ["ART_15_WARNING"]
-const articleSelectOptions = [
-  ...articleOptions.filter((x) => excludeArticles.indexOf(x.value) == -1),
-  ...[{ value: "", text: "Tous" }],
-]
+const articleSelectOptions = [...articleOptions, ...[{ value: "", text: "Tous" }]]
 
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
