@@ -81,6 +81,7 @@ class PlantAdmin(ElementAdminWithChangeReason):
     )
     list_display = ("name", "siccrf_family", "status", "is_risky")
     list_filter = ("is_obsolete", "siccrf_family", "status", "is_risky")
+    show_facets = admin.ShowFacets.NEVER
     readonly_fields = (
         "siccrf_name",
         "name",

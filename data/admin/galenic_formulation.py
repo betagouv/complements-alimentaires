@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+
 from data.models import GalenicFormulation
 
 
@@ -41,3 +42,4 @@ class GalenicFormulationAdmin(admin.ModelAdmin):
         "is_liquid",
         "is_risky",
     )
+    show_facets = admin.ShowFacets.NEVER

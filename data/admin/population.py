@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+
 from data.models import Population
 
 
@@ -39,3 +40,4 @@ class PopulationAdmin(admin.ModelAdmin):
         "is_obsolete",
         "is_defined_by_anses",
     )
+    show_facets = admin.ShowFacets.NEVER
