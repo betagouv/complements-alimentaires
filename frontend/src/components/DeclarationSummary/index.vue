@@ -27,26 +27,38 @@
       <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
     </h3>
 
-    <SummaryElementList objectType="plant" :elements="payload.declaredPlants" />
-    <SummaryElementList objectType="microorganism" :elements="payload.declaredMicroorganisms" />
+    <SummaryElementList :useAccordions="useAccordions" objectType="plant" :elements="payload.declaredPlants" />
+    <SummaryElementList
+      :useAccordions="useAccordions"
+      objectType="microorganism"
+      :elements="payload.declaredMicroorganisms"
+    />
     <SummaryElementList
       objectType="form_of_supply"
+      :useAccordions="useAccordions"
       :elements="getObjectSubTypeList(payload.declaredIngredients, 'form_of_supply')"
     />
-    <SummaryElementList objectType="aroma" :elements="getObjectSubTypeList(payload.declaredIngredients, 'aroma')" />
+    <SummaryElementList
+      :useAccordions="useAccordions"
+      objectType="aroma"
+      :elements="getObjectSubTypeList(payload.declaredIngredients, 'aroma')"
+    />
     <SummaryElementList
       objectType="additive"
+      :useAccordions="useAccordions"
       :elements="getObjectSubTypeList(payload.declaredIngredients, 'additive')"
     />
     <SummaryElementList
       objectType="active_ingredient"
+      :useAccordions="useAccordions"
       :elements="getObjectSubTypeList(payload.declaredIngredients, 'active_ingredient')"
     />
     <SummaryElementList
       objectType="non_active_ingredient"
+      :useAccordions="useAccordions"
       :elements="getObjectSubTypeList(payload.declaredIngredients, 'non_active_ingredient')"
     />
-    <SummaryElementList objectType="substance" :elements="payload.declaredSubstances" />
+    <SummaryElementList objectType="substance" :useAccordions="useAccordions" :elements="payload.declaredSubstances" />
 
     <p class="font-bold mt-8">Substances contenues dans la composition :</p>
     <SubstancesTable v-model="payload" readonly />
@@ -95,7 +107,7 @@ const router = useRouter()
 const { units, populations, conditions, effects, galenicFormulations } = storeToRefs(useRootStore())
 
 const payload = defineModel()
-defineProps({ readonly: Boolean, showArticle: Boolean })
+defineProps({ readonly: Boolean, showArticle: Boolean, useAccordions: Boolean })
 const unitInfo = computed(() => {
   if (!payload.value.unitQuantity) return null
   const unitMeasurement = units.value?.find?.((x) => x.id === payload.value.unitMeasurement)?.name || "-"
