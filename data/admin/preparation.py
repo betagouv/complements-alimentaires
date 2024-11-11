@@ -31,3 +31,4 @@ class PreparationAdmin(admin.ModelAdmin):
     ]
     list_display = ["name", "modification_date", "contains_alcohol"]
     list_filter = ("is_obsolete",)
+    show_facets = admin.ShowFacets.NEVER

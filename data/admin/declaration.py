@@ -191,6 +191,8 @@ class DeclarationAdmin(SimpleHistoryAdmin):
     form = DeclarationForm
     list_display = ("name", "status", "company", "author")
     list_filter = ("status", "company", "author")
+
+    show_facets = admin.ShowFacets.NEVER
     inlines = (
         DeclaredPlantInline,
         DeclaredMicroorganismInline,

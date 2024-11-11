@@ -122,4 +122,5 @@ class SubstanceAdmin(ElementAdminWithChangeReason):
     ]
     list_display = ("name", "get_plants", "get_microorganisms", "get_ingredients", "status", "is_risky")
     list_filter = ("is_obsolete", "status", "is_risky")
+    show_facets = admin.ShowFacets.NEVER
     search_fields = ["id", "name"]

@@ -40,6 +40,7 @@ class IngredientAdmin(ElementAdminWithChangeReason):
     )
     list_display = ("name", "status", "is_risky")
     list_filter = ("is_obsolete", "status", "is_risky")
+    show_facets = admin.ShowFacets.NEVER
     readonly_fields = (
         "name",
         "is_obsolete",
