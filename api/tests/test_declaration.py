@@ -983,6 +983,28 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(results[0]["id"], declaration.id)
 
     @authenticate
+    def test_ordering_and_filtering_instructor_not_assigned(self):
+        """
+        Le filtre des non-assignés doit pouvoir s'effectuer avec celui du triage
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        emma = InstructionRoleFactory()
+        edouard = InstructionRoleFactory()
+        stephane = InstructionRoleFactory()
+
+        OngoingInstructionDeclarationFactory(instructor=emma)
+        OngoingInstructionDeclarationFactory(instructor=edouard)
+        OngoingInstructionDeclarationFactory(instructor=stephane)
+        declaration = AwaitingInstructionDeclarationFactory()
+
+        url = f"{reverse('api:list_all_declarations')}?instructor=None&ordering=responseLimitDate"
+        response = self.client.get(url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
     def test_filter_instructor_not_assigned_and_assigned(self):
         """
         Les déclarations peuvent être filtrées par celles qui n'ont pas encore d'instructrice

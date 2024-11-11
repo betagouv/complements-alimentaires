@@ -81,19 +81,16 @@ class DeclarationFilterSet(django_filters.FilterSet):
         if not filter_values:
             return queryset
 
-        unassigned_declarations = (
-            queryset.filter(instructor__isnull=True) if empty_term in filter_values else Declaration.objects.none()
-        )
-
         try:
             declaration_ids = [int(x.strip()) for x in filter_values if x != empty_term]
         except Exception as _:
             raise ProjectAPIException(global_error="Vérifier votre filtre instructeur")
-        filtered_declarations = (
-            queryset.filter(instructor__id__in=declaration_ids) if declaration_ids else Declaration.objects.none()
-        )
 
-        return unassigned_declarations.union(filtered_declarations)
+        include_unassigned = empty_term in filter_values
+        if include_unassigned:
+            return queryset.filter(Q(instructor__isnull=True) | Q(instructor__id__in=declaration_ids))
+        else:
+            return queryset.filter(instructor__id__in=declaration_ids)
 
     def nullable_visor(self, queryset, value, *args, **kwargs):
         empty_term = "None"
