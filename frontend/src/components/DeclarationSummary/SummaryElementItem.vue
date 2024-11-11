@@ -9,8 +9,9 @@
       </div>
 
       <DsfrBadge v-if="model.new" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
+      <DsfrBadge v-if="isPlant && !model.active" label="Non-actif" type="none" class="self-center ml-2" small />
     </div>
-    <p class="my-2">
+    <p class="my-2" v-if="model.active">
       {{ elementInfo }}
     </p>
   </li>
@@ -28,6 +29,7 @@ const { plantParts, units, preparations } = storeToRefs(useRootStore())
 const model = defineModel()
 const props = defineProps({ objectType: { type: String } })
 
+const isPlant = computed(() => props.objectType === "plant")
 const plantPartName = computed(() => plantParts.value?.find((x) => x.id === model.value.usedPart)?.name || "Aucune")
 const unitName = computed(() => units.value?.find((x) => x.id === model.value.unit)?.name || "")
 const preparationName = computed(
