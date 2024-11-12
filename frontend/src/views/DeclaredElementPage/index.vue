@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DsfrNotice title="Page en construction" />
+    <DsfrNotice title="En construction" desc="Des nouvelles fonctionnalités arrivent bientôt !" />
     <DsfrNotice
       title="NOUVEL INGRÉDIENT"
       desc="Ingrédient non intégré dans la base de donnée et en attente de validation. "
