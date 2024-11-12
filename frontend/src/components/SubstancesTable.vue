@@ -62,7 +62,7 @@
               pour {{ payload.computedSubstances[rowIndex].substance.maxQuantity }} maximum autorisés
             </span>
           </div>
-          <DsfrInputGroup>
+          <DsfrInputGroup v-else>
             <NumberField
               v-model="payload.computedSubstances[rowIndex].quantity"
               label="Quantité par DJR"

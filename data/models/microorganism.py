@@ -6,9 +6,8 @@ from simple_history.models import HistoricalRecords
 
 from data.behaviours import Historisable, TimeStampable
 
-from .abstract_models import CommonModel
-from .ingredient_status import WithStatus
-from .mixins import WithComments, WithMissingImportBoolean
+from .abstract_models import IngredientCommonModel
+from .mixins import WithMissingImportBoolean
 from .substance import Substance
 
 
@@ -22,7 +21,7 @@ class ConcatOp(models.Func):
     template = "%(expressions)s"
 
 
-class Microorganism(CommonModel, WithComments, WithStatus):
+class Microorganism(IngredientCommonModel):
     class Meta:
         verbose_name = "micro-organisme"
 

@@ -8,6 +8,7 @@ from api.serializers import (
     DeclaredSubstanceSerializer,
     DeclaredIngredientSerializer,
 )
+from api.permissions import IsInstructor
 from itertools import chain
 
 
@@ -19,6 +20,7 @@ class DeclaredElementsPagination(LimitOffsetPagination):
 class DeclaredElementsView(ListAPIView):
     serializer_class = DeclaredElementSerializer
     pagination_class = DeclaredElementsPagination
+    permission_classes = [IsInstructor]
 
     def get_queryset(self):
         closed_statuses = [

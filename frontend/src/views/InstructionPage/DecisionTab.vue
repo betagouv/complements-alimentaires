@@ -77,15 +77,6 @@
           <div v-if="firstErrorMsg(v$, 'reasons')">{{ firstErrorMsg(v$, "reasons") }}</div>
         </template>
       </DsfrHighlight>
-      <hr />
-      <DsfrInputGroup>
-        <DsfrInput
-          v-model="privateNotes"
-          is-textarea
-          label-visible
-          label="Notes de l'expert (à destination de l'administration)"
-        />
-      </DsfrInputGroup>
     </div>
   </div>
 </template>
@@ -117,7 +108,6 @@ const proposal = ref(null)
 const delayDays = ref(15)
 const comment = ref(declaration.value?.lastAdministrationComment || "")
 const reasons = ref([])
-const privateNotes = ref(declaration.value?.privateNotes || "")
 
 const $externalResults = ref({})
 const v$ = useVuelidate(rules, { comment, proposal, reasons, delayDays }, { $externalResults })
@@ -221,7 +211,6 @@ const submitDecision = async () => {
   const { response } = await useFetch(url, { headers: headers() })
     .post({
       comment: comment.value,
-      privateNotes: privateNotes.value,
       reasons: reasons.value,
       expiration: delayDays.value,
     })

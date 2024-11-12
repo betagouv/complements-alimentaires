@@ -152,17 +152,17 @@ files = [
 
 [[package]]
 name = "boto3"
-version = "1.35.54"
+version = "1.35.57"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "boto3-1.35.54-py3-none-any.whl", hash = "sha256:2d5e160b614db55fbee7981001c54476cb827c441cef65b2fcb2c52a62019909"},
-    {file = "boto3-1.35.54.tar.gz", hash = "sha256:7d9c359bbbc858a60b51c86328db813353c8bd1940212cdbd0a7da835291c2e1"},
+    {file = "boto3-1.35.57-py3-none-any.whl", hash = "sha256:9edf49640c79a05b0a72f4c2d1e24dfc164344b680535a645f455ac624dc3680"},
+    {file = "boto3-1.35.57.tar.gz", hash = "sha256:db58348849a5af061f0f5ec9c3b699da5221ca83354059fdccb798e3ddb6b62a"},
 ]
 
 [package.dependencies]
-botocore = ">=1.35.54,<1.36.0"
+botocore = ">=1.35.57,<1.36.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.10.0,<0.11.0"
 
@@ -171,13 +171,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.35.54"
+version = "1.35.57"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.35.54-py3-none-any.whl", hash = "sha256:9cca1811094b6cdc144c2c063a3ec2db6d7c88194b04d4277cd34fc8e3473aff"},
-    {file = "botocore-1.35.54.tar.gz", hash = "sha256:131bb59ce59c8a939b31e8e647242d70cf11d32d4529fa4dca01feea1e891a76"},
+    {file = "botocore-1.35.57-py3-none-any.whl", hash = "sha256:92ddd02469213766872cb2399269dd20948f90348b42bf08379881d5e946cc34"},
+    {file = "botocore-1.35.57.tar.gz", hash = "sha256:d96306558085baf0bcb3b022d7a8c39c93494f031edb376694d2b2dcd0e81327"},
 ]
 
 [package.dependencies]
@@ -802,13 +802,13 @@ files = [
 
 [[package]]
 name = "django"
-version = "5.1.2"
+version = "5.1.3"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "Django-5.1.2-py3-none-any.whl", hash = "sha256:f11aa87ad8d5617171e3f77e1d5d16f004b79a2cf5d2e1d2b97a6a1f8e9ba5ed"},
-    {file = "Django-5.1.2.tar.gz", hash = "sha256:bd7376f90c99f96b643722eee676498706c9fd7dc759f55ebfaf2c08ebcdf4f0"},
+    {file = "Django-5.1.3-py3-none-any.whl", hash = "sha256:8b38a9a12da3ae00cb0ba72da985ec4b14de6345046b1e174b1fd7254398f818"},
+    {file = "Django-5.1.3.tar.gz", hash = "sha256:c0fa0e619c39325a169208caef234f90baa925227032ad3f44842ba14d75234a"},
 ]
 
 [package.dependencies]
@@ -2958,13 +2958,13 @@ png = ["pypng"]
 
 [[package]]
 name = "redis"
-version = "5.1.1"
+version = "5.2.0"
 description = "Python client for Redis database and key-value store"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "redis-5.1.1-py3-none-any.whl", hash = "sha256:f8ea06b7482a668c6475ae202ed8d9bcaa409f6e87fb77ed1043d912afd62e24"},
-    {file = "redis-5.1.1.tar.gz", hash = "sha256:f6c997521fedbae53387307c5d0bf784d9acc28d9f1d058abeac566ec4dbed72"},
+    {file = "redis-5.2.0-py3-none-any.whl", hash = "sha256:ae174f2bb3b1bf2b09d54bf3e51fbc1469cf6c10aa03e21141f51969801a7897"},
+    {file = "redis-5.2.0.tar.gz", hash = "sha256:0b1087665a771b1ff2e003aa5bdd354f15a70c9e25d5a7dbf9c722c16528a7b0"},
 ]
 
 [package.dependencies]
@@ -3302,13 +3302,13 @@ stats = ["scipy (>=1.7)", "statsmodels (>=0.12)"]
 
 [[package]]
 name = "sentry-sdk"
-version = "2.17.0"
+version = "2.18.0"
 description = "Python client for Sentry (https://sentry.io)"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "sentry_sdk-2.17.0-py2.py3-none-any.whl", hash = "sha256:625955884b862cc58748920f9e21efdfb8e0d4f98cca4ab0d3918576d5b606ad"},
-    {file = "sentry_sdk-2.17.0.tar.gz", hash = "sha256:dd0a05352b78ffeacced73a94e86f38b32e2eae15fff5f30ca5abb568a72eacf"},
+    {file = "sentry_sdk-2.18.0-py2.py3-none-any.whl", hash = "sha256:ee70e27d1bbe4cd52a38e1bd28a5fadb9b17bc29d91b5f2b97ae29c0a7610442"},
+    {file = "sentry_sdk-2.18.0.tar.gz", hash = "sha256:0dc21febd1ab35c648391c664df96f5f79fb0d92d7d4225cd9832e53a617cafd"},
 ]
 
 [package.dependencies]
@@ -3336,9 +3336,11 @@ httpx = ["httpx (>=0.16.0)"]
 huey = ["huey (>=2)"]
 huggingface-hub = ["huggingface-hub (>=0.22)"]
 langchain = ["langchain (>=0.0.210)"]
+launchdarkly = ["launchdarkly-server-sdk (>=9.8.0)"]
 litestar = ["litestar (>=2.0.0)"]
 loguru = ["loguru (>=0.5)"]
 openai = ["openai (>=1.0.0)", "tiktoken (>=0.3.0)"]
+openfeature = ["openfeature-sdk (>=0.7.1)"]
 opentelemetry = ["opentelemetry-distro (>=0.35b0)"]
 opentelemetry-experimental = ["opentelemetry-distro"]
 pure-eval = ["asttokens", "executing", "pure-eval"]
@@ -3392,13 +3394,13 @@ files = [
 
 [[package]]
 name = "sqlfluff"
-version = "3.2.4"
+version = "3.2.5"
 description = "The SQL Linter for Humans"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "sqlfluff-3.2.4-py3-none-any.whl", hash = "sha256:a03a152e01824b2b636235fb2703270367bd6695d1644345a29f648a44f6319b"},
-    {file = "sqlfluff-3.2.4.tar.gz", hash = "sha256:a027ded8bea1f10a4de6173e3f02363cba37ab9e344432292553549a24028931"},
+    {file = "sqlfluff-3.2.5-py3-none-any.whl", hash = "sha256:ae9ff821986b5b0dd1ea858392db7f0eb80343c2cdeee7900fa031f581e04643"},
+    {file = "sqlfluff-3.2.5.tar.gz", hash = "sha256:39822db2c6ad7dac9f6e43d36a3d086c503c051b09665d14a5bdf644770f6ef6"},
 ]
 
 [package.dependencies]
@@ -3723,4 +3725,4 @@ test = ["coverage (>=5.3)", "tomli (>=2.0.1)", "tox"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.*"
-content-hash = "dba61b2897ecd18e1797067b09db38037bf173ece6bcb16e57587d6634c5ea56"
+content-hash = "595b5f330138c129b9bbdf0255e1bd077ab43fe949be5827176463b818a09725"
