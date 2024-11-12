@@ -1,19 +1,33 @@
 <template>
   <li class="border-l-2 border-b pl-4 py-2">
-    <div class="flex content-center">
-      <ElementCommentModal v-model="model" class="mr-2" />
-      <div class="self-center">
-        <p class="capitalize font-bold mb-0">
-          {{ getElementName(model).toLowerCase() }}
+    <div class="md:flex justify-between">
+      <div>
+        <div class="flex content-center">
+          <ElementCommentModal v-model="model" class="mr-2" />
+          <div class="self-center">
+            <p class="capitalize font-bold mb-0">
+              {{ getElementName(model).toLowerCase() }}
+            </p>
+          </div>
+
+          <DsfrBadge v-if="model.new" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
+          <DsfrBadge v-if="!model.active" label="Non-actif" type="none" class="self-center ml-2" small />
+        </div>
+        <p class="my-2" v-if="model.active">
+          {{ elementInfo }}
         </p>
       </div>
 
-      <DsfrBadge v-if="model.new" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
-      <DsfrBadge v-if="!model.active" label="Non-actif" type="none" class="self-center ml-2" small />
+      <div v-if="model.new" class="content-center">
+        <router-link
+          :to="{ name: 'DeclaredElementPage', params: { type: props.objectType, id: model.id } }"
+          class="fr-btn fr-btn--sm fr-btn--secondary"
+        >
+          <v-icon name="ri-file-add-line" class="mr-2"></v-icon>
+          Contrôler la demande d’ajout
+        </router-link>
+      </div>
     </div>
-    <p class="my-2" v-if="model.active">
-      {{ elementInfo }}
-    </p>
   </li>
 </template>
 
