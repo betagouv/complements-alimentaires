@@ -495,3 +495,13 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
             "modification_date",
         )
         read_only_fields = fields
+
+
+class DeclaredElementSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.SerializerMethodField()
+    type = serializers.CharField()
+    declaration = DeclarationShortSerializer()
+
+    def get_name(self, obj):
+        return str(obj)

@@ -29,8 +29,10 @@ from .declaration import (
     ObjectionDeclarationFactory,
     AuthorizedDeclarationFactory,
     DeclaredPlantFactory,
-    ComputedSubstanceFactory,
+    DeclaredMicroorganismFactory,
+    DeclaredIngredientFactory,
     DeclaredSubstanceFactory,
+    ComputedSubstanceFactory,
     AttachmentFactory,
 )
 from .solicitation import CollaborationInvitationFactory, CompanyAccessClaimFactory, SupervisionClaimFactory

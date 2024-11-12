@@ -17,6 +17,9 @@ from data.factories import (
     DeclarantRoleFactory,
     DeclarationFactory,
     DeclaredPlantFactory,
+    DeclaredSubstanceFactory,
+    DeclaredMicroorganismFactory,
+    DeclaredIngredientFactory,
     EffectFactory,
     GalenicFormulationFactory,
     IngredientFactory,
@@ -1492,3 +1495,40 @@ class TestDeclarationApi(APITestCase):
         results = response.json()["results"]
         self.assertEqual(len(results), 1)
         self.assertTrue(results[0]["visaRefused"])
+
+
+class TestDeclaredElementsApi(APITestCase):
+    @authenticate
+    def test_get_declared_elements(self):
+        """
+        Les instructrices peuvent voir une liste de toutes les demandes de nouveaux ingredients
+        Tous types confondus. Ignorer les déclarations en brouillon
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        draft = DeclarationFactory(status=Declaration.DeclarationStatus.DRAFT)
+        for _ in range(3):
+            DeclaredPlantFactory(new=True, declaration=declaration)
+            DeclaredSubstanceFactory(new=True, declaration=declaration)
+            DeclaredMicroorganismFactory(new=True, declaration=declaration)
+            DeclaredIngredientFactory(new=True, declaration=declaration)
+            # don't return not new ones
+            DeclaredPlantFactory(new=False, declaration=declaration)
+            # don't return ones attached to draft declarations
+            DeclaredIngredientFactory(new=True, declaration=draft)
+
+        response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 12)
+        result = results["results"][0]
+        self.assertEqual(result["declaration"]["id"], declaration.id)
+
+    def test_get_declared_elements_not_allowed_not_authenticated(self):
+        response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_get_declared_elements_not_allowed_not_instructor(self):
+        response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
