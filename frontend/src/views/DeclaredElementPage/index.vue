@@ -49,10 +49,12 @@ import { useFetch } from "@vueuse/core"
 
 const props = defineProps({ type: String, id: Number })
 const icon = computed(() => getTypeIcon(props.type))
+// TODO: get more specific type name from ingredient_type ?
 const typeName = computed(() => getTypeInFrench(props.type))
 
 const url = computed(() => `/api/v1/declared-elements/${getApiType(props.type)}s/${props.id}`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
+// TODO: handle 404 and 403
 
 const franceAuthorization = computed(() => {
   return element.value?.authorizationMode === "FR"
@@ -63,6 +65,7 @@ const elementProfile = computed(() => {
 
   const items = [
     {
+      // TODO: improve display of flag, consider hiding it as decorative from screen readers
       label: franceAuthorization.value ? "🇫🇷" : "🇪🇺",
       text: franceAuthorization.value ? "Autorisé en France." : "Autorisé dans un état membre de l’EU ou EEE.",
     },
