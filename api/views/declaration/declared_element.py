@@ -20,7 +20,7 @@ class DeclaredElementsPagination(LimitOffsetPagination):
 class DeclaredElementsView(ListAPIView):
     serializer_class = DeclaredElementSerializer
     pagination_class = DeclaredElementsPagination
-    permission_classes = [IsInstructor]
+    permission_classes = [(IsInstructor | IsVisor)]
 
     def get_queryset(self):
         closed_statuses = [
