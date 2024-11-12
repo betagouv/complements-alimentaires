@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import MagicLinkToken, InseeToken
+from .models import InseeToken, MagicLinkToken
 
 
 @admin.register(MagicLinkToken)
@@ -12,7 +12,8 @@ class MagicLinkTokenAdmin(admin.ModelAdmin):
         "usage",
     )
     readonly_fields = ("key",)
-    list_filter = ("expiration", "user")
+    list_filter = ("expiration",)
+    show_facets = admin.ShowFacets.NEVER
 
 
 @admin.register(InseeToken)
@@ -23,3 +24,4 @@ class InseeTokenAdmin(admin.ModelAdmin):
     )
     readonly_fields = ("key",)
     list_filter = ("expiration",)
+    show_facets = admin.ShowFacets.NEVER

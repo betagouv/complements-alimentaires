@@ -34,6 +34,7 @@ class UserAdmin(UserAdmin):
         "email",
         "username",
     )
+    show_facets = admin.ShowFacets.NEVER
 
     inlines = (
         DeclarantRoleInline,

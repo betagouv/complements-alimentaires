@@ -20,7 +20,7 @@ urlpatterns = {
     path("substances/<int:pk>", views.SubstanceRetrieveView.as_view(), name="single_substance"),
     path("elements/autocomplete/", views.AutocompleteView.as_view(), name="substance_autocomplete"),
     # Declared elements
-    path("declared-elements/", views.DeclaredElementsView.as_view(), name="list_new_declared_elements"),
+    path("new-declared-elements/", views.DeclaredElementsView.as_view(), name="list_new_declared_elements"),
     path("declared-elements/plants/<int:pk>", views.DeclaredPlantView.as_view(), name="declared_plant"),
     path(
         "declared-elements/other-ingredients/<int:pk>",

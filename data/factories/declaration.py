@@ -36,7 +36,8 @@ class DeclarationFactory(factory.django.DjangoModelFactory):
     gamme = factory.Faker("bs")
     flavor = factory.Faker("text", max_nb_chars=20)
     description = factory.Faker("text", max_nb_chars=20)
-    private_notes = factory.Faker("text", max_nb_chars=20)
+    private_notes_instruction = factory.Faker("text", max_nb_chars=20)
+    private_notes_visa = factory.Faker("text", max_nb_chars=20)
 
 
 class DeclaredPlantFactory(factory.django.DjangoModelFactory):

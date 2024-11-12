@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+
 from data.models import BlogPost
 
 
@@ -29,6 +30,7 @@ class BlogPostAdmin(admin.ModelAdmin):
         "published_state",
     )
     list_filter = ("published",)
+    show_facets = admin.ShowFacets.NEVER
 
     def published_state(self, obj):
         return "✅ Publié" if obj.published else "🔒 Non publié"

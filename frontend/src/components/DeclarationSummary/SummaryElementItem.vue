@@ -9,8 +9,9 @@
       </div>
 
       <DsfrBadge v-if="model.new" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
+      <DsfrBadge v-if="!model.active" label="Non-actif" type="none" class="self-center ml-2" small />
     </div>
-    <p class="my-2">
+    <p class="my-2" v-if="model.active">
       {{ elementInfo }}
     </p>
   </li>

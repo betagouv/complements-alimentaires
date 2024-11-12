@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+
 from data.models import Condition
 
 
@@ -34,3 +35,4 @@ class ConditionAdmin(admin.ModelAdmin):
         "modification_date",
     ]
     list_filter = ("is_obsolete",)
+    show_facets = admin.ShowFacets.NEVER
