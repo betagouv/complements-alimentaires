@@ -113,7 +113,10 @@ const declarationLink = computed(() => {
 })
 
 const breadcrumbLinks = computed(() => {
-  const links = [{ to: { name: "InstructionDeclarations" }, text: "Déclarations pour instruction" }]
+  const links = [
+    { to: { name: "DashboardPage" }, text: "Tableau de bord" },
+    { to: { name: "InstructionDeclarations" }, text: "Déclarations pour instruction" },
+  ]
   if (declarationLink.value) links.push({ to: declarationLink.value, text: "Instruction" })
   links.push({ text: "Demande d'ajout d'ingrédient" })
   return links
