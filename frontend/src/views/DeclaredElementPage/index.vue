@@ -7,7 +7,7 @@
     />
     <div class="fr-container">
       <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
-      <div class="grid md:grid-cols-2 gap-4">
+      <div v-if="element" class="grid md:grid-cols-2 gap-4">
         <div class="bg-grey-975 p-4 mb-8">
           <p class="text-blue-france-sun-113">
             <v-icon :name="icon" />
@@ -47,16 +47,10 @@ import { getTypeIcon, getTypeInFrench, getApiType } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
 
 const props = defineProps({ type: String, id: Number })
+
+// prepare template data for display
 const icon = computed(() => getTypeIcon(props.type))
 const typeName = computed(() => getTypeInFrench(element.value?.newType || props.type))
-
-const url = computed(() => `/api/v1/declared-elements/${getApiType(props.type)}s/${props.id}`)
-const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
-
-const getElementFromApi = async () => {
-  await execute()
-  await handleError(response)
-}
 
 const franceAuthorization = computed(() => {
   return element.value?.authorizationMode === "FR"
@@ -67,6 +61,22 @@ const authorizationInfo = computed(() => {
     text: franceAuthorization.value ? "Autorisé en France." : "Autorisé dans un état membre de l’EU ou EEE.",
   }
 })
+
+const detailForType = {
+  plant: [
+    { label: "Nom", key: "newName" },
+    { label: "Description", key: "newDescription" },
+  ],
+  microorganism: [
+    { label: "Genre", key: "newGenre" },
+    { label: "Espèce", key: "newSpecies" },
+    { label: "Description", key: "newDescription" },
+  ],
+  default: [
+    { label: "Libillé", key: "newName" },
+    { label: "Description", key: "newDescription" },
+  ],
+}
 
 const elementProfile = computed(() => {
   if (!element.value) return []
@@ -96,31 +106,6 @@ const elementProfile = computed(() => {
   return items
 })
 
-const detailForType = {
-  plant: [
-    { label: "Nom", key: "newName" },
-    { label: "Description", key: "newDescription" },
-  ],
-  microorganism: [
-    { label: "Genre", key: "newGenre" },
-    { label: "Espèce", key: "newSpecies" },
-    { label: "Description", key: "newDescription" },
-  ],
-  default: [
-    { label: "Libillé", key: "newName" },
-    { label: "Description", key: "newDescription" },
-  ],
-}
-
-// Init
-getElementFromApi()
-watch(element, (newElement) => {
-  if (newElement) {
-    const name = newElement.newName || `${newElement.newSpecies} ${newElement.newGenre}`
-    document.title = `${name} - Compl'Alim`
-  }
-})
-
 const declarationId = computed(() => element.value?.declaration)
 const declarationLink = computed(() => {
   if (!declarationId.value) return
@@ -132,5 +117,22 @@ const breadcrumbLinks = computed(() => {
   if (declarationLink.value) links.push({ to: declarationLink.value, text: "Instruction" })
   links.push({ text: "Demande d'ajout d'ingrédient" })
   return links
+})
+
+// Init
+const url = computed(() => `/api/v1/declared-elements/${getApiType(props.type)}s/${props.id}`)
+const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
+
+const getElementFromApi = async () => {
+  await execute()
+  await handleError(response)
+}
+
+getElementFromApi()
+watch(element, (newElement) => {
+  if (newElement) {
+    const name = newElement.newName || `${newElement.newSpecies} ${newElement.newGenre}`
+    document.title = `${name} - Compl'Alim`
+  }
 })
 </script>
