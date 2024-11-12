@@ -8,8 +8,8 @@
     <div class="fr-container">
       <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
       <div class="grid md:grid-cols-2 gap-4">
-        <div class="bg-grey-975 py-4 px-4 mb-8">
-          <p class="mt-6">
+        <div class="bg-grey-975 p-4 mb-8">
+          <p class="text-blue-france-sun-113">
             <v-icon :name="icon" />
             {{ typeName }}
           </p>
@@ -22,14 +22,14 @@
               <b>{{ info.label }}</b>
             </p>
             <p class="col-span-2">
-              <a v-if="info.href" :href="info.href" target="_blank" rel="noopener">
+              <a v-if="info.href" :href="info.href" target="_blank" rel="noopener" class="text-blue-france-sun-113">
                 {{ info.text }}
               </a>
               <span v-else>{{ info.text }}</span>
             </p>
           </div>
-          <div class="grid justify-items-end">
-            <router-link :to="declarationLink">
+          <div class="grid justify-items-end p-2">
+            <router-link :to="declarationLink" class="text-blue-france-sun-113">
               Voir la déclaration
               <v-icon icon="ri-arrow-right-line"></v-icon>
             </router-link>
