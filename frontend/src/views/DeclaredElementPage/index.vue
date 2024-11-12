@@ -6,14 +6,7 @@
       desc="Ingrédient non intégré dans la base de donnée et en attente de validation. "
     />
     <div class="fr-container">
-      <!-- TODO: add link to declaration in between -->
-      <DsfrBreadcrumb
-        class="mb-8"
-        :links="[
-          { to: { name: 'InstructionDeclarations' }, text: 'Déclarations pour instruction' },
-          { text: 'Demande d\'ajout d\'ingrédient' },
-        ]"
-      />
+      <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
       <div class="grid grid-cols-2 gap-4">
         <div class="bg-grey-975 py-4 px-4 mb-8">
           <p class="mt-6">
@@ -30,8 +23,7 @@
             <p v-else>{{ info.text }}</p>
           </div>
           <div class="grid justify-items-end">
-            <!-- TODO: link to decla -->
-            <router-link>
+            <router-link :to="declarationLink">
               Voir la déclaration
               <v-icon icon="ri-arrow-right-line"></v-icon>
             </router-link>
@@ -116,5 +108,18 @@ watch(element, (newElement) => {
     const name = newElement.newName || `${newElement.newSpecies} ${newElement.newGenre}`
     document.title = `${name} - Compl'Alim`
   }
+})
+
+const declarationId = computed(() => element.value?.declaration)
+const declarationLink = computed(() => {
+  if (!declarationId.value) return
+  return { name: "InstructionPage", params: { declarationId: declarationId.value } }
+})
+
+const breadcrumbLinks = computed(() => {
+  const links = [{ to: { name: "InstructionDeclarations" }, text: "Déclarations pour instruction" }]
+  if (declarationLink.value) links.push({ to: declarationLink.value, text: "Instruction" })
+  links.push({ text: "Demande d'ajout d'ingrédient" })
+  return links
 })
 </script>
