@@ -191,6 +191,7 @@ class DeclarationAdmin(SimpleHistoryAdmin):
     form = DeclarationForm
     list_display = ("id", "name", "status", "company", "author")
     list_filter = ("status", "company", "author")
+    list_select_related = ["author", "company"]
 
     show_facets = admin.ShowFacets.NEVER
     inlines = (
