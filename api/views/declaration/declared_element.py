@@ -1,8 +1,14 @@
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from data.models import DeclaredPlant, DeclaredSubstance, DeclaredIngredient, DeclaredMicroorganism, Declaration
-from api.permissions import IsInstructor
-from api.serializers import DeclaredElementSerializer
+from api.serializers import (
+    DeclaredElementSerializer,
+    DeclaredPlantSerializer,
+    DeclaredMicroorganismSerializer,
+    DeclaredSubstanceSerializer,
+    DeclaredIngredientSerializer,
+)
+from api.permissions import IsInstructor, IsVisor
 from itertools import chain
 
 
@@ -14,7 +20,7 @@ class DeclaredElementsPagination(LimitOffsetPagination):
 class DeclaredElementsView(ListAPIView):
     serializer_class = DeclaredElementSerializer
     pagination_class = DeclaredElementsPagination
-    permission_classes = [IsInstructor]
+    permission_classes = [(IsInstructor | IsVisor)]
 
     def get_queryset(self):
         closed_statuses = [
@@ -31,3 +37,27 @@ class DeclaredElementsView(ListAPIView):
                 DeclaredMicroorganism.objects.filter(new=True).exclude(declaration__status__in=closed_statuses),
             )
         )
+
+
+class DeclaredPlantView(RetrieveAPIView):
+    permission_classes = [(IsInstructor | IsVisor)]
+    serializer_class = DeclaredPlantSerializer
+    queryset = DeclaredPlant.objects.all()
+
+
+class DeclaredMicroorganismView(RetrieveAPIView):
+    permission_classes = [(IsInstructor | IsVisor)]
+    serializer_class = DeclaredMicroorganismSerializer
+    queryset = DeclaredMicroorganism.objects.all()
+
+
+class DeclaredSubstanceView(RetrieveAPIView):
+    permission_classes = [(IsInstructor | IsVisor)]
+    serializer_class = DeclaredSubstanceSerializer
+    queryset = DeclaredSubstance.objects.all()
+
+
+class DeclaredIngredientView(RetrieveAPIView):
+    permission_classes = [(IsInstructor | IsVisor)]
+    serializer_class = DeclaredIngredientSerializer
+    queryset = DeclaredIngredient.objects.all()

@@ -1532,3 +1532,76 @@ class TestDeclaredElementsApi(APITestCase):
     def test_get_declared_elements_not_allowed_not_instructor(self):
         response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_get_single_declared_plant(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        plant = DeclaredPlantFactory(declaration=declaration)
+
+        response = self.client.get(reverse("api:declared_plant", kwargs={"pk": plant.id}), format="json")
+        body = response.json()
+        self.assertEqual(body["id"], plant.id)
+
+    @authenticate
+    def test_get_single_declared_microorganism(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        microorganism = DeclaredMicroorganismFactory(declaration=declaration)
+
+        response = self.client.get(
+            reverse("api:declared_microorganism", kwargs={"pk": microorganism.id}), format="json"
+        )
+        body = response.json()
+        self.assertEqual(body["id"], microorganism.id)
+
+    @authenticate
+    def test_get_single_declared_substance(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        substance = DeclaredSubstanceFactory(declaration=declaration)
+
+        response = self.client.get(reverse("api:declared_substance", kwargs={"pk": substance.id}), format="json")
+        body = response.json()
+        self.assertEqual(body["id"], substance.id)
+
+    @authenticate
+    def test_get_single_declared_ingredient(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        ingredient = DeclaredIngredientFactory(declaration=declaration)
+
+        response = self.client.get(reverse("api:declared_ingredient", kwargs={"pk": ingredient.id}), format="json")
+        body = response.json()
+        self.assertEqual(body["id"], ingredient.id)
+
+    def test_get_declared_element_not_allowed_not_authenticated(self):
+        response = self.client.get(reverse("api:declared_plant", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(reverse("api:declared_microorganism", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(reverse("api:declared_substance", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(reverse("api:declared_ingredient", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_get_declared_element_not_allowed_not_instructor(self):
+        response = self.client.get(reverse("api:declared_plant", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(reverse("api:declared_microorganism", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(reverse("api:declared_substance", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(reverse("api:declared_ingredient", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
