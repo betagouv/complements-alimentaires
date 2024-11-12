@@ -1,6 +1,7 @@
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from data.models import DeclaredPlant, DeclaredSubstance, DeclaredIngredient, DeclaredMicroorganism, Declaration
+from api.permissions import IsInstructor
 from api.serializers import DeclaredElementSerializer
 from itertools import chain
 
@@ -13,6 +14,7 @@ class DeclaredElementsPagination(LimitOffsetPagination):
 class DeclaredElementsView(ListAPIView):
     serializer_class = DeclaredElementSerializer
     pagination_class = DeclaredElementsPagination
+    permission_classes = [IsInstructor]
 
     def get_queryset(self):
         closed_statuses = [

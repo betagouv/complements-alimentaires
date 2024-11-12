@@ -1523,3 +1523,12 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(results["count"], 12)
         result = results["results"][0]
         self.assertEqual(result["declaration"]["id"], declaration.id)
+
+    def test_get_declared_elements_not_allowed_not_authenticated(self):
+        response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_get_declared_elements_not_allowed_not_instructor(self):
+        response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
