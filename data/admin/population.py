@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+
 from data.models import Population
 
 
@@ -18,6 +19,7 @@ class PopulationAdmin(admin.ModelAdmin):
         "ca_name",
         "is_obsolete",
         "ca_is_obsolete",
+        "is_defined_by_anses",
         "min_age",
         "max_age",
         "creation_date",
@@ -32,5 +34,10 @@ class PopulationAdmin(admin.ModelAdmin):
     list_display = [
         "name",
         "modification_date",
+        "is_defined_by_anses",
     ]
-    list_filter = ("is_obsolete",)
+    list_filter = (
+        "is_obsolete",
+        "is_defined_by_anses",
+    )
+    show_facets = admin.ShowFacets.NEVER

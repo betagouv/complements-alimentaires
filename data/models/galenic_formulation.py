@@ -1,10 +1,12 @@
 from django.db import models
+
 from simple_history.models import HistoricalRecords
 
 from .abstract_models import CommonModel
+from .mixins import WithIsRiskyBoolean
 
 
-class GalenicFormulation(CommonModel):
+class GalenicFormulation(CommonModel, WithIsRiskyBoolean):
     class Meta:
         verbose_name = "forme galénique"
         verbose_name_plural = "formes galéniques"

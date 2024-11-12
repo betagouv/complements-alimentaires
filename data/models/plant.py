@@ -6,9 +6,8 @@ from simple_history.models import HistoricalRecords
 
 from data.behaviours import Historisable, TimeStampable
 
-from .abstract_models import CommonModel
-from .ingredient_status import WithStatus
-from .mixins import WithComments, WithMissingImportBoolean
+from .abstract_models import CommonModel, IngredientCommonModel
+from .mixins import WithMissingImportBoolean
 from .substance import Substance
 
 
@@ -43,7 +42,7 @@ class PlantPart(CommonModel):
         return self.siccrf_name_en
 
 
-class Plant(CommonModel, WithComments, WithStatus):
+class Plant(IngredientCommonModel):
     class Meta:
         verbose_name = "plante"
 
