@@ -8,7 +8,7 @@ from api.serializers import (
     DeclaredSubstanceSerializer,
     DeclaredIngredientSerializer,
 )
-from api.permissions import IsInstructor
+from api.permissions import IsInstructor, IsVisor
 from itertools import chain
 
 
@@ -40,20 +40,24 @@ class DeclaredElementsView(ListAPIView):
 
 
 class DeclaredPlantView(RetrieveAPIView):
+    permission_classes = [(IsInstructor | IsVisor)]
     serializer_class = DeclaredPlantSerializer
     queryset = DeclaredPlant.objects.all()
 
 
 class DeclaredMicroorganismView(RetrieveAPIView):
+    permission_classes = [(IsInstructor | IsVisor)]
     serializer_class = DeclaredMicroorganismSerializer
     queryset = DeclaredMicroorganism.objects.all()
 
 
 class DeclaredSubstanceView(RetrieveAPIView):
+    permission_classes = [(IsInstructor | IsVisor)]
     serializer_class = DeclaredSubstanceSerializer
     queryset = DeclaredSubstance.objects.all()
 
 
 class DeclaredIngredientView(RetrieveAPIView):
+    permission_classes = [(IsInstructor | IsVisor)]
     serializer_class = DeclaredIngredientSerializer
     queryset = DeclaredIngredient.objects.all()
