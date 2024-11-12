@@ -20,15 +20,15 @@
             <v-icon :name="icon" />
             {{ typeName }}
           </p>
-          <!-- TODO: flag for authorisation -->
-          <!-- Maybe it's easier to do this more declaratively... -->
-          <div v-for="(info, idx) in request" :key="idx" class="grid grid-cols-2">
+          <div v-for="(info, idx) in elementProfile" :key="idx" class="grid grid-cols-2">
             <p>
               <b>{{ info.label }}</b>
             </p>
-            <p>{{ info.text }}</p>
+            <p v-if="info.href">
+              <a :href="info.href" _target="blank" rel="noopener">{{ info.text }}</a>
+            </p>
+            <p v-else>{{ info.text }}</p>
           </div>
-          <!-- TODO: potentially link to reglementation -->
           <div class="grid justify-items-end">
             <!-- TODO: link to decla -->
             <router-link>
@@ -54,32 +54,65 @@ const typeName = computed(() => getTypeInFrench(props.type))
 const url = computed(() => `/api/v1/declared-elements/${getApiType(props.type)}s/${props.id}`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
-const request = computed(() => {
+const franceAuthorization = computed(() => {
+  return element.value?.authorizationMode === "FR"
+})
+
+const elementProfile = computed(() => {
   if (!element.value) return []
+
   const items = [
-    // TODO: authorisation
     {
-      label: "Nom",
-      text: element.value.newName,
+      label: franceAuthorization.value ? "🇫🇷" : "🇪🇺",
+      text: franceAuthorization.value ? "Autorisé en France." : "Autorisé dans un état membre de l’EU ou EEE.",
     },
-    {
-      label: "Description",
-      text: element.value.newDescription,
-    },
-    // TODO: source reglementaire
   ]
-  if (element.value.authorizationMode !== "FR") {
-    items.push({
-      label: "Pays de référence",
-      text: element.value.euReferenceCountry,
-    })
+
+  const detail = detailForType[props.type] || detailForType.default
+  detail.forEach((d) => {
+    items.push({ label: d.label, text: element.value[d.key] })
+  })
+
+  if (franceAuthorization.value === false) {
+    items.push(
+      ...[
+        {
+          label: "Pays de référence",
+          text: element.value.euReferenceCountry,
+        },
+        {
+          label: "Source réglementaire",
+          text: element.value.euLegalSource,
+          href: element.value.euLegalSource,
+        },
+      ]
+    )
   }
   return items
 })
 
+const detailForType = {
+  plant: [
+    { label: "Nom", key: "newName" },
+    { label: "Description", key: "newDescription" },
+  ],
+  microorganism: [
+    { label: "Genre", key: "newGenre" },
+    { label: "Espèce", key: "newSpecies" },
+    { label: "Description", key: "newDescription" },
+  ],
+  default: [
+    { label: "Libillé", key: "newName" },
+    { label: "Description", key: "newDescription" },
+  ],
+}
+
 // Init
 execute()
 watch(element, (newElement) => {
-  if (newElement) document.title = `${newElement.name} - Compl'Alim`
+  if (newElement) {
+    const name = newElement.newName || `${newElement.newSpecies} ${newElement.newGenre}`
+    document.title = `${name} - Compl'Alim`
+  }
 })
 </script>
