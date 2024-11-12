@@ -41,8 +41,9 @@
 
 <script setup>
 import { computed, watch } from "vue"
-import { getTypeIcon, getTypeInFrench, getApiType } from "@/utils/mappings"
 import { useFetch } from "@vueuse/core"
+import { getTypeIcon, getTypeInFrench, getApiType } from "@/utils/mappings"
+import { handleError } from "@/utils/error-handling"
 
 const props = defineProps({ type: String, id: Number })
 const icon = computed(() => getTypeIcon(props.type))
@@ -50,7 +51,11 @@ const typeName = computed(() => getTypeInFrench(element.value?.newType || props.
 
 const url = computed(() => `/api/v1/declared-elements/${getApiType(props.type)}s/${props.id}`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
-// TODO: handle 404 and 403
+
+const getElementFromApi = async () => {
+  await execute()
+  await handleError(response)
+}
 
 const franceAuthorization = computed(() => {
   return element.value?.authorizationMode === "FR"
@@ -107,7 +112,7 @@ const detailForType = {
 }
 
 // Init
-execute()
+getElementFromApi()
 watch(element, (newElement) => {
   if (newElement) {
     const name = newElement.newName || `${newElement.newSpecies} ${newElement.newGenre}`
