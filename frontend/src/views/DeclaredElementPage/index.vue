@@ -13,12 +13,17 @@
             <v-icon :name="icon" />
             {{ typeName }}
           </p>
+          <div class="grid grid-cols-2">
+            <p :aria-hidden="true" class="fr-h4">{{ authorizationInfo.flag }}</p>
+            <p class="content-center">{{ authorizationInfo.text }}</p>
+          </div>
           <div v-for="(info, idx) in elementProfile" :key="idx" class="grid grid-cols-2">
             <p>
               <b>{{ info.label }}</b>
             </p>
             <p v-if="info.href">
               <a :href="info.href" _target="blank" rel="noopener">{{ info.text }}</a>
+              <!-- TODO: open in new icon -->
             </p>
             <p v-else>{{ info.text }}</p>
           </div>
@@ -50,17 +55,17 @@ const { data: element, response, execute } = useFetch(url, { immediate: false })
 const franceAuthorization = computed(() => {
   return element.value?.authorizationMode === "FR"
 })
+const authorizationInfo = computed(() => {
+  return {
+    flag: franceAuthorization.value ? "🇫🇷" : "🇪🇺",
+    text: franceAuthorization.value ? "Autorisé en France." : "Autorisé dans un état membre de l’EU ou EEE.",
+  }
+})
 
 const elementProfile = computed(() => {
   if (!element.value) return []
 
-  const items = [
-    {
-      // TODO: improve display of flag, consider hiding it as decorative from screen readers
-      label: franceAuthorization.value ? "🇫🇷" : "🇪🇺",
-      text: franceAuthorization.value ? "Autorisé en France." : "Autorisé dans un état membre de l’EU ou EEE.",
-    },
-  ]
+  const items = []
 
   const detail = detailForType[props.type] || detailForType.default
   detail.forEach((d) => {
