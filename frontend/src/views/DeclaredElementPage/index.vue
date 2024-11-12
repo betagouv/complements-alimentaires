@@ -7,25 +7,26 @@
     />
     <div class="fr-container">
       <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid md:grid-cols-2 gap-4">
         <div class="bg-grey-975 py-4 px-4 mb-8">
           <p class="mt-6">
             <v-icon :name="icon" />
             {{ typeName }}
           </p>
-          <div class="grid grid-cols-2">
-            <p :aria-hidden="true" class="fr-h4">{{ authorizationInfo.flag }}</p>
-            <p class="content-center">{{ authorizationInfo.text }}</p>
+          <div class="grid grid-cols-3">
+            <p :aria-hidden="true" class="fr-h2">{{ authorizationInfo.flag }}</p>
+            <p class="content-center col-span-2">{{ authorizationInfo.text }}</p>
           </div>
-          <div v-for="(info, idx) in elementProfile" :key="idx" class="grid grid-cols-2">
+          <div v-for="(info, idx) in elementProfile" :key="idx" class="grid grid-cols-3">
             <p>
               <b>{{ info.label }}</b>
             </p>
-            <p v-if="info.href">
-              <a :href="info.href" _target="blank" rel="noopener">{{ info.text }}</a>
-              <!-- TODO: open in new icon -->
+            <p class="col-span-2">
+              <a v-if="info.href" :href="info.href" target="_blank" rel="noopener">
+                {{ info.text }}
+              </a>
+              <span v-else>{{ info.text }}</span>
             </p>
-            <p v-else>{{ info.text }}</p>
           </div>
           <div class="grid justify-items-end">
             <router-link :to="declarationLink">
