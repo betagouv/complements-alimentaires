@@ -1,27 +1,24 @@
 <template>
   <div v-if="elements.length">
-    <div class="flex mt-6 mb-3">
-      <div :class="`mr-2 self-center justify-center rounded-full size-4 flex`">
-        <v-icon class="self-center" :name="getTypeIcon(objectType)" />
-      </div>
-      <p class="m-0 font-bold capitalize self-center">{{ getTypeInFrench(objectType) }}s</p>
-    </div>
+    <!-- Affichage avec les accordéons : les ingrédients sont cachés à l'intérieur -->
+    <DsfrAccordion v-if="useAccordions">
+      <template v-slot:title>
+        <SummaryElementListTitle :objectType="objectType" :elementCount="`${elements.length}`" />
+      </template>
+      <SummaryElementListItems :objectType="objectType" :elements="elements" />
+    </DsfrAccordion>
 
-    <ul class="list-none">
-      <SummaryElementItem
-        class="mb-2 last:mb-0"
-        v-for="(element, index) in elements"
-        :key="`summary-${objectType}-${index}`"
-        v-model="elements[index]"
-        :objectType="objectType"
-      />
-    </ul>
+    <!-- Affichage sans les accordéons, tous les ingrédients sont affichés -->
+    <div v-else>
+      <SummaryElementListTitle class="mt-6 mb-3" :objectType="objectType" />
+      <SummaryElementListItems :objectType="objectType" :elements="elements" />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
-import SummaryElementItem from "./SummaryElementItem"
+import SummaryElementListTitle from "./SummaryElementListTitle"
+import SummaryElementListItems from "./SummaryElementListItems"
 
-defineProps({ objectType: { type: String }, elements: { type: Array } })
+defineProps({ objectType: { type: String }, elements: { type: Array }, useAccordions: { type: Boolean } })
 </script>
