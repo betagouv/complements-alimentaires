@@ -193,7 +193,7 @@
         "type": "array"
       },
       {
-        "description": "Autres ingredients actifs",
+        "description": "Autres ingrédients actifs",
         "example": "dextrine",
         "name": "autres_ingredients_actifs",
         "title": "Autres ingredients actifs",
@@ -203,7 +203,15 @@
         "description": "Substances (composant actif)",
         "example": "['nom': 'cafféine', 'quantité_par_djr': '2', 'unité': 'ml']",
         "name": "substances",
+        "title": "Substances",
         "type": "array"
+      },
+      {
+        "description": "Lien vers une image de l'étiquette (limité à 4Mb)",
+        "example": "www.lienverslimage.com",
+        "name": "etiquette",
+        "title": "Etiquette",
+        "type": "string"
       }
     ]
   },
