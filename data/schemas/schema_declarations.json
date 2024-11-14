@@ -104,7 +104,7 @@
         "constraints": {
           "required": "True"
         },
-        "description": "La forme galénique correspond à la forme sous laquelle le complément alimentaire se présente (comprimé, gélule, sirop...). Elle est spécialement conçue pour la voie d’administration à laquelle le médicament est destiné. (source : sante.gouv.fr)",
+        "description": "La forme galénique correspond à la forme sous laquelle le complément alimentaire se présente (comprimé, gélule, sirop...). Elle est spécialement conçue pour la voie d’administration à laquelle le complément est destiné. (source : sante.gouv.fr)",
         "example": "Sirop",
         "name": "forme_galenique",
         "title": "Forme galénique",
