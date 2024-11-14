@@ -297,6 +297,33 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class OpenDataDeclarationSerializer(serializers.ModelSerializer):
+    instructor = SimpleUserSerializer(read_only=True, source="instructor.user")
+    visor = SimpleUserSerializer(read_only=True, source="visor.user")
+    company = SimpleCompanySerializer(read_only=True)
+
+    class Meta:
+        model = Declaration
+        fields = (
+            "id",
+            "status",
+            "author",
+            "company",
+            "name",
+            "brand",
+            "gamme",
+            "description",
+            "modification_date",
+            "creation_date",
+            "instructor",
+            "visor",
+            "response_limit_date",
+            "visa_refused",
+            "article",
+        )
+        read_only_fields = fields
+
+
 class DeclarationSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
