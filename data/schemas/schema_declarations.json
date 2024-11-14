@@ -204,13 +204,6 @@
         "example": "['nom': 'cafféine', 'quantité_par_djr': '2', 'unité': 'ml']",
         "name": "substances",
         "type": "array"
-      },
-      {
-        "description": "Code barre",
-        "example": "3178530410105",
-        "name": "code_barre",
-        "title": "Code barre",
-        "type": "integer"
       }
     ]
   },
