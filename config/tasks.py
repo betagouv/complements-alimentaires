@@ -113,18 +113,20 @@ def expire_declarations():
         except Exception as _:
             logger.exception(f"Could not expire declaration f{declaration.id}")
 
+
 def fetch_declarations():
     open_data_view = OpenDataDeclarationsListView()
     queryset = open_data_view.get_queryset()
     serializer = open_data_view.get_serializer_class()
     return serializer(queryset, many=True)
 
+
 @app.task
 def export_datasets_to_data_gouv():
-    # possible : importer depuis la view le queryset et le serializer
     declarations = fetch_declarations()
     print(declarations.data)
     # Writing JSON content to a file using the dump method
     import pandas as pd
+
     df = pd.DataFrame(declarations.data)
-    df.to_csv('open_data.csv', sep=';')
+    df.to_csv("open_data.csv", sep=";")
