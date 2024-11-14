@@ -1,4 +1,5 @@
 import logging
+import requests
 from datetime import datetime, time
 
 from django.utils import timezone
@@ -7,6 +8,8 @@ from viewflow import fsm
 
 from config import email
 from data.models import Declaration
+from api.serializers.declaration import DeclaredListSerializer, SimpleDeclarationSerializer
+from api.views.declaration.declaration import OpenDataDeclarationsListView
 
 from .celery import app
 
@@ -109,3 +112,19 @@ def expire_declarations():
             break
         except Exception as _:
             logger.exception(f"Could not expire declaration f{declaration.id}")
+
+def fetch_declarations():
+    open_data_view = OpenDataDeclarationsListView()
+    queryset = open_data_view.get_queryset()
+    serializer = open_data_view.get_serializer_class()
+    return serializer(queryset, many=True)
+
+@app.task
+def export_datasets_to_data_gouv():
+    # possible : importer depuis la view le queryset et le serializer
+    declarations = fetch_declarations()
+    print(declarations.data)
+    # Writing JSON content to a file using the dump method
+    import pandas as pd
+    df = pd.DataFrame(declarations.data)
+    df.to_csv('open_data.csv', sep=';')

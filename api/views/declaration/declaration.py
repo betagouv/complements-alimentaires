@@ -347,6 +347,14 @@ class OngoingDeclarationsListView(GenericDeclarationsListView):
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT)
 
 
+class OpenDataDeclarationsListView(GenericDeclarationsListView):
+    pagination_class = InstructionDeclarationPagination
+    serializer_class = SimpleDeclarationSerializer
+    filter_backends = [django_filters.DjangoFilterBackend, InstructionDateOrderingFilter]
+    ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
+    queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT)
+
+
 class CompanyDeclarationsListView(GenericDeclarationsListView):
     # Une fois l'instruction commencée on pourra avoir un serializer différent pour cette vue
     serializer_class = SimpleDeclarationSerializer
