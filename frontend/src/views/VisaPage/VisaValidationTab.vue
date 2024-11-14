@@ -5,12 +5,20 @@
       <div class="border p-2">
         <VisaInfoLine title="Instructeur·ice" :text="instructorName" icon="ri-account-circle-line" />
         <VisaInfoLine title="Décision" :text="postValidationStatus" icon="ri-focus-2-fill" />
+        <VisaInfoLine title="Message au déclarant·e" icon="ri-chat-3-line">
+          <template v-slot:value>
+            <DsfrInputGroup>
+              <DsfrInput
+                is-textarea
+                label="Motivation de la décision (à destination du professionnel)"
+                v-model="producerMessage"
+                class="!mt-0"
+              />
+            </DsfrInputGroup>
+          </template>
+        </VisaInfoLine>
         <VisaInfoLine
-          title="Message au déclarant·e"
-          icon="ri-chat-3-line"
-          :text="declaration.postValidationProducerMessage || '< sans commentaire >'"
-        />
-        <VisaInfoLine
+          v-if="showExpirationDays"
           title="Délai de réponse"
           icon="ri-time-fill"
           :text="declaration.postValidationExpirationDays || '< non spécifié >'"
@@ -23,15 +31,6 @@
         />
       </div>
     </div>
-
-    <DsfrInputGroup>
-      <DsfrInput
-        v-model="privateNotes"
-        is-textarea
-        label-visible
-        label="Notes de l'expert (à destination de l'administration)"
-      />
-    </DsfrInputGroup>
 
     <div class="grid grid-cols-2 gap-10">
       <div class="border p-4" v-for="decision in decisionCategories" :key="decision.title">
@@ -63,15 +62,19 @@ const $externalResults = ref({})
 const emit = defineEmits(["decision-done"])
 const declaration = defineModel()
 
-const privateNotes = ref(declaration.value?.privateNotes || "")
+const producerMessage = ref(declaration.value.postValidationProducerMessage)
 
 const instructorName = computed(
   () => `${declaration.value?.instructor?.firstName} ${declaration.value?.instructor?.lastName}`
 )
+const showExpirationDays = computed(
+  () =>
+    declaration.value.postValidationStatus === "OBJECTION" || declaration.value.postValidationStatus === "OBSERVATION"
+)
 const postValidationStatus = computed(() => statusProps[declaration.value.postValidationStatus].label)
 const refuseVisa = async () => {
   const url = `/api/v1/declarations/${declaration.value.id}/refuse-visa/`
-  const { response } = await useFetch(url, { headers: headers() }).post({ privateNotes: privateNotes.value }).json()
+  const { response } = await useFetch(url, { headers: headers() }).post({ comment: producerMessage.value }).json()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre décision a été prise en compte")
@@ -81,7 +84,7 @@ const refuseVisa = async () => {
 
 const acceptVisa = async () => {
   const url = `/api/v1/declarations/${declaration.value.id}/accept-visa/`
-  const { response } = await useFetch(url, { headers: headers() }).post({ privateNotes: privateNotes.value }).json()
+  const { response } = await useFetch(url, { headers: headers() }).post({ comment: producerMessage.value }).json()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre décision a été prise en compte")

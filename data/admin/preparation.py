@@ -19,6 +19,7 @@ class PreparationAdmin(admin.ModelAdmin):
         "ca_name",
         "is_obsolete",
         "ca_is_obsolete",
+        "contains_alcohol",
         "creation_date",
         "modification_date",
     ]
@@ -28,8 +29,6 @@ class PreparationAdmin(admin.ModelAdmin):
         "creation_date",
         "modification_date",
     ]
-    list_display = [
-        "name",
-        "modification_date",
-    ]
+    list_display = ["name", "modification_date", "contains_alcohol"]
     list_filter = ("is_obsolete",)
+    show_facets = admin.ShowFacets.NEVER

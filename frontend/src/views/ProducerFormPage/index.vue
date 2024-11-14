@@ -32,16 +32,17 @@
         v-if="payload"
         ref="tabs"
         :tab-titles="titles"
-        :initialSelectedIndex="parseInt(route.query.tab)"
-        @select-tab="(tab) => router.replace({ query: { tab } })"
+        v-model="selectedTabIndex"
+        @update:modelValue="selectTab"
       >
+        <div class="absolute opacity-50 bg-slate-200 inset-0 z-10 flex justify-center pt-20" v-if="requestInProgress">
+          <ProgressSpinner />
+        </div>
         <DsfrTabContent
           v-for="(component, idx) in components"
           :key="`component-${idx}`"
           :panelId="`tab-content-${idx}`"
           :tabId="`tab-${idx}`"
-          :selected="selectedTabIndex === idx"
-          :asc="asc"
         >
           <FormWrapper :externalResults="$externalResults">
             <component
@@ -63,6 +64,7 @@
         :selectedTabIndex="selectedTabIndex"
         @back="selectTab(selectedTabIndex - 1)"
         @forward="selectTab(selectedTabIndex + 1)"
+        :removeSaveLabel="readonly"
       />
     </div>
   </div>
@@ -105,17 +107,18 @@ const statusChangeErrors = ref({})
 const route = useRoute()
 const router = useRouter()
 
+const previouslySelectedTabIndex = ref(parseInt(route.query.tab))
 const selectedTabIndex = ref(parseInt(route.query.tab))
-const asc = ref(true)
-const tabs = ref(null) // Corresponds to the template ref (https://vuejs.org/guide/essentials/template-refs.html#accessing-the-refs)
+
 const selectTab = async (index) => {
-  if (requestInProgress.value || index === selectedTabIndex.value) return
+  if (requestInProgress.value) return
   const allowTransition = readonly.value || (await savePayload())
   if (allowTransition) {
-    asc.value = selectedTabIndex.value < index
-    selectedTabIndex.value = index
+    router.replace({ query: { tab: index } })
+    previouslySelectedTabIndex.value = index
+  } else {
+    selectedTabIndex.value = previouslySelectedTabIndex.value
   }
-  tabs.value?.selectIndex?.(selectedTabIndex.value)
 }
 
 const requestInProgress = ref(false)
@@ -141,14 +144,22 @@ const payload = ref({
   computedSubstances: [],
   attachments: [],
 })
-const { response, data, isFetching, execute } = useFetch(`/api/v1/declarations/${props.id}`, { immediate: false })
+const { response, data, isFetching, execute } = useFetch(`/api/v1/declarations/${props.id || route.query.duplicate}`, {
+  immediate: false,
+})
   .get()
   .json()
 
-if (!isNewDeclaration.value) execute()
+if (!isNewDeclaration.value || route.query.duplicate) execute()
 
 watch(response, () => handleError(response))
-watch(data, () => (payload.value = data.value))
+watch(data, () => {
+  const shouldDuplicate = route.query.duplicate && !props.id
+  if (shouldDuplicate) {
+    performDuplication(data.value)
+    savePayload("Votre déclaration a été dupliquée. Merci de renseigner les pièces jointes.")
+  } else payload.value = data.value
+})
 
 const hasNewElements = computed(() => {
   return []
@@ -182,7 +193,7 @@ const components = computed(() => {
 
 const titles = computed(() => tabTitles(components.value, !readonly.value))
 
-const savePayload = async () => {
+const savePayload = async (successMessage = "Votre démarche a été sauvegardée") => {
   const isNewDeclaration = !payload.value.id
   const url = isNewDeclaration
     ? `/api/v1/users/${loggedUser.value.id}/declarations/`
@@ -214,7 +225,7 @@ const savePayload = async () => {
     useToaster().addMessage({
       type: "success",
       id: "declaration-success",
-      description: "Votre démarche a été sauvegardée",
+      description: successMessage,
     })
     return true
   }
@@ -265,6 +276,54 @@ const onWithdrawal = () => router.replace({ name: "DeclarationsHomePage", query:
 
 watch(
   () => route.query.tab,
-  (tab) => selectTab(parseInt(tab))
+  (tab) => (selectedTabIndex.value = parseInt(tab))
 )
+
+const performDuplication = (originalDeclaration) => {
+  // Prendre uniquement les champs pertinents. C'est préférable d'utiliser une
+  // whitelist pour s'assurer qu'un champ non souhaité ne se faufile pas dans la
+  // duplication
+  const fieldsToKeep = [
+    "company",
+    "address",
+    "additionalDetails",
+    "postalCode",
+    "city",
+    "cedex",
+    "country",
+    "name",
+    "brand",
+    "gamme",
+    "flavor",
+    "description",
+    "galenicFormulation",
+    "unitQuantity",
+    "unitMeasurement",
+    "conditioning",
+    "dailyRecommendedDose",
+    "minimumDuration",
+    "instructions",
+    "warning",
+    "populations",
+    "conditionsNotRecommended",
+    "effects",
+    "declaredPlants",
+    "declaredMicroorganisms",
+    "declaredIngredients",
+    "declaredSubstances",
+    "computedSubstances",
+    "otherEffects",
+    "otherGalenicFormulation",
+    "otherConditions",
+  ]
+
+  fieldsToKeep.forEach((x) => (payload.value[x] = originalDeclaration[x]))
+
+  // Enlever les IDs des éléments de la composition
+  payload.value.declaredPlants.forEach((x) => delete x.id)
+  payload.value.declaredMicroorganisms.forEach((x) => delete x.id)
+  payload.value.declaredSubstances.forEach((x) => delete x.id)
+  payload.value.declaredIngredients.forEach((x) => delete x.id)
+  payload.value.computedSubstances.forEach((x) => delete x.id)
+}
 </script>

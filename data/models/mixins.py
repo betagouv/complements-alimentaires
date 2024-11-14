@@ -76,3 +76,15 @@ class WithComments(models.Model):
     siccrf_private_comments_en = models.TextField(
         blank=True, editable=False, verbose_name="commentaires privés en anglais SICCRF"
     )
+
+
+class WithIsRiskyBoolean(models.Model):
+    """
+    Les tables ingrédients (plantes, micro-organismes, substances et ingrédients de la SICCRF) peuvent être considérés comme 'à risque'
+    Cela implique notamment l'assignation d'un `article 15 vigilance`
+    """
+
+    class Meta:
+        abstract = True
+
+    is_risky = models.BooleanField(default=False, verbose_name="nécessite une instruction manuelle et vigilante ?")

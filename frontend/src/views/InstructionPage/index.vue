@@ -27,24 +27,28 @@
       </DsfrAlert>
       <DeclarationAlert class="mb-6" v-else-if="!canInstruct" role="instructor" :declaration="declaration" />
       <div v-if="declaration">
-        <DeclarationSummary :showArticle="true" :readonly="true" v-model="declaration" v-if="isAwaitingInstruction" />
+        <DeclarationSummary
+          :showArticle="true"
+          :useAccordions="true"
+          :readonly="true"
+          v-model="declaration"
+          v-if="isAwaitingInstruction"
+        />
 
-        <DsfrTabs v-else ref="tabs" :tab-titles="titles" :initialSelectedIndex="0" @select-tab="selectTab">
+        <DsfrTabs v-else v-model="selectedTabIndex" ref="tabs" :tab-titles="titles">
           <DsfrTabContent
             v-for="(component, idx) in components"
             :key="`component-${idx}`"
             :panelId="`tab-content-${idx}`"
             :tabId="`tab-${idx}`"
-            :selected="selectedTabIndex === idx"
-            :asc="asc"
           >
             <component
               :is="component"
               v-model="declaration"
               :externalResults="$externalResults"
               :readonly="true"
+              :useAccordions="true"
               :declarationId="declaration?.id"
-              :privateNotes="declaration?.privateNotes"
               :user="declarant"
               :company="company"
               @decision-done="onDecisionDone"
@@ -56,9 +60,37 @@
           v-if="!isAwaitingInstruction"
           :titles="titles"
           :selectedTabIndex="selectedTabIndex"
-          @back="selectTab(selectedTabIndex - 1)"
-          @forward="selectTab(selectedTabIndex + 1)"
-        />
+          @back="selectedTabIndex -= 1"
+          @forward="selectedTabIndex += 1"
+          :removeSaveLabel="true"
+        >
+          <template v-slot:content>
+            <h6 class="text-left">
+              <v-icon name="ri-pencil-fill"></v-icon>
+              Notes à destination de l'administration
+            </h6>
+            <div class="text-left mb-4 sm:mb-0 sm:flex sm:gap-8">
+              <DsfrInputGroup>
+                <DsfrInput
+                  v-model="privateNotesInstruction"
+                  is-textarea
+                  label-visible
+                  label="Notes de l'instruction"
+                  @update:modelValue="saveComment"
+                />
+              </DsfrInputGroup>
+              <DsfrInputGroup>
+                <DsfrInput
+                  :disabled="true"
+                  v-model="privateNotesVisa"
+                  is-textarea
+                  label-visible
+                  label="Notes du visa"
+                />
+              </DsfrInputGroup>
+            </div>
+          </template>
+        </TabStepper>
       </div>
     </div>
   </div>
@@ -69,7 +101,7 @@ import TabStepper from "@/components/TabStepper"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { onMounted, computed, ref } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch, useDebounceFn } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import DeclarationSummary from "@/components/DeclarationSummary"
@@ -88,7 +120,6 @@ const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 const $externalResults = ref({})
-const tabs = ref(null) // Corresponds to the template ref (https://vuejs.org/guide/essentials/template-refs.html#accessing-the-refs)
 
 const props = defineProps({
   declarationId: String,
@@ -104,7 +135,8 @@ const {
   data: declaration,
   execute: executeDeclarationFetch,
 } = useFetch(`/api/v1/declarations/${props.declarationId}`, { immediate: false }).get().json()
-
+const privateNotesInstruction = ref(declaration.value?.privateNotesInstruction || "")
+const privateNotesVisa = ref(declaration.value?.privateNotesVisa || "")
 const {
   response: declarantResponse,
   data: declarant,
@@ -121,9 +153,22 @@ const {
   .get()
   .json()
 
+// Sauvegarde du commentaire privé
+const saveComment = useDebounceFn(async () => {
+  const { response } = await useFetch(() => `/api/v1/declarations/${declaration.value?.id}`, {
+    headers: headers(),
+  })
+    .patch({ privateNotesInstruction: privateNotesInstruction.value })
+    .json()
+  handleError(response)
+}, 600)
+
 onMounted(async () => {
   await executeDeclarationFetch()
   handleError(declarationResponse)
+
+  privateNotesInstruction.value = declaration.value?.privateNotesInstruction || ""
+  privateNotesVisa.value = declaration.value?.privateNotesVisa || ""
 
   // Si on arrive à cette page avec une déclaration déjà assignée à quelqun.e mais en état
   // AWAITING_INSTRUCTION, on la passe directement à ONGOING_INSTRUCTION.
@@ -139,20 +184,12 @@ onMounted(async () => {
 
 // Tab management
 const components = computed(() => {
-  const baseComponents = [DeclarationSummary, HistoryTab]
+  const baseComponents = [IdentityTab, DeclarationSummary, HistoryTab]
   if (canInstruct.value) baseComponents.push(DecisionTab)
-  baseComponents.push(IdentityTab)
   return baseComponents
 })
 const titles = computed(() => tabTitles(components.value))
 const selectedTabIndex = ref(0)
-const asc = ref(true) // Je n'aime pas le nommage mais ça vient de ce paramètre : https://vue-dsfr.netlify.app/?path=/docs/composants-dsfrtabs--docs
-const selectTab = (index) => {
-  if (index === selectedTabIndex.value) return
-  asc.value = selectedTabIndex.value < index
-  selectedTabIndex.value = index
-  tabs.value?.selectIndex?.(selectedTabIndex.value)
-}
 
 const instructDeclaration = async () => {
   const url = `/api/v1/declarations/${props.declarationId}/take-for-instruction/`
@@ -169,3 +206,10 @@ const onDecisionDone = () => {
   router.push({ name: "InstructionDeclarations", query: previousQuery })
 }
 </script>
+
+<style scoped>
+div :deep(.fr-input-group) {
+  @apply !mt-0;
+  flex: 1;
+}
+</style>

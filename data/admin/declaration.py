@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib import admin
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import (
     ComputedSubstance,
     Declaration,
@@ -40,6 +42,7 @@ class DeclaredPlantInline(admin.StackedInline):
     can_delete = True
     fields = (
         "plant",
+        "active",
         "used_part",
         "quantity",
         "unit",
@@ -49,6 +52,7 @@ class DeclaredPlantInline(admin.StackedInline):
         "new_name",
         "new_description",
     )
+    autocomplete_fields = ("plant",)
     extra = 0
 
     def has_add_permission(self, request, object):
@@ -75,7 +79,6 @@ class DeclaredMicroorganismInline(admin.StackedInline):
     can_delete = True
     fields = (
         "microorganism",
-        "active",
         "activated",
         "strain",
         "quantity",
@@ -85,6 +88,8 @@ class DeclaredMicroorganismInline(admin.StackedInline):
         "new_genre",
         "new_description",
     )
+    autocomplete_fields = ("microorganism",)
+
     extra = 0
 
     def has_add_permission(self, request, object):
@@ -118,6 +123,7 @@ class DeclaredIngredientInline(admin.StackedInline):
         "new_type",
         "new_description",
     )
+    autocomplete_fields = ("ingredient",)
     extra = 0
 
     def has_add_permission(self, request, object):
@@ -130,7 +136,8 @@ class DeclaredIngredientInline(admin.StackedInline):
 class DeclaredSubstanceInline(admin.StackedInline):
     model = DeclaredSubstance
     can_delete = True
-    fields = ("substance",)
+    fields = ("substance", "quantity", "unit")
+    autocomplete_fields = ("substance",)
     extra = 0
 
     def has_add_permission(self, request, object):
@@ -144,11 +151,11 @@ class ComputedSubstanceInline(admin.TabularInline):
     model = ComputedSubstance
     can_delete = False
     fields = ("substance", "quantity", "unit")
-    readonly_fields = fields
+    autocomplete_fields = ("substance",)
     extra = 0
 
     def has_add_permission(self, request, object):
-        return False
+        return True
 
 
 class DeclarationForm(forms.ModelForm):
@@ -169,7 +176,8 @@ class DeclarationForm(forms.ModelForm):
             "instructions": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "warning": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "post_validation_producer_message": forms.Textarea(attrs={"cols": 35, "rows": 3}),
-            "private_notes": forms.Textarea(attrs={"cols": 35, "rows": 3}),
+            "private_notes_instruction": forms.Textarea(attrs={"cols": 35, "rows": 3}),
+            "private_notes_visa": forms.Textarea(attrs={"cols": 35, "rows": 3}),
             "other_galenic_formulation": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "other_effects": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "other_conditions": forms.Textarea(attrs={"cols": 35, "rows": 1}),
@@ -179,10 +187,13 @@ class DeclarationForm(forms.ModelForm):
 
 
 @admin.register(Declaration)
-class DeclarationAdmin(admin.ModelAdmin):
+class DeclarationAdmin(SimpleHistoryAdmin):
     form = DeclarationForm
-    list_display = ("name", "status", "company", "author")
+    list_display = ("id", "name", "status", "company", "author")
     list_filter = ("status", "company", "author")
+    list_select_related = ["author", "company"]
+
+    show_facets = admin.ShowFacets.NEVER
     inlines = (
         DeclaredPlantInline,
         DeclaredMicroorganismInline,
@@ -231,7 +242,8 @@ class DeclarationAdmin(admin.ModelAdmin):
                     "status",
                     "instructor",
                     "visor",
-                    "private_notes",
+                    "private_notes_instruction",
+                    "private_notes_visa",
                 ),
             },
         ),

@@ -1,0 +1,49 @@
+{% extends 'certificates/certificate-base-template.html' %}
+{% block 'body' %}
+<h1 style="font-family: 'Marianne-Bold'; font-weight: bold;">
+    Réf. : Dossier n° {{declaration.id}}
+</h1>
+<div style="font-size: 1.2em;">
+    <p>
+        Madame, Monsieur,
+    </p>
+    <p>
+        Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré la mise sur le marché du produit :
+        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+            {{ declaration.name }} / {{ declaration.galenic_formulation }}
+        </span>
+    <p>
+        L’examen de cette déclaration soulève les objections suivantes, qui la rendent irrecevable :
+        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+            <br>
+            {% for reason in declaration.blocking_reasons %}
+                - {{ reason }}<br>
+            {% endfor %}
+        </span>
+    </p>
+    <p style="font-family: 'Marianne-Bold'; font-style: italic;">
+        {{ declaration.last_administration_comment }}
+    </p>
+    <p>
+        Vous disposez d’un délai de 30 jours francs, à compter de la date de réception de la présente lettre, pour régulariser votre déclaration ou me faire part de vos observations.
+        Vous pouvez vous faire assister ou représenter par le conseil de votre choix.
+    </p>
+    <p>
+        En l’absence de réponse de votre part dans ce délai, le dossier sera clos et la déclaration sera réputée rejetée.
+    </p>
+    <p>
+        Je vous rappelle, à toutes fins utiles, que l’article 20 du décret du décret du 20 mars 2006 précité vous interdit d’importer pour la mise en libre pratique,
+        de détenir en vue de la vente ou de la distribution à titre gratuit, de mettre en vente, de vendre ou de distribuer à titre gratuit un complément alimentaire qui n’a pas été dûment déclaré.
+    </p>
+    <p>
+        Je vous prie d’agréer, Madame, Monsieur, l’expression de ma considération distinguée.
+    </p>
+    <p style="padding-left: 10cm;">
+        La Sous-Directrice de la sécurité sanitaire<br />
+        des aliments
+    </p>
+    <p style="padding-left: 10cm;">
+        Vanessa HUMMEL-FOURRAT
+    </p>
+</div>
+{% endblock %}

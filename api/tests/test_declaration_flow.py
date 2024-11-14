@@ -3,7 +3,9 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from data.choices import AuthorizationModes
 from data.factories import (
+    AttachmentFactory,
     AuthorizedDeclarationFactory,
     AwaitingInstructionDeclarationFactory,
     AwaitingVisaDeclarationFactory,
@@ -17,7 +19,7 @@ from data.factories import (
     OngoingVisaDeclarationFactory,
     VisaRoleFactory,
 )
-from data.models import Declaration, Snapshot
+from data.models import Attachment, Declaration, Snapshot
 
 from .utils import authenticate
 
@@ -102,6 +104,32 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(
             "Merci de renseigner les informations manquantes des plantes ajoutées", json_errors["nonFieldErrors"][0]
         )
+
+    @authenticate
+    def test_submit_declaration_eu_mode(self):
+        """
+        Passage du DRAFT -> AWAITING_INSTRUCTION
+        En cas de nouvel ingrédient avec `authorization_mode == "EU"` on a besoin d'une
+        pièce jointe non-étiquetage de plus.
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        declaration = InstructionReadyDeclarationFactory(author=authenticate.user, company=company)
+        plant = declaration.declared_plants.first()
+        plant.new = True
+        plant.authorization_mode = AuthorizationModes.EU
+        plant.save()
+
+        response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # L'ajout d'une pièce jointe non-étiquetage débloque la situation
+        eu_proof = AttachmentFactory(type=Attachment.AttachmentType.REGULATORY_PROOF, declaration=declaration)
+        eu_proof.save()
+
+        response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @authenticate
     def test_submit_declaration_wrong_company(self):
@@ -628,6 +656,44 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.OBSERVATION)
         self.assertEqual(latest_snapshot.comment, "Observation")
         self.assertEqual(latest_snapshot.expiration_days, 23)
+
+    @authenticate
+    def test_visor_can_modify_comment(self):
+        """
+        Une personne avec le rôle de visa peut modifier le commentaire à destination du pro
+        """
+        VisaRoleFactory(user=authenticate.user)
+
+        # Visa acceptée
+        declaration = OngoingVisaDeclarationFactory(
+            post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
+            post_validation_producer_message="À authoriser",
+            post_validation_expiration_days=12,
+        )
+
+        response = self.client.post(
+            reverse("api:accept_visa", kwargs={"pk": declaration.id}), {"comment": "Overriden comment"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.last_administration_comment, "Overriden comment")
+
+        # Visa refusée
+        declaration = OngoingVisaDeclarationFactory(
+            post_validation_status=Declaration.DeclarationStatus.REJECTED,
+            post_validation_producer_message="À refuser",
+            post_validation_expiration_days=20,
+        )
+
+        response = self.client.post(
+            reverse("api:refuse_visa", kwargs={"pk": declaration.id}),
+            {"comment": "Overriden comment 2"},
+            format="json",
+        )
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.last_administration_comment, "Overriden comment 2")
 
     @authenticate
     def accept_visa_unauthorized(self):

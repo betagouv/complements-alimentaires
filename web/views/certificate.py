@@ -10,14 +10,14 @@ from rest_framework.exceptions import NotFound
 from rest_framework.generics import GenericAPIView
 from xhtml2pdf import pisa
 
-from api.permissions import IsDeclarationAuthor
+from api.permissions import CanAccessIndividualDeclaration
 from data.models import Declaration
 
 logger = logging.getLogger(__name__)
 
 
 class CertificateView(GenericAPIView):
-    permission_classes = [IsDeclarationAuthor]
+    permission_classes = [CanAccessIndividualDeclaration]
     queryset = Declaration.objects.all()
 
     def get(self, request, *args, **kwargs):
@@ -42,6 +42,7 @@ class CertificateView(GenericAPIView):
             Declaration.Article.ARTICLE_15: 15,
             Declaration.Article.ARTICLE_15_WARNING: 15,
             Declaration.Article.ARTICLE_16: 16,
+            Declaration.Article.ANSES_REFERAL: "anses",
         }
         article = article_map.get(declaration.article, 15)
         if declaration.status in [
@@ -53,6 +54,8 @@ class CertificateView(GenericAPIView):
             return f"certificates/certificate-submitted-art-{article}.html"
         if declaration.status in [status.AUTHORIZED, status.WITHDRAWN]:
             return f"certificates/certificate-art-{article}.html"
+        if declaration.status == status.OBJECTION:
+            return "certificates/certificate-objected.html"
         if declaration.status == status.REJECTED:
             return "certificates/certificate-rejected.html"
 

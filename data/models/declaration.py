@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from datetime import timedelta
 
 from django.conf import settings
@@ -7,8 +8,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Case, Value, When
 from django.db.models.functions import Coalesce
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 from dateutil.relativedelta import relativedelta
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
@@ -110,7 +109,10 @@ class Declaration(Historisable, TimeStampable):
         related_name="declarations",
     )
 
-    private_notes = models.TextField("notes à destination de l'administration", blank=True, default="")
+    private_notes_instruction = models.TextField(
+        "notes de l'instruction à destination de l'administration", blank=True, default=""
+    )
+    private_notes_visa = models.TextField("notes du visa à destination de l'administration", blank=True, default="")
     company = models.ForeignKey(
         Company, null=True, on_delete=models.SET_NULL, verbose_name="entreprise", related_name="declarations"
     )
@@ -207,6 +209,36 @@ class Declaration(Historisable, TimeStampable):
         )
 
     @property
+    def blocking_reasons(self):
+        from data.models import Snapshot
+
+        try:
+            latest_snapshot = self.snapshots.filter(blocking_reasons__isnull=False).latest("creation_date")
+            return latest_snapshot.blocking_reasons
+        except Snapshot.DoesNotExist:
+            return None
+
+    @property
+    def last_administration_comment(self):
+        from data.models import Snapshot
+
+        admin_actions = [
+            Snapshot.SnapshotActions.OBSERVE_NO_VISA,
+            Snapshot.SnapshotActions.AUTHORIZE_NO_VISA,
+            Snapshot.SnapshotActions.REQUEST_VISA,
+            Snapshot.SnapshotActions.ACCEPT_VISA,
+            Snapshot.SnapshotActions.REFUSE_VISA,
+        ]
+
+        try:
+            latest_snapshot = self.snapshots.filter(comment__isnull=False, action__in=admin_actions).latest(
+                "creation_date"
+            )
+            return latest_snapshot.comment
+        except Snapshot.DoesNotExist:
+            return None
+
+    @property
     def json_representation(self):
         from api.serializers import DeclarationSerializer
 
@@ -267,6 +299,15 @@ class Declaration(Historisable, TimeStampable):
             return None
 
     @property
+    def visa_refused(self):
+        from data.models import Snapshot
+
+        return (
+            self.status == Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+            and self.snapshots.latest("creation_date").action == Snapshot.SnapshotActions.REFUSE_VISA
+        )
+
+    @property
     def response_limit_date(self):
         """
         La date limite d'instruction est fixée à deux mois à partir du dernier statut
@@ -291,54 +332,96 @@ class Declaration(Historisable, TimeStampable):
     def __str__(self):
         return f"Déclaration « {self.name} »"
 
-    def assign_article(self):
+    def assign_calculated_article(self):
         """
-        Cette fonction est appelée depuis les signals post_save et post_delete des objets calulated_<type>
-        afin de mettre à jour l'article de la déclaration.
-        Ces signals sont dans la fonction « update_article » de ce même fichier.
+        Peuple l'article calculé pour cette déclaration.
+        La fonction ne sauvegarde pas la déclaration en base. L'appelant doit le faire en cas de besoin.
+        Cette décision a été prise pour éviter d'avoir des sauvegardes inutiles.
+        Ce sont les particularités des ingrédients et substances contenues dans la composition qui déterminent les articles.
+        Dans le cas où plusieurs ingrédients impliqueraient plusieurs articles, certains articles prennent la priorité sur d'autres :
+        saisine ANSES (ART_17 et ART_18) > ART_16 > ART_15
         """
         try:
-            current_calculated_article = self.calculated_article
-            new_calculated_article = current_calculated_article
-            composition_items = (
+            composition_ingredients = (
                 self.declared_plants,
                 self.declared_microorganisms,
                 self.declared_substances,
                 self.declared_ingredients,
             )
-            empty_composition = all(not x.exists() for x in composition_items)
+            empty_composition = all(not x.exists() for x in composition_ingredients)
             # cela ne devrait être possible que pour les plantes qui même non autorisées peuvent être ajoutées en infime quantité dans des elixirs
 
-            # TODO ajouter la vérification sur les computed_substances aussi
-            has_not_authorized_items = (
+            has_not_authorized_ingredients = (
                 any(self.declared_plants.filter(plant__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_microorganisms.filter(microorganism__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
+                or any(self.computed_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_ingredients.filter(ingredient__status=IngredientStatus.NOT_AUTHORIZED))
             )
 
-            has_new_items = any(x.filter(new=True).exists() for x in composition_items if issubclass(x.model, Addable))
+            has_new_ingredients = any(
+                x.filter(new=True).exists() for x in composition_ingredients if issubclass(x.model, Addable)
+            )
+
             surpasses_max_dose = any(
                 x.quantity > x.substance.max_quantity
                 for x in self.computed_substances.all()
-                if x.substance.max_quantity and x.substance.unit == x.unit
-                # TODO: vérifier si ce cas est possible, sinon enlever l'unit du ComputedSubstance
+                if x.substance
+                and x.quantity is not None
+                and x.substance.max_quantity is not None
+                and x.substance.unit == x.unit
+            ) or any(
+                x.quantity > x.substance.max_quantity
+                for x in self.declared_substances.all()
+                if x.substance
+                and x.quantity is not None
+                and x.substance.max_quantity is not None
+                and x.substance.unit == x.unit
             )
+            has_risky_ingredients = (
+                any(
+                    x
+                    for x in self.declared_ingredients.filter(new=False)
+                    if x.ingredient.is_risky
+                    or re.match(r"([^A-Za-z]+|^)vin([^A-Za-z]+|$)|alcool|vinaigre", x.ingredient.name)
+                )
+                # Les plantes ayant public_comments ~* 'la concentration en <nom de substance> est à surveiller' n'impliquent d'obligation règlementaire
+                or any(
+                    x
+                    for x in self.declared_plants.filter(new=False)
+                    if x.plant.is_risky
+                    or (x.preparation and x.preparation.contains_alcohol)
+                    or re.match(r"dérivés hydroxyanthracéniques|dérivés anthracéniques|HAD", x.plant.name)
+                )
+                or any(
+                    x
+                    for x in self.declared_microorganisms.filter(new=False)
+                    if x.microorganism and x.microorganism.is_risky
+                )
+                or any(x for x in self.declared_substances.filter(new=False) if x.substance and x.substance.is_risky)
+                or any(x for x in self.computed_substances.all() if x.substance and x.substance.is_risky)
+            )
+            # Les populations cibles qui sont définies par l'ANSES et utilisées dans les avertissements
+            # et contre-indications sont considérées comme étant à surveiller avec vigilance lorsqu'utilisées comme population cible
+            has_risky_target_population = any(x for x in self.populations.all() if x.is_defined_by_anses)
 
             if empty_composition:
-                new_calculated_article = ""
+                self.calculated_article = ""
             elif surpasses_max_dose:
-                new_calculated_article = Declaration.Article.ANSES_REFERAL
-            elif has_not_authorized_items:
-                new_calculated_article = Declaration.Article.ARTICLE_16
-            elif has_new_items:
-                new_calculated_article = Declaration.Article.ARTICLE_16
+                self.calculated_article = Declaration.Article.ANSES_REFERAL
+            elif has_not_authorized_ingredients:
+                self.calculated_article = Declaration.Article.ARTICLE_16
+            elif has_new_ingredients:
+                self.calculated_article = Declaration.Article.ARTICLE_16
+            elif (
+                has_risky_ingredients
+                or has_risky_target_population
+                or (self.galenic_formulation and self.galenic_formulation.is_risky)
+            ):
+                self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
             else:
-                new_calculated_article = Declaration.Article.ARTICLE_15
+                self.calculated_article = Declaration.Article.ARTICLE_15
 
-            if new_calculated_article != current_calculated_article:
-                self.calculated_article = new_calculated_article
-                self.save()
         except Exception as e:
             logger.error("Error calculating article")
             logger.exception(e)
@@ -421,6 +504,10 @@ class DeclaredPlant(Historisable, Addable):
         else:
             return self.plant.name
 
+    @property
+    def type(self):
+        return "plant"
+
 
 class DeclaredMicroorganism(Historisable, Addable):
     class Meta:
@@ -450,6 +537,10 @@ class DeclaredMicroorganism(Historisable, Addable):
             return f"{self.new_species} {self.new_genre}"
         return f"{self.microorganism.species} {self.microorganism.genus}"
 
+    @property
+    def type(self):
+        return "microorganism"
+
 
 class DeclaredIngredient(Historisable, Addable):
     class Meta:
@@ -474,6 +565,10 @@ class DeclaredIngredient(Historisable, Addable):
     def __str__(self):
         return f"{self.new_name or self.ingredient.name}"
 
+    @property
+    def type(self):
+        return "ingredient"
+
 
 class DeclaredSubstance(Historisable, Addable):
     class Meta:
@@ -496,6 +591,10 @@ class DeclaredSubstance(Historisable, Addable):
 
     def __str__(self):
         return f"{self.new_name or self.substance.name}"
+
+    @property
+    def type(self):
+        return "substance"
 
 
 # Les substances détectées au moment de faire la déclaration seront ici, avec la valeur de la quantité
@@ -568,8 +667,3 @@ class Attachment(Historisable):
         null=True, blank=True, upload_to="declaration-attachments/%Y/%m/%d/", verbose_name="pièce jointe"
     )
     name = models.TextField("nom du fichier", blank=True)
-
-
-@receiver((post_save), sender=Declaration)
-def update_article(sender, instance, *args, **kwargs):
-    instance.assign_article()

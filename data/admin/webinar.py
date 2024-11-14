@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.utils import timezone
+
 from data.models import Webinar
 
 
@@ -48,3 +49,4 @@ class WebinarAdmin(admin.ModelAdmin):
         "start_date",
     )
     list_filter = (UpcomingEventsFilter,)
+    show_facets = admin.ShowFacets.NEVER

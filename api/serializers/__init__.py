@@ -20,7 +20,16 @@ from .galenic_formulation import GalenicFormulationSerializer
 from .preparation import PreparationSerializer
 from .unit import SubstanceUnitSerializer
 from .autocomplete_item import AutocompleteItemSerializer
-from .declaration import DeclarationSerializer, DeclarationShortSerializer, SimpleDeclarationSerializer
+from .declaration import (
+    DeclarationSerializer,
+    DeclarationShortSerializer,
+    SimpleDeclarationSerializer,
+    DeclaredElementSerializer,
+    DeclaredPlantSerializer,
+    DeclaredMicroorganismSerializer,
+    DeclaredSubstanceSerializer,
+    DeclaredIngredientSerializer,
+)
 from .company import CompanySerializer
 from .solicitation import CollaborationInvitationSerializer, CompanyAccessClaimSerializer, AddNewCollaboratorSerializer
 from .snapshot import SnapshotSerializer

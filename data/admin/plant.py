@@ -48,6 +48,7 @@ class PlantAdmin(ElementAdminWithChangeReason):
                     "ca_name",
                     "name",
                     "is_obsolete",
+                    "is_risky",
                     "siccrf_status",
                     "ca_status",
                     "ca_is_obsolete",
@@ -78,8 +79,9 @@ class PlantAdmin(ElementAdminWithChangeReason):
         SubstanceInlineAdmin,
         PlantSynonymInline,
     )
-    list_display = ("name", "siccrf_family", "status")
-    list_filter = ("is_obsolete", "siccrf_family", "status")
+    list_display = ("name", "siccrf_family", "status", "is_risky")
+    list_filter = ("is_obsolete", "siccrf_family", "status", "is_risky")
+    show_facets = admin.ShowFacets.NEVER
     readonly_fields = (
         "siccrf_name",
         "name",

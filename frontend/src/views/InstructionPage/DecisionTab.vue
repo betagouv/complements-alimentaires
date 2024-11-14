@@ -27,11 +27,11 @@
     <div v-if="decisionCategory === 'modify'" class="reject-reasons">
       <hr />
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reasons')">
-        <div class="mb-8" v-for="reason in rejectReasons" :key="reason.title">
+        <div class="mb-8" v-for="reason in blockingReasons" :key="reason.title">
           <p class="font-bold">{{ reason.title }}</p>
           <DsfrCheckboxSet
             v-model="reasons"
-            :options="reason.items.map((x) => ({ label: x, name: x }))"
+            :options="reason.items.map((x) => ({ label: x, value: x }))"
             :error-message="firstErrorMsg(v$, 'reason')"
           />
         </div>
@@ -77,15 +77,6 @@
           <div v-if="firstErrorMsg(v$, 'reasons')">{{ firstErrorMsg(v$, "reasons") }}</div>
         </template>
       </DsfrHighlight>
-      <hr />
-      <DsfrInputGroup>
-        <DsfrInput
-          v-model="privateNotes"
-          is-textarea
-          label-visible
-          label="Notes de l'expert (à destination de l'administration)"
-        />
-      </DsfrInputGroup>
     </div>
   </div>
 </template>
@@ -115,9 +106,8 @@ const rules = computed(() => {
 const declaration = defineModel()
 const proposal = ref(null)
 const delayDays = ref(15)
-const comment = ref("")
+const comment = ref(declaration.value?.lastAdministrationComment || "")
 const reasons = ref([])
-const privateNotes = ref(declaration.value?.privateNotes || "")
 
 const $externalResults = ref({})
 const v$ = useVuelidate(rules, { comment, proposal, reasons, delayDays }, { $externalResults })
@@ -152,14 +142,14 @@ const decisionCategories = [
   },
 ]
 
-const rejectReasons = [
+const blockingReasons = [
   {
     title: "Le produit ne répond pas à la définition du complément alimentaire",
     items: [
       "Forme assimilable à un aliment courant",
       "Recommandations d'emploi incompatibles",
       "Composition (source concentrée, ...)",
-      "Autre",
+      "Autre raison pour laquelle le produit ne répond pas à la définition du complément alimentaire",
     ],
   },
   {
@@ -182,7 +172,7 @@ const rejectReasons = [
       "Informations manquantes",
       "Absence de preuve de reconnaissance mutuelle",
       "Absence ou non conformité de l'étiquetage",
-      "Autre",
+      "Autre motif d'irrecevabilité",
     ],
   },
   {
@@ -210,7 +200,7 @@ const submitDecision = async () => {
 
   const actions = {
     observation: "observe",
-    approve: "authorize",
+    autorisation: "authorize",
     objection: "object",
     rejection: "reject",
   }
@@ -221,7 +211,6 @@ const submitDecision = async () => {
   const { response } = await useFetch(url, { headers: headers() })
     .post({
       comment: comment.value,
-      privateNotes: privateNotes.value,
       reasons: reasons.value,
       expiration: delayDays.value,
     })

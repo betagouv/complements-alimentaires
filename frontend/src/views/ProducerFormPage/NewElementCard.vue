@@ -73,10 +73,10 @@
             <DsfrInput
               v-model="model.euLegalSource"
               label-visible
-              label="Source réglementaire"
+              label="Lien de la source réglementaire"
               is-textarea
               :required="true"
-              hint="Veuillez préciser la référence exacte du texte réglementaire."
+              hint="Veuillez préciser l'URL du texte réglementaire."
             />
           </DsfrInputGroup>
           <DsfrInputGroup>

@@ -19,7 +19,6 @@ from data.models import (
     Plant,
     PlantPart,
     Population,
-    Snapshot,
     Substance,
     SubstanceUnit,
 )
@@ -292,12 +291,31 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
             "instructor",
             "visor",
             "response_limit_date",
+            "visa_refused",
             "article",
         )
         read_only_fields = fields
 
 
 class DeclarationSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        context = kwargs.get("context", {})
+        request = context.get("request")
+        view = context.get("view")
+        if not request or not view:
+            return
+
+        is_instructor = IsInstructor().has_permission(request, view)
+        is_visor = IsVisor().has_permission(request, view)
+        if not is_instructor and not is_visor:
+            self.fields.pop("private_notes_instruction")
+            self.fields.pop("private_notes_visa")
+        else:
+            self.fields["private_notes_instruction"].read_only = not is_instructor
+            self.fields["private_notes_visa"].read_only = not is_visor
+
     instructor = SimpleUserSerializer(read_only=True, source="instructor.user")
     visor = SimpleUserSerializer(read_only=True, source="visor.user")
     author = serializers.PrimaryKeyRelatedField(read_only=True, allow_null=True)
@@ -322,7 +340,9 @@ class DeclarationSerializer(serializers.ModelSerializer):
     computed_substances = DeclaredListSerializer(child=ComputedSubstanceSerializer(), required=False)
     attachments = DeclaredListSerializer(child=AttachmentSerializer(), required=False)
     name = serializers.CharField(allow_blank=False, required=True)
-    blocking_reasons = serializers.SerializerMethodField(read_only=True)
+    private_notes_instruction = serializers.CharField(allow_blank=True, required=False)
+    private_notes_visa = serializers.CharField(allow_blank=True, required=False)
+    blocking_reasons = serializers.ListField(read_only=True)
 
     class Meta:
         model = Declaration
@@ -368,9 +388,11 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "post_validation_status",
             "post_validation_producer_message",
             "post_validation_expiration_days",
-            "private_notes",
+            "private_notes_instruction",
+            "private_notes_visa",
             "blocking_reasons",
             "expiration_date",
+            "last_administration_comment",
         )
         read_only_fields = (
             "id",
@@ -382,7 +404,8 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "post_validation_status",
             "post_validation_producer_message",
             "post_validation_expiration_days",
-            "private_notes",
+            "private_notes_instruction",
+            "private_notes_visa",
         )
 
     @staticmethod
@@ -451,31 +474,6 @@ class DeclarationSerializer(serializers.ModelSerializer):
 
         return declaration
 
-    def to_representation(self, obj):
-        """
-        On surcharge cette méthode pour assurer que les notes privées ne soient pas
-        sérialisées si la personne ne fait pas partie de l'administration
-        """
-        ret = super().to_representation(obj)
-        request = self.context.get("request")
-        view = self.context.get("view")
-        can_see_private_notes = (
-            request
-            and view
-            and (IsVisor().has_permission(request, view) or IsInstructor().has_permission(request, view))
-        )
-
-        if not can_see_private_notes:
-            ret.pop("private_notes")
-        return ret
-
-    def get_blocking_reasons(self, obj):
-        try:
-            latest_snapshot = obj.snapshots.filter(blocking_reasons__isnull=False).latest("creation_date")
-            return latest_snapshot.blocking_reasons
-        except Snapshot.DoesNotExist:
-            return None
-
 
 class DeclarationShortSerializer(serializers.ModelSerializer):
     author = SimpleUserSerializer(read_only=True)
@@ -497,3 +495,13 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
             "modification_date",
         )
         read_only_fields = fields
+
+
+class DeclaredElementSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.SerializerMethodField()
+    type = serializers.CharField()
+    declaration = DeclarationShortSerializer()
+
+    def get_name(self, obj):
+        return str(obj)

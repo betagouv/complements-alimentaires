@@ -67,6 +67,8 @@ THIRD_PARTY_APPS = [
     "simple_history",
     "django_extensions",
     "phonenumber_field",
+    "hijack",
+    "hijack.contrib.admin",
 ]
 
 if ENABLE_SILK:
@@ -91,6 +93,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
+    "hijack.middleware.HijackUserMiddleware",
 ]
 
 if ENABLE_SILK:
@@ -124,7 +127,7 @@ WEBPACK_LOADER = {
     "DEFAULT": {
         "CACHE": not DEBUG,
         "BUNDLE_DIR_NAME": "/bundles/",
-        "STATS_FILE": os.path.join(FRONTEND_DIR, "webpack-stats.json"),
+        "STATS_FILE": os.path.join(FRONTEND_DIR, "dist/webpack-stats.json"),
         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
     }
 }

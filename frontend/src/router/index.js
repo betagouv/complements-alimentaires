@@ -218,6 +218,7 @@ const routes = [
         status: "DRAFT,OBSERVATION,OBJECTION,INSTRUCTION",
         company: "",
         author: "",
+        limit: "10",
       },
     },
   },
@@ -274,8 +275,9 @@ const routes = [
         entrepriseDe: "",
         entrepriseA: "",
         personneAssignée: "",
-        triage: "-modificationDate",
+        triage: "responseLimitDate",
         article: "",
+        limit: "10",
       },
     },
   },
@@ -303,8 +305,9 @@ const routes = [
         status: "AWAITING_VISA,ONGOING_VISA",
         entrepriseDe: "",
         entrepriseA: "",
-        triage: "-modificationDate",
+        triage: "responseLimitDate",
         article: "",
+        limit: "10",
       },
     },
   },
@@ -371,7 +374,9 @@ const chooseAuthorisedRoute = async (to, from, next, store) => {
       store.companies?.some((c) => c.roles?.some((x) => x.name === to.meta.requiredRole)) ||
       store.loggedUser?.globalRoles?.some((x) => x.name === to.meta.requiredRole)
 
-    authenticationCheck && roleCheck ? next() : next({ name: "LoginPage", query: { next: to.path } })
+    if (!authenticationCheck) next({ name: "LoginPage", query: { next: to.path } })
+    else if (!roleCheck) next({ name: "DashboardPage" })
+    else next()
   }
 }
 

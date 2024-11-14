@@ -82,12 +82,7 @@
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <!-- Date de dernière mise à jour de la donnée -->
-      <DsfrAccordion
-        title="Historique de l'ingrédient"
-        id="accordion-history"
-        :expanded-id="expandedId"
-        @expand="(id) => (expandedId = id)"
-      >
+      <DsfrAccordion title="Historique de l'ingrédient" id="accordion-history">
         <DsfrTable :rows="historyDataDedup"></DsfrTable>
       </DsfrAccordion>
     </div>
@@ -144,12 +139,13 @@ const status = computed(() =>
   ["autorisé", "non autorisé"].includes(element.value?.status) ? element.value?.status : null
 )
 const nutritionalReference = computed(() => {
-  if (element.value?.unit && element.value?.nutritionalReference)
+  if (element.value?.unit && (element.value?.nutritionalReference || element.value.nutritionalReference == 0))
     return element.value?.nutritionalReference + " " + element.value?.unit
   else return null
 })
 const maxQuantity = computed(() => {
-  if (element.value?.unit && element.value?.maxQuantity) return element.value?.maxQuantity + " " + element.value?.unit
+  if (element.value?.unit && (element.value?.maxQuantity || element.value.maxQuantity == 0))
+    return element.value?.maxQuantity + " " + element.value?.unit
   else return null
 })
 const description = computed(() => element.value?.description)
@@ -181,7 +177,6 @@ const getElementFromApi = async () => {
 }
 
 const searchPageSource = ref(null)
-const expandedId = ref(null)
 
 const breadcrumbLinks = computed(() => {
   const links = [{ to: "/", text: "Accueil" }]

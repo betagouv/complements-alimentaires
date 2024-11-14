@@ -17,12 +17,16 @@ from data.factories import (
     DeclarantRoleFactory,
     DeclarationFactory,
     DeclaredPlantFactory,
+    DeclaredSubstanceFactory,
+    DeclaredMicroorganismFactory,
+    DeclaredIngredientFactory,
     EffectFactory,
     GalenicFormulationFactory,
     IngredientFactory,
     InstructionRoleFactory,
     MicroorganismFactory,
     OngoingInstructionDeclarationFactory,
+    OngoingVisaDeclarationFactory,
     PlantFactory,
     PlantPartFactory,
     PopulationFactory,
@@ -684,24 +688,27 @@ class TestDeclarationApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    @authenticate
-    def test_private_notes(self):
-        """
-        Seulement les roles Instruction et Visa peuvent voir les notes privées
-        """
-        DeclarantRoleFactory(user=authenticate.user)
-        declaration = DeclarationFactory(author=authenticate.user)
+    # @authenticate
+    # def test_private_notes_instruction(self):
+    #     """
+    #     Seulement les roles Instruction et Visa peuvent voir les notes privées
+    #     """
+    #     DeclarantRoleFactory(user=authenticate.user)
+    #     declaration = DeclarationFactory(author=authenticate.user)
 
-        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
-        json_declaration = response.json()
-        self.assertFalse("privateNotes" in json_declaration)
+    #     response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
+    #     json_declaration = response.json()
+    #     self.assertFalse("privateNotesInstruction" in json_declaration)
+    #     self.assertFalse("privateNotesVisa" in json_declaration)
 
-        # On essaie à nouveau cette fois ci en étant aussi instructeur·ice
-        InstructionRoleFactory(user=authenticate.user)
-        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
-        json_declaration = response.json()
-        self.assertTrue("privateNotes" in json_declaration)
-        self.assertEqual(json_declaration["privateNotes"], declaration.private_notes)
+    #     # On essaie à nouveau cette fois ci en étant aussi instructeur·ice
+    #     InstructionRoleFactory(user=authenticate.user)
+    #     response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
+    #     json_declaration = response.json()
+    #     self.assertTrue("privateNotesInstruction" in json_declaration)
+    #     self.assertTrue("privateNotesVisa" in json_declaration)
+    #     self.assertEqual(json_declaration["privateNotesInstruction"], declaration.private_notes_instruction)
+    #     self.assertEqual(json_declaration["privateNotesVisa"], declaration.private_notes_visa)
 
     @authenticate
     def test_update_single_declaration(self):
@@ -721,6 +728,106 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         user_declaration.refresh_from_db()
         self.assertEqual(user_declaration.name, "New name")
+
+    @authenticate
+    def test_private_comments_user(self):
+        """
+        Un usager ne peut ni visualiser ni modifier les champs des notes privées
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+        declaration = DeclarationFactory(
+            author=authenticate.user, company=company, status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+        )
+
+        # Un usager sans rôles instruction ou visa ne peut pas visualiser les notes privées
+        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
+        json_declaration = response.json()
+        self.assertFalse("privateNotesInstruction" in json_declaration)
+        self.assertFalse("privateNotesVisa" in json_declaration)
+
+        # Un usager sans rôles instruction ou visa ne peut pas modifier les notes privées
+        response = self.client.patch(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            {"privateNotesInstruction": "modified by user"},
+            format="json",
+        )
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.private_notes_instruction, "modified by user")
+
+        response = self.client.patch(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            {"privateNotesVisa": "modified by user"},
+            format="json",
+        )
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.private_notes_visa, "modified by user")
+
+    @authenticate
+    def test_private_comments_instruction(self):
+        """
+        Une instructrice peut voir les champs de notes privées et modifier le champ
+        private_notes_instruction
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+        # Une instructrice peut visualiser les notes privées
+        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
+        json_declaration = response.json()
+        self.assertTrue("privateNotesInstruction" in json_declaration)
+        self.assertTrue("privateNotesVisa" in json_declaration)
+
+        # Une instructrice peut modifier les notes privées de l'instruction
+        response = self.client.patch(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            {"privateNotesInstruction": "modified by instructor"},
+            format="json",
+        )
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.private_notes_instruction, "modified by instructor")
+
+        # Une instructrice ne peut pas modifier les notes privées du visa
+        response = self.client.patch(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            {"privateNotesVisa": "modified by instructor"},
+            format="json",
+        )
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.private_notes_visa, "modified by instructor")
+
+    @authenticate
+    def test_private_comments_visa(self):
+        """
+        Une viseuse peut voir les champs de notes privées et modifier le champ
+        private_notes_visa
+        """
+        VisaRoleFactory(user=authenticate.user)
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+        # Une viseuse peut visualiser les notes privées
+        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
+        json_declaration = response.json()
+        self.assertTrue("privateNotesInstruction" in json_declaration)
+        self.assertTrue("privateNotesVisa" in json_declaration)
+
+        # Une viseuse ne peut pas modifier les notes privées de l'instruction
+        response = self.client.patch(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            {"privateNotesInstruction": "modified by visor"},
+            format="json",
+        )
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.private_notes_instruction, "modified by visor")
+
+        # Une instructrice peut modifier les notes privées du visa
+        response = self.client.patch(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            {"privateNotesVisa": "modified by visor"},
+            format="json",
+        )
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.private_notes_visa, "modified by visor")
 
     @authenticate
     def test_get_all_declarations(self):
@@ -874,6 +981,28 @@ class TestDeclarationApi(APITestCase):
 
         unassigned_filter_url = f"{reverse('api:list_all_declarations')}?instructor=None"
         response = self.client.get(unassigned_filter_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
+    def test_ordering_and_filtering_instructor_not_assigned(self):
+        """
+        Le filtre des non-assignés doit pouvoir s'effectuer avec celui du triage
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        emma = InstructionRoleFactory()
+        edouard = InstructionRoleFactory()
+        stephane = InstructionRoleFactory()
+
+        OngoingInstructionDeclarationFactory(instructor=emma)
+        OngoingInstructionDeclarationFactory(instructor=edouard)
+        OngoingInstructionDeclarationFactory(instructor=stephane)
+        declaration = AwaitingInstructionDeclarationFactory()
+
+        url = f"{reverse('api:list_all_declarations')}?instructor=None&ordering=responseLimitDate"
+        response = self.client.get(url, format="json")
         results = response.json()["results"]
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["id"], declaration.id)
@@ -1280,9 +1409,10 @@ class TestDeclarationApi(APITestCase):
             computed_substances=[],
         )
         DeclaredPlantFactory(new=False, declaration=art_15)
+        art_15.assign_calculated_article()
         art_15.save()
-
         art_15.refresh_from_db()
+
         self.assertEqual(art_15.article, Declaration.Article.ARTICLE_15)
 
         # Une instructrice peut surcharger l'article
@@ -1301,7 +1431,8 @@ class TestDeclarationApi(APITestCase):
     @authenticate
     def test_update_article_unauthorized(self):
         """
-        Les viseuses ou instructrices peuvent changer l'article d'une déclaration
+        Les viseuses ou instructrices peuvent changer l'article d'une déclaration, non pas
+        les déclarant·e·s
         """
         company = CompanyFactory()
         DeclarantRoleFactory(user=authenticate.user, company=company)
@@ -1351,3 +1482,126 @@ class TestDeclarationApi(APITestCase):
 
         declaration.refresh_from_db()
         self.assertNotEqual(declaration.author, authenticate.user)
+
+    @authenticate
+    def test_visa_refusal_field(self):
+        VisaRoleFactory(user=authenticate.user)
+        declaration = OngoingVisaDeclarationFactory()
+
+        response = self.client.post(reverse("api:refuse_visa", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(reverse("api:list_all_declarations"), format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertTrue(results[0]["visaRefused"])
+
+
+class TestDeclaredElementsApi(APITestCase):
+    @authenticate
+    def test_get_declared_elements(self):
+        """
+        Les instructrices peuvent voir une liste de toutes les demandes de nouveaux ingredients
+        Tous types confondus. Ignorer les déclarations en brouillon
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        draft = DeclarationFactory(status=Declaration.DeclarationStatus.DRAFT)
+        for _ in range(3):
+            DeclaredPlantFactory(new=True, declaration=declaration)
+            DeclaredSubstanceFactory(new=True, declaration=declaration)
+            DeclaredMicroorganismFactory(new=True, declaration=declaration)
+            DeclaredIngredientFactory(new=True, declaration=declaration)
+            # don't return not new ones
+            DeclaredPlantFactory(new=False, declaration=declaration)
+            # don't return ones attached to draft declarations
+            DeclaredIngredientFactory(new=True, declaration=draft)
+
+        response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 12)
+        result = results["results"][0]
+        self.assertEqual(result["declaration"]["id"], declaration.id)
+
+    def test_get_declared_elements_not_allowed_not_authenticated(self):
+        response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_get_declared_elements_not_allowed_not_instructor(self):
+        response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_get_single_declared_plant(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        plant = DeclaredPlantFactory(declaration=declaration)
+
+        response = self.client.get(reverse("api:declared_plant", kwargs={"pk": plant.id}), format="json")
+        body = response.json()
+        self.assertEqual(body["id"], plant.id)
+
+    @authenticate
+    def test_get_single_declared_microorganism(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        microorganism = DeclaredMicroorganismFactory(declaration=declaration)
+
+        response = self.client.get(
+            reverse("api:declared_microorganism", kwargs={"pk": microorganism.id}), format="json"
+        )
+        body = response.json()
+        self.assertEqual(body["id"], microorganism.id)
+
+    @authenticate
+    def test_get_single_declared_substance(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        substance = DeclaredSubstanceFactory(declaration=declaration)
+
+        response = self.client.get(reverse("api:declared_substance", kwargs={"pk": substance.id}), format="json")
+        body = response.json()
+        self.assertEqual(body["id"], substance.id)
+
+    @authenticate
+    def test_get_single_declared_ingredient(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        ingredient = DeclaredIngredientFactory(declaration=declaration)
+
+        response = self.client.get(reverse("api:declared_ingredient", kwargs={"pk": ingredient.id}), format="json")
+        body = response.json()
+        self.assertEqual(body["id"], ingredient.id)
+
+    def test_get_declared_element_not_allowed_not_authenticated(self):
+        response = self.client.get(reverse("api:declared_plant", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(reverse("api:declared_microorganism", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(reverse("api:declared_substance", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(reverse("api:declared_ingredient", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_get_declared_element_not_allowed_not_instructor(self):
+        response = self.client.get(reverse("api:declared_plant", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(reverse("api:declared_microorganism", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(reverse("api:declared_substance", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(reverse("api:declared_ingredient", kwargs={"pk": 1}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
