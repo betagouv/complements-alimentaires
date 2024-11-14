@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, time
 
 from django.conf import settings
+from django.db import transaction
 from django.db.models import Count, Max
 from django.utils import timezone
 
@@ -156,7 +157,9 @@ def approve_declarations():
     for declaration in declarations:
         try:
             declaration.status = Declaration.DeclarationStatus.AUTHORIZED
-            declaration.create_snapshot(action=Snapshot.SnapshotActions.AUTOMATICALLY_AUTHORIZE)
+            with transaction.atomic():
+                declaration.save()
+                declaration.create_snapshot(action=Snapshot.SnapshotActions.AUTOMATICALLY_AUTHORIZE)
             success_count += 1
             send_automatic_validation_email(declaration)
         except Exception as _:
