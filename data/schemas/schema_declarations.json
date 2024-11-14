@@ -177,7 +177,7 @@
       {
         "description": "Micro organismes composants le complément alimentaire. Si le micro-organisme a été inactivé, il n'est pas nécessaire de renseigner la quantité.",
         "example": "{'genre': 'Lactobacillus', 'espèce': 'lactis', 'souche': '', 'quantité_par_djr': '2', 'unité': 'cfu', 'inactivé': 'True'}",
-        "name": "micro_organisme",
+        "name": "micro_organismes",
         "type": "array"
       },
       {
