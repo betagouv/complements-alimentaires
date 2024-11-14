@@ -125,7 +125,7 @@ def send_automatic_validation_email(declaration):
             declaration.author.get_full_name(),
         )
     except Exception as _:
-        logger.exception(f"Email not automatic validation of declaration {declaration.id}")
+        logger.exception(f"Email not sent on automatic validation of declaration {declaration.id}")
 
 
 @app.task
