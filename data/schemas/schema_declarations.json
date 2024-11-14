@@ -24,6 +24,16 @@
         "constraints": {
           "required": "True"
         },
+        "description": "Status du complément alimentaire. Indique s'il est autorisé ou refusé à la vente",
+        "example": "autorisé",
+        "name": "status",
+        "title": "Status",
+        "type": "string"
+      },
+      {
+        "constraints": {
+          "required": "True"
+        },
         "description": "Date acceptation du complément alimentaire.",
         "example": "2024-01-27",
         "name": "date_acceptation",
