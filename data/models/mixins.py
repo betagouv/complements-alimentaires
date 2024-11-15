@@ -98,4 +98,4 @@ class WithNovelFoodBoolean(models.Model):
     class Meta:
         abstract = True
 
-    novel_food = models.BooleanField(default=False, verbose_name="est considéré comme Novel Food ?")
+    novel_food = models.BooleanField(default=False, verbose_name="considéré Novel Food ?")
