@@ -136,7 +136,15 @@ class DeclaredIngredientInline(admin.StackedInline):
 class DeclaredSubstanceInline(admin.StackedInline):
     model = DeclaredSubstance
     can_delete = True
-    fields = ("substance", "quantity", "unit")
+    fields = (
+        "substance",
+        "quantity",
+        "unit",
+        "first_ocurrence",
+        "new",
+        "new_name",
+        "new_description",
+    )
     autocomplete_fields = ("substance",)
     extra = 0
 
