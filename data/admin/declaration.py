@@ -283,3 +283,8 @@ class DeclarationAdmin(SimpleHistoryAdmin):
             },
         ),
     )
+
+    def save_model(self, request, obj, form, change):
+        if change:
+            obj.assign_calculated_article()
+        super().save_model(request, obj, form, change)
