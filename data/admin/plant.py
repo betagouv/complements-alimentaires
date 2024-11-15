@@ -70,7 +70,7 @@ class PlantAdmin(ElementAdminWithChangeReason):
         (
             "Famille",
             {
-                "fields": ["siccrf_family"],
+                "fields": ["siccrf_family", "ca_family"],
             },
         ),
     ]
@@ -91,6 +91,5 @@ class PlantAdmin(ElementAdminWithChangeReason):
         "siccrf_public_comments",
         "siccrf_private_comments",
         "siccrf_family",
-        "family",
     )
     search_fields = ["id", "name"]
