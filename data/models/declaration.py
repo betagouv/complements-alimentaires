@@ -60,6 +60,7 @@ class Declaration(Historisable, TimeStampable):
     class Article(models.TextChoices):
         ARTICLE_15 = "ART_15", "Article 15"
         ARTICLE_15_WARNING = "ART_15_WARNING", "Article 15 Vigilance"
+        ARTICLE_15_HIGH_RISK_POPULATION = "ARTICLE_15_HIGH_RISK_POPULATION", "Article 15 Population à risque"
         ARTICLE_16 = "ART_16", "Article 16"
         # ARTICLE_17 = "ART_17", "Article 17" # Article 17 et 18 sont pour le moment regroupés sous le label "nécessite saisine ANSES"
         ANSES_REFERAL = "ANSES_REFERAL", "nécessite saisine ANSES"
@@ -332,6 +333,14 @@ class Declaration(Historisable, TimeStampable):
     def __str__(self):
         return f"Déclaration « {self.name} »"
 
+    @property
+    def has_risky_target_population(self):
+        """
+        Les populations cibles qui sont définies par l'ANSES et utilisées dans les avertissements
+        et contre-indications sont considérées comme étant à surveiller avec vigilance lorsqu'utilisées comme population cible
+        """
+        return any(x for x in self.populations.all() if x.is_defined_by_anses)
+
     def assign_calculated_article(self):
         """
         Peuple l'article calculé pour cette déclaration.
@@ -401,9 +410,6 @@ class Declaration(Historisable, TimeStampable):
                 or any(x for x in self.declared_substances.filter(new=False) if x.substance and x.substance.is_risky)
                 or any(x for x in self.computed_substances.all() if x.substance and x.substance.is_risky)
             )
-            # Les populations cibles qui sont définies par l'ANSES et utilisées dans les avertissements
-            # et contre-indications sont considérées comme étant à surveiller avec vigilance lorsqu'utilisées comme population cible
-            has_risky_target_population = any(x for x in self.populations.all() if x.is_defined_by_anses)
 
             if empty_composition:
                 self.calculated_article = ""
@@ -413,12 +419,10 @@ class Declaration(Historisable, TimeStampable):
                 self.calculated_article = Declaration.Article.ARTICLE_16
             elif has_new_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
-            elif (
-                has_risky_ingredients
-                or has_risky_target_population
-                or (self.galenic_formulation and self.galenic_formulation.is_risky)
-            ):
+            elif has_risky_ingredients or (self.galenic_formulation and self.galenic_formulation.is_risky):
                 self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
+            elif self.has_risky_target_population:
+                self.calculated_article = Declaration.Article.ARTICLE_15_POPULATION_WARNING
             else:
                 self.calculated_article = Declaration.Article.ARTICLE_15
 

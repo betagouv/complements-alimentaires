@@ -41,6 +41,7 @@ class CertificateView(GenericAPIView):
         article_map = {
             Declaration.Article.ARTICLE_15: 15,
             Declaration.Article.ARTICLE_15_WARNING: 15,
+            Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION: 15,
             Declaration.Article.ARTICLE_16: 16,
             Declaration.Article.ANSES_REFERAL: "anses",
         }
