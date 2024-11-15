@@ -499,7 +499,7 @@ class DeclaredPlant(Historisable, Addable):
     )
 
     def __str__(self):
-        if self.new_name:
+        if self.new:
             return f"-NEW- {self.new_name}"
         else:
             return self.plant.name
@@ -530,7 +530,7 @@ class DeclaredMicroorganism(Historisable, Addable):
 
     def __str__(self):
         if self.new:
-            return f"{self.new_species} {self.new_genre}"
+            return f"-NEW- {self.new_species} {self.new_genre}"
         return f"{self.microorganism.species} {self.microorganism.genus}"
 
 
@@ -555,7 +555,10 @@ class DeclaredIngredient(Historisable, Addable):
     unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
     def __str__(self):
-        return f"{self.new_name or self.ingredient.name}"
+        if self.new:
+            return f"-NEW- {self.new_name}"
+        else:
+            return self.ingredient.name
 
 
 class DeclaredSubstance(Historisable, Addable):
@@ -578,7 +581,10 @@ class DeclaredSubstance(Historisable, Addable):
     unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
     def __str__(self):
-        return f"{self.new_name or self.substance.name}"
+        if self.new:
+            return f"-NEW- {self.new_name}"
+        else:
+            return self.substance.name
 
 
 # Les substances détectées au moment de faire la déclaration seront ici, avec la valeur de la quantité
