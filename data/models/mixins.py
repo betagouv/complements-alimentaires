@@ -88,3 +88,14 @@ class WithIsRiskyBoolean(models.Model):
         abstract = True
 
     is_risky = models.BooleanField(default=False, verbose_name="nécessite une instruction manuelle et vigilante ?")
+
+
+class WithNovelFoodBoolean(models.Model):
+    """
+    Les tables ingrédients (plantes, micro-organismes, substances et ingrédients de la SICCRF) peuvent être considérés comme 'Novel Food'
+    """
+
+    class Meta:
+        abstract = True
+
+    novel_food = models.BooleanField(default=False, verbose_name="est considéré comme Novel Food ?")
