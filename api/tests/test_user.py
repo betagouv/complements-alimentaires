@@ -104,6 +104,31 @@ class TestGetLoggedUser(ProjectAPITestCase):
         self.assertEqual(len(response["globalRoles"]), 1)
         self.assertEqual(response["globalRoles"][0]["name"], "VisaRole")
 
+    def test_mandated_companies(self):
+        """
+        Un·e utilisateur·ice doit voir les entreprises representées par son
+        entreprise - et ce avec le même rôle de déclarant
+        """
+        company_1 = CompanyFactory()
+        company_2 = CompanyFactory()
+
+        user = self.login()
+
+        # L'utilisateur·ice a un rôle déclaration dans company_1
+        DeclarantRoleFactory(user=user, company=company_1)
+
+        # company_2 mandate company_1 pour ses déclarations
+        company_2.mandated_companies.add(company_1)
+        company_2.save()
+
+        response = self.get(self.url())
+        companies = response.data["companies"]
+
+        # L'utilisateur·ice doit donc avoir le droit de déclaration sur les deux entreprises
+        self.assertEqual(len(companies), 2)
+        self.assertEqual(len(list(filter(lambda x: x["id"] == company_1.id, companies))), 1)
+        self.assertEqual(len(list(filter(lambda x: x["id"] == company_2.id, companies))), 1)
+
 
 class TestCreateUser(ProjectAPITestCase):
     viewname = "user_create"

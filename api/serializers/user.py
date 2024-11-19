@@ -57,14 +57,19 @@ class UserSerializer(serializers.ModelSerializer):
     global_roles = serializers.SerializerMethodField(read_only=True)
 
     def get_companies(self, obj):
-        from data.models import Company  # évite un import circulaire
-
         result = []
-        for company_id, roles in obj.get_roles_mapped_to_companies().items():
-            company_data_dict = SimpleCompanySerializer(Company.objects.get(id=company_id)).data
+
+        def add_company_to_result(company, roles):
+            company_data_dict = SimpleCompanySerializer(company).data
             role_data = [ROLE_SERIALIZER_MAPPING[type(role)](role).data for role in roles]
-            # Merge les deux types de données
             result.append(company_data_dict | {"roles": role_data})
+
+        for company, roles in obj.get_roles_mapped_to_companies().items():
+            add_company_to_result(company, roles)
+            declarant_role = next((x for x in roles if type(x) is DeclarantRole), None)
+            if declarant_role:
+                for represented_company in company.represented_companies.all():
+                    add_company_to_result(represented_company, [declarant_role])
 
         return result
 
