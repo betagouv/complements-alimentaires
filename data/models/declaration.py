@@ -6,7 +6,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Case, Value, When
+from django.db.models import Case, F, Q, Value, When
 from django.db.models.functions import Coalesce
 
 from dateutil.relativedelta import relativedelta
@@ -173,6 +173,7 @@ class Declaration(Historisable, TimeStampable):
     other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non listés")
 
     calculated_article = models.TextField("article calculé automatiquement", blank=True, choices=Article)
+    # TODO: les Article.choice pour overriden_article ne devraient pas inclure les choices calculés automatiquement
     overriden_article = models.TextField("article manuellement spécifié", blank=True, choices=Article)
     article = models.GeneratedField(
         expression=Coalesce(
@@ -334,6 +335,30 @@ class Declaration(Historisable, TimeStampable):
         return f"Déclaration « {self.name} »"
 
     @property
+    def computed_substances_with_max_dose_exceeded(self):
+        substances_with_max_dose_exceeded = self.computed_substances.exclude(
+            Q(quantity__isnull=True) | Q(substance__max_quantity__isnull=True)
+        ).filter(unit=F("substance__unit"), quantity__gte=F("substance__max_quantity"))
+        return substances_with_max_dose_exceeded
+
+    @property
+    def declared_substances_with_max_dose_exceeded(self):
+        substances_with_max_dose_exceeded = self.declared_substances.exclude(
+            Q(new=True) | Q(quantity__isnull=True) | Q(substance__max_quantity__isnull=True)
+        ).filter(unit=F("substance__unit"), quantity__gte=F("substance__max_quantity"))
+        return substances_with_max_dose_exceeded
+
+    @property
+    def has_dose_max_exceeded(self):
+        """
+        Les doses max sont aujourd'hui définies pour les substances seulement.
+        """
+        return (
+            self.computed_substances_with_max_dose_exceeded.exists()
+            | self.declared_substances_with_max_dose_exceeded.exists()
+        )
+
+    @property
     def has_risky_target_population(self):
         """
         Les populations cibles qui sont définies par l'ANSES et utilisées dans les avertissements
@@ -372,21 +397,6 @@ class Declaration(Historisable, TimeStampable):
                 x.filter(new=True).exists() for x in composition_ingredients if issubclass(x.model, Addable)
             )
 
-            surpasses_max_dose = any(
-                x.quantity > x.substance.max_quantity
-                for x in self.computed_substances.all()
-                if x.substance
-                and x.quantity is not None
-                and x.substance.max_quantity is not None
-                and x.substance.unit == x.unit
-            ) or any(
-                x.quantity > x.substance.max_quantity
-                for x in self.declared_substances.all()
-                if x.substance
-                and x.quantity is not None
-                and x.substance.max_quantity is not None
-                and x.substance.unit == x.unit
-            )
             has_risky_ingredients = (
                 any(
                     x
@@ -413,7 +423,7 @@ class Declaration(Historisable, TimeStampable):
 
             if empty_composition:
                 self.calculated_article = ""
-            elif surpasses_max_dose:
+            elif self.has_dose_max_exceeded:
                 self.calculated_article = Declaration.Article.ANSES_REFERAL
             elif has_not_authorized_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
@@ -422,7 +432,7 @@ class Declaration(Historisable, TimeStampable):
             elif has_risky_ingredients or (self.galenic_formulation and self.galenic_formulation.is_risky):
                 self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
             elif self.has_risky_target_population:
-                self.calculated_article = Declaration.Article.ARTICLE_15_POPULATION_WARNING
+                self.calculated_article = Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
             else:
                 self.calculated_article = Declaration.Article.ARTICLE_15
 
