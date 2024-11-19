@@ -135,7 +135,10 @@ class GenerateUsernameView(APIView):
 
 class VerifyEmailView(APIView):
     def post(self, request, *args, **kwargs):
-        user = MagicLinkToken.run_email_verification(request.data["key"])
+        key = request.data.get("key")
+        if not key:
+            raise ProjectAPIException(global_error="Lien de validation invalide.")
+        user = MagicLinkToken.run_email_verification(key)
         if user:
             # we log the user in to avoid an unnecessary login step
             login(request, user)  # will create the user session
