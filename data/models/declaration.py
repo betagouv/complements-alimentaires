@@ -646,6 +646,13 @@ class ComputedSubstance(Historisable):
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
     unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
+    def __str__(self):
+        return self.substance.name
+
+    @property
+    def type(self):
+        return "substance"
+
 
 # Les pièces jointes peuvent avoir plusieurs types et formats.
 
