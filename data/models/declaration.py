@@ -1,6 +1,5 @@
 import json
 import logging
-import re
 from datetime import timedelta
 
 from django.conf import settings
@@ -359,6 +358,44 @@ class Declaration(Historisable, TimeStampable):
         )
 
     @property
+    def risky_ingredients(self):
+        return self.declared_ingredients.exclude(new=True).filter(
+            Q(ingredient__is_risky=True)
+            | Q(ingredient__name__iregex="([^A-Za-z]+|^)vin([^A-Za-z]+|$)|alcool|vinaigre")
+        )
+
+    @property
+    def risky_plants(self):
+        # Les plantes ayant public_comments ~* 'la concentration en <nom de substance> est à surveiller' n'impliquent d'obligation règlementaire
+        return self.declared_plants.exclude(new=True).filter(
+            Q(plant__is_risky=True)
+            | Q(plant__name__iregex="dérivés hydroxyanthracéniques|dérivés anthracéniques|HAD")
+            | Q(preparation__contains_alcohol=True)
+        )
+
+    @property
+    def risky_microorganisms(self):
+        return self.declared_microorganisms.exclude(new=True).filter(microorganism__is_risky=True)
+
+    @property
+    def risky_declared_substances(self):
+        return self.declared_substances.exclude(new=True).filter(substance__is_risky=True)
+
+    @property
+    def risky_computed_substances(self):
+        return self.computed_substances.filter(substance__is_risky=True)
+
+    @property
+    def has_risky_ingredients(self):
+        return (
+            self.risky_ingredients.exists()
+            | self.risky_plants.exists()
+            | self.risky_microorganisms.exists()
+            | self.risky_declared_substances.exists()
+            | self.risky_computed_substances.exists()
+        )
+
+    @property
     def has_risky_target_population(self):
         """
         Les populations cibles qui sont définies par l'ANSES et utilisées dans les avertissements
@@ -397,30 +434,6 @@ class Declaration(Historisable, TimeStampable):
                 x.filter(new=True).exists() for x in composition_ingredients if issubclass(x.model, Addable)
             )
 
-            has_risky_ingredients = (
-                any(
-                    x
-                    for x in self.declared_ingredients.filter(new=False)
-                    if x.ingredient.is_risky
-                    or re.match(r"([^A-Za-z]+|^)vin([^A-Za-z]+|$)|alcool|vinaigre", x.ingredient.name)
-                )
-                # Les plantes ayant public_comments ~* 'la concentration en <nom de substance> est à surveiller' n'impliquent d'obligation règlementaire
-                or any(
-                    x
-                    for x in self.declared_plants.filter(new=False)
-                    if x.plant.is_risky
-                    or (x.preparation and x.preparation.contains_alcohol)
-                    or re.match(r"dérivés hydroxyanthracéniques|dérivés anthracéniques|HAD", x.plant.name)
-                )
-                or any(
-                    x
-                    for x in self.declared_microorganisms.filter(new=False)
-                    if x.microorganism and x.microorganism.is_risky
-                )
-                or any(x for x in self.declared_substances.filter(new=False) if x.substance and x.substance.is_risky)
-                or any(x for x in self.computed_substances.all() if x.substance and x.substance.is_risky)
-            )
-
             if empty_composition:
                 self.calculated_article = ""
             elif self.has_dose_max_exceeded:
@@ -429,7 +442,7 @@ class Declaration(Historisable, TimeStampable):
                 self.calculated_article = Declaration.Article.ARTICLE_16
             elif has_new_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
-            elif has_risky_ingredients or (self.galenic_formulation and self.galenic_formulation.is_risky):
+            elif self.has_risky_ingredients or (self.galenic_formulation and self.galenic_formulation.is_risky):
                 self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
             elif self.has_risky_target_population:
                 self.calculated_article = Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
