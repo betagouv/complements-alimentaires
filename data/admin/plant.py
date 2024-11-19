@@ -49,6 +49,7 @@ class PlantAdmin(ElementAdminWithChangeReason):
                     "name",
                     "is_obsolete",
                     "is_risky",
+                    "novel_food",
                     "siccrf_status",
                     "ca_status",
                     "ca_is_obsolete",
@@ -69,7 +70,7 @@ class PlantAdmin(ElementAdminWithChangeReason):
         (
             "Famille",
             {
-                "fields": ["siccrf_family"],
+                "fields": ["siccrf_family", "ca_family"],
             },
         ),
     ]
@@ -79,8 +80,8 @@ class PlantAdmin(ElementAdminWithChangeReason):
         SubstanceInlineAdmin,
         PlantSynonymInline,
     )
-    list_display = ("name", "siccrf_family", "status", "is_risky")
-    list_filter = ("is_obsolete", "siccrf_family", "status", "is_risky")
+    list_display = ("name", "siccrf_family", "status", "is_risky", "novel_food")
+    list_filter = ("is_obsolete", "siccrf_family", "status", "is_risky", "novel_food")
     show_facets = admin.ShowFacets.NEVER
     readonly_fields = (
         "siccrf_name",
@@ -90,6 +91,5 @@ class PlantAdmin(ElementAdminWithChangeReason):
         "siccrf_public_comments",
         "siccrf_private_comments",
         "siccrf_family",
-        "family",
     )
     search_fields = ["id", "name"]

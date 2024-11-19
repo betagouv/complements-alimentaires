@@ -58,6 +58,7 @@ class SubstanceAdmin(ElementAdminWithChangeReason):
                     "siccrf_source",
                     "ca_source",
                     "is_risky",
+                    "novel_food",
                 ],
             },
         ),
@@ -120,7 +121,7 @@ class SubstanceAdmin(ElementAdminWithChangeReason):
         "get_microorganisms",
         "get_ingredients",
     ]
-    list_display = ("name", "get_plants", "get_microorganisms", "get_ingredients", "status", "is_risky")
-    list_filter = ("is_obsolete", "status", "is_risky")
+    list_display = ("name", "get_plants", "get_microorganisms", "get_ingredients", "status", "is_risky", "novel_food")
+    list_filter = ("is_obsolete", "status", "is_risky", "novel_food")
     show_facets = admin.ShowFacets.NEVER
     search_fields = ["id", "name"]

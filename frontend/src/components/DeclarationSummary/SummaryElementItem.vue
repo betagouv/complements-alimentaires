@@ -8,6 +8,7 @@
         </p>
       </div>
 
+      <DsfrBadge v-if="novelFood" label="Novel Food" type="new" class="self-center ml-2" small />
       <DsfrBadge v-if="model.new" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
       <DsfrBadge v-if="!model.active" label="Non-actif" type="none" class="self-center ml-2" small />
     </div>
@@ -34,6 +35,9 @@ const unitName = computed(() => units.value?.find((x) => x.id === model.value.un
 const preparationName = computed(
   () => preparations.value?.find((x) => x.id === parseInt(model.value.preparation))?.name || ""
 )
+const novelFood = computed(() => {
+  return model.value.element?.novelFood
+})
 
 const elementInfo = computed(() => {
   if (props.objectType === "microorganism") {
@@ -45,6 +49,7 @@ const elementInfo = computed(() => {
     const used_part_label = `Partie utilisée : « ${plantPartName.value} »`
     const quantity_label = model.value.quantity ? `Qté par DJR : ${model.value.quantity} ${unitName.value}` : null
     const preparation_label = model.value.preparation ? `Préparation : ${preparationName.value}` : null
+
     return [used_part_label, quantity_label, preparation_label].filter(Boolean).join(` | `)
   }
 
