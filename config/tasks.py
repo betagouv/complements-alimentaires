@@ -166,6 +166,6 @@ def approve_declarations():
             logger.exception(f"Automatic validation of declaration {declaration.id} failed.")
             error_count += 1
 
-    logger.error(f"{success_count} declarations were automatically validated.")
+    logger.info(f"{success_count} declarations were automatically validated.")
     if error_count:
         logger.error(f"{error_count} declarations failed automatic validation.")
