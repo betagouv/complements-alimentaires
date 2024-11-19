@@ -334,27 +334,27 @@ class Declaration(Historisable, TimeStampable):
         return f"Déclaration « {self.name} »"
 
     @property
-    def computed_substances_with_max_dose_exceeded(self):
-        substances_with_max_dose_exceeded = self.computed_substances.exclude(
+    def computed_substances_with_max_quantity_exceeded(self):
+        substances_with_max_quantity_exceeded = self.computed_substances.exclude(
             Q(quantity__isnull=True) | Q(substance__max_quantity__isnull=True)
         ).filter(unit=F("substance__unit"), quantity__gte=F("substance__max_quantity"))
-        return substances_with_max_dose_exceeded
+        return substances_with_max_quantity_exceeded
 
     @property
-    def declared_substances_with_max_dose_exceeded(self):
-        substances_with_max_dose_exceeded = self.declared_substances.exclude(
+    def declared_substances_with_max_quantity_exceeded(self):
+        substances_with_max_quantity_exceeded = self.declared_substances.exclude(
             Q(new=True) | Q(quantity__isnull=True) | Q(substance__max_quantity__isnull=True)
         ).filter(unit=F("substance__unit"), quantity__gte=F("substance__max_quantity"))
-        return substances_with_max_dose_exceeded
+        return substances_with_max_quantity_exceeded
 
     @property
-    def has_dose_max_exceeded(self):
+    def has_max_quantity_exceeded(self):
         """
         Les doses max sont aujourd'hui définies pour les substances seulement.
         """
         return (
-            self.computed_substances_with_max_dose_exceeded.exists()
-            | self.declared_substances_with_max_dose_exceeded.exists()
+            self.computed_substances_with_max_quantity_exceeded.exists()
+            | self.declared_substances_with_max_quantity_exceeded.exists()
         )
 
     @property
@@ -436,7 +436,7 @@ class Declaration(Historisable, TimeStampable):
 
             if empty_composition:
                 self.calculated_article = ""
-            elif self.has_dose_max_exceeded:
+            elif self.has_max_quantity_exceeded:
                 self.calculated_article = Declaration.Article.ANSES_REFERAL
             elif has_not_authorized_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
