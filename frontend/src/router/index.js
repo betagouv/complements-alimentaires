@@ -32,6 +32,7 @@ import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
 import A11yPage from "@/views/A11yPage.vue"
 import ContactForm from "@/views/ContactForm"
 import CompliancePage from "@/views/CompliancePage"
+import ElementForm from "@/views/ElementForm"
 import { ref } from "vue"
 
 const routes = [
@@ -329,6 +330,16 @@ const routes = [
     component: CompliancePage,
     meta: {
       title: "Conformité au droit alimentaire",
+    },
+  },
+  {
+    path: "/element-detail/:urlComponent",
+    name: "ElementForm",
+    component: ElementForm,
+    props: true,
+    meta: {
+      authenticationRequired: true,
+      requiredRole: "InstructionRole",
     },
   },
   {
