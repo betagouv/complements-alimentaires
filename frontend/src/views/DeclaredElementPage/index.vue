@@ -46,7 +46,7 @@ import { useFetch } from "@vueuse/core"
 import { getTypeIcon, getTypeInFrench, getApiType } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
 
-const props = defineProps({ type: String, id: Number })
+const props = defineProps({ type: String, id: String })
 
 // prepare template data for display
 const icon = computed(() => getTypeIcon(props.type))
