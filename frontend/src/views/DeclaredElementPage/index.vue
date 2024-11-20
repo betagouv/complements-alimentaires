@@ -3,7 +3,7 @@
     <DsfrNotice title="En construction" desc="Des nouvelles fonctionnalités arrivent bientôt !" />
     <DsfrNotice
       title="NOUVEL INGRÉDIENT"
-      desc="Ingrédient non intégré dans la base de donnée et en attente de validation. "
+      desc="Ingrédient non intégré dans la base de données et en attente de validation."
     />
     <div class="fr-container">
       <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
@@ -17,7 +17,7 @@
             <p :aria-hidden="true" class="fr-h2">{{ authorizationInfo.flag }}</p>
             <p class="content-center col-span-2">{{ authorizationInfo.text }}</p>
           </div>
-          <div v-for="(info, idx) in elementProfile" :key="idx" class="grid grid-cols-3">
+          <div v-for="(info, idx) in elementProfile" :key="`element-profile-${idx}`" class="grid grid-cols-3">
             <p>
               <b>{{ info.label }}</b>
             </p>
