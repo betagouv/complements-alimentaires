@@ -41,7 +41,7 @@
         <div>
           <DsfrButtonGroup :buttons="actionButtons" inlineLayoutWhen="md" align="center" class="mb-8" />
 
-          <DsfrModal :opened="!!modalToOpen" :title="title" :actions="actions" @close="closeModal">
+          <DsfrModal :opened="!!modalToOpen" :title="modalTitle" :actions="modalActions" @close="closeModal">
             <template #default>
               <DsfrInput v-model="notes" label="Notes" label-visible is-textarea />
             </template>
@@ -54,9 +54,10 @@
 
 <script setup>
 import { computed, watch, ref } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch, useDebounceFn } from "@vueuse/core"
 import { getTypeIcon, getTypeInFrench, getApiType } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
+import { headers } from "@/utils/data-fetching"
 
 const props = defineProps({ type: String, id: String })
 
@@ -152,23 +153,40 @@ watch(element, (newElement) => {
 })
 
 // Actions
+const modalToOpen = ref(false)
+const closeModal = () => (modalToOpen.value = false)
+
+const notes = ref()
+
+const openModal = (type) => {
+  return () => {
+    if (!notes.value) notes.value = element.value?.privateNotesInstruction
+    modalToOpen.value = type
+  }
+}
 const actionButtons = [
   {
     label: "Demander plus d’information",
     tertiary: true,
-    onclick: () => (modalToOpen.value = "info"),
+    onclick: openModal("info"),
   },
   {
     label: "Refuser l’ingrédient",
     tertiary: true,
     "no-outline": true,
     icon: "ri-close-line",
-    onclick: () => (modalToOpen.value = "refuse"),
+    onclick: openModal("refuse"),
   },
 ]
 
-const modalToOpen = ref(false)
-const closeModal = () => (modalToOpen.value = false)
+const updateElement = useDebounceFn(async (payload) => {
+  const { response } = await useFetch(url, {
+    headers: headers(),
+  })
+    .patch(payload)
+    .json()
+  handleError(response)
+}, 600)
 
 const modals = {
   info: {
@@ -177,7 +195,10 @@ const modals = {
       {
         label: "Enregistrer",
         onClick() {
-          // TODO: update status and save note
+          updateElement({
+            status: "INFORMATION",
+            privateNotesInstruction: notes.value,
+          })
           closeModal()
         },
       },
@@ -189,19 +210,19 @@ const modals = {
       {
         label: "Refuser",
         onClick() {
-          // TODO: update status and save note
+          updateElement({
+            status: "REJECTED",
+            privateNotesInstruction: notes.value,
+          })
           closeModal()
         },
       },
     ],
   },
 }
+const modalTitle = computed(() => modals[modalToOpen.value]?.title)
 
-const title = computed(() => modals[modalToOpen.value]?.title)
-// TODO: prefill with existing note?
-const notes = ref()
-
-const actions = computed(() => {
+const modalActions = computed(() => {
   const actions = modals[modalToOpen.value]?.actions || []
   return actions.concat([
     {

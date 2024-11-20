@@ -37,7 +37,7 @@ from data.factories import (
     SupervisorRoleFactory,
     VisaRoleFactory,
 )
-from data.models import Attachment, Declaration
+from data.models import Attachment, Declaration, DeclaredMicroorganism
 
 from .utils import authenticate
 
@@ -1605,3 +1605,19 @@ class TestDeclaredElementsApi(APITestCase):
 
         response = self.client.get(reverse("api:declared_ingredient", kwargs={"pk": 1}), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_update_declared_microorganism(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        microorganism = DeclaredMicroorganismFactory(declaration=declaration)
+
+        self.client.patch(
+            reverse("api:declared_microorganism", kwargs={"pk": microorganism.id}),
+            {"status": DeclaredMicroorganism.AddableStatus.INFORMATION, "privateNotesInstruction": "some notes"},
+            format="json",
+        )
+        microorganism.refresh_from_db()
+        self.assertEqual(microorganism.private_notes_instruction, "some notes")
+        self.assertEqual(microorganism.status, "INFORMATION")

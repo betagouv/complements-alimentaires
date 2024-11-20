@@ -100,31 +100,8 @@ ADDABLE_ELEMENT_FIELDS = (
 )
 
 
-# TODO: reuse on Declaration serializer that this logic came from
-class ControlledFieldsMixin:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        context = kwargs.get("context", {})
-        request = context.get("request")
-        view = context.get("view")
-        if not request or not view:
-            return
-
-        is_instructor = IsInstructor().has_permission(request, view)
-        is_visor = IsVisor().has_permission(request, view)
-        if not is_instructor and not is_visor:
-            for field in self.internal_fields:
-                self.fields.pop(field)
-        elif is_visor:
-            for field in self.visor_only_edit_fields:
-                self.fields[field].read_only = False
-        elif is_instructor:
-            for field in self.instructor_only_edit_fields:
-                self.fields[field].read_only = False
-
-
-class DeclaredPlantSerializer(serializers.ModelSerializer, ControlledFieldsMixin):
+# TODO: make sure private notes and status aren't being made visible to anyone other that instructors and visors
+class DeclaredPlantSerializer(serializers.ModelSerializer):
     element = PassthroughPlantSerializer(required=False, source="plant", allow_null=True)
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
     used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False, allow_null=True)
@@ -145,19 +122,6 @@ class DeclaredPlantSerializer(serializers.ModelSerializer, ControlledFieldsMixin
             "private_notes_instruction",
             "status",
         )
-        read_only_fields = (
-            "id",
-            "private_notes_instruction",
-            "status",
-        )
-        internal_fields = (
-            "private_notes_instruction",
-            "status",
-        )
-        instructor_only_edit_fields = (
-            "private_notes_instruction",
-            "status",
-        )
 
     def create(self, validated_data):
         # DRF ne gère pas automatiquement la création des nested-fields :
@@ -172,7 +136,7 @@ class DeclaredPlantSerializer(serializers.ModelSerializer, ControlledFieldsMixin
         return super().create(validated_data)
 
 
-class DeclaredMicroorganismSerializer(serializers.ModelSerializer, ControlledFieldsMixin):
+class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
     element = PassthroughMicroorganismSerializer(required=False, source="microorganism", allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -188,19 +152,6 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer, ControlledFie
             "activated",
             "strain",
             "quantity",
-            "private_notes_instruction",
-            "status",
-        )
-        read_only_fields = (
-            "id",
-            "private_notes_instruction",
-            "status",
-        )
-        internal_fields = (
-            "private_notes_instruction",
-            "status",
-        )
-        instructor_only_edit_fields = (
             "private_notes_instruction",
             "status",
         )
@@ -220,7 +171,7 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer, ControlledFie
         return super().create(validated_data)
 
 
-class DeclaredIngredientSerializer(serializers.ModelSerializer, ControlledFieldsMixin):
+class DeclaredIngredientSerializer(serializers.ModelSerializer):
     element = PassthroughIngredientSerializer(required=False, source="ingredient", allow_null=True)
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -239,19 +190,6 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer, ControlledFields
             "private_notes_instruction",
             "status",
         )
-        read_only_fields = (
-            "id",
-            "private_notes_instruction",
-            "status",
-        )
-        internal_fields = (
-            "private_notes_instruction",
-            "status",
-        )
-        instructor_only_edit_fields = (
-            "private_notes_instruction",
-            "status",
-        )
 
     def create(self, validated_data):
         # DRF ne gère pas automatiquement la création des nested-fields :
@@ -266,7 +204,7 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer, ControlledFields
         return super().create(validated_data)
 
 
-class DeclaredSubstanceSerializer(serializers.ModelSerializer, ControlledFieldsMixin):
+class DeclaredSubstanceSerializer(serializers.ModelSerializer):
     element = PassthroughSubstanceSerializer(required=False, source="substance", allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -280,19 +218,6 @@ class DeclaredSubstanceSerializer(serializers.ModelSerializer, ControlledFieldsM
             "active",
             "quantity",
             "unit",
-            "private_notes_instruction",
-            "status",
-        )
-        read_only_fields = (
-            "id",
-            "private_notes_instruction",
-            "status",
-        )
-        internal_fields = (
-            "private_notes_instruction",
-            "status",
-        )
-        instructor_only_edit_fields = (
             "private_notes_instruction",
             "status",
         )
