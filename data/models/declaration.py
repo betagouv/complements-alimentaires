@@ -437,6 +437,11 @@ class Addable(models.Model):
     class Meta:
         abstract = True
 
+    class AddableStatus(models.TextChoices):
+        NEW = "NEW", "Nouveau"
+        INFORMATION = "INFORMATION", "En attente de plus d'information"
+        REJECTED = "REJECTED", "Refusé"
+
     new = models.BooleanField(default=False)
     new_description = models.TextField(blank=True, verbose_name="description")
 
@@ -461,6 +466,16 @@ class Addable(models.Model):
     eu_legal_source = models.TextField("référence du texte réglementaire d'un autre pays européen", blank=True)
     eu_details = models.TextField(
         "information additionnelle sur l'autorisation dans un autre pays européen", blank=True
+    )
+
+    status = models.CharField(
+        max_length=50,
+        choices=AddableStatus.choices,
+        default=AddableStatus.NEW,
+        verbose_name="statut",
+    )
+    private_notes_instruction = models.TextField(
+        "notes de l'instruction à destination de l'administration", blank=True, default=""
     )
 
     def clean(self):

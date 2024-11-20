@@ -100,7 +100,31 @@ ADDABLE_ELEMENT_FIELDS = (
 )
 
 
-class DeclaredPlantSerializer(serializers.ModelSerializer):
+# TODO: reuse on Declaration serializer that this logic came from
+class ControlledFieldsMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        context = kwargs.get("context", {})
+        request = context.get("request")
+        view = context.get("view")
+        if not request or not view:
+            return
+
+        is_instructor = IsInstructor().has_permission(request, view)
+        is_visor = IsVisor().has_permission(request, view)
+        if not is_instructor and not is_visor:
+            for field in self.internal_fields:
+                self.fields.pop(field)
+        elif is_visor:
+            for field in self.visor_only_edit_fields:
+                self.fields[field].read_only = False
+        elif is_instructor:
+            for field in self.instructor_only_edit_fields:
+                self.fields[field].read_only = False
+
+
+class DeclaredPlantSerializer(serializers.ModelSerializer, ControlledFieldsMixin):
     element = PassthroughPlantSerializer(required=False, source="plant", allow_null=True)
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
     used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False, allow_null=True)
@@ -118,6 +142,21 @@ class DeclaredPlantSerializer(serializers.ModelSerializer):
             "unit",
             "quantity",
             "preparation",
+            "private_notes_instruction",
+            "status",
+        )
+        read_only_fields = (
+            "id",
+            "private_notes_instruction",
+            "status",
+        )
+        internal_fields = (
+            "private_notes_instruction",
+            "status",
+        )
+        instructor_only_edit_fields = (
+            "private_notes_instruction",
+            "status",
         )
 
     def create(self, validated_data):
@@ -133,7 +172,7 @@ class DeclaredPlantSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
+class DeclaredMicroorganismSerializer(serializers.ModelSerializer, ControlledFieldsMixin):
     element = PassthroughMicroorganismSerializer(required=False, source="microorganism", allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -149,6 +188,21 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
             "activated",
             "strain",
             "quantity",
+            "private_notes_instruction",
+            "status",
+        )
+        read_only_fields = (
+            "id",
+            "private_notes_instruction",
+            "status",
+        )
+        internal_fields = (
+            "private_notes_instruction",
+            "status",
+        )
+        instructor_only_edit_fields = (
+            "private_notes_instruction",
+            "status",
         )
 
     def create(self, validated_data):
@@ -166,7 +220,7 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class DeclaredIngredientSerializer(serializers.ModelSerializer):
+class DeclaredIngredientSerializer(serializers.ModelSerializer, ControlledFieldsMixin):
     element = PassthroughIngredientSerializer(required=False, source="ingredient", allow_null=True)
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -182,6 +236,21 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
             "active",
             "quantity",
             "unit",
+            "private_notes_instruction",
+            "status",
+        )
+        read_only_fields = (
+            "id",
+            "private_notes_instruction",
+            "status",
+        )
+        internal_fields = (
+            "private_notes_instruction",
+            "status",
+        )
+        instructor_only_edit_fields = (
+            "private_notes_instruction",
+            "status",
         )
 
     def create(self, validated_data):
@@ -197,7 +266,7 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class DeclaredSubstanceSerializer(serializers.ModelSerializer):
+class DeclaredSubstanceSerializer(serializers.ModelSerializer, ControlledFieldsMixin):
     element = PassthroughSubstanceSerializer(required=False, source="substance", allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -211,6 +280,21 @@ class DeclaredSubstanceSerializer(serializers.ModelSerializer):
             "active",
             "quantity",
             "unit",
+            "private_notes_instruction",
+            "status",
+        )
+        read_only_fields = (
+            "id",
+            "private_notes_instruction",
+            "status",
+        )
+        internal_fields = (
+            "private_notes_instruction",
+            "status",
+        )
+        instructor_only_edit_fields = (
+            "private_notes_instruction",
+            "status",
         )
 
     def create(self, validated_data):
