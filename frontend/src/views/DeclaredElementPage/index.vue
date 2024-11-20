@@ -3,11 +3,7 @@
     <DsfrNotice title="En construction" desc="Des nouvelles fonctionnalités arrivent bientôt !" />
     <div class="fr-container">
       <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
-      <DsfrAlert
-        title="Nouvel ingrédient"
-        description="Ingrédient non intégré dans la base de données et en attente de validation."
-        class="mb-4"
-      />
+      <DsfrAlert v-if="alert" v-bind="alert" class="mb-4" />
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
           <div class="bg-grey-975 p-4 mb-8">
@@ -179,14 +175,18 @@ const actionButtons = [
   },
 ]
 
+// TODO: do I really want to use the debounce fn?
 const updateElement = useDebounceFn(async (payload) => {
-  const { response } = await useFetch(url, {
+  const { data, response } = await useFetch(url, {
     headers: headers(),
   })
     .patch(payload)
     .json()
   handleError(response)
-}, 600)
+  if (data) {
+    element.value = data.value
+  }
+}, 200)
 
 const modals = {
   info: {
@@ -198,8 +198,7 @@ const modals = {
           updateElement({
             status: "INFORMATION",
             privateNotesInstruction: notes.value,
-          })
-          closeModal()
+          }).then(closeModal)
         },
       },
     ],
@@ -213,8 +212,7 @@ const modals = {
           updateElement({
             status: "REJECTED",
             privateNotesInstruction: notes.value,
-          })
-          closeModal()
+          }).then(closeModal)
         },
       },
     ],
@@ -234,4 +232,23 @@ const modalActions = computed(() => {
     },
   ])
 })
+
+const alerts = computed(() => ({
+  NEW: {
+    title: "Nouvel ingrédient",
+    description: "Ingrédient non intégré dans la base de données et en attente de validation.",
+    type: "info",
+  },
+  INFORMATION: {
+    title: "Attente d'information",
+    description: element.value?.privateNotesInstruction,
+    type: "warning",
+  },
+  REJECTED: {
+    title: "Ingrédient refusé",
+    description: element.value?.privateNotesInstruction,
+    type: "error",
+  },
+}))
+const alert = computed(() => alerts.value[element.value?.status])
 </script>
