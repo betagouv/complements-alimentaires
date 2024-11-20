@@ -50,7 +50,7 @@
 
 <script setup>
 import { computed, watch, ref } from "vue"
-import { useFetch, useDebounceFn } from "@vueuse/core"
+import { useFetch } from "@vueuse/core"
 import { getTypeIcon, getTypeInFrench, getApiType } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
@@ -175,8 +175,7 @@ const actionButtons = [
   },
 ]
 
-// TODO: do I really want to use the debounce fn?
-const updateElement = useDebounceFn(async (payload) => {
+const updateElement = async (payload) => {
   const { data, response } = await useFetch(url, {
     headers: headers(),
   })
@@ -186,7 +185,7 @@ const updateElement = useDebounceFn(async (payload) => {
   if (data) {
     element.value = data.value
   }
-}, 200)
+}
 
 const modals = {
   info: {
