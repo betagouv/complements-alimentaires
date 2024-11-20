@@ -1,12 +1,13 @@
 <template>
   <div>
     <DsfrNotice title="En construction" desc="Des nouvelles fonctionnalités arrivent bientôt !" />
-    <DsfrNotice
-      title="NOUVEL INGRÉDIENT"
-      desc="Ingrédient non intégré dans la base de données et en attente de validation."
-    />
     <div class="fr-container">
       <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
+      <DsfrAlert
+        title="Nouvel ingrédient"
+        description="Ingrédient non intégré dans la base de données et en attente de validation."
+        class="mb-4"
+      />
       <div v-if="element" class="grid md:grid-cols-2 gap-4">
         <div class="bg-grey-975 p-4 mb-8">
           <p class="text-blue-france-sun-113">
