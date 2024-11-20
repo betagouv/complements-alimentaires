@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DsfrNotice title="En cours de construction" desc="Plus de fonctionnalités à venir bientôt !" />
+    <DsfrNotice title="En construction" desc="Des nouvelles fonctionnalités arrivent bientôt !" />
     <div class="fr-container">
       <DsfrBreadcrumb
         class="mb-8"
@@ -9,7 +9,7 @@
           { text: 'Demandes d\'ajout d\'ingrédient' },
         ]"
       />
-      <h1 class="fr-h4">Liste des demandes en attente d'ajout d'ingrédients</h1>
+      <h1 class="fr-h4">Demandes d'ajout d'ingrédients</h1>
       <!-- <div class="border px-4 py-2 mb-2 md:flex gap-4 items-baseline filters">
       <div class="flex gap-4">
         <DsfrInputGroup>

@@ -104,7 +104,7 @@ const instructionActions = [
     link: { name: "InstructionDeclarations" },
   },
   {
-    title: "Liste des nouvels ingrédients",
+    title: "Liste des nouveaux ingrédients",
     description: "Accédez à la liste des nouvels ingrédients Compl'Alim",
     link: { name: "NewElementsPage" },
   },

@@ -24,10 +24,10 @@ const headers = [
   "Authorisation marché FR ou EU",
   "Date de demande d'ajout",
   "Statut de la déclaration",
-  "",
+  "Déclaration",
 ]
 const rows = computed(() =>
-  props.data?.results?.map((x) => ({
+  props.data.results?.map((x) => ({
     rowData: [
       x.name,
       getTypeInFrench(x.type),

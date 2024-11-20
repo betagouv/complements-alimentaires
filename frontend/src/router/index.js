@@ -287,7 +287,7 @@ const routes = [
     name: "NewElementsPage",
     component: NewElementsPage,
     meta: {
-      title: "Nouvels ingrédients",
+      title: "Nouveaux ingrédients",
       requiredRole: "InstructionRole",
       authenticationRequired: true,
       defaultQueryParams: {
