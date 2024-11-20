@@ -136,7 +136,15 @@ class DeclaredIngredientInline(admin.StackedInline):
 class DeclaredSubstanceInline(admin.StackedInline):
     model = DeclaredSubstance
     can_delete = True
-    fields = ("substance", "quantity", "unit")
+    fields = (
+        "substance",
+        "quantity",
+        "unit",
+        "first_ocurrence",
+        "new",
+        "new_name",
+        "new_description",
+    )
     autocomplete_fields = ("substance",)
     extra = 0
 
@@ -176,7 +184,8 @@ class DeclarationForm(forms.ModelForm):
             "instructions": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "warning": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "post_validation_producer_message": forms.Textarea(attrs={"cols": 35, "rows": 3}),
-            "private_notes": forms.Textarea(attrs={"cols": 35, "rows": 3}),
+            "private_notes_instruction": forms.Textarea(attrs={"cols": 35, "rows": 3}),
+            "private_notes_visa": forms.Textarea(attrs={"cols": 35, "rows": 3}),
             "other_galenic_formulation": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "other_effects": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "other_conditions": forms.Textarea(attrs={"cols": 35, "rows": 1}),
@@ -188,8 +197,11 @@ class DeclarationForm(forms.ModelForm):
 @admin.register(Declaration)
 class DeclarationAdmin(SimpleHistoryAdmin):
     form = DeclarationForm
-    list_display = ("name", "status", "company", "author")
+    list_display = ("id", "name", "status", "company", "author")
     list_filter = ("status", "company", "author")
+    list_select_related = ["author", "company"]
+
+    show_facets = admin.ShowFacets.NEVER
     inlines = (
         DeclaredPlantInline,
         DeclaredMicroorganismInline,
@@ -238,7 +250,8 @@ class DeclarationAdmin(SimpleHistoryAdmin):
                     "status",
                     "instructor",
                     "visor",
-                    "private_notes",
+                    "private_notes_instruction",
+                    "private_notes_visa",
                 ),
             },
         ),
@@ -279,3 +292,8 @@ class DeclarationAdmin(SimpleHistoryAdmin):
             },
         ),
     )
+
+    def save_model(self, request, obj, form, change):
+        if change:
+            obj.assign_calculated_article()
+        super().save_model(request, obj, form, change)

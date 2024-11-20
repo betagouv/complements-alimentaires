@@ -25,6 +25,8 @@ class MicroorganismAdmin(ElementAdminWithChangeReason):
                 "fields": [
                     "name",
                     "is_obsolete",
+                    "is_risky",
+                    "novel_food",
                     "siccrf_status",
                     "ca_status",
                     "ca_is_obsolete",
@@ -55,8 +57,9 @@ class MicroorganismAdmin(ElementAdminWithChangeReason):
         ),
     ]
 
-    list_display = ("name", "status")
-    list_filter = ("is_obsolete", "status")
+    list_display = ("name", "status", "is_risky", "novel_food")
+    list_filter = ("is_obsolete", "status", "is_risky", "novel_food")
+    show_facets = admin.ShowFacets.NEVER
     readonly_fields = (
         "name",
         "is_obsolete",

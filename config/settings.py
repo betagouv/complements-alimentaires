@@ -417,3 +417,5 @@ FIXTURE_MODELS = [
     ("data", "BlogPost"),
     ("data", "Webinar"),
 ]
+
+ENABLE_AUTO_VALIDATION = env("ENABLE_AUTO_VALIDATION", cast=bool, default=False)

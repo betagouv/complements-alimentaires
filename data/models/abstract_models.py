@@ -3,7 +3,8 @@ from django.db import models
 from data.behaviours import TimeStampable
 from data.choices import IngredientActivity
 
-from .mixins import WithDefaultFields, WithMissingImportBoolean
+from .ingredient_status import WithStatus
+from .mixins import WithComments, WithDefaultFields, WithIsRiskyBoolean, WithMissingImportBoolean, WithNovelFoodBoolean
 
 
 # Remplace le manager par défaut pour filtrer tous les modèles ayant un champ `is_obsolete`
@@ -20,7 +21,7 @@ class CommonModelManager(models.Manager):
 
 class CommonModel(TimeStampable, WithMissingImportBoolean, WithDefaultFields):
     """
-    Les modèles ingrédients et les synonymes héritent de ce modèle
+    Tous les modèles issus de la base de données TeleIcare héritent de ce modèle
     """
 
     class Meta:
@@ -28,6 +29,18 @@ class CommonModel(TimeStampable, WithMissingImportBoolean, WithDefaultFields):
 
     def __str__(self):
         return self.name
+
+    objects = CommonModelManager()
+    up_to_date_objects = CommonModelManager(avoid_obsolete=True)
+
+
+class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBoolean, WithNovelFoodBoolean):
+    """
+    Les modèles ingrédients héritent de ce modèle
+    """
+
+    class Meta:
+        abstract = True
 
     @property
     def object_type(self):
@@ -60,6 +73,3 @@ class CommonModel(TimeStampable, WithMissingImportBoolean, WithDefaultFields):
             "additive": IngredientActivity.NOT_ACTIVE,
         }
         return TYPE_ACTIVITY_MAPPING[self.object_type]
-
-    objects = CommonModelManager()
-    up_to_date_objects = CommonModelManager(avoid_obsolete=True)

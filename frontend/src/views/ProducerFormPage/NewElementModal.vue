@@ -1,6 +1,14 @@
 <template>
   <DsfrButton label="Créer un nouvel ingrédient" secondary size="sm" @click="opened = true" ref="modalOrigin" />
+  <DsfrTooltip class="whitespace-pre-wrap" :content="simpleDescription" />
   <DsfrModal :actions="actions" ref="modal" @close="close" :opened="opened" title="Nouvel ingrédient">
+    <DsfrAlert
+      type="info"
+      title="Avant de créer un nouvel ingrédient"
+      :description="model.objectType == 'plant' ? simpleDescription + ' ' + plantDescription : simpleDescription"
+      title-tag="h2"
+      small="true"
+    />
     <DsfrInputGroup :error-message="firstErrorMsg(v$, 'objectType')">
       <DsfrSelect
         label="Quel type d'ingrédient souhaitez-vous créer ?"
@@ -109,6 +117,9 @@ const rules = computed(() => {
 })
 
 const v$ = useVuelidate(rules, model)
+const simpleDescription = "Avant de créer un nouvel ingrédient, vérifiez qu'il n'existe pas déjà sous un autre nom."
+const plantDescription =
+  "Les plantes doivent être recherchées par leur nom scientifique, sans précision sur la préparation ou la partie utilisée."
 </script>
 
 <style>

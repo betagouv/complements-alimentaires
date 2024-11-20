@@ -7,10 +7,9 @@ from simple_history.models import HistoricalRecords
 
 from data.behaviours import Historisable, TimeStampable
 
-from .abstract_models import CommonModel
-from .ingredient_status import WithStatus
+from .abstract_models import IngredientCommonModel
 from .ingredient_type import IngredientType
-from .mixins import WithComments, WithMissingImportBoolean
+from .mixins import WithMissingImportBoolean
 from .unit import SubstanceUnit
 
 
@@ -32,7 +31,7 @@ class SubstanceType(models.IntegerChoices):
     # AMINO_ACID = 4, "Acide aminé"
 
 
-class Substance(CommonModel, WithComments, WithStatus):
+class Substance(IngredientCommonModel):
     """
     siccrf_min_quantity présente dans les tables SICCRF n'est strictement jamais remplie, donc pas transformée en champ du modèle
     siccrf_source_en présente dans les tables SICCRF est très peu remplie, donc pas transformée en champ du modèle

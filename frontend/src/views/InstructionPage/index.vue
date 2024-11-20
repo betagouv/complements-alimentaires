@@ -27,7 +27,13 @@
       </DsfrAlert>
       <DeclarationAlert class="mb-6" v-else-if="!canInstruct" role="instructor" :declaration="declaration" />
       <div v-if="declaration">
-        <DeclarationSummary :showArticle="true" :readonly="true" v-model="declaration" v-if="isAwaitingInstruction" />
+        <DeclarationSummary
+          :showArticle="true"
+          :useAccordions="true"
+          :readonly="true"
+          v-model="declaration"
+          v-if="isAwaitingInstruction"
+        />
 
         <DsfrTabs v-else v-model="selectedTabIndex" ref="tabs" :tab-titles="titles">
           <DsfrTabContent
@@ -41,8 +47,8 @@
               v-model="declaration"
               :externalResults="$externalResults"
               :readonly="true"
+              :useAccordions="true"
               :declarationId="declaration?.id"
-              :privateNotes="declaration?.privateNotes"
               :user="declarant"
               :company="company"
               @decision-done="onDecisionDone"
@@ -57,7 +63,34 @@
           @back="selectedTabIndex -= 1"
           @forward="selectedTabIndex += 1"
           :removeSaveLabel="true"
-        />
+        >
+          <template v-slot:content>
+            <h6 class="text-left">
+              <v-icon name="ri-pencil-fill"></v-icon>
+              Notes à destination de l'administration
+            </h6>
+            <div class="text-left mb-4 sm:mb-0 sm:flex sm:gap-8">
+              <DsfrInputGroup>
+                <DsfrInput
+                  v-model="privateNotesInstruction"
+                  is-textarea
+                  label-visible
+                  label="Notes de l'instruction"
+                  @update:modelValue="saveComment"
+                />
+              </DsfrInputGroup>
+              <DsfrInputGroup>
+                <DsfrInput
+                  :disabled="true"
+                  v-model="privateNotesVisa"
+                  is-textarea
+                  label-visible
+                  label="Notes du visa"
+                />
+              </DsfrInputGroup>
+            </div>
+          </template>
+        </TabStepper>
       </div>
     </div>
   </div>
@@ -68,7 +101,7 @@ import TabStepper from "@/components/TabStepper"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { onMounted, computed, ref } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch, useDebounceFn } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import DeclarationSummary from "@/components/DeclarationSummary"
@@ -102,7 +135,8 @@ const {
   data: declaration,
   execute: executeDeclarationFetch,
 } = useFetch(`/api/v1/declarations/${props.declarationId}`, { immediate: false }).get().json()
-
+const privateNotesInstruction = ref(declaration.value?.privateNotesInstruction || "")
+const privateNotesVisa = ref(declaration.value?.privateNotesVisa || "")
 const {
   response: declarantResponse,
   data: declarant,
@@ -119,9 +153,22 @@ const {
   .get()
   .json()
 
+// Sauvegarde du commentaire privé
+const saveComment = useDebounceFn(async () => {
+  const { response } = await useFetch(() => `/api/v1/declarations/${declaration.value?.id}`, {
+    headers: headers(),
+  })
+    .patch({ privateNotesInstruction: privateNotesInstruction.value })
+    .json()
+  handleError(response)
+}, 600)
+
 onMounted(async () => {
   await executeDeclarationFetch()
   handleError(declarationResponse)
+
+  privateNotesInstruction.value = declaration.value?.privateNotesInstruction || ""
+  privateNotesVisa.value = declaration.value?.privateNotesVisa || ""
 
   // Si on arrive à cette page avec une déclaration déjà assignée à quelqun.e mais en état
   // AWAITING_INSTRUCTION, on la passe directement à ONGOING_INSTRUCTION.
@@ -159,3 +206,10 @@ const onDecisionDone = () => {
   router.push({ name: "InstructionDeclarations", query: previousQuery })
 }
 </script>
+
+<style scoped>
+div :deep(.fr-input-group) {
+  @apply !mt-0;
+  flex: 1;
+}
+</style>

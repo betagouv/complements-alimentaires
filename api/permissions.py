@@ -93,6 +93,8 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
     message = "Vous n'avez pas accès à cette déclaration"
 
     def has_object_permission(self, request, view, obj):  # obj: Declaration
+        if not request.user.is_authenticated:
+            return False
         is_author = IsDeclarationAuthor().has_object_permission(request, view, obj)
         is_from_same_company = obj.company in request.user.declarable_companies.all()
         is_agent = IsInstructor().has_permission(request, view) or IsVisor().has_permission(request, view)
@@ -101,13 +103,15 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return is_author or is_from_same_company or (is_agent and not is_draft)
 
-        return (is_author or is_from_same_company) and is_declarant
+        return ((is_author or is_from_same_company) and is_declarant) or (is_agent and not is_draft)
 
 
 class CanTakeAuthorship(permissions.BasePermission):
     message = "Vous ne pouvez pas vous assigner cette déclaration"
 
     def has_object_permission(self, request, view, obj):  # obj: Declaration
+        if not request.user.is_authenticated:
+            return False
         is_from_same_company = obj.company in request.user.declarable_companies.all()
         is_declarant = IsDeclarant().has_object_permission(request, view, obj)
 

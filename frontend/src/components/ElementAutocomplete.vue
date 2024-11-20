@@ -12,6 +12,7 @@
         @blur="hasFocus = false"
         @keydown="checkKeyboardNav($event)"
       />
+
       <DsfrButton
         v-if="!hideSearchButton"
         class="max-h-10 mt-2 rounded-r"

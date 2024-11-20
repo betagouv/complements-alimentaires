@@ -67,7 +67,7 @@ const isAdministrativeAction = computed(() => {
   return instructionActions.indexOf(props.snapshot.action) > -1
 })
 
-const initials = computed(() => `${props.snapshot.user.firstName?.[0]}${props.snapshot.user.lastName?.[0]}`)
+const initials = computed(() => `${props.snapshot.user?.firstName?.[0]}${props.snapshot.user?.lastName?.[0]}`)
 const date = computed(
   () => `${isoToPrettyDate(props.snapshot.creationDate)} à ${isoToPrettyTime(props.snapshot.creationDate)}`
 )
@@ -75,7 +75,7 @@ const modalOpened = ref(false)
 const isInValidationState = computed(() => props.snapshot.status === "AWAITING_VISA")
 const fullName = computed(() => {
   if (props.hideInstructionDetails && isAdministrativeAction.value) return "L'administration"
-  return `${props.snapshot.user.firstName} ${props.snapshot.user.lastName}`
+  return `${props.snapshot.user?.firstName} ${props.snapshot.user?.lastName}`
 })
 const actionText = computed(() => {
   const mapping = {
