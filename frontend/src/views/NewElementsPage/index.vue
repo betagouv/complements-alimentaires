@@ -4,12 +4,9 @@
     <div class="fr-container">
       <DsfrBreadcrumb
         class="mb-8"
-        :links="[
-          { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-          { text: 'Demandes d\'ajout d\'ingrédient' },
-        ]"
+        :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Ingrédients pour ajout' }]"
       />
-      <h1 class="fr-h4">Demandes d'ajout d'ingrédients</h1>
+      <h1 class="fr-h4">Liste des demandes en attente d’ajout d’ingrédients</h1>
       <!-- <div class="border px-4 py-2 mb-2 md:flex gap-4 items-baseline filters">
       <div class="flex gap-4">
         <DsfrInputGroup>
@@ -98,14 +95,15 @@ const limit = computed(() => route.query.limit)
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
-const updateNameFilter = (newValue) => updateQuery({ nom: newValue })
-const updateTypeFilter = (newValue) => updateQuery({ type: newValue })
-const updateOrdering = (newValue) => updateQuery({ triage: newValue })
-const updateLimit = (newValue) => updateQuery({ limit: newValue, page: 1 })
+// const updateNameFilter = (newValue) => updateQuery({ nom: newValue })
+// const updateTypeFilter = (newValue) => updateQuery({ type: newValue })
+// const updateOrdering = (newValue) => updateQuery({ triage: newValue })
+// const updateLimit = (newValue) => updateQuery({ limit: newValue, page: 1 })
 
 // Obtention de la donnée via API
 const url = computed(
-  () => `/api/v1/declared-elements/?limit=${limit.value}&offset=${offset.value}&name=${name.value}&type=${type.value}`
+  () =>
+    `/api/v1/new-declared-elements/?limit=${limit.value}&offset=${offset.value}&name=${name.value}&type=${type.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {

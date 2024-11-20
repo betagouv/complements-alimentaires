@@ -283,7 +283,7 @@ const routes = [
     },
   },
   {
-    path: "/nouvels-ingredients",
+    path: "/nouveaux-ingredients",
     name: "NewElementsPage",
     component: NewElementsPage,
     meta: {
