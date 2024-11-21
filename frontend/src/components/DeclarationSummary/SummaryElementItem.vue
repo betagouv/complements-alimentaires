@@ -19,7 +19,7 @@
         </p>
       </div>
 
-      <div v-if="model.new" class="content-center">
+      <div v-if="model.new && isInstructor" class="content-center">
         <router-link
           :to="{ name: 'DeclaredElementPage', params: { type: props.objectType, id: model.id } }"
           class="fr-btn fr-btn--sm fr-btn--secondary"
@@ -39,7 +39,9 @@ import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import ElementCommentModal from "@/components/ElementCommentModal"
 
-const { plantParts, units, preparations } = storeToRefs(useRootStore())
+const { plantParts, units, preparations, loggedUser } = storeToRefs(useRootStore())
+
+const isInstructor = computed(() => loggedUser.value?.globalRoles.some((x) => x.name === "InstructionRole"))
 
 const model = defineModel()
 const props = defineProps({ objectType: { type: String } })
