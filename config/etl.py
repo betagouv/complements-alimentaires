@@ -1,10 +1,22 @@
 import logging
 from abc import ABC, abstractmethod
 import json
+import io
 import pandas as pd
+import requests
 from api.views.declaration.declaration import OpenDataDeclarationsListView
 
 logger = logging.getLogger(__name__)
+
+
+def prepare_file_validata_post_request(df: pd.DataFrame):
+    buffer = io.StringIO()
+    df.to_csv(buffer, sep=";", index=False)
+    buffer.seek(0)
+    # Prepare the file for the POST request
+    return {
+        "file": ("data.csv", buffer, "text/csv"),
+    }
 
 
 class ETL(ABC):
@@ -63,17 +75,30 @@ class ETL_OPEN_DATA(ETL):
         self.df = self.df[self.columns]
 
     def is_valid(self) -> bool:
-        return True
+        files = prepare_file_validata_post_request(self.df)
+        res = requests.post(
+            "https://api.validata.etalab.studio/validate?",
+            files=files,
+            data={"schema": self.schema_url, "header_case": True},
+        )
+        report = json.loads(res.text)["report"]
+        if len(report["errors"]) > 0 or report["stats"]["errors"] > 0:
+            logger.error(f"The dataset {self.dataset_name} extraction has errors : ")
+            logger.error(report["errors"])
+            logger.error(report["tasks"])
+            return False
+        else:
+            return True
 
-    def _load_data_data_gouv(self):
-        self.df.to_csv("open_data.csv", sep=";", index=False)
+    def _load_data_locally(self):
+        self.df.to_csv("declarations.csv", sep=";", index=False)
 
     def load_dataset(self):
         if not self.is_valid():
             logger.error(f"The dataset {self.name} is invalid and therefore will not be exported to s3")
             return
         try:
-            self._load_data_data_gouv()
+            self._load_data_locally()
         except Exception as e:
             logger.error(f"Error saving validated data: {e}")
 
@@ -83,6 +108,9 @@ class ETL_OPEN_DATA_DECLARATIONS(ETL_OPEN_DATA):
         super().__init__()
         self.dataset_name = "declarations"
         self.schema = json.load(open("data/schemas/schema_declarations.json"))["schema"]
+        self.schema_url = (
+            "https://github.com/betagouv/complements-alimentaires/blob/staging/data/schemas/schema_declarations.json"
+        )
         self.df = None
         self.columns_mapper = {
             "id": "id",
