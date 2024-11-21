@@ -11,9 +11,9 @@ from viewflow import fsm
 
 from config import email
 from data.models import Declaration, Snapshot
-from api.views.declaration.declaration import OpenDataDeclarationsListView
 
 from .celery import app
+from .etl import ETL_OPEN_DATA_DECLARATIONS
 
 logger = logging.getLogger(__name__)
 Status = Declaration.DeclarationStatus
@@ -172,19 +172,9 @@ def approve_declarations():
         logger.error(f"{error_count} declarations failed automatic validation.")
 
 
-def fetch_declarations():
-    open_data_view = OpenDataDeclarationsListView()
-    queryset = open_data_view.get_queryset()
-    serializer = open_data_view.get_serializer_class()
-    return serializer(queryset, many=True)
-
-
 @app.task
 def export_datasets_to_data_gouv():
-    declarations = fetch_declarations()
-    print(declarations.data)
-    # Writing JSON content to a file using the dump method
-    import pandas as pd
-
-    df = pd.DataFrame(declarations.data)
-    df.to_csv("open_data.csv", sep=";")
+    etl = ETL_OPEN_DATA_DECLARATIONS()
+    etl.extract_dataset()
+    etl.transform_dataset()
+    etl.load_dataset()
