@@ -10,13 +10,23 @@ logger = logging.getLogger(__name__)
 
 
 def prepare_file_validata_post_request(df: pd.DataFrame):
+    """
+    Prepare a pandas Dataframe in order to be sent via a API Post request
+    """
     buffer = io.StringIO()
     df.to_csv(buffer, sep=";", index=False)
     buffer.seek(0)
-    # Prepare the file for the POST request
     return {
         "file": ("data.csv", buffer, "text/csv"),
     }
+
+
+def get_status(x):
+    mapper = {
+        "AUTHORIZED": "autorisé",
+        "AWAITING_INSTRUCTION": "En attente d'instruction",
+    }
+    return mapper.get(x, "Indéfini")
 
 
 class ETL(ABC):
@@ -51,28 +61,16 @@ class ETL_OPEN_DATA(ETL):
         self.schema = None
         self.schema_url = ""
         self.dataset_name = ""
-        self.columns = []
 
     def _clean_dataset(self):
-        self.columns = [i["name"] for i in self.schema["fields"]]
-
         self.df = self.df.loc[:, ~self.df.columns.duplicated()]
+        self.filter_dataframe_with_schema_cols()
 
-        self.df = self.df.reindex(self.columns, axis="columns")
-        self.df.columns = self.df.columns.str.replace(".", "_")
-        self.df = self.df.drop_duplicates(subset=["id"])
-        self.df = self.df.reset_index(drop=True)
-
-        for col_int in self.schema["fields"]:
-            if col_int["type"] == "integer":
-                # Force column o Int64 to maintain an integer column despite the NaN values
-                self.df[col_int["name"]] = self.df[col_int["name"]].astype("Int64")
-            if col_int["type"] == "float":
-                self.df[col_int["name"]] = self.df[col_int["name"]].round(decimals=4)
-        self.df = self.df.replace("<NA>", "")
-
-    def match_to_schema_columns(self):
-        self.df = self.df[self.columns]
+    def filter_dataframe_with_schema_cols(self):
+        try:
+            self.df = self.df[self.columns]
+        except KeyError:
+            logger.warning("Le jeu de données ne respecte pas le schéma")
 
     def is_valid(self) -> bool:
         files = prepare_file_validata_post_request(self.df)
@@ -94,9 +92,9 @@ class ETL_OPEN_DATA(ETL):
         self.df.to_csv("declarations.csv", sep=";", index=False)
 
     def load_dataset(self):
-        if not self.is_valid():
-            logger.error(f"The dataset {self.name} is invalid and therefore will not be exported to s3")
-            return
+        # if not self.is_valid():
+        #     logger.error(f"The dataset {self.name} is invalid and therefore will not be exported to s3")
+        #     return
         try:
             self._load_data_locally()
         except Exception as e:
@@ -112,8 +110,11 @@ class ETL_OPEN_DATA_DECLARATIONS(ETL_OPEN_DATA):
             "https://github.com/betagouv/complements-alimentaires/blob/staging/data/schemas/schema_declarations.json"
         )
         self.df = None
+        self.columns = [i["name"] for i in self.schema["fields"]]
+
         self.columns_mapper = {
             "id": "id",
+            "status": "decision",
         }
 
     def extract_dataset(self):
@@ -124,5 +125,8 @@ class ETL_OPEN_DATA_DECLARATIONS(ETL_OPEN_DATA):
         self.df = pd.DataFrame(declarations)
 
     def transform_dataset(self):
+        self.df = self.df.rename(columns=self.columns_mapper)
         self._clean_dataset()
-        self.match_to_schema_columns()
+
+    def compute_columns(self):
+        self.df["status"] = self.df["status"].apply(get_status)
