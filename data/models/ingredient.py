@@ -83,3 +83,6 @@ class IngredientSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
     @property
     def is_obsolete(self):
         return self.siccrf_is_obsolete
+
+    def __str__(self):
+        return self.standard_name
