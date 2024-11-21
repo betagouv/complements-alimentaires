@@ -18,6 +18,10 @@ const { data, response, execute } = useFetch("/api/v1/verify-email/", { headers:
   .json()
 
 onMounted(async () => {
+  if (!route.query?.key) {
+    useToaster().addErrorMessage("Lien de validation invalide.")
+    return
+  }
   await execute()
   await handleError(response)
   if (response.value.ok) {

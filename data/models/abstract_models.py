@@ -4,7 +4,7 @@ from data.behaviours import TimeStampable
 from data.choices import IngredientActivity
 
 from .ingredient_status import WithStatus
-from .mixins import WithComments, WithDefaultFields, WithIsRiskyBoolean, WithMissingImportBoolean
+from .mixins import WithComments, WithDefaultFields, WithIsRiskyBoolean, WithMissingImportBoolean, WithNovelFoodBoolean
 
 
 # Remplace le manager par défaut pour filtrer tous les modèles ayant un champ `is_obsolete`
@@ -34,7 +34,7 @@ class CommonModel(TimeStampable, WithMissingImportBoolean, WithDefaultFields):
     up_to_date_objects = CommonModelManager(avoid_obsolete=True)
 
 
-class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBoolean):
+class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBoolean, WithNovelFoodBoolean):
     """
     Les modèles ingrédients héritent de ce modèle
     """

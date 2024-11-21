@@ -135,7 +135,8 @@ const submit = async () => {
 // Username Pre-fill
 const usernameInput = ref(null)
 const urlPF = computed(
-  () => `/api/v1/generate-username?first_name=${state.value.firstName}&last_name=${state.value.lastName}`
+  () =>
+    `/api/v1/generate-username?first_name=${encodeURIComponent(state.value.firstName)}&last_name=${encodeURIComponent(state.value.lastName)}`
 )
 const { data: dataPF, execute: executePF, isFetching: isFetchingPF } = useFetch(urlPF, {}, { immediate: false }).json()
 
