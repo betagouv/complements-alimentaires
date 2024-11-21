@@ -39,13 +39,14 @@ class ETL_OPEN_DATA(ETL):
         self.schema = None
         self.schema_url = ""
         self.dataset_name = ""
+        self.columns = []
 
     def _clean_dataset(self):
-        columns = [i["name"].replace("canteen_", "canteen.") for i in self.schema["fields"]]
+        self.columns = [i["name"] for i in self.schema["fields"]]
 
         self.df = self.df.loc[:, ~self.df.columns.duplicated()]
 
-        self.df = self.df.reindex(columns, axis="columns")
+        self.df = self.df.reindex(self.columns, axis="columns")
         self.df.columns = self.df.columns.str.replace(".", "_")
         self.df = self.df.drop_duplicates(subset=["id"])
         self.df = self.df.reset_index(drop=True)
@@ -58,11 +59,14 @@ class ETL_OPEN_DATA(ETL):
                 self.df[col_int["name"]] = self.df[col_int["name"]].round(decimals=4)
         self.df = self.df.replace("<NA>", "")
 
+    def match_to_schema_columns(self):
+        self.df = self.df[self.columns]
+
     def is_valid(self) -> bool:
         return True
 
     def _load_data_data_gouv(self):
-        self.df.to_csv("open_data.csv", sep=";")
+        self.df.to_csv("open_data.csv", sep=";", index=False)
 
     def load_dataset(self):
         if not self.is_valid():
@@ -78,8 +82,11 @@ class ETL_OPEN_DATA_DECLARATIONS(ETL_OPEN_DATA):
     def __init__(self):
         super().__init__()
         self.dataset_name = "declarations"
-        self.schema = json.load(open("data/schemas/schema_declarations.json"))
-        self.declarations = None
+        self.schema = json.load(open("data/schemas/schema_declarations.json"))["schema"]
+        self.df = None
+        self.columns_mapper = {
+            "id": "id",
+        }
 
     def extract_dataset(self):
         open_data_view = OpenDataDeclarationsListView()
@@ -89,4 +96,5 @@ class ETL_OPEN_DATA_DECLARATIONS(ETL_OPEN_DATA):
         self.df = pd.DataFrame(declarations)
 
     def transform_dataset(self):
-        pass
+        self._clean_dataset()
+        self.match_to_schema_columns()
