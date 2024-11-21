@@ -8,10 +8,12 @@ from api.views.declaration.declaration import OpenDataDeclarationsListView
 
 logger = logging.getLogger(__name__)
 
+# ---------------- utils functions ----------------------
+
 
 def prepare_file_validata_post_request(df: pd.DataFrame):
     """
-    Prepare a pandas Dataframe in order to be sent via a API Post request
+    Prepare a pandas Dataframe in order to be sent via a API Post request using the param "files"
     """
     buffer = io.StringIO()
     df.to_csv(buffer, sep=";", index=False)
@@ -22,6 +24,9 @@ def prepare_file_validata_post_request(df: pd.DataFrame):
 
 
 def get_status(x):
+    """
+    Translates the status field using its original definition
+    """
     mapper = {
         "AUTHORIZED": "autorisé",
         "AWAITING_INSTRUCTION": "En attente d'instruction",
@@ -29,7 +34,14 @@ def get_status(x):
     return mapper.get(x, "Indéfini")
 
 
+# -------------------- ETL classes ----------------------
 class ETL(ABC):
+    def __init__(self):
+        self.df = None
+        self.schema = None
+        self.schema_url = ""
+        self.dataset_name = ""
+
     @abstractmethod
     def extract_dataset(self):
         pass
@@ -54,23 +66,15 @@ class ETL(ABC):
         else:
             return 0
 
-
-class ETL_OPEN_DATA(ETL):
-    def __init__(self):
-        self.df = None
-        self.schema = None
-        self.schema_url = ""
-        self.dataset_name = ""
-
-    def _clean_dataset(self):
-        self.df = self.df.loc[:, ~self.df.columns.duplicated()]
-        self.filter_dataframe_with_schema_cols()
-
     def filter_dataframe_with_schema_cols(self):
         try:
             self.df = self.df[self.columns]
         except KeyError:
             logger.warning("Le jeu de données ne respecte pas le schéma")
+
+    def clean_dataset(self):
+        self.df = self.df.loc[:, ~self.df.columns.duplicated()]
+        self.filter_dataframe_with_schema_cols()
 
     def is_valid(self) -> bool:
         files = prepare_file_validata_post_request(self.df)
@@ -88,13 +92,15 @@ class ETL_OPEN_DATA(ETL):
         else:
             return True
 
+
+class ETL_OPEN_DATA(ETL):
     def _load_data_locally(self):
         self.df.to_csv("declarations.csv", sep=";", index=False)
 
     def load_dataset(self):
-        # if not self.is_valid():
-        #     logger.error(f"The dataset {self.name} is invalid and therefore will not be exported to s3")
-        #     return
+        if not self.is_valid():
+            logger.error(f"The dataset {self.name} is invalid and therefore will not be exported to s3")
+            return
         try:
             self._load_data_locally()
         except Exception as e:
@@ -126,7 +132,7 @@ class ETL_OPEN_DATA_DECLARATIONS(ETL_OPEN_DATA):
 
     def transform_dataset(self):
         self.df = self.df.rename(columns=self.columns_mapper)
-        self._clean_dataset()
+        self.clean_dataset()
 
     def compute_columns(self):
         self.df["status"] = self.df["status"].apply(get_status)
