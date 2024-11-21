@@ -48,7 +48,7 @@ const page = computed(() => parseInt(route.query.page))
 const name = computed(() => route.query.nom)
 const type = computed(() => route.query.type)
 const ordering = computed(() => route.query.triage)
-const limit = computed(() => parseInt(route.query.limit) || 1)
+const limit = computed(() => parseInt(route.query.limit) || 10)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 
