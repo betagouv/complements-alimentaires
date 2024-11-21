@@ -43,6 +43,7 @@ class SubstanceSerializer(HistoricalModelSerializer, PrivateCommentSerializer):
             "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
             "activity",
             "status",
+            "novel_food",
             "history",
             "object_type",
         )

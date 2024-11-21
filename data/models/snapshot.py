@@ -31,6 +31,7 @@ class Snapshot(TimeStampable):
         REFUSE_VISA = "REFUSE_VISA", "refuser le visa"
         WITHDRAW = "WITHDRAW", "retirer du marché"
         ABANDON = "ABANDON", "mettre en abandon"
+        AUTOMATICALLY_AUTHORIZE = "AUTOMATICALLY_AUTHORIZE", "validé automatiquement par le bot"
         OTHER = "OTHER", "autre"
 
     action = models.CharField(

@@ -1,14 +1,16 @@
 import logging
-import requests
 from datetime import datetime, time
 
+from django.conf import settings
+from django.db import transaction
+from django.db.models import Count, Max
 from django.utils import timezone
 
+from dateutil.relativedelta import relativedelta
 from viewflow import fsm
 
 from config import email
-from data.models import Declaration
-from api.serializers.declaration import DeclaredListSerializer, SimpleDeclarationSerializer
+from data.models import Declaration, Snapshot
 from api.views.declaration.declaration import OpenDataDeclarationsListView
 
 from .celery import app
@@ -112,6 +114,62 @@ def expire_declarations():
             break
         except Exception as _:
             logger.exception(f"Could not expire declaration f{declaration.id}")
+
+
+def send_automatic_validation_email(declaration):
+    brevo_template_id = 6
+    try:
+        email.send_sib_template(
+            brevo_template_id,
+            declaration.brevo_parameters,
+            declaration.author.email,
+            declaration.author.get_full_name(),
+        )
+    except Exception as _:
+        logger.exception(f"Email not sent on automatic validation of declaration {declaration.id}")
+
+
+@app.task
+def approve_declarations():
+    if not settings.ENABLE_AUTO_VALIDATION:
+        logger.info("Automatic validation of declarations disabled. Enable setting ENABLE_AUTO_VALIDATION.")
+        return
+
+    cutoff_delta = timezone.now() - relativedelta(months=2)
+
+    declarations = (
+        Declaration.objects
+        # On prend seulement les déclatations en attente d'instruction et artciles 15
+        .filter(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION, article=Declaration.Article.ARTICLE_15)
+        # Plus précisement, seulement les déclarations qui n'ont pas été traitées ni touchées par l'instruction,
+        # et donc ont seulement un snapshot : celui créé par la soumission DRAFT => AWAITING_INSTRUCTION
+        .annotate(snapshot_count=Count("snapshots"))
+        .filter(snapshot_count=1)
+        # On vérifie que le snapshot en question soit bien du type "SUBMIT"
+        .filter(snapshots__action=Snapshot.SnapshotActions.SUBMIT)
+        # Et finalement on ne prend que celles soumises au moins il y a deux mois
+        .annotate(submission_date=Max("snapshots__creation_date"))
+        .filter(submission_date__lt=cutoff_delta)
+    )
+
+    logger.info(f"Starting the automatic validation of {declarations.count()} declarations.")
+    error_count = 0
+    success_count = 0
+    for declaration in declarations:
+        try:
+            declaration.status = Declaration.DeclarationStatus.AUTHORIZED
+            with transaction.atomic():
+                declaration.save()
+                declaration.create_snapshot(action=Snapshot.SnapshotActions.AUTOMATICALLY_AUTHORIZE)
+            success_count += 1
+            send_automatic_validation_email(declaration)
+        except Exception as _:
+            logger.exception(f"Automatic validation of declaration {declaration.id} failed.")
+            error_count += 1
+
+    logger.info(f"{success_count} declarations were automatically validated.")
+    if error_count:
+        logger.error(f"{error_count} declarations failed automatic validation.")
 
 
 def fetch_declarations():

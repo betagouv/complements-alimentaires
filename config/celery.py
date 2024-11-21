@@ -28,6 +28,7 @@ app.worker_hijack_root_logger = False
 
 mornings = crontab(hour=10, minute=0, day_of_week="*")
 midnights = crontab(hour=0, minute=0, day_of_week="*")
+daily_workweek = crontab(hour=7, minute=0, day_of_week="1-5")
 
 every_minute = crontab(minute="*/1")  # Pour tester en local
 
@@ -39,6 +40,10 @@ app.conf.beat_schedule = {
     "expire_declarations": {
         "task": "config.tasks.expire_declarations",
         "schedule": midnights,
+    },
+    "approve_declarations": {
+        "task": "config.tasks.approve_declarations",
+        "schedule": daily_workweek,
     },
 }
 
