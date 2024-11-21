@@ -153,4 +153,4 @@ class PlantSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
         return self.siccrf_is_obsolete
 
     def __str__(self):
-        return self.standard_name
+        return self.name
