@@ -501,6 +501,7 @@ class DeclaredElementSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.SerializerMethodField()
     type = serializers.CharField()
+    authorization_mode = serializers.CharField()
     declaration = DeclarationShortSerializer()
 
     def get_name(self, obj):
