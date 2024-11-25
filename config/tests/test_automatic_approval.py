@@ -44,19 +44,30 @@ class TestAutomaticApproval(TestCase):
 
     def test_awaiting_declaration_approved_art_15(self, _):
         """
-        Une déclaration en attente d'instruction doit se valider si aucune action
-        d'instruction n'a été effectuée dessus et que son snapshot de soumission date de
-        plus de deux mois.
+        Une déclaration en attente d'instruction doit se valider si :
+         * elle a l'article 15 ou 15 population à risque
+         * aucune action d'instruction n'a été effectuée dessus
+         * son snapshot de soumission date de plus de deux mois.
         """
-        declaration = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
-        TestAutomaticApproval._create_submission_snapshot(declaration)
+        declaration_15 = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+        TestAutomaticApproval._create_submission_snapshot(declaration_15)
+
+        declaration_high_risk_population = AwaitingInstructionDeclarationFactory(
+            overriden_article=Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
+        )
+        TestAutomaticApproval._create_submission_snapshot(declaration_high_risk_population)
 
         approve_declarations()
-        declaration.refresh_from_db()
-        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
+        declaration_15.refresh_from_db()
+        declaration_high_risk_population.refresh_from_db()
 
-        latest_snapshot = declaration.snapshots.latest("creation_date")
-        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.AUTOMATICALLY_AUTHORIZE)
+        self.assertEqual(declaration_15.status, Declaration.DeclarationStatus.AUTHORIZED)
+        latest_snapshot_15 = declaration_15.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot_15.action, Snapshot.SnapshotActions.AUTOMATICALLY_AUTHORIZE)
+
+        self.assertEqual(declaration_high_risk_population.status, Declaration.DeclarationStatus.AUTHORIZED)
+        latest_snapshot_hrp = declaration_high_risk_population.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot_hrp.action, Snapshot.SnapshotActions.AUTOMATICALLY_AUTHORIZE)
 
     def test_email_sent_declaration_approved(self, mocked_brevo):
         """

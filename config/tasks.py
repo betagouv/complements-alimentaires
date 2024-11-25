@@ -138,8 +138,11 @@ def approve_declarations():
 
     declarations = (
         Declaration.objects
-        # On prend seulement les déclatations en attente d'instruction et artciles 15
-        .filter(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION, article=Declaration.Article.ARTICLE_15)
+        # On prend seulement les déclatations en attente d'instruction et articles 15 / 15 vigilance population
+        .filter(
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            article__in=[Declaration.Article.ARTICLE_15, Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION],
+        )
         # Plus précisement, seulement les déclarations qui n'ont pas été traitées ni touchées par l'instruction,
         # et donc ont seulement un snapshot : celui créé par la soumission DRAFT => AWAITING_INSTRUCTION
         .annotate(snapshot_count=Count("snapshots"))
