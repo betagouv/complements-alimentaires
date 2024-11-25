@@ -136,6 +136,11 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration.overriden_article, "")
 
     def test_article_15_warning(self):
+        """
+        Il existe 2 types d'article 15 vigilance :
+        * la vigilance est liée à la population cible
+        * la vigilance est lié à l'ingrédient, ses substances, sa préparation ou la forme galénique du CA
+        """
         declaration_with_risky_substance = InstructionReadyDeclarationFactory(
             computed_substances=[],
         )
@@ -188,8 +193,12 @@ class DeclarationTestCase(TestCase):
         declaration_with_risky_population.assign_calculated_article()
         declaration_with_risky_population.save()
         declaration_with_risky_population.refresh_from_db()
-        self.assertEqual(declaration_with_risky_population.article, Declaration.Article.ARTICLE_15_WARNING)
-        self.assertEqual(declaration_with_risky_population.calculated_article, Declaration.Article.ARTICLE_15_WARNING)
+        self.assertEqual(
+            declaration_with_risky_population.article, Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
+        )
+        self.assertEqual(
+            declaration_with_risky_population.calculated_article, Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
+        )
         self.assertEqual(declaration_with_risky_population.overriden_article, "")
 
     def test_article_15_override(self):
