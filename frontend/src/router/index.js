@@ -25,6 +25,7 @@ import VerificationSentPage from "@/views/VerificationSentPage"
 import DeclarationsHomePage from "@/views/DeclarationsHomePage"
 import CollaboratorsPage from "@/views/CollaboratorsPage"
 import InstructionDeclarationsPage from "@/views/InstructionDeclarationsPage"
+import NewElementsPage from "@/views/NewElementsPage"
 import InstructionPage from "@/views/InstructionPage"
 import VisaDeclarationsPage from "@/views/VisaDeclarationsPage"
 import VisaPage from "@/views/VisaPage"
@@ -32,6 +33,7 @@ import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
 import A11yPage from "@/views/A11yPage.vue"
 import ContactForm from "@/views/ContactForm"
 import CompliancePage from "@/views/CompliancePage"
+import DeclaredElementPage from "@/views/DeclaredElementPage"
 import { ref } from "vue"
 
 const routes = [
@@ -85,6 +87,17 @@ const routes = [
     name: "ElementPage",
     component: ElementPage,
     props: true,
+  },
+  {
+    path: "/nouvel-element/:type/:id",
+    name: "DeclaredElementPage",
+    component: DeclaredElementPage,
+    props: true,
+    meta: {
+      title: "Demande d'ajout d'ingrédient",
+      requiredRole: "InstructionRole",
+      authenticationRequired: true,
+    },
   },
   {
     path: "/mentions-legales",
@@ -277,6 +290,23 @@ const routes = [
         personneAssignée: "",
         triage: "responseLimitDate",
         article: "",
+        limit: "10",
+      },
+    },
+  },
+  {
+    path: "/nouveaux-ingredients",
+    name: "NewElementsPage",
+    component: NewElementsPage,
+    meta: {
+      title: "Nouveaux ingrédients",
+      requiredRole: "InstructionRole",
+      authenticationRequired: true,
+      defaultQueryParams: {
+        page: 1,
+        name: "",
+        type: "",
+        triage: "-creationDate",
         limit: "10",
       },
     },

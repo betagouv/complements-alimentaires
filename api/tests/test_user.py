@@ -352,3 +352,8 @@ class TestGenerateUsername(ProjectAPITestCase):
         response = self.get(self.url() + "?first_name=jean&last_name=dupon")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {"username": "jean.dupon"})
+
+    def test_special_chars(self):
+        response = self.get(self.url() + "?first_name=S.L.&last_name=UNIK%20HEALTH&NUTRITION")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"username": "sl.unik-health"})

@@ -126,12 +126,19 @@ class SendNewSignupVerificationEmailView(APIView):
 
 class GenerateUsernameView(APIView):
     def get(self, request, *args, **kwargs):
-        return Response({"username": User.generate_username(**request.query_params)})
+        first_name = request.query_params.get("first_name")
+        last_name = request.query_params.get("last_name")
+        if not first_name or not last_name:
+            raise ProjectAPIException(global_error="Les champs nom et prénom doivent être remplis.")
+        return Response({"username": User.generate_username(first_name, last_name)})
 
 
 class VerifyEmailView(APIView):
     def post(self, request, *args, **kwargs):
-        user = MagicLinkToken.run_email_verification(request.data["key"])
+        key = request.data.get("key")
+        if not key:
+            raise ProjectAPIException(global_error="Lien de validation invalide.")
+        user = MagicLinkToken.run_email_verification(key)
         if user:
             # we log the user in to avoid an unnecessary login step
             login(request, user)  # will create the user session
