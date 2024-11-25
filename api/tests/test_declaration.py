@@ -1621,3 +1621,37 @@ class TestDeclaredElementsApi(APITestCase):
         microorganism.refresh_from_db()
         self.assertEqual(microorganism.private_notes_instruction, "some notes")
         self.assertEqual(microorganism.status, "INFORMATION")
+
+    @authenticate
+    def test_fields_hidden_from_declarant(self):
+        """
+        La déclaration doit pas contenir les champs statut et notes privés pour des ingrédients
+        si l'user est un déclarant
+        """
+        DeclarantRoleFactory(user=authenticate.user)
+        declaration = DeclarationFactory(author=authenticate.user)
+        microorganism = DeclaredMicroorganismFactory(declaration=declaration)
+
+        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
+        body = response.json()
+        declared_microorganisms = body["declaredMicroorganisms"]
+        m = declared_microorganisms[0]
+        self.assertEqual(m["id"], microorganism.id)
+        self.assertNotIn("status", m)
+        self.assertNotIn("privateNotesInstruction", m)
+
+    @authenticate
+    def test_status_visible_to_instructor(self):
+        """
+        La déclaration contient les infos sur le statut de la demande d'un ingrédient.
+        Visible aux instructrices et viseurs.
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        declaration = AwaitingInstructionDeclarationFactory()
+
+        response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
+        body = response.json()
+        declared_microorganisms = body["declaredMicroorganisms"]
+        m = declared_microorganisms[0]
+        self.assertIn("status", m)
+        self.assertIn("privateNotesInstruction", m)
