@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -215,3 +215,34 @@ class RemoveCompanyRoleView(APIView):
         role_class.objects.filter(company=company, user=collaborator).delete()  # évite le try/except
 
         return Response(CollaboratorSerializer(collaborator, context={"company_id": request.data["company_pk"]}).data)
+
+
+class AddMandatedCompanyView(GenericAPIView):
+    """
+    Cet endpoint permet de mandater une autre entreprise pour la création des déclarations
+    """
+
+    permission_classes = [IsAuthenticated, IsSupervisor]
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+
+    def post(self, request, pk):
+        company = self.get_object()
+
+        siret = request.data.get("siret")
+        vat = request.data.get("vat")
+
+        if not siret and not vat:
+            raise ProjectAPIException(global_error="Le SIRET ou le numéro de TVA doivent être spécifiés")
+
+        try:
+            mandated_company = Company.objects.get(siret=siret) if siret else Company.objects.get(vat=vat)
+        except Company.DoesNotExist as _:
+            raise NotFound()
+
+        company.mandated_companies.add(mandated_company)
+        company.save()
+        # TODO: send email to mandated_company
+
+        serializer = self.get_serializer(company)
+        return Response(serializer.data)

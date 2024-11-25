@@ -1,8 +1,10 @@
 from unittest import mock
 
 from django.test.utils import override_settings
+from django.urls import reverse
 
 from rest_framework import status
+from rest_framework.test import APITestCase
 
 from data.factories import (
     CollaborationInvitationFactory,
@@ -18,7 +20,7 @@ from data.models import Company
 from data.models.company import ActivityChoices
 
 from ..views.company import CompanyStatusChoices
-from .utils import ProjectAPITestCase
+from .utils import ProjectAPITestCase, authenticate
 
 
 class TestCheckCompanyIdentifier(ProjectAPITestCase):
@@ -359,3 +361,68 @@ class TestAddNewCollaborator(ProjectAPITestCase):
         ]:
             response = self.post(self.url(pk=self.company.pk), wrong_payload)
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class TestMandatedCompanies(APITestCase):
+    @authenticate
+    def test_add_mandated_company(self):
+        """
+        Le gestionnaire d'une entreprise peut ajouter une autre entreprise en tant
+        qu'entreprise mandatée.
+        """
+        company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        mandated_company_1 = CompanyFactory()
+        mandated_company_2 = CompanyFactory(vat="BE0582992566")
+
+        url = reverse("api:add_mandated_company", kwargs={"pk": company.pk})
+
+        # On peut utiliser le SIRET pour ajouter une compagnie
+        response = self.client.post(url, {"siret": mandated_company_1.siret}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        company.refresh_from_db()
+        self.assertIn(mandated_company_1, company.mandated_companies.all())
+
+        # TODO test via TVA
+        response = self.client.post(url, {"vat": mandated_company_2.vat}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        company.refresh_from_db()
+        self.assertIn(mandated_company_2, company.mandated_companies.all())
+
+    @authenticate
+    def test_add_mandated_company_not_found(self):
+        """
+        Si l'entreprise mandatée ne se trove pas dans notre base de données l'API
+        retourne un 404
+        """
+        company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        url = reverse("api:add_mandated_company", kwargs={"pk": company.pk})
+        response = self.client.post(url, {"siret": "65257741834921"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @authenticate
+    def test_add_mandated_company_forbidden(self):
+        """
+        L'utilisateur·ice doit avoir les droits de supervision pour l'entreprise
+        souhaitant ajouter une entreprise mandatée
+        """
+        company = CompanyFactory()
+        other_company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        url = reverse("api:add_mandated_company", kwargs={"pk": other_company.pk})
+        response = self.client.post(url, {"siret": "65257741834921"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_add_mandated_company_unauthenticated(self):
+        """
+        L'endpoint API n'est pas accessible sans authentifications
+        """
+        company = CompanyFactory()
+
+        url = reverse("api:add_mandated_company", kwargs={"pk": company.pk})
+        response = self.client.post(url, {"siret": "65257741834921"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
