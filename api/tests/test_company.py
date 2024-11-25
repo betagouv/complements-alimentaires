@@ -426,3 +426,64 @@ class TestMandatedCompanies(APITestCase):
         url = reverse("api:add_mandated_company", kwargs={"pk": company.pk})
         response = self.client.post(url, {"siret": "65257741834921"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_remove_mandated_company(self):
+        """
+        Le gestionnaire d'une entreprise peut enlever une entreprise mandataire.
+        """
+        company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        mandated_company = CompanyFactory()
+        company.mandated_companies.add(mandated_company)
+        company.save()
+
+        url = reverse("api:remove_mandated_company", kwargs={"pk": company.pk})
+
+        response = self.client.post(url, {"id": mandated_company.id}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        company.refresh_from_db()
+        self.assertNotIn(mandated_company, company.mandated_companies.all())
+
+    @authenticate
+    def test_remove_unexistent_company(self):
+        """
+        Lors qu'on spécifie une entreprise non-mandatée la réponse est 200 et aucun
+        changement s'effectue
+        """
+        company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        other_company = CompanyFactory()
+
+        url = reverse("api:remove_mandated_company", kwargs={"pk": company.pk})
+
+        response = self.client.post(url, {"id": other_company.id}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        company.refresh_from_db()
+        self.assertNotIn(other_company, company.mandated_companies.all())
+
+    @authenticate
+    def test_remove_mandated_company_forbidden(self):
+        """
+        L'utilisateur·ice doit avoir les droits de supervision pour l'entreprise
+        souhaitant enlever une entreprise mandatée
+        """
+        company = CompanyFactory()
+        other_company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        url = reverse("api:remove_mandated_company", kwargs={"pk": other_company.pk})
+        response = self.client.post(url, {"id": other_company.id}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_remove_mandated_company_unauthenticated(self):
+        """
+        L'endpoint API n'est pas accessible sans authentifications
+        """
+        company = CompanyFactory()
+
+        url = reverse("api:remove_mandated_company", kwargs={"pk": company.pk})
+        response = self.client.post(url, {"id": company.id}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

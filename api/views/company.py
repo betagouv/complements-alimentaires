@@ -246,3 +246,32 @@ class AddMandatedCompanyView(GenericAPIView):
 
         serializer = self.get_serializer(company)
         return Response(serializer.data)
+
+
+class RemoveMandatedCompanyView(GenericAPIView):
+    """
+    Cet endpoint permet d'enlever une entreprise mandatée
+    """
+
+    permission_classes = [IsAuthenticated, IsSupervisor]
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+
+    def post(self, request, pk):
+        company = self.get_object()
+
+        mandated_company_id = request.data.get("id")
+
+        if not mandated_company_id:
+            raise ProjectAPIException(global_error="L'ID de l'entreprise mandatée doit être spécifié")
+
+        try:
+            mandated_company = company.mandated_companies.get(pk=mandated_company_id)
+            company.mandated_companies.remove(mandated_company)
+            company.save()
+        except Company.DoesNotExist as _:
+            pass
+
+        # TODO: send email to mandated_company
+        serializer = self.get_serializer(company)
+        return Response(serializer.data)
