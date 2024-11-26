@@ -105,9 +105,9 @@ ADDABLE_ELEMENT_FIELDS = (
 class HideInstructionFields:
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        if self.parent:
-            request = self.parent.context["request"]
-            view = self.parent.context["view"]
+        if self.parent and self.parent.context:
+            request = self.parent.context.get("request")
+            view = self.parent.context.get("view")
 
             if not request or not view:
                 return
