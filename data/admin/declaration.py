@@ -60,6 +60,7 @@ class DeclaredPlantInline(admin.StackedInline):
     ) + REQUEST_FIELDS
     autocomplete_fields = ("plant",)
     extra = 0
+    classes = ["collapse"]
 
     def has_add_permission(self, request, object):
         return True
@@ -96,6 +97,7 @@ class DeclaredMicroorganismInline(admin.StackedInline):
         "new_description",
     ) + REQUEST_FIELDS
     autocomplete_fields = ("microorganism",)
+    classes = ["collapse"]
 
     extra = 0
 
@@ -133,6 +135,7 @@ class DeclaredIngredientInline(admin.StackedInline):
     ) + REQUEST_FIELDS
     autocomplete_fields = ("ingredient",)
     extra = 0
+    classes = ["collapse"]
 
     def has_add_permission(self, request, object):
         return True
@@ -164,6 +167,7 @@ class DeclaredSubstanceInline(admin.StackedInline):
     ) + REQUEST_FIELDS
     autocomplete_fields = ("substance",)
     extra = 0
+    classes = ["collapse"]
 
     def has_add_permission(self, request, object):
         return True
