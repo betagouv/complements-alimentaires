@@ -3,7 +3,7 @@
     <DsfrNotice title="En construction" desc="Des nouvelles fonctionnalités arrivent bientôt !" />
     <div class="fr-container">
       <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
-      <DsfrAlert v-if="alert" v-bind="alert" class="mb-4" />
+      <ElementAlert :element="element" />
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
@@ -29,6 +29,7 @@ import { getApiType } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 import ElementInfo from "./ElementInfo"
+import ElementAlert from "./ElementAlert"
 
 const props = defineProps({ type: String, id: String })
 
@@ -148,23 +149,4 @@ const modalActions = computed(() => {
     },
   ])
 })
-
-const alerts = computed(() => ({
-  REQUESTED: {
-    title: "Nouvel ingrédient",
-    description: "Ingrédient non intégré dans la base de données et en attente de validation.",
-    type: "info",
-  },
-  INFORMATION: {
-    title: "En attente d'information",
-    description: element.value?.requestPrivateNotes,
-    type: "warning",
-  },
-  REJECTED: {
-    title: "Ingrédient refusé",
-    description: element.value?.requestPrivateNotes,
-    type: "error",
-  },
-}))
-const alert = computed(() => alerts.value[element.value?.requestStatus])
 </script>
