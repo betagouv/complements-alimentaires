@@ -16,7 +16,7 @@
         <template v-slot:label>
           <div>
             <img src="/static/images/flags/fr.svg" class="w-5 mr-1 -mt-1 inline rounded-sm" />
-            Utilisable en France
+            {{ getAuthorizationModeInFrench("FR") }}
           </div>
         </template>
       </DsfrRadioButton>
@@ -30,7 +30,7 @@
         <template v-slot:label>
           <div>
             <img src="/static/images/flags/eu.svg" class="w-5 mr-1 -mt-1 inline rounded-sm" />
-            Autorisé dans un État membre de l'UE ou EEE
+            {{ getAuthorizationModeInFrench("EU") }}
           </div>
         </template>
       </DsfrRadioButton>
@@ -97,6 +97,7 @@
 <script setup>
 import CountryField from "@/components/fields/CountryField"
 import { getElementName } from "@/utils/elements"
+import { getAuthorizationModeInFrench } from "@/utils/mappings"
 import { getCurrentInstance } from "vue"
 
 const model = defineModel()

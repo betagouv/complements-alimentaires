@@ -10,6 +10,7 @@
             </p>
           </div>
 
+          <DsfrBadge v-if="novelFood" label="Novel Food" type="new" class="self-center ml-2" small />
           <DsfrBadge v-if="model.new" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
           <DsfrBadge v-if="!model.active" label="Non-actif" type="none" class="self-center ml-2" small />
         </div>
@@ -18,7 +19,7 @@
         </p>
       </div>
 
-      <div v-if="model.new" class="content-center">
+      <div v-if="model.new && isInstructor" class="content-center">
         <router-link
           :to="{ name: 'DeclaredElementPage', params: { type: props.objectType, id: model.id } }"
           class="fr-btn fr-btn--sm fr-btn--secondary"
@@ -38,7 +39,9 @@ import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import ElementCommentModal from "@/components/ElementCommentModal"
 
-const { plantParts, units, preparations } = storeToRefs(useRootStore())
+const { plantParts, units, preparations, loggedUser } = storeToRefs(useRootStore())
+
+const isInstructor = computed(() => loggedUser.value?.globalRoles.some((x) => x.name === "InstructionRole"))
 
 const model = defineModel()
 const props = defineProps({ objectType: { type: String } })
@@ -48,6 +51,9 @@ const unitName = computed(() => units.value?.find((x) => x.id === model.value.un
 const preparationName = computed(
   () => preparations.value?.find((x) => x.id === parseInt(model.value.preparation))?.name || ""
 )
+const novelFood = computed(() => {
+  return model.value.element?.novelFood
+})
 
 const elementInfo = computed(() => {
   if (props.objectType === "microorganism") {
@@ -59,6 +65,7 @@ const elementInfo = computed(() => {
     const used_part_label = `Partie utilisée : « ${plantPartName.value} »`
     const quantity_label = model.value.quantity ? `Qté par DJR : ${model.value.quantity} ${unitName.value}` : null
     const preparation_label = model.value.preparation ? `Préparation : ${preparationName.value}` : null
+
     return [used_part_label, quantity_label, preparation_label].filter(Boolean).join(` | `)
   }
 
