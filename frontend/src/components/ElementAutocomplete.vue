@@ -7,7 +7,7 @@
         autocomplete="nothing"
         @update:searchTerm="$emit('update:searchTerm', $event)"
         v-bind="$attrs"
-        :required="true"
+        :required="!optional"
         @focus="hasFocus = true"
         @blur="hasFocus = false"
         @keydown="checkKeyboardNav($event)"
@@ -77,6 +77,10 @@ const props = defineProps({
     default: true,
   },
   hideSearchButton: {
+    type: Boolean,
+    default: false,
+  },
+  optional: {
     type: Boolean,
     default: false,
   },

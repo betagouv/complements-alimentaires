@@ -7,6 +7,7 @@
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
+          <ReplacementSearch @replacement-id="(id) => (replacement = id)" />
         </div>
         <div>
           <DsfrButtonGroup :buttons="actionButtons" inlineLayoutWhen="md" align="center" class="mb-8" />
@@ -30,6 +31,7 @@ import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
+import ReplacementSearch from "./ReplacementSearch"
 
 const props = defineProps({ type: String, id: String })
 
@@ -78,7 +80,21 @@ const openModal = (type) => {
     modalToOpen.value = type
   }
 }
+
+const replacement = ref()
+const replaceElement = async () => {
+  if (replacement.value) {
+    // TODO: send request to back
+    console.log("Replace with :", replacement.value)
+  }
+}
+
 const actionButtons = [
+  {
+    label: "Remplacer",
+    primary: true, // TODO: only available if replacement selected
+    onclick: replaceElement, // TODO: open modal to update synonymes
+  },
   {
     label: "Demander plus d’information",
     tertiary: true,
