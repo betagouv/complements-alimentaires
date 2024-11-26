@@ -17,6 +17,9 @@
 
 <script setup>
 import { ref } from "vue"
+import { useFetch } from "@vueuse/core"
+import { handleError } from "@/utils/error-handling"
+import { getApiType } from "@/utils/mappings"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import ResultCard from "./ResultCard.vue"
 
@@ -25,7 +28,18 @@ const emit = defineEmits(["replacement-id"])
 const selectedOption = ref()
 
 const selectOption = (option) => {
-  selectedOption.value = option
+  selectedOption.value = option // quick and temporary display
+  fetchElement(getApiType(option.objectType), option.objectType, option.id).then((item) => {
+    selectedOption.value = item
+  })
   emit("replacement-id", option.id)
+}
+
+// TODO: turn into service ? It was taken from another file
+const fetchElement = async (apiType, type, id) => {
+  const { data, response } = await useFetch(`/api/v1/${apiType}s/${id}`).get().json()
+  await handleError(response)
+  if (!response.value.ok) return null
+  return { ...data.value, ...{ objectType: type } }
 }
 </script>

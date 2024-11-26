@@ -9,7 +9,7 @@
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
           <ReplacementSearch @replacement-id="(id) => (replacement = id)" />
         </div>
-        <div>
+        <div class="mt-4">
           <DsfrButtonGroup :buttons="actionButtons" inlineLayoutWhen="md" align="center" class="mb-8" />
 
           <DsfrModal :opened="!!modalToOpen" :title="modalTitle" :actions="modalActions" @close="closeModal">
