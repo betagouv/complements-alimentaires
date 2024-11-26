@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- TODO: show search button but don't do flex - need to update component -->
     <ElementAutocomplete
       autocomplete="nothing"
       label="Chercher un ingrédient dans la base de données"

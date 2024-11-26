@@ -89,11 +89,12 @@ const replaceElement = async () => {
   }
 }
 
-const actionButtons = [
+const actionButtons = computed(() => [
   {
     label: "Remplacer",
-    primary: true, // TODO: only available if replacement selected
+    primary: true,
     onclick: replaceElement, // TODO: open modal to update synonymes
+    disabled: !replacement.value,
   },
   {
     label: "Demander plus d’information",
@@ -107,7 +108,7 @@ const actionButtons = [
     icon: "ri-close-line",
     onclick: openModal("refuse"),
   },
-]
+])
 
 const updateElement = async (payload) => {
   const { data, response } = await useFetch(url, {
