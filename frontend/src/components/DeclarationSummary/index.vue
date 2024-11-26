@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ArticleInfoRow v-model="payload" v-if="showArticle" class="mb-2" />
+    <ArticleInfoRow v-model="payload" :hideArticle15Subtypes="!showArticle" v-if="showArticle" class="mb-2" />
     <h3 class="fr-h6">
       Informations sur le produit
       <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />

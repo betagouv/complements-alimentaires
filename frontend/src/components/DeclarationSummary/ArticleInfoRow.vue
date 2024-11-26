@@ -27,19 +27,22 @@
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { ref, onMounted } from "vue"
-import { articleOptions } from "@/utils/mappings"
+import { articleOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
 import useToaster from "@/composables/use-toaster"
 const articleModalOpened = ref(false)
-
-const omitOptions = ["ART_15_WARNING", "ART_15_HIGH_RISK_POPULATION"]
-const options = articleOptions
-  .filter((x) => omitOptions.indexOf(x.value) === -1)
-  .map((x) => ({ value: x.value, label: x.text }))
 
 const newArticle = ref()
 onMounted(() => (newArticle.value = payload.value.article))
 
 const payload = defineModel()
+const props = defineProps({ hideArticle15Subtypes: Boolean })
+
+// Aujourd'hui les subtypes (WARNING, et HIGH_RISK_POPULATION) doivent être cachés aux déclarants,
+// Mais le DeclarationSummary de la page déclarants n'affiche pas le composant ArticleInfoRow aujourd'hui
+// TODO: lorsqu'il l'affichera il faudra désactiver la possibilité de modifier l'article
+const options = props.hideArticle15Subtypes
+  ? articleOptions.map((x) => ({ value: x.value, label: x.text }))
+  : articleOptionsWith15Subtypes.map((x) => ({ value: x.value, label: x.text }))
 
 const changeArticle = async () => {
   if (newArticle.value === payload.value.article) {
