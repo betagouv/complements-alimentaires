@@ -104,13 +104,13 @@ import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
 import { DsfrInput } from "@gouvminint/vue-dsfr"
 import StatusFilter from "@/components/StatusFilter.vue"
-import { orderingOptions, articleOptions } from "@/utils/mappings"
+import { orderingOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 
 const router = useRouter()
 const route = useRoute()
 
-const articleSelectOptions = [...articleOptions, ...[{ value: "", text: "Tous" }]]
+const articleSelectOptions = [...articleOptionsWith15Subtypes, ...[{ value: "", text: "Tous" }]]
 
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
