@@ -465,7 +465,7 @@ class Addable(models.Model):
         abstract = True
 
     class AddableStatus(models.TextChoices):
-        NEW = "NEW", "Nouveau"  # TODO: untreated ?
+        ADDED = "ADDED", "Ingrédient ajouté par le déclarant"
         INFORMATION = "INFORMATION", "En attente de plus d'information"
         REJECTED = "REJECTED", "Refusé"
 
@@ -495,16 +495,13 @@ class Addable(models.Model):
         "information additionnelle sur l'autorisation dans un autre pays européen", blank=True
     )
 
-    # TODO: remake migration
-    # request_status
-    status = models.CharField(
+    request_status = models.CharField(
         max_length=50,
         choices=AddableStatus.choices,
-        default=AddableStatus.NEW,  # TODO: change to untreated or whatever
+        default=AddableStatus.ADDED,
         verbose_name="statut de la demande de l'ajout du nouvel ingrédient",
     )
-    # TODO: request_private_notes
-    private_notes_instruction = models.TextField(
+    request_private_notes = models.TextField(
         "notes de l'instruction à destination de l'administration", blank=True, default=""
     )
 

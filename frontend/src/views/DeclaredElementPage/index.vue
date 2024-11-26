@@ -156,7 +156,7 @@ const notes = ref()
 
 const openModal = (type) => {
   return () => {
-    if (!notes.value) notes.value = element.value?.privateNotesInstruction
+    if (!notes.value) notes.value = element.value?.requestPrivateNotes
     modalToOpen.value = type
   }
 }
@@ -195,8 +195,8 @@ const modals = {
         label: "Enregistrer",
         onClick() {
           updateElement({
-            status: "INFORMATION",
-            privateNotesInstruction: notes.value,
+            requestStatus: "INFORMATION",
+            requestPrivateNotes: notes.value,
           }).then(closeModal)
         },
       },
@@ -209,8 +209,8 @@ const modals = {
         label: "Refuser",
         onClick() {
           updateElement({
-            status: "REJECTED",
-            privateNotesInstruction: notes.value,
+            requestStatus: "REJECTED",
+            requestPrivateNotes: notes.value,
           }).then(closeModal)
         },
       },
@@ -233,21 +233,21 @@ const modalActions = computed(() => {
 })
 
 const alerts = computed(() => ({
-  NEW: {
+  ADDED: {
     title: "Nouvel ingrédient",
     description: "Ingrédient non intégré dans la base de données et en attente de validation.",
     type: "info",
   },
   INFORMATION: {
     title: "Attente d'information",
-    description: element.value?.privateNotesInstruction,
+    description: element.value?.requestPrivateNotes,
     type: "warning",
   },
   REJECTED: {
     title: "Ingrédient refusé",
-    description: element.value?.privateNotesInstruction,
+    description: element.value?.requestPrivateNotes,
     type: "error",
   },
 }))
-const alert = computed(() => alerts.value[element.value?.status])
+const alert = computed(() => alerts.value[element.value?.requestStatus])
 </script>

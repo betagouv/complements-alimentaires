@@ -1615,12 +1615,12 @@ class TestDeclaredElementsApi(APITestCase):
 
         self.client.patch(
             reverse("api:declared_microorganism", kwargs={"pk": microorganism.id}),
-            {"status": DeclaredMicroorganism.AddableStatus.INFORMATION, "privateNotesInstruction": "some notes"},
+            {"requestStatus": DeclaredMicroorganism.AddableStatus.INFORMATION, "requestPrivateNotes": "some notes"},
             format="json",
         )
         microorganism.refresh_from_db()
-        self.assertEqual(microorganism.private_notes_instruction, "some notes")
-        self.assertEqual(microorganism.status, "INFORMATION")
+        self.assertEqual(microorganism.request_private_notes, "some notes")
+        self.assertEqual(microorganism.request_status, "INFORMATION")
 
     @authenticate
     def test_fields_hidden_from_declarant(self):
@@ -1637,8 +1637,8 @@ class TestDeclaredElementsApi(APITestCase):
         declared_microorganisms = body["declaredMicroorganisms"]
         m = declared_microorganisms[0]
         self.assertEqual(m["id"], microorganism.id)
-        self.assertNotIn("status", m)
-        self.assertNotIn("privateNotesInstruction", m)
+        self.assertNotIn("requestStatus", m)
+        self.assertNotIn("requestPrivateNotes", m)
 
     @authenticate
     def test_status_visible_to_instructor(self):
@@ -1653,5 +1653,5 @@ class TestDeclaredElementsApi(APITestCase):
         body = response.json()
         declared_microorganisms = body["declaredMicroorganisms"]
         m = declared_microorganisms[0]
-        self.assertIn("status", m)
-        self.assertIn("privateNotesInstruction", m)
+        self.assertIn("requestStatus", m)
+        self.assertIn("requestPrivateNotes", m)

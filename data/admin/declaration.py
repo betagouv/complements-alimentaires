@@ -97,6 +97,7 @@ class DeclaredMicroorganismInline(admin.StackedInline):
 
 
 # Declared Ingredients inline
+# TODO: add status and private notes?
 
 
 class DeclaredIngredientInlineForm(forms.ModelForm):

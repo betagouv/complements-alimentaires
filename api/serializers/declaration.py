@@ -97,8 +97,8 @@ ADDABLE_ELEMENT_FIELDS = (
     "eu_details",
     "new_description",
     "new",
-    "private_notes_instruction",
-    "status",
+    "request_private_notes",
+    "request_status",
 )
 
 
@@ -115,8 +115,8 @@ class HideInstructionFields:
             is_instructor = IsInstructor().has_permission(request, view)
             is_visor = IsVisor().has_permission(request, view)
             if not is_instructor and not is_visor:
-                representation.pop("private_notes_instruction")
-                representation.pop("status")
+                representation.pop("request_private_notes")
+                representation.pop("request_status")
         return representation
 
 
