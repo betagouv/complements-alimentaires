@@ -31,7 +31,7 @@ import { articleOptions } from "@/utils/mappings"
 import useToaster from "@/composables/use-toaster"
 const articleModalOpened = ref(false)
 
-const omitOptions = ["ART_15_WARNING"]
+const omitOptions = ["ART_15_WARNING", "ART_15_HIGH_RISK_POPULATION"]
 const options = articleOptions
   .filter((x) => omitOptions.indexOf(x.value) === -1)
   .map((x) => ({ value: x.value, label: x.text }))
