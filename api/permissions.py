@@ -27,10 +27,13 @@ class CanAccessUserDeclatarions(permissions.BasePermission):
         if created_by_user:  # Pour éviter les requêtes successives si on n'a pas besoin
             return True
 
-        user_companies = request.user.declarable_companies.all() + request.user.supervisable_companies.all()
+        declarable_companies = request.user.declarable_companies.all()
+        supervisable_companies = request.user.supervisable_companies.all()
 
-        user_has_company_roles = obj.company in user_companies or any(
-            x for x in obj.company.mandated_companies.all() if x in user_companies
+        user_has_company_roles = (
+            obj.company in declarable_companies
+            or obj.company in supervisable_companies
+            or (obj.mandated_company and obj.mandated_company in declarable_companies)
         )
         return user_has_company_roles
 

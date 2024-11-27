@@ -282,6 +282,7 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
     visor = SimpleUserSerializer(read_only=True, source="visor.user")
     author = SimpleUserSerializer(read_only=True)
     company = SimpleCompanySerializer(read_only=True)
+    mandated_company = SimpleCompanySerializer(read_only=True)
 
     class Meta:
         model = Declaration
@@ -290,6 +291,7 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
             "status",
             "author",
             "company",
+            "mandated_company",
             "name",
             "brand",
             "gamme",
@@ -328,6 +330,9 @@ class DeclarationSerializer(serializers.ModelSerializer):
     visor = SimpleUserSerializer(read_only=True, source="visor.user")
     author = serializers.PrimaryKeyRelatedField(read_only=True, allow_null=True)
     company = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all(), allow_null=True)
+    mandated_company = serializers.PrimaryKeyRelatedField(
+        queryset=Company.objects.all(), allow_null=True, required=False
+    )
     unit_measurement = serializers.PrimaryKeyRelatedField(
         queryset=SubstanceUnit.objects.all(), required=False, allow_null=True
     )
@@ -360,6 +365,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "status",
             "author",
             "company",
+            "mandated_company",
             "address",
             "additional_details",
             "postal_code",
@@ -425,6 +431,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         queryset = queryset.select_related(
             "author",
             "company",
+            "mandated_company",
             "unit_measurement",
             "galenic_formulation",
         )
@@ -486,6 +493,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
 class DeclarationShortSerializer(serializers.ModelSerializer):
     author = SimpleUserSerializer(read_only=True)
     company = SimpleCompanySerializer(read_only=True)
+    mandated_company = SimpleCompanySerializer(read_only=True)
 
     class Meta:
         model = Declaration
@@ -494,6 +502,7 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
             "status",
             "author",
             "company",
+            "mandated_company",
             "name",
             "brand",
             "gamme",
