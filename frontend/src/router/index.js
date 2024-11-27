@@ -34,6 +34,7 @@ import A11yPage from "@/views/A11yPage.vue"
 import ContactForm from "@/views/ContactForm"
 import CompliancePage from "@/views/CompliancePage"
 import DeclaredElementPage from "@/views/DeclaredElementPage"
+import MandatedCompaniesPage from "@/views/MandatedCompaniesPage"
 import { ref } from "vue"
 
 const routes = [
@@ -254,6 +255,16 @@ const routes = [
     component: CollaboratorsPage,
     meta: {
       title: "Gestion des collaborateurs",
+      requiredRole: "SupervisorRole",
+      authenticationRequired: true,
+    },
+  },
+  {
+    path: "/mandats/:id",
+    name: "MandatedCompaniesPage",
+    component: MandatedCompaniesPage,
+    meta: {
+      title: "Gestion des entreprises mandatées",
       requiredRole: "SupervisorRole",
       authenticationRequired: true,
     },

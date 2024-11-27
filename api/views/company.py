@@ -21,7 +21,7 @@ from data.validators import validate_siret, validate_vat  # noqa
 
 from ..exception_handling import ProjectAPIException
 from ..permissions import IsSupervisor, IsSupervisorOrAgent
-from ..serializers import CollaboratorSerializer, CompanySerializer
+from ..serializers import CollaboratorSerializer, CompanySerializer, MinimalCompanySerializer
 
 User = get_user_model()
 
@@ -91,7 +91,7 @@ class CheckCompanyIdentifierView(APIView):
         return Response(
             {
                 "company_status": company_status,  # pour déterminer les étapes suivantes côté front
-                "company": (CompanySerializer(company).data if company else None),  # ex : pour set l'ID dans le state
+                "company": (MinimalCompanySerializer(company).data if company else None),
                 "company_siret_data": company_siret_data,
             }
         )
