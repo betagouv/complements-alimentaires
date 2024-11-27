@@ -192,7 +192,9 @@ class UserDeclarationsListCreateApiView(ListCreateAPIView):
             company = Company.objects.get(pk=company_id)
         except Company.DoesNotExist as _:
             raise NotFound("Company not found")
-        if not company.declarants.filter(id=self.request.user.id).exists():
+
+        companies = [company] + list(company.mandated_companies.all())
+        if not any(x for x in companies if x.declarant_roles.filter(user=self.request.user).exists()):
             raise PermissionDenied()
         return super().perform_create(serializer)
 

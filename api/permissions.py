@@ -27,9 +27,10 @@ class CanAccessUserDeclatarions(permissions.BasePermission):
         if created_by_user:  # Pour éviter les requêtes successives si on n'a pas besoin
             return True
 
-        user_has_company_roles = (
-            obj.company in request.user.declarable_companies.all()
-            or obj.company in request.user.supervisable_companies.all()
+        user_companies = request.user.declarable_companies.all() + request.user.supervisable_companies.all()
+
+        user_has_company_roles = obj.company in user_companies or any(
+            x for x in obj.company.mandated_companies.all() if x in user_companies
         )
         return user_has_company_roles
 
@@ -50,7 +51,8 @@ class IsDeclarant(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):  # obj: Declaration
         user = request.user
-        return user.is_authenticated and obj.company.declarant_roles.filter(user=user).exists()
+        companies = [obj.company] + list(obj.company.mandated_companies.all())
+        return user.is_authenticated and any(x for x in companies if x.declarant_roles.filter(user=user).exists())
 
 
 class IsDeclarationAuthor(permissions.BasePermission):

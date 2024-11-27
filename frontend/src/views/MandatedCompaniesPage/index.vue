@@ -4,8 +4,8 @@
       class="mb-8"
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Entreprises mandatées' }]"
     />
-    <h1 class="fr-h3">Entreprises mandatées</h1>
     <div v-if="company">
+      <h1 class="fr-h3">Entreprises mandatées par {{ company.socialName }}</h1>
       <p>
         Une entreprise mandatée peut effectuer des déclarations au nom de {{ company.socialName }}.
 
