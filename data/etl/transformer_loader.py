@@ -45,6 +45,6 @@ class OPEN_DATA(TRANSFORMER_LOADER):
 class ETL_OPEN_DATA_DECLARATIONS(DECLARATIONS, OPEN_DATA):
     def transform_dataset(self):
         self.df = self.df.rename(columns=self.columns_mapper)
-        self.df["nom_fabriquant"] = self.df["nom_fabriquant"].apply(lambda x: x[0])
-        self.df["siret_fabriquant"] = self.df["nom_fabriquant"].apply(lambda x: x[1])
+        self.df["responsable_mise_sur_marche"] = self.df["responsable_mise_sur_marche"].apply(lambda x: x[0])
+        self.df["siret_responsable_mise_sur_marche"] = self.df["responsable_mise_sur_marche"].apply(lambda x: x[1])
         self.clean_dataset()

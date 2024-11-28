@@ -103,9 +103,14 @@ class DECLARATIONS(EXTRACTOR):
             "name": "nom_commercial",
             "brand": "marque",
             "gamme": "gamme",
-            "company": "nom_fabriquant",
+            "company": "responsable_mise_sur_marche",
             "article": "article",
             "galenic_formulation": "forme_galenique",
+            "declared_plants": "plantes",
+            "declared_microorganisms": "micro_organismes",
+            "declared_ingredients": "ingredients_inactifs",
+            "declared_substances": "substances",
+            "modification_date": "date_decision",  #  Warning : Se baser sur la du snapshot d'autorisation si la plateforme Compl'Alim permet d'editer la déclaration (ex: abandon)
         }
 
     def extract_dataset(self):
