@@ -33,6 +33,7 @@ const selectOption = (option) => {
   fetchElement(getApiType(option.objectType), option.objectType, option.id).then((item) => {
     selectedOption.value = item
   })
+  // TODO: erase search term from search bar?
   emit("replacement-id", option.id)
 }
 

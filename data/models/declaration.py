@@ -545,7 +545,6 @@ class DeclaredPlant(Historisable, Addable):
         else:
             return self.plant.name
 
-    # TODO: rename to object_type like on the Plant model ?
     @property
     def type(self):
         return "plant"

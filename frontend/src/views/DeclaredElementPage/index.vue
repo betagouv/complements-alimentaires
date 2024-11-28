@@ -7,7 +7,7 @@
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
-          <ReplacementSearch @replacement-id="(id) => (replacement = id)" />
+          <ReplacementSearch @replacement-id="(id) => (replacement = id)" :reset="clearSearch" />
         </div>
         <div class="mt-4">
           <DsfrButtonGroup :buttons="actionButtons" inlineLayoutWhen="md" align="center" class="mb-8" />
@@ -128,6 +128,7 @@ const modals = {
             requestStatus: "REPLACED",
             element: { id: replacement.value },
           }
+          // TODO: clear search if we stay on page
           updateElement(payload).then(closeModal)
         },
       },
