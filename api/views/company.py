@@ -1,3 +1,4 @@
+import logging
 from enum import StrEnum, auto
 
 from django.apps import apps
@@ -13,6 +14,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.utils.urls import get_base_url
+from config import email
 from data.choices import CountryChoices
 from data.models import Company, DeclarantRole, SupervisorRole
 from data.models.solicitation import CompanyAccessClaim, SupervisionClaim
@@ -24,6 +27,8 @@ from ..permissions import IsSupervisor, IsSupervisorOrAgent
 from ..serializers import CollaboratorSerializer, CompanySerializer, MinimalCompanySerializer
 
 User = get_user_model()
+
+logger = logging.getLogger(__name__)
 
 
 class CountryListView(APIView):
@@ -242,7 +247,21 @@ class AddMandatedCompanyView(GenericAPIView):
 
         company.mandated_companies.add(mandated_company)
         company.save()
-        # TODO: send email to mandated_company
+
+        brevo_template = 27
+        for supervisor in mandated_company.supervisor_roles.all():
+            try:
+                email.send_sib_template(
+                    brevo_template,
+                    {
+                        "COMPANY_NAME": company.social_name,
+                        "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={mandated_company.id}",
+                    },
+                    supervisor.user.email,
+                    supervisor.user.get_full_name(),
+                )
+            except Exception as _:
+                logger.exception(f"Email not sent on AddMandatedCompanyView for recipient {supervisor.user.id}")
 
         serializer = self.get_serializer(company)
         return Response(serializer.data)

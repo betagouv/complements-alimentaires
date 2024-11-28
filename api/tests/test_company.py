@@ -6,6 +6,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from api.utils.urls import get_base_url
 from data.factories import (
     CollaborationInvitationFactory,
     CompanyFactory,
@@ -365,7 +366,8 @@ class TestAddNewCollaborator(ProjectAPITestCase):
 
 class TestMandatedCompanies(APITestCase):
     @authenticate
-    def test_add_mandated_company(self):
+    @mock.patch("config.email.send_sib_template")
+    def test_add_mandated_company(self, mock):
         """
         Le gestionnaire d'une entreprise peut ajouter une autre entreprise en tant
         qu'entreprise mandatée.
@@ -374,7 +376,10 @@ class TestMandatedCompanies(APITestCase):
         SupervisorRoleFactory(user=authenticate.user, company=company)
 
         mandated_company_1 = CompanyFactory()
+        supervisor_1 = SupervisorRoleFactory(company=mandated_company_1)
+
         mandated_company_2 = CompanyFactory(vat="BE0582992566")
+        supervisor_2 = SupervisorRoleFactory(company=mandated_company_2)
 
         url = reverse("api:add_mandated_company", kwargs={"pk": company.pk})
 
@@ -384,14 +389,37 @@ class TestMandatedCompanies(APITestCase):
         company.refresh_from_db()
         self.assertIn(mandated_company_1, company.mandated_companies.all())
 
-        # TODO test via TVA
+        mock.assert_called_once_with(
+            27,
+            {
+                "COMPANY_NAME": company.social_name,
+                "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={mandated_company_1.id}",
+            },
+            supervisor_1.user.email,
+            supervisor_1.user.get_full_name(),
+        )
+        mock.reset_mock()
+
+        # On peut aussi tester avec le numéro TVA
         response = self.client.post(url, {"vat": mandated_company_2.vat}, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         company.refresh_from_db()
         self.assertIn(mandated_company_2, company.mandated_companies.all())
 
+        mock.assert_called_once_with(
+            27,
+            {
+                "COMPANY_NAME": company.social_name,
+                "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={mandated_company_2.id}",
+            },
+            supervisor_2.user.email,
+            supervisor_2.user.get_full_name(),
+        )
+        mock.reset_mock()
+
     @authenticate
-    def test_add_mandated_company_not_found(self):
+    @mock.patch("config.email.send_sib_template")
+    def test_add_mandated_company_not_found(self, mock):
         """
         Si l'entreprise mandatée ne se trove pas dans notre base de données l'API
         retourne un 404
@@ -403,8 +431,11 @@ class TestMandatedCompanies(APITestCase):
         response = self.client.post(url, {"siret": "65257741834921"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+        mock.assert_not_called()
+
     @authenticate
-    def test_add_mandated_company_forbidden(self):
+    @mock.patch("config.email.send_sib_template")
+    def test_add_mandated_company_forbidden(self, mock):
         """
         L'utilisateur·ice doit avoir les droits de supervision pour l'entreprise
         souhaitant ajouter une entreprise mandatée
@@ -417,7 +448,10 @@ class TestMandatedCompanies(APITestCase):
         response = self.client.post(url, {"siret": "65257741834921"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_add_mandated_company_unauthenticated(self):
+        mock.assert_not_called()
+
+    @mock.patch("config.email.send_sib_template")
+    def test_add_mandated_company_unauthenticated(self, mock):
         """
         L'endpoint API n'est pas accessible sans authentifications
         """
@@ -427,8 +461,11 @@ class TestMandatedCompanies(APITestCase):
         response = self.client.post(url, {"siret": "65257741834921"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+        mock.assert_not_called()
+
     @authenticate
-    def test_remove_mandated_company(self):
+    @mock.patch("config.email.send_sib_template")
+    def test_remove_mandated_company(self, mock):
         """
         Le gestionnaire d'une entreprise peut enlever une entreprise mandataire.
         """
@@ -446,8 +483,11 @@ class TestMandatedCompanies(APITestCase):
         company.refresh_from_db()
         self.assertNotIn(mandated_company, company.mandated_companies.all())
 
+        mock.assert_not_called()
+
     @authenticate
-    def test_remove_unexistent_company(self):
+    @mock.patch("config.email.send_sib_template")
+    def test_remove_unexistent_company(self, mock):
         """
         Lors qu'on spécifie une entreprise non-mandatée la réponse est 200 et aucun
         changement s'effectue
@@ -464,8 +504,11 @@ class TestMandatedCompanies(APITestCase):
         company.refresh_from_db()
         self.assertNotIn(other_company, company.mandated_companies.all())
 
+        mock.assert_not_called()
+
     @authenticate
-    def test_remove_mandated_company_forbidden(self):
+    @mock.patch("config.email.send_sib_template")
+    def test_remove_mandated_company_forbidden(self, mock):
         """
         L'utilisateur·ice doit avoir les droits de supervision pour l'entreprise
         souhaitant enlever une entreprise mandatée
@@ -478,7 +521,10 @@ class TestMandatedCompanies(APITestCase):
         response = self.client.post(url, {"id": other_company.id}, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_remove_mandated_company_unauthenticated(self):
+        mock.assert_not_called()
+
+    @mock.patch("config.email.send_sib_template")
+    def test_remove_mandated_company_unauthenticated(self, mock):
         """
         L'endpoint API n'est pas accessible sans authentifications
         """
@@ -487,3 +533,5 @@ class TestMandatedCompanies(APITestCase):
         url = reverse("api:remove_mandated_company", kwargs={"pk": company.pk})
         response = self.client.post(url, {"id": company.id}, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        mock.assert_not_called()
