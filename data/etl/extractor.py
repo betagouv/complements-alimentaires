@@ -23,17 +23,6 @@ def prepare_file_validata_post_request(df: pd.DataFrame):
     }
 
 
-def get_status(x):
-    """
-    Translates the status field using its original definition
-    """
-    mapper = {
-        "AUTHORIZED": "autorisé",
-        "AWAITING_INSTRUCTION": "En attente d'instruction",
-    }
-    return mapper.get(x, "Indéfini")
-
-
 # -------------------- ETL classes ----------------------
 class ETL(ABC):
     def __init__(self):
@@ -125,6 +114,3 @@ class DECLARATIONS(EXTRACTOR):
         serializer = open_data_view.get_serializer_class()
         declarations = serializer(queryset, many=True).data
         self.df = pd.DataFrame(declarations)
-
-    def compute_columns(self):
-        self.df["status"] = self.df["status"].apply(get_status)
