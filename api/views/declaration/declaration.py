@@ -353,7 +353,7 @@ class OpenDataDeclarationsListView(GenericDeclarationsListView):
     serializer_class = OpenDataDeclarationSerializer
     filter_backends = [django_filters.DjangoFilterBackend, InstructionDateOrderingFilter]
     ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
-    queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT)
+    queryset = Declaration.objects.filter(status=Declaration.DeclarationStatus.AUTHORIZED)
 
 
 class CompanyDeclarationsListView(GenericDeclarationsListView):
