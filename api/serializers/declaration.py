@@ -341,8 +341,14 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         return obj.get_status_display()
 
     def get_article(self, obj):
-        # TODO : mapper tous les article 15 sont des articles 15
-        return obj.get_status_display()
+        """
+        Unify all types of Articles 15 categories.
+        If not part of Article 15, then return display name
+        """
+        if "Article 15" in obj.get_calculated_article_display():
+            return "Article 15"
+        else:
+            return obj.get_calculated_article_display()
 
     def get_company(self, obj):
         return obj.company.commercial_name, obj.company.siret
