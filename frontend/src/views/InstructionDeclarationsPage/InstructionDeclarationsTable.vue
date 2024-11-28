@@ -16,7 +16,7 @@ import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { articleOptions } from "@/utils/mappings"
+import { articleOptionsWith15Subtypes } from "@/utils/mappings"
 
 const { loggedUser } = storeToRefs(useRootStore())
 
@@ -40,7 +40,7 @@ const rows = computed(() =>
       x.instructor
         ? `${x.instructor.firstName} ${x.instructor.lastName}`
         : { component: "span", text: "Non-assigné", class: "italic" },
-      x.article ? articleOptions.find((y) => y.value === x.article)?.shortText : "",
+      x.article ? articleOptionsWith15Subtypes.find((y) => y.value === x.article)?.shortText : "",
     ],
   }))
 )

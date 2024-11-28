@@ -14,7 +14,7 @@
 import { computed } from "vue"
 import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
-import { articleOptions } from "@/utils/mappings"
+import { articleOptionsWith15Subtypes } from "@/utils/mappings"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
@@ -46,7 +46,7 @@ const rows = computed(() =>
       x.visor
         ? `${x.visor.firstName} ${x.visor.lastName}`
         : { component: "span", text: "Non-assigné", class: "italic" },
-      x.article ? articleOptions.find((y) => y.value === x.article)?.shortText : "",
+      x.article ? articleOptionsWith15Subtypes.find((y) => y.value === x.article)?.shortText : "",
     ],
   }))
 )
