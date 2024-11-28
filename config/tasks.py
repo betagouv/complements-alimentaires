@@ -13,7 +13,7 @@ from config import email
 from data.models import Declaration, Snapshot
 
 from .celery import app
-from .etl import ETL_OPEN_DATA_DECLARATIONS
+from data.etl.transformer_loader import ETL_OPEN_DATA_DECLARATIONS
 
 logger = logging.getLogger(__name__)
 Status = Declaration.DeclarationStatus

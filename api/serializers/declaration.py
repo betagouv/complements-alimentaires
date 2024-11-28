@@ -298,30 +298,28 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
 
 
 class OpenDataDeclarationSerializer(serializers.ModelSerializer):
-    instructor = SimpleUserSerializer(read_only=True, source="instructor.user")
-    visor = SimpleUserSerializer(read_only=True, source="visor.user")
-    company = SimpleCompanySerializer(read_only=True)
+    status = serializers.SerializerMethodField()
+    company = serializers.SerializerMethodField()
 
     class Meta:
         model = Declaration
         fields = (
             "id",
             "status",
-            "author",
             "company",
             "name",
             "brand",
             "gamme",
             "description",
-            "modification_date",
-            "creation_date",
-            "instructor",
-            "visor",
-            "response_limit_date",
-            "visa_refused",
             "article",
         )
         read_only_fields = fields
+
+    def get_status(self, obj):
+        return obj.get_status_display()
+
+    def get_company(self, obj):
+        return obj.company.commercial_name
 
 
 class DeclarationSerializer(serializers.ModelSerializer):

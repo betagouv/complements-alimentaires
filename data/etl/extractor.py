@@ -42,18 +42,6 @@ class ETL(ABC):
         self.schema_url = ""
         self.dataset_name = ""
 
-    @abstractmethod
-    def extract_dataset(self):
-        pass
-
-    @abstractmethod
-    def transform_dataset(self):
-        pass
-
-    @abstractmethod
-    def load_dataset(self):
-        pass
-
     def get_schema(self):
         return self.schema
 
@@ -93,21 +81,23 @@ class ETL(ABC):
             return True
 
 
-class ETL_OPEN_DATA(ETL):
-    def _load_data_locally(self):
-        self.df.to_csv("declarations.csv", sep=";", index=False)
+class EXTRACTOR(ETL):
+    @abstractmethod
+    def extract_dataset(self):
+        pass
 
+
+class TRANSFORMER_LOADER(ETL):
+    @abstractmethod
+    def transform_dataset(self):
+        pass
+
+    @abstractmethod
     def load_dataset(self):
-        if not self.is_valid():
-            logger.error(f"The dataset {self.name} is invalid and therefore will not be exported to s3")
-            return
-        try:
-            self._load_data_locally()
-        except Exception as e:
-            logger.error(f"Error saving validated data: {e}")
+        pass
 
 
-class ETL_OPEN_DATA_DECLARATIONS(ETL_OPEN_DATA):
+class DECLARATIONS(EXTRACTOR):
     def __init__(self):
         super().__init__()
         self.dataset_name = "declarations"
@@ -121,6 +111,11 @@ class ETL_OPEN_DATA_DECLARATIONS(ETL_OPEN_DATA):
         self.columns_mapper = {
             "id": "id",
             "status": "decision",
+            "name": "nom_commercial",
+            "brand": "marque",
+            "gamme": "gamme",
+            "company": "nom_fabriquant",
+            "article": "article",
         }
 
     def extract_dataset(self):
@@ -129,10 +124,6 @@ class ETL_OPEN_DATA_DECLARATIONS(ETL_OPEN_DATA):
         serializer = open_data_view.get_serializer_class()
         declarations = serializer(queryset, many=True).data
         self.df = pd.DataFrame(declarations)
-
-    def transform_dataset(self):
-        self.df = self.df.rename(columns=self.columns_mapper)
-        self.clean_dataset()
 
     def compute_columns(self):
         self.df["status"] = self.df["status"].apply(get_status)
