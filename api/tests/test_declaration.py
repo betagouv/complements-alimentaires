@@ -37,7 +37,7 @@ from data.factories import (
     SupervisorRoleFactory,
     VisaRoleFactory,
 )
-from data.models import Attachment, Declaration, DeclaredMicroorganism
+from data.models import Attachment, Declaration, DeclaredMicroorganism, DeclaredPlant
 
 from .utils import authenticate
 
@@ -1655,3 +1655,21 @@ class TestDeclaredElementsApi(APITestCase):
         m = declared_microorganisms[0]
         self.assertIn("requestStatus", m)
         self.assertIn("requestPrivateNotes", m)
+
+    @authenticate
+    def test_replace_declared_plant(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
+        plant = PlantFactory()
+
+        response = self.client.patch(
+            reverse("api:declared_plant", kwargs={"pk": declared_plant.id}),
+            {"requestStatus": DeclaredPlant.AddableStatus.REPLACED, "element": {"id": plant.id}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        declared_plant.refresh_from_db()
+        self.assertEqual(declared_plant.request_status, "REPLACED")
+        self.assertEqual(declared_plant.plant.id, plant.id)

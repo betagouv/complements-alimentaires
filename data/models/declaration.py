@@ -468,6 +468,7 @@ class Addable(models.Model):
         REQUESTED = "REQUESTED", "Ingrédient ajouté à la déclaration par le déclarant"
         INFORMATION = "INFORMATION", "En attente de plus d'information"
         REJECTED = "REJECTED", "Refusé"
+        REPLACED = "REPLACED", "Remplacé par un ingrédient existant"
 
     new = models.BooleanField(default=False)
     new_description = models.TextField(blank=True, verbose_name="description")
@@ -544,6 +545,7 @@ class DeclaredPlant(Historisable, Addable):
         else:
             return self.plant.name
 
+    # TODO: rename to object_type like on the Plant model ?
     @property
     def type(self):
         return "plant"

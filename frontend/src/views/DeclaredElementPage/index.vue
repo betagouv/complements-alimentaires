@@ -82,18 +82,12 @@ const openModal = (type) => {
 }
 
 const replacement = ref()
-const replaceElement = async () => {
-  if (replacement.value) {
-    // TODO: send request to back
-    console.log("Replace with :", replacement.value)
-  }
-}
 
 const actionButtons = computed(() => [
   {
     label: "Remplacer",
     primary: true,
-    onclick: replaceElement, // TODO: open modal to update synonymes
+    onclick: openModal("replace"),
     disabled: !replacement.value,
   },
   {
@@ -116,6 +110,7 @@ const updateElement = async (payload) => {
   })
     .patch(payload)
     .json()
+  // TODO: is this handling errors nicely?
   handleError(response)
   if (data) {
     element.value = data.value
@@ -123,6 +118,21 @@ const updateElement = async (payload) => {
 }
 
 const modals = {
+  replace: {
+    title: "Remplace l'ingrédient",
+    actions: [
+      {
+        label: "Remplacer",
+        onClick() {
+          const payload = {
+            requestStatus: "REPLACED",
+            element: { id: replacement.value },
+          }
+          updateElement(payload).then(closeModal)
+        },
+      },
+    ],
+  },
   info: {
     title: "L’ajout du nouvel ingrédient nécessite plus d’information.",
     actions: [
