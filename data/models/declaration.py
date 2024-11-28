@@ -1,12 +1,11 @@
 import json
 import logging
-import re
 from datetime import timedelta
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Case, Value, When
+from django.db.models import Case, F, Q, Value, When
 from django.db.models.functions import Coalesce
 
 from dateutil.relativedelta import relativedelta
@@ -60,6 +59,7 @@ class Declaration(Historisable, TimeStampable):
     class Article(models.TextChoices):
         ARTICLE_15 = "ART_15", "Article 15"
         ARTICLE_15_WARNING = "ART_15_WARNING", "Article 15 Vigilance"
+        ARTICLE_15_HIGH_RISK_POPULATION = "ART_15_HIGH_RISK_POPULATION", "Article 15 Population à risque"
         ARTICLE_16 = "ART_16", "Article 16"
         # ARTICLE_17 = "ART_17", "Article 17" # Article 17 et 18 sont pour le moment regroupés sous le label "nécessite saisine ANSES"
         ANSES_REFERAL = "ANSES_REFERAL", "nécessite saisine ANSES"
@@ -172,6 +172,7 @@ class Declaration(Historisable, TimeStampable):
     other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non listés")
 
     calculated_article = models.TextField("article calculé automatiquement", blank=True, choices=Article)
+    # TODO: les Article.choice pour overriden_article ne devraient pas inclure les choices calculés automatiquement
     overriden_article = models.TextField("article manuellement spécifié", blank=True, choices=Article)
     article = models.GeneratedField(
         expression=Coalesce(
@@ -332,6 +333,76 @@ class Declaration(Historisable, TimeStampable):
     def __str__(self):
         return f"Déclaration « {self.name} »"
 
+    @property
+    def computed_substances_with_max_quantity_exceeded(self):
+        substances_with_max_quantity_exceeded = self.computed_substances.exclude(
+            Q(quantity__isnull=True) | Q(substance__max_quantity__isnull=True)
+        ).filter(unit=F("substance__unit"), quantity__gt=F("substance__max_quantity"))
+        return substances_with_max_quantity_exceeded
+
+    @property
+    def declared_substances_with_max_quantity_exceeded(self):
+        substances_with_max_quantity_exceeded = self.declared_substances.exclude(
+            Q(new=True) | Q(quantity__isnull=True) | Q(substance__max_quantity__isnull=True)
+        ).filter(unit=F("substance__unit"), quantity__gt=F("substance__max_quantity"))
+        return substances_with_max_quantity_exceeded
+
+    @property
+    def has_max_quantity_exceeded(self):
+        """
+        Les doses max sont aujourd'hui définies pour les substances seulement.
+        """
+        return (
+            self.computed_substances_with_max_quantity_exceeded.exists()
+            | self.declared_substances_with_max_quantity_exceeded.exists()
+        )
+
+    @property
+    def risky_ingredients(self):
+        return self.declared_ingredients.exclude(new=True).filter(
+            Q(ingredient__is_risky=True)
+            | Q(ingredient__name__iregex="([^A-Za-z]+|^)vin([^A-Za-z]+|$)|alcool|vinaigre")
+        )
+
+    @property
+    def risky_plants(self):
+        # Les plantes ayant public_comments ~* 'la concentration en <nom de substance> est à surveiller' n'impliquent d'obligation règlementaire
+        return self.declared_plants.exclude(new=True).filter(
+            Q(plant__is_risky=True)
+            | Q(plant__name__iregex="dérivés hydroxyanthracéniques|dérivés anthracéniques|HAD")
+            | Q(preparation__contains_alcohol=True)
+        )
+
+    @property
+    def risky_microorganisms(self):
+        return self.declared_microorganisms.exclude(new=True).filter(microorganism__is_risky=True)
+
+    @property
+    def risky_declared_substances(self):
+        return self.declared_substances.exclude(new=True).filter(substance__is_risky=True)
+
+    @property
+    def risky_computed_substances(self):
+        return self.computed_substances.filter(substance__is_risky=True)
+
+    @property
+    def has_risky_ingredients(self):
+        return (
+            self.risky_ingredients.exists()
+            | self.risky_plants.exists()
+            | self.risky_microorganisms.exists()
+            | self.risky_declared_substances.exists()
+            | self.risky_computed_substances.exists()
+        )
+
+    @property
+    def has_risky_target_population(self):
+        """
+        Les populations cibles qui sont définies par l'ANSES et utilisées dans les avertissements
+        et contre-indications sont considérées comme étant à surveiller avec vigilance lorsqu'utilisées comme population cible
+        """
+        return any(x for x in self.populations.all() if x.is_defined_by_anses)
+
     def assign_calculated_article(self):
         """
         Peuple l'article calculé pour cette déclaration.
@@ -363,62 +434,18 @@ class Declaration(Historisable, TimeStampable):
                 x.filter(new=True).exists() for x in composition_ingredients if issubclass(x.model, Addable)
             )
 
-            surpasses_max_dose = any(
-                x.quantity > x.substance.max_quantity
-                for x in self.computed_substances.all()
-                if x.substance
-                and x.quantity is not None
-                and x.substance.max_quantity is not None
-                and x.substance.unit == x.unit
-            ) or any(
-                x.quantity > x.substance.max_quantity
-                for x in self.declared_substances.all()
-                if x.substance
-                and x.quantity is not None
-                and x.substance.max_quantity is not None
-                and x.substance.unit == x.unit
-            )
-            has_risky_ingredients = (
-                any(
-                    x
-                    for x in self.declared_ingredients.filter(new=False)
-                    if x.ingredient.is_risky
-                    or re.match(r"([^A-Za-z]+|^)vin([^A-Za-z]+|$)|alcool|vinaigre", x.ingredient.name)
-                )
-                # Les plantes ayant public_comments ~* 'la concentration en <nom de substance> est à surveiller' n'impliquent d'obligation règlementaire
-                or any(
-                    x
-                    for x in self.declared_plants.filter(new=False)
-                    if x.plant.is_risky
-                    or (x.preparation and x.preparation.contains_alcohol)
-                    or re.match(r"dérivés hydroxyanthracéniques|dérivés anthracéniques|HAD", x.plant.name)
-                )
-                or any(
-                    x
-                    for x in self.declared_microorganisms.filter(new=False)
-                    if x.microorganism and x.microorganism.is_risky
-                )
-                or any(x for x in self.declared_substances.filter(new=False) if x.substance and x.substance.is_risky)
-                or any(x for x in self.computed_substances.all() if x.substance and x.substance.is_risky)
-            )
-            # Les populations cibles qui sont définies par l'ANSES et utilisées dans les avertissements
-            # et contre-indications sont considérées comme étant à surveiller avec vigilance lorsqu'utilisées comme population cible
-            has_risky_target_population = any(x for x in self.populations.all() if x.is_defined_by_anses)
-
             if empty_composition:
                 self.calculated_article = ""
-            elif surpasses_max_dose:
+            elif self.has_max_quantity_exceeded:
                 self.calculated_article = Declaration.Article.ANSES_REFERAL
             elif has_not_authorized_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
             elif has_new_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
-            elif (
-                has_risky_ingredients
-                or has_risky_target_population
-                or (self.galenic_formulation and self.galenic_formulation.is_risky)
-            ):
+            elif self.has_risky_ingredients or (self.galenic_formulation and self.galenic_formulation.is_risky):
                 self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
+            elif self.has_risky_target_population:
+                self.calculated_article = Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
             else:
                 self.calculated_article = Declaration.Article.ARTICLE_15
 
@@ -624,6 +651,13 @@ class ComputedSubstance(Historisable):
     )
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
     unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
+
+    def __str__(self):
+        return self.substance.name
+
+    @property
+    def type(self):
+        return "substance"
 
 
 # Les pièces jointes peuvent avoir plusieurs types et formats.

@@ -136,6 +136,11 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration.overriden_article, "")
 
     def test_article_15_warning(self):
+        """
+        Il existe 2 types d'article 15 vigilance :
+        * la vigilance est liée à la population cible
+        * la vigilance est lié à l'ingrédient, ses substances, sa préparation ou la forme galénique du CA
+        """
         declaration_with_risky_substance = InstructionReadyDeclarationFactory(
             computed_substances=[],
         )
@@ -188,8 +193,12 @@ class DeclarationTestCase(TestCase):
         declaration_with_risky_population.assign_calculated_article()
         declaration_with_risky_population.save()
         declaration_with_risky_population.refresh_from_db()
-        self.assertEqual(declaration_with_risky_population.article, Declaration.Article.ARTICLE_15_WARNING)
-        self.assertEqual(declaration_with_risky_population.calculated_article, Declaration.Article.ARTICLE_15_WARNING)
+        self.assertEqual(
+            declaration_with_risky_population.article, Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
+        )
+        self.assertEqual(
+            declaration_with_risky_population.calculated_article, Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
+        )
         self.assertEqual(declaration_with_risky_population.overriden_article, "")
 
     def test_article_15_override(self):
@@ -252,10 +261,11 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration_not_autorized.overriden_article, "")
 
     def test_article_anses_referal(self):
+        SUBSTANCE_MAX_QUANTITY = 1.0
         declaration_with_computed_substance_max_exceeded = InstructionReadyDeclarationFactory(
             computed_substances=[],
         )
-        substance = SubstanceFactory(ca_max_quantity=1.0)
+        substance = SubstanceFactory(ca_max_quantity=SUBSTANCE_MAX_QUANTITY)
         ComputedSubstanceFactory(
             substance=substance,
             unit=substance.unit,
@@ -270,6 +280,25 @@ class DeclarationTestCase(TestCase):
             declaration_with_computed_substance_max_exceeded.calculated_article, Declaration.Article.ANSES_REFERAL
         )
         self.assertEqual(declaration_with_computed_substance_max_exceeded.overriden_article, "")
+
+        # La déclaration ne doit pas passer en saisine ANSES si la dose est exactement égale à la dose maximale
+        declaration_with_computed_substance_equals_max = InstructionReadyDeclarationFactory(
+            computed_substances=[],
+        )
+        ComputedSubstanceFactory(
+            substance=substance,
+            unit=substance.unit,
+            quantity=SUBSTANCE_MAX_QUANTITY,
+            declaration=declaration_with_computed_substance_equals_max,
+        )
+        declaration_with_computed_substance_equals_max.assign_calculated_article()
+        declaration_with_computed_substance_equals_max.save()
+        declaration_with_computed_substance_equals_max.refresh_from_db()
+        self.assertEqual(declaration_with_computed_substance_equals_max.article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(
+            declaration_with_computed_substance_equals_max.calculated_article, Declaration.Article.ARTICLE_15
+        )
+        self.assertEqual(declaration_with_computed_substance_equals_max.overriden_article, "")
 
         declaration_with_declared_substance_max_exceeded = InstructionReadyDeclarationFactory(
             computed_substances=[],

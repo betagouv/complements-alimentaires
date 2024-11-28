@@ -104,11 +104,13 @@ class DeclaredPlantSerializer(serializers.ModelSerializer):
     element = PassthroughPlantSerializer(required=False, source="plant", allow_null=True)
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
     used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False, allow_null=True)
+    declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = DeclaredPlant
         fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
+            "declaration",
             "element",
             "new_name",
             "active",
@@ -133,11 +135,13 @@ class DeclaredPlantSerializer(serializers.ModelSerializer):
 
 class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
     element = PassthroughMicroorganismSerializer(required=False, source="microorganism", allow_null=True)
+    declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = DeclaredMicroorganism
         fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
+            "declaration",
             "element",
             "new_species",
             "new_genre",
@@ -165,11 +169,13 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
 class DeclaredIngredientSerializer(serializers.ModelSerializer):
     element = PassthroughIngredientSerializer(required=False, source="ingredient", allow_null=True)
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
+    declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = DeclaredIngredient
         fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
+            "declaration",
             "element",
             "new_name",
             "new_type",
@@ -193,11 +199,13 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
 
 class DeclaredSubstanceSerializer(serializers.ModelSerializer):
     element = PassthroughSubstanceSerializer(required=False, source="substance", allow_null=True)
+    declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = DeclaredSubstance
         fields = ADDABLE_ELEMENT_FIELDS + (
             "id",
+            "declaration",
             "element",
             "new_name",
             "active",
@@ -568,6 +576,7 @@ class DeclaredElementSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.SerializerMethodField()
     type = serializers.CharField()
+    authorization_mode = serializers.CharField()
     declaration = DeclarationShortSerializer()
 
     def get_name(self, obj):
