@@ -300,26 +300,21 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
 class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
     company = serializers.SerializerMethodField()
+    galenic_formulation = serializers.SerializerMethodField()
 
     class Meta:
         model = Declaration
-        fields = (
-            "id",
-            "status",
-            "company",
-            "name",
-            "brand",
-            "gamme",
-            "description",
-            "article",
-        )
+        fields = ("id", "status", "company", "name", "brand", "gamme", "article", "galenic_formulation")
         read_only_fields = fields
 
     def get_status(self, obj):
         return obj.get_status_display()
 
     def get_company(self, obj):
-        return obj.company.commercial_name
+        return obj.company.commercial_name, obj.company.siret
+
+    def get_galenic_formulation(self, obj):
+        return obj.galenic_formulation.name
 
 
 class DeclarationSerializer(serializers.ModelSerializer):

@@ -116,6 +116,7 @@ class DECLARATIONS(EXTRACTOR):
             "gamme": "gamme",
             "company": "nom_fabriquant",
             "article": "article",
+            "galenic_formulation": "forme_galenique",
         }
 
     def extract_dataset(self):
