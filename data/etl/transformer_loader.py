@@ -51,10 +51,9 @@ class ETL_OPEN_DATA_DECLARATIONS(DECLARATIONS, OPEN_DATA):
             "name": "nom_commercial",
             "brand": "marque",
             "gamme": "gamme",
-            "company": "complet_responsable_mise_sur_marche",
             "article": "article",
             "galenic_formulation": "forme_galenique",
-            "quantity": "dose_journaliere",
+            "daily_recommended_dose": "dose_journaliere",
             "instructions": "mode_emploi",
             "warning": "mises_en_garde",
             "declared_plants": "plantes",
@@ -65,8 +64,6 @@ class ETL_OPEN_DATA_DECLARATIONS(DECLARATIONS, OPEN_DATA):
 
     def transform_dataset(self):
         self.df = self.df.rename(columns=self.columns_mapper)
-        self.df["responsable_mise_sur_marche"] = self.df["complet_responsable_mise_sur_marche"].apply(lambda x: x[0])
-        self.df["siret_responsable_mise_sur_marche"] = self.df["complet_responsable_mise_sur_marche"].apply(
-            lambda x: x[1]
-        )
+        self.df["responsable_mise_sur_marche"] = self.df["company"].apply(lambda x: x[0])
+        self.df["siret_responsable_mise_sur_marche"] = self.df["company"].apply(lambda x: x[1])
         self.clean_dataset()

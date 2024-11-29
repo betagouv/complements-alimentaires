@@ -52,6 +52,13 @@ class ETL(ABC):
 
     def clean_dataset(self):
         self.df = self.df.loc[:, ~self.df.columns.duplicated()]
+        ## Code temporaire en attendant d'avoir tous les champs du schéma
+        columns_to_keep = []
+        for col in self.columns:
+            if col in self.df.columns:
+                columns_to_keep.append(col)
+        # ---------------------------------------------------
+        self.df = self.df[columns_to_keep]
         self.filter_dataframe_with_schema_cols()
 
     def is_valid(self) -> bool:
