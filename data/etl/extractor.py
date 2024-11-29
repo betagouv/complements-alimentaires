@@ -103,7 +103,7 @@ class DECLARATIONS(EXTRACTOR):
             "name": "nom_commercial",
             "brand": "marque",
             "gamme": "gamme",
-            "company": "responsable_mise_sur_marche",
+            "company": "complet_responsable_mise_sur_marche",
             "article": "article",
             "galenic_formulation": "forme_galenique",
             "declared_plants": "plantes",
