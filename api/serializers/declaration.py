@@ -329,6 +329,8 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             "article",
             "galenic_formulation",
             "daily_recommended_dose",
+            "instructions",
+            "warning",
             "declared_plants",
             "declared_microorganisms",
             "declared_substances",

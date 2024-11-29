@@ -55,6 +55,8 @@ class ETL_OPEN_DATA_DECLARATIONS(DECLARATIONS, OPEN_DATA):
             "article": "article",
             "galenic_formulation": "forme_galenique",
             "quantity": "dose_journaliere",
+            "instructions": "mode_emploi",
+            "warning": "mises_en_garde",
             "declared_plants": "plantes",
             "declared_microorganisms": "micro_organismes",
             "declared_substances": "substances",
