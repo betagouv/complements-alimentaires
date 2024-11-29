@@ -108,7 +108,6 @@ class DECLARATIONS(EXTRACTOR):
             "galenic_formulation": "forme_galenique",
             "declared_plants": "plantes",
             "declared_microorganisms": "micro_organismes",
-            "declared_ingredients": "ingredients_inactifs",
             "declared_substances": "substances",
             "modification_date": "date_decision",  #  Warning : Se baser sur la du snapshot d'autorisation si la plateforme Compl'Alim permet d'editer la déclaration (ex: abandon)
         }

@@ -313,7 +313,6 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     declared_plants = serializers.SerializerMethodField()
     declared_microorganisms = serializers.SerializerMethodField()
-    declared_ingredients = serializers.SerializerMethodField()
     declared_substances = serializers.SerializerMethodField()
 
     modification_date = serializers.DateTimeField(format="%Y-%m-%d")
@@ -332,7 +331,6 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             "declared_plants",
             "declared_microorganisms",
             "declared_substances",
-            "declared_ingredients",
             "modification_date",
         )
         read_only_fields = fields
@@ -363,7 +361,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
                 "partie": declared_plant.used_part.name,
                 "preparation": declared_plant.preparation.name,
                 "quantité_par_djr": declared_plant.quantity,
-                "unit": declared_plant.unit,
+                "unite": declared_plant.unit.name,
             }
             if declared_plant.plant
             and declared_plant.used_part
@@ -383,14 +381,25 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
                 "quantité_par_djr": declared_microorganism.quantity,
                 "inactive": not declared_microorganism.activated,
             }
+            if declared_microorganism.microorganism
+            and declared_microorganism.strain
+            and declared_microorganism.quantity
+            and declared_microorganism.activated
+            else {}
             for declared_microorganism in obj.declared_microorganisms.all()
         ]
 
-    def get_declared_ingredients(self, obj):
-        return [declared_ingredient.microorganism.genus for declared_ingredient in obj.declared_ingredients.all()]
-
     def get_declared_substances(self, obj):
-        return {"nom": obj.declared_plants.name}
+        return [
+            {
+                "nom": declared_substance.new_name,
+                "quantité_par_djr": declared_substance.quantity,
+                "unite": declared_substance.unit.name,
+            }
+            if declared_substance.new_name and declared_substance.quantity and declared_substance.unit
+            else {}
+            for declared_substance in obj.declared_substances.all()
+        ]
 
 
 class DeclarationSerializer(serializers.ModelSerializer):
