@@ -28,6 +28,7 @@ from api.permissions import (
     IsVisor,
 )
 from api.serializers import (
+    OpenDataDeclarationSerializer,
     DeclarationSerializer,
     DeclarationShortSerializer,
     SimpleDeclarationSerializer,
@@ -345,6 +346,14 @@ class OngoingDeclarationsListView(GenericDeclarationsListView):
     filter_backends = [django_filters.DjangoFilterBackend, InstructionDateOrderingFilter]
     ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT)
+
+
+class OpenDataDeclarationsListView(GenericDeclarationsListView):
+    pagination_class = InstructionDeclarationPagination
+    serializer_class = OpenDataDeclarationSerializer
+    filter_backends = [django_filters.DjangoFilterBackend, InstructionDateOrderingFilter]
+    ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
+    queryset = Declaration.objects.filter(status=Declaration.DeclarationStatus.AUTHORIZED)
 
 
 class CompanyDeclarationsListView(GenericDeclarationsListView):
