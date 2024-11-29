@@ -369,7 +369,16 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         ]
 
     def get_declared_microorganisms(self, obj):
-        return {"nom": obj.declared_plants.name}
+        return [
+            {
+                "genre": declared_microorganism.microorganism.genus,
+                "espece": declared_microorganism.microorganism.species,
+                "souche": declared_microorganism.strain,
+                "quantité_par_djr": declared_microorganism.quantity,
+                "inactive": not declared_microorganism.activated,
+            }
+            for declared_microorganism in obj.declared_microorganisms.all()
+        ]
 
     def get_declared_ingredients(self, obj):
         return {"nom": obj.declared_plants.name}
