@@ -30,6 +30,7 @@ class ETL(ABC):
         self.schema = None
         self.schema_url = ""
         self.dataset_name = ""
+        self.columns = []
 
     def get_schema(self):
         return self.schema
