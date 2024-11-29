@@ -97,21 +97,6 @@ class DECLARATIONS(EXTRACTOR):
         self.df = None
         self.columns = [i["name"] for i in self.schema["fields"]]
 
-        self.columns_mapper = {
-            "id": "id",
-            "status": "decision",
-            "name": "nom_commercial",
-            "brand": "marque",
-            "gamme": "gamme",
-            "company": "complet_responsable_mise_sur_marche",
-            "article": "article",
-            "galenic_formulation": "forme_galenique",
-            "declared_plants": "plantes",
-            "declared_microorganisms": "micro_organismes",
-            "declared_substances": "substances",
-            "modification_date": "date_decision",  #  Warning : Se baser sur la du snapshot d'autorisation si la plateforme Compl'Alim permet d'editer la déclaration (ex: abandon)
-        }
-
     def extract_dataset(self):
         open_data_view = OpenDataDeclarationsListView()
         queryset = open_data_view.get_queryset()

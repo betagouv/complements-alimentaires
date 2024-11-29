@@ -43,6 +43,23 @@ class OPEN_DATA(TRANSFORMER_LOADER):
 
 
 class ETL_OPEN_DATA_DECLARATIONS(DECLARATIONS, OPEN_DATA):
+    def __init__(self):
+        super().__init__()
+        self.columns_mapper = {
+            "id": "id",
+            "status": "decision",
+            "name": "nom_commercial",
+            "brand": "marque",
+            "gamme": "gamme",
+            "company": "complet_responsable_mise_sur_marche",
+            "article": "article",
+            "galenic_formulation": "forme_galenique",
+            "declared_plants": "plantes",
+            "declared_microorganisms": "micro_organismes",
+            "declared_substances": "substances",
+            "modification_date": "date_decision",  #  Warning : Se baser sur la du snapshot d'autorisation si la plateforme Compl'Alim permet d'editer la déclaration (ex: abandon)
+        }
+
     def transform_dataset(self):
         self.df = self.df.rename(columns=self.columns_mapper)
         self.df["responsable_mise_sur_marche"] = self.df["complet_responsable_mise_sur_marche"].apply(lambda x: x[0])
