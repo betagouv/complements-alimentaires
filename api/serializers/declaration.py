@@ -313,7 +313,6 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     declared_plants = serializers.SerializerMethodField()
     declared_microorganisms = serializers.SerializerMethodField()
-    declared_ingredients = serializers.SerializerMethodField()
     declared_substances = serializers.SerializerMethodField()
 
     modification_date = serializers.DateTimeField(format="%Y-%m-%d")
@@ -329,10 +328,12 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             "gamme",
             "article",
             "galenic_formulation",
+            "daily_recommended_dose",
+            "instructions",
+            "warning",
             "declared_plants",
             "declared_microorganisms",
             "declared_substances",
-            "declared_ingredients",
             "modification_date",
         )
         read_only_fields = fields
@@ -363,19 +364,38 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
                 "partie": declared_plant.used_part.name,
                 "preparation": declared_plant.preparation.name,
                 "quantité_par_djr": declared_plant.quantity,
-                "unit": declared_plant.unit,
+                "unite": declared_plant.unit.name,
             }
-            for declared_plant in obj.declared_plants.all()
+            if declared_plant.unit
+            else {}
+            for declared_plant in obj.declared_plants.filter(active=True)
         ]
 
     def get_declared_microorganisms(self, obj):
-        return {"nom": obj.declared_plants.name}
-
-    def get_declared_ingredients(self, obj):
-        return {"nom": obj.declared_plants.name}
+        return [
+            {
+                "genre": declared_microorganism.microorganism.genus,
+                "espece": declared_microorganism.microorganism.species,
+                "souche": declared_microorganism.strain
+                if declared_microorganism.strain
+                else None,  # elle est normalement obligatoire mais quelques entrées ont pu être rentrées avant le required
+                "quantité_par_djr": declared_microorganism.quantity if declared_microorganism.activated else None,
+                "inactive": not declared_microorganism.activated,
+            }
+            for declared_microorganism in obj.declared_microorganisms.all()
+        ]
 
     def get_declared_substances(self, obj):
-        return {"nom": obj.declared_plants.name}
+        return [
+            {
+                "nom": declared_substance.substance.name,
+                "quantité_par_djr": declared_substance.quantity,
+                "unite": declared_substance.unit.name,
+            }
+            if declared_substance.substance.name and declared_substance.quantity and declared_substance.unit
+            else {}
+            for declared_substance in obj.declared_substances.all()
+        ]
 
 
 class DeclarationSerializer(serializers.ModelSerializer):

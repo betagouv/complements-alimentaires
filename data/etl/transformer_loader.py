@@ -43,8 +43,27 @@ class OPEN_DATA(TRANSFORMER_LOADER):
 
 
 class ETL_OPEN_DATA_DECLARATIONS(DECLARATIONS, OPEN_DATA):
+    def __init__(self):
+        super().__init__()
+        self.columns_mapper = {
+            "id": "id",
+            "status": "decision",
+            "name": "nom_commercial",
+            "brand": "marque",
+            "gamme": "gamme",
+            "article": "article",
+            "galenic_formulation": "forme_galenique",
+            "daily_recommended_dose": "dose_journaliere",
+            "instructions": "mode_emploi",
+            "warning": "mises_en_garde",
+            "declared_plants": "plantes",
+            "declared_microorganisms": "micro_organismes",
+            "declared_substances": "substances",
+            "modification_date": "date_decision",  #  Warning : Se baser sur la du snapshot d'autorisation si la plateforme Compl'Alim permet d'editer la déclaration (ex: abandon)
+        }
+
     def transform_dataset(self):
         self.df = self.df.rename(columns=self.columns_mapper)
-        self.df["responsable_mise_sur_marche"] = self.df["responsable_mise_sur_marche"].apply(lambda x: x[0])
-        self.df["siret_responsable_mise_sur_marche"] = self.df["responsable_mise_sur_marche"].apply(lambda x: x[1])
+        self.df["responsable_mise_sur_marche"] = self.df["company"].apply(lambda x: x[0])
+        self.df["siret_responsable_mise_sur_marche"] = self.df["company"].apply(lambda x: x[1])
         self.clean_dataset()

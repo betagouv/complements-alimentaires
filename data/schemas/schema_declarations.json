@@ -68,10 +68,10 @@
         "constraints": {
           "required": "True"
         },
-        "description": "Nom de l'entreprise ayant fabriqué le complément alimentaire",
-        "example": "",
-        "name": "nom_fabricant",
-        "title": "Nom fabricant",
+        "description": "Nom de l'entreprise responsable de la mise sur le marché du complément alimentaire",
+        "example": "Compl Corp",
+        "name": "responsable_mise_sur_marche",
+        "title": "Responsable de la mise sur le marché",
         "type": "string"
       },
       {
@@ -79,9 +79,10 @@
           "pattern": "^[0-9]{14}$",
           "required": true
         },
+        "description": "Siret de l'entreprise responsable de la mise sur le marché du complément alimentaire",
         "example": "11007001800012",
-        "name": "siret_fabricant",
-        "title": "Siret fabricant",
+        "name": "siret_responsable_mise_sur_marche",
+        "title": "Siret responsable de la mise sur le marché",
         "type": "integer"
       },
       {

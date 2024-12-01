@@ -30,6 +30,7 @@ class ETL(ABC):
         self.schema = None
         self.schema_url = ""
         self.dataset_name = ""
+        self.columns = []
 
     def get_schema(self):
         return self.schema
@@ -51,6 +52,13 @@ class ETL(ABC):
 
     def clean_dataset(self):
         self.df = self.df.loc[:, ~self.df.columns.duplicated()]
+        ## Code temporaire en attendant d'avoir tous les champs du schéma
+        columns_to_keep = []
+        for col in self.columns:
+            if col in self.df.columns:
+                columns_to_keep.append(col)
+        # ---------------------------------------------------
+        self.df = self.df[columns_to_keep]
         self.filter_dataframe_with_schema_cols()
 
     def is_valid(self) -> bool:
@@ -96,22 +104,6 @@ class DECLARATIONS(EXTRACTOR):
         )
         self.df = None
         self.columns = [i["name"] for i in self.schema["fields"]]
-
-        self.columns_mapper = {
-            "id": "id",
-            "status": "decision",
-            "name": "nom_commercial",
-            "brand": "marque",
-            "gamme": "gamme",
-            "company": "responsable_mise_sur_marche",
-            "article": "article",
-            "galenic_formulation": "forme_galenique",
-            "declared_plants": "plantes",
-            "declared_microorganisms": "micro_organismes",
-            "declared_ingredients": "ingredients_inactifs",
-            "declared_substances": "substances",
-            "modification_date": "date_decision",  #  Warning : Se baser sur la du snapshot d'autorisation si la plateforme Compl'Alim permet d'editer la déclaration (ex: abandon)
-        }
 
     def extract_dataset(self):
         open_data_view = OpenDataDeclarationsListView()
