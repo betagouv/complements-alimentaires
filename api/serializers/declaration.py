@@ -366,13 +366,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
                 "quantité_par_djr": declared_plant.quantity,
                 "unite": declared_plant.unit.name,
             }
-            if declared_plant.plant
-            and declared_plant.used_part
-            and declared_plant.preparation
-            and declared_plant.quantity
-            and declared_plant.unit
-            else {}
-            for declared_plant in obj.declared_plants.all()
+            for declared_plant in obj.declared_plants.filter(active=True)
         ]
 
     def get_declared_microorganisms(self, obj):
