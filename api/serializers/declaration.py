@@ -369,20 +369,17 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             for declared_plant in obj.declared_plants.filter(active=True)
         ]
 
-    def get_declared_microorganisms(self, obj):
+    def get_declared_ingredients(self, obj):
         return [
             {
                 "genre": declared_microorganism.microorganism.genus,
                 "espece": declared_microorganism.microorganism.species,
-                "souche": declared_microorganism.strain,
-                "quantité_par_djr": declared_microorganism.quantity,
+                "souche": declared_microorganism.strain
+                if declared_microorganism.strain
+                else None,  # elle est normalement obligatoire mais quelques entrées ont pu être rentrées avant le required
+                "quantité_par_djr": declared_microorganism.quantity if declared_microorganism.activated else None,
                 "inactive": not declared_microorganism.activated,
             }
-            if declared_microorganism.microorganism
-            and declared_microorganism.strain
-            and declared_microorganism.quantity
-            and declared_microorganism.activated
-            else {}
             for declared_microorganism in obj.declared_microorganisms.all()
         ]
 
