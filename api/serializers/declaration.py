@@ -366,10 +366,12 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
                 "quantité_par_djr": declared_plant.quantity,
                 "unite": declared_plant.unit.name,
             }
+            if declared_plant.unit
+            else {}
             for declared_plant in obj.declared_plants.filter(active=True)
         ]
 
-    def get_declared_ingredients(self, obj):
+    def get_declared_microorganisms(self, obj):
         return [
             {
                 "genre": declared_microorganism.microorganism.genus,
@@ -386,11 +388,11 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def get_declared_substances(self, obj):
         return [
             {
-                "nom": declared_substance.name,
+                "nom": declared_substance.substance.name,
                 "quantité_par_djr": declared_substance.quantity,
                 "unite": declared_substance.unit.name,
             }
-            if declared_substance.name and declared_substance.quantity and declared_substance.unit
+            if declared_substance.substance.name and declared_substance.quantity and declared_substance.unit
             else {}
             for declared_substance in obj.declared_substances.all()
         ]
