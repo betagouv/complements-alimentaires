@@ -29,11 +29,24 @@
     <div v-else class="flex justify-center items-center min-h-60">
       <ProgressSpinner />
     </div>
+    <DsfrModal
+      title="Entreprise non trouvée"
+      :opened="missingCompanyModalOpened"
+      @close="missingCompanyModalOpened = false"
+    >
+      <p>
+        L'entreprise correspondant à ce SIRET ou numéro TVA n'a pas encore de compte Compl'Alim. Afin de pouvoir ajouter
+        le mandat, l'entreprise doit être présente dans notre plateforme.
+      </p>
+      <div class="flex gap-4">
+        <DsfrButton label="Fermer" @click="missingCompanyModalOpened = false" />
+      </div>
+    </DsfrModal>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import useToaster from "@/composables/use-toaster"
 import { useFetch } from "@vueuse/core"
 import { useRoute } from "vue-router"
@@ -45,6 +58,8 @@ import NewMandateModal from "./NewMandateModal"
 import MandatedCompaniesList from "./MandatedCompaniesList"
 
 const route = useRoute()
+const missingCompanyModalOpened = ref(false)
+
 const {
   data: company,
   execute,
@@ -72,12 +87,16 @@ const removeMandate = (id) => {
 
 const editMandate = async (payload, url, successMessage) => {
   const { response: mandateResponse, data } = await useFetch(url, { headers: headers() }).post(payload).json()
-  if (!mandateResponse.value.ok) {
+  const adding = url.indexOf("add-mandated-company") > -1
+  if (adding && mandateResponse.value.status === 404) {
+    missingCompanyModalOpened.value = true
+  } else if (!mandateResponse.value.ok) {
     useToaster().addErrorMessage("Une erreur s'est produite, merci de ressayer plus tard")
     return
+  } else {
+    company.value = data.value
+    useToaster().addSuccessMessage(successMessage)
   }
-  company.value = data.value
-  useToaster().addSuccessMessage(successMessage)
 }
 
 const hasMandates = computed(() => company.value?.mandatedCompanies?.length > 0)
