@@ -360,10 +360,10 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def get_declared_plants(self, obj):
         return [
             {
-                "nom": declared_plant.plant.name,
-                "partie": declared_plant.used_part.name,
-                "preparation": declared_plant.preparation.name,
-                "quantité_par_djr": declared_plant.quantity,
+                "nom": declared_plant.plant.name if declared_plant.plant else None,
+                "partie": declared_plant.used_part.name if declared_plant.used_part else None,
+                "preparation": declared_plant.preparation.name if declared_plant.preparation else None,
+                "quantité_par_djr": declared_plant.quantity if declared_plant.quantity else None,
                 "unite": declared_plant.unit.name,
             }
             if declared_plant.unit
@@ -374,8 +374,10 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def get_declared_microorganisms(self, obj):
         return [
             {
-                "genre": declared_microorganism.microorganism.genus,
-                "espece": declared_microorganism.microorganism.species,
+                "genre": declared_microorganism.microorganism.genus if declared_microorganism.microorganism else None,
+                "espece": declared_microorganism.microorganism.species
+                if declared_microorganism.microorganism
+                else None,
                 "souche": declared_microorganism.strain
                 if declared_microorganism.strain
                 else None,  # elle est normalement obligatoire mais quelques entrées ont pu être rentrées avant le required
@@ -392,7 +394,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
                 "quantité_par_djr": declared_substance.quantity,
                 "unite": declared_substance.unit.name,
             }
-            if declared_substance.substance.name and declared_substance.quantity and declared_substance.unit
+            if declared_substance.substance and declared_substance.quantity and declared_substance.unit
             else {}
             for declared_substance in obj.declared_substances.all()
         ]
