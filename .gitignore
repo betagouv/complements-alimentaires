@@ -174,3 +174,9 @@ notes/
 
 # Poetry
 poetry.toml
+
+# Shell nix
+shell.nix
+
+# Database
+.postgres

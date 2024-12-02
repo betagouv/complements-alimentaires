@@ -21,6 +21,7 @@ from .preparation import PreparationSerializer
 from .unit import SubstanceUnitSerializer
 from .autocomplete_item import AutocompleteItemSerializer
 from .declaration import (
+    OpenDataDeclarationSerializer,
     DeclarationSerializer,
     DeclarationShortSerializer,
     SimpleDeclarationSerializer,

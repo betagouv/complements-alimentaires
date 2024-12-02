@@ -307,6 +307,99 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class OpenDataDeclarationSerializer(serializers.ModelSerializer):
+    status = serializers.SerializerMethodField()
+    article = serializers.SerializerMethodField()
+    company = serializers.SerializerMethodField()
+    galenic_formulation = serializers.SerializerMethodField()
+
+    declared_plants = serializers.SerializerMethodField()
+    declared_microorganisms = serializers.SerializerMethodField()
+    declared_substances = serializers.SerializerMethodField()
+
+    modification_date = serializers.DateTimeField(format="%Y-%m-%d")
+
+    class Meta:
+        model = Declaration
+        fields = (
+            "id",
+            "status",
+            "company",
+            "name",
+            "brand",
+            "gamme",
+            "article",
+            "galenic_formulation",
+            "daily_recommended_dose",
+            "instructions",
+            "warning",
+            "declared_plants",
+            "declared_microorganisms",
+            "declared_substances",
+            "modification_date",
+        )
+        read_only_fields = fields
+
+    def get_status(self, obj):
+        return obj.get_status_display()
+
+    def get_article(self, obj):
+        """
+        Unify all types of Articles 15 categories.
+        If not part of Article 15, then return display name
+        """
+        if "Article 15" in obj.get_calculated_article_display():
+            return "Article 15"
+        else:
+            return obj.get_calculated_article_display()
+
+    def get_company(self, obj):
+        return obj.company.commercial_name, obj.company.siret
+
+    def get_galenic_formulation(self, obj):
+        return obj.galenic_formulation.name
+
+    def get_declared_plants(self, obj):
+        return [
+            {
+                "nom": declared_plant.plant.name,
+                "partie": declared_plant.used_part.name,
+                "preparation": declared_plant.preparation.name,
+                "quantité_par_djr": declared_plant.quantity,
+                "unite": declared_plant.unit.name,
+            }
+            if declared_plant.unit
+            else {}
+            for declared_plant in obj.declared_plants.filter(active=True)
+        ]
+
+    def get_declared_microorganisms(self, obj):
+        return [
+            {
+                "genre": declared_microorganism.microorganism.genus,
+                "espece": declared_microorganism.microorganism.species,
+                "souche": declared_microorganism.strain
+                if declared_microorganism.strain
+                else None,  # elle est normalement obligatoire mais quelques entrées ont pu être rentrées avant le required
+                "quantité_par_djr": declared_microorganism.quantity if declared_microorganism.activated else None,
+                "inactive": not declared_microorganism.activated,
+            }
+            for declared_microorganism in obj.declared_microorganisms.all()
+        ]
+
+    def get_declared_substances(self, obj):
+        return [
+            {
+                "nom": declared_substance.substance.name,
+                "quantité_par_djr": declared_substance.quantity,
+                "unite": declared_substance.unit.name,
+            }
+            if declared_substance.substance.name and declared_substance.quantity and declared_substance.unit
+            else {}
+            for declared_substance in obj.declared_substances.all()
+        ]
+
+
 class DeclarationSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
