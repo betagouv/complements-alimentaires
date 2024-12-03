@@ -6,7 +6,7 @@ class PrivateCommentSerializer(serializers.ModelSerializer):
         repr = super().to_representation(instance)
         user = self.context and self.context["request"] and self.context["request"].user
         if not user:
-            repr.pop("private_comments")
+            self.remove_fields(repr)
             return repr
         try:
             has_visa_role = user.visarole
@@ -18,8 +18,13 @@ class PrivateCommentSerializer(serializers.ModelSerializer):
             has_instruction_role = False
         can_see_private_comments = has_visa_role or has_instruction_role
         if not can_see_private_comments:
-            repr.pop("private_comments", None)
+            self.remove_fields(repr)
         return repr
+
+    def remove_fields(self, representation):
+        fields = getattr(self, "private_fields", ("private_comments",))
+        for field in fields:
+            representation.pop(field, None)
 
 
 class HistoricalModelSerializer(serializers.ModelSerializer):

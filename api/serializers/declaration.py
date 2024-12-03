@@ -29,6 +29,7 @@ from .microorganism import MicroorganismSerializer
 from .plant import PlantSerializer
 from .substance import SubstanceSerializer
 from .user import SimpleUserSerializer
+from .utils import PrivateCommentSerializer
 
 
 class IdPassthrough:
@@ -102,25 +103,11 @@ ADDABLE_ELEMENT_FIELDS = (
 )
 
 
-class HideInstructionFields:
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        if self.parent and self.parent.context:
-            request = self.parent.context.get("request")
-            view = self.parent.context.get("view")
-
-            if not request or not view:
-                return
-
-            is_instructor = IsInstructor().has_permission(request, view)
-            is_visor = IsVisor().has_permission(request, view)
-            if not is_instructor and not is_visor:
-                representation.pop("request_private_notes")
-                representation.pop("request_status")
-        return representation
+class DeclaredIngredientCommonSerializer(PrivateCommentSerializer):
+    private_fields = ("request_private_notes", "request_status")
 
 
-class DeclaredPlantSerializer(HideInstructionFields, serializers.ModelSerializer):
+class DeclaredPlantSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughPlantSerializer(required=False, source="plant", allow_null=True)
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
     used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False, allow_null=True)
@@ -153,7 +140,7 @@ class DeclaredPlantSerializer(HideInstructionFields, serializers.ModelSerializer
         return super().create(validated_data)
 
 
-class DeclaredMicroorganismSerializer(HideInstructionFields, serializers.ModelSerializer):
+class DeclaredMicroorganismSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughMicroorganismSerializer(required=False, source="microorganism", allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -186,7 +173,7 @@ class DeclaredMicroorganismSerializer(HideInstructionFields, serializers.ModelSe
         return super().create(validated_data)
 
 
-class DeclaredIngredientSerializer(HideInstructionFields, serializers.ModelSerializer):
+class DeclaredIngredientSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughIngredientSerializer(required=False, source="ingredient", allow_null=True)
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -217,7 +204,7 @@ class DeclaredIngredientSerializer(HideInstructionFields, serializers.ModelSeria
         return super().create(validated_data)
 
 
-class DeclaredSubstanceSerializer(HideInstructionFields, serializers.ModelSerializer):
+class DeclaredSubstanceSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughSubstanceSerializer(required=False, source="substance", allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
