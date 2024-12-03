@@ -29,7 +29,7 @@ from .microorganism import MicroorganismSerializer
 from .plant import PlantSerializer
 from .substance import SubstanceSerializer
 from .user import SimpleUserSerializer
-from .utils import PrivateCommentSerializer
+from .utils import PrivateFieldsSerializer
 
 
 class IdPassthrough:
@@ -103,7 +103,7 @@ ADDABLE_ELEMENT_FIELDS = (
 )
 
 
-class DeclaredIngredientCommonSerializer(PrivateCommentSerializer):
+class DeclaredIngredientCommonSerializer(PrivateFieldsSerializer):
     private_fields = ("request_private_notes", "request_status")
 
 

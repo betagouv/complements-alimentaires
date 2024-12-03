@@ -1,7 +1,12 @@
 from rest_framework import serializers
 
 
-class PrivateCommentSerializer(serializers.ModelSerializer):
+class PrivateFieldsSerializer(serializers.ModelSerializer):
+    """
+    Par défaut, ça va cacher `private_comments` du serializer enfant.
+    Définir le tuple `private_fields` sur l'enfant pour cacher autres champs.
+    """
+
     def to_representation(self, instance):
         repr = super().to_representation(instance)
         user = self.context and self.context["request"] and self.context["request"].user
