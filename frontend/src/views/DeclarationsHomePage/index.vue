@@ -105,7 +105,7 @@ const offset = computed(() => (page.value - 1) * limit.value)
 
 const authorOptions = computed(() => {
   const allAuthors = data.value?.authors.map((x) => ({ value: x.id, text: `${x.firstName} ${x.lastName}` })) || []
-  if ((data.value?.authors?.map?.((x) => x.id) || []).indexOf(loggedUser.value.id) === -1)
+  if ((data.value?.authors.map((x) => x.id) || []).indexOf(loggedUser.value.id) === -1)
     allAuthors.unshift({
       value: loggedUser.value.id,
       text: `${loggedUser.value.firstName} ${loggedUser.value.lastName}`,
