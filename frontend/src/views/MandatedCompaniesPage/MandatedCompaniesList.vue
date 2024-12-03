@@ -10,7 +10,7 @@
       :pagination="false"
     />
     <DsfrModal title="Veuillez confirmer" :opened="confirmationModalOpened" @close="closeRemovalModal">
-      <p>Êtes-vous sûr de vouloir retirer ce mandat ?</p>
+      <p>Voulez-vous vraiment retirer ce mandat ?</p>
       <div class="flex gap-4">
         <DsfrButton secondary label="Non, revenir en arrière" @click="closeRemovalModal" />
         <DsfrButton icon="ri-close-fill" label="Oui, je veux le retirer" @click="removeMandate" />
