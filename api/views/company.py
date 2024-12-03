@@ -291,6 +291,5 @@ class RemoveMandatedCompanyView(GenericAPIView):
         except Company.DoesNotExist as _:
             pass
 
-        # TODO: send email to mandated_company
         serializer = self.get_serializer(company)
         return Response(serializer.data)
