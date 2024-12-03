@@ -63,22 +63,21 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_companies(self, obj):
         result = []
-
-        def add_company_to_result(company, roles, represented_by=None):
-            company_data_dict = SimpleCompanySerializer(company).data
-            if represented_by:
-                company_data_dict["represented_by"] = MinimalCompanySerializer(represented_by).data
-            role_data = [ROLE_SERIALIZER_MAPPING[type(role)](role).data for role in roles]
-            result.append(company_data_dict | {"roles": role_data})
-
         for company, roles in obj.get_roles_mapped_to_companies().items():
-            add_company_to_result(company, roles)
+            result.append(UserSerializer._get_result_item(company, roles))
             declarant_role = next((x for x in roles if type(x) is DeclarantRole), None)
             if declarant_role:
                 for represented_company in company.represented_companies.all():
-                    add_company_to_result(represented_company, [declarant_role], company)
-
+                    result.append(UserSerializer._get_result_item(represented_company, [declarant_role], company))
         return result
+
+    @staticmethod
+    def _get_result_item(company, roles, represented_by=None):
+        company_data_dict = SimpleCompanySerializer(company).data
+        if represented_by:
+            company_data_dict["represented_by"] = MinimalCompanySerializer(represented_by).data
+        role_data = [ROLE_SERIALIZER_MAPPING[type(role)](role).data for role in roles]
+        return company_data_dict | {"roles": role_data}
 
     def get_global_roles(self, obj):
         return [ROLE_SERIALIZER_MAPPING[type(role)](role).data for role in obj.get_global_roles()]
