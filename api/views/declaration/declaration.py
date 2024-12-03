@@ -28,9 +28,9 @@ from api.permissions import (
     IsVisor,
 )
 from api.serializers import (
-    OpenDataDeclarationSerializer,
     DeclarationSerializer,
     DeclarationShortSerializer,
+    OpenDataDeclarationSerializer,
     SimpleDeclarationSerializer,
     SimpleInstructorSerializer,
     SimpleUserSerializer,

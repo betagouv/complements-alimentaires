@@ -92,7 +92,6 @@ const editMandate = async (payload, url, successMessage) => {
     missingCompanyModalOpened.value = true
   } else if (!mandateResponse.value.ok) {
     useToaster().addErrorMessage("Une erreur s'est produite, merci de ressayer plus tard")
-    return
   } else {
     company.value = data.value
     useToaster().addSuccessMessage(successMessage)
