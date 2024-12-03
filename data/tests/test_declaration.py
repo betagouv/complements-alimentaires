@@ -16,7 +16,7 @@ from data.factories import (
     SnapshotFactory,
     SubstanceFactory,
 )
-from data.models import Declaration
+from data.models import Declaration, Snapshot
 from data.models.ingredient_status import IngredientStatus
 
 
@@ -99,6 +99,24 @@ class DeclarationTestCase(TestCase):
 
         snapshot.creation_date = timezone.make_aware(datetime(2024, 1, 1, 1, 1, 1, 1))
         snapshot.save()
+
+        response_limit = timezone.make_aware(datetime(2024, 3, 1, 1, 1, 1, 1))
+        self.assertEqual(declaration.response_limit_date, response_limit)
+
+    def test_response_limit_date_post_visa(self):
+        """
+        Un refus de visa ne compte pas dans le calcul du temps limite d'instruction
+        """
+        declaration = AwaitingInstructionDeclarationFactory()
+        snapshot_submission = SnapshotFactory(declaration=declaration, status=declaration.status)
+        snapshot_submission.creation_date = timezone.make_aware(datetime(2024, 1, 1, 1, 1, 1, 1))
+        snapshot_submission.save()
+
+        snapshot_visa_refuse = SnapshotFactory(
+            declaration=declaration, status=declaration.status, action=Snapshot.SnapshotActions.REFUSE_VISA
+        )
+        snapshot_visa_refuse.creation_date = timezone.make_aware(datetime(2024, 2, 1, 1, 1, 1, 1))
+        snapshot_visa_refuse.save()
 
         response_limit = timezone.make_aware(datetime(2024, 3, 1, 1, 1, 1, 1))
         self.assertEqual(declaration.response_limit_date, response_limit)
