@@ -55,10 +55,12 @@ const vat = ref("")
 const confirmMandate = () => {
   if (!siret.value && !vat.value)
     window.alert("Merci de renseigner soit le numéro SIRET soit le numéro de TVA pour créer le mandat.")
-  else emit("confirm", siret.value, vat.value)
-  siret.value = ""
-  vat.value = ""
-  opened.value = false
+  else {
+    emit("confirm", siret.value, vat.value)
+    siret.value = ""
+    vat.value = ""
+    opened.value = false
+  }
 }
 
 const actions = [
