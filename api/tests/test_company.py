@@ -370,7 +370,8 @@ class TestMandatedCompanies(APITestCase):
     def test_add_mandated_company(self, mock):
         """
         Le gestionnaire d'une entreprise peut ajouter une autre entreprise en tant
-        qu'entreprise mandatée.
+        qu'entreprise mandatée. Un email doit être envoyé aux superviseurs de l'entreprise
+        mandatée.
         """
         company = CompanyFactory()
         SupervisorRoleFactory(user=authenticate.user, company=company)
@@ -389,8 +390,9 @@ class TestMandatedCompanies(APITestCase):
         company.refresh_from_db()
         self.assertIn(mandated_company_1, company.mandated_companies.all())
 
+        brevo_template = 27
         mock.assert_called_once_with(
-            27,
+            brevo_template,
             {
                 "COMPANY_NAME": company.social_name,
                 "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={mandated_company_1.id}",
@@ -445,6 +447,19 @@ class TestMandatedCompanies(APITestCase):
         SupervisorRoleFactory(user=authenticate.user, company=company)
 
         url = reverse("api:add_mandated_company", kwargs={"pk": other_company.pk})
+        response = self.client.post(url, {"siret": "65257741834921"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    @mock.patch("config.email.send_sib_template")
+    def test_add_mandated_company_declarant(self, mock):
+        """
+        Le rôle de déclarant·e ne permet pas d'ajouter une entreprise mandatée
+        """
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+
+        url = reverse("api:add_mandated_company", kwargs={"pk": company.pk})
         response = self.client.post(url, {"siret": "65257741834921"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 

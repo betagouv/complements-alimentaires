@@ -74,7 +74,7 @@ class TestDeclarationApi(APITestCase):
     @authenticate
     def test_create_mandated_company_declaration(self):
         """
-        A declarant should be able to create declarations for a represented company
+        Un·e déclarant·e doit pouvoir créer des déclarations pour une compagnie representée
         """
         company = CompanyFactory()
         mandated_company = CompanyFactory()
