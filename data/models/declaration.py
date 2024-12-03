@@ -465,7 +465,7 @@ class Addable(models.Model):
         abstract = True
 
     class AddableStatus(models.TextChoices):
-        ADDED = "ADDED", "Ingrédient ajouté par le déclarant"
+        REQUESTED = "REQUESTED", "Ingrédient ajouté à la déclaration par le déclarant"
         INFORMATION = "INFORMATION", "En attente de plus d'information"
         REJECTED = "REJECTED", "Refusé"
 
@@ -498,12 +498,10 @@ class Addable(models.Model):
     request_status = models.CharField(
         max_length=50,
         choices=AddableStatus.choices,
-        default=AddableStatus.ADDED,
+        default=AddableStatus.REQUESTED,
         verbose_name="statut de la demande de l'ajout du nouvel ingrédient",
     )
-    request_private_notes = models.TextField(
-        "notes de l'instruction à destination de l'administration", blank=True, default=""
-    )
+    request_private_notes = models.TextField("notes de l'instruction à destination de l'administration", blank=True)
 
     def clean(self):
         # L'ingrédient ne peut pas être `new` et avoir `first_ocurrence` à true. Le vrai ingrédient

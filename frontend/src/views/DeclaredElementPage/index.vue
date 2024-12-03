@@ -150,7 +150,7 @@ const modalActions = computed(() => {
 })
 
 const alerts = computed(() => ({
-  ADDED: {
+  REQUESTED: {
     title: "Nouvel ingrédient",
     description: "Ingrédient non intégré dans la base de données et en attente de validation.",
     type: "info",
