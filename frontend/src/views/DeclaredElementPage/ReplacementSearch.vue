@@ -7,7 +7,6 @@
       label-visible
       hint="Tapez au moins trois caractères pour démarrer la recherche"
       @selected="selectOption"
-      :hideSearchButton="true"
       :optional="true"
     />
     <div class="mt-4" v-if="selectedOption">

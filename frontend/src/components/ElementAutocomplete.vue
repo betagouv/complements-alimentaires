@@ -1,17 +1,19 @@
 <template>
   <div ref="container" class="relative">
-    <div :class="hideSearchButton ? '' : 'flex'">
-      <DsfrInput
-        v-model="searchTerm"
-        :options="autocompleteResults"
-        autocomplete="nothing"
-        @update:searchTerm="$emit('update:searchTerm', $event)"
-        v-bind="$attrs"
-        :required="!optional"
-        @focus="hasFocus = true"
-        @blur="hasFocus = false"
-        @keydown="checkKeyboardNav($event)"
-      />
+    <div :class="hideSearchButton ? '' : 'flex items-end'">
+      <div class="grow">
+        <DsfrInput
+          v-model="searchTerm"
+          :options="autocompleteResults"
+          autocomplete="nothing"
+          @update:searchTerm="$emit('update:searchTerm', $event)"
+          v-bind="$attrs"
+          :required="!optional"
+          @focus="hasFocus = true"
+          @blur="hasFocus = false"
+          @keydown="checkKeyboardNav($event)"
+        />
+      </div>
 
       <DsfrButton
         v-if="!hideSearchButton"
