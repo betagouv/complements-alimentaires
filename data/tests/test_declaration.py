@@ -105,7 +105,7 @@ class DeclarationTestCase(TestCase):
 
     def test_response_limit_date_post_visa(self):
         """
-        Un refus de visa ne compte pas dans le calcul du temps limite d'instructino
+        Un refus de visa ne compte pas dans le calcul du temps limite d'instruction
         """
         declaration = AwaitingInstructionDeclarationFactory()
         snapshot_submission = SnapshotFactory(declaration=declaration, status=declaration.status)
