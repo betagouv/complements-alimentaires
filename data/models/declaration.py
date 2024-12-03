@@ -310,9 +310,11 @@ class Declaration(Historisable, TimeStampable):
 
     @property
     def response_limit_date(self):
+        from data.models import Snapshot
+
         """
         La date limite d'instruction est fixée à deux mois à partir du dernier statut
-        "en attente d'instruction"
+        "en attente d'instruction" sauf dans le cas d'un refus de visa
         """
         concerned_statuses = [
             Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
@@ -324,7 +326,11 @@ class Declaration(Historisable, TimeStampable):
             return None
         status = Declaration.DeclarationStatus.AWAITING_INSTRUCTION
         try:
-            latest_snapshot = self.snapshots.filter(status=status).latest("creation_date")
+            latest_snapshot = (
+                self.snapshots.filter(status=status)
+                .exclude(action=Snapshot.SnapshotActions.REFUSE_VISA)
+                .latest("creation_date")
+            )
             response_limit = latest_snapshot.creation_date + relativedelta(months=2)
             return response_limit
         except Exception as _:
