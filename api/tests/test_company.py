@@ -538,6 +538,21 @@ class TestMandatedCompanies(APITestCase):
 
         mock.assert_not_called()
 
+    @authenticate
+    @mock.patch("config.email.send_sib_template")
+    def test_remove_mandated_company_declarant(self, mock):
+        """
+        Le rôle déclarant·e ne suffit pas pour enlever une entreprise mandatée
+        """
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+
+        url = reverse("api:remove_mandated_company", kwargs={"pk": company.pk})
+        response = self.client.post(url, {"id": company.id}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        mock.assert_not_called()
+
     @mock.patch("config.email.send_sib_template")
     def test_remove_mandated_company_unauthenticated(self, mock):
         """
