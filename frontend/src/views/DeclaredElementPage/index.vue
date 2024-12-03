@@ -106,7 +106,7 @@ const updateElement = async (payload) => {
 
 const modals = {
   info: {
-    title: "L’ajout d’un nouvel ingrédient nécessite plus d’information.",
+    title: "L’ajout du nouvel ingrédient nécessite plus d’information.",
     actions: [
       {
         label: "Enregistrer",
@@ -156,7 +156,7 @@ const alerts = computed(() => ({
     type: "info",
   },
   INFORMATION: {
-    title: "Attente d'information",
+    title: "En attente d'information",
     description: element.value?.requestPrivateNotes,
     type: "warning",
   },

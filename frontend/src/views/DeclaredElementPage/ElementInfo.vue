@@ -59,7 +59,7 @@ const detailForType = {
     { label: "Description", key: "newDescription" },
   ],
   default: [
-    { label: "Libillé", key: "newName" },
+    { label: "Libellé", key: "newName" },
     { label: "Description", key: "newDescription" },
   ],
 }
