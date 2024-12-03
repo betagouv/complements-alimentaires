@@ -55,7 +55,7 @@ class IsDeclarant(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):  # obj: Declaration
         user = request.user
         companies = [obj.company] + list(obj.company.mandated_companies.all())
-        return user.is_authenticated and any(x for x in companies if x.declarant_roles.filter(user=user).exists())
+        return user.is_authenticated and any(company in user.declarable_companies.all() for company in companies)
 
 
 class IsDeclarationAuthor(permissions.BasePermission):
