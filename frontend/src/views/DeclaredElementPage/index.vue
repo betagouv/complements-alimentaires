@@ -7,14 +7,22 @@
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
-          <ReplacementSearch @replacement-id="(id) => (replacement = id)" :reset="clearSearch" />
+          <ReplacementSearch @replacement="(obj) => (replacement = obj)" :reset="clearSearch" />
         </div>
         <div class="mt-4">
           <DsfrButtonGroup :buttons="actionButtons" inlineLayoutWhen="md" align="center" class="mb-8" />
 
           <DsfrModal :opened="!!modalToOpen" :title="modalTitle" :actions="modalActions" @close="closeModal">
             <template #default>
-              <DsfrInput v-model="notes" label="Notes" label-visible is-textarea />
+              <div v-if="modalToOpen === 'replace'">
+                <p v-if="cannotReplace">
+                  Ce n'est pas possible pour l'instant de remplacer une demande avec un ingrédient d'un type different.
+                  Veuillez contacter l'équipe Compl'Alim pour résoudre le substitution.
+                </p>
+              </div>
+              <div v-else>
+                <DsfrInput v-model="notes" label="Notes" label-visible is-textarea />
+              </div>
             </template>
           </DsfrModal>
         </div>
@@ -82,6 +90,7 @@ const openModal = (type) => {
 }
 
 const replacement = ref()
+const cannotReplace = computed(() => replacement.value?.objectType !== element.value.type)
 
 const actionButtons = computed(() => [
   {
@@ -117,56 +126,59 @@ const updateElement = async (payload) => {
   }
 }
 
-const modals = {
-  replace: {
-    title: "Remplace l'ingrédient",
-    actions: [
-      {
-        label: "Remplacer",
-        onClick() {
-          const payload = {
-            requestStatus: "REPLACED",
-            element: { id: replacement.value },
-          }
-          // TODO: clear search if we stay on page
-          updateElement(payload).then(closeModal)
+const modals = computed(() => {
+  return {
+    replace: {
+      title: "Remplace l'ingrédient",
+      actions: [
+        {
+          label: "Remplacer",
+          onClick() {
+            const payload = {
+              requestStatus: "REPLACED",
+              element: { id: replacement.value?.id },
+            }
+            // TODO: clear search if we stay on page
+            updateElement(payload).then(closeModal)
+          },
+          disabled: cannotReplace.value,
         },
-      },
-    ],
-  },
-  info: {
-    title: "L’ajout du nouvel ingrédient nécessite plus d’information.",
-    actions: [
-      {
-        label: "Enregistrer",
-        onClick() {
-          updateElement({
-            requestStatus: "INFORMATION",
-            requestPrivateNotes: notes.value,
-          }).then(closeModal)
+      ],
+    },
+    info: {
+      title: "L’ajout du nouvel ingrédient nécessite plus d’information.",
+      actions: [
+        {
+          label: "Enregistrer",
+          onClick() {
+            updateElement({
+              requestStatus: "INFORMATION",
+              requestPrivateNotes: notes.value,
+            }).then(closeModal)
+          },
         },
-      },
-    ],
-  },
-  refuse: {
-    title: "L’ajout du nouvel ingrédient sera refusé.",
-    actions: [
-      {
-        label: "Refuser",
-        onClick() {
-          updateElement({
-            requestStatus: "REJECTED",
-            requestPrivateNotes: notes.value,
-          }).then(closeModal)
+      ],
+    },
+    refuse: {
+      title: "L’ajout du nouvel ingrédient sera refusé.",
+      actions: [
+        {
+          label: "Refuser",
+          onClick() {
+            updateElement({
+              requestStatus: "REJECTED",
+              requestPrivateNotes: notes.value,
+            }).then(closeModal)
+          },
         },
-      },
-    ],
-  },
-}
-const modalTitle = computed(() => modals[modalToOpen.value]?.title)
+      ],
+    },
+  }
+})
+const modalTitle = computed(() => modals.value[modalToOpen.value]?.title)
 
 const modalActions = computed(() => {
-  const actions = modals[modalToOpen.value]?.actions || []
+  const actions = modals.value[modalToOpen.value]?.actions || []
   return actions.concat([
     {
       label: "Annuler",

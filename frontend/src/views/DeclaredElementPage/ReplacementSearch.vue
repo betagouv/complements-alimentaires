@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- TODO: show search button but don't do flex - need to update component -->
     <ElementAutocomplete
       autocomplete="nothing"
       label="Chercher un ingrédient dans la base de données"
@@ -33,7 +32,7 @@ const selectOption = (option) => {
     selectedOption.value = item
   })
   // TODO: erase search term from search bar?
-  emit("replacement-id", option.id)
+  emit("replacement", option)
 }
 
 // TODO: turn into service ? It was taken from another file
