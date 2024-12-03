@@ -29,11 +29,10 @@ class CanAccessUserDeclatarions(permissions.BasePermission):
 
         declarable_companies = request.user.declarable_companies.all()
         supervisable_companies = request.user.supervisable_companies.all()
+        companies = declarable_companies.union(supervisable_companies)
 
-        user_has_company_roles = (
-            obj.company in declarable_companies
-            or obj.company in supervisable_companies
-            or (obj.mandated_company and obj.mandated_company in declarable_companies)
+        user_has_company_roles = obj.company in companies or (
+            obj.mandated_company and obj.mandated_company in companies
         )
         return user_has_company_roles
 

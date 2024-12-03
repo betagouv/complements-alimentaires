@@ -183,7 +183,7 @@ class UserDeclarationsListCreateApiView(ListCreateAPIView):
         declarable_companies = self.request.user.declarable_companies.all()
         all_companies = list(declarable_companies.union(self.request.user.supervisable_companies.all()))
         return Declaration.objects.filter(
-            Q(author=self.request.user) | Q(company__in=all_companies) | Q(mandated_company__in=declarable_companies)
+            Q(author=self.request.user) | Q(company__in=all_companies) | Q(mandated_company__in=all_companies)
         )
 
     def perform_create(self, serializer):
