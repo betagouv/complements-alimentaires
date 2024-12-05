@@ -24,7 +24,7 @@ const headers = [
   "Authorisation marché FR ou EU",
   "Date de demande d'ajout",
   "Statut de la déclaration",
-  "Déclaration",
+  "",
 ]
 const rows = computed(() =>
   props.data.results?.map((x) => ({
@@ -34,13 +34,18 @@ const rows = computed(() =>
       getAuthorizationModeInFrench(x.authorizationMode),
       x.declaration.creationDate && isoToPrettyDate(x.declaration.creationDate),
       getStatusTagForCell(x.declaration.status),
-      // TODO: replace with link to request view
       {
         component: "router-link",
-        text: x.declaration.name,
-        to: { name: "InstructionPage", params: { declarationId: x.declaration.id } },
+        text: "Contrôler l'ingrédient",
+        to: { name: "DeclaredElementPage", params: { type: x.type, id: x.id } },
       },
     ],
   }))
 )
 </script>
+
+<style scoped>
+.fr-table :deep(td) {
+  width: calc(100% / 6);
+}
+</style>
