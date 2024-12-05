@@ -17,6 +17,7 @@ import { getStatusTagForCell } from "@/utils/components"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { articleOptionsWith15Subtypes } from "@/utils/mappings"
+import CompanyTableCell from "@/components/CompanyTableCell"
 
 const { loggedUser } = storeToRefs(useRootStore())
 
@@ -34,7 +35,11 @@ const rows = computed(() =>
         text: x.name,
         to: { name: "InstructionPage", params: { declarationId: x.id } },
       },
-      x.company.socialName,
+      {
+        component: CompanyTableCell,
+        company: x.company?.socialName,
+        mandatedCompany: x.mandatedCompany?.socialName,
+      },
       getStatusTagForCell(x.status),
       x.responseLimitDate && isoToPrettyDate(x.responseLimitDate),
       x.instructor
