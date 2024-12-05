@@ -59,7 +59,7 @@ class Declaration(Historisable, TimeStampable):
     class Article(models.TextChoices):
         ARTICLE_15 = "ART_15", "Article 15"
         ARTICLE_15_WARNING = "ART_15_WARNING", "Article 15 Vigilance"
-        ARTICLE_15_HIGH_RISK_POPULATION = "ARTICLE_15_HIGH_RISK_POPULATION", "Article 15 Population à risque"
+        ARTICLE_15_HIGH_RISK_POPULATION = "ART_15_HIGH_RISK_POPULATION", "Article 15 Population à risque"
         ARTICLE_16 = "ART_16", "Article 16"
         # ARTICLE_17 = "ART_17", "Article 17" # Article 17 et 18 sont pour le moment regroupés sous le label "nécessite saisine ANSES"
         ANSES_REFERAL = "ANSES_REFERAL", "nécessite saisine ANSES"
@@ -310,9 +310,11 @@ class Declaration(Historisable, TimeStampable):
 
     @property
     def response_limit_date(self):
+        from data.models import Snapshot
+
         """
         La date limite d'instruction est fixée à deux mois à partir du dernier statut
-        "en attente d'instruction"
+        "en attente d'instruction" sauf dans le cas d'un refus de visa
         """
         concerned_statuses = [
             Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
@@ -324,7 +326,11 @@ class Declaration(Historisable, TimeStampable):
             return None
         status = Declaration.DeclarationStatus.AWAITING_INSTRUCTION
         try:
-            latest_snapshot = self.snapshots.filter(status=status).latest("creation_date")
+            latest_snapshot = (
+                self.snapshots.filter(status=status)
+                .exclude(action=Snapshot.SnapshotActions.REFUSE_VISA)
+                .latest("creation_date")
+            )
             response_limit = latest_snapshot.creation_date + relativedelta(months=2)
             return response_limit
         except Exception as _:
@@ -337,14 +343,14 @@ class Declaration(Historisable, TimeStampable):
     def computed_substances_with_max_quantity_exceeded(self):
         substances_with_max_quantity_exceeded = self.computed_substances.exclude(
             Q(quantity__isnull=True) | Q(substance__max_quantity__isnull=True)
-        ).filter(unit=F("substance__unit"), quantity__gte=F("substance__max_quantity"))
+        ).filter(unit=F("substance__unit"), quantity__gt=F("substance__max_quantity"))
         return substances_with_max_quantity_exceeded
 
     @property
     def declared_substances_with_max_quantity_exceeded(self):
         substances_with_max_quantity_exceeded = self.declared_substances.exclude(
             Q(new=True) | Q(quantity__isnull=True) | Q(substance__max_quantity__isnull=True)
-        ).filter(unit=F("substance__unit"), quantity__gte=F("substance__max_quantity"))
+        ).filter(unit=F("substance__unit"), quantity__gt=F("substance__max_quantity"))
         return substances_with_max_quantity_exceeded
 
     @property

@@ -13,6 +13,7 @@ from config import email
 from data.models import Declaration, Snapshot
 
 from .celery import app
+from data.etl.transformer_loader import ETL_OPEN_DATA_DECLARATIONS
 
 logger = logging.getLogger(__name__)
 Status = Declaration.DeclarationStatus
@@ -172,3 +173,11 @@ def approve_declarations():
     logger.info(f"{success_count} declarations were automatically validated.")
     if error_count:
         logger.error(f"{error_count} declarations failed automatic validation.")
+
+
+@app.task
+def export_datasets_to_data_gouv():
+    etl = ETL_OPEN_DATA_DECLARATIONS()
+    etl.extract_dataset()
+    etl.transform_dataset()
+    etl.load_dataset()

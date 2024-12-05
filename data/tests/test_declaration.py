@@ -16,7 +16,7 @@ from data.factories import (
     SnapshotFactory,
     SubstanceFactory,
 )
-from data.models import Declaration
+from data.models import Declaration, Snapshot
 from data.models.ingredient_status import IngredientStatus
 
 
@@ -99,6 +99,24 @@ class DeclarationTestCase(TestCase):
 
         snapshot.creation_date = timezone.make_aware(datetime(2024, 1, 1, 1, 1, 1, 1))
         snapshot.save()
+
+        response_limit = timezone.make_aware(datetime(2024, 3, 1, 1, 1, 1, 1))
+        self.assertEqual(declaration.response_limit_date, response_limit)
+
+    def test_response_limit_date_post_visa(self):
+        """
+        Un refus de visa ne compte pas dans le calcul du temps limite d'instruction
+        """
+        declaration = AwaitingInstructionDeclarationFactory()
+        snapshot_submission = SnapshotFactory(declaration=declaration, status=declaration.status)
+        snapshot_submission.creation_date = timezone.make_aware(datetime(2024, 1, 1, 1, 1, 1, 1))
+        snapshot_submission.save()
+
+        snapshot_visa_refuse = SnapshotFactory(
+            declaration=declaration, status=declaration.status, action=Snapshot.SnapshotActions.REFUSE_VISA
+        )
+        snapshot_visa_refuse.creation_date = timezone.make_aware(datetime(2024, 2, 1, 1, 1, 1, 1))
+        snapshot_visa_refuse.save()
 
         response_limit = timezone.make_aware(datetime(2024, 3, 1, 1, 1, 1, 1))
         self.assertEqual(declaration.response_limit_date, response_limit)
@@ -261,10 +279,11 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration_not_autorized.overriden_article, "")
 
     def test_article_anses_referal(self):
+        SUBSTANCE_MAX_QUANTITY = 1.0
         declaration_with_computed_substance_max_exceeded = InstructionReadyDeclarationFactory(
             computed_substances=[],
         )
-        substance = SubstanceFactory(ca_max_quantity=1.0)
+        substance = SubstanceFactory(ca_max_quantity=SUBSTANCE_MAX_QUANTITY)
         ComputedSubstanceFactory(
             substance=substance,
             unit=substance.unit,
@@ -279,6 +298,25 @@ class DeclarationTestCase(TestCase):
             declaration_with_computed_substance_max_exceeded.calculated_article, Declaration.Article.ANSES_REFERAL
         )
         self.assertEqual(declaration_with_computed_substance_max_exceeded.overriden_article, "")
+
+        # La déclaration ne doit pas passer en saisine ANSES si la dose est exactement égale à la dose maximale
+        declaration_with_computed_substance_equals_max = InstructionReadyDeclarationFactory(
+            computed_substances=[],
+        )
+        ComputedSubstanceFactory(
+            substance=substance,
+            unit=substance.unit,
+            quantity=SUBSTANCE_MAX_QUANTITY,
+            declaration=declaration_with_computed_substance_equals_max,
+        )
+        declaration_with_computed_substance_equals_max.assign_calculated_article()
+        declaration_with_computed_substance_equals_max.save()
+        declaration_with_computed_substance_equals_max.refresh_from_db()
+        self.assertEqual(declaration_with_computed_substance_equals_max.article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(
+            declaration_with_computed_substance_equals_max.calculated_article, Declaration.Article.ARTICLE_15
+        )
+        self.assertEqual(declaration_with_computed_substance_equals_max.overriden_article, "")
 
         declaration_with_declared_substance_max_exceeded = InstructionReadyDeclarationFactory(
             computed_substances=[],
