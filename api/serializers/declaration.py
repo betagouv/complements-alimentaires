@@ -342,6 +342,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             "declared_microorganisms",
             "declared_substances",
             "modification_date",
+            "label",
         )
         read_only_fields = fields
 
@@ -405,6 +406,9 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             else {}
             for declared_substance in obj.declared_substances.all()
         ]
+
+    def get_label(self, obj):
+        return obj.attachments.filter(type="LABEL").first().file
 
 
 class DeclarationSerializer(serializers.ModelSerializer):
