@@ -255,6 +255,7 @@ class AddMandatedCompanyView(GenericAPIView):
                     brevo_template,
                     {
                         "COMPANY_NAME": company.social_name,
+                        "MANDATED_COMPANY_NAME": mandated_company.social_name,
                         "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={mandated_company.id}",
                     },
                     supervisor.user.email,
