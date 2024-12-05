@@ -15,6 +15,7 @@ import { computed } from "vue"
 import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import { articleOptionsWith15Subtypes } from "@/utils/mappings"
+import CompanyTableCell from "@/components/CompanyTableCell"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
@@ -37,7 +38,11 @@ const rows = computed(() =>
         text: x.name,
         to: { name: "VisaPage", params: { declarationId: x.id } },
       },
-      x.company.socialName,
+      {
+        component: CompanyTableCell,
+        company: x.company?.socialName,
+        mandatedCompany: x.mandatedCompany?.socialName,
+      },
       getStatusTagForCell(x.status),
       x.responseLimitDate && isoToPrettyDate(x.responseLimitDate),
       x.instructor

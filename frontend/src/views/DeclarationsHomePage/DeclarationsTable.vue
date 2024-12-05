@@ -14,6 +14,7 @@
 import { computed, ref } from "vue"
 import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
+import CompanyTableCell from "@/components/CompanyTableCell"
 import { useResizeObserver, useDebounceFn } from "@vueuse/core"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
@@ -44,7 +45,11 @@ const rows = computed(() => {
         class: "font-medium",
         to: { name: "DeclarationPage", params: { id: d.id } },
       },
-      d.company?.socialName || "Inconnue",
+      {
+        component: CompanyTableCell,
+        company: d.company?.socialName,
+        mandatedCompany: d.mandatedCompany?.socialName,
+      },
       d.author ? `${d.author.firstName} ${d.author.lastName}` : "",
       getStatusTagForCell(d.status, true),
       timeAgo(d.modificationDate),
