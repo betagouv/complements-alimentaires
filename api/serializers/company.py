@@ -4,6 +4,17 @@ from rest_framework import serializers
 from data.models import Company, DeclarantRole, SupervisorRole
 
 
+class MinimalCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = (
+            "id",
+            "social_name",
+            "siret",
+            "vat",
+        )
+
+
 class SimpleCompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
@@ -20,6 +31,11 @@ class SimpleCompanySerializer(serializers.ModelSerializer):
 
 
 class CompanySerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    phone_number = PhoneNumberField()
+    country_label = serializers.CharField(read_only=True, source="get_country_display")
+    mandated_companies = MinimalCompanySerializer(read_only=True, many=True)
+
     class Meta:
         model = Company
         fields = (
@@ -39,11 +55,8 @@ class CompanySerializer(serializers.ModelSerializer):
             "phone_number",
             "email",
             "website",
+            "mandated_companies",
         )
-
-    id = serializers.IntegerField(read_only=True)
-    phone_number = PhoneNumberField()
-    country_label = serializers.CharField(read_only=True, source="get_country_display")
 
     def to_internal_value(self, data):
         # permet de définir dynamiquement la bonne région pour le numéro de téléphone entré

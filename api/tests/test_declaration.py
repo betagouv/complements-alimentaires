@@ -16,10 +16,10 @@ from data.factories import (
     ConditionFactory,
     DeclarantRoleFactory,
     DeclarationFactory,
+    DeclaredIngredientFactory,
+    DeclaredMicroorganismFactory,
     DeclaredPlantFactory,
     DeclaredSubstanceFactory,
-    DeclaredMicroorganismFactory,
-    DeclaredIngredientFactory,
     EffectFactory,
     GalenicFormulationFactory,
     IngredientFactory,
@@ -70,6 +70,27 @@ class TestDeclarationApi(APITestCase):
             reverse("api:list_create_declaration", kwargs={"user_pk": authenticate.user.id}), payload, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_create_mandated_company_declaration(self):
+        """
+        Un·e déclarant·e doit pouvoir créer des déclarations pour une compagnie representée
+        """
+        company = CompanyFactory()
+        mandated_company = CompanyFactory()
+        company.mandated_companies.add(mandated_company)
+        company.save()
+
+        DeclarantRoleFactory(user=authenticate.user, company=mandated_company)
+
+        payload = {
+            "company": company.id,
+            "name": "name",
+        }
+        response = self.client.post(
+            reverse("api:list_create_declaration", kwargs={"user_pk": authenticate.user.id}), payload, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     @authenticate
     def test_create_declaration_product_data(self):

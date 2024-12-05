@@ -116,6 +116,13 @@ class Declaration(Historisable, TimeStampable):
     company = models.ForeignKey(
         Company, null=True, on_delete=models.SET_NULL, verbose_name="entreprise", related_name="declarations"
     )
+    mandated_company = models.ForeignKey(
+        Company,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name="entreprise mandataire",
+        related_name="mandated_declarations",
+    )
 
     # Champs adresse :
     # On ne prend pas la même classe que l'adresse de la compagnie car on a besoin

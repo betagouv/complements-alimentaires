@@ -1,3 +1,4 @@
+import logging
 from enum import StrEnum, auto
 
 from django.apps import apps
@@ -8,11 +9,13 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.utils.urls import get_base_url
+from config import email
 from data.choices import CountryChoices
 from data.models import Company, DeclarantRole, SupervisorRole
 from data.models.solicitation import CompanyAccessClaim, SupervisionClaim
@@ -21,9 +24,11 @@ from data.validators import validate_siret, validate_vat  # noqa
 
 from ..exception_handling import ProjectAPIException
 from ..permissions import IsSupervisor, IsSupervisorOrAgent
-from ..serializers import CollaboratorSerializer, CompanySerializer
+from ..serializers import CollaboratorSerializer, CompanySerializer, MinimalCompanySerializer
 
 User = get_user_model()
+
+logger = logging.getLogger(__name__)
 
 
 class CountryListView(APIView):
@@ -91,7 +96,7 @@ class CheckCompanyIdentifierView(APIView):
         return Response(
             {
                 "company_status": company_status,  # pour déterminer les étapes suivantes côté front
-                "company": (CompanySerializer(company).data if company else None),  # ex : pour set l'ID dans le state
+                "company": (MinimalCompanySerializer(company).data if company else None),
                 "company_siret_data": company_siret_data,
             }
         )
@@ -215,3 +220,77 @@ class RemoveCompanyRoleView(APIView):
         role_class.objects.filter(company=company, user=collaborator).delete()  # évite le try/except
 
         return Response(CollaboratorSerializer(collaborator, context={"company_id": request.data["company_pk"]}).data)
+
+
+class AddMandatedCompanyView(GenericAPIView):
+    """
+    Cet endpoint permet de mandater une autre entreprise pour la création des déclarations
+    """
+
+    permission_classes = [IsAuthenticated, IsSupervisor]
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+
+    def post(self, request, pk):
+        company = self.get_object()
+
+        siret = request.data.get("siret")
+        vat = request.data.get("vat")
+
+        if not siret and not vat:
+            raise ProjectAPIException(global_error="Le SIRET ou le numéro de TVA doivent être spécifiés")
+
+        try:
+            mandated_company = Company.objects.get(siret=siret) if siret else Company.objects.get(vat=vat)
+        except Company.DoesNotExist as _:
+            raise NotFound()
+
+        company.mandated_companies.add(mandated_company)
+        company.save()
+
+        brevo_template = 27
+        for supervisor in mandated_company.supervisor_roles.all():
+            try:
+                email.send_sib_template(
+                    brevo_template,
+                    {
+                        "COMPANY_NAME": company.social_name,
+                        "MANDATED_COMPANY_NAME": mandated_company.social_name,
+                        "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={mandated_company.id}",
+                    },
+                    supervisor.user.email,
+                    supervisor.user.get_full_name(),
+                )
+            except Exception as _:
+                logger.exception(f"Email not sent on AddMandatedCompanyView for recipient {supervisor.user.id}")
+
+        serializer = self.get_serializer(company)
+        return Response(serializer.data)
+
+
+class RemoveMandatedCompanyView(GenericAPIView):
+    """
+    Cet endpoint permet d'enlever une entreprise mandatée
+    """
+
+    permission_classes = [IsAuthenticated, IsSupervisor]
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+
+    def post(self, request, pk):
+        company = self.get_object()
+
+        mandated_company_id = request.data.get("id")
+
+        if not mandated_company_id:
+            raise ProjectAPIException(global_error="L'ID de l'entreprise mandatée doit être spécifié")
+
+        try:
+            mandated_company = company.mandated_companies.get(pk=mandated_company_id)
+            company.mandated_companies.remove(mandated_company)
+            company.save()
+        except Company.DoesNotExist as _:
+            pass
+
+        serializer = self.get_serializer(company)
+        return Response(serializer.data)

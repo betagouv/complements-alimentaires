@@ -13,8 +13,8 @@
       <DsfrInputGroup class="max-w-md" :error-message="firstErrorMsg(v$, 'company')" v-else>
         <DsfrSelect
           label="Entreprise qui produit le complément"
-          v-model.number="payload.company"
-          :options="companies.map((x) => ({ text: x.socialName, value: x.id }))"
+          v-model="selectedCompanyOption"
+          :options="companiesSelectOptions"
           :required="true"
         />
       </DsfrInputGroup>
@@ -297,10 +297,7 @@ const galenicFormulationList = computed(() => {
     )
   }
 })
-const companies = computed(() =>
-  loggedUser.value.companies.filter((company) => company.roles.some((role) => role.name === "DeclarantRole"))
-)
-const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))
+
 const formulationStates = [
   {
     text: "Liquide",
@@ -311,6 +308,30 @@ const formulationStates = [
     value: "solid",
   },
 ]
+
+// Gestion d'entreprises / mandataires
+const companies = computed(() =>
+  loggedUser.value.companies.filter((company) => company.roles.some((role) => role.name === "DeclarantRole"))
+)
+
+const companiesSelectOptions = computed(() => {
+  return companies.value?.map((x) => ({
+    text: `${x.socialName} ${x.representedBy ? "(représenté par " + x.representedBy.socialName + ")" : ""}`,
+
+    // Pour distinguer les combinaisons entre entreprise et entreprise mandatée on utilise une combinaison d'ID :
+    // "<id de la compagnie>|<id de l'entreprise mandataire (s'il y en a)>"
+    value: `${x.id}|${x.representedBy?.id || ""}`,
+  }))
+})
+
+const selectedCompanyOption = ref(`${payload.value.company}|${payload.value.mandatedCompany || ""}`)
+watch(selectedCompanyOption, (value) => {
+  const [companyId, mandatedCompanyId] = value?.split?.("|") || [null, null]
+  payload.value.company = companyId ? parseInt(companyId) : null
+  payload.value.mandatedCompany = mandatedCompanyId ? parseInt(mandatedCompanyId) : null
+})
+
+const selectedCompany = computed(() => companies.value?.find((x) => x.id === payload.value.company))
 watch(selectedCompany, () => {
   const addressFields = ["address", "additionalDetails", "postalCode", "city", "cedex", "country"]
   const addressEmpty = addressFields.every((field) => !payload.value[field])

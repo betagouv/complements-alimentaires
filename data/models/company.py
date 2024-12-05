@@ -91,6 +91,13 @@ class Company(AutoValidable, Address, CompanyContact, models.Model):
         verbose_name="déclarants",
         related_name="declarable_companies",
     )
+    mandated_companies = models.ManyToManyField(
+        "self",
+        blank=True,
+        verbose_name="Autres entreprises pouvant déclarer pour cette entreprise",
+        related_name="represented_companies",
+        symmetrical=False,
+    )
 
     def clean(self):
         # SIRET ou VAT ou les deux
