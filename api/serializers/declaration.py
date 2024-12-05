@@ -103,15 +103,48 @@ ADDABLE_ELEMENT_FIELDS = (
 )
 
 
-class DeclaredIngredientCommonSerializer(PrivateFieldsSerializer):
-    private_fields = ("request_private_notes", "request_status")
+class DeclaredElementNestedField:
+    def create(self, validated_data):
+        # DRF ne gère pas automatiquement la création des nested-fields :
+        # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
+        element = validated_data.pop(self.nested_field_name, None)
+        if element:
+            try:
+                validated_data[self.nested_field_name] = self.nested_model.objects.get(pk=element.get("id"))
+            except self.nested_model.DoesNotExist:
+                raise ProjectAPIException(
+                    field_errors={f"declared_{self.nested_field_name}s": "L'ingrédient spécifiée n'existe pas."}
+                )
 
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        # DRF ne gère pas automatiquement la création des nested-fields :
+        # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
+        element = validated_data.pop(self.nested_field_name, None)
+        if element:
+            try:
+                validated_data[self.nested_field_name] = self.nested_model.objects.get(pk=element.get("id"))
+            except self.nested_model.DoesNotExist:
+                raise ProjectAPIException(
+                    field_errors={f"declared_{self.nested_field_name}s": "L'ingrédient spécifié n'existe pas."}
+                )
+
+        return super().update(instance, validated_data)
+
+
+class DeclaredIngredientCommonSerializer(DeclaredElementNestedField, PrivateFieldsSerializer):
+    private_fields = ("request_private_notes", "request_status")
+    
 
 class DeclaredPlantSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughPlantSerializer(required=False, source="plant", allow_null=True)
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
     used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False, allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    nested_field_name = "plant"
+    nested_model = Plant
 
     class Meta:
         model = DeclaredPlant
@@ -125,24 +158,16 @@ class DeclaredPlantSerializer(DeclaredIngredientCommonSerializer):
             "unit",
             "quantity",
             "preparation",
+            "type",
         )
-
-    def create(self, validated_data):
-        # DRF ne gère pas automatiquement la création des nested-fields :
-        # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
-        plant = validated_data.pop("plant", None)
-        if plant:
-            try:
-                validated_data["plant"] = Plant.objects.get(pk=plant.get("id"))
-            except Plant.DoesNotExist:
-                raise ProjectAPIException(field_errors={"declared_plants": "La plante spécifiée n'existe pas."})
-
-        return super().create(validated_data)
 
 
 class DeclaredMicroorganismSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughMicroorganismSerializer(required=False, source="microorganism", allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    nested_field_name = "microorganism"
+    nested_model = Microorganism
 
     class Meta:
         model = DeclaredMicroorganism
@@ -156,27 +181,17 @@ class DeclaredMicroorganismSerializer(DeclaredIngredientCommonSerializer):
             "activated",
             "strain",
             "quantity",
+            "type",
         )
-
-    def create(self, validated_data):
-        # DRF ne gère pas automatiquement la création des nested-fields :
-        # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
-        microorganism = validated_data.pop("microorganism", None)
-        if microorganism:
-            try:
-                validated_data["microorganism"] = Microorganism.objects.get(pk=microorganism.get("id"))
-            except Microorganism.DoesNotExist:
-                raise ProjectAPIException(
-                    field_errors={"declared_microorganisms": "Le micro-organisme spécifié n'existe pas."}
-                )
-
-        return super().create(validated_data)
 
 
 class DeclaredIngredientSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughIngredientSerializer(required=False, source="ingredient", allow_null=True)
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    nested_field_name = "ingredient"
+    nested_model = Ingredient
 
     class Meta:
         model = DeclaredIngredient
@@ -189,24 +204,16 @@ class DeclaredIngredientSerializer(DeclaredIngredientCommonSerializer):
             "active",
             "quantity",
             "unit",
+            "type",
         )
-
-    def create(self, validated_data):
-        # DRF ne gère pas automatiquement la création des nested-fields :
-        # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
-        ingredient = validated_data.pop("ingredient", None)
-        if ingredient:
-            try:
-                validated_data["ingredient"] = Ingredient.objects.get(pk=ingredient.get("id"))
-            except Ingredient.DoesNotExist:
-                raise ProjectAPIException(field_errors={"declared_ingredients": "L'ingrédient spécifié n'existe pas."})
-
-        return super().create(validated_data)
 
 
 class DeclaredSubstanceSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughSubstanceSerializer(required=False, source="substance", allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    nested_field_name = "substance"
+    nested_model = Substance
 
     class Meta:
         model = DeclaredSubstance
@@ -218,24 +225,16 @@ class DeclaredSubstanceSerializer(DeclaredIngredientCommonSerializer):
             "active",
             "quantity",
             "unit",
+            "type",
         )
 
-    def create(self, validated_data):
-        # DRF ne gère pas automatiquement la création des nested-fields :
-        # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
-        substance = validated_data.pop("substance", None)
-        if substance:
-            try:
-                validated_data["substance"] = Substance.objects.get(pk=substance.get("id"))
-            except Substance.DoesNotExist:
-                raise ProjectAPIException(field_errors={"declared_substances": "La substance spécifiée n'existe pas."})
 
-        return super().create(validated_data)
-
-
-class ComputedSubstanceSerializer(serializers.ModelSerializer):
+class ComputedSubstanceSerializer(DeclaredElementNestedField, serializers.ModelSerializer):
     substance = PassthroughSubstanceSerializer()
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
+
+    nested_field_name = "substance"
+    nested_model = Substance
 
     class Meta:
         model = ComputedSubstance
@@ -245,18 +244,6 @@ class ComputedSubstanceSerializer(serializers.ModelSerializer):
             "quantity",
             "unit",
         )
-
-    def create(self, validated_data):
-        # DRF ne gère pas automatiquement la création des nested-fields :
-        # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
-        substance = validated_data.pop("substance", None)
-        if substance:
-            try:
-                validated_data["substance"] = Substance.objects.get(pk=substance.get("id"))
-            except Substance.DoesNotExist:
-                raise ProjectAPIException(field_errors={"declared_substances": "La substance spécifiée n'existe pas."})
-
-        return super().create(validated_data)
 
 
 class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
