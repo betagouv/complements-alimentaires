@@ -92,7 +92,7 @@ import useToaster from "@/composables/use-toaster"
 import { handleError } from "@/utils/error-handling"
 
 const decisionCategory = ref(null)
-watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "approve" : null))
+watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "autorisation" : null))
 
 const rules = computed(() => {
   if (decisionCategory.value !== "modify") return {}

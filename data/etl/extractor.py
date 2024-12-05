@@ -60,6 +60,7 @@ class ETL(ABC):
         # ---------------------------------------------------
         self.df = self.df[columns_to_keep]
         self.filter_dataframe_with_schema_cols()
+        self.df = self.df.replace({"\n": " ", "\r": " "}, regex=True)
 
     def is_valid(self) -> bool:
         files = prepare_file_validata_post_request(self.df)

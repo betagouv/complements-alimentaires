@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from data.models import DeclaredPlant, DeclaredSubstance, DeclaredIngredient, DeclaredMicroorganism, Declaration
 from api.serializers import (
@@ -39,25 +39,25 @@ class DeclaredElementsView(ListAPIView):
         )
 
 
-class DeclaredPlantView(RetrieveAPIView):
+class DeclaredPlantView(RetrieveUpdateAPIView):
     permission_classes = [(IsInstructor | IsVisor)]
     serializer_class = DeclaredPlantSerializer
     queryset = DeclaredPlant.objects.all()
 
 
-class DeclaredMicroorganismView(RetrieveAPIView):
+class DeclaredMicroorganismView(RetrieveUpdateAPIView):
     permission_classes = [(IsInstructor | IsVisor)]
     serializer_class = DeclaredMicroorganismSerializer
     queryset = DeclaredMicroorganism.objects.all()
 
 
-class DeclaredSubstanceView(RetrieveAPIView):
+class DeclaredSubstanceView(RetrieveUpdateAPIView):
     permission_classes = [(IsInstructor | IsVisor)]
     serializer_class = DeclaredSubstanceSerializer
     queryset = DeclaredSubstance.objects.all()
 
 
-class DeclaredIngredientView(RetrieveAPIView):
+class DeclaredIngredientView(RetrieveUpdateAPIView):
     permission_classes = [(IsInstructor | IsVisor)]
     serializer_class = DeclaredIngredientSerializer
     queryset = DeclaredIngredient.objects.all()

@@ -29,6 +29,7 @@ from .microorganism import MicroorganismSerializer
 from .plant import PlantSerializer
 from .substance import SubstanceSerializer
 from .user import SimpleUserSerializer
+from .utils import PrivateFieldsSerializer
 
 
 class IdPassthrough:
@@ -97,10 +98,16 @@ ADDABLE_ELEMENT_FIELDS = (
     "eu_details",
     "new_description",
     "new",
+    "request_private_notes",
+    "request_status",
 )
 
 
-class DeclaredPlantSerializer(serializers.ModelSerializer):
+class DeclaredIngredientCommonSerializer(PrivateFieldsSerializer):
+    private_fields = ("request_private_notes", "request_status")
+
+
+class DeclaredPlantSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughPlantSerializer(required=False, source="plant", allow_null=True)
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
     used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False, allow_null=True)
@@ -133,7 +140,7 @@ class DeclaredPlantSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
+class DeclaredMicroorganismSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughMicroorganismSerializer(required=False, source="microorganism", allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -166,7 +173,7 @@ class DeclaredMicroorganismSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class DeclaredIngredientSerializer(serializers.ModelSerializer):
+class DeclaredIngredientSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughIngredientSerializer(required=False, source="ingredient", allow_null=True)
     unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -197,7 +204,7 @@ class DeclaredIngredientSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class DeclaredSubstanceSerializer(serializers.ModelSerializer):
+class DeclaredSubstanceSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughSubstanceSerializer(required=False, source="substance", allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -362,10 +369,10 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def get_declared_plants(self, obj):
         return [
             {
-                "nom": declared_plant.plant.name,
-                "partie": declared_plant.used_part.name,
-                "preparation": declared_plant.preparation.name,
-                "quantité_par_djr": declared_plant.quantity,
+                "nom": declared_plant.plant.name if declared_plant.plant else None,
+                "partie": declared_plant.used_part.name if declared_plant.used_part else None,
+                "preparation": declared_plant.preparation.name if declared_plant.preparation else None,
+                "quantité_par_djr": declared_plant.quantity if declared_plant.quantity else None,
                 "unite": declared_plant.unit.name,
             }
             if declared_plant.unit
@@ -376,8 +383,10 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def get_declared_microorganisms(self, obj):
         return [
             {
-                "genre": declared_microorganism.microorganism.genus,
-                "espece": declared_microorganism.microorganism.species,
+                "genre": declared_microorganism.microorganism.genus if declared_microorganism.microorganism else None,
+                "espece": declared_microorganism.microorganism.species
+                if declared_microorganism.microorganism
+                else None,
                 "souche": declared_microorganism.strain
                 if declared_microorganism.strain
                 else None,  # elle est normalement obligatoire mais quelques entrées ont pu être rentrées avant le required
@@ -394,7 +403,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
                 "quantité_par_djr": declared_substance.quantity,
                 "unite": declared_substance.unit.name,
             }
-            if declared_substance.substance.name and declared_substance.quantity and declared_substance.unit
+            if declared_substance.substance and declared_substance.quantity and declared_substance.unit
             else {}
             for declared_substance in obj.declared_substances.all()
         ]
