@@ -395,6 +395,7 @@ class TestMandatedCompanies(APITestCase):
             brevo_template,
             {
                 "COMPANY_NAME": company.social_name,
+                "MANDATED_COMPANY_NAME": mandated_company_1.social_name,
                 "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={mandated_company_1.id}",
             },
             supervisor_1.user.email,
@@ -412,6 +413,7 @@ class TestMandatedCompanies(APITestCase):
             27,
             {
                 "COMPANY_NAME": company.social_name,
+                "MANDATED_COMPANY_NAME": mandated_company_2.social_name,
                 "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={mandated_company_2.id}",
             },
             supervisor_2.user.email,
