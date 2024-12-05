@@ -25,6 +25,11 @@ class SnapshotInline(admin.TabularInline):
         return False
 
 
+REQUEST_FIELDS = (
+    "request_status",
+    "request_private_notes",
+)
+
 # Declared Plants inline
 
 
@@ -33,6 +38,7 @@ class DeclaredPlantInlineForm(forms.ModelForm):
         widgets = {
             "new_name": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "new_description": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+            "request_private_notes": forms.Textarea(attrs={"rows": 1}),
         }
 
 
@@ -51,9 +57,10 @@ class DeclaredPlantInline(admin.StackedInline):
         "new",
         "new_name",
         "new_description",
-    )
+    ) + REQUEST_FIELDS
     autocomplete_fields = ("plant",)
     extra = 0
+    classes = ["collapse"]
 
     def has_add_permission(self, request, object):
         return True
@@ -70,6 +77,7 @@ class DeclaredMicroorganismInlineForm(forms.ModelForm):
             "new_description": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "strain": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "quantity": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+            "request_private_notes": forms.Textarea(attrs={"rows": 1}),
         }
 
 
@@ -87,8 +95,9 @@ class DeclaredMicroorganismInline(admin.StackedInline):
         "new_species",
         "new_genre",
         "new_description",
-    )
+    ) + REQUEST_FIELDS
     autocomplete_fields = ("microorganism",)
+    classes = ["collapse"]
 
     extra = 0
 
@@ -105,6 +114,7 @@ class DeclaredIngredientInlineForm(forms.ModelForm):
             "new_name": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "new_description": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "quantity": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+            "request_private_notes": forms.Textarea(attrs={"rows": 1}),
         }
 
 
@@ -122,9 +132,10 @@ class DeclaredIngredientInline(admin.StackedInline):
         "new_name",
         "new_type",
         "new_description",
-    )
+    ) + REQUEST_FIELDS
     autocomplete_fields = ("ingredient",)
     extra = 0
+    classes = ["collapse"]
 
     def has_add_permission(self, request, object):
         return True
@@ -133,8 +144,17 @@ class DeclaredIngredientInline(admin.StackedInline):
 # Declared Substances inline
 
 
+class DeclaredSubstanceInlineForm(forms.ModelForm):
+    class Meta:
+        widgets = {
+            "new_description": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+            "request_private_notes": forms.Textarea(attrs={"rows": 1}),
+        }
+
+
 class DeclaredSubstanceInline(admin.StackedInline):
     model = DeclaredSubstance
+    form = DeclaredSubstanceInlineForm
     can_delete = True
     fields = (
         "substance",
@@ -144,9 +164,10 @@ class DeclaredSubstanceInline(admin.StackedInline):
         "new",
         "new_name",
         "new_description",
-    )
+    ) + REQUEST_FIELDS
     autocomplete_fields = ("substance",)
     extra = 0
+    classes = ["collapse"]
 
     def has_add_permission(self, request, object):
         return True

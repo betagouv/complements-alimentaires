@@ -5,7 +5,7 @@ from data.models import IngredientStatus, Part, Plant, PlantFamily, PlantPart, P
 
 from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
-from .utils import HistoricalModelSerializer, PrivateCommentSerializer
+from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
 
 
 class PlantFamilySerializer(serializers.ModelSerializer):
@@ -50,7 +50,7 @@ class PlantSynonymSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class PlantSerializer(HistoricalModelSerializer, PrivateCommentSerializer):
+class PlantSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
     family = PlantFamilySerializer(read_only=True)
     plant_parts = PartRelationSerializer(source="part_set", many=True, read_only=True)
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
