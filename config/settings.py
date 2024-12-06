@@ -69,6 +69,7 @@ THIRD_PARTY_APPS = [
     "phonenumber_field",
     "hijack",
     "hijack.contrib.admin",
+    "csvimport.app.CSVImportConf",  # use AppConfig for django >=1.7 csvimport >=2.2
 ]
 
 if ENABLE_SILK:
@@ -78,6 +79,7 @@ PROJECT_APPS = [
     "config",
     "api",
     "data",
+    "declaration_history",
     "tokens",
     "web",
 ]
