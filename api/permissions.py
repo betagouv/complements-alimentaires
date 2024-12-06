@@ -100,7 +100,8 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
         if not request.user.is_authenticated:
             return False
         is_author = IsDeclarationAuthor().has_object_permission(request, view, obj)
-        is_from_same_company = obj.company in request.user.declarable_companies.all()
+        companies = request.user.declarable_companies.all()
+        is_from_same_company = obj.company in companies or (obj.mandated_company and obj.mandated_company in companies)
         is_agent = IsInstructor().has_permission(request, view) or IsVisor().has_permission(request, view)
         is_declarant = IsDeclarant().has_object_permission(request, view, obj)
         is_draft = obj.status == Declaration.DeclarationStatus.DRAFT

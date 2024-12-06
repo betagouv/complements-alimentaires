@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework.generics import ListAPIView
 
-from api.permissions import IsDeclarationAuthor, IsInstructor, IsVisor
+from api.permissions import CanAccessIndividualDeclaration, IsInstructor, IsVisor
 from api.serializers import SnapshotSerializer
 from data.models import Declaration, Snapshot
 
@@ -10,7 +10,7 @@ from data.models import Declaration, Snapshot
 class DeclarationSnapshotListView(ListAPIView):
     model = Snapshot
     serializer_class = SnapshotSerializer
-    permission_classes = (IsDeclarationAuthor | IsInstructor | IsVisor,)
+    permission_classes = (CanAccessIndividualDeclaration | IsInstructor | IsVisor,)
 
     def get_queryset(self):
         declaration = get_object_or_404(Declaration, pk=self.kwargs[self.lookup_field])
