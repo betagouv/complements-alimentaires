@@ -92,6 +92,8 @@ bs4 = "^0.0.2"
 #########################
 django-hijack = "^3.7.0"
 pandas = "^2.2.3"
+pyodbc = "^5.2.0"
+mssql-django = "^1.5"
 [tool.poetry.group.dev.dependencies]
 sqlfluff = "*"
 
