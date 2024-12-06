@@ -35,6 +35,7 @@ class CompanySerializer(serializers.ModelSerializer):
     phone_number = PhoneNumberField()
     country_label = serializers.CharField(read_only=True, source="get_country_display")
     mandated_companies = MinimalCompanySerializer(read_only=True, many=True)
+    represented_companies = MinimalCompanySerializer(read_only=True, many=True)
 
     class Meta:
         model = Company
@@ -56,6 +57,11 @@ class CompanySerializer(serializers.ModelSerializer):
             "email",
             "website",
             "mandated_companies",
+            "represented_companies",
+        )
+        readonly_fields = (
+            "mandated_companies",
+            "represented_companies",
         )
 
     def to_internal_value(self, data):
