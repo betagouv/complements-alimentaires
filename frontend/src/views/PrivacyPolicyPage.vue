@@ -25,10 +25,10 @@
     <h2>Données à caractère personnel traitées</h2>
     <p>La plateforme peut traiter les données à caractère personnel concernant plusieurs types de profils :</p>
     <ul>
-      <li>Utilisateurs ou utilisatrice non identifié sur la plateforme</li>
-      <li>Utilisateurs ou utilisatrice réalisant des déclarations ou le suivi de déclarations de CA</li>
+      <li>Utilisateur ou utilisatrice non identifié sur la plateforme</li>
+      <li>Utilisateur ou utilisatrice réalisant des déclarations ou le suivi de déclarations de CA</li>
       <li>
-        Utilisateurs ou utilisatrice réalisant les missions des administrations publiques en lien avec les déclarations
+        Utilisateur ou utilisatrice réalisant les missions des administrations publiques en lien avec les déclarations
         de CA
       </li>
     </ul>
