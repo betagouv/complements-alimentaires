@@ -59,7 +59,7 @@ class CompanySerializer(serializers.ModelSerializer):
             "mandated_companies",
             "represented_companies",
         )
-        readonly_fields = (
+        read_only_fields = (
             "mandated_companies",
             "represented_companies",
         )
