@@ -12,6 +12,7 @@ from data.factories import (
     OngoingInstructionDeclarationFactory,
     OngoingVisaDeclarationFactory,
     SnapshotFactory,
+    SupervisorRoleFactory,
     VisaRoleFactory,
 )
 from data.models import Declaration, Snapshot
@@ -258,14 +259,76 @@ class TestSnapshotApi(APITestCase):
 
     @authenticate
     def test_snapshot_list_view_unauthorized(self):
+        """
+        Une personne qui n'est pas lié à l'entreprise de la déclaration ne peut pas voir
+        les snapshots
+        """
         declaration = InstructionReadyDeclarationFactory()
 
-        # L'endpoint est seulement disponible pour l'auteur de la déclaration ou pour une
-        # personne ayant le rôle d'instruction
         response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         InstructionRoleFactory(user=authenticate.user)
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @authenticate
+    def test_snapshot_list_view_declaration_same_company(self):
+        """
+        Un user ayant le rôle de déclarant·e pour la même entreprise peut récupérer
+        les snapshots
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        declaration = InstructionReadyDeclarationFactory(company=company)
+        SnapshotFactory.create(declaration=declaration)
+
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @authenticate
+    def test_snapshot_list_view_supervision_same_company(self):
+        """
+        Un user ayant le rôle de supervision pour la même entreprise peut récupérer
+        les snapshots
+        """
+        supervision_role = SupervisorRoleFactory(user=authenticate.user)
+        company = supervision_role.company
+
+        declaration = InstructionReadyDeclarationFactory(company=company)
+        SnapshotFactory.create(declaration=declaration)
+
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @authenticate
+    def test_snapshot_list_view_declaration_mandated_company(self):
+        """
+        Un user ayant le rôle de déclaration pour l'entreprise mandatée peut recupérer
+        les snapshots
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        declaration = InstructionReadyDeclarationFactory(mandated_company=company)
+        SnapshotFactory.create(declaration=declaration)
+
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @authenticate
+    def test_snapshot_list_view_supervision_mandated_company(self):
+        """
+        Un user ayant le rôle de supervision pour l'entreprise mandatée peut recupérer
+        les snapshots
+        """
+        supervision_role = SupervisorRoleFactory(user=authenticate.user)
+        company = supervision_role.company
+
+        declaration = InstructionReadyDeclarationFactory(mandated_company=company)
+        SnapshotFactory.create(declaration=declaration)
+
         response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -276,6 +339,29 @@ class TestSnapshotApi(APITestCase):
 
         # Une déclaration avec toutes les conditions nécessaires pour l'instruction
         declaration = InstructionReadyDeclarationFactory(author=authenticate.user, company=company)
+        snapshot = SnapshotFactory(
+            declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.SUBMIT
+        )
+        SnapshotFactory(declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.REQUEST_VISA)
+        SnapshotFactory(declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.REFUSE_VISA)
+
+        # On obtient les snapshots liés à cette déclaration. Cet user n'est pas viseur ni instructeur,
+        # donc les snapshots liés à l'admin ne devraient pas s'afficher
+
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+        self.assertEqual(len(body), 1)
+        self.assertEqual(body[0]["id"], snapshot.id)
+        self.assertEqual(body[0]["comment"], snapshot.comment)
+
+    @authenticate
+    def test_snapshot_hide_visa_to_supervisors(self):
+        supervision_role = SupervisorRoleFactory(user=authenticate.user)
+        company = supervision_role.company
+
+        # Une déclaration avec toutes les conditions nécessaires pour l'instruction
+        declaration = InstructionReadyDeclarationFactory(company=company)
         snapshot = SnapshotFactory(
             declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.SUBMIT
         )
