@@ -25,6 +25,12 @@
       <div>
         <NewMandateModal @confirm="addMandate" />
       </div>
+      <div v-if="company.representedCompanies?.length">
+        <hr class="mt-10" />
+        <h2 class="fr-h5">Entreprises representées par {{ company.socialName }}</h2>
+        <p>Ces entreprises ont donné un mandat de déclaration à {{ company.socialName }}.</p>
+        <RepresentedCompaniesList :companies="company.representedCompanies" />
+      </div>
     </div>
     <div v-else class="flex justify-center items-center min-h-60">
       <ProgressSpinner />
@@ -56,6 +62,7 @@ import { onMounted } from "vue"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import NewMandateModal from "./NewMandateModal"
 import MandatedCompaniesList from "./MandatedCompaniesList"
+import RepresentedCompaniesList from "./RepresentedCompaniesList"
 
 const route = useRoute()
 const missingCompanyModalOpened = ref(false)
