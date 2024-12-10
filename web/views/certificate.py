@@ -98,7 +98,7 @@ class CertificateView(GenericAPIView):
         # Le load-balancer Sozu a du mal avec les noms de fichier pdf contenant des caractères non-ASCII
         # https://github.com/betagouv/complements-alimentaires/issues/1367
         name = declaration.name.encode("ascii", "ignore")
-        return f"attestation-{name}.pdf"
+        return f"attestation-{name.decode()}.pdf"
 
     @staticmethod
     def link_callback(uri, rel):
