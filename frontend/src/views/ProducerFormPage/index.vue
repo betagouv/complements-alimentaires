@@ -19,7 +19,16 @@
 
       <DsfrAlert
         class="mb-4"
-        v-if="payload.author && payload.author !== loggedUser.id"
+        v-if="payload.id && !payload.author"
+        type="info"
+        title="Cette déclaration n'est gérée par personne"
+      >
+        <p>Vous pouvez néanmoins vous l'assigner en cliquant ci-dessous</p>
+        <DsfrButton class="mt-2" label="Prendre cette déclaration" tertiary @click="takeDeclaration" />
+      </DsfrAlert>
+      <DsfrAlert
+        class="mb-4"
+        v-else-if="payload.author && payload.author !== loggedUser.id"
         type="info"
         title="Cette déclaration est gérée par une autre personne"
       >
