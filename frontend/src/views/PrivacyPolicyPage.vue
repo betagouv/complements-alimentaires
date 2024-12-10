@@ -11,23 +11,34 @@
     <h2>Finalités</h2>
     <p>
       La plateforme numérique Compl'Alim est destinée à accompagner les acteurs du secteur des compléments alimentaires
-      (ci-après abrégé « CA ») en facilitant la constitution des dossiers de déclaration.
+      (ci-après abrégé « CA ») en facilitant la constitution des dossiers de déclaration, et leur instruction.
     </p>
     <p>Elle permet ainsi d’effectuer :</p>
     <ul>
       <li>la constitution d’un dossier permettant de déclarer un CA,</li>
-      <li>la modification d’un produit ou son arrêt de commercialisation</li>
-      <li>la recherche sur l’état d’un produit par le grand public</li>
+      <li>les échanges avec l'administration nécessaires à la finalisation de la déclaration,</li>
+      <li>la modification d’un produit ou son arrêt de commercialisation,</li>
+      <li>la recherche sur l’état d’un produit par le grand public,</li>
+      <li>l'instruction des dossiers par l'administation</li>
     </ul>
     <p>La recherche sur les ingrédients et les différents CA est disponible avec et sans création de compte.</p>
     <h2>Données à caractère personnel traitées</h2>
-    <p>La plateforme peut traiter les données à caractère personnel suivantes :</p>
+    <p>La plateforme peut traiter les données à caractère personnel concernant plusieurs types de profils :</p>
+    <ul>
+      <li>Utilisateur ou utilisatrice non identifié sur la plateforme</li>
+      <li>Utilisateur ou utilisatrice réalisant des déclarations ou le suivi de déclarations de CA</li>
+      <li>
+        Utilisateur ou utilisatrice réalisant les missions des administrations publiques en lien avec les déclarations
+        de CA
+      </li>
+    </ul>
+    <p>Pour ces différents types, la plateforme peut traiter les données suivantes :</p>
     <ul>
       <li>
         Données relatives à la création d’un compte : Certaines données sont obligatoires pour la création du compte :
-        nom, prénom, nom d'utilisateur, adresse e-mail. L’utilisateur doit également fournir un ensemble de données
-        relatives à l’établissement concerné (par exemple SIRET), qui ne sont pas considérées comme des données à
-        caractère personnel.
+        nom, prénom, nom d'utilisateur, adresse e-mail. Si l’utilisateur souhaite déclarer un CA, il doit également
+        fournir un ensemble de données relatives à l’établissement concerné (par exemple SIRET), qui ne sont pas
+        considérées comme des données à caractère personnel.
       </li>
       <li>
         Données de contact : Certaines données sont collectées lors de la prise de contact avec les différents acteurs
