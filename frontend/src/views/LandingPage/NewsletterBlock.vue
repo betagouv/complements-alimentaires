@@ -3,7 +3,7 @@
     <div class="col-span-12 md:col-span-7 md:pr-10">
       <h3>S'abonner à l'info-lettre de veille réglementaire</h3>
       <p class="m-0">
-        Recevez tous les mois une actualisation réglementaire, des nouvelles de la plateforme Compl'Alim....
+        Il sera bientôt possible de recevoir des mises à jour sur les actualités réglementaires
       </p>
     </div>
     <div class="col-span-12 md:col-span-5 my-6 md:my-0">
