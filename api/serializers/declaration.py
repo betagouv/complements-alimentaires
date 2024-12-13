@@ -309,6 +309,7 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
             "visor",
             "response_limit_date",
             "visa_refused",
+            "has_pending_pro_responses",
             "article",
         )
         read_only_fields = fields

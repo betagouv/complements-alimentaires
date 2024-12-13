@@ -6,6 +6,7 @@ from django.utils import timezone
 from data.factories import (
     AwaitingInstructionDeclarationFactory,
     ComputedSubstanceFactory,
+    DeclarationFactory,
     DeclaredPlantFactory,
     DeclaredSubstanceFactory,
     GalenicFormulationFactory,
@@ -335,3 +336,132 @@ class DeclarationTestCase(TestCase):
             declaration_with_declared_substance_max_exceeded.calculated_article, Declaration.Article.ANSES_REFERAL
         )
         self.assertEqual(declaration_with_declared_substance_max_exceeded.overriden_article, "")
+
+    def test_visa_refused(self):
+        """
+        La propriété `visa_refused` est présente si le visa a été refusé et qu'aucune action
+        du pro a été effectué depuis.
+        """
+        # Une déclaration en draft ne doit pas être visa_refused
+        declaration = DeclarationFactory()
+        self.assertFalse(declaration.visa_refused)
+
+        # On soumet la déclaration
+        SnapshotFactory(
+            declaration=declaration,
+            action=Snapshot.SnapshotActions.SUBMIT,
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+        )
+        declaration.status = Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+        declaration.save()
+        self.assertFalse(declaration.visa_refused)
+
+        # On demande le visa
+        SnapshotFactory(
+            declaration=declaration,
+            action=Snapshot.SnapshotActions.REQUEST_VISA,
+            status=Declaration.DeclarationStatus.AWAITING_VISA,
+        )
+        declaration.status = Declaration.DeclarationStatus.AWAITING_VISA
+        declaration.save()
+        self.assertFalse(declaration.visa_refused)
+
+        # On refuse le visa - visa_refused doit être à true
+        SnapshotFactory(
+            declaration=declaration,
+            action=Snapshot.SnapshotActions.REFUSE_VISA,
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+        )
+        declaration.status = Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+        declaration.save()
+        self.assertTrue(declaration.visa_refused)
+
+        # Si une instructrice s'assigne le dossier - visa_refused doit être toujours à true
+        # car on n'a pas eu une réponse du pro
+        SnapshotFactory(
+            declaration=declaration,
+            action=Snapshot.SnapshotActions.TAKE_FOR_INSTRUCTION,
+            status=Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
+        )
+        declaration.status = Declaration.DeclarationStatus.ONGOING_INSTRUCTION
+        declaration.save()
+        self.assertTrue(declaration.visa_refused)
+
+        # En faisant une observation, le dossier repasse côté pro, donc on revient à false
+        SnapshotFactory(
+            declaration=declaration,
+            action=Snapshot.SnapshotActions.OBSERVE_NO_VISA,
+            status=Declaration.DeclarationStatus.OBSERVATION,
+        )
+        declaration.status = Declaration.DeclarationStatus.OBSERVATION
+        declaration.save()
+        self.assertFalse(declaration.visa_refused)
+
+        # Si le ou la pro répond à l'observation, visa_refused reste false
+        SnapshotFactory(
+            declaration=declaration,
+            action=Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION,
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+        )
+        declaration.status = Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+        declaration.save()
+        self.assertFalse(declaration.visa_refused)
+
+    def test_pending_pro_responses(self):
+        """
+        On vérifie si une déclaration côté instruction a déjà fait un aller-retour
+        côté pro, çad si le pro a déjà répondu une remarque de l'administration.
+        """
+        # Une déclaration en draft ne doit pas être has_pending_pro_responses
+        declaration = DeclarationFactory()
+        self.assertFalse(declaration.has_pending_pro_responses)
+
+        # On soumet la déclaration
+        SnapshotFactory(
+            declaration=declaration,
+            action=Snapshot.SnapshotActions.SUBMIT,
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+        )
+        declaration.status = Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+        declaration.save()
+        self.assertFalse(declaration.has_pending_pro_responses)
+
+        # En faisant une observation, le dossier repasse côté pro.
+        SnapshotFactory(
+            declaration=declaration,
+            action=Snapshot.SnapshotActions.OBSERVE_NO_VISA,
+            status=Declaration.DeclarationStatus.OBSERVATION,
+        )
+        declaration.status = Declaration.DeclarationStatus.OBSERVATION
+        declaration.save()
+        self.assertFalse(declaration.has_pending_pro_responses)
+
+        # Si le ou la pro répond à l'observation, has_pending_pro_responses passe à true
+        SnapshotFactory(
+            declaration=declaration,
+            action=Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION,
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+        )
+        declaration.status = Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+        declaration.save()
+        self.assertTrue(declaration.has_pending_pro_responses)
+
+        # Quand l'instructrice s'assigne le dossier, has_pending_pro_responses reste à true
+        SnapshotFactory(
+            declaration=declaration,
+            action=Snapshot.SnapshotActions.TAKE_FOR_INSTRUCTION,
+            status=Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
+        )
+        declaration.status = Declaration.DeclarationStatus.ONGOING_INSTRUCTION
+        declaration.save()
+        self.assertTrue(declaration.has_pending_pro_responses)
+
+        # En refaisant une observation, has_pending_pro_responses repasse à false
+        SnapshotFactory(
+            declaration=declaration,
+            action=Snapshot.SnapshotActions.OBSERVE_NO_VISA,
+            status=Declaration.DeclarationStatus.OBSERVATION,
+        )
+        declaration.status = Declaration.DeclarationStatus.OBSERVATION
+        declaration.save()
+        self.assertFalse(declaration.has_pending_pro_responses)

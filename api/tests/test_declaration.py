@@ -37,7 +37,7 @@ from data.factories import (
     SupervisorRoleFactory,
     VisaRoleFactory,
 )
-from data.models import Attachment, Declaration, DeclaredMicroorganism
+from data.models import Attachment, Declaration, DeclaredMicroorganism, Snapshot
 
 from .utils import authenticate
 
@@ -1585,7 +1585,7 @@ class TestDeclarationApi(APITestCase):
     def test_visa_refusal_field(self):
         VisaRoleFactory(user=authenticate.user)
         declaration = OngoingVisaDeclarationFactory()
-
+        SnapshotFactory(declaration=declaration, action=Snapshot.SnapshotActions.RESPOND_TO_OBJECTION)
         response = self.client.post(reverse("api:refuse_visa", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
