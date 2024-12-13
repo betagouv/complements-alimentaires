@@ -231,7 +231,7 @@ export const articleOptionsWith15Subtypes = [
   { value: "ART_15_WARNING", text: "Article 15 vigilance", shortText: "15 vig." },
   { value: "ART_15_HIGH_RISK_POPULATION", text: "Article 15 population à risque", shortText: "15 pop." },
   { value: "ART_16", text: "Article 16", shortText: "16" },
-  { value: "ANSES_REFERAL", text: "Saisine ANSES", shortText: "saisine ANSES" },
+  { value: "ANSES_REFERAL", text: "Saisine ANSES", shortText: "Saisine ANSES" },
 ]
 
 export const articleOptions = [
@@ -239,7 +239,7 @@ export const articleOptions = [
   { value: "ART_15_WARNING", text: "Article 15", shortText: "15" },
   { value: "ART_15_HIGH_RISK_POPULATION", text: "Article 15", shortText: "15" },
   { value: "ART_16", text: "Article 16", shortText: "16" },
-  { value: "ANSES_REFERAL", text: "Saisine ANSES", shortText: "saisine ANSES" },
+  { value: "ANSES_REFERAL", text: "Saisine ANSES", shortText: "Saisine ANSES" },
 ]
 
 export const typeOptions = [
