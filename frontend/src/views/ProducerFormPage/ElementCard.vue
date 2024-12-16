@@ -9,6 +9,9 @@
           <div v-if="synonyms">
             {{ synonyms }}
           </div>
+          <div v-if="model.element?.status === 'non autorisé'">
+            <ElementStatusBadge :text="model.element.status" />
+          </div>
           <div v-if="model.new" class="self-center mt-1">
             <DsfrBadge label="Nouvel ingrédient" type="info" />
           </div>
@@ -126,6 +129,7 @@ import { computed, watch } from "vue"
 import { getElementName } from "@/utils/elements"
 import { getActivityReadonlyByType } from "@/utils/mappings"
 import ElementCommentModal from "@/components/ElementCommentModal"
+import ElementStatusBadge from "@/components/ElementStatusBadge"
 
 const model = defineModel()
 const store = useRootStore()
