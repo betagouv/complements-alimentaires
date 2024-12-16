@@ -131,7 +131,9 @@ class CanTakeAuthorship(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):  # obj: Declaration
         if not request.user.is_authenticated:
             return False
-        is_from_same_company = obj.company in request.user.declarable_companies.all()
+        declarable_companies = request.user.declarable_companies.all()
+        is_from_same_company = obj.company in declarable_companies
+        is_from_mandated_company = obj.mandated_company and obj.mandated_company in declarable_companies
         is_declarant = IsDeclarant().has_object_permission(request, view, obj)
 
-        return is_from_same_company and is_declarant
+        return (is_from_same_company or is_from_mandated_company) and is_declarant
