@@ -38,7 +38,7 @@ class IngredientAdmin(ElementAdminWithChangeReason):
         SubstanceInlineAdmin,
         IngredientSynonymInline,
     )
-    list_display = ("name", "status", "is_risky", "novel_food")
+    list_display = ("name", "is_obsolete", "status", "is_risky", "novel_food")
     list_filter = ("is_obsolete", "status", "is_risky", "novel_food")
     show_facets = admin.ShowFacets.NEVER
     readonly_fields = (
