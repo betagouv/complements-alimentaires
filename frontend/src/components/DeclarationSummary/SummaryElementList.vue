@@ -5,13 +5,21 @@
       <template v-slot:title>
         <SummaryElementListTitle :objectType="objectType" :elementCount="`${elements.length}`" />
       </template>
-      <SummaryElementListItems :objectType="objectType" :elements="elements" />
+      <SummaryElementListItems
+        :showElementAuthorization="showElementAuthorization"
+        :objectType="objectType"
+        :elements="elements"
+      />
     </DsfrAccordion>
 
     <!-- Affichage sans les accordéons, tous les ingrédients sont affichés -->
     <div v-else>
       <SummaryElementListTitle class="mt-6 mb-3" :objectType="objectType" />
-      <SummaryElementListItems :objectType="objectType" :elements="elements" />
+      <SummaryElementListItems
+        :showElementAuthorization="showElementAuthorization"
+        :objectType="objectType"
+        :elements="elements"
+      />
     </div>
   </div>
 </template>
@@ -20,5 +28,10 @@
 import SummaryElementListTitle from "./SummaryElementListTitle"
 import SummaryElementListItems from "./SummaryElementListItems"
 
-defineProps({ objectType: { type: String }, elements: { type: Array }, useAccordions: { type: Boolean } })
+defineProps({
+  objectType: { type: String },
+  elements: { type: Array },
+  useAccordions: { type: Boolean },
+  showElementAuthorization: { type: Boolean },
+})
 </script>

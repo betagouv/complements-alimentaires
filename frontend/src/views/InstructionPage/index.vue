@@ -30,6 +30,7 @@
         <DeclarationSummary
           :showArticle="true"
           :useAccordions="true"
+          :showElementAuthorization="true"
           :readonly="true"
           v-model="declaration"
           v-if="isAwaitingInstruction"
@@ -48,6 +49,7 @@
               :externalResults="$externalResults"
               :readonly="true"
               :useAccordions="true"
+              :showElementAuthorization="true"
               :declarationId="declaration?.id"
               :user="declarant"
               :company="company"

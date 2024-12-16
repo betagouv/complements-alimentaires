@@ -26,6 +26,7 @@
         <DeclarationSummary
           :showArticle="true"
           :useAccordions="true"
+          :showElementAuthorization="true"
           :readonly="true"
           v-model="declaration"
           v-if="isAwaitingVisa"
@@ -46,6 +47,7 @@
               :readonly="true"
               :declarationId="declaration?.id"
               :useAccordions="true"
+              :showElementAuthorization="true"
               :user="declarant"
               :company="company"
               @decision-done="onDecisionDone"
