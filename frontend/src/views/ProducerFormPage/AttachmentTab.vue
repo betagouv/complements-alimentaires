@@ -20,7 +20,7 @@
     <DsfrInputGroup>
       <DsfrFileUpload
         :label="otherAttachmentsLabel"
-        :acceptTypes="['image/jpeg, image/gif, image/png, application/pdf']"
+        :acceptTypes="acceptedTypes"
         hint="Taille maximale du fichier : 2 Mo"
         @change="addOtherFiles"
         v-model="selectedOtherFile"
@@ -37,6 +37,7 @@ import { ref, computed } from "vue"
 import FileGrid from "./FileGrid"
 import SectionTitle from "@/components/SectionTitle"
 
+const acceptedTypes = ["image/jpeg", "image/gif", "image/png", "application/pdf"]
 const props = defineProps(["externalResults"])
 const payload = defineModel()
 
@@ -75,6 +76,13 @@ const addFiles = async (files, container, resetModel, defaultData) => {
     const sizeIsValid = parseInt(files[i].size) < maxSize
     if (!sizeIsValid) {
       window.alert(`Le fichier ${files[i].name} dépasse la taille limite de 2 Mo`)
+      continue
+    }
+    const formatIsValid = acceptedTypes.indexOf(files[i].type) > -1
+    if (!formatIsValid) {
+      window.alert(
+        `Le format du fichier ${files[i].name} n'est pas supporté. Merci de joindre un fichier en JPG, GIF, PNG ou PDF.`
+      )
       continue
     }
     const base64 = await toBase64(files[i])
