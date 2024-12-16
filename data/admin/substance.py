@@ -1,9 +1,10 @@
 from django import forms
 from django.contrib import admin
+from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 
-from data.models import Substance
+from data.models import Substance, SubstanceSynonym
 
 from .abstract_admin import ElementAdminWithChangeReason
 
@@ -17,6 +18,15 @@ class SubstanceForm(forms.ModelForm):
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
         }
+
+
+class SubstanceSynonymInline(admin.TabularInline):
+    model = SubstanceSynonym
+    extra = 1
+
+    formfield_overrides = {
+        models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
+    }
 
 
 @admin.register(Substance)
@@ -104,6 +114,7 @@ class SubstanceAdmin(ElementAdminWithChangeReason):
             },
         ),
     ]
+    inlines = (SubstanceSynonymInline,)
     readonly_fields = [
         "siccrf_name",
         "siccrf_name_en",
