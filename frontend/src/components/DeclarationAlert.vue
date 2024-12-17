@@ -84,7 +84,7 @@ const declarantDisplayData = computed(() => {
     case "AUTHORIZED":
       return { type: "success", title: "Attestation de déclaration", body: null, canDownloadCertificate: true }
     case "ABANDONED":
-      return { type: "warning", title: "Ce dossier est abandonné", body: null, canDownloadCertificate: false }
+      return { type: "warning", title: "Ce dossier est abandonné", body: null, canDownloadCertificate: true }
     case "REJECTED":
       return {
         type: "warning",
@@ -140,7 +140,7 @@ const instructorDisplayData = computed(() => {
     case "AUTHORIZED":
       return { type: "success", title: "Cette déclaration a été autorisée", body: null, canDownloadCertificate: true }
     case "ABANDONED":
-      return { type: "warning", title: "Ce dossier est abandonné", body: null, canDownloadCertificate: false }
+      return { type: "warning", title: "Ce dossier est abandonné", body: null, canDownloadCertificate: true }
     case "REJECTED":
       return {
         type: "warning",
@@ -196,7 +196,7 @@ const visorDisplayData = computed(() => {
     case "AUTHORIZED":
       return { type: "success", title: "Cette déclaration a été autorisée", body: null, canDownloadCertificate: true }
     case "ABANDONED":
-      return { type: "warning", title: "Ce dossier est abandonné", body: null, canDownloadCertificate: false }
+      return { type: "warning", title: "Ce dossier est abandonné", body: null, canDownloadCertificate: true }
     case "REJECTED":
       return {
         type: "warning",
