@@ -27,38 +27,54 @@
       <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
     </h3>
 
-    <SummaryElementList :useAccordions="useAccordions" objectType="plant" :elements="payload.declaredPlants" />
     <SummaryElementList
       :useAccordions="useAccordions"
+      :showElementAuthorization="showElementAuthorization"
+      objectType="plant"
+      :elements="payload.declaredPlants"
+    />
+    <SummaryElementList
+      :useAccordions="useAccordions"
+      :showElementAuthorization="showElementAuthorization"
       objectType="microorganism"
       :elements="payload.declaredMicroorganisms"
     />
     <SummaryElementList
       objectType="form_of_supply"
       :useAccordions="useAccordions"
+      :showElementAuthorization="showElementAuthorization"
       :elements="getObjectSubTypeList(payload.declaredIngredients, 'form_of_supply')"
     />
     <SummaryElementList
       :useAccordions="useAccordions"
+      :showElementAuthorization="showElementAuthorization"
       objectType="aroma"
       :elements="getObjectSubTypeList(payload.declaredIngredients, 'aroma')"
     />
     <SummaryElementList
       objectType="additive"
       :useAccordions="useAccordions"
+      :showElementAuthorization="showElementAuthorization"
       :elements="getObjectSubTypeList(payload.declaredIngredients, 'additive')"
     />
     <SummaryElementList
       objectType="active_ingredient"
       :useAccordions="useAccordions"
+      :showElementAuthorization="showElementAuthorization"
       :elements="getObjectSubTypeList(payload.declaredIngredients, 'active_ingredient')"
     />
     <SummaryElementList
       objectType="non_active_ingredient"
       :useAccordions="useAccordions"
+      :showElementAuthorization="showElementAuthorization"
       :elements="getObjectSubTypeList(payload.declaredIngredients, 'non_active_ingredient')"
     />
-    <SummaryElementList objectType="substance" :useAccordions="useAccordions" :elements="payload.declaredSubstances" />
+    <SummaryElementList
+      objectType="substance"
+      :useAccordions="useAccordions"
+      :showElementAuthorization="showElementAuthorization"
+      :elements="payload.declaredSubstances"
+    />
 
     <p class="font-bold mt-8">Substances contenues dans la composition :</p>
     <SubstancesTable v-model="payload" readonly />
@@ -107,7 +123,7 @@ const router = useRouter()
 const { units, populations, conditions, effects, galenicFormulations } = storeToRefs(useRootStore())
 
 const payload = defineModel()
-defineProps({ readonly: Boolean, showArticle: Boolean, useAccordions: Boolean })
+defineProps({ readonly: Boolean, showArticle: Boolean, useAccordions: Boolean, showElementAuthorization: Boolean })
 const unitInfo = computed(() => {
   if (!payload.value.unitQuantity) return null
   const unitMeasurement = units.value?.find?.((x) => x.id === payload.value.unitMeasurement)?.name || "-"

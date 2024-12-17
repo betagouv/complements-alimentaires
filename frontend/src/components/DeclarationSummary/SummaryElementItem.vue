@@ -10,6 +10,12 @@
             </p>
           </div>
 
+          <ElementStatusBadge
+            :text="model.element.status"
+            v-if="showElementAuthorization && model.element?.status === 'non autorisé'"
+            class="self-center ml-2"
+          />
+
           <DsfrBadge v-if="novelFood" label="Novel Food" type="new" class="self-center ml-2" small />
           <DsfrBadge v-if="model.new" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
           <DsfrBadge v-if="!model.active" label="Non-actif" type="none" class="self-center ml-2" small />
@@ -38,13 +44,14 @@ import { getElementName } from "@/utils/elements"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import ElementCommentModal from "@/components/ElementCommentModal"
+import ElementStatusBadge from "@/components/ElementStatusBadge"
 
 const { plantParts, units, preparations, loggedUser } = storeToRefs(useRootStore())
 
 const isInstructor = computed(() => loggedUser.value?.globalRoles.some((x) => x.name === "InstructionRole"))
 
 const model = defineModel()
-const props = defineProps({ objectType: { type: String } })
+const props = defineProps({ objectType: { type: String }, showElementAuthorization: { type: Boolean } })
 
 const plantPartName = computed(() => plantParts.value?.find((x) => x.id === model.value.usedPart)?.name || "Aucune")
 const unitName = computed(() => units.value?.find((x) => x.id === model.value.unit)?.name || "")
