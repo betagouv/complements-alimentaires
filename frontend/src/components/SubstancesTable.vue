@@ -45,7 +45,7 @@
               '!text-red-marianne-425 font-bold':
                 (payload.computedSubstances[rowIndex].substance.maxQuantity ||
                   payload.computedSubstances[rowIndex].substance.maxQuantity === 0) &&
-                payload.computedSubstances[rowIndex].quantity >=
+                payload.computedSubstances[rowIndex].quantity >
                   payload.computedSubstances[rowIndex].substance.maxQuantity,
             }"
             v-if="props.readonly"
@@ -55,7 +55,7 @@
               v-if="
                 (payload.computedSubstances[rowIndex].substance.maxQuantity ||
                   payload.computedSubstances[rowIndex].substance.maxQuantity === 0) &&
-                payload.computedSubstances[rowIndex].quantity >=
+                payload.computedSubstances[rowIndex].quantity >
                   payload.computedSubstances[rowIndex].substance.maxQuantity
               "
             >

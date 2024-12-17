@@ -216,11 +216,13 @@ class CSVImporterTestCase(TestCase):
         self.assertEqual(len(Plant.objects.filter(siccrf_status=1)), 2)
 
         self.assertEqual(len(Microorganism.objects.filter(status=IngredientStatus.AUTHORIZED)), 2)
-        self.assertEqual(len(Microorganism.objects.filter(siccrf_status=3)), 2)
+        self.assertEqual(len(Microorganism.objects.filter(siccrf_status=3)), 0)  # ce status est converti
+        self.assertEqual(len(Microorganism.objects.filter(siccrf_status=1)), 2)
         self.assertEqual(len(Microorganism.objects.filter(to_be_entered_in_next_decree=True)), 2)
 
         self.assertEqual(len(Ingredient.objects.filter(status=IngredientStatus.NO_STATUS)), 2)
-        self.assertEqual(len(Ingredient.objects.filter(siccrf_status=4)), 2)
+        self.assertEqual(len(Ingredient.objects.filter(siccrf_status=4)), 0)  # ce status est converti
+        self.assertEqual(len(Ingredient.objects.filter(siccrf_status=3)), 2)
         self.assertEqual(len(Ingredient.objects.filter(status=IngredientStatus.AUTHORIZED)), 0)
 
         self.assertEqual(len(Substance.objects.filter(status=IngredientStatus.NOT_AUTHORIZED)), 2)
