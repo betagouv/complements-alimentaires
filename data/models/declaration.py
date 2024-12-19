@@ -116,6 +116,13 @@ class Declaration(Historisable, TimeStampable):
     company = models.ForeignKey(
         Company, null=True, on_delete=models.SET_NULL, verbose_name="entreprise", related_name="declarations"
     )
+    mandated_company = models.ForeignKey(
+        Company,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name="entreprise mandataire",
+        related_name="mandated_declarations",
+    )
 
     # Champs adresse :
     # On ne prend pas la même classe que l'adresse de la compagnie car on a besoin
@@ -301,12 +308,48 @@ class Declaration(Historisable, TimeStampable):
 
     @property
     def visa_refused(self):
+        """
+        Vérifie si le dernier refus de visa est effectué après la dernière action du pro.
+        """
         from data.models import Snapshot
 
-        return (
-            self.status == Declaration.DeclarationStatus.AWAITING_INSTRUCTION
-            and self.snapshots.latest("creation_date").action == Snapshot.SnapshotActions.REFUSE_VISA
-        )
+        user_actions = [
+            Snapshot.SnapshotActions.SUBMIT,
+            Snapshot.SnapshotActions.RESPOND_TO_OBJECTION,
+            Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION,
+        ]
+        statuses = [
+            Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
+        ]
+
+        if self.status not in statuses:
+            return False
+
+        try:
+            latest_visa_refusal = self.snapshots.filter(action=Snapshot.SnapshotActions.REFUSE_VISA).latest(
+                "creation_date"
+            )
+            latest_user_action = self.snapshots.filter(action__in=user_actions).latest("creation_date")
+        except Snapshot.DoesNotExist as _:
+            return False
+
+        return latest_user_action.creation_date < latest_visa_refusal.creation_date
+
+    @property
+    def has_pending_pro_responses(self):
+        """
+        Vérifie si la déclaration est du côté de l'instruction après au moins un aller-retour avec le pro
+        """
+        from data.models import Snapshot
+
+        statuses = [
+            Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
+        ]
+        actions = [Snapshot.SnapshotActions.RESPOND_TO_OBJECTION, Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION]
+
+        return self.status in statuses and self.snapshots.filter(action__in=actions).exists()
 
     @property
     def response_limit_date(self):

@@ -13,7 +13,7 @@
     </DsfrModal>
 
     <DsfrBadge type="warning" label="Article inconnu" v-if="!payload.article" />
-    <DsfrBadge no-icon v-else :label="articleOptions.find((x) => x.value === payload.article)?.text" />
+    <DsfrBadge no-icon v-else :label="articleOptionsWith15Subtypes.find((x) => x.value === payload.article)?.text" />
     <DsfrButton
       size="sm"
       tertiary

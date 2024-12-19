@@ -151,7 +151,7 @@ const modals = computed(() => {
           label: "Enregistrer",
           onClick() {
             updateElement("request-info", {
-              requestPrivateNotes: notes.value,
+              requestPrivateNotes: notes.value || "",
             }).then(closeModal)
           },
         },
@@ -164,7 +164,7 @@ const modals = computed(() => {
           label: "Refuser",
           onClick() {
             updateElement("reject", {
-              requestPrivateNotes: notes.value,
+              requestPrivateNotes: notes.value || "",
             }).then(closeModal)
           },
         },

@@ -97,6 +97,15 @@ urlpatterns = {
         views.AddNewCollaboratorView.as_view(),
         name="add_new_collaborator",
     ),
+    # Entreprises mandatées
+    path(
+        "companies/<int:pk>/add-mandated-company/", views.AddMandatedCompanyView.as_view(), name="add_mandated_company"
+    ),
+    path(
+        "companies/<int:pk>/remove-mandated-company/",
+        views.RemoveMandatedCompanyView.as_view(),
+        name="remove_mandated_company",
+    ),
     # Solicitations
     path(
         "companies/<int:pk>/collaboration-invitations/",

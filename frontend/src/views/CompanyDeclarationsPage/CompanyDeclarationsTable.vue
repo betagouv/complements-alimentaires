@@ -14,6 +14,7 @@
 import { computed } from "vue"
 import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
+import CompanyTableCell from "@/components/CompanyTableCell"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
@@ -27,7 +28,11 @@ const rows = computed(() =>
         text: x.name,
         to: { name: "DeclarationPage", params: { id: x.id } }, // TODO Change to a more enteprisey view
       },
-      x.company.socialName,
+      {
+        component: CompanyTableCell,
+        company: x.company?.socialName,
+        mandatedCompany: x.mandatedCompany?.socialName,
+      },
       `${x.author.firstName} ${x.author.lastName}`,
       getStatusTagForCell(x.status, true),
       timeAgo(x.creationDate),

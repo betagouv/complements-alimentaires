@@ -21,11 +21,12 @@
         <p>Vous pouvez vous assigner cette déclaration pour visa / signature</p>
         <DsfrButton class="mt-2" label="Prendre pour validation" tertiary @click="takeDeclaration" />
       </DsfrAlert>
-      <DeclarationAlert role="visor" class="mb-4" v-else :declaration="declaration" />
+      <DeclarationAlert role="visor" class="mb-4" v-else :declaration="declaration" :snapshots="snapshots" />
       <div v-if="declaration">
         <DeclarationSummary
           :showArticle="true"
           :useAccordions="true"
+          :showElementAuthorization="true"
           :readonly="true"
           v-model="declaration"
           v-if="isAwaitingVisa"
@@ -46,8 +47,10 @@
               :readonly="true"
               :declarationId="declaration?.id"
               :useAccordions="true"
+              :showElementAuthorization="true"
               :user="declarant"
               :company="company"
+              :snapshots="snapshots"
               @decision-done="onDecisionDone"
             ></component>
           </DsfrTabContent>
@@ -148,6 +151,14 @@ const {
   .get()
   .json()
 
+const {
+  response: snapshotsResponse,
+  data: snapshots,
+  execute: executeSnapshotsFetch,
+} = useFetch(() => `/api/v1/declarations/${props.declarationId}/snapshots/`, { immediate: false })
+  .get()
+  .json()
+
 const privateNotesInstruction = ref(declaration.value?.privateNotesInstruction || "")
 const privateNotesVisa = ref(declaration.value?.privateNotesVisa || "")
 onMounted(async () => {
@@ -166,6 +177,8 @@ onMounted(async () => {
   handleError(declarantResponse)
   await executeCompanyFetch()
   handleError(companyResponse)
+  await executeSnapshotsFetch()
+  handleError(snapshotsResponse)
   isFetching.value = false
 })
 

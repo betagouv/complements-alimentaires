@@ -25,11 +25,18 @@
         <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
         <DsfrButton class="mt-2" label="Instruire" tertiary @click="instructDeclaration" />
       </DsfrAlert>
-      <DeclarationAlert class="mb-6" v-else-if="!canInstruct" role="instructor" :declaration="declaration" />
+      <DeclarationAlert
+        class="mb-6"
+        v-else-if="!canInstruct"
+        role="instructor"
+        :declaration="declaration"
+        :snapshots="snapshots"
+      />
       <div v-if="declaration">
         <DeclarationSummary
           :showArticle="true"
           :useAccordions="true"
+          :showElementAuthorization="true"
           :readonly="true"
           v-model="declaration"
           v-if="isAwaitingInstruction"
@@ -48,9 +55,11 @@
               :externalResults="$externalResults"
               :readonly="true"
               :useAccordions="true"
+              :showElementAuthorization="true"
               :declarationId="declaration?.id"
               :user="declarant"
               :company="company"
+              :snapshots="snapshots"
               @decision-done="onDecisionDone"
               :showArticle="true"
             ></component>
@@ -153,6 +162,14 @@ const {
   .get()
   .json()
 
+const {
+  response: snapshotsResponse,
+  data: snapshots,
+  execute: executeSnapshotsFetch,
+} = useFetch(() => `/api/v1/declarations/${props.declarationId}/snapshots/`, { immediate: false })
+  .get()
+  .json()
+
 // Sauvegarde du commentaire privé
 const saveComment = useDebounceFn(async () => {
   const { response } = await useFetch(() => `/api/v1/declarations/${declaration.value?.id}`, {
@@ -179,6 +196,8 @@ onMounted(async () => {
   handleError(declarantResponse)
   await executeCompanyFetch()
   handleError(companyResponse)
+  await executeSnapshotsFetch()
+  handleError(snapshotsResponse)
   isFetching.value = false
 })
 

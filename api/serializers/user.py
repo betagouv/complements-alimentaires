@@ -6,7 +6,12 @@ from rest_framework import serializers
 from data.models import InstructionRole, VisaRole
 from data.models.company import DeclarantRole, SupervisorRole
 
-from .company import DeclarantRoleSerializer, SimpleCompanySerializer, SupervisorRoleSerializer
+from .company import (
+    DeclarantRoleSerializer,
+    MinimalCompanySerializer,
+    SimpleCompanySerializer,
+    SupervisorRoleSerializer,
+)
 from .global_roles import InstructionRoleSerializer, VisaRoleSerializer
 
 User = get_user_model()
@@ -57,16 +62,22 @@ class UserSerializer(serializers.ModelSerializer):
     global_roles = serializers.SerializerMethodField(read_only=True)
 
     def get_companies(self, obj):
-        from data.models import Company  # évite un import circulaire
-
         result = []
-        for company_id, roles in obj.get_roles_mapped_to_companies().items():
-            company_data_dict = SimpleCompanySerializer(Company.objects.get(id=company_id)).data
-            role_data = [ROLE_SERIALIZER_MAPPING[type(role)](role).data for role in roles]
-            # Merge les deux types de données
-            result.append(company_data_dict | {"roles": role_data})
-
+        for company, roles in obj.get_roles_mapped_to_companies().items():
+            result.append(UserSerializer._get_result_item(company, roles))
+            declarant_role = next((x for x in roles if type(x) is DeclarantRole), None)
+            if declarant_role:
+                for represented_company in company.represented_companies.all():
+                    result.append(UserSerializer._get_result_item(represented_company, [declarant_role], company))
         return result
+
+    @staticmethod
+    def _get_result_item(company, roles, represented_by=None):
+        company_data_dict = SimpleCompanySerializer(company).data
+        if represented_by:
+            company_data_dict["represented_by"] = MinimalCompanySerializer(represented_by).data
+        role_data = [ROLE_SERIALIZER_MAPPING[type(role)](role).data for role in roles]
+        return company_data_dict | {"roles": role_data}
 
     def get_global_roles(self, obj):
         return [ROLE_SERIALIZER_MAPPING[type(role)](role).data for role in obj.get_global_roles()]

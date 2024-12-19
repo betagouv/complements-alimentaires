@@ -17,6 +17,8 @@ import { getStatusTagForCell } from "@/utils/components"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { articleOptionsWith15Subtypes } from "@/utils/mappings"
+import CompanyTableCell from "@/components/CompanyTableCell"
+import CircleIndicators from "./CircleIndicators"
 
 const { loggedUser } = storeToRefs(useRootStore())
 
@@ -27,14 +29,21 @@ const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowAttrs: { class: needsAttention(x) ? "font-bold" : "" },
     rowData: [
-      needsAttention(x) ? { component: "div", class: `h-3 w-3 rounded-full ${circleColor(x)}` } : "",
+      {
+        component: CircleIndicators,
+        declaration: x,
+      },
       x.id,
       {
         component: "router-link",
         text: x.name,
         to: { name: "InstructionPage", params: { declarationId: x.id } },
       },
-      x.company.socialName,
+      {
+        component: CompanyTableCell,
+        company: x.company?.socialName,
+        mandatedCompany: x.mandatedCompany?.socialName,
+      },
       getStatusTagForCell(x.status),
       x.responseLimitDate && isoToPrettyDate(x.responseLimitDate),
       x.instructor
@@ -49,8 +58,6 @@ const needsAttention = (declaration) =>
   !!declaration.instructor &&
   declaration.instructor.id === loggedUser.value.id &&
   declaration.status === "AWAITING_INSTRUCTION"
-
-const circleColor = (declaration) => (declaration.visaRefused ? "bg-red-500" : "bg-orange-400")
 </script>
 
 <style scoped>

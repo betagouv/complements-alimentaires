@@ -1,9 +1,12 @@
 from unittest import mock
 
 from django.test.utils import override_settings
+from django.urls import reverse
 
 from rest_framework import status
+from rest_framework.test import APITestCase
 
+from api.utils.urls import get_base_url
 from data.factories import (
     CollaborationInvitationFactory,
     CompanyFactory,
@@ -18,7 +21,7 @@ from data.models import Company
 from data.models.company import ActivityChoices
 
 from ..views.company import CompanyStatusChoices
-from .utils import ProjectAPITestCase
+from .utils import ProjectAPITestCase, authenticate
 
 
 class TestCheckCompanyIdentifier(ProjectAPITestCase):
@@ -359,3 +362,208 @@ class TestAddNewCollaborator(ProjectAPITestCase):
         ]:
             response = self.post(self.url(pk=self.company.pk), wrong_payload)
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class TestMandatedCompanies(APITestCase):
+    @authenticate
+    @mock.patch("config.email.send_sib_template")
+    def test_add_mandated_company(self, mock):
+        """
+        Le gestionnaire d'une entreprise peut ajouter une autre entreprise en tant
+        qu'entreprise mandatée. Un email doit être envoyé aux superviseurs de l'entreprise
+        mandatée.
+        """
+        company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        mandated_company_1 = CompanyFactory()
+        supervisor_1 = SupervisorRoleFactory(company=mandated_company_1)
+
+        mandated_company_2 = CompanyFactory(vat="BE0582992566")
+        supervisor_2 = SupervisorRoleFactory(company=mandated_company_2)
+
+        url = reverse("api:add_mandated_company", kwargs={"pk": company.pk})
+
+        # On peut utiliser le SIRET pour ajouter une compagnie
+        response = self.client.post(url, {"siret": mandated_company_1.siret}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        company.refresh_from_db()
+        self.assertIn(mandated_company_1, company.mandated_companies.all())
+
+        brevo_template = 27
+        mock.assert_called_once_with(
+            brevo_template,
+            {
+                "COMPANY_NAME": company.social_name,
+                "MANDATED_COMPANY_NAME": mandated_company_1.social_name,
+                "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={mandated_company_1.id}",
+            },
+            supervisor_1.user.email,
+            supervisor_1.user.get_full_name(),
+        )
+        mock.reset_mock()
+
+        # On peut aussi tester avec le numéro TVA
+        response = self.client.post(url, {"vat": mandated_company_2.vat}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        company.refresh_from_db()
+        self.assertIn(mandated_company_2, company.mandated_companies.all())
+
+        mock.assert_called_once_with(
+            27,
+            {
+                "COMPANY_NAME": company.social_name,
+                "MANDATED_COMPANY_NAME": mandated_company_2.social_name,
+                "DASHBOARD_LINK": f"{get_base_url()}tableau-de-bord?company={mandated_company_2.id}",
+            },
+            supervisor_2.user.email,
+            supervisor_2.user.get_full_name(),
+        )
+        mock.reset_mock()
+
+    @authenticate
+    @mock.patch("config.email.send_sib_template")
+    def test_add_mandated_company_not_found(self, mock):
+        """
+        Si l'entreprise mandatée ne se trove pas dans notre base de données l'API
+        retourne un 404
+        """
+        company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        url = reverse("api:add_mandated_company", kwargs={"pk": company.pk})
+        response = self.client.post(url, {"siret": "65257741834921"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        mock.assert_not_called()
+
+    @authenticate
+    @mock.patch("config.email.send_sib_template")
+    def test_add_mandated_company_forbidden(self, mock):
+        """
+        L'utilisateur·ice doit avoir les droits de supervision pour l'entreprise
+        souhaitant ajouter une entreprise mandatée
+        """
+        company = CompanyFactory()
+        other_company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        url = reverse("api:add_mandated_company", kwargs={"pk": other_company.pk})
+        response = self.client.post(url, {"siret": "65257741834921"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    @mock.patch("config.email.send_sib_template")
+    def test_add_mandated_company_declarant(self, mock):
+        """
+        Le rôle de déclarant·e ne permet pas d'ajouter une entreprise mandatée
+        """
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+
+        url = reverse("api:add_mandated_company", kwargs={"pk": company.pk})
+        response = self.client.post(url, {"siret": "65257741834921"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        mock.assert_not_called()
+
+    @mock.patch("config.email.send_sib_template")
+    def test_add_mandated_company_unauthenticated(self, mock):
+        """
+        L'endpoint API n'est pas accessible sans authentifications
+        """
+        company = CompanyFactory()
+
+        url = reverse("api:add_mandated_company", kwargs={"pk": company.pk})
+        response = self.client.post(url, {"siret": "65257741834921"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        mock.assert_not_called()
+
+    @authenticate
+    @mock.patch("config.email.send_sib_template")
+    def test_remove_mandated_company(self, mock):
+        """
+        Le gestionnaire d'une entreprise peut enlever une entreprise mandataire.
+        """
+        company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        mandated_company = CompanyFactory()
+        company.mandated_companies.add(mandated_company)
+        company.save()
+
+        url = reverse("api:remove_mandated_company", kwargs={"pk": company.pk})
+
+        response = self.client.post(url, {"id": mandated_company.id}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        company.refresh_from_db()
+        self.assertNotIn(mandated_company, company.mandated_companies.all())
+
+        mock.assert_not_called()
+
+    @authenticate
+    @mock.patch("config.email.send_sib_template")
+    def test_remove_unexistent_company(self, mock):
+        """
+        Lors qu'on spécifie une entreprise non-mandatée la réponse est 200 et aucun
+        changement s'effectue
+        """
+        company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        other_company = CompanyFactory()
+
+        url = reverse("api:remove_mandated_company", kwargs={"pk": company.pk})
+
+        response = self.client.post(url, {"id": other_company.id}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        company.refresh_from_db()
+        self.assertNotIn(other_company, company.mandated_companies.all())
+
+        mock.assert_not_called()
+
+    @authenticate
+    @mock.patch("config.email.send_sib_template")
+    def test_remove_mandated_company_forbidden(self, mock):
+        """
+        L'utilisateur·ice doit avoir les droits de supervision pour l'entreprise
+        souhaitant enlever une entreprise mandatée
+        """
+        company = CompanyFactory()
+        other_company = CompanyFactory()
+        SupervisorRoleFactory(user=authenticate.user, company=company)
+
+        url = reverse("api:remove_mandated_company", kwargs={"pk": other_company.pk})
+        response = self.client.post(url, {"id": other_company.id}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        mock.assert_not_called()
+
+    @authenticate
+    @mock.patch("config.email.send_sib_template")
+    def test_remove_mandated_company_declarant(self, mock):
+        """
+        Le rôle déclarant·e ne suffit pas pour enlever une entreprise mandatée
+        """
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+
+        url = reverse("api:remove_mandated_company", kwargs={"pk": company.pk})
+        response = self.client.post(url, {"id": company.id}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        mock.assert_not_called()
+
+    @mock.patch("config.email.send_sib_template")
+    def test_remove_mandated_company_unauthenticated(self, mock):
+        """
+        L'endpoint API n'est pas accessible sans authentifications
+        """
+        company = CompanyFactory()
+
+        url = reverse("api:remove_mandated_company", kwargs={"pk": company.pk})
+        response = self.client.post(url, {"id": company.id}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        mock.assert_not_called()

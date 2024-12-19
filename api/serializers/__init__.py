@@ -31,6 +31,6 @@ from .declaration import (
     DeclaredSubstanceSerializer,
     DeclaredIngredientSerializer,
 )
-from .company import CompanySerializer
+from .company import CompanySerializer, MinimalCompanySerializer
 from .solicitation import CollaborationInvitationSerializer, CompanyAccessClaimSerializer, AddNewCollaboratorSerializer
 from .snapshot import SnapshotSerializer

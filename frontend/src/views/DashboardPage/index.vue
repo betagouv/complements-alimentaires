@@ -77,6 +77,11 @@ const supervisorActions = computed(() => [
     link: { name: "CollaboratorsPage", params: { id: company.value?.id } },
   },
   {
+    title: "Entreprises mandatées",
+    description: "Gérez les mandats accordés aux autres entreprises",
+    link: { name: "MandatedCompaniesPage", params: { id: company.value?.id } },
+  },
+  {
     title: "Les coordonnées de l'entreprise",
     description: "Consultez et mettez à jour les données de votre entreprise",
     link: { name: "CompanyPage", params: { id: company.value?.id } },

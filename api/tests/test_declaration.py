@@ -16,10 +16,10 @@ from data.factories import (
     ConditionFactory,
     DeclarantRoleFactory,
     DeclarationFactory,
+    DeclaredIngredientFactory,
+    DeclaredMicroorganismFactory,
     DeclaredPlantFactory,
     DeclaredSubstanceFactory,
-    DeclaredMicroorganismFactory,
-    DeclaredIngredientFactory,
     EffectFactory,
     GalenicFormulationFactory,
     IngredientFactory,
@@ -37,7 +37,7 @@ from data.factories import (
     SupervisorRoleFactory,
     VisaRoleFactory,
 )
-from data.models import Attachment, Declaration, DeclaredMicroorganism, DeclaredPlant
+from data.models import Attachment, Declaration, Snapshot, DeclaredMicroorganism, DeclaredPlant
 
 from .utils import authenticate
 
@@ -70,6 +70,27 @@ class TestDeclarationApi(APITestCase):
             reverse("api:list_create_declaration", kwargs={"user_pk": authenticate.user.id}), payload, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_create_mandated_company_declaration(self):
+        """
+        Un·e déclarant·e doit pouvoir créer des déclarations pour une compagnie representée
+        """
+        company = CompanyFactory()
+        mandated_company = CompanyFactory()
+        company.mandated_companies.add(mandated_company)
+        company.save()
+
+        DeclarantRoleFactory(user=authenticate.user, company=mandated_company)
+
+        payload = {
+            "company": company.id,
+            "name": "name",
+        }
+        response = self.client.post(
+            reverse("api:list_create_declaration", kwargs={"user_pk": authenticate.user.id}), payload, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     @authenticate
     def test_create_declaration_product_data(self):
@@ -668,6 +689,66 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
+    def test_retrieve_single_declaration_same_company(self):
+        """
+        Un user ayant le rôle de déclarant·e pour la même entreprise peut récupérer
+        les infos de la déclaration
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+        user_declaration = DeclarationFactory(company=company)
+
+        response = self.client.get(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": user_declaration.id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @authenticate
+    def test_retrieve_single_declaration_supervisor_company(self):
+        """
+        Un user ayant le rôle de supervision pour la même entreprise peut récupérer
+        les infos de la déclaration
+        """
+        supervisor_role = SupervisorRoleFactory(user=authenticate.user)
+        company = supervisor_role.company
+        user_declaration = DeclarationFactory(company=company)
+
+        response = self.client.get(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": user_declaration.id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @authenticate
+    def test_retrieve_single_declaration_mandated_company(self):
+        """
+        Un user ayant le rôle de déclaration pour l'entreprise mandatée peut recupérer
+        les infos de la déclaration
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+        user_declaration = DeclarationFactory(mandated_company=company)
+
+        response = self.client.get(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": user_declaration.id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @authenticate
+    def test_retrieve_single_declaration_mandated_company_supervisor(self):
+        """
+        Un user ayant le rôle de supervision pour l'entreprise mandatée peut recupérer
+        les infos de la déclaration
+        """
+        supervision_role = SupervisorRoleFactory(user=authenticate.user)
+        company = supervision_role.company
+        user_declaration = DeclarationFactory(mandated_company=company)
+
+        response = self.client.get(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": user_declaration.id})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @authenticate
     def test_retrieve_company_declaration(self):
         """
         Un user peut récupérer les informations complètes d'une déclaration de sa
@@ -728,6 +809,23 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         user_declaration.refresh_from_db()
         self.assertEqual(user_declaration.name, "New name")
+
+    @authenticate
+    def test_update_single_declaration_supervisor(self):
+        """
+        Un superviseur ne peut pas modifier les données de la déclaration d'un·e
+        déclarant·e de son entreprise.
+        """
+        supervisor_role = SupervisorRoleFactory(user=authenticate.user)
+        company = supervisor_role.company
+        user_declaration = DeclarationFactory(name="Old name", company=company)
+
+        response = self.client.put(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": user_declaration.id}),
+            {"name": "New name"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
     def test_private_comments_user(self):
@@ -1487,7 +1585,7 @@ class TestDeclarationApi(APITestCase):
     def test_visa_refusal_field(self):
         VisaRoleFactory(user=authenticate.user)
         declaration = OngoingVisaDeclarationFactory()
-
+        SnapshotFactory(declaration=declaration, action=Snapshot.SnapshotActions.RESPOND_TO_OBJECTION)
         response = self.client.post(reverse("api:refuse_visa", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

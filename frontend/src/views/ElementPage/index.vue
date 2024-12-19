@@ -57,7 +57,7 @@
           <ElementText :text="maxQuantity" :lowercase="true" />
         </ElementColumn>
 
-        <ElementColumn title="Parties utiles" v-if="plantParts?.length">
+        <ElementColumn title="Parties autorisées" v-if="plantParts?.length">
           <ElementTag :label="part" v-for="part in plantParts" :key="part" />
         </ElementColumn>
 

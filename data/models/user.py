@@ -117,7 +117,7 @@ class User(PermissionsMixin, AutoValidable, Verifiable, Deactivable, AbstractBas
     def get_roles_mapped_to_companies(self) -> dict[int, list[CompanyRole]]:
         """Retourne les différents rôles d'un utilisateur pour chacune des entreprises à laquelle il est lié"""
         all_companies = self.declarable_companies.all().union(self.supervisable_companies.all())
-        return {company.id: self.get_company_roles(company) for company in all_companies}
+        return {company: self.get_company_roles(company) for company in all_companies}
 
     def get_all_roles(self, company) -> list[BaseGlobalRole | CompanyRole]:
         """Récupère l'ensemble des rôles globaux et rôles liés à l'entreprise donnée pour cet utilisateur"""

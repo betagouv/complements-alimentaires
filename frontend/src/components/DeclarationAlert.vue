@@ -16,7 +16,7 @@
 <script setup>
 import { computed } from "vue"
 import { isoToPrettyDate } from "@/utils/date"
-const props = defineProps({ declaration: Object, role: { type: String, default: "declarant" } })
+const props = defineProps({ declaration: Object, role: { type: String, default: "declarant" }, snapshots: Array })
 
 const displayData = computed(() => {
   switch (props.role) {
@@ -30,6 +30,12 @@ const displayData = computed(() => {
       console.error(`Role ${props.role} not supported`)
       return null
   }
+})
+
+const canDownloadAbandonedCertificate = computed(() => {
+  if (!props.snapshots) return false
+  const latestSnapshot = [...props.snapshots].sort((a, b) => b.creationDate.localeCompare(a.creationDate))?.[0]
+  return latestSnapshot?.status === "OBJECTION"
 })
 
 const declarantDisplayData = computed(() => {
@@ -84,7 +90,12 @@ const declarantDisplayData = computed(() => {
     case "AUTHORIZED":
       return { type: "success", title: "Attestation de déclaration", body: null, canDownloadCertificate: true }
     case "ABANDONED":
-      return { type: "warning", title: "Ce dossier est abandonné", body: null, canDownloadCertificate: false }
+      return {
+        type: "warning",
+        title: "Ce dossier est abandonné",
+        body: null,
+        canDownloadCertificate: canDownloadAbandonedCertificate.value,
+      }
     case "REJECTED":
       return {
         type: "warning",
@@ -140,7 +151,12 @@ const instructorDisplayData = computed(() => {
     case "AUTHORIZED":
       return { type: "success", title: "Cette déclaration a été autorisée", body: null, canDownloadCertificate: true }
     case "ABANDONED":
-      return { type: "warning", title: "Ce dossier est abandonné", body: null, canDownloadCertificate: false }
+      return {
+        type: "warning",
+        title: "Ce dossier est abandonné",
+        body: null,
+        canDownloadCertificate: canDownloadAbandonedCertificate.value,
+      }
     case "REJECTED":
       return {
         type: "warning",
@@ -196,7 +212,12 @@ const visorDisplayData = computed(() => {
     case "AUTHORIZED":
       return { type: "success", title: "Cette déclaration a été autorisée", body: null, canDownloadCertificate: true }
     case "ABANDONED":
-      return { type: "warning", title: "Ce dossier est abandonné", body: null, canDownloadCertificate: false }
+      return {
+        type: "warning",
+        title: "Ce dossier est abandonné",
+        body: null,
+        canDownloadCertificate: canDownloadAbandonedCertificate.value,
+      }
     case "REJECTED":
       return {
         type: "warning",

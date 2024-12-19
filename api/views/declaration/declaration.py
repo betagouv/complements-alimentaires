@@ -28,9 +28,9 @@ from api.permissions import (
     IsVisor,
 )
 from api.serializers import (
-    OpenDataDeclarationSerializer,
     DeclarationSerializer,
     DeclarationShortSerializer,
+    OpenDataDeclarationSerializer,
     SimpleDeclarationSerializer,
     SimpleInstructorSerializer,
     SimpleUserSerializer,
@@ -180,10 +180,11 @@ class UserDeclarationsListCreateApiView(ListCreateAPIView):
     filterset_class = DeclarationFilterSet
 
     def get_queryset(self):
-        companies = list(
-            self.request.user.declarable_companies.all().union(self.request.user.supervisable_companies.all())
+        declarable_companies = self.request.user.declarable_companies.all()
+        all_companies = list(declarable_companies.union(self.request.user.supervisable_companies.all()))
+        return Declaration.objects.filter(
+            Q(author=self.request.user) | Q(company__in=all_companies) | Q(mandated_company__in=all_companies)
         )
-        return Declaration.objects.filter(Q(author=self.request.user) | Q(company__in=companies))
 
     def perform_create(self, serializer):
         # Lors de la création, des validations concernant l'objet créé doivent être faits ici
@@ -193,7 +194,9 @@ class UserDeclarationsListCreateApiView(ListCreateAPIView):
             company = Company.objects.get(pk=company_id)
         except Company.DoesNotExist as _:
             raise NotFound("Company not found")
-        if not company.declarants.filter(id=self.request.user.id).exists():
+
+        companies = [company] + list(company.mandated_companies.all())
+        if not any(x for x in companies if x.declarant_roles.filter(user=self.request.user).exists()):
             raise PermissionDenied()
         return super().perform_create(serializer)
 

@@ -27,9 +27,12 @@ class CanAccessUserDeclatarions(permissions.BasePermission):
         if created_by_user:  # Pour éviter les requêtes successives si on n'a pas besoin
             return True
 
-        user_has_company_roles = (
-            obj.company in request.user.declarable_companies.all()
-            or obj.company in request.user.supervisable_companies.all()
+        declarable_companies = request.user.declarable_companies.all()
+        supervisable_companies = request.user.supervisable_companies.all()
+        companies = declarable_companies.union(supervisable_companies)
+
+        user_has_company_roles = obj.company in companies or (
+            obj.mandated_company and obj.mandated_company in companies
         )
         return user_has_company_roles
 
@@ -50,7 +53,8 @@ class IsDeclarant(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):  # obj: Declaration
         user = request.user
-        return user.is_authenticated and obj.company.declarant_roles.filter(user=user).exists()
+        companies = [obj.company] + list(obj.company.mandated_companies.all())
+        return user.is_authenticated and any(company in user.declarable_companies.all() for company in companies)
 
 
 class IsDeclarationAuthor(permissions.BasePermission):
@@ -95,15 +99,30 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):  # obj: Declaration
         if not request.user.is_authenticated:
             return False
+
         is_author = IsDeclarationAuthor().has_object_permission(request, view, obj)
-        is_from_same_company = obj.company in request.user.declarable_companies.all()
         is_agent = IsInstructor().has_permission(request, view) or IsVisor().has_permission(request, view)
-        is_declarant = IsDeclarant().has_object_permission(request, view, obj)
+
+        declarable_companies = request.user.declarable_companies.all()
+        is_declarant_from_same_company = obj.company in declarable_companies or (
+            obj.mandated_company and obj.mandated_company in declarable_companies
+        )
+
+        superviseable_companies = request.user.supervisable_companies.all()
+        is_supervisor_from_same_company = obj.company in superviseable_companies or (
+            obj.mandated_company and obj.mandated_company in superviseable_companies
+        )
+
         is_draft = obj.status == Declaration.DeclarationStatus.DRAFT
         if request.method in permissions.SAFE_METHODS:
-            return is_author or is_from_same_company or (is_agent and not is_draft)
+            return (
+                is_author
+                or is_declarant_from_same_company
+                or is_supervisor_from_same_company
+                or (is_agent and not is_draft)
+            )
 
-        return ((is_author or is_from_same_company) and is_declarant) or (is_agent and not is_draft)
+        return (is_author or is_declarant_from_same_company) or (is_agent and not is_draft)
 
 
 class CanTakeAuthorship(permissions.BasePermission):
@@ -112,7 +131,9 @@ class CanTakeAuthorship(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):  # obj: Declaration
         if not request.user.is_authenticated:
             return False
-        is_from_same_company = obj.company in request.user.declarable_companies.all()
+        declarable_companies = request.user.declarable_companies.all()
+        is_from_same_company = obj.company in declarable_companies
+        is_from_mandated_company = obj.mandated_company and obj.mandated_company in declarable_companies
         is_declarant = IsDeclarant().has_object_permission(request, view, obj)
 
-        return is_from_same_company and is_declarant
+        return (is_from_same_company or is_from_mandated_company) and is_declarant

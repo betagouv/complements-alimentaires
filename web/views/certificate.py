@@ -11,7 +11,7 @@ from rest_framework.generics import GenericAPIView
 from xhtml2pdf import pisa
 
 from api.permissions import CanAccessIndividualDeclaration
-from data.models import Declaration
+from data.models import Declaration, Snapshot
 
 logger = logging.getLogger(__name__)
 
@@ -53,11 +53,19 @@ class CertificateView(GenericAPIView):
             status.ONGOING_VISA,
         ]:
             return f"certificates/certificate-submitted-art-{article}.html"
-        if declaration.status in [status.AUTHORIZED, status.WITHDRAWN]:
+
+        template_status = declaration.status
+
+        # La mise en abandon ne produit pas de Snapshot (car pas effectué en tant qu'action usager).
+        # On vérifie donc le status du dernier snapshot pour calculer le template
+        if template_status == status.ABANDONED:
+            template_status = declaration.snapshots.latest("creation_date").status
+
+        if template_status in [status.AUTHORIZED, status.WITHDRAWN]:
             return f"certificates/certificate-art-{article}.html"
-        if declaration.status == status.OBJECTION:
+        if template_status == status.OBJECTION:
             return "certificates/certificate-objected.html"
-        if declaration.status == status.REJECTED:
+        if template_status == status.REJECTED:
             return "certificates/certificate-rejected.html"
 
         raise NotFound()
@@ -65,17 +73,26 @@ class CertificateView(GenericAPIView):
     def get_context(self, declaration):
         status = Declaration.DeclarationStatus
         date_statuses = [status.AWAITING_INSTRUCTION, status.AUTHORIZED, status.REJECTED]
-
         try:
-            date = declaration.snapshots.filter(status__in=date_statuses).latest("creation_date").creation_date
+            date = (
+                declaration.snapshots.filter(status__in=date_statuses)
+                .exclude(action=Snapshot.SnapshotActions.REFUSE_VISA)
+                .latest("creation_date")
+                .creation_date
+            )
         except Exception as e:
             logger.error(f"Error obtaining certificate date for declaration {declaration.id}")
             logger.exception(e)
             date = declaration.creation_date
 
         try:
+            submission_actions = [
+                Snapshot.SnapshotActions.SUBMIT,
+                Snapshot.SnapshotActions.RESPOND_TO_OBJECTION,
+                Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION,
+            ]
             last_submission_date = (
-                declaration.snapshots.filter(status=status.AWAITING_INSTRUCTION).latest("creation_date").creation_date
+                declaration.snapshots.filter(action__in=submission_actions).latest("creation_date").creation_date
             )
         except Exception as e:
             logger.error(f"Error obtaining last submission date for declaration {declaration.id}")
@@ -95,7 +112,10 @@ class CertificateView(GenericAPIView):
         }
 
     def get_pdf_file_name(self, declaration):
-        return f"attestation-{declaration.name}.pdf"
+        # Le load-balancer Sozu a du mal avec les noms de fichier pdf contenant des caractères non-ASCII
+        # https://github.com/betagouv/complements-alimentaires/issues/1367
+        name = declaration.name.encode("ascii", "ignore")
+        return f"attestation-{name.decode()}.pdf"
 
     @staticmethod
     def link_callback(uri, rel):

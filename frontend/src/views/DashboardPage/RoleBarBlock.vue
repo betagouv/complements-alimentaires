@@ -31,5 +31,7 @@ import { computed } from "vue"
 const emit = defineEmits(["changeCompany"])
 const props = defineProps({ name: String, activeCompany: Object, companies: Array })
 
-const companiesSelectOptions = computed(() => props.companies?.map((c) => ({ text: c.socialName, value: c.id })))
+const companiesSelectOptions = computed(() =>
+  props.companies?.filter((c) => !c.representedBy).map((c) => ({ text: c.socialName, value: c.id }))
+)
 </script>
