@@ -113,7 +113,7 @@ const modals = {
         onClick() {
           updateElement({
             requestStatus: "INFORMATION",
-            requestPrivateNotes: notes.value,
+            requestPrivateNotes: notes.value || "",
           }).then(closeModal)
         },
       },
@@ -127,7 +127,7 @@ const modals = {
         onClick() {
           updateElement({
             requestStatus: "REJECTED",
-            requestPrivateNotes: notes.value,
+            requestPrivateNotes: notes.value || "",
           }).then(closeModal)
         },
       },

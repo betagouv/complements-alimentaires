@@ -72,7 +72,21 @@
               v-model="comment"
             />
           </DsfrInputGroup>
-          <DsfrButton class="" label="Soumettre" @click="submitDecision" />
+          <DsfrButton
+            class=""
+            label="Soumettre"
+            @click="submitDecision"
+            :disabled="needsAnsesReferal && decisionCategory === 'approve'"
+          />
+          <div v-if="needsAnsesReferal && decisionCategory === 'approve'" class="mt-2">
+            <hr class="p-0 my-2" />
+            <p class="my-1">
+              <v-icon name="ri-error-warning-line"></v-icon>
+              La déclaration ne peut pas être validée en nécessitant une saisine ANSEES. Merci de changer l'article
+              avant de la valider.
+            </p>
+            <ArticleInfoRow v-model="declaration" v-if="needsAnsesReferal && decisionCategory === 'approve'" />
+          </div>
 
           <div v-if="firstErrorMsg(v$, 'reasons')">{{ firstErrorMsg(v$, "reasons") }}</div>
         </template>
@@ -90,6 +104,7 @@ import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { handleError } from "@/utils/error-handling"
+import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
 
 const decisionCategory = ref(null)
 watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "autorisation" : null))
@@ -124,6 +139,8 @@ watch(proposal, (newProposal) => {
   else if (newProposal === "rejection") delayDays.value = null
   else delayDays.value = 15
 })
+
+const needsAnsesReferal = computed(() => declaration.value?.article === "ANSES_REFERAL")
 
 const decisionCategories = [
   {
