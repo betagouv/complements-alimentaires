@@ -2,8 +2,8 @@
   <div>
     <SectionTitle title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" />
     <DeclarationSummary v-model="payload" :readonly="readonly" />
-    <hr />
-    <h2>Soumettre</h2>
+    <hr v-if="!readonly" />
+    <h2 v-if="!readonly">Soumettre</h2>
     <DsfrAlert v-if="!readonly">
       <DsfrInputGroup>
         <DsfrInput
