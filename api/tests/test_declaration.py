@@ -1654,6 +1654,7 @@ class TestDeclaredElementsApi(APITestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["requestStatus"], DeclaredMicroorganism.AddableStatus.INFORMATION)
         microorganism.refresh_from_db()
         self.assertEqual(microorganism.request_private_notes, "some notes")
         self.assertEqual(microorganism.request_status, DeclaredMicroorganism.AddableStatus.INFORMATION)

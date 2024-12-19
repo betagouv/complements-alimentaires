@@ -123,7 +123,7 @@ class DeclaredElementActionAbstractView(APIView, ElementMappingMixin):
         self._update_element(element, request)
         element.save()
 
-        return Response(self.type_serializer(element).data)
+        return Response(self.type_serializer(element, context={"request": request}).data)
 
     @abc.abstractmethod
     def _update_element(self, element, request):

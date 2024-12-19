@@ -113,11 +113,11 @@ const actionButtons = computed(() => [
   },
 ])
 
-const updateElement = async (payload) => {
-  const { data, response } = await useFetch(url, {
+const updateElement = async (action, payload) => {
+  const { data, response } = await useFetch(`${url.value}/${action}`, {
     headers: headers(),
   })
-    .patch(payload)
+    .post(payload)
     .json()
   // TODO: is this handling errors nicely?
   handleError(response)
@@ -135,11 +135,10 @@ const modals = computed(() => {
           label: "Remplacer",
           onClick() {
             const payload = {
-              requestStatus: "REPLACED",
-              element: { id: replacement.value?.id },
+              element: { id: replacement.value?.id, type: replacement.value?.objectType },
             }
             // TODO: clear search if we stay on page
-            updateElement(payload).then(closeModal)
+            updateElement("replace", payload).then(closeModal)
           },
           disabled: cannotReplace.value,
         },
@@ -151,8 +150,7 @@ const modals = computed(() => {
         {
           label: "Enregistrer",
           onClick() {
-            updateElement({
-              requestStatus: "INFORMATION",
+            updateElement("request-info", {
               requestPrivateNotes: notes.value,
             }).then(closeModal)
           },
@@ -165,8 +163,7 @@ const modals = computed(() => {
         {
           label: "Refuser",
           onClick() {
-            updateElement({
-              requestStatus: "REJECTED",
+            updateElement("reject", {
               requestPrivateNotes: notes.value,
             }).then(closeModal)
           },
