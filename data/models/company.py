@@ -9,6 +9,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from data.behaviours import AutoValidable, Deactivable
 from data.choices import CountryChoices
 from data.fields import MultipleChoiceField
+from data.models.teleicare_history.etablissement import IcaEtablissement
 from data.validators import validate_siret, validate_vat
 
 
@@ -59,7 +60,20 @@ class ActivityChoices(models.TextChoices):
     DISTRIBUTEUR = auto()
 
 
-class Company(AutoValidable, Address, CompanyContact, models.Model):
+class TeleicareCompany(models.Model):
+    class Meta:
+        abstract = True
+
+    siccrf_id = models.ForeignKey(
+        IcaEtablissement,
+        on_delete=models.PROTECT,  # nous ne voulons pas supprimer les établissements TeleIcare qui sont encore en activité dans Compl'Alim
+        blank=True,
+        null=True,
+        verbose_name="id dans les tables et tables relationnelles SICCRF",
+    )
+
+
+class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.Model):
     class Meta:
         verbose_name = "entreprise"
 
