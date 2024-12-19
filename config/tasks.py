@@ -3,17 +3,17 @@ from datetime import datetime, time
 
 from django.conf import settings
 from django.db import transaction
-from django.db.models import Count, Max
+from django.db.models import Count, F, Max, Q
 from django.utils import timezone
 
 from dateutil.relativedelta import relativedelta
 from viewflow import fsm
 
 from config import email
+from data.etl.transformer_loader import ETL_OPEN_DATA_DECLARATIONS
 from data.models import Declaration, Snapshot
 
 from .celery import app
-from data.etl.transformer_loader import ETL_OPEN_DATA_DECLARATIONS
 
 logger = logging.getLogger(__name__)
 Status = Declaration.DeclarationStatus
@@ -145,11 +145,12 @@ def approve_declarations():
             article__in=[Declaration.Article.ARTICLE_15, Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION],
         )
         # Plus précisement, seulement les déclarations qui n'ont pas été traitées ni touchées par l'instruction,
-        # et donc ont seulement un snapshot : celui créé par la soumission DRAFT => AWAITING_INSTRUCTION
-        .annotate(snapshot_count=Count("snapshots"))
-        .filter(snapshot_count=1)
-        # On vérifie que le snapshot en question soit bien du type "SUBMIT"
-        .filter(snapshots__action=Snapshot.SnapshotActions.SUBMIT)
+        # et donc ont seulement des snapshots type "SUBMIT" (créés par le passage DRAFT => AWAITING_INSTRUCTION)
+        .annotate(
+            total_snapshot_count=Count("snapshots"),
+            submit_snapshots_count=Count("snapshots", filter=Q(snapshots__action=Snapshot.SnapshotActions.SUBMIT)),
+        )
+        .filter(total_snapshot_count=F("submit_snapshots_count"))
         # Et finalement on ne prend que celles soumises au moins il y a deux mois
         .annotate(submission_date=Max("snapshots__creation_date"))
         .filter(submission_date__lt=cutoff_delta)
