@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="isFetching" class="flex justify-center items-center min-h-60">
+    <div v-if="!snapshots" class="flex justify-center items-center min-h-60">
       <ProgressSpinner />
     </div>
     <div v-if="snapshots && snapshots.length" class="flex flex-col gap-6">
@@ -19,20 +19,11 @@
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
-import { onMounted, computed } from "vue"
-import { handleError } from "@/utils/error-handling"
+import { computed } from "vue"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import SnapshotItem from "@/components/SnapshotItem"
 
-const props = defineProps(["declarationId", "hideInstructionDetails"])
-
-const { response, data, execute, isFetching } = useFetch(
-  () => `/api/v1/declarations/${props.declarationId}/snapshots/`,
-  { immediate: false }
-)
-  .get()
-  .json()
+const props = defineProps(["snapshots", "declarationId", "hideInstructionDetails"])
 
 const snapshots = computed(() => {
   if (props.hideInstructionDetails) {
@@ -46,14 +37,9 @@ const snapshots = computed(() => {
       "WITHDRAW",
       "ABANDON",
     ]
-    return data.value?.filter((x) => allowedActions.indexOf(x.action) > -1)
+    return props.snapshots?.filter((x) => allowedActions.indexOf(x.action) > -1)
   }
-  return data.value
-})
-
-onMounted(async () => {
-  await execute()
-  handleError(response)
+  return props.snapshots
 })
 
 const showOnRight = (snapshot) => {

@@ -55,11 +55,11 @@ class CertificateView(GenericAPIView):
             return f"certificates/certificate-submitted-art-{article}.html"
 
         template_status = declaration.status
+
+        # La mise en abandon ne produit pas de Snapshot (car pas effectué en tant qu'action usager).
+        # On vérifie donc le status du dernier snapshot pour calculer le template
         if template_status == status.ABANDONED:
-            pre_abandon_statuses = [status.OBJECTION, status.OBSERVATION]
-            template_status = (
-                declaration.snapshots.filter(status__in=pre_abandon_statuses).latest("creation_date").status
-            )
+            template_status = declaration.snapshots.latest("creation_date").status
 
         if template_status in [status.AUTHORIZED, status.WITHDRAWN]:
             return f"certificates/certificate-art-{article}.html"

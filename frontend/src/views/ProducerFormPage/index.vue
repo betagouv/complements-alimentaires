@@ -15,7 +15,7 @@
     </div>
 
     <div v-else class="mb-4">
-      <DeclarationAlert v-if="payload" role="declarant" :declaration="payload" class="mb-4" />
+      <DeclarationAlert v-if="payload" role="declarant" :declaration="payload" :snapshots="snapshots" class="mb-4" />
 
       <DsfrAlert
         class="mb-4"
@@ -61,6 +61,7 @@
               :externalResults="$externalResults"
               :readonly="readonly"
               :declarationId="id"
+              :snapshots="snapshots"
               @withdraw="onWithdrawal"
               :hideInstructionDetails="true"
             ></component>
@@ -159,9 +160,19 @@ const { response, data, isFetching, execute } = useFetch(`/api/v1/declarations/$
   .get()
   .json()
 
+const {
+  response: snapshotsResponse,
+  data: snapshots,
+  execute: executeSnapshotsFetch,
+} = useFetch(() => `/api/v1/declarations/${props.id}/snapshots/`, { immediate: false })
+  .get()
+  .json()
+
 if (!isNewDeclaration.value || route.query.duplicate) execute()
+if (!isNewDeclaration.value && !route.query.duplicate) executeSnapshotsFetch()
 
 watch(response, () => handleError(response))
+watch(snapshotsResponse, () => handleError(snapshotsResponse))
 watch(data, () => {
   const shouldDuplicate = route.query.duplicate && !props.id
   if (shouldDuplicate) {
