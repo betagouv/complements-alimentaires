@@ -77,6 +77,15 @@
     />
 
     <p class="font-bold mt-8">Substances contenues dans la composition :</p>
+    <DsfrAlert v-if="replacedRequestsWithSubstances.length" type="warning" class="mb-4">
+      Les ingrédients suivantes, ajoutés pour remplacer une demande, rajoutent des substances dans la composition.
+      Pensez à renvoyer la déclaration vers le déclarant pour mettre à jour les doses.
+      <ul>
+        <li v-for="i in replacedRequestsWithSubstances" :key="`${i.type}-${i.id}`">
+          {{ i.element.name }}
+        </li>
+      </ul>
+    </DsfrAlert>
     <SubstancesTable v-model="payload" readonly />
 
     <h3 class="fr-h6 !mt-8">
@@ -170,6 +179,16 @@ const conditionNames = computed(() => {
 })
 
 const editLink = (tab) => ({ query: { tab } })
+
+const replacedRequestsWithSubstances = computed(() => {
+  const data = payload.value
+  if (!data) return false
+  const elements = data.declaredPlants
+    .concat(data.declaredMicroorganisms)
+    .concat(data.declaredSubstances)
+    .concat(data.declaredIngredients)
+  return elements?.filter((i) => i.requestStatus === "REPLACED" && i.element?.substances?.length)
+})
 </script>
 
 <style scoped>
