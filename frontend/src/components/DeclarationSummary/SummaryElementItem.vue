@@ -12,6 +12,13 @@
 
           <DsfrBadge v-if="novelFood" label="Novel Food" type="new" class="self-center ml-2" small />
           <DsfrBadge v-if="model.new" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
+          <DsfrBadge
+            v-else-if="model.requestStatus === 'REPLACED'"
+            label="Demande remplacée"
+            type="info"
+            class="self-center ml-2"
+            small
+          />
           <DsfrBadge v-if="!model.active" label="Non-actif" type="none" class="self-center ml-2" small />
         </div>
         <p class="my-2" v-if="model.active">
@@ -19,7 +26,7 @@
         </p>
       </div>
 
-      <div v-if="model.new && isInstructor" class="content-center">
+      <div v-if="showRequestInspectionLink" class="content-center">
         <router-link
           :to="{ name: 'DeclaredElementPage', params: { type: props.objectType, id: model.id } }"
           class="fr-btn fr-btn--sm fr-btn--secondary"
@@ -77,4 +84,8 @@ const elementInfo = computed(() => {
     return model.value.quantity ? `Qté par DJR: ${model.value.quantity} ${unitName.value}` : null
   return ""
 })
+
+const showRequestInspectionLink = computed(
+  () => (model.value.new || model.value.requestStatus === "REPLACED") && isInstructor.value
+)
 </script>
