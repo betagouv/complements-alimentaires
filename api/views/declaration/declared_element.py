@@ -146,9 +146,12 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
     def _update_element(self, element, request):
         try:
             existing_element_id = request.data["element"]["id"]
-            # existing_element_type = request.data["element"]["type"]
+            existing_element_type = request.data["element"]["type"]
         except KeyError:
             raise ParseError(detail="Must provide a dict 'element' with id and type")
+
+        if existing_element_type != self.element_type:
+            raise ParseError(detail="Cannot replace element request with existing element of a different type")
 
         try:
             existing_element = self.element_model.objects.get(pk=existing_element_id)

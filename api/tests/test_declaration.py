@@ -1727,4 +1727,27 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         declared_plant.refresh_from_db()
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
-        self.assertEqual(declared_plant.plant.id, plant.id)
+        self.assertEqual(declared_plant.plant, plant)
+
+    @authenticate
+    def test_cannot_replace_element_different_type(self):
+        """
+        Pour reduire le scope de changements, temporairement bloque le remplacement d'une demande
+        avec un element d'un type different
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
+        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
+        microorganism = MicroorganismFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {"element": {"id": microorganism.id, "type": "microorganism"}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response.json())
+        declared_plant.refresh_from_db()
+        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
+        self.assertNotEqual(declared_plant.plant, microorganism)
