@@ -60,7 +60,7 @@ const breadcrumbLinks = computed(() => {
 })
 
 // Init
-const url = computed(() => `/api/v1/declared-elements/${getApiType(props.type)}s/${props.id}`)
+const url = computed(() => `/api/v1/declared-elements/${getApiType(props.type)}/${props.id}`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
 const getElementFromApi = async () => {

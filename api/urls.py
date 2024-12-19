@@ -21,18 +21,7 @@ urlpatterns = {
     path("elements/autocomplete/", views.AutocompleteView.as_view(), name="substance_autocomplete"),
     # Declared elements
     path("new-declared-elements/", views.DeclaredElementsView.as_view(), name="list_new_declared_elements"),
-    path("declared-elements/plants/<int:pk>", views.DeclaredPlantView.as_view(), name="declared_plant"),
-    path(
-        "declared-elements/other-ingredients/<int:pk>",
-        views.DeclaredIngredientView.as_view(),
-        name="declared_ingredient",
-    ),
-    path(
-        "declared-elements/microorganisms/<int:pk>",
-        views.DeclaredMicroorganismView.as_view(),
-        name="declared_microorganism",
-    ),
-    path("declared-elements/substances/<int:pk>", views.DeclaredSubstanceView.as_view(), name="declared_substance"),
+    path("declared-elements/<str:type>/<int:pk>", views.DeclaredElementView.as_view(), name="declared_element"),
     # References
     path("populations/", views.PopulationListView.as_view(), name="population_list"),
     path("conditions/", views.ConditionListView.as_view(), name="condition_list"),

@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ParseError
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from data.models import DeclaredPlant, DeclaredSubstance, DeclaredIngredient, DeclaredMicroorganism, Declaration
@@ -39,25 +40,40 @@ class DeclaredElementsView(ListAPIView):
         )
 
 
-class DeclaredPlantView(RetrieveUpdateAPIView):
+class DeclaredElementView(RetrieveUpdateAPIView):
     permission_classes = [(IsInstructor | IsVisor)]
-    serializer_class = DeclaredPlantSerializer
-    queryset = DeclaredPlant.objects.all()
 
+    type_mapping = {
+        "plant": {
+            "model": DeclaredPlant,
+            "serializer": DeclaredPlantSerializer,
+        },
+        "microorganism": {
+            "model": DeclaredMicroorganism,
+            "serializer": DeclaredMicroorganismSerializer,
+        },
+        "substance": {
+            "model": DeclaredSubstance,
+            "serializer": DeclaredSubstanceSerializer,
+        },
+        "ingredient": {
+            "model": DeclaredIngredient,
+            "serializer": DeclaredIngredientSerializer,
+        },
+    }
 
-class DeclaredMicroorganismView(RetrieveUpdateAPIView):
-    permission_classes = [(IsInstructor | IsVisor)]
-    serializer_class = DeclaredMicroorganismSerializer
-    queryset = DeclaredMicroorganism.objects.all()
+    def get_queryset(self):
+        return self.type_info["model"].objects.all()
 
+    def get_serializer_class(self):
+        return self.type_info["serializer"]
 
-class DeclaredSubstanceView(RetrieveUpdateAPIView):
-    permission_classes = [(IsInstructor | IsVisor)]
-    serializer_class = DeclaredSubstanceSerializer
-    queryset = DeclaredSubstance.objects.all()
+    @property
+    def type_info(self):
+        element_type = self.kwargs["type"]
 
+        if element_type not in self.type_mapping:
+            valid_type_list = list(self.type_mapping.keys())
+            raise ParseError(detail=f"Unknown type: '{element_type}' not in {valid_type_list}")
 
-class DeclaredIngredientView(RetrieveUpdateAPIView):
-    permission_classes = [(IsInstructor | IsVisor)]
-    serializer_class = DeclaredIngredientSerializer
-    queryset = DeclaredIngredient.objects.all()
+        return self.type_mapping[element_type]

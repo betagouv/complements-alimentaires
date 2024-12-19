@@ -1540,7 +1540,9 @@ class TestDeclaredElementsApi(APITestCase):
         declaration = DeclarationFactory()
         plant = DeclaredPlantFactory(declaration=declaration)
 
-        response = self.client.get(reverse("api:declared_plant", kwargs={"pk": plant.id}), format="json")
+        response = self.client.get(
+            reverse("api:declared_element", kwargs={"pk": plant.id, "type": "plant"}), format="json"
+        )
         body = response.json()
         self.assertEqual(body["id"], plant.id)
 
@@ -1552,7 +1554,7 @@ class TestDeclaredElementsApi(APITestCase):
         microorganism = DeclaredMicroorganismFactory(declaration=declaration)
 
         response = self.client.get(
-            reverse("api:declared_microorganism", kwargs={"pk": microorganism.id}), format="json"
+            reverse("api:declared_element", kwargs={"pk": microorganism.id, "type": "microorganism"}), format="json"
         )
         body = response.json()
         self.assertEqual(body["id"], microorganism.id)
@@ -1564,7 +1566,9 @@ class TestDeclaredElementsApi(APITestCase):
         declaration = DeclarationFactory()
         substance = DeclaredSubstanceFactory(declaration=declaration)
 
-        response = self.client.get(reverse("api:declared_substance", kwargs={"pk": substance.id}), format="json")
+        response = self.client.get(
+            reverse("api:declared_element", kwargs={"pk": substance.id, "type": "substance"}), format="json"
+        )
         body = response.json()
         self.assertEqual(body["id"], substance.id)
 
@@ -1575,35 +1579,65 @@ class TestDeclaredElementsApi(APITestCase):
         declaration = DeclarationFactory()
         ingredient = DeclaredIngredientFactory(declaration=declaration)
 
-        response = self.client.get(reverse("api:declared_ingredient", kwargs={"pk": ingredient.id}), format="json")
+        response = self.client.get(
+            reverse("api:declared_element", kwargs={"pk": ingredient.id, "type": "ingredient"}), format="json"
+        )
         body = response.json()
         self.assertEqual(body["id"], ingredient.id)
 
+    @authenticate
+    def test_cannot_get_declared_element_unknown_type(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        ingredient = DeclaredIngredientFactory(declaration=declaration)
+
+        response = self.client.get(
+            reverse("api:declared_element", kwargs={"pk": ingredient.id, "type": "unknown"}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.json()["globalError"],
+            "Unknown type: 'unknown' not in ['plant', 'microorganism', 'substance', 'ingredient']",
+        )
+
     def test_get_declared_element_not_allowed_not_authenticated(self):
-        response = self.client.get(reverse("api:declared_plant", kwargs={"pk": 1}), format="json")
+        response = self.client.get(reverse("api:declared_element", kwargs={"pk": 1, "type": "plant"}), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        response = self.client.get(reverse("api:declared_microorganism", kwargs={"pk": 1}), format="json")
+        response = self.client.get(
+            reverse("api:declared_element", kwargs={"pk": 1, "type": "microorganism"}), format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        response = self.client.get(reverse("api:declared_substance", kwargs={"pk": 1}), format="json")
+        response = self.client.get(
+            reverse("api:declared_element", kwargs={"pk": 1, "type": "substance"}), format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        response = self.client.get(reverse("api:declared_ingredient", kwargs={"pk": 1}), format="json")
+        response = self.client.get(
+            reverse("api:declared_element", kwargs={"pk": 1, "type": "ingredient"}), format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
     def test_get_declared_element_not_allowed_not_instructor(self):
-        response = self.client.get(reverse("api:declared_plant", kwargs={"pk": 1}), format="json")
+        response = self.client.get(reverse("api:declared_element", kwargs={"pk": 1, "type": "plant"}), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        response = self.client.get(reverse("api:declared_microorganism", kwargs={"pk": 1}), format="json")
+        response = self.client.get(
+            reverse("api:declared_element", kwargs={"pk": 1, "type": "microorganism"}), format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        response = self.client.get(reverse("api:declared_substance", kwargs={"pk": 1}), format="json")
+        response = self.client.get(
+            reverse("api:declared_element", kwargs={"pk": 1, "type": "substance"}), format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        response = self.client.get(reverse("api:declared_ingredient", kwargs={"pk": 1}), format="json")
+        response = self.client.get(
+            reverse("api:declared_element", kwargs={"pk": 1, "type": "ingredient"}), format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
@@ -1614,7 +1648,7 @@ class TestDeclaredElementsApi(APITestCase):
         microorganism = DeclaredMicroorganismFactory(declaration=declaration)
 
         self.client.patch(
-            reverse("api:declared_microorganism", kwargs={"pk": microorganism.id}),
+            reverse("api:declared_element", kwargs={"pk": microorganism.id, "type": "microorganism"}),
             {"requestStatus": DeclaredMicroorganism.AddableStatus.INFORMATION, "requestPrivateNotes": "some notes"},
             format="json",
         )
@@ -1665,7 +1699,7 @@ class TestDeclaredElementsApi(APITestCase):
         plant = PlantFactory()
 
         response = self.client.patch(
-            reverse("api:declared_plant", kwargs={"pk": declared_plant.id}),
+            reverse("api:declared_element", kwargs={"pk": declared_plant.id, "type": "plant"}),
             {"requestStatus": DeclaredPlant.AddableStatus.REPLACED, "element": {"id": plant.id}},
             format="json",
         )
