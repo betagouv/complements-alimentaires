@@ -61,6 +61,10 @@
     <SummaryElementList objectType="substance" :useAccordions="useAccordions" :elements="payload.declaredSubstances" />
 
     <p class="font-bold mt-8">Substances contenues dans la composition :</p>
+    <DsfrAlert v-if="hasReplacedRequests" type="warning">
+      Une ou plusieurs demandes d'ajout d'ingrédient dans la composition ont été remplacés par un ingrédient existant.
+      Si besoin, renvoyez la déclaration au déclarant pour re-calculer et completer la liste de substances.
+    </DsfrAlert>
     <SubstancesTable v-model="payload" readonly />
 
     <h3 class="fr-h6 !mt-8">
@@ -154,6 +158,16 @@ const conditionNames = computed(() => {
 })
 
 const editLink = (tab) => ({ query: { tab } })
+
+const hasReplacedRequests = computed(() => {
+  const data = payload.value
+  if (!data) return false
+  const elements = data.declaredPlants
+    .concat(data.declaredMicroorganisms)
+    .concat(data.declaredSubstances)
+    .concat(data.declaredIngredients)
+  return elements?.some((i) => i.requestStatus === "REPLACED")
+})
 </script>
 
 <style scoped>
