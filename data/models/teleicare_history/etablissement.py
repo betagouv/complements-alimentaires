@@ -14,7 +14,7 @@ class IcaEtablissement(models.Model):
     etab_ident_parent = models.IntegerField(blank=True, null=True)
     pays_ident = models.IntegerField()
     etab_siret = models.TextField(blank=True, null=True)
-    etab_numero_tva_integerra = models.TextField(blank=True, null=True)
+    etab_numero_tva_intra = models.TextField(blank=True, null=True)
     etab_raison_sociale = models.TextField()
     etab_enseigne = models.TextField(blank=True, null=True)
     etab_adre_ville = models.TextField(blank=True, null=True)
