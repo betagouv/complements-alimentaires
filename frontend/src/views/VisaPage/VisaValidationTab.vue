@@ -41,8 +41,14 @@
         <p class="fr-text--sm">
           {{ decision.description }}
         </p>
-        <div class="text-right">
-          <DsfrButton :label="decision.buttonText" @click="decision.buttonHandler" secondary />
+        <ArticleInfoRow class="mb-2" v-if="decision.blockedByAnses" v-model="declaration" />
+        <div v-else class="text-right">
+          <DsfrButton
+            :label="decision.buttonText"
+            @click="decision.buttonHandler"
+            secondary
+            :disabled="decision.blockedByAnses"
+          />
         </div>
       </div>
     </div>
@@ -57,6 +63,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import useToaster from "@/composables/use-toaster"
 import VisaInfoLine from "./VisaInfoLine.vue"
+import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
 
 const $externalResults = ref({})
 const emit = defineEmits(["decision-done"])
@@ -91,16 +98,22 @@ const acceptVisa = async () => {
     emit("decision-done")
   }
 }
-
+const needsAnsesReferal = computed(() => declaration.value?.article === "ANSES_REFERAL")
+const shouldBlockApproval = computed(
+  () => needsAnsesReferal.value && declaration.value.postValidationStatus === "AUTHORIZED"
+)
 const decisionCategories = computed(() => {
   return [
     {
       title: "Je valide cette décision",
       icon: "ri-checkbox-circle-fill",
       iconColor: "green",
-      description: "Je vise cette déclaration et signe.",
+      description: shouldBlockApproval.value
+        ? "La déclaration ne peut pas être autorisée en nécessitant une saisine ANSEES."
+        : "Je vise cette déclaration et signe.",
       buttonText: "Valider",
       buttonHandler: acceptVisa,
+      blockedByAnses: shouldBlockApproval.value,
     },
     {
       title: "Je ne suis pas d'accord",
