@@ -118,24 +118,10 @@ class DeclaredElementNestedField:
 
         return super().create(validated_data)
 
-    def update(self, instance, validated_data):
-        # DRF ne gère pas automatiquement la création des nested-fields :
-        # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
-        element = validated_data.pop(self.nested_field_name, None)
-        if element:
-            try:
-                validated_data[self.nested_field_name] = self.nested_model.objects.get(pk=element.get("id"))
-            except self.nested_model.DoesNotExist:
-                raise ProjectAPIException(
-                    field_errors={f"declared_{self.nested_field_name}s": "L'ingrédient spécifié n'existe pas."}
-                )
-
-        return super().update(instance, validated_data)
-
 
 class DeclaredIngredientCommonSerializer(DeclaredElementNestedField, PrivateFieldsSerializer):
     private_fields = ("request_private_notes", "request_status")
-    
+
 
 class DeclaredPlantSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughPlantSerializer(required=False, source="plant", allow_null=True)

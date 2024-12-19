@@ -22,6 +22,21 @@ urlpatterns = {
     # Declared elements
     path("new-declared-elements/", views.DeclaredElementsView.as_view(), name="list_new_declared_elements"),
     path("declared-elements/<str:type>/<int:pk>", views.DeclaredElementView.as_view(), name="declared_element"),
+    path(
+        "declared-elements/<str:type>/<int:pk>/request-info",
+        views.DeclaredElementRequestInfoView.as_view(),
+        name="declared_element_request_info",
+    ),
+    path(
+        "declared-elements/<str:type>/<int:pk>/reject",
+        views.DeclaredElementRejectView.as_view(),
+        name="declared_element_reject",
+    ),
+    path(
+        "declared-elements/<str:type>/<int:pk>/replace",
+        views.DeclaredElementReplaceView.as_view(),
+        name="declared_element_replace",
+    ),
     # References
     path("populations/", views.PopulationListView.as_view(), name="population_list"),
     path("conditions/", views.ConditionListView.as_view(), name="condition_list"),

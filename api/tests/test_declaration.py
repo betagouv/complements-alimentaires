@@ -1641,20 +1641,40 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
-    def test_update_declared_microorganism(self):
+    def test_request_info_declared_element(self):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
         microorganism = DeclaredMicroorganismFactory(declaration=declaration)
+        self.assertNotEqual(microorganism.request_status, DeclaredMicroorganism.AddableStatus.INFORMATION)
 
-        self.client.patch(
-            reverse("api:declared_element", kwargs={"pk": microorganism.id, "type": "microorganism"}),
-            {"requestStatus": DeclaredMicroorganism.AddableStatus.INFORMATION, "requestPrivateNotes": "some notes"},
+        response = self.client.post(
+            reverse("api:declared_element_request_info", kwargs={"pk": microorganism.id, "type": "microorganism"}),
+            {"requestPrivateNotes": "some notes"},
             format="json",
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         microorganism.refresh_from_db()
         self.assertEqual(microorganism.request_private_notes, "some notes")
-        self.assertEqual(microorganism.request_status, "INFORMATION")
+        self.assertEqual(microorganism.request_status, DeclaredMicroorganism.AddableStatus.INFORMATION)
+
+    @authenticate
+    def test_reject_declared_element(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        microorganism = DeclaredMicroorganismFactory(declaration=declaration)
+        self.assertNotEqual(microorganism.request_status, DeclaredMicroorganism.AddableStatus.REJECTED)
+
+        response = self.client.post(
+            reverse("api:declared_element_reject", kwargs={"pk": microorganism.id, "type": "microorganism"}),
+            {"requestPrivateNotes": "some notes"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        microorganism.refresh_from_db()
+        self.assertEqual(microorganism.request_private_notes, "some notes")
+        self.assertEqual(microorganism.request_status, DeclaredMicroorganism.AddableStatus.REJECTED)
 
     @authenticate
     def test_fields_hidden_from_declarant(self):
@@ -1696,14 +1716,15 @@ class TestDeclaredElementsApi(APITestCase):
 
         declaration = DeclarationFactory()
         declared_plant = DeclaredPlantFactory(declaration=declaration)
+        self.assertNotEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
         plant = PlantFactory()
 
-        response = self.client.patch(
-            reverse("api:declared_element", kwargs={"pk": declared_plant.id, "type": "plant"}),
-            {"requestStatus": DeclaredPlant.AddableStatus.REPLACED, "element": {"id": plant.id}},
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {"id": plant.id},
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         declared_plant.refresh_from_db()
-        self.assertEqual(declared_plant.request_status, "REPLACED")
+        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
         self.assertEqual(declared_plant.plant.id, plant.id)
