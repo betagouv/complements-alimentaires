@@ -160,3 +160,4 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
 
         setattr(element, self.element_type, existing_element)
         element.request_status = self.type_model.AddableStatus.REPLACED
+        element.new = False

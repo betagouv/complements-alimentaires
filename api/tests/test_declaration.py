@@ -1716,7 +1716,7 @@ class TestDeclaredElementsApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration)
+        declared_plant = DeclaredPlantFactory(declaration=declaration, new=True)
         self.assertNotEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
         plant = PlantFactory()
 
@@ -1728,6 +1728,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         declared_plant.refresh_from_db()
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        self.assertFalse(declared_plant.new)
         self.assertEqual(declared_plant.plant, plant)
 
     @authenticate
