@@ -3,7 +3,8 @@ import logging
 from django.db import transaction
 from django.db.models import Q, TextField, Transform
 
-from ..models import Ingredient, IngredientStatus, Substance
+from data.models import Ingredient, IngredientStatus, Substance
+
 from .utils import update_or_create_object
 
 
