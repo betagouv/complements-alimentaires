@@ -145,9 +145,10 @@ class DeclaredElementRejectView(DeclaredElementActionAbstractView):
 class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
     def _update_element(self, element, request):
         try:
-            existing_element_id = request.data["id"]
+            existing_element_id = request.data["element"]["id"]
+            # existing_element_type = request.data["element"]["type"]
         except KeyError:
-            raise ParseError(detail="No replacement id provided")
+            raise ParseError(detail="Must provide a dict 'element' with id and type")
 
         try:
             existing_element = self.element_model.objects.get(pk=existing_element_id)

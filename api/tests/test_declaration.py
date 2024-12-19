@@ -1721,7 +1721,7 @@ class TestDeclaredElementsApi(APITestCase):
 
         response = self.client.post(
             reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
-            {"id": plant.id},
+            {"element": {"id": plant.id, "type": "plant"}},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
