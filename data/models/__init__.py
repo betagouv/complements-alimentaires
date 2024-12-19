@@ -31,6 +31,8 @@ from .declaration import (
 )
 from .solicitation import SupervisionClaim, CompanyAccessClaim, CollaborationInvitation
 from .snapshot import Snapshot
+from .teleicare_history.declaration import IcaComplementAlimentaire, IcaDeclaration, IcaVersionDeclaration
+from .teleicare_history.etablissement import IcaEtablissement
 
 ELEMENT_MODELS = [
     Ingredient,
