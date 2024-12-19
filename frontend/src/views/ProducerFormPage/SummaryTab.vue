@@ -5,7 +5,7 @@
     <hr v-if="!readonly" />
     <h2 v-if="!readonly">Soumettre</h2>
     <DsfrAlert v-if="!readonly">
-      <DsfrInputGroup>
+      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'comment')">
         <DsfrInput
           class="!max-w-lg"
           label="Commentaires à destination de l'administration"
@@ -27,20 +27,36 @@
           </template>
         </DsfrCheckbox>
       </DsfrInputGroup>
-      <DsfrButton :disabled="!conformityEngaged" @click="emit('submit', comment)" label="Soumettre ma démarche" />
+      <DsfrButton :disabled="!conformityEngaged" @click="submitDeclaration" label="Soumettre ma démarche" />
     </DsfrAlert>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import DeclarationSummary from "@/components/DeclarationSummary"
 import SectionTitle from "@/components/SectionTitle"
+import { useVuelidate } from "@vuelidate/core"
+import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
 
 const conformityEngaged = ref(false)
 
 const payload = defineModel()
 const emit = defineEmits(["submit"])
 const comment = ref("")
+
+const rules = computed(() => {
+  if (payload.value.status === "DRAFT") return {}
+  return { comment: errorRequiredField }
+})
+const $externalResults = ref({})
+const v$ = useVuelidate(rules, { comment }, { $externalResults })
+
+const submitDeclaration = () => {
+  v$.value.$reset()
+  v$.value.$validate()
+  if (!v$.value.$error) emit("submit", comment.value)
+}
+
 defineProps({ readonly: Boolean })
 </script>
