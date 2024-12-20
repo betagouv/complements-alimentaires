@@ -10,6 +10,8 @@ def match_companies_on_siret_or_vat():
     Le matching pourrait aussi être fait sur
     * Q(social_name__icontains=etab.etab_raison_sociale)
     * Q(commercial_name__icontains=etab.etab_enseigne)
+    * Q(email__icontains=etab.etab_courriel)
+    * Q(phone_number__icontains=etab.etab_telephone)
     Mais il serait moins précis.
     """
     nb_vat_match = 0
