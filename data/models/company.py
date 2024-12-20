@@ -9,7 +9,6 @@ from phonenumber_field.modelfields import PhoneNumberField
 from data.behaviours import AutoValidable, Deactivable
 from data.choices import CountryChoices
 from data.fields import MultipleChoiceField
-from data.models.teleicare_history.etablissement import IcaEtablissement
 from data.validators import validate_siret, validate_vat
 
 
@@ -64,11 +63,12 @@ class TeleicareCompany(models.Model):
     class Meta:
         abstract = True
 
-    siccrf_id = models.ForeignKey(
-        IcaEtablissement,
-        on_delete=models.PROTECT,  # nous ne voulons pas supprimer les établissements TeleIcare qui sont encore en activité dans Compl'Alim
+    siccrf_id = models.IntegerField(
         blank=True,
         null=True,
+        editable=False,
+        db_index=True,
+        unique=True,
         verbose_name="id dans les tables et tables relationnelles SICCRF",
     )
 

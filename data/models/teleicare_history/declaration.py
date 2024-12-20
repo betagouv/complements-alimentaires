@@ -13,7 +13,7 @@ from .etablissement import IcaEtablissement
 class IcaComplementAlimentaire(models.Model):
     cplalim_ident = models.IntegerField(primary_key=True)
     frmgal_ident = models.IntegerField(blank=True, null=True)
-    etab_ident = models.ForeignKey(IcaEtablissement, on_delete=models.CASCADE)
+    etab = models.ForeignKey(IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident")
     cplalim_marque = models.TextField(blank=True, null=True)
     cplalim_gamme = models.TextField(blank=True, null=True)
     cplalim_nom = models.TextField()
@@ -22,15 +22,15 @@ class IcaComplementAlimentaire(models.Model):
 
     class Meta:
         managed = False
-        db_table = "ica_complement_alimentaire"
+        db_table = "ica_complementalimentaire"
 
 
 class IcaDeclaration(models.Model):
     dcl_ident = models.IntegerField(primary_key=True)
-    cplalim_ident = models.ForeignKey(IcaComplementAlimentaire, on_delete=models.CASCADE)
+    cplalim = models.ForeignKey(IcaComplementAlimentaire, on_delete=models.CASCADE, db_column="cplalim_ident")
     tydcl_ident = models.IntegerField()
-    etab_ident = models.ForeignKey(
-        IcaEtablissement, on_delete=models.CASCADE
+    etab = models.ForeignKey(
+        IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident"
     )  # duplique la foreign key vers l'établissement présente dans le CA
     etab_ident_rmm_declarant = models.IntegerField()
     dcl_date = models.TextField()
@@ -51,13 +51,13 @@ class IcaVersionDeclaration(models.Model):
     typvrs_ident = models.IntegerField()
     unt_ident = models.IntegerField(blank=True, null=True)
     pays_ident_adre = models.IntegerField(blank=True, null=True)
-    etab_ident = models.ForeignKey(
-        IcaEtablissement, on_delete=models.CASCADE
+    etab = models.ForeignKey(
+        IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident"
     )  # duplique la foreign key vers l'établissement présente dans le CA
     ex_ident = models.IntegerField()
     pays_ident_pays_de_reference = models.IntegerField(blank=True, null=True)
-    dcl_ident = models.ForeignKey(
-        IcaDeclaration, on_delete=models.CASCADE
+    dcl = models.ForeignKey(
+        IcaDeclaration, on_delete=models.CASCADE, db_column="dcl_ident"
     )  # duplique la foreign key vers l'établissement présente dans la decla
     stattdcl_ident = models.IntegerField(blank=True, null=True)
     stadcl_ident = models.IntegerField(blank=True, null=True)
@@ -87,4 +87,4 @@ class IcaVersionDeclaration(models.Model):
 
     class Meta:
         managed = False
-        db_table = "ica_version_declaration"
+        db_table = "ica_versiondeclaration"
