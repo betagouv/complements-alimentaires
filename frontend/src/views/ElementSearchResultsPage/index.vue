@@ -1,10 +1,12 @@
 <template>
   <div class="bg-blue-france-925 py-8">
     <div class="fr-container">
-      <DsfrSearchBar
-        placeholder="Rechercher par ingrédient, plante, substance..."
+      <ElementAutocomplete
         v-model="searchTerm"
+        hint="Tapez au moins trois caractères pour démarrer la recherche"
+        @selected="goToSelectedOption"
         @search="search"
+        :chooseFirstAsDefault="false"
       />
     </div>
   </div>
@@ -51,7 +53,9 @@ import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import ResultCard from "./ResultCard"
 import ProgressSpinner from "@/components/ProgressSpinner"
+import ElementAutocomplete from "@/components/ElementAutocomplete"
 import { handleError } from "@/utils/error-handling"
+import { slugifyType } from "@/utils/mappings"
 import { getPagesForPagination } from "@/utils/components"
 
 const router = useRouter()
@@ -64,9 +68,9 @@ Cette base est en amélioration continue, l'équipe du BEPIAS et Compl'Alim font
 Cependant et même si nous avons vocation à l'exhaustivité, il s’agit d’un outil administratif qui n'a pas force de loi.`
 
 // Search
-const search = () => {
-  if (searchTerm.value.length < 3) window.alert("Veuillez saisir au moins trois caractères")
-  else router.push({ query: { q: searchTerm.value } })
+const search = (newTerm) => {
+  if (newTerm.length < 3) window.alert("Veuillez saisir au moins trois caractères")
+  else router.push({ query: { q: newTerm } })
 }
 
 // Pagination
@@ -92,6 +96,12 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
+const goToSelectedOption = (option) => {
+  const slugguedType = slugifyType(option.objectType)
+  const urlComponent = `${option?.id}--${slugguedType}--${option?.name}`
+  return router.push({ name: "ElementPage", params: { urlComponent } })
+}
+
 // Initial search
 fetchSearchResults() // No need for Suspense
 
@@ -109,3 +119,10 @@ watch(page, () => {
   routerFunction({ query: { ...route.query, ...{ page: page.value } } })
 })
 </script>
+
+<style scoped>
+.fr-container :deep(input),
+.fr-container :deep(button) {
+  @apply !mt-0;
+}
+</style>
