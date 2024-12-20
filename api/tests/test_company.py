@@ -190,7 +190,7 @@ class TestCreateCompany(ProjectAPITestCase):
         self.login()
         company = CompanyWithSiretFactory.build(social_name="Too Good To Leave")  # créé en mémoire, pas en DB
         companies_count = Company.objects.count()
-        for key in ["_state", "id", "vat"]:  # retire les champs à ne pas fournir dans le payload
+        for key in ["_state", "id", "vat", "siccrf_id"]:  # retire les champs à ne pas fournir dans le payload
             company.__dict__.pop(key, None)
         response = self.post(self.url(), company.__dict__)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -201,7 +201,7 @@ class TestCreateCompany(ProjectAPITestCase):
         self.login()
         company = CompanyWithVatFactory.build(social_name="Too Bad To Join")  # créé en mémoire, pas en DB
         companies_count = Company.objects.count()
-        for key in ["_state", "id", "siret"]:  # retire les champs à ne pas fournir dans le payload
+        for key in ["_state", "id", "siret", "siccrf_id"]:  # retire les champs à ne pas fournir dans le payload
             company.__dict__.pop(key, None)
         response = self.post(self.url(), company.__dict__)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

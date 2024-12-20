@@ -59,7 +59,26 @@ class ActivityChoices(models.TextChoices):
     DISTRIBUTEUR = auto()
 
 
-class Company(AutoValidable, Address, CompanyContact, models.Model):
+class TeleicareCompany(models.Model):
+    class Meta:
+        abstract = True
+
+    # ce champ devrait être une ForeignKey vers la table unmanaged IcaEtablissement
+    # mais une ForeignKey vers une table unmanaged implique de cla complexité au niveau du code :
+    # création des tables au setup des tests notamment
+    # https://docs.djangoproject.com/fr/5.1/ref/models/options/#managed
+
+    siccrf_id = models.IntegerField(
+        blank=True,
+        null=True,
+        editable=False,
+        db_index=True,
+        unique=True,
+        verbose_name="id dans les tables et tables relationnelles SICCRF",
+    )
+
+
+class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.Model):
     class Meta:
         verbose_name = "entreprise"
 

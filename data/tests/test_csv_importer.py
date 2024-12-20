@@ -7,9 +7,9 @@ from django.db.models import CharField, FloatField, IntegerField, TextField
 from django.test import TestCase
 
 from data.choices import IngredientActivity
-from data.etl.csv_importer import CSVImporter, import_csv_from_filepath
 from data.etl.exceptions import CSVFileError
-from data.etl.utils import clean_value
+from data.etl.teleicare_ingredients.csv_importer import CSVImporter, import_csv_from_filepath
+from data.etl.teleicare_ingredients.utils import clean_value
 from data.models import (
     Effect,
     GalenicFormulation,
