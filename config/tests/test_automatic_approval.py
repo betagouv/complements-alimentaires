@@ -69,6 +69,50 @@ class TestAutomaticApproval(TestCase):
         latest_snapshot_hrp = declaration_high_risk_population.snapshots.latest("creation_date")
         self.assertEqual(latest_snapshot_hrp.action, Snapshot.SnapshotActions.AUTOMATICALLY_AUTHORIZE)
 
+    def test_double_submission_declaration_approved_art_15(self, _):
+        """
+        Dans certains cas, un·e admin peut remettre la déclaration à l'état brouillon depuis
+        l'admin afin que le pro puisse corriger une erreur repéré tardivement. Dans ces cas,
+        deux snapshots type SUBMIT sont créés. Le bot doit quand même approuver ces déclarations.
+        Plus d'infos : https://github.com/betagouv/complements-alimentaires/issues/1395
+        """
+        declaration_15 = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+
+        # Double soumission
+        TestAutomaticApproval._create_submission_snapshot(declaration_15)
+        TestAutomaticApproval._create_submission_snapshot(declaration_15)
+
+        approve_declarations()
+        declaration_15.refresh_from_db()
+
+        self.assertEqual(declaration_15.status, Declaration.DeclarationStatus.AUTHORIZED)
+        latest_snapshot_15 = declaration_15.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot_15.action, Snapshot.SnapshotActions.AUTOMATICALLY_AUTHORIZE)
+
+    def test_non_submission_snapshots_not_approved_art_15(self, _):
+        """
+        Si au moins un snapshot est présent avec un type différent de "SUBMIT" la déclaration
+        ne devra pas être autorisée
+        """
+        declaration_15 = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+
+        # Double soumission
+        TestAutomaticApproval._create_submission_snapshot(declaration_15)
+        TestAutomaticApproval._create_submission_snapshot(declaration_15)
+
+        SnapshotFactory(
+            action=Snapshot.SnapshotActions.TAKE_FOR_INSTRUCTION,
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            declaration=declaration_15,
+        )
+
+        approve_declarations()
+        declaration_15.refresh_from_db()
+
+        self.assertEqual(declaration_15.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        latest_snapshot_15 = declaration_15.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot_15.action, Snapshot.SnapshotActions.TAKE_FOR_INSTRUCTION)
+
     def test_email_sent_declaration_approved(self, mocked_brevo):
         """
         L'email d'approbation doit être envoyé lors d'une approbation automatique
