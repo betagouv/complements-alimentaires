@@ -63,6 +63,11 @@ class TeleicareCompany(models.Model):
     class Meta:
         abstract = True
 
+    # ce champ devrait être une ForeignKey vers la table unmanaged IcaEtablissement
+    # mais une ForeignKey vers une table unmanaged implique de cla complexité au niveau du code :
+    # création des tables au setup des tests notamment
+    # https://docs.djangoproject.com/fr/5.1/ref/models/options/#managed
+
     siccrf_id = models.IntegerField(
         blank=True,
         null=True,
