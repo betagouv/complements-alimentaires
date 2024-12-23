@@ -104,6 +104,7 @@ class SubstanceAdmin(ElementAdminWithChangeReason):
                     "ca_must_specify_quantity",
                     "ca_max_quantity",
                     "ca_nutritional_reference",
+                    "unit",
                 ],
             },
         ),
