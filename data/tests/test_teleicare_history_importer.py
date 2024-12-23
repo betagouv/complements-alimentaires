@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.db import connection
 from django.test import TestCase
 
@@ -38,7 +40,6 @@ class TeleicareHistoryImporterTestCase(TestCase):
         Une entreprise enregistrée dans Teleicare ayant le même SIRET ou n° TVA intracom
         qu'une entreprise enregistrée dans Compl'Alim doit être liée par le siccrf_id
         """
-        # create_model_table(IcaEtablissement)
         siret = _make_siret()
         etablissement_with_siret = EtablissementFactory(etab_siret=siret)
         company_with_siret = CompanyFactory(siret=siret)
@@ -58,8 +59,24 @@ class TeleicareHistoryImporterTestCase(TestCase):
         random_company.refresh_from_db()
         random_etablissement.refresh_from_db()
 
-        # self.assertEqual(company_with_siret.siccrf_id, etablissement_with_siret.etab_ident)
+        self.assertEqual(company_with_siret.siccrf_id, etablissement_with_siret.etab_ident)
         self.assertEqual(company_with_vat.siccrf_id, etablissement_with_vat.etab_ident)
         self.assertNotEqual(random_company.siccrf_id, random_etablissement.etab_ident)
         self.assertEqual(random_company.siccrf_id, None)
-        # delete_model_table(IcaEtablissement)
+
+    @patch("data.etl.teleicare_history.extractor.logger")
+    def test_match_companies_on_vat_used_twice(self, mocked_logger):
+        """
+        Si deux entreprises enregistrées dans Teleicare ont le même SIRET ou n° TVA intracom
+        alors le matching avec une Company Compl'Alim avec la contrainte d'unicité sur ces deux champs
+        n'est pas évident
+        """
+        vat_used_twice = _make_vat()
+        _ = EtablissementFactory(etab_siret=None, etab_numero_tva_intra=vat_used_twice)
+        _ = EtablissementFactory(etab_siret=None, etab_numero_tva_intra=vat_used_twice)
+        _ = CompanyFactory(vat=vat_used_twice)
+
+        match_companies_on_siret_or_vat()
+        mocked_logger.error.assert_called_with(
+            "Plusieurs Etablissement provenant de Teleicare ont le même n° TVA, ce qui rend le matching avec une Company Compl'Alim incertain."
+        )
