@@ -220,12 +220,9 @@ const url = computed(() => {
   return `/api/v1/declarations/${declaration.value?.id}/${urlPath}/`
 })
 
+const requestPayload = computed(() => ({ comment: comment.value, reasons: reasons.value, expiration: delayDays.value }))
 const { response, isFetching, execute } = useFetch(url, { headers: headers() }, { immediate: false })
-  .post({
-    comment: comment.value,
-    reasons: reasons.value,
-    expiration: delayDays.value,
-  })
+  .post(requestPayload)
   .json()
 
 const submitDecision = async () => {
