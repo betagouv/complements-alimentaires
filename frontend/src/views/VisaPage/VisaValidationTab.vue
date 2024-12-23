@@ -47,7 +47,7 @@
             :label="decision.buttonText"
             @click="decision.buttonHandler"
             secondary
-            :disabled="decision.blockedByAnses"
+            :disabled="refuseIsFetching || acceptIsFetching || decision.blockedByAnses"
           />
         </div>
       </div>
@@ -79,25 +79,39 @@ const showExpirationDays = computed(
     declaration.value.postValidationStatus === "OBJECTION" || declaration.value.postValidationStatus === "OBSERVATION"
 )
 const postValidationStatus = computed(() => statusProps[declaration.value.postValidationStatus].label)
+
+const refusalUrl = computed(() => `/api/v1/declarations/${declaration.value.id}/refuse-visa/`)
+const acceptanceUrl = computed(() => `/api/v1/declarations/${declaration.value.id}/accept-visa/`)
+const postData = computed(() => ({ comment: producerMessage.value }))
+
+const {
+  execute: refuseExecute,
+  isFetching: refuseIsFetching,
+  response: refuseResponse,
+} = useFetch(refusalUrl, { headers: headers() }, { immediate: false }).post(postData).json()
+const {
+  execute: acceptExecute,
+  isFetching: acceptIsFetching,
+  response: acceptResponse,
+} = useFetch(acceptanceUrl, { headers: headers() }, { immediate: false }).post(postData).json()
+
 const refuseVisa = async () => {
-  const url = `/api/v1/declarations/${declaration.value.id}/refuse-visa/`
-  const { response } = await useFetch(url, { headers: headers() }).post({ comment: producerMessage.value }).json()
-  $externalResults.value = await handleError(response)
-  if (response.value.ok) {
-    useToaster().addSuccessMessage("Votre décision a été prise en compte")
-    emit("decision-done")
-  }
+  await refuseExecute()
+  $externalResults.value = await handleError(refuseResponse)
+  if (refuseResponse.value.ok) notifySuccess()
 }
 
 const acceptVisa = async () => {
-  const url = `/api/v1/declarations/${declaration.value.id}/accept-visa/`
-  const { response } = await useFetch(url, { headers: headers() }).post({ comment: producerMessage.value }).json()
-  $externalResults.value = await handleError(response)
-  if (response.value.ok) {
-    useToaster().addSuccessMessage("Votre décision a été prise en compte")
-    emit("decision-done")
-  }
+  await acceptExecute()
+  $externalResults.value = await handleError(acceptResponse)
+  if (acceptResponse.value.ok) notifySuccess()
 }
+
+const notifySuccess = () => {
+  useToaster().addSuccessMessage("Votre décision a été prise en compte")
+  emit("decision-done")
+}
+
 const needsAnsesReferal = computed(() => declaration.value?.article === "ANSES_REFERAL")
 const shouldBlockApproval = computed(
   () => needsAnsesReferal.value && declaration.value.postValidationStatus === "AUTHORIZED"

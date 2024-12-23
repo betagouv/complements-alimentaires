@@ -43,7 +43,7 @@ const snapshots = computed(() => {
 })
 
 const showOnRight = (snapshot) => {
-  const rightSideStatus = ["OBSERVATION", "AUTHORIZED", "AWAITING_VISA"]
+  const rightSideStatus = ["OBSERVATION", "AUTHORIZED", "AWAITING_VISA", "OBJECTION"]
   return rightSideStatus.indexOf(snapshot.status) > -1
 }
 </script>
