@@ -6,7 +6,7 @@ from django.test import TestCase
 from data.etl.teleicare_history.extractor import match_companies_on_siret_or_vat
 from data.factories.company import CompanyFactory, _make_siret, _make_vat
 from data.factories.teleicare_history import EtablissementFactory
-from data.models.teleicare_history.etablissement import IcaEtablissement
+from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 
 
 class TeleicareHistoryImporterTestCase(TestCase):

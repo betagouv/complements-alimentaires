@@ -6,7 +6,7 @@
 
 from django.db import models
 
-from .etablissement import IcaEtablissement
+from .ica_etablissement import IcaEtablissement
 
 
 class IcaComplementAlimentaire(models.Model):

@@ -6,7 +6,7 @@ import faker
 from phonenumber_field.phonenumber import PhoneNumber
 
 from data.choices import CountryChoices
-from data.models.teleicare_history.etablissement import IcaEtablissement
+from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 from data.utils.string_utils import make_random_str
 from data.factories.company import _make_siret, _make_vat, _make_phone_number
 
