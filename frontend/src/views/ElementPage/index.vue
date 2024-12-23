@@ -2,10 +2,12 @@
   <div class="bg-blue-france-925 py-8">
     <!-- Search -->
     <div class="fr-container">
-      <DsfrSearchBar
-        placeholder="Rechercher par ingrédient, plante, substance..."
+      <ElementAutocomplete
         v-model="searchTerm"
+        hint="Tapez au moins trois caractères pour démarrer la recherche"
+        @selected="goToSelectedOption"
         @search="search"
+        :chooseFirstAsDefault="false"
       />
     </div>
   </div>
@@ -101,7 +103,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue"
-import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, unSlugifyType, slugifyType, getApiType } from "@/utils/mappings"
 import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
@@ -110,6 +112,7 @@ import ElementTag from "./ElementTag.vue"
 import ElementStatusBadge from "@/components/ElementStatusBadge.vue"
 import ElementText from "./ElementText.vue"
 import ElementTextSection from "./ElementTextSection.vue"
+import ElementAutocomplete from "@/components/ElementAutocomplete"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
 
 const route = useRoute()
@@ -117,9 +120,15 @@ const router = useRouter()
 const notFound = ref(false)
 
 const searchTerm = ref(null)
-const search = () => {
-  if (searchTerm.value.length < 3) window.alert("Veuillez saisir au moins trois caractères")
-  else router.push({ name: "ElementSearchResultsPage", query: { q: searchTerm.value } })
+const search = (newTerm) => {
+  if (newTerm.length < 3) window.alert("Veuillez saisir au moins trois caractères")
+  else router.push({ name: "ElementSearchResultsPage", query: { q: newTerm } })
+}
+
+const goToSelectedOption = (option) => {
+  const slugguedType = slugifyType(option.objectType)
+  const urlComponent = `${option?.id}--${slugguedType}--${option?.name}`
+  return router.push({ name: "ElementPage", params: { urlComponent } })
 }
 
 // Afin d'améliorer le SEO, l'urlComponent prend la forme id--type--name
@@ -203,5 +212,9 @@ watch(route, getElementFromApi)
 <style scoped>
 .fr-table :deep(table) {
   @apply !table;
+}
+.fr-container :deep(input),
+.fr-container :deep(button) {
+  @apply !mt-0;
 }
 </style>
