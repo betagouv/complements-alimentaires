@@ -25,6 +25,7 @@ class IcaComplementAlimentaire(models.Model):
 
 
 class IcaDeclaration(models.Model):
+    # dcl_ident et cplalim_ident sont égaux
     dcl_ident = models.IntegerField(primary_key=True)
     cplalim = models.ForeignKey(IcaComplementAlimentaire, on_delete=models.CASCADE, db_column="cplalim_ident")
     tydcl_ident = models.IntegerField()
@@ -57,7 +58,7 @@ class IcaVersionDeclaration(models.Model):
     pays_ident_pays_de_reference = models.IntegerField(blank=True, null=True)
     dcl = models.ForeignKey(
         IcaDeclaration, on_delete=models.CASCADE, db_column="dcl_ident"
-    )  # duplique la foreign key vers l'établissement présente dans la decla
+    )  # dcl_ident est aussi une foreign_key vers IcaComplementAlimentaire
     stattdcl_ident = models.IntegerField(blank=True, null=True)
     stadcl_ident = models.IntegerField(blank=True, null=True)
     vrsdecl_numero = models.IntegerField()
