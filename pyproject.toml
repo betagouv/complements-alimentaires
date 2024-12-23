@@ -90,7 +90,7 @@ bs4 = "^0.0.2"
 ######################################################################################################################
 # Dépendances en environnement de dev
 #########################
-django-hijack = "^3.7.0"
+django-hijack = "^3.7.1"
 pandas = "^2.2.3"
 [tool.poetry.group.dev.dependencies]
 sqlfluff = "*"
