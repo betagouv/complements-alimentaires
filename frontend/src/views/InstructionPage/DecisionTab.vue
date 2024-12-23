@@ -76,7 +76,7 @@
             class=""
             label="Soumettre"
             @click="submitDecision"
-            :disabled="needsAnsesReferal && decisionCategory === 'approve'"
+            :disabled="isFetching || (needsAnsesReferal && decisionCategory === 'approve')"
           />
           <div v-if="needsAnsesReferal && decisionCategory === 'approve'" class="mt-2">
             <hr class="p-0 my-2" />
@@ -208,13 +208,7 @@ const proposalOptions = computed(() => {
   ]
 })
 
-const submitDecision = async () => {
-  v$.value.$reset()
-  v$.value.$validate()
-  if (v$.value.$error) {
-    return
-  }
-
+const url = computed(() => {
   const actions = {
     observation: "observe",
     autorisation: "authorize",
@@ -223,15 +217,23 @@ const submitDecision = async () => {
   }
   const visaPath = needsVisa.value ? "with-visa" : "no-visa"
   const urlPath = `${actions[proposal.value]}-${visaPath}`
+  return `/api/v1/declarations/${declaration.value?.id}/${urlPath}/`
+})
 
-  const url = `/api/v1/declarations/${declaration.value?.id}/${urlPath}/`
-  const { response } = await useFetch(url, { headers: headers() })
-    .post({
-      comment: comment.value,
-      reasons: reasons.value,
-      expiration: delayDays.value,
-    })
-    .json()
+const { response, isFetching, execute } = useFetch(url, { headers: headers() }, { immediate: false })
+  .post({
+    comment: comment.value,
+    reasons: reasons.value,
+    expiration: delayDays.value,
+  })
+  .json()
+
+const submitDecision = async () => {
+  v$.value.$reset()
+  v$.value.$validate()
+  if (v$.value.$error) return
+
+  await execute()
   $externalResults.value = await handleError(response)
 
   if (response.value.ok) {
