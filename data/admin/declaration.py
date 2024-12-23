@@ -4,6 +4,7 @@ from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
 from data.models import (
+    Attachment,
     ComputedSubstance,
     Declaration,
     DeclaredIngredient,
@@ -22,6 +23,19 @@ class SnapshotInline(admin.TabularInline):
     extra = 0
 
     def has_add_permission(self, request, object):
+        return False
+
+
+class AttachmentInline(admin.TabularInline):
+    model = Attachment
+    can_delete = True
+    fields = ("type", "file", "name")
+    extra = 0
+
+    def has_add_permission(self, request, object):
+        return True
+
+    def has_change_permission(self, request, object):
         return False
 
 
@@ -230,6 +244,7 @@ class DeclarationAdmin(SimpleHistoryAdmin):
         DeclaredSubstanceInline,
         ComputedSubstanceInline,
         SnapshotInline,
+        AttachmentInline,
     )
     search_fields = (
         "name",

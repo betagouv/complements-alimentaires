@@ -74,7 +74,7 @@ sib-api-v3-sdk = "*" # https://github.com/sendinblue/APIv3-python-library
 # Misc
 ######################################################################################################################
 pillow = "*"              # https://github.com/python-pillow/Pillow
-django-ckeditor = "6.7.0" # https://github.com/django-ckeditor/django-ckeditor # we keep it temporarily for migrations
+django-ckeditor = "6.7.2" # https://github.com/django-ckeditor/django-ckeditor # we keep it temporarily for migrations
 django-ckeditor-5 = "*"   # https://github.com/hvlads/django-ckeditor-5
 django-viewflow = "*"     # https://github.com/viewflow/viewflow
 
@@ -90,7 +90,7 @@ bs4 = "^0.0.2"
 ######################################################################################################################
 # Dépendances en environnement de dev
 #########################
-django-hijack = "^3.7.0"
+django-hijack = "^3.7.1"
 pandas = "^2.2.3"
 [tool.poetry.group.dev.dependencies]
 sqlfluff = "*"
