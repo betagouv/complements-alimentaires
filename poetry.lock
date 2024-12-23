@@ -837,13 +837,13 @@ resend = ["svix"]
 
 [[package]]
 name = "django-ckeditor"
-version = "6.7.0"
+version = "6.7.2"
 description = "Django admin CKEditor integration."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "django-ckeditor-6.7.0.tar.gz", hash = "sha256:0489f7a6ae93360d328f77cea17c04891103cbdfa6c962af386bbe47e811671b"},
-    {file = "django_ckeditor-6.7.0-py3-none-any.whl", hash = "sha256:73399fb8f56f565e7519b57adbd7c585623db2cdc8c75666f56918d3eecf7906"},
+    {file = "django_ckeditor-6.7.2-py3-none-any.whl", hash = "sha256:2b3f147ce21eba861db481683e9a4639c11f0ad1f0d37c179003ef07f9eb65a4"},
+    {file = "django_ckeditor-6.7.2.tar.gz", hash = "sha256:a66be4f0ca13924d756e4930260144b31df4164eae8b942ca610f4313df00d5f"},
 ]
 
 [package.dependencies]
@@ -3730,4 +3730,4 @@ test = ["coverage (>=5.3)", "tomli (>=2.0.1)", "tox"]
 [metadata]
 lock-version = "2.0"
 python-versions = "<4,>= 3.11.*"
-content-hash = "4a89111e3e5647b35d974201035b4b8ff3aa91832c35afbae347a46b73bf29ae"
+content-hash = "65c354dac0db4f63a224696ac67784137683c9a22538b43bfb3b05a42d5f9ac5"
