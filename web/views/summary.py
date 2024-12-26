@@ -42,8 +42,8 @@ class SummaryView(GenericAPIView):
             ("Marque", declaration.brand or "Non spécifiée"),
             ("Gamme", declaration.gamme or "Non spécifiée"),
             ("Description", declaration.description or "Non spécifiée"),
-            ("Populations cibles", "TODO"),
-            ("Populations à consommation déconseillée", "TODO"),
+            ("Populations cibles", ", ".join(list(declaration.populations.all().values_list("name", flat=True)))),
+            ("Populations à consommation déconseillée", self.get_conditions_string(declaration)),
             ("Forme galénique", "TODO"),
             ("Mode d'emploi", declaration.instructions or "Non spécifié"),
             ("Unité de consommation", "TODO"),
@@ -62,6 +62,17 @@ class SummaryView(GenericAPIView):
             "computed_substances": declaration.computed_substances.all(),
             "attachments": declaration.attachments.all(),
         }
+
+    def get_conditions_string(self, declaration):
+        conditions = ", ".join(
+            list(
+                declaration.conditions_not_recommended.exclude(name="Autre (à préciser)").values_list(
+                    "name", flat=True
+                )
+            )
+        )
+        if declaration.other_conditions:
+            return ", ".join([conditions, declaration.other_conditions])
 
     def get_pdf_file_name(self, declaration):
         # Le load-balancer Sozu a du mal avec les noms de fichier pdf contenant des caractères non-ASCII
