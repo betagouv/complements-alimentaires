@@ -769,3 +769,7 @@ class Attachment(Historisable):
         null=True, blank=True, upload_to="declaration-attachments/%Y/%m/%d/", verbose_name="pièce jointe"
     )
     name = models.TextField("nom du fichier", blank=True)
+
+    @property
+    def has_pdf_extension(self):
+        return self.file and self.file.url.endswith(".pdf")

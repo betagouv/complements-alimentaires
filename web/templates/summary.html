@@ -1,0 +1,216 @@
+{% load static %}
+<html>
+    <head>
+        <style>
+            @font-face {
+            font-family: 'Marianne';
+            src: url({% static '../../static/fonts/Marianne-Regular.ttf' %}) format('truetype');
+            }
+            @font-face {
+                font-family: 'Marianne-Medium';
+                src:  url({% static '../../static/fonts/Marianne-Medium.ttf' %}) format('truetype');
+            }
+            @font-face {
+                font-family: 'Marianne-Bold';
+                src:  url({% static '../../static/fonts/Marianne-Bold.ttf' %}) format('truetype');
+            }
+            @font-face {
+                font-family: 'Marianne-ExtraBold';
+                src: url({% static '../../static/fonts/Marianne-ExtraBold.ttf' %}) format('truetype');
+            }
+            body {
+                font-family: 'Marianne', Arial, Helvetica, sans-serif;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 1.3cm 2cm;
+
+                @frame footer_frame {
+                    -pdf-frame-content: footer_content;
+                    left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+                }
+            }
+        </style>
+    </head>
+    <body style="font-family: 'Marianne'">
+        <div id="footer_content">Page <pdf:pagenumber>
+            de <pdf:pagecount>
+        </div>
+        <table>
+            <tr>
+                <td>
+                    <img width="100" src="{% static '../../static/images/certificate/masa.png' %}" alt="">
+                </td>
+                <td align="right">
+                    <img width="120" src="{% static '../../static/images/logo.png' %}" alt="">
+                </td>
+            </tr>
+        </table>
+        <div style="margin-top: 20px;">
+            <h1>Votre déclaration « {{ declaration.name }} »</h1>
+
+            <!-- Date de la déclaration -->
+
+            <!-- Information produit -->
+            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'">Produit</h2>
+            <table>
+                {% for row in product_table_rows %}
+                <tr>
+                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">
+                        {{ row.0 }}
+                    </td>
+                    <td>{{ row.1 }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <!-- Composition -->
+
+            <!-- Plantes -->
+            {% if declared_plants %}
+            <hr style="-pdf-keep-with-next: true;" />
+            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Plantes</h2>
+            {% for declared_plant in declared_plants %}
+                <h3 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">
+                    {% firstof declared_plant.plant.name declared_plant.new_name %}
+                    {% if declared_plant.new %}
+                    (nouvel ajout)
+                    {% endif %}
+                </h3>
+
+                <table>
+                    <tr>
+                        <td style="font-weight: medium; font-family: 'Marianne-Medium'">Partie utilisée</td>
+                        <td>TODO</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
+                        <td>TODO</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: medium; font-family: 'Marianne-Medium'">Préparation</td>
+                        <td>TODO</td>
+                    </tr>
+                </table>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Micro-organismes -->
+            {% if declared_microorganisms %}
+            <hr style="-pdf-keep-with-next: true;" />
+            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Micro-organismes</h2>
+            {% for declared_microorganism in declared_microorganisms %}
+            <h3 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">
+                {% firstof declared_microorganism.microorganism.species declared_microorganism.new_species %}
+                {% firstof declared_microorganism.microorganism.genre declared_microorganism.new_genre %}
+                {% if declared_microorganism.new %}
+                (nouvel ajout)
+                {% endif %}
+            </h3>
+            <table>
+                <tr>
+                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">Souche</td>
+                    <td>TODO</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
+                    <td>TODO</td>
+                </tr>
+            </table>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Substances -->
+            {% if declared_substances %}
+            <hr style="-pdf-keep-with-next: true;" />
+            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Substances</h2>
+            {% for declared_substance in declared_substances %}
+            <h3 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">
+                {% firstof declared_substance.substance.name declared_substance.new_name %}
+                {% if declared_substance.new %}
+                (nouvel ajout)
+                {% endif %}
+            </h3>
+            <table>
+                <tr>
+                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
+                    <td>TODO</td>
+                </tr>
+            </table>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Autres ingrédients -->
+            {% if declared_ingredients %}
+            <hr style="-pdf-keep-with-next: true;" />
+            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Autres ingredients</h2>
+            {% for declared_ingredient in declared_ingredients %}
+            <h3 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">
+                {% firstof declared_ingredient.ingredient.name declared_ingredient.new_name %}
+                {% if declared_ingredient.new %}
+                (nouvel ajout)
+                {% endif %}
+            </h3>
+            <table>
+                <tr>
+                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
+                    <td>TODO</td>
+                </tr>
+            </table>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Substances calculées -->
+            {% if computed_substances %}
+            <hr style="-pdf-keep-with-next: true;" />
+            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Substances contenues dans la composition</h2>
+            {% for computed_substance in computed_substances %}
+            <h3 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">
+                {{ computed_substance.substance.name }}
+            </h3>
+            <table>
+                <tr>
+                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
+                    <td>TODO (inclure unité)</td>
+                </tr>
+            </table>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Adresse sur l'étiquetage -->
+            <hr style="-pdf-keep-with-next: true;" />
+            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Adresse sur l'étiquetage</h2>
+            <p>
+                {% if declaration.address %}{{ declaration.address }}<br />{% endif %}
+                {% if declaration.additional_details %}{{ declaration.additional_details }}<br />{% endif %}
+                {% if declaration.postal_code %}{{ declaration.postal_code }}<br />{% endif %}
+                {% if declaration.city %}{{ declaration.city }}<br />{% endif %}
+                {% if declaration.cedex %}{{ declaration.cedex }}<br />{% endif %}
+                {% if declaration.country %}{{ declaration.country }}<br />{% endif %}
+            </p>
+            <!-- Pièces jointes -->
+            {% if attachments %}
+            <hr style="-pdf-keep-with-next: true;" />
+            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Pièces jointes</h2>
+            <div style="display: flex;">
+            {% for attachment in attachments %}
+            <div>
+                <div>
+                    {% if attachment.has_pdf_extension %}
+                    <img width="120" src="{% static 'images/pdf-file.png' %}" alt="">
+                    {% else %}
+                    <img width="220" src="{{ attachment.file.url }}" alt="">
+                    {% endif %}
+                </div>
+                <div style="font-weight: bold; font-family: 'Marianne-Bold'">
+                    {{ attachment.name }}
+                </div>
+            </div>
+            <hr style="-pdf-keep-with-next: true;" />
+            {% endfor %}
+        </div>
+
+            {% endif %}
+        </div>
+    </body>
+</html>
