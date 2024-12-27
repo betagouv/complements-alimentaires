@@ -27,7 +27,7 @@
 
                 @frame footer_frame {
                     -pdf-frame-content: footer_content;
-                    left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+                    left: 500pt; width: 512pt; top: 820pt; height: 20pt;
                 }
             }
         </style>
@@ -81,15 +81,19 @@
                 <table>
                     <tr>
                         <td style="font-weight: medium; font-family: 'Marianne-Medium'">Partie utilisée</td>
-                        <td>TODO</td>
+                        <td>{% firstof declared_plant.used_part.name "Non spécifiée" %}</td>
                     </tr>
                     <tr>
                         <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
-                        <td>TODO</td>
+                        {% if declared_plant.quantity %}
+                        <td>{{ declared_plant.quantity }} {% firstof declared_plant.unit.name "(unité non spécifiée)" %}</td>
+                        {% else %}
+                        <td>Non spécifiée</td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td style="font-weight: medium; font-family: 'Marianne-Medium'">Préparation</td>
-                        <td>TODO</td>
+                        <td>{% firstof declared_plant.preparation.name 'Non spécifiée' %}</td>
                     </tr>
                 </table>
             {% endfor %}
@@ -110,11 +114,11 @@
             <table>
                 <tr>
                     <td style="font-weight: medium; font-family: 'Marianne-Medium'">Souche</td>
-                    <td>TODO</td>
+                    <td>{% firstof declared_microorganism.strain 'Non spécifiée' %}</td>
                 </tr>
                 <tr>
-                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
-                    <td>TODO</td>
+                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR (en UFC)</td>
+                    <td>{% firstof declared_microorganism.quantity 'Non spécifiée' %}</td>
                 </tr>
             </table>
             {% endfor %}
@@ -134,7 +138,11 @@
             <table>
                 <tr>
                     <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
-                    <td>TODO</td>
+                    {% if declared_substance.quantity %}
+                    <td>{{ declared_substance.quantity }} {% firstof declared_substance.unit.name "(unité non spécifiée)" %}</td>
+                    {% else %}
+                    <td>Non spécifiée</td>
+                    {% endif %}
                 </tr>
             </table>
             {% endfor %}
@@ -154,7 +162,11 @@
             <table>
                 <tr>
                     <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
-                    <td>TODO</td>
+                    {% if declared_ingredient.quantity %}
+                    <td>{{ declared_ingredient.quantity }} {% firstof declared_ingredient.unit.name "(unité non spécifiée)" %}</td>
+                    {% else %}
+                    <td>Non spécifiée</td>
+                    {% endif %}
                 </tr>
             </table>
             {% endfor %}
@@ -171,7 +183,11 @@
             <table>
                 <tr>
                     <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
-                    <td>TODO (inclure unité)</td>
+                    {% if computed_substance.quantity %}
+                    <td>{{ computed_substance.quantity }} {% firstof computed_substance.unit.name "(unité non spécifiée)" %}</td>
+                    {% else %}
+                    <td>Non spécifiée</td>
+                    {% endif %}
                 </tr>
             </table>
             {% endfor %}
@@ -197,7 +213,7 @@
             <div>
                 <div>
                     {% if attachment.has_pdf_extension %}
-                    <img width="120" src="{% static 'images/pdf-file.png' %}" alt="">
+                    <img width="70" src="{% static 'images/pdf-file.png' %}" alt="">
                     {% else %}
                     <img width="220" src="{{ attachment.file.url }}" alt="">
                     {% endif %}
