@@ -190,6 +190,14 @@ class Declaration(Historisable, TimeStampable):
         output_field=models.TextField(verbose_name="article", null=True),
         db_persist=True,
     )
+    siccrf_id = models.IntegerField(
+        blank=True,
+        null=True,
+        editable=False,
+        db_index=True,
+        unique=True,
+        verbose_name="cplalim_ident dans le modèle IcaComplementAlimentaire si la déclaration provient de Teleicare",
+    )
 
     def create_snapshot(
         self,

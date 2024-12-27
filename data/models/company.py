@@ -74,7 +74,7 @@ class TeleicareCompany(models.Model):
         editable=False,
         db_index=True,
         unique=True,
-        verbose_name="id dans les tables et tables relationnelles SICCRF",
+        verbose_name="etab_ident dans le modèle IcaEtablissement SICCRF",
     )
 
 
