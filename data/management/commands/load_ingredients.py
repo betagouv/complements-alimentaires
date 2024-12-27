@@ -6,9 +6,9 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 
-from data.etl.csv_importer import import_csv_from_filepath
 from data.etl.exceptions import CSVFileError
-from data.etl.post_load_transformation import deduplicate_substances_ingredients
+from data.etl.teleicare_ingredients.csv_importer import import_csv_from_filepath
+from data.etl.teleicare_ingredients.post_load_transformation import deduplicate_substances_ingredients
 from data.models.plant import Part
 
 logger = logging.getLogger(__name__)
