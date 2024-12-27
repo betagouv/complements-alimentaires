@@ -356,6 +356,34 @@ class TestSnapshotApi(APITestCase):
         self.assertEqual(body[0]["comment"], snapshot.comment)
 
     @authenticate
+    def test_snapshot_show_visa_approval_to_declarants(self):
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        # Une déclaration avec toutes les conditions nécessaires pour l'instruction
+        declaration = InstructionReadyDeclarationFactory(author=authenticate.user, company=company)
+        snapshot = SnapshotFactory(
+            declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.SUBMIT
+        )
+        SnapshotFactory(declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.REQUEST_VISA)
+        visa_accept_snapshot = SnapshotFactory(
+            declaration=declaration, user=authenticate.user, action=Snapshot.SnapshotActions.ACCEPT_VISA
+        )
+
+        # On obtient les snapshots liés à cette déclaration. Cet user n'est pas viseur ni instructeur,
+        # mais la validation du visa doit être communiqué
+
+        response = self.client.get(reverse("api:declaration_snapshots", kwargs={"pk": declaration.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+        self.assertEqual(len(body), 2)
+        self.assertEqual(body[0]["id"], snapshot.id)
+        self.assertEqual(body[0]["comment"], snapshot.comment)
+
+        self.assertEqual(body[1]["id"], visa_accept_snapshot.id)
+        self.assertEqual(body[1]["comment"], visa_accept_snapshot.comment)
+
+    @authenticate
     def test_snapshot_hide_visa_to_supervisors(self):
         supervision_role = SupervisorRoleFactory(user=authenticate.user)
         company = supervision_role.company
