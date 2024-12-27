@@ -22,7 +22,6 @@ class DeclarationSnapshotListView(ListAPIView):
                 action__in=[
                     Snapshot.SnapshotActions.REQUEST_VISA,
                     Snapshot.SnapshotActions.TAKE_FOR_VISA,
-                    Snapshot.SnapshotActions.ACCEPT_VISA,
                     Snapshot.SnapshotActions.REFUSE_VISA,
                 ]
             )
