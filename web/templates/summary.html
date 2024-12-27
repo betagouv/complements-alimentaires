@@ -32,7 +32,7 @@
             }
         </style>
     </head>
-    <body style="font-family: 'Marianne'">
+    <body style="font-family: 'Marianne';">
         <div id="footer_content">Page <pdf:pagenumber>
             de <pdf:pagecount>
         </div>
@@ -48,6 +48,9 @@
         </table>
         <div style="margin-top: 20px;">
             <h1>Votre déclaration « {{ declaration.name }} »</h1>
+            {% if submission_date %}
+            <p>Soumise le {{ submission_date|date:"l j F Y" }}</p>
+            {% endif %}
 
             <!-- Date de la déclaration -->
 
@@ -78,6 +81,7 @@
                     {% endif %}
                 </h3>
 
+                {% if declared_plant.active %}
                 <table>
                     <tr>
                         <td style="font-weight: medium; font-family: 'Marianne-Medium'">Partie utilisée</td>
@@ -86,7 +90,11 @@
                     <tr>
                         <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
                         {% if declared_plant.quantity %}
-                        <td>{{ declared_plant.quantity }} {% firstof declared_plant.unit.name "(unité non spécifiée)" %}</td>
+                        <td>{{ declared_plant.quantity }}
+                            <span style="font-family: sans-serif;">
+                                {% firstof declared_plant.unit.name "(unité non spécifiée)" %}
+                            </span>
+                        </td>
                         {% else %}
                         <td>Non spécifiée</td>
                         {% endif %}
@@ -96,6 +104,7 @@
                         <td>{% firstof declared_plant.preparation.name 'Non spécifiée' %}</td>
                     </tr>
                 </table>
+                {% endif %}
             {% endfor %}
             {% endif %}
 
@@ -139,7 +148,13 @@
                 <tr>
                     <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
                     {% if declared_substance.quantity %}
-                    <td>{{ declared_substance.quantity }} {% firstof declared_substance.unit.name "(unité non spécifiée)" %}</td>
+                    <td>
+                        {{ declared_substance.quantity }}
+                        <span style="font-family: sans-serif;">
+                            {% firstof declared_substance.unit.name declared_substance.substance.unit.name "(unité non spécifiée)" %}
+                        </span>
+
+                    </td>
                     {% else %}
                     <td>Non spécifiée</td>
                     {% endif %}
@@ -163,9 +178,13 @@
                 <tr>
                     <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
                     {% if declared_ingredient.quantity %}
-                    <td>{{ declared_ingredient.quantity }} {% firstof declared_ingredient.unit.name "(unité non spécifiée)" %}</td>
+                    <td style="font-family: 'Marianne', sans-serif;">{{ declared_ingredient.quantity }}
+                        <span style="font-family: sans-serif;">
+                            {% firstof declared_ingredient.unit.name "(unité non spécifiée)" %}
+                        </span>
+                    </td>
                     {% else %}
-                    <td>Non spécifiée</td>
+                    <td>-</td>
                     {% endif %}
                 </tr>
             </table>
@@ -184,7 +203,11 @@
                 <tr>
                     <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
                     {% if computed_substance.quantity %}
-                    <td>{{ computed_substance.quantity }} {% firstof computed_substance.unit.name "(unité non spécifiée)" %}</td>
+                    <td style="font-family: 'Marianne', sans-serif;">{{ computed_substance.quantity }}
+                        <span style="font-family: sans-serif;">
+                            {% firstof computed_substance.unit.name computed_substance.substance.unit.name "(unité non spécifiée)" %}
+                        </span>
+                    </td>
                     {% else %}
                     <td>Non spécifiée</td>
                     {% endif %}

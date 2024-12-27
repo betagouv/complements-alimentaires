@@ -1,5 +1,11 @@
 <template>
   <div>
+    <div class="text-right">
+      <a :href="`/declarations/${payload.id}/summary`" target="_blank" class="text-sm font-medium">
+        <v-icon name="ri-printer-line"></v-icon>
+        Imprimer
+      </a>
+    </div>
     <SectionTitle title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" />
     <DeclarationSummary v-model="payload" :readonly="readonly" />
     <hr v-if="!readonly" />

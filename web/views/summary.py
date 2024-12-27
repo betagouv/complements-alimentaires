@@ -9,7 +9,7 @@ from rest_framework.generics import GenericAPIView
 from xhtml2pdf import pisa
 
 from api.permissions import CanAccessIndividualDeclaration
-from data.models import Declaration
+from data.models import Declaration, Snapshot
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +55,14 @@ class SummaryView(GenericAPIView):
             ("Durabilité minimale / DLUO (en mois)", declaration.minimum_duration or "Non spécifiée"),
             ("Objectifs / effets", self.get_effects_string(declaration)),
         )
+        try:
+            last_submission_snapshot = declaration.snapshots.filter(action=Snapshot.SnapshotActions.SUBMIT).latest(
+                "creation_date"
+            )
+            submission_date = last_submission_snapshot.creation_date
+        except Exception as _:
+            submission_date = None
+
         return {
             "product_table_rows": product_table_rows,
             "declaration": declaration,
@@ -64,6 +72,7 @@ class SummaryView(GenericAPIView):
             "declared_substances": declaration.declared_substances.all(),
             "computed_substances": declaration.computed_substances.all(),
             "attachments": declaration.attachments.all(),
+            "submission_date": submission_date,
         }
 
     def get_conditions_string(self, declaration):
@@ -107,7 +116,4 @@ class SummaryView(GenericAPIView):
         else:
             return uri  # On le laisse tel qu'il est car pas static ni media
 
-        # On vérifie que le path existe
-        if not os.path.isfile(path):
-            raise Exception(f"File does not exist: {path}")
         return path
