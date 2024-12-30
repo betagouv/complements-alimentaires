@@ -21,6 +21,7 @@ def match_or_create_companies_on_siret_or_vat():
     * Q(email__icontains=etab.etab_courriel)
     * Q(phone_number__icontains=etab.etab_telephone)
     Mais il serait moins précis.
+    Cette méthode créé les entreprises non matchées pour avoir toutes les données intégrées dans le nouveau système.
     """
     nb_vat_match = 0
     nb_siret_match = 0
@@ -38,6 +39,7 @@ def match_or_create_companies_on_siret_or_vat():
                     )
                 else:
                     nb_siret_match += 1
+                    matched = True
                     siret_matching[0].siccrf_id = etab.etab_ident
                     siret_matching[0].save()
 
@@ -51,12 +53,34 @@ def match_or_create_companies_on_siret_or_vat():
                     )
                 else:
                     nb_vat_match += 1
+                    matched = True
                     vat_matching[0].siccrf_id = etab.etab_ident
                     vat_matching[0].save()
+        # creation de la company
+        if not matched:
+            logger.info(f"La company {etab.etab_raison_sociale} est créée via les infos TeleIcare.")
+            new_company = Company(
+                siccrf_id=etab.etab_ident,
+                adress=etab.etab_adre_voie,
+                postal_code=etab.etab_adre_cp,
+                city=etab.etab_adre_ville,
+                phone_number=etab.etab_telephone,
+                email=etab.etab_courriel,
+                social_name=etab.etab_raison_sociale,
+                commercial_name=etab.etab_enseigne,
+                siret=etab.etab_siret,
+                tva=etab.etab_numero_tva_intra,
+            )
+            new_company.save()
+            nb_created_companies += 1
 
     logger.info(
-        f"{nb_vat_match} + {nb_siret_match} entreprises réconcilliées sur {len(IcaEtablissement.objects.all())}"
+        f"Sur {len(IcaEtablissement.objects.all())} : {nb_siret_match} entreprises réconcilliées par le siret."
     )
+    logger.info(
+        f"Sur {len(IcaEtablissement.objects.all())} : {nb_vat_match} entreprises réconcilliées par le n°TVA intracom."
+    )
+    logger.info(f"Sur {len(IcaEtablissement.objects.all())} : {nb_created_companies} entreprises créées.")
 
 
 def create_declaration_from_teleicare_history():
