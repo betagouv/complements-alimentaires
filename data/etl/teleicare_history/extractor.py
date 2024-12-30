@@ -1,14 +1,15 @@
 import logging
 import re
+from datetime import date, datetime
 
 from data.models import Company, GalenicFormulation, SubstanceUnit
-from data.models.declaration import Declaration, DeclarationStatus
-from data.models.teleicare_history import (
+from data.models.declaration import Declaration
+from data.models.teleicare_history.ica_declaration import (
     IcaComplementAlimentaire,
     IcaDeclaration,
-    IcaEtablissement,
     IcaVersionDeclaration,
 )
+from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 
 logger = logging.getLogger(__name__)
 
@@ -83,6 +84,33 @@ def match_or_create_companies_on_siret_or_vat():
     logger.info(f"Sur {len(IcaEtablissement.objects.all())} : {nb_created_companies} entreprises créées.")
 
 
+def get_most_recent(list_of_declarations):
+    def convert_str_date(value):
+        return datetime.strptime(value, "%m/%d/%Y %H:%M:%S %p").date()
+
+    most_recent_date = date.min
+    for ica_declaration in list_of_declarations:
+        current_date = convert_str_date(ica_declaration.dcl_date)
+        if most_recent_date < current_date:
+            most_recent_date = current_date
+            most_recente_dcl_date = ica_declaration.dcl_date
+
+    return list_of_declarations.get(dcl_date=most_recente_dcl_date)
+
+
+# Pour les déclarations TeleIcare, le status correspond au champ IcaVersionDeclaration.stattdcl_ident
+DECLARATION_STATUS_MAPPING = {
+    1: Declaration.DeclarationStatus.ONGOING_INSTRUCTION,  # 'en cours'
+    2: Declaration.DeclarationStatus.AUTHORIZED,  # 'autorisé temporaire'
+    3: Declaration.DeclarationStatus.AUTHORIZED,  # 'autorisé prolongé'  aucune occurence
+    4: Declaration.DeclarationStatus.AUTHORIZED,  # 'autorisé définitif'  aucune occurence
+    5: Declaration.DeclarationStatus.REJECTED,  # 'refusé'
+    6: Declaration.DeclarationStatus.WITHDRAWN,  # 'arrêt commercialisation'
+    7: Declaration.DeclarationStatus.WITHDRAWN,  # 'retiré du marché' aucune occurence
+    8: Declaration.DeclarationStatus.ABANDONED,  # 'abandonné'
+}
+
+
 def create_declaration_from_teleicare_history():
     """
     Dans Teleicare une entreprise peut-être relié à une déclaration par 3 relations différentes :
@@ -90,13 +118,13 @@ def create_declaration_from_teleicare_history():
     * gestionnaire de la déclaration (équivalent Declaration.company)
     * télédéclarante de la déclaration (cette relation n'est pour le moment pas conservée, car le BEPIAS ne sait pas ce qu'elle signifie)
     """
+    nb_created_declarations = 0
     for ica_complement_alimentaire in IcaComplementAlimentaire.objects.all():
         # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
-        latest_ica_declaration = IcaDeclaration.objects.filter(
-            cplalim_id=ica_complement_alimentaire.cplalim_ident, dcl_date_fin_commercialisation=None
-        ).first()
-        # le complément alimentaire est encore commercialisé
-        if latest_ica_declaration:
+        all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=ica_complement_alimentaire.cplalim_ident)
+        # le champ date est stocké en text, il faut donc faire la conversion en python
+        if all_ica_declarations:
+            latest_ica_declaration = get_most_recent(all_ica_declarations)
             # retrouve la version de déclaration la plus à jour correspondant à cette déclaration
             latest_ica_version_declaration = IcaVersionDeclaration.objects.filter(
                 dcl_id=latest_ica_declaration.dcl_ident,
@@ -108,7 +136,7 @@ def create_declaration_from_teleicare_history():
                 ],  # status 'autorisé', 'refusé', 'arrêt commercialisation', 'abandonné'
                 stadcl_ident=8,  # état 'clos'
             ).first()
-            # la déclaration à une version finalisée
+            # la déclaration a une version finalisée
             if latest_ica_version_declaration:
                 try:
                     company = Company.objects.get(siccrf_id=ica_complement_alimentaire.etab_id)
@@ -151,23 +179,12 @@ def create_declaration_from_teleicare_history():
                         # other_conditions=
                         # effects=
                         # other_effects=
-                        # status=
+                        status=Declaration.DeclarationStatus.WITHDRAWN
+                        if latest_ica_declaration.dcl_date_fin_commercialisation
+                        else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident],
                     )
                     declaration.save()
+                    nb_created_declarations += 1
                 except Company.DoesNotExist:
                     pass
-
-        # else: # ajoute des déclaration dont la commercialisation est arrêtée
-
-
-# Pout les déclarations TeleIcare, le status correspond au champ IcaVersionDeclaration.stattdcl_ident
-DECLARATION_STATUS_MAPPING = {
-    1: DeclarationStatus.ONGOING_INSTRUCTION,  # 'en cours'
-    2: DeclarationStatus.AUTHORIZED,  # 'autorisé temporaire'
-    3: DeclarationStatus.AUTHORIZED,  # 'autorisé prolongé'  aucune occurence
-    4: DeclarationStatus.AUTHORIZED,  # 'autorisé définitif'  aucune occurence
-    5: DeclarationStatus.REJECTED,  # 'refusé'
-    6: DeclarationStatus.WITHDRAWN,  # 'arrêt commercialisation'
-    7: DeclarationStatus.WITHDRAWN,  # 'retiré du marché' aucune occurence
-    8: DeclarationStatus.ABANDONED,  # 'abandonné'
-}
+    logger.info(f"Sur {len(IcaComplementAlimentaire.objects.all())} : {nb_created_declarations} déclarations créées.")

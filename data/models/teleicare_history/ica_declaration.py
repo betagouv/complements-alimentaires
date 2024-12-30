@@ -32,7 +32,7 @@ class IcaComplementAlimentaire(models.Model):
 
 
 class IcaDeclaration(models.Model):
-    # dcl_ident et cplalim_ident sont égaux
+    # dcl_ident et cplalim_ident ne sont pas égaux
     dcl_ident = models.IntegerField(primary_key=True)
     cplalim = models.ForeignKey(IcaComplementAlimentaire, on_delete=models.CASCADE, db_column="cplalim_ident")
     tydcl_ident = models.IntegerField()
