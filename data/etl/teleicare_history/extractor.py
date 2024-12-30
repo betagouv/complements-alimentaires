@@ -1,13 +1,19 @@
 import logging
+import re
 
-from data.models import Company, GalenicFormulation
+from data.models import Company, GalenicFormulation, SubstanceUnit
 from data.models.declaration import Declaration, DeclarationStatus
-from data.models.teleicare_history import IcaComplementAlimentaire, IcaEtablissement
+from data.models.teleicare_history import (
+    IcaComplementAlimentaire,
+    IcaDeclaration,
+    IcaEtablissement,
+    IcaVersionDeclaration,
+)
 
 logger = logging.getLogger(__name__)
 
 
-def match_companies_on_siret_or_vat():
+def match_or_create_companies_on_siret_or_vat():
     """
     Le matching pourrait aussi être fait sur
     * Q(social_name__icontains=etab.etab_raison_sociale)
@@ -18,7 +24,10 @@ def match_companies_on_siret_or_vat():
     """
     nb_vat_match = 0
     nb_siret_match = 0
+    nb_created_companies = 0
     for etab in IcaEtablissement.objects.all():
+        matched = False
+        # recherche de l'etablissement dans les Company déjà enregistrées
         if etab.etab_siret is not None:
             siret_matching = Company.objects.filter(siret=etab.etab_siret)
             # seulement 2 options possible pour len(siret_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.siret
@@ -58,35 +67,73 @@ def create_declaration_from_teleicare_history():
     * télédéclarante de la déclaration (cette relation n'est pour le moment pas conservée, car le BEPIAS ne sait pas ce qu'elle signifie)
     """
     for ica_complement_alimentaire in IcaComplementAlimentaire.objects.all():
-        declaration = Declaration(
-            siccrf_id=ica_complement_alimentaire.cplalim_ident,
-            galenic_formulation=GalenicFormulation.objects.filter(siccrf_id=ica_complement_alimentaire.frmgal_ident),
-            company=ica_complement_alimentaire.etab_id,  # resp étiquetage, resp commercialisation
-            brand=ica_complement_alimentaire.cplalim_marque,
-            gamme=ica_complement_alimentaire.cplalim_gamme,
-            name=ica_complement_alimentaire.cplalim_nom,
-            flavor=ica_complement_alimentaire.dclencours_gout_arome_parfum,
-            other_galenic_formulation=ica_complement_alimentaire.cplalim_forme_galenique_autre,
-        )
-        declaration.save()
-        # for ica_declaration in IcaDeclaration.objects.filter(cplalim_ident=ica_complement_alimentaire.cplalim_ident).latest("dcl_date")
-        # TODO : vérifier que la company existe déjà dans nos Company
+        # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
+        latest_ica_declaration = IcaDeclaration.objects.filter(
+            cplalim_id=ica_complement_alimentaire.cplalim_ident, dcl_date_fin_commercialisation=None
+        ).first()
+        # le complément alimentaire est encore commercialisé
+        if latest_ica_declaration:
+            # retrouve la version de déclaration la plus à jour correspondant à cette déclaration
+            latest_ica_version_declaration = IcaVersionDeclaration.objects.filter(
+                dcl_id=latest_ica_declaration.dcl_ident,
+                stattdcl_ident__in=[
+                    2,
+                    5,
+                    6,
+                    8,
+                ],  # status 'autorisé', 'refusé', 'arrêt commercialisation', 'abandonné'
+                stadcl_ident=8,  # état 'clos'
+            ).first()
+            # la déclaration à une version finalisée
+            if latest_ica_version_declaration:
+                try:
+                    company = Company.objects.get(siccrf_id=ica_complement_alimentaire.etab_id)
+                    declaration = Declaration(
+                        siccrf_id=ica_complement_alimentaire.cplalim_ident,
+                        galenic_formulation=GalenicFormulation.objects.get(
+                            siccrf_id=ica_complement_alimentaire.frmgal_ident
+                        ),
+                        company=company,  # resp étiquetage, resp commercialisation
+                        brand=ica_complement_alimentaire.cplalim_marque
+                        if ica_complement_alimentaire.cplalim_marque
+                        else "",
+                        gamme=ica_complement_alimentaire.cplalim_gamme
+                        if ica_complement_alimentaire.cplalim_gamme
+                        else "",
+                        name=ica_complement_alimentaire.cplalim_nom,
+                        flavor=ica_complement_alimentaire.dclencours_gout_arome_parfum
+                        if ica_complement_alimentaire.dclencours_gout_arome_parfum
+                        else "",
+                        other_galenic_formulation=ica_complement_alimentaire.cplalim_forme_galenique_autre
+                        if ica_complement_alimentaire.cplalim_forme_galenique_autre
+                        else "",
+                        # extraction d'un nombre depuis une chaîne de caractères
+                        unit_quantity=re.findall(r"\d+", latest_ica_version_declaration.vrsdecl_djr)[0],
+                        unit_measurement=SubstanceUnit.objects.get(siccrf_id=latest_ica_version_declaration.unt_ident),
+                        conditioning=latest_ica_version_declaration.vrsdecl_conditionnement
+                        if latest_ica_version_declaration.vrsdecl_conditionnement
+                        else "",
+                        daily_recommended_dose=latest_ica_version_declaration.vrsdecl_poids_uc,
+                        minimum_duration=latest_ica_version_declaration.vrsdecl_durabilite,
+                        instructions=latest_ica_version_declaration.vrsdecl_mode_emploi
+                        if latest_ica_version_declaration.vrsdecl_mode_emploi
+                        else "",
+                        warning=latest_ica_version_declaration.vrsdecl_mise_en_garde
+                        if latest_ica_version_declaration.vrsdecl_mise_en_garde
+                        else "",
+                        # TODO: ces champs proviennent de tables pas encore importées
+                        # populations=
+                        # conditions_not_recommended=
+                        # other_conditions=
+                        # effects=
+                        # other_effects=
+                        # status=
+                    )
+                    declaration.save()
+                except Company.DoesNotExist:
+                    pass
 
-        #  for company in Company.objects.exclude(siccrf_id=None):
-        # # dans ce cas la company est responsable de l'étiquetage donc
-        # declared_food_supplements = IcaComplementAlimentaire.object.filter(
-        #     etab_ident=company.siccrf_id#, stattdcl_ident_in=[]
-        # )
-        # # dans ce cas la company est télédéclarante
-        # declared_declaration = IcaVersionDeclaration.object.filter(
-        #     etab_ident=company.siccrf_id,
-        #     stadcl_ident=8, # état 'clos'
-        #     stattdcl_ident_in=[2, 5, 6, 8], # status 'autorisé', 'refusé', 'arrêt commercialisation', 'abandonné'
-        # )
-        # # vérifie que l'entreprise "gestionnaire de la déclaration" selon TéléIcare est soit mandatée soit mandataire
-        # declaration_managing_company_id = IcaDeclaration.objects.get().etab_iden
-        # if declaration_managing_company !=
-        #     logger.error("L'entreprise gestionnaire de la déclaration n'est ni l'entreprise mandataire ni l'entreprise mandatée.")
+        # else: # ajoute des déclaration dont la commercialisation est arrêtée
 
 
 # Pout les déclarations TeleIcare, le status correspond au champ IcaVersionDeclaration.stattdcl_ident
