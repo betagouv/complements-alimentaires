@@ -2,6 +2,8 @@ import logging
 import re
 from datetime import date, datetime
 
+from django.db import IntegrityError
+
 from data.models import Company, GalenicFormulation, SubstanceUnit
 from data.models.declaration import Declaration
 from data.models.teleicare_history.ica_declaration import (
@@ -12,6 +14,16 @@ from data.models.teleicare_history.ica_declaration import (
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 
 logger = logging.getLogger(__name__)
+
+
+def convert_phone_number(phone_number):
+    # TODO
+    return phone_number
+
+
+def convert_activities(etab):
+    # TODO
+    return etab
 
 
 def match_or_create_companies_on_siret_or_vat():
@@ -62,15 +74,16 @@ def match_or_create_companies_on_siret_or_vat():
             logger.info(f"La company {etab.etab_raison_sociale} est créée via les infos TeleIcare.")
             new_company = Company(
                 siccrf_id=etab.etab_ident,
-                adress=etab.etab_adre_voie,
+                address=etab.etab_adre_voie,
                 postal_code=etab.etab_adre_cp,
                 city=etab.etab_adre_ville,
-                phone_number=etab.etab_telephone,
+                phone_number=convert_phone_number(etab.etab_telephone),
                 email=etab.etab_courriel,
                 social_name=etab.etab_raison_sociale,
                 commercial_name=etab.etab_enseigne,
                 siret=etab.etab_siret,
-                tva=etab.etab_numero_tva_intra,
+                vat=etab.etab_numero_tva_intra,
+                activities=convert_activities(etab),
             )
             new_company.save()
             nb_created_companies += 1
@@ -140,51 +153,58 @@ def create_declaration_from_teleicare_history():
             if latest_ica_version_declaration:
                 try:
                     company = Company.objects.get(siccrf_id=ica_complement_alimentaire.etab_id)
-                    declaration = Declaration(
-                        siccrf_id=ica_complement_alimentaire.cplalim_ident,
-                        galenic_formulation=GalenicFormulation.objects.get(
-                            siccrf_id=ica_complement_alimentaire.frmgal_ident
-                        ),
-                        company=company,  # resp étiquetage, resp commercialisation
-                        brand=ica_complement_alimentaire.cplalim_marque
-                        if ica_complement_alimentaire.cplalim_marque
-                        else "",
-                        gamme=ica_complement_alimentaire.cplalim_gamme
-                        if ica_complement_alimentaire.cplalim_gamme
-                        else "",
-                        name=ica_complement_alimentaire.cplalim_nom,
-                        flavor=ica_complement_alimentaire.dclencours_gout_arome_parfum
-                        if ica_complement_alimentaire.dclencours_gout_arome_parfum
-                        else "",
-                        other_galenic_formulation=ica_complement_alimentaire.cplalim_forme_galenique_autre
-                        if ica_complement_alimentaire.cplalim_forme_galenique_autre
-                        else "",
-                        # extraction d'un nombre depuis une chaîne de caractères
-                        unit_quantity=re.findall(r"\d+", latest_ica_version_declaration.vrsdecl_djr)[0],
-                        unit_measurement=SubstanceUnit.objects.get(siccrf_id=latest_ica_version_declaration.unt_ident),
-                        conditioning=latest_ica_version_declaration.vrsdecl_conditionnement
-                        if latest_ica_version_declaration.vrsdecl_conditionnement
-                        else "",
-                        daily_recommended_dose=latest_ica_version_declaration.vrsdecl_poids_uc,
-                        minimum_duration=latest_ica_version_declaration.vrsdecl_durabilite,
-                        instructions=latest_ica_version_declaration.vrsdecl_mode_emploi
-                        if latest_ica_version_declaration.vrsdecl_mode_emploi
-                        else "",
-                        warning=latest_ica_version_declaration.vrsdecl_mise_en_garde
-                        if latest_ica_version_declaration.vrsdecl_mise_en_garde
-                        else "",
-                        # TODO: ces champs proviennent de tables pas encore importées
-                        # populations=
-                        # conditions_not_recommended=
-                        # other_conditions=
-                        # effects=
-                        # other_effects=
-                        status=Declaration.DeclarationStatus.WITHDRAWN
-                        if latest_ica_declaration.dcl_date_fin_commercialisation
-                        else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident],
-                    )
-                    declaration.save()
-                    nb_created_declarations += 1
+                    try:
+                        declaration = Declaration(
+                            siccrf_id=ica_complement_alimentaire.cplalim_ident,
+                            galenic_formulation=GalenicFormulation.objects.get(
+                                siccrf_id=ica_complement_alimentaire.frmgal_ident
+                            ),
+                            company=company,  # resp étiquetage, resp commercialisation
+                            brand=ica_complement_alimentaire.cplalim_marque
+                            if ica_complement_alimentaire.cplalim_marque
+                            else "",
+                            gamme=ica_complement_alimentaire.cplalim_gamme
+                            if ica_complement_alimentaire.cplalim_gamme
+                            else "",
+                            name=ica_complement_alimentaire.cplalim_nom,
+                            flavor=ica_complement_alimentaire.dclencours_gout_arome_parfum
+                            if ica_complement_alimentaire.dclencours_gout_arome_parfum
+                            else "",
+                            other_galenic_formulation=ica_complement_alimentaire.cplalim_forme_galenique_autre
+                            if ica_complement_alimentaire.cplalim_forme_galenique_autre
+                            else "",
+                            # extraction d'un nombre depuis une chaîne de caractères
+                            unit_quantity=re.findall(r"\d+", latest_ica_version_declaration.vrsdecl_djr)[0],
+                            unit_measurement=SubstanceUnit.objects.get(
+                                siccrf_id=latest_ica_version_declaration.unt_ident
+                            ),
+                            conditioning=latest_ica_version_declaration.vrsdecl_conditionnement
+                            if latest_ica_version_declaration.vrsdecl_conditionnement
+                            else "",
+                            daily_recommended_dose=latest_ica_version_declaration.vrsdecl_poids_uc,
+                            minimum_duration=latest_ica_version_declaration.vrsdecl_durabilite,
+                            instructions=latest_ica_version_declaration.vrsdecl_mode_emploi
+                            if latest_ica_version_declaration.vrsdecl_mode_emploi
+                            else "",
+                            warning=latest_ica_version_declaration.vrsdecl_mise_en_garde
+                            if latest_ica_version_declaration.vrsdecl_mise_en_garde
+                            else "",
+                            # TODO: ces champs proviennent de tables pas encore importées
+                            # populations=
+                            # conditions_not_recommended=
+                            # other_conditions=
+                            # effects=
+                            # other_effects=
+                            status=Declaration.DeclarationStatus.WITHDRAWN
+                            if latest_ica_declaration.dcl_date_fin_commercialisation
+                            else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident],
+                        )
+
+                        declaration.save()
+                        nb_created_declarations += 1
+                    except IntegrityError:
+                        # cette Déclaration a déjà été créée
+                        pass
                 except Company.DoesNotExist:
                     pass
     logger.info(f"Sur {len(IcaComplementAlimentaire.objects.all())} : {nb_created_declarations} déclarations créées.")
