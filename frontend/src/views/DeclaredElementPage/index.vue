@@ -119,9 +119,8 @@ const updateElement = async (action, payload) => {
   })
     .post(payload)
     .json()
-  // TODO: is this handling errors nicely?
   handleError(response)
-  if (data) {
+  if (data.value) {
     element.value = data.value
   }
 }
