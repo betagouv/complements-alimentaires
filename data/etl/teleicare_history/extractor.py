@@ -4,7 +4,8 @@ from datetime import date, datetime
 
 from django.db import IntegrityError
 
-from data.models import Company, GalenicFormulation, SubstanceUnit
+from data.models import GalenicFormulation, SubstanceUnit
+from data.models.company import ActivityChoices, Company
 from data.models.declaration import Declaration
 from data.models.teleicare_history.ica_declaration import (
     IcaComplementAlimentaire,
@@ -22,11 +23,24 @@ def convert_phone_number(phone_number):
 
 
 def convert_activities(etab):
-    # TODO
-    return etab
+    activities = []
+    if etab.etab_ica_faconnier:
+        activities.append(ActivityChoices.FAÇONNIER)
+    if etab.etab_ica_fabricant:
+        activities.append(ActivityChoices.FABRICANT)
+    if etab.etab_ica_importateur:
+        activities.append(ActivityChoices.IMPORTATEUR)
+    if etab.etab_ica_introducteur:
+        activities.append(ActivityChoices.INTRODUCTEUR)
+    if etab.etab_ica_conseil:
+        activities.append(ActivityChoices.CONSEIL)
+    if etab.etab_ica_distributeur:
+        activities.append(ActivityChoices.DISTRIBUTEUR)
+
+    return activities
 
 
-def match_or_create_companies_on_siret_or_vat():
+def match_companies_on_siret_or_vat(create_if_not_exist=False):
     """
     Le matching pourrait aussi être fait sur
     * Q(social_name__icontains=etab.etab_raison_sociale)
@@ -70,7 +84,7 @@ def match_or_create_companies_on_siret_or_vat():
                     vat_matching[0].siccrf_id = etab.etab_ident
                     vat_matching[0].save()
         # creation de la company
-        if not matched:
+        if not matched and create_if_not_exist:
             logger.info(f"La company {etab.etab_raison_sociale} est créée via les infos TeleIcare.")
             new_company = Company(
                 siccrf_id=etab.etab_ident,

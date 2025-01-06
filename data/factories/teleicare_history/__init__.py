@@ -19,9 +19,12 @@ class EtablissementFactory(factory.django.DjangoModelFactory):
     etab_raison_sociale = factory.Faker("company", locale="FR")
     etab_enseigne = factory.Faker("company", locale="FR")
     etab_siret = factory.LazyFunction(_make_siret)
-    etab_numero_tva_intra = factory.LazyFunction(_make_siret)
+    etab_numero_tva_intra = factory.LazyFunction(_make_vat)
     pays_ident = factory.Faker("pyint", min_value=0, max_value=200)
     etab_nb_compte_autorise = factory.Faker("pyint", min_value=0, max_value=5)
     # contact
     etab_telephone = factory.LazyFunction(_make_phone_number)
     etab_courriel = factory.Faker("email", locale="FR")
+    etab_adre_ville = factory.Faker("city", locale="FR")
+    etab_adre_cp = factory.Faker("postcode", locale="FR")
+    etab_adre_voie = factory.Faker("street_address", locale="FR")
