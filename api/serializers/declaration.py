@@ -109,11 +109,14 @@ class DeclaredElementNestedField:
         # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
         element = validated_data.pop(self.nested_field_name, None)
         if element:
+            id = element.get("id")
             try:
-                validated_data[self.nested_field_name] = self.nested_model.objects.get(pk=element.get("id"))
+                validated_data[self.nested_field_name] = self.nested_model.objects.get(pk=id)
             except self.nested_model.DoesNotExist:
                 raise ProjectAPIException(
-                    field_errors={f"declared_{self.nested_field_name}s": "L'ingrédient spécifiée n'existe pas."}
+                    field_errors={
+                        f"declared_{self.nested_field_name}s": f"L'ingrédient avec l'id « {id} » spécifiée n'existe pas."
+                    }
                 )
 
         return super().create(validated_data)

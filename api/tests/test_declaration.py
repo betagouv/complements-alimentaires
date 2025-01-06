@@ -282,6 +282,9 @@ class TestDeclarationApi(APITestCase):
 
         body = response.json()
         self.assertIn("declaredPlants", body.get("fieldErrors"))
+        self.assertEqual(
+            body["fieldErrors"]["declaredPlants"], "L'ingrédient avec l'id « 999999 » spécifiée n'existe pas."
+        )
 
     @authenticate
     def test_create_declaration_declared_microorganisms(self):
