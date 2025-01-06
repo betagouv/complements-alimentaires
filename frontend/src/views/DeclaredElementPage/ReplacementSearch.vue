@@ -6,7 +6,7 @@
       label-visible
       hint="Tapez au moins trois caractères pour démarrer la recherche"
       @selected="selectOption"
-      :optional="true"
+      :required="false"
     />
     <div class="mt-4" v-if="selectedOption">
       <ResultCard :result="selectedOption" />
