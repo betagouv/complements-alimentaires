@@ -17,7 +17,7 @@
               <div v-if="modalToOpen === 'replace'">
                 <p v-if="cannotReplace">
                   Ce n'est pas possible pour l'instant de remplacer une demande avec un ingrédient d'un type different.
-                  Veuillez contacter l'équipe Compl'Alim pour résoudre le substitution.
+                  Veuillez contacter l'équipe Compl'Alim pour effectuer la substitution.
                 </p>
               </div>
               <div v-else>
