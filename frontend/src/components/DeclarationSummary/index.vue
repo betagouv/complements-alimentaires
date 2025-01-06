@@ -77,9 +77,19 @@
     />
 
     <p class="font-bold mt-8">Substances contenues dans la composition :</p>
-    <DsfrAlert v-if="replacedRequestsWithSubstances.length" type="warning" class="mb-4">
-      Les ingrédients suivantes, ajoutés pour remplacer une demande, rajoutent des substances dans la composition.
-      Pensez à renvoyer la déclaration vers le déclarant pour mettre à jour les doses.
+    <DsfrAlert
+      v-if="replacedRequestsWithSubstances.length"
+      type="warning"
+      class="mb-4"
+      title="Vérifiez les doses totales des substances"
+    >
+      <p>
+        Les ingrédients suivantes, ajoutés pour remplacer une demande, rajoutent des substances dans la composition.
+      </p>
+      <p>
+        Veuillez vérifier que les doses totales des substances restent pertinentes. Si besoin, renvoyez la déclaration
+        vers le déclarant pour les mettre à jour.
+      </p>
       <ul>
         <li v-for="i in replacedRequestsWithSubstances" :key="`${i.type}-${i.id}`">
           {{ i.element.name }}
