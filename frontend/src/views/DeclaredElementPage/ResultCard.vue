@@ -11,8 +11,6 @@
         <DsfrBadge v-if="result.novelFood" label="Novel Food" small type="new" />
         <ElementStatusBadge v-if="result.status" :text="result.status" />
       </div>
-      <!-- TODO: make this a tag and align with badges, check DSFR -->
-      <!-- then update other ResultCard ? -->
       <div class="my-2 flex gap-x-1">
         <div><v-icon scale="0.85" :name="icon" /></div>
         <div class="mt-[1px]">{{ frenchType }}</div>
