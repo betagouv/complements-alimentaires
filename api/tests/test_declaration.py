@@ -1758,6 +1758,28 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(microorganism.request_status, DeclaredMicroorganism.AddableStatus.INFORMATION)
 
     @authenticate
+    def test_request_info_declared_element_not_allowed_not_instructor(self):
+        response = self.client.get(
+            reverse("api:declared_element_request_info", kwargs={"pk": 1, "type": "plant"}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(
+            reverse("api:declared_element_request_info", kwargs={"pk": 1, "type": "microorganism"}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(
+            reverse("api:declared_element_request_info", kwargs={"pk": 1, "type": "substance"}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(
+            reverse("api:declared_element_request_info", kwargs={"pk": 1, "type": "ingredient"}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
     def test_reject_declared_element(self):
         InstructionRoleFactory(user=authenticate.user)
 
@@ -1774,6 +1796,28 @@ class TestDeclaredElementsApi(APITestCase):
         microorganism.refresh_from_db()
         self.assertEqual(microorganism.request_private_notes, "some notes")
         self.assertEqual(microorganism.request_status, DeclaredMicroorganism.AddableStatus.REJECTED)
+
+    @authenticate
+    def test_reject_declared_element_not_allowed_not_instructor(self):
+        response = self.client.get(
+            reverse("api:declared_element_reject", kwargs={"pk": 1, "type": "plant"}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(
+            reverse("api:declared_element_reject", kwargs={"pk": 1, "type": "microorganism"}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(
+            reverse("api:declared_element_reject", kwargs={"pk": 1, "type": "substance"}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        response = self.client.get(
+            reverse("api:declared_element_reject", kwargs={"pk": 1, "type": "ingredient"}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
     def test_fields_hidden_from_declarant(self):
