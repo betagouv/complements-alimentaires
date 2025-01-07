@@ -64,14 +64,16 @@ class SummaryView(PdfDeclarationView):
             list(declaration.conditions_not_recommended.exclude(name=OTHER_OPTION).values_list("name", flat=True))
         )
         if has_other_conditions and declaration.other_conditions:
-            return ", ".join([conditions, declaration.other_conditions])
+            other = " : ".join([OTHER_OPTION, declaration.other_conditions])
+            return ", ".join([conditions, other])
         return conditions
 
     def get_effects_string(self, declaration):
         has_other_effect = declaration.effects.filter(name=OTHER_OPTION).exists()
         effects = ", ".join(list(declaration.effects.exclude(name=OTHER_OPTION).values_list("name", flat=True)))
         if has_other_effect and declaration.other_effects:
-            return ", ".join([effects, declaration.other_effects])
+            other = " : ".join([OTHER_OPTION, declaration.other_effects])
+            return ", ".join([effects, other])
         return effects
 
     def get_measurement_unit_string(self, declaration):
