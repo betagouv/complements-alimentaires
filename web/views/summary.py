@@ -23,6 +23,7 @@ class SummaryView(PdfDeclarationView):
             ("Description", declaration.description or "Non spécifiée"),
             ("Populations cibles", ", ".join(list(declaration.populations.all().values_list("name", flat=True)))),
             ("Populations à consommation déconseillée", self.get_conditions_string(declaration)),
+            ("Mise en garde et avertissement", declaration.warning or "Non spécifiée"),
             (
                 "Forme galénique",
                 declaration.galenic_formulation or declaration.other_galenic_formulation or "Non spécifiée",
