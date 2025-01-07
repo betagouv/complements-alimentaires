@@ -83,9 +83,7 @@
       class="mb-4"
       title="Vérifiez les doses totales des substances"
     >
-      <p>
-        Les ingrédients suivants, ajoutés pour remplacer une demande, rajoutent des substances dans la composition.
-      </p>
+      <p>Les ingrédients suivants, ajoutés pour remplacer une demande, rajoutent des substances dans la composition.</p>
       <p>
         Veuillez vérifier que les doses totales des substances restent pertinentes. Si besoin, renvoyez la déclaration
         vers le déclarant pour les mettre à jour.
