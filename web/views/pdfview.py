@@ -13,10 +13,15 @@ logger = logging.getLogger(__name__)
 
 
 class PdfDeclarationView(GenericAPIView, ABC):
+    as_html = False
+
     def get(self, request, *args, **kwargs):
         declaration = self.get_object()
         template = get_template(self.get_template_path(declaration))
         html = template.render(self.get_context(declaration))
+
+        if self.as_html:
+            return HttpResponse(html, status=200)
 
         response = HttpResponse(content_type="application/pdf")
         filename = self.get_pdf_file_name(declaration)

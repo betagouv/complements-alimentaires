@@ -10,4 +10,6 @@ urlpatterns = [
     path("envoyer-un-fichier", FileUploadView.as_view(), name="file_upload"),
     path("declarations/<int:pk>/certificate", CertificateView.as_view(), name="certificate"),
     path("declarations/<int:pk>/summary", SummaryView.as_view(), name="summary"),
+    # html view primarily used for development purposes
+    path("declarations/<int:pk>/summary-html", SummaryView.as_view(as_html=True), name="summary_html"),
 ]
