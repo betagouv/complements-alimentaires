@@ -774,3 +774,7 @@ class Attachment(Historisable):
     @property
     def has_pdf_extension(self):
         return self.file and self.file.url.endswith(".pdf")
+
+    @property
+    def type_display(self):
+        return self.get_type_display() or "Type inconnu"
