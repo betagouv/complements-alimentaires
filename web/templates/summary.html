@@ -30,36 +30,51 @@
                     left: 500pt; width: 512pt; top: 820pt; height: 20pt;
                 }
             }
+            .bold-marianne {
+                font-weight: bold;
+                font-family: 'Marianne-Bold', sans-serif;
+            }
+            .medium-marianne {
+                font-weight: medium;
+                font-family: 'Marianne-Medium', sans-serif;
+            }
+            .keep-with-next {
+                -pdf-keep-with-next: true;
+            }
+            .unit-font {
+                font-family: sans-serif;
+            }
         </style>
     </head>
-    <body style="font-family: 'Marianne';">
+    <body style="font-family: 'Marianne', sans-serif;">
         <div id="footer_content">Page <pdf:pagenumber>
             de <pdf:pagecount>
         </div>
         <table>
             <tr>
                 <td>
-                    <img width="100" src="{% static '../../static/images/certificate/masa.png' %}" alt="">
+                    <img width="100" src="{% static '../../static/images/certificate/masa.png' %}" alt="Ministère de l’Agriculture et de la Souveraineté Alimentaire">
                 </td>
                 <td align="right">
-                    <img width="120" src="{% static '../../static/images/logo.png' %}" alt="">
+                    <img width="120" src="{% static '../../static/images/logo.png' %}" alt="Compl'Alim">
                 </td>
             </tr>
         </table>
         <div style="margin-top: 20px;">
             <h1>Votre déclaration « {{ declaration.name }} »</h1>
+
+            <!-- Date de la déclaration -->
+
             {% if submission_date %}
             <p>Soumise le {{ submission_date|date:"l j F Y" }}</p>
             {% endif %}
 
-            <!-- Date de la déclaration -->
-
             <!-- Information produit -->
-            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'">Produit</h2>
+            <h2 class="bold-marianne">Produit</h2>
             <table>
                 {% for row in product_table_rows %}
                 <tr>
-                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">
+                    <td class="medium-marianne">
                         {{ row.0 }}
                     </td>
                     <td>{{ row.1 }}</td>
@@ -71,10 +86,10 @@
 
             <!-- Plantes -->
             {% if declared_plants %}
-            <hr style="-pdf-keep-with-next: true;" />
-            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Plantes</h2>
+            <hr class="keep-with-next" />
+            <h2 class="bold-marianne keep-with-next">Plantes</h2>
             {% for declared_plant in declared_plants %}
-                <h3 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">
+                <h3 class="bold-marianne keep-with-next">
                     {% firstof declared_plant.plant.name declared_plant.new_name %}
                     {% if declared_plant.new %}
                     (nouvel ajout)
@@ -84,14 +99,14 @@
                 {% if declared_plant.active %}
                 <table>
                     <tr>
-                        <td style="font-weight: medium; font-family: 'Marianne-Medium'">Partie utilisée</td>
+                        <td class="medium-marianne">Partie utilisée</td>
                         <td>{% firstof declared_plant.used_part.name "Non spécifiée" %}</td>
                     </tr>
                     <tr>
-                        <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
+                        <td class="medium-marianne">Qté par DJR</td>
                         {% if declared_plant.quantity %}
                         <td>{{ declared_plant.quantity }}
-                            <span style="font-family: sans-serif;">
+                            <span class="unit-font">
                                 {% firstof declared_plant.unit.name "(unité non spécifiée)" %}
                             </span>
                         </td>
@@ -100,7 +115,7 @@
                         {% endif %}
                     </tr>
                     <tr>
-                        <td style="font-weight: medium; font-family: 'Marianne-Medium'">Préparation</td>
+                        <td class="medium-marianne">Préparation</td>
                         <td>{% firstof declared_plant.preparation.name 'Non spécifiée' %}</td>
                     </tr>
                 </table>
@@ -110,10 +125,10 @@
 
             <!-- Micro-organismes -->
             {% if declared_microorganisms %}
-            <hr style="-pdf-keep-with-next: true;" />
-            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Micro-organismes</h2>
+            <hr class="keep-with-next" />
+            <h2 class="bold-marianne keep-with-next">Micro-organismes</h2>
             {% for declared_microorganism in declared_microorganisms %}
-            <h3 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">
+            <h3 class="bold-marianne keep-with-next">
                 {% firstof declared_microorganism.microorganism.species declared_microorganism.new_species %}
                 {% firstof declared_microorganism.microorganism.genre declared_microorganism.new_genre %}
                 {% if declared_microorganism.new %}
@@ -122,11 +137,11 @@
             </h3>
             <table>
                 <tr>
-                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">Souche</td>
+                    <td class="medium-marianne">Souche</td>
                     <td>{% firstof declared_microorganism.strain 'Non spécifiée' %}</td>
                 </tr>
                 <tr>
-                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR (en UFC)</td>
+                    <td class="medium-marianne">Qté par DJR (en UFC)</td>
                     <td>{% firstof declared_microorganism.quantity 'Non spécifiée' %}</td>
                 </tr>
             </table>
@@ -135,10 +150,10 @@
 
             <!-- Substances -->
             {% if declared_substances %}
-            <hr style="-pdf-keep-with-next: true;" />
-            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Substances</h2>
+            <hr class="keep-with-next" />
+            <h2 class="bold-marianne keep-with-next">Substances</h2>
             {% for declared_substance in declared_substances %}
-            <h3 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">
+            <h3 class="bold-marianne keep-with-next">
                 {% firstof declared_substance.substance.name declared_substance.new_name %}
                 {% if declared_substance.new %}
                 (nouvel ajout)
@@ -146,14 +161,13 @@
             </h3>
             <table>
                 <tr>
-                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
+                    <td class="medium-marianne">Qté par DJR</td>
                     {% if declared_substance.quantity %}
                     <td>
                         {{ declared_substance.quantity }}
-                        <span style="font-family: sans-serif;">
+                        <span class="unit-font">
                             {% firstof declared_substance.unit.name declared_substance.substance.unit.name "(unité non spécifiée)" %}
                         </span>
-
                     </td>
                     {% else %}
                     <td>Non spécifiée</td>
@@ -165,10 +179,10 @@
 
             <!-- Autres ingrédients -->
             {% if declared_ingredients %}
-            <hr style="-pdf-keep-with-next: true;" />
-            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Autres ingredients</h2>
+            <hr class="keep-with-next" />
+            <h2 class="bold-marianne keep-with-next">Autres ingredients</h2>
             {% for declared_ingredient in declared_ingredients %}
-            <h3 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">
+            <h3 class="bold-marianne keep-with-next">
                 {% firstof declared_ingredient.ingredient.name declared_ingredient.new_name %}
                 {% if declared_ingredient.new %}
                 (nouvel ajout)
@@ -176,10 +190,10 @@
             </h3>
             <table>
                 <tr>
-                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
+                    <td class="medium-marianne">Qté par DJR</td>
                     {% if declared_ingredient.quantity %}
-                    <td style="font-family: 'Marianne', sans-serif;">{{ declared_ingredient.quantity }}
-                        <span style="font-family: sans-serif;">
+                    <td>{{ declared_ingredient.quantity }}
+                        <span class="unit-font">
                             {% firstof declared_ingredient.unit.name "(unité non spécifiée)" %}
                         </span>
                     </td>
@@ -193,18 +207,18 @@
 
             <!-- Substances calculées -->
             {% if computed_substances %}
-            <hr style="-pdf-keep-with-next: true;" />
-            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Substances contenues dans la composition</h2>
+            <hr class="keep-with-next" />
+            <h2 class="bold-marianne keep-with-next">Substances contenues dans la composition</h2>
             {% for computed_substance in computed_substances %}
-            <h3 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">
+            <h3 class="bold-marianne keep-with-next">
                 {{ computed_substance.substance.name }}
             </h3>
             <table>
                 <tr>
-                    <td style="font-weight: medium; font-family: 'Marianne-Medium'">Qté par DJR</td>
+                    <td class="medium-marianne">Qté par DJR</td>
                     {% if computed_substance.quantity %}
-                    <td style="font-family: 'Marianne', sans-serif;">{{ computed_substance.quantity }}
-                        <span style="font-family: sans-serif;">
+                    <td>{{ computed_substance.quantity }}
+                        <span class="unit-font">
                             {% firstof computed_substance.unit.name computed_substance.substance.unit.name "(unité non spécifiée)" %}
                         </span>
                     </td>
@@ -217,8 +231,8 @@
             {% endif %}
 
             <!-- Adresse sur l'étiquetage -->
-            <hr style="-pdf-keep-with-next: true;" />
-            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Adresse sur l'étiquetage</h2>
+            <hr class="keep-with-next" />
+            <h2 class="bold-marianne keep-with-next">Adresse sur l'étiquetage</h2>
             <p>
                 {% if declaration.address %}{{ declaration.address }}<br />{% endif %}
                 {% if declaration.additional_details %}{{ declaration.additional_details }}<br />{% endif %}
@@ -229,9 +243,9 @@
             </p>
             <!-- Pièces jointes -->
             {% if attachments %}
-            <hr style="-pdf-keep-with-next: true;" />
-            <h2 style="font-weight: bold; font-family: 'Marianne-Bold'; -pdf-keep-with-next: true;">Pièces jointes</h2>
-            <div style="display: flex;">
+            <hr class="keep-with-next" />
+            <h2 class="bold-marianne keep-with-next">Pièces jointes</h2>
+            <div>
             {% for attachment in attachments %}
             <div>
                 <div>
@@ -241,11 +255,11 @@
                     <img width="220" src="{{ attachment.file.url }}" alt="">
                     {% endif %}
                 </div>
-                <div style="font-weight: bold; font-family: 'Marianne-Bold'">
+                <div class="bold-marianne">
                     {{ attachment.name }}
                 </div>
             </div>
-            <hr style="-pdf-keep-with-next: true;" />
+            <hr class="keep-with-next" />
             {% endfor %}
         </div>
 
