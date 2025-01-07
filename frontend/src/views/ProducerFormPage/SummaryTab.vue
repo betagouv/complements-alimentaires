@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="text-right">
-      <a :href="`/declarations/${payload.id}/summary`" target="_blank" class="text-sm font-medium">
+      <a :href="`/declarations/${payload.id}/summary`" download class="text-sm font-medium">
         <v-icon name="ri-printer-line"></v-icon>
         Imprimer
       </a>
