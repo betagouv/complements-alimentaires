@@ -278,14 +278,14 @@
             <!-- Adresse sur l'étiquetage -->
             <hr class="keep-with-next" />
             <h2 class="bold-marianne keep-with-next">Adresse sur l'étiquetage</h2>
-            <p>
+            <address>
                 {% if declaration.address %}{{ declaration.address }}<br />{% endif %}
                 {% if declaration.additional_details %}{{ declaration.additional_details }}<br />{% endif %}
                 {% if declaration.postal_code %}{{ declaration.postal_code }}<br />{% endif %}
                 {% if declaration.city %}{{ declaration.city }}<br />{% endif %}
                 {% if declaration.cedex %}{{ declaration.cedex }}<br />{% endif %}
                 {% if declaration.country %}{{ declaration.country }}<br />{% endif %}
-            </p>
+            </address>
             <!-- Pièces jointes -->
             {% if attachments %}
             <hr class="keep-with-next" />
