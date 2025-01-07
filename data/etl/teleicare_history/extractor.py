@@ -2,7 +2,10 @@ import logging
 import re
 from datetime import date, datetime
 
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+
+from phonenumber_field.phonenumber import PhoneNumber
 
 from data.models import GalenicFormulation, SubstanceUnit
 from data.models.company import ActivityChoices, Company
@@ -17,9 +20,11 @@ from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 logger = logging.getLogger(__name__)
 
 
-def convert_phone_number(phone_number):
-    # TODO
-    return phone_number
+def convert_phone_number(phone_number_to_parse):
+    if phone_number_to_parse:
+        phone_number = PhoneNumber.from_string(phone_number_to_parse, region="FR")
+        return phone_number
+    return None
 
 
 def convert_activities(etab):
@@ -68,6 +73,7 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                     nb_siret_match += 1
                     matched = True
                     siret_matching[0].siccrf_id = etab.etab_ident
+                    siret_matching[0].matched = True
                     siret_matching[0].save()
 
         elif etab.etab_numero_tva_intra is not None:
@@ -82,25 +88,30 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                     nb_vat_match += 1
                     matched = True
                     vat_matching[0].siccrf_id = etab.etab_ident
+                    vat_matching[0].matched = True
                     vat_matching[0].save()
         # creation de la company
         if not matched and create_if_not_exist:
-            logger.info(f"La company {etab.etab_raison_sociale} est créée via les infos TeleIcare.")
             new_company = Company(
                 siccrf_id=etab.etab_ident,
                 address=etab.etab_adre_voie,
                 postal_code=etab.etab_adre_cp,
                 city=etab.etab_adre_ville,
                 phone_number=convert_phone_number(etab.etab_telephone),
-                email=etab.etab_courriel,
+                email=etab.etab_courriel if etab.etab_courriel else "",
                 social_name=etab.etab_raison_sociale,
-                commercial_name=etab.etab_enseigne,
+                commercial_name=etab.etab_enseigne if etab.etab_enseigne else "",
                 siret=etab.etab_siret,
                 vat=etab.etab_numero_tva_intra,
                 activities=convert_activities(etab),
+                # la etab_date_adhesion n'est pas conservée
             )
-            new_company.save()
-            nb_created_companies += 1
+            try:
+                new_company.save()
+                nb_created_companies += 1
+                logger.info(f"La company {etab.etab_raison_sociale} est créée via les infos TeleIcare.")
+            except ValidationError as e:
+                logger.error(f"Impossible de créer la Company à partir du siccrf_id = {etab.etab_ident}: {e}")
 
     logger.info(
         f"Sur {len(IcaEtablissement.objects.all())} : {nb_siret_match} entreprises réconcilliées par le siret."

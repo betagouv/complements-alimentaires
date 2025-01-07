@@ -46,7 +46,7 @@ class CompanyContact(models.Model):
         abstract = True
 
     phone_number = PhoneNumberField("numéro de téléphone de contact")
-    email = models.EmailField("adresse e-mail de contact")
+    email = models.EmailField("adresse e-mail de contact", blank=True)
     website = models.CharField("site web de l'entreprise", blank=True)
 
 
@@ -76,6 +76,9 @@ class TeleicareCompany(models.Model):
         unique=True,
         verbose_name="etab_ident dans le modèle IcaEtablissement SICCRF",
     )
+    matched = models.BooleanField(
+        default=False, verbose_name="La Company Compl'Alim a été matchée avec un Etablissement TeleIcare"
+    )
 
 
 class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.Model):
@@ -83,7 +86,7 @@ class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.M
         verbose_name = "entreprise"
 
     social_name = models.CharField("dénomination sociale")
-    commercial_name = models.CharField("enseigne", help_text="nom commercial")
+    commercial_name = models.CharField("enseigne", blank=True, help_text="nom commercial")
     # null=True permet de gérer en parralèle le unique=True
     siret = models.CharField(
         "n° SIRET",
