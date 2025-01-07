@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from api.permissions import CanAccessIndividualDeclaration
 from data.models import Declaration, Snapshot
 
@@ -40,6 +42,8 @@ class SummaryView(PdfDeclarationView):
         except Exception as _:
             submission_date = None
 
+        environment = getattr(settings, "ENVIRONMENT")
+
         return {
             "product_table_rows": product_table_rows,
             "declaration": declaration,
@@ -50,6 +54,7 @@ class SummaryView(PdfDeclarationView):
             "computed_substances": declaration.computed_substances.all(),
             "attachments": declaration.attachments.all(),
             "submission_date": submission_date,
+            "environment": environment if environment in ["dev", "staging", "demo"] else None,
         }
 
     def get_conditions_string(self, declaration):

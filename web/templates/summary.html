@@ -61,6 +61,11 @@
             </tr>
         </table>
         <div style="margin-top: 20px;">
+            <!-- Environnement si différent à prod -->
+            {% if environment %}
+            <p class="bold-marianne">Environnement : {{ environment }}</p>
+            {% endif %}
+
             <h1>Votre déclaration « {{ declaration.name }} »</h1>
 
             <!-- Date de la déclaration -->
