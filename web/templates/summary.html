@@ -248,16 +248,16 @@
             <div>
             {% for attachment in attachments %}
             <div>
-                <div>
+                <figure>
                     {% if attachment.has_pdf_extension %}
-                    <img width="70" src="{% static 'images/pdf-file.png' %}" alt="">
+                    <img width="70" src="{% static 'images/pdf-file.png' %}">
                     {% else %}
-                    <img width="220" src="{{ attachment.file.url }}" alt="">
+                    <img width="220" src="{{ attachment.file.url }}">
                     {% endif %}
-                </div>
-                <div class="bold-marianne">
-                    {{ attachment.name }}
-                </div>
+                    <figcaption class="bold-marianne" style="display: block;">
+                        {{ attachment.name }}
+                    </figcaption>
+                </figure>
             </div>
             <hr class="keep-with-next" />
             {% endfor %}
