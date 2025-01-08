@@ -1,8 +1,11 @@
+build:
+	docker compose build
+
 run:
 	docker compose up
 
 bash:
-	docker compose run server bash -rm --user root
+	docker compose run --user root server bash -rm
 
 clean:
 	docker image prune
