@@ -11,7 +11,7 @@
         icon-only
         tertiary
         no-outline
-        @click="deleteSynonym(s)"
+        @click="deleteSynonym(idx)"
       />
     </div>
     <DsfrButton label="Ajouter synonyme" icon="ri-add-line" secondary @click="addSynonym" />
@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+// TODO: rename file to be just ReplacementModal or something?
 import { onMounted, ref } from "vue"
 
 const props = defineProps({ initialSynonyms: Array })
@@ -34,5 +35,7 @@ const addSynonym = () => {
   synonyms.value.push({})
 }
 
-const deleteSynonym = (synonym) => {}
+const deleteSynonym = (idx) => {
+  synonyms.value.splice(idx, 1)
+}
 </script>
