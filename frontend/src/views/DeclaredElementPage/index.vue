@@ -20,19 +20,7 @@
                   Veuillez contacter l'équipe Compl'Alim pour effectuer la substitution.
                 </p>
                 <div v-else>
-                  <h2>Synonymes</h2>
-                  <div v-for="s in replacement.synonyms" :key="s.id" class="flex items-center">
-                    <DsfrInput label="Synonyme" v-model="s.name" class="mb-2" />
-
-                    <DsfrButton
-                      :label="`Supprimer synonyme '${s.name}'`"
-                      icon="ri-delete-bin-6-line"
-                      icon-only
-                      tertiary
-                      no-outline
-                    />
-                  </div>
-                  <DsfrButton label="Ajouter synonyme" icon="ri-add-line" secondary />
+                  <ManageSynonyms :initialSynonyms="replacement.synonyms" />
                 </div>
               </div>
               <div v-else>
@@ -55,6 +43,7 @@ import { headers } from "@/utils/data-fetching"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
 import ReplacementSearch from "./ReplacementSearch"
+import ManageSynonyms from "./ManageSynonyms"
 
 const props = defineProps({ type: String, id: String })
 
@@ -92,8 +81,7 @@ watch(element, (newElement) => {
 })
 
 // Actions
-// const modalToOpen = ref(false)
-const modalToOpen = ref("replace")
+const modalToOpen = ref(false)
 const closeModal = () => (modalToOpen.value = false)
 
 const notes = ref()
