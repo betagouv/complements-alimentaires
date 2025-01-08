@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils import timezone
 
 from api.permissions import CanAccessIndividualDeclaration
 from data.models import Declaration, Snapshot
@@ -55,6 +56,7 @@ class SummaryView(PdfDeclarationView):
             "computed_substances": declaration.computed_substances.all(),
             "attachments": declaration.attachments.all(),
             "submission_date": submission_date,
+            "now": timezone.now(),
             "environment": environment if environment in ["dev", "staging", "demo"] else None,
         }
 

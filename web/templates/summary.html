@@ -351,5 +351,8 @@
 
             {% endif %}
         </div>
+        {% if now %}
+        <p>Imprimée le {{ now|date:"l j F Y H:m" }}</p>
+        {% endif %}
     </body>
 </html>
