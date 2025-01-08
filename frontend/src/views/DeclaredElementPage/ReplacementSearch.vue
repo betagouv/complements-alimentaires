@@ -28,11 +28,12 @@ const selectedOption = ref()
 
 const selectOption = (option) => {
   selectedOption.value = option // quick and temporary display
+  emit("replacement", option)
   fetchElement(getApiType(option.objectType), option.objectType, option.id).then((item) => {
     selectedOption.value = item
+    emit("replacement", item)
   })
   // TODO: erase search term from search bar?
-  emit("replacement", option)
 }
 
 // TODO: turn into service ? It was taken from another file

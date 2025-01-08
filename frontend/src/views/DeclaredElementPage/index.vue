@@ -19,6 +19,21 @@
                   Ce n'est pas possible pour l'instant de remplacer une demande avec un ingrédient d'un type different.
                   Veuillez contacter l'équipe Compl'Alim pour effectuer la substitution.
                 </p>
+                <div v-else>
+                  <h2>Synonymes</h2>
+                  <div v-for="s in replacement.synonyms" :key="s.id" class="flex items-center">
+                    <DsfrInput label="Synonyme" v-model="s.name" class="mb-2" />
+
+                    <DsfrButton
+                      :label="`Supprimer synonyme '${s.name}'`"
+                      icon="ri-delete-bin-6-line"
+                      icon-only
+                      tertiary
+                      no-outline
+                    />
+                  </div>
+                  <DsfrButton label="Ajouter synonyme" icon="ri-add-line" secondary />
+                </div>
               </div>
               <div v-else>
                 <DsfrInput v-model="notes" label="Notes" label-visible is-textarea />
@@ -77,7 +92,8 @@ watch(element, (newElement) => {
 })
 
 // Actions
-const modalToOpen = ref(false)
+// const modalToOpen = ref(false)
+const modalToOpen = ref("replace")
 const closeModal = () => (modalToOpen.value = false)
 
 const notes = ref()
@@ -89,7 +105,13 @@ const openModal = (type) => {
   }
 }
 
-const replacement = ref()
+// const replacement = ref()
+const replacement = ref({
+  id: 3,
+  name: "Test modal",
+  synonyms: [{ id: 1, name: "My existing synonym" }],
+  objectType: props.type,
+})
 const cannotReplace = computed(() => replacement.value?.objectType !== element.value.type)
 
 const actionButtons = computed(() => [
