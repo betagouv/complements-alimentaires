@@ -71,7 +71,7 @@ class ElementMappingMixin:
             "element_model": Substance,
             "serializer": DeclaredSubstanceSerializer,
         },
-        "ingredient": {
+        "other-ingredient": {
             "model": DeclaredIngredient,
             "element_model": Ingredient,
             "serializer": DeclaredIngredientSerializer,
