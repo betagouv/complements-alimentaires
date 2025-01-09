@@ -58,6 +58,7 @@ class ETL_OPEN_DATA_DECLARATIONS(DECLARATIONS, OPEN_DATA):
             "warning": "mises_en_garde",
             "effects": "objectif_effet",
             "flavor": "aromes",
+            "conditions_not_recommended": "facteurs_risques",
             "declared_plants": "plantes",
             "declared_microorganisms": "micro_organismes",
             "declared_substances": "substances",

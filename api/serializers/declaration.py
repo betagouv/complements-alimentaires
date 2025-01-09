@@ -297,6 +297,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     company = serializers.SerializerMethodField()
     galenic_formulation = serializers.SerializerMethodField()
     effects = serializers.SerializerMethodField()
+    conditions_not_recommended = serializers.SerializerMethodField()
 
     declared_plants = serializers.SerializerMethodField()
     declared_microorganisms = serializers.SerializerMethodField()
@@ -320,6 +321,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             "warning",
             "effects",
             "flavor",
+            "conditions_not_recommended",
             "declared_plants",
             "declared_microorganisms",
             "declared_substances",
@@ -351,6 +353,9 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     def get_effects(self, obj):
         return [effect.name for effect in obj.effects.all()]
+
+    def get_conditions_not_recommended(self, obj):
+        return [condition.name for condition in obj.conditions_not_recommended.all()]
 
     def get_declared_plants(self, obj):
         return [
