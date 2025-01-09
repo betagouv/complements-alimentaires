@@ -1,6 +1,7 @@
+import contextlib
 import logging
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
@@ -18,6 +19,30 @@ from data.models.teleicare_history.ica_declaration import (
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 
 logger = logging.getLogger(__name__)
+
+
+@contextlib.contextmanager
+def suppress_autotime(model, fields):
+    """
+    Décorateur pour annuler temporairement le auto_now et auto_now_add de certains champs
+    Copié depuis https://stackoverflow.com/questions/7499767/temporarily-disable-auto-now-auto-now-add
+    """
+    _original_values = {}
+    for field in model._meta.local_fields:
+        if field.name in fields:
+            _original_values[field.name] = {
+                "auto_now": field.auto_now,
+                "auto_now_add": field.auto_now_add,
+            }
+            field.auto_now = False
+            field.auto_now_add = False
+    try:
+        yield
+    finally:
+        for field in model._meta.local_fields:
+            if field.name in fields:
+                field.auto_now = _original_values[field.name]["auto_now"]
+                field.auto_now_add = _original_values[field.name]["auto_now_add"]
 
 
 def convert_phone_number(phone_number_to_parse):
@@ -123,9 +148,6 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
 
 
 def get_most_recent(list_of_declarations):
-    def convert_str_date(value):
-        return datetime.strptime(value, "%m/%d/%Y %H:%M:%S %p").date()
-
     most_recent_date = date.min
     for ica_declaration in list_of_declarations:
         current_date = convert_str_date(ica_declaration.dcl_date)
@@ -134,6 +156,14 @@ def get_most_recent(list_of_declarations):
             most_recente_dcl_date = ica_declaration.dcl_date
 
     return list_of_declarations.get(dcl_date=most_recente_dcl_date)
+
+
+def convert_str_date(value, aware=False):
+    dt = datetime.strptime(value, "%m/%d/%Y %H:%M:%S %p")
+    if aware:
+        return dt.replace(tzinfo=timezone.utc)
+    else:
+        return dt.date()
 
 
 # Pour les déclarations TeleIcare, le status correspond au champ IcaVersionDeclaration.stattdcl_ident
@@ -181,7 +211,18 @@ def create_declaration_from_teleicare_history():
                 except Company.DoesNotExist as e:
                     logger.error(e.message)
                     continue
+                declaration_creation_date = (
+                    convert_str_date(latest_ica_declaration.dcl_date, aware=True)
+                    if latest_ica_declaration.dcl_date
+                    else ""
+                )
                 declaration = Declaration(
+                    creation_date=declaration_creation_date,
+                    modification_date=convert_str_date(
+                        latest_ica_declaration.dcl_date_fin_commercialisation, aware=True
+                    )
+                    if latest_ica_declaration.dcl_date_fin_commercialisation
+                    else declaration_creation_date,
                     siccrf_id=ica_complement_alimentaire.cplalim_ident,
                     galenic_formulation=GalenicFormulation.objects.get(
                         siccrf_id=ica_complement_alimentaire.frmgal_ident
@@ -211,8 +252,9 @@ def create_declaration_from_teleicare_history():
                     else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident],
                 )
                 try:
-                    declaration.save()
-                    nb_created_declarations += 1
+                    with suppress_autotime(declaration, ["creation_date", "modification_date"]):
+                        declaration.save()
+                        nb_created_declarations += 1
                 except IntegrityError:
                     # cette Déclaration a déjà été créée
                     pass

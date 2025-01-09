@@ -61,7 +61,7 @@ class PassthroughSubstanceSerializer(IdPassthrough, SubstanceSerializer):
 class DeclaredListSerializer(serializers.ListSerializer):
     """
     Pour les modèles liés et les list serializers on a besoin de spécifier le comportement
-    dans une mise à jour car DRF ne peut pas le déviner:
+    dans une mise à jour car DRF ne peut pas le deviner:
     https://www.django-rest-framework.org/api-guide/serializers/#customizing-multiple-update
     """
 
