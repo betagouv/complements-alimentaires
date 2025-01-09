@@ -56,6 +56,7 @@ class ETL_OPEN_DATA_DECLARATIONS(DECLARATIONS, OPEN_DATA):
             "daily_recommended_dose": "dose_journaliere",
             "instructions": "mode_emploi",
             "warning": "mises_en_garde",
+            "flavor": "aromes",
             "declared_plants": "plantes",
             "declared_microorganisms": "micro_organismes",
             "declared_substances": "substances",
