@@ -92,10 +92,10 @@ class TeleicareHistoryImporterTestCase(TestCase):
         etablissement_to_create_as_company = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
         # ne sera pas créé car le numéro de téléphone est mal formatté
         _ = EtablissementFactory(etab_siret=None, etab_ica_importateur=True, etab_telephone="0345")
-        self.assertEqual(len(Company.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident)), 0)
+        self.assertEqual(Company.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident).count(), 0)
 
         match_companies_on_siret_or_vat(create_if_not_exist=True)
-        self.assertEqual(len(Company.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident)), 1)
+        self.assertEqual(Company.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident).count(), 1)
 
         created_company = Company.objects.get(siccrf_id=etablissement_to_create_as_company.etab_ident)
         self.assertEqual(created_company.siccrf_id, etablissement_to_create_as_company.etab_ident)
