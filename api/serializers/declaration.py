@@ -578,6 +578,8 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
+            "siccrf_id",
+            "declared_in_teleicare",
             "status",
             "author",
             "company",

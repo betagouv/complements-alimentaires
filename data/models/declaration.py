@@ -391,6 +391,10 @@ class Declaration(Historisable, TimeStampable):
         return f"Déclaration « {self.name} »"
 
     @property
+    def declared_in_teleicare(self):
+        return self.siccrf_id is not None
+
+    @property
     def computed_substances_with_max_quantity_exceeded(self):
         substances_with_max_quantity_exceeded = self.computed_substances.exclude(
             Q(quantity__isnull=True) | Q(substance__max_quantity__isnull=True)
