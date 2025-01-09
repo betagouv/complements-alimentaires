@@ -33,7 +33,7 @@ const rows = computed(() =>
         company: x.company?.socialName,
         mandatedCompany: x.mandatedCompany?.socialName,
       },
-      `${x.author.firstName} ${x.author.lastName}`,
+      x.author ? `${x.author.firstName} ${x.author.lastName}` : "",
       getStatusTagForCell(x.status, true),
       timeAgo(x.creationDate),
       timeAgo(x.modificationDate),
