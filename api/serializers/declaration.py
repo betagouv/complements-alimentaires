@@ -342,7 +342,10 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         return obj.company.commercial_name, obj.company.siret
 
     def get_galenic_formulation(self, obj):
-        return obj.galenic_formulation.name
+        if obj.galenic_formulation:
+            return obj.galenic_formulation.name
+        else:
+            return None
 
     def get_declared_plants(self, obj):
         return [
