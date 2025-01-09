@@ -20,7 +20,11 @@
                   Veuillez contacter l'équipe Compl'Alim pour effectuer la substitution.
                 </p>
                 <div v-else>
-                  <ManageSynonyms :initialSynonyms="replacement.synonyms" :requestElement="element" />
+                  <ManageSynonyms
+                    v-model="synonyms"
+                    :requestElement="element"
+                    :initialSynonyms="replacement.synonyms"
+                  />
                 </div>
               </div>
               <div v-else>
@@ -93,13 +97,14 @@ const openModal = (type) => {
   }
 }
 
-// const replacement = ref()
-const replacement = ref({
-  id: 3,
-  name: "Test modal",
-  synonyms: [{ id: 1, name: "My existing synonym" }],
-  objectType: props.type,
+const replacement = ref()
+const synonyms = ref()
+watch(replacement, () => {
+  if (replacement.value.synonyms) {
+    synonyms.value = JSON.parse(JSON.stringify(replacement.value.synonyms)) // initialise synonyms that might be updated
+  }
 })
+
 const cannotReplace = computed(() => replacement.value?.objectType !== element.value.type)
 
 const actionButtons = computed(() => [
@@ -145,6 +150,7 @@ const modals = computed(() => {
           onClick() {
             const payload = {
               element: { id: replacement.value?.id, type: replacement.value?.objectType },
+              synonyms: synonyms.value,
             }
             // TODO: clear search if we stay on page
             updateElement("replace", payload).then(closeModal)
