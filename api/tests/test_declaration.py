@@ -37,7 +37,7 @@ from data.factories import (
     SupervisorRoleFactory,
     VisaRoleFactory,
 )
-from data.models import Attachment, Declaration, Snapshot, DeclaredMicroorganism, DeclaredPlant
+from data.models import Attachment, Declaration, DeclaredMicroorganism, DeclaredPlant, Snapshot
 
 from .utils import authenticate
 
@@ -1495,6 +1495,52 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(results[0]["id"], declaration_first.id)
         self.assertEqual(results[1]["id"], declaration_middle.id)
         self.assertEqual(results[2]["id"], declaration_last.id)
+
+    @authenticate
+    def test_sort_declarations_by_instruction_limit_with_visa(self):
+        """
+        Le refus d'un visa ne doit pas compter pour le triage par date limite de réponse
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        today = timezone.now()
+
+        declaration_first = AwaitingInstructionDeclarationFactory()
+        snapshot_first = SnapshotFactory(declaration=declaration_first, status=declaration_first.status)
+        snapshot_first.creation_date = today - timedelta(days=1)
+        snapshot_first.save()
+
+        declaration_last = AwaitingInstructionDeclarationFactory()
+        snapshot_last = SnapshotFactory(declaration=declaration_last, status=declaration_last.status)
+        snapshot_last.creation_date = today - timedelta(days=10)
+        snapshot_last.save()
+
+        # Le snapshot du refus de visa ne doit pas affecter la date limite de réponse
+        snapshot_last_visa_refusal = SnapshotFactory(
+            declaration=declaration_last,
+            status=declaration_last.status,
+            action=Snapshot.SnapshotActions.REFUSE_VISA,
+        )
+        snapshot_last_visa_refusal.creation_date = today - timedelta(days=1)
+        snapshot_last_visa_refusal.save()
+
+        # Triage par date limite d'instruction
+        sort_url = f"{reverse('api:list_all_declarations')}?ordering=responseLimitDate"
+        response = self.client.get(sort_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+
+        self.assertEqual(results[0]["id"], declaration_last.id)
+        self.assertEqual(results[1]["id"], declaration_first.id)
+
+        # Triage par date limite d'instruction inversé
+        reverse_sort_url = f"{reverse('api:list_all_declarations')}?ordering=-responseLimitDate"
+        response = self.client.get(reverse_sort_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+
+        self.assertEqual(results[0]["id"], declaration_first.id)
+        self.assertEqual(results[1]["id"], declaration_last.id)
 
     @authenticate
     def test_update_article(self):

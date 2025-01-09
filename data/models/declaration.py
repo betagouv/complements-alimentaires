@@ -357,7 +357,11 @@ class Declaration(Historisable, TimeStampable):
 
         """
         La date limite d'instruction est fixée à deux mois à partir du dernier statut
-        "en attente d'instruction" sauf dans le cas d'un refus de visa
+        "en attente d'instruction" sauf dans le cas d'un refus de visa.
+
+        ⚠️ Attention : Le filtre par date de réponse dans api/views/declaration/declaration.py
+        refait la même logique dans la couche DB. Tout changement effectué dans cette fonction
+        doit aussi être reflété dans InstructionDateOrderingFilter > filter_queryset.
         """
         concerned_statuses = [
             Declaration.DeclarationStatus.AWAITING_INSTRUCTION,

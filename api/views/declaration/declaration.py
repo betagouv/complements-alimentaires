@@ -291,6 +291,9 @@ class InstructionDateOrderingFilter(CamelCaseOrderingFilter):
         """
         Cette fonction vise à réproduire la property "response_limit_date" du modèle Declaration
         mais dans la couche DB (avec des querysets) afin de pouvoir filtrer dessus.
+
+        ⚠️ Attention : Tout changement effectué dans cette fonction doit aussi être reflété dans
+        data/models/declaration.py > response_limit_date
         """
         order_by_response_limit, desc = self.order_by_response_limit(request)
 
@@ -302,6 +305,7 @@ class InstructionDateOrderingFilter(CamelCaseOrderingFilter):
             Snapshot.objects.filter(
                 declaration=OuterRef("pk"), status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION
             )
+            .exclude(action=Snapshot.SnapshotActions.REFUSE_VISA)
             .order_by("-creation_date" if order_by_response_limit else "creation_date")
             .values("creation_date")[:1]
         )
