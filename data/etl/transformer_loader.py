@@ -64,6 +64,7 @@ class ETL_OPEN_DATA_DECLARATIONS(DECLARATIONS, OPEN_DATA):
             "declared_microorganisms": "micro_organismes",
             "declared_substances": "substances",
             "declared_additives": "additifs",
+            "declared_nutriments": "nutriments",
             "modification_date": "date_decision",  #  Warning : Se baser sur la du snapshot d'autorisation si la plateforme Compl'Alim permet d'editer la déclaration (ex: abandon)
         }
 
