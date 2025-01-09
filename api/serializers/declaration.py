@@ -299,6 +299,8 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     effects = serializers.SerializerMethodField()
     conditions_not_recommended = serializers.SerializerMethodField()
 
+    populations = serializers.SerializerMethodField()
+
     declared_plants = serializers.SerializerMethodField()
     declared_microorganisms = serializers.SerializerMethodField()
     declared_substances = serializers.SerializerMethodField()
@@ -322,6 +324,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             "effects",
             "flavor",
             "conditions_not_recommended",
+            "populations",
             "declared_plants",
             "declared_microorganisms",
             "declared_substances",
@@ -356,6 +359,9 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     def get_conditions_not_recommended(self, obj):
         return [condition.name for condition in obj.conditions_not_recommended.all()]
+
+    def get_populations(self, obj):
+        return [population.name for population in obj.populations.all()]
 
     def get_declared_plants(self, obj):
         return [
