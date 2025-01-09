@@ -12,24 +12,24 @@ from xhtml2pdf import pisa
 logger = logging.getLogger(__name__)
 
 
-class PdfDeclarationView(GenericAPIView, ABC):
+class PdfView(GenericAPIView, ABC):
     as_html = False
 
     def get(self, request, *args, **kwargs):
-        declaration = self.get_object()
-        template = get_template(self.get_template_path(declaration))
-        html = template.render(self.get_context(declaration))
+        obj = self.get_object()
+        template = get_template(self.get_template_path(obj))
+        html = template.render(self.get_context(obj))
 
         if self.as_html:
             return HttpResponse(html, status=200)
 
         response = HttpResponse(content_type="application/pdf")
-        filename = self.get_pdf_file_name(declaration)
+        filename = self.get_pdf_file_name(obj)
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
-        pisa_status = pisa.CreatePDF(html, dest=response, link_callback=PdfDeclarationView.link_callback)
+        pisa_status = pisa.CreatePDF(html, dest=response, link_callback=PdfView.link_callback)
 
         if pisa_status.err:
-            logger.error(f"Error while generating PDF for declaration {declaration.id}:\n{pisa_status.err}")
+            logger.error(f"Error while generating PDF for {obj.__class__.__name__} {obj.id}:\n{pisa_status.err}")
             return HttpResponse("An error ocurred", status=500)
 
         return response
@@ -51,13 +51,13 @@ class PdfDeclarationView(GenericAPIView, ABC):
         return path
 
     @abstractmethod
-    def get_context(self, declaration):
+    def get_context(self, obj):
         pass
 
     @abstractmethod
-    def get_pdf_file_name(self, declaration):
+    def get_pdf_file_name(self, obj):
         pass
 
     @abstractmethod
-    def get_template_path(self, declaration):
+    def get_template_path(self, obj):
         pass

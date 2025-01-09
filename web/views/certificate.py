@@ -5,12 +5,12 @@ from rest_framework.exceptions import NotFound
 from api.permissions import CanAccessIndividualDeclaration
 from data.models import Declaration, Snapshot
 
-from .pdfview import PdfDeclarationView
+from .pdfview import PdfView
 
 logger = logging.getLogger(__name__)
 
 
-class CertificateView(PdfDeclarationView):
+class CertificateView(PdfView):
     permission_classes = [CanAccessIndividualDeclaration]
     queryset = Declaration.objects.all()
 

@@ -4,12 +4,12 @@ from django.utils import timezone
 from api.permissions import CanAccessIndividualDeclaration
 from data.models import Declaration, Snapshot
 
-from .pdfview import PdfDeclarationView
+from .pdfview import PdfView
 
 OTHER_OPTION = "Autre (à préciser)"
 
 
-class SummaryView(PdfDeclarationView):
+class SummaryView(PdfView):
     permission_classes = [CanAccessIndividualDeclaration]
     queryset = Declaration.objects.all()
 
