@@ -340,8 +340,8 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         Unify all types of Articles 15 categories.
         If not part of Article 15, then return display name
         """
-        if "Article 15" in obj.get_calculated_article_display():
-            return "Article 15"
+        if "ART_15" in obj.get_calculated_article_display():
+            return "ART_15"
         else:
             return obj.get_calculated_article_display()
 

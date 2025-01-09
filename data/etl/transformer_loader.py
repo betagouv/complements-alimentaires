@@ -51,7 +51,7 @@ class ETL_OPEN_DATA_DECLARATIONS(DECLARATIONS, OPEN_DATA):
             "name": "nom_commercial",
             "brand": "marque",
             "gamme": "gamme",
-            "article": "article",
+            "article": "article_reference",
             "galenic_formulation": "forme_galenique",
             "daily_recommended_dose": "dose_journaliere",
             "instructions": "mode_emploi",
