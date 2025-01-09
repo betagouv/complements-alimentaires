@@ -16,9 +16,9 @@
     <div class="mb-4">
       <DsfrAlert
         size="sm"
-        title="Migration des déclarations soumises sur Teleicare"
-        description="II n'est pas nécessaire de déclarer à nouveau sur Compl'Alim les produits que vous avez déjà déclarés sur Teleicare. Cet historique sera importé d’ici la fin 2024 grâce à une correspondance entre les SIRET/n° TVA intracommunautaire. En attendant, vous pouvez consulter cet historique sur Teleicare."
-        type="info"
+        title="Historique des déclarations soumises sur Teleicare"
+        description="Les produits que vous avez déjà déclarés sur Teleicare sont en cours d'import grâce à une correspondance entre les SIRET/n° TVA intracommunautaire. Il est possible que vous retrouviez des informations partielles sur vos historiques (pas de composition pour le moment). En attendant, vous pouvez consulter l'historique complet sur Teleicare."
+        type="warning"
       ></DsfrAlert>
     </div>
 
