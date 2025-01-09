@@ -1681,7 +1681,7 @@ class TestDeclaredElementsApi(APITestCase):
         ingredient = DeclaredIngredientFactory(declaration=declaration)
 
         response = self.client.get(
-            reverse("api:declared_element", kwargs={"pk": ingredient.id, "type": "ingredient"}), format="json"
+            reverse("api:declared_element", kwargs={"pk": ingredient.id, "type": "other-ingredient"}), format="json"
         )
         body = response.json()
         self.assertEqual(body["id"], ingredient.id)
@@ -1699,7 +1699,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.json()["globalError"],
-            "Unknown type: 'unknown' not in ['plant', 'microorganism', 'substance', 'ingredient']",
+            "Unknown type: 'unknown' not in ['plant', 'microorganism', 'substance', 'other-ingredient']",
         )
 
     def test_get_declared_element_not_allowed_not_authenticated(self):
@@ -1717,7 +1717,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         response = self.client.get(
-            reverse("api:declared_element", kwargs={"pk": 1, "type": "ingredient"}), format="json"
+            reverse("api:declared_element", kwargs={"pk": 1, "type": "other-ingredient"}), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -1737,7 +1737,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         response = self.client.get(
-            reverse("api:declared_element", kwargs={"pk": 1, "type": "ingredient"}), format="json"
+            reverse("api:declared_element", kwargs={"pk": 1, "type": "other-ingredient"}), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -1778,7 +1778,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         response = self.client.get(
-            reverse("api:declared_element_request_info", kwargs={"pk": 1, "type": "ingredient"}), format="json"
+            reverse("api:declared_element_request_info", kwargs={"pk": 1, "type": "other-ingredient"}), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -1818,7 +1818,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         response = self.client.get(
-            reverse("api:declared_element_reject", kwargs={"pk": 1, "type": "ingredient"}), format="json"
+            reverse("api:declared_element_reject", kwargs={"pk": 1, "type": "other-ingredient"}), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
