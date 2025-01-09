@@ -15,13 +15,21 @@ class BlogPostForm(forms.ModelForm):
 @admin.register(BlogPost)
 class BlogPostAdmin(admin.ModelAdmin):
     form = BlogPostForm
-    fields = (
-        "title",
-        "tagline",
-        "display_date",
-        "published",
-        "author",
-        "body",
+    fieldsets = (
+        (
+            "",
+            {
+                "fields": (
+                    "title",
+                    "tagline",
+                    "display_date",
+                    "published",
+                    "author",
+                    "content",
+                )
+            },
+        ),
+        ("Contenu legacy (ne plus utiliser)", {"fields": ("body",)}),
     )
     list_display = (
         "title",

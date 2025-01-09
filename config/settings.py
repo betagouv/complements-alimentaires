@@ -63,6 +63,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "webpack_loader",
     "django_ckeditor_5",
+    "prose",
     "anymail",
     "simple_history",
     "django_extensions",

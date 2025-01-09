@@ -13,7 +13,7 @@
     <h1 class="fr-h4">{{ blogPost.title }}</h1>
     <p class="my-0">{{ author }}</p>
     <p class="fr-text--xs my-0">{{ date }}</p>
-    <div id="content" v-html="blogPost.body" class="text-left"></div>
+    <div id="content" v-html="blogPost.content || blogPost.body" class="text-left"></div>
   </div>
 </template>
 
