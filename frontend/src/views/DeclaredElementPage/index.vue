@@ -20,7 +20,7 @@
                   Veuillez contacter l'équipe Compl'Alim pour effectuer la substitution.
                 </p>
                 <div v-else>
-                  <ManageSynonyms :initialSynonyms="replacement.synonyms" />
+                  <ManageSynonyms :initialSynonyms="replacement.synonyms" :requestElement="element" />
                 </div>
               </div>
               <div v-else>
