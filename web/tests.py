@@ -45,6 +45,8 @@ class DeclarationPdfViewTests:
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_unauthorized_forbidden(self):
+        other_user = UserFactory()
+        self.client.force_login(other_user)
         response = self.client.get(reverse(self.view_name, kwargs={"pk": self.declaration.id}))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
