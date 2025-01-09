@@ -82,9 +82,9 @@ avec `git commit -m 'my message' --no-verify`.
 ### Installation avec docker (_méthode 3_)
 
 ```
-docker compose build
-docker compose up
-docker compose run -rm server bash
+make build
+make run
+make bash
 python manage.py migrate
 ```
 
