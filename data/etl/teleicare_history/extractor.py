@@ -178,8 +178,10 @@ def create_declaration_from_teleicare_history():
             if latest_ica_version_declaration:
                 try:
                     company = Company.objects.get(siccrf_id=ica_complement_alimentaire.etab_id)
-                except Company.DoesNotExist as e:
-                    logger.error(e.message)
+                except Company.DoesNotExist:
+                    logger.error(
+                        f"Cette entreprise avec siccrf_id={ica_complement_alimentaire.etab_id} n'existe pas déjà en base"
+                    )
                     continue
                 declaration = Declaration(
                     siccrf_id=ica_complement_alimentaire.cplalim_ident,
