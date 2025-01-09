@@ -304,6 +304,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     declared_plants = serializers.SerializerMethodField()
     declared_microorganisms = serializers.SerializerMethodField()
     declared_substances = serializers.SerializerMethodField()
+    declared_additives = serializers.SerializerMethodField()
 
     modification_date = serializers.DateTimeField(format="%Y-%m-%d")
 
@@ -327,6 +328,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             "populations",
             "declared_plants",
             "declared_microorganisms",
+            "declared_additives",
             "declared_substances",
             "modification_date",
         )
@@ -403,6 +405,12 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             if declared_substance.substance and declared_substance.quantity and declared_substance.unit
             else {}
             for declared_substance in obj.declared_substances.all()
+        ]
+
+    def get_declared_additives(self, obj):
+        return [
+            str(declared_ingredient.ingredient.name)
+            for declared_ingredient in obj.declared_ingredients.filter(ingredient__ingredient_type=2)
         ]
 
 
