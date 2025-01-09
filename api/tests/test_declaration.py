@@ -1505,24 +1505,28 @@ class TestDeclarationApi(APITestCase):
 
         today = timezone.now()
 
-        declaration_first = AwaitingInstructionDeclarationFactory()
-        snapshot_first = SnapshotFactory(declaration=declaration_first, status=declaration_first.status)
-        snapshot_first.creation_date = today - timedelta(days=1)
-        snapshot_first.save()
+        declaration_less_urgent = AwaitingInstructionDeclarationFactory()
+        snapshot_less_urgent = SnapshotFactory(
+            declaration=declaration_less_urgent, status=declaration_less_urgent.status
+        )
+        snapshot_less_urgent.creation_date = today - timedelta(days=1)
+        snapshot_less_urgent.save()
 
-        declaration_last = AwaitingInstructionDeclarationFactory()
-        snapshot_last = SnapshotFactory(declaration=declaration_last, status=declaration_last.status)
-        snapshot_last.creation_date = today - timedelta(days=10)
-        snapshot_last.save()
+        declaration_more_urgent = AwaitingInstructionDeclarationFactory()
+        snapshot_more_urgent = SnapshotFactory(
+            declaration=declaration_more_urgent, status=declaration_more_urgent.status
+        )
+        snapshot_more_urgent.creation_date = today - timedelta(days=10)
+        snapshot_more_urgent.save()
 
         # Le snapshot du refus de visa ne doit pas affecter la date limite de réponse
-        snapshot_last_visa_refusal = SnapshotFactory(
-            declaration=declaration_last,
-            status=declaration_last.status,
+        snapshot_visa_refusal = SnapshotFactory(
+            declaration=declaration_more_urgent,
+            status=declaration_more_urgent.status,
             action=Snapshot.SnapshotActions.REFUSE_VISA,
         )
-        snapshot_last_visa_refusal.creation_date = today - timedelta(days=1)
-        snapshot_last_visa_refusal.save()
+        snapshot_visa_refusal.creation_date = today - timedelta(days=1)
+        snapshot_visa_refusal.save()
 
         # Triage par date limite d'instruction
         sort_url = f"{reverse('api:list_all_declarations')}?ordering=responseLimitDate"
@@ -1530,8 +1534,8 @@ class TestDeclarationApi(APITestCase):
         results = response.json()["results"]
         self.assertEqual(len(results), 2)
 
-        self.assertEqual(results[0]["id"], declaration_last.id)
-        self.assertEqual(results[1]["id"], declaration_first.id)
+        self.assertEqual(results[0]["id"], declaration_more_urgent.id)
+        self.assertEqual(results[1]["id"], declaration_less_urgent.id)
 
         # Triage par date limite d'instruction inversé
         reverse_sort_url = f"{reverse('api:list_all_declarations')}?ordering=-responseLimitDate"
@@ -1539,8 +1543,8 @@ class TestDeclarationApi(APITestCase):
         results = response.json()["results"]
         self.assertEqual(len(results), 2)
 
-        self.assertEqual(results[0]["id"], declaration_first.id)
-        self.assertEqual(results[1]["id"], declaration_last.id)
+        self.assertEqual(results[0]["id"], declaration_less_urgent.id)
+        self.assertEqual(results[1]["id"], declaration_more_urgent.id)
 
     @authenticate
     def test_update_article(self):
