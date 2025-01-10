@@ -45,7 +45,7 @@ class CompanyContact(models.Model):
     class Meta:
         abstract = True
 
-    phone_number = PhoneNumberField("numéro de téléphone de contact")
+    phone_number = PhoneNumberField("numéro de téléphone de contact", blank=True)
     email = models.EmailField("adresse e-mail de contact", blank=True)
     website = models.CharField("site web de l'entreprise", blank=True)
 
@@ -97,7 +97,9 @@ class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.M
         validators=[validate_siret],
     )
     vat = models.CharField("n° TVA intracommunautaire", unique=True, blank=True, null=True, validators=[validate_vat])
-    activities = MultipleChoiceField(models.CharField(choices=ActivityChoices), verbose_name="activités", default=list)
+    activities = MultipleChoiceField(
+        models.CharField(choices=ActivityChoices), verbose_name="activités", default=list, blank=True
+    )
 
     supervisors = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
@@ -127,7 +129,9 @@ class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.M
             raise ValidationError(
                 "Une entreprise doit avoir un n° de SIRET ou un n°de TVA intracommunautaire (ou les deux)."
             )
-
+        # Au minimum un point de contact nécessaire (hors None ou "")
+        if not ((self.phone_number and self.phone_number.is_valid()) or self.email):
+            raise ValidationError("Une entreprise doit avoir un n° de téléphone ou un e-mail (ou les deux).")
         # Pas de duplication possible des activités
         if len(self.activities) != len(set(self.activities)):
             raise ValidationError("Une entreprise ne peut avoir plusieurs fois la même activité")
