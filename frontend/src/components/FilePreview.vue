@@ -14,7 +14,7 @@
         :required="true"
       />
     </DsfrInputGroup>
-    <div v-else>{{ documentTypes.find((x) => x.value === file.type)?.text }}</div>
+    <div v-else>{{ file.typeDisplay }}</div>
     <div class="flex gap-2">
       <a :href="file.file" target="_blank" class="fr-btn fr-btn--secondary fr-btn--sm inline-flex">
         Ouvrir {{ isPDF ? "PDF" : "image" }}

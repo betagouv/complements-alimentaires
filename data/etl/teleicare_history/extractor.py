@@ -49,7 +49,7 @@ def convert_phone_number(phone_number_to_parse):
     if phone_number_to_parse:
         phone_number = PhoneNumber.from_string(phone_number_to_parse, region="FR")
         return phone_number
-    return None
+    return ""
 
 
 def convert_activities(etab):
@@ -132,9 +132,8 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                 # la etab_date_adhesion n'est pas conservée
             )
             try:
-                new_company.save()
+                new_company.save(fields_with_no_validation=("phone_number"))
                 nb_created_companies += 1
-                logger.info(f"La company {etab.etab_raison_sociale} est créée via les infos TeleIcare.")
             except ValidationError as e:
                 logger.error(f"Impossible de créer la Company à partir du siccrf_id = {etab.etab_ident}: {e}")
 
@@ -208,8 +207,10 @@ def create_declaration_from_teleicare_history():
             if latest_ica_version_declaration:
                 try:
                     company = Company.objects.get(siccrf_id=ica_complement_alimentaire.etab_id)
-                except Company.DoesNotExist as e:
-                    logger.error(e.message)
+                except Company.DoesNotExist:
+                    logger.error(
+                        f"Cette entreprise avec siccrf_id={ica_complement_alimentaire.etab_id} n'existe pas déjà en base"
+                    )
                     continue
                 declaration_creation_date = (
                     convert_str_date(latest_ica_declaration.dcl_date, aware=True)
