@@ -7,6 +7,7 @@ from data.etl.teleicare_history.extractor import match_companies_on_siret_or_vat
 from data.factories.company import CompanyFactory, _make_siret, _make_vat
 from data.factories.teleicare_history import EtablissementFactory
 from data.models.company import Company
+from data.models.declaration import Declaration
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 
 
@@ -90,15 +91,39 @@ class TeleicareHistoryImporterTestCase(TestCase):
         """
 
         etablissement_to_create_as_company = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
-        # ne sera pas créé car le numéro de téléphone est mal formatté
+        # devrait être créée malgré le numéro de téléphone mal formaté
         _ = EtablissementFactory(etab_siret=None, etab_ica_importateur=True, etab_telephone="0345")
         self.assertEqual(Company.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident).count(), 0)
 
         match_companies_on_siret_or_vat(create_if_not_exist=True)
-        self.assertEqual(Company.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident).count(), 1)
+        self.assertTrue(Company.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident).exists())
+        self.assertEqual(Company.objects.exclude(siccrf_id=None).count(), 2)
 
         created_company = Company.objects.get(siccrf_id=etablissement_to_create_as_company.etab_ident)
         self.assertEqual(created_company.siccrf_id, etablissement_to_create_as_company.etab_ident)
         self.assertEqual(created_company.address, etablissement_to_create_as_company.etab_adre_voie)
         self.assertEqual(created_company.postal_code, etablissement_to_create_as_company.etab_adre_cp)
         self.assertEqual(created_company.city, etablissement_to_create_as_company.etab_adre_ville)
+
+    def test_create_declaration(self):
+        """
+        Les déclarations sont créées à partir d'object historiques des modèles Ica_
+        """
+
+        etablissement_to_create_as_company = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
+        # ne sera pas créé car le numéro de téléphone est mal formatté
+        _ = EtablissementFactory(etab_siret=None, etab_ica_importateur=True, etab_telephone="0345")
+        self.assertEqual(
+            Declaration.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident).count(), 0
+        )
+
+        match_companies_on_siret_or_vat(create_if_not_exist=True)
+        self.assertEqual(
+            Declaration.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident).count(), 1
+        )
+
+        created_declaration = Declaration.objects.get(siccrf_id=etablissement_to_create_as_company.etab_ident)
+        self.assertEqual(created_declaration.siccrf_id, etablissement_to_create_as_company.etab_ident)
+        self.assertEqual(created_declaration.address, etablissement_to_create_as_company.etab_adre_voie)
+        self.assertEqual(created_declaration.postal_code, etablissement_to_create_as_company.etab_adre_cp)
+        self.assertEqual(created_declaration.city, etablissement_to_create_as_company.etab_adre_ville)
