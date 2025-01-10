@@ -6,6 +6,7 @@ from django.test import TestCase
 from data.etl.teleicare_history.extractor import match_companies_on_siret_or_vat
 from data.factories.company import CompanyFactory, _make_siret, _make_vat
 from data.factories.teleicare_history import EtablissementFactory
+from data.models.company import Company
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 
 
@@ -49,7 +50,9 @@ class TeleicareHistoryImporterTestCase(TestCase):
         company_with_vat = CompanyFactory(vat=vat)
 
         random_company = CompanyFactory()
-        random_etablissement = EtablissementFactory()
+        random_etablissement = EtablissementFactory(
+            etab_ica_fabricant=True,
+        )
 
         match_companies_on_siret_or_vat()
         company_with_siret.refresh_from_db()
@@ -80,3 +83,22 @@ class TeleicareHistoryImporterTestCase(TestCase):
         mocked_logger.error.assert_called_with(
             "Plusieurs Etablissement provenant de Teleicare ont le même n° TVA, ce qui rend le matching avec une Company Compl'Alim incertain."
         )
+
+    def test_create_new_companies(self):
+        """
+        Si une entreprise enregistrée dans TeleIcare n'existe pas encore dans Compl'Alim, elle est créée
+        """
+
+        etablissement_to_create_as_company = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
+        # ne sera pas créé car le numéro de téléphone est mal formatté
+        _ = EtablissementFactory(etab_siret=None, etab_ica_importateur=True, etab_telephone="0345")
+        self.assertEqual(Company.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident).count(), 0)
+
+        match_companies_on_siret_or_vat(create_if_not_exist=True)
+        self.assertEqual(Company.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident).count(), 1)
+
+        created_company = Company.objects.get(siccrf_id=etablissement_to_create_as_company.etab_ident)
+        self.assertEqual(created_company.siccrf_id, etablissement_to_create_as_company.etab_ident)
+        self.assertEqual(created_company.address, etablissement_to_create_as_company.etab_adre_voie)
+        self.assertEqual(created_company.postal_code, etablissement_to_create_as_company.etab_adre_cp)
+        self.assertEqual(created_company.city, etablissement_to_create_as_company.etab_adre_ville)

@@ -8,11 +8,18 @@ from django.db import models
 
 from .ica_etablissement import IcaEtablissement
 
+# Les etablissements en lien avec ces 3 modèles peuvent être tous différents (cas rare) ou tous les mêmes
+# * entreprise responsable de l'étiquetage du modèle IcaComplementAlimentaire
+# * entreprise télédéclarante du modèle IcaVersionDeclaration
+# * entreprise gestionnaire du modèle IcaDeclaration
+
 
 class IcaComplementAlimentaire(models.Model):
     cplalim_ident = models.IntegerField(primary_key=True)
     frmgal_ident = models.IntegerField(blank=True, null=True)
-    etab = models.ForeignKey(IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident")
+    etab = models.ForeignKey(
+        IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident"
+    )  # correspond à l'entreprise responsable de l'étiquetage
     cplalim_marque = models.TextField(blank=True, null=True)
     cplalim_gamme = models.TextField(blank=True, null=True)
     cplalim_nom = models.TextField()
@@ -25,12 +32,13 @@ class IcaComplementAlimentaire(models.Model):
 
 
 class IcaDeclaration(models.Model):
+    # dcl_ident et cplalim_ident ne sont pas égaux
     dcl_ident = models.IntegerField(primary_key=True)
     cplalim = models.ForeignKey(IcaComplementAlimentaire, on_delete=models.CASCADE, db_column="cplalim_ident")
     tydcl_ident = models.IntegerField()
     etab = models.ForeignKey(
         IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident"
-    )  # duplique la foreign key vers l'établissement présente dans le CA
+    )  # correspond à l'entreprise gestionnaire de la déclaration
     etab_ident_rmm_declarant = models.IntegerField()
     dcl_date = models.TextField()
     dcl_saisie_administration = models.BooleanField()
@@ -52,12 +60,12 @@ class IcaVersionDeclaration(models.Model):
     pays_ident_adre = models.IntegerField(blank=True, null=True)
     etab = models.ForeignKey(
         IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident"
-    )  # duplique la foreign key vers l'établissement présente dans le CA
+    )  # correspond à l'entreprise télédéclarante
     ex_ident = models.IntegerField()
     pays_ident_pays_de_reference = models.IntegerField(blank=True, null=True)
     dcl = models.ForeignKey(
         IcaDeclaration, on_delete=models.CASCADE, db_column="dcl_ident"
-    )  # duplique la foreign key vers l'établissement présente dans la decla
+    )  # dcl_ident est aussi une foreign_key vers IcaComplementAlimentaire
     stattdcl_ident = models.IntegerField(blank=True, null=True)
     stadcl_ident = models.IntegerField(blank=True, null=True)
     vrsdecl_numero = models.IntegerField()

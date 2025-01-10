@@ -45,8 +45,8 @@ class CompanyContact(models.Model):
     class Meta:
         abstract = True
 
-    phone_number = PhoneNumberField("numéro de téléphone de contact")
-    email = models.EmailField("adresse e-mail de contact")
+    phone_number = PhoneNumberField("numéro de téléphone de contact", blank=True)
+    email = models.EmailField("adresse e-mail de contact", blank=True)
     website = models.CharField("site web de l'entreprise", blank=True)
 
 
@@ -74,7 +74,10 @@ class TeleicareCompany(models.Model):
         editable=False,
         db_index=True,
         unique=True,
-        verbose_name="id dans les tables et tables relationnelles SICCRF",
+        verbose_name="etab_ident dans le modèle IcaEtablissement SICCRF",
+    )
+    matched = models.BooleanField(
+        default=False, verbose_name="La Company Compl'Alim a été matchée avec un Etablissement TeleIcare"
     )
 
 
@@ -83,7 +86,7 @@ class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.M
         verbose_name = "entreprise"
 
     social_name = models.CharField("dénomination sociale")
-    commercial_name = models.CharField("enseigne", help_text="nom commercial")
+    commercial_name = models.CharField("enseigne", blank=True, help_text="nom commercial")
     # null=True permet de gérer en parralèle le unique=True
     siret = models.CharField(
         "n° SIRET",
@@ -94,7 +97,9 @@ class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.M
         validators=[validate_siret],
     )
     vat = models.CharField("n° TVA intracommunautaire", unique=True, blank=True, null=True, validators=[validate_vat])
-    activities = MultipleChoiceField(models.CharField(choices=ActivityChoices), verbose_name="activités", default=list)
+    activities = MultipleChoiceField(
+        models.CharField(choices=ActivityChoices), verbose_name="activités", default=list, blank=True
+    )
 
     supervisors = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
@@ -124,7 +129,9 @@ class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.M
             raise ValidationError(
                 "Une entreprise doit avoir un n° de SIRET ou un n°de TVA intracommunautaire (ou les deux)."
             )
-
+        # Au minimum un point de contact nécessaire (hors None ou "")
+        if not ((self.phone_number and self.phone_number.is_valid()) or self.email):
+            raise ValidationError("Une entreprise doit avoir un n° de téléphone ou un e-mail (ou les deux).")
         # Pas de duplication possible des activités
         if len(self.activities) != len(set(self.activities)):
             raise ValidationError("Une entreprise ne peut avoir plusieurs fois la même activité")

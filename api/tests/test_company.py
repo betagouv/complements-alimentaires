@@ -178,7 +178,7 @@ class TestUpdateCompany(ProjectAPITestCase):
 
     def test_update_company_ko_bad_data(self):
         self.login(self.supervisor)
-        self.payload["email"] = ""
+        self.payload["phone_number"] = ""
         response = self.put(self.url(pk=self.company.id), self.payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
