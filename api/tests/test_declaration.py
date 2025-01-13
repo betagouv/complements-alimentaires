@@ -1926,5 +1926,5 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
         plant.refresh_from_db()
         self.assertEqual(plant.plantsynonym_set.count(), 2)
-        self.assertTrue(plant.plantsynonym_set.get(name="New synonym").exists())
+        self.assertIsNotNone(plant.plantsynonym_set.get(name="New synonym"))
         self.assertEqual(plant.plantsynonym_set.get(id=synonym.id).name, synonym.name)
