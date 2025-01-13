@@ -5,7 +5,8 @@ import factory
 import faker
 
 from phonenumber_field.phonenumber import PhoneNumber
-from datetime import datetime
+from datetime import datetime, timedelta
+from random import randrange
 
 from data.choices import CountryChoices
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
@@ -16,6 +17,16 @@ from data.models.teleicare_history.ica_declaration import (
 )
 from data.utils.string_utils import make_random_str
 from data.factories.company import _make_siret, _make_vat, _make_phone_number
+
+
+def random_date(start, end=datetime.now()):
+    """
+    Retourne une date random entre une date de début et une date de fin
+    """
+    delta = end - start
+    int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
+    random_second = randrange(int_delta)
+    return start + timedelta(seconds=random_second)
 
 
 class EtablissementFactory(factory.django.DjangoModelFactory):
@@ -60,9 +71,9 @@ class DeclarationFactory(factory.django.DjangoModelFactory):
     tydcl_ident = factory.Faker("pyint", min_value=0, max_value=20)
     etab = factory.SubFactory(EtablissementFactory)
     etab_ident_rmm_declarant = factory.Faker("pyint", min_value=0, max_value=20)
-    dcl_date = datetime.strftime(factory.Faker("date_time"), "%m/%d/%Y %H:%M:%S %p")
+    dcl_date = datetime.strftime(random_date(start=datetime(2016, 1, 1)), "%m/%d/%Y %H:%M:%S %p")
     dcl_date_fin_commercialisation = factory.LazyFunction(
-        lambda: datetime.strftime(factory.Faker("date_time"), "%m/%d/%Y %H:%M:%S %p")
+        lambda: datetime.strftime(random_date(start=datetime(2016, 1, 1)), "%m/%d/%Y %H:%M:%S %p")
         if random.random() > 0.3
         else None
     )
@@ -87,7 +98,7 @@ class VersionDeclarationFactory(factory.django.DjangoModelFactory):
     vrsdecl_mise_en_garde = factory.Faker("text", max_nb_chars=20)
     vrsdecl_durabilite = factory.Faker("pyint", min_value=0, max_value=8)
     vrsdecl_mode_emploi = factory.Faker("text", max_nb_chars=20)
-    vrsdecl_djr = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_djr = factory.fuzzy.FuzzyText(length=4, chars=string.ascii_uppercase + string.digits)
     vrsdecl_conditionnement = factory.Faker("text", max_nb_chars=20)
     vrsdecl_poids_uc = factory.Faker("pyfloat")
     vrsdecl_forme_galenique_autre = factory.Faker("text", max_nb_chars=20)

@@ -41,10 +41,10 @@ class IcaDeclaration(models.Model):
     )  # correspond à l'entreprise gestionnaire de la déclaration
     etab_ident_rmm_declarant = models.IntegerField()
     dcl_date = models.TextField()
-    dcl_saisie_administration = models.BooleanField()
-    dcl_annee = models.IntegerField()
-    dcl_mois = models.IntegerField()
-    dcl_numero = models.IntegerField()
+    dcl_saisie_administration = models.BooleanField(null=True)  # rendu nullable pour simplifier les Factories
+    dcl_annee = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
+    dcl_mois = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
+    dcl_numero = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
     dcl_date_fin_commercialisation = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -55,20 +55,20 @@ class IcaDeclaration(models.Model):
 class IcaVersionDeclaration(models.Model):
     vrsdecl_ident = models.IntegerField(primary_key=True)
     ag_ident = models.IntegerField(blank=True, null=True)
-    typvrs_ident = models.IntegerField()
+    typvrs_ident = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
     unt_ident = models.IntegerField(blank=True, null=True)
     pays_ident_adre = models.IntegerField(blank=True, null=True)
     etab = models.ForeignKey(
         IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident"
     )  # correspond à l'entreprise télédéclarante
-    ex_ident = models.IntegerField()
+    ex_ident = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
     pays_ident_pays_de_reference = models.IntegerField(blank=True, null=True)
     dcl = models.ForeignKey(
         IcaDeclaration, on_delete=models.CASCADE, db_column="dcl_ident"
     )  # dcl_ident est aussi une foreign_key vers IcaComplementAlimentaire
     stattdcl_ident = models.IntegerField(blank=True, null=True)
     stadcl_ident = models.IntegerField(blank=True, null=True)
-    vrsdecl_numero = models.IntegerField()
+    vrsdecl_numero = models.IntegerField(null=True)
     vrsdecl_commentaires = models.TextField(blank=True, null=True)
     vrsdecl_mise_en_garde = models.TextField(blank=True, null=True)
     vrsdecl_durabilite = models.IntegerField(blank=True, null=True)
@@ -80,9 +80,9 @@ class IcaVersionDeclaration(models.Model):
     vrsdecl_date_limite_reponse_pro = models.TextField(blank=True, null=True)
     vrsdecl_observations_ac = models.TextField(blank=True, null=True)
     vrsdecl_observations_pro = models.TextField(blank=True, null=True)
-    vrsdecl_mode_json = models.BooleanField()
+    vrsdecl_mode_json = models.BooleanField(null=True)  # rendu nullable pour simplifier les Factories
     vrsdecl_numero_dossiel = models.TextField(blank=True, null=True)
-    vrsdecl_mode_sans_verif = models.BooleanField()
+    vrsdecl_mode_sans_verif = models.BooleanField(null=True)  # rendu nullable pour simplifier les Factories
     vrsdecl_adre_ville = models.TextField(blank=True, null=True)
     vrsdecl_adre_cp = models.TextField(blank=True, null=True)
     vrsdecl_adre_voie = models.TextField(blank=True, null=True)
