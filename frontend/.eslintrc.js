@@ -20,6 +20,7 @@ module.exports = {
     "vue/no-multiple-template-root": "off",
     // Change some errors to warning only, to not prevent development
     "no-unused-vars": 1,
+    "prettier/prettier": ["error", { semi: false }],
   },
   plugins: ["prettier"],
 
