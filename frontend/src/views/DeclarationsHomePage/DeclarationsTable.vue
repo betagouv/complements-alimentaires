@@ -23,7 +23,7 @@ const emit = defineEmits("open")
 // Les données pour la table
 const headers = computed(() => {
   if (useShortTable.value) return ["Nom", "État"]
-  return ["ID", "", "Nom du produit", "Entreprise", "Déclarant·e", "État", "Date de modification", ""]
+  return ["ID", "Nom du produit", "Entreprise", "Déclarant·e", "État", "Date de modification", ""]
 })
 
 const rows = computed(() => {
@@ -38,14 +38,15 @@ const rows = computed(() => {
 
   return props.data.results.map((d) => ({
     rowData: [
-      d.id,
       d.declaredInTeleicare
         ? {
             component: "DsfrBadge",
-            label: "Déclaration soumise sur Teleicare",
+            label: "issue de Teleicare",
             type: "info",
+            small: true,
+            noIcon: true,
           }
-        : "",
+        : d.id,
       {
         component: "router-link",
         text: d.name,
@@ -60,11 +61,13 @@ const rows = computed(() => {
       d.author ? `${d.author.firstName} ${d.author.lastName}` : "",
       getStatusTagForCell(d.status, true),
       timeAgo(d.modificationDate),
-      {
-        component: "router-link",
-        text: "Dupliquer",
-        to: { name: "NewDeclaration", query: { duplicate: d.id } },
-      },
+      d.declaredInTeleicare
+        ? ""
+        : {
+            component: "router-link",
+            text: "Dupliquer",
+            to: { name: "NewDeclaration", query: { duplicate: d.id } },
+          },
     ],
   }))
 })

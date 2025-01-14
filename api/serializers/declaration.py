@@ -272,6 +272,8 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
+            "siccrf_id",
+            "declared_in_teleicare",
             "status",
             "author",
             "company",
@@ -441,6 +443,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
+            "declared_in_teleicare",
             "article",
             "status",
             "author",

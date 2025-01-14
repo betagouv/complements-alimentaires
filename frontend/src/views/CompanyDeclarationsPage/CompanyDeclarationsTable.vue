@@ -22,7 +22,15 @@ const headers = ["ID", "Nom du produit", "Entreprise", "Auteur", "État", "Date 
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
-      x.id,
+      x.declaredInTeleicare
+        ? {
+            component: "DsfrBadge",
+            label: "issue de Teleicare",
+            type: "info",
+            small: true,
+            noIcon: true,
+          }
+        : x.id,
       {
         component: "router-link",
         text: x.name,

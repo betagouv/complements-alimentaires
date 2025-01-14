@@ -13,16 +13,8 @@
         @click="createNewDeclaration"
       />
     </div>
-    <div class="mb-4">
-      <DsfrAlert
-        size="sm"
-        title="Historique des déclarations soumises sur Teleicare"
-        description="Les produits que vous avez déjà déclarés sur Téléicare sont en cours d'importation grâce à une correspondance basée sur les SIRET et les numéros de TVA intracommunautaire.
-        Certaines informations apparaissent de manière incomplète dans vos historiques (la composition des produits, l'étiquettage, l'attestation ne sont pas encore disponibles).
-        En attendant, vous pouvez accéder à l'historique complet directement sur Téléicare."
-        type="warning"
-      ></DsfrAlert>
-    </div>
+
+    <HistoryAlert />
 
     <div class="border px-4 pt-4 mb-2 sm:flex gap-8 items-baseline filters">
       <DsfrFieldset class="!mb-0">
@@ -93,6 +85,7 @@ import { storeToRefs } from "pinia"
 import { getPagesForPagination } from "@/utils/components"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import StatusFilter from "@/components/StatusFilter"
+import HistoryAlert from "@/components/HistoryAlert.vue"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)

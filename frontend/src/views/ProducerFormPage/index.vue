@@ -15,11 +15,31 @@
     </div>
 
     <div v-else class="mb-4">
-      <DeclarationAlert v-if="payload" role="declarant" :declaration="payload" :snapshots="snapshots" class="mb-4" />
+      <DsfrAlert
+        v-if="payload.declaredInTeleicare"
+        type="warning"
+        class="mb-4"
+        title="Cette déclaration est issue de l'historique Teleicare"
+      >
+        <p>L'import de l'historique est en cours. Les informations suivantes arriveront bientôt :</p>
+        <ul>
+          <li>la composition</li>
+          <li>les entreprises mandantes s'il y en a</li>
+          <li>l'étiquettage</li>
+          <li>l'attestation</li>
+        </ul>
+      </DsfrAlert>
+      <DeclarationAlert
+        v-else-if="payload"
+        role="declarant"
+        :declaration="payload"
+        :snapshots="snapshots"
+        class="mb-4"
+      />
 
       <DsfrAlert
         class="mb-4"
-        v-if="payload.id && !payload.author"
+        v-if="payload.id && !payload.author && !payload.declaredInTeleicare"
         type="info"
         title="Cette déclaration n'est gérée par personne"
       >
@@ -28,7 +48,7 @@
       </DsfrAlert>
       <DsfrAlert
         class="mb-4"
-        v-else-if="payload.author && payload.author !== loggedUser.id"
+        v-else-if="payload.author && payload.author !== loggedUser.id && !payload.declaredInTeleicare"
         type="info"
         title="Cette déclaration est gérée par une autre personne"
       >
