@@ -1927,29 +1927,6 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(declared_plant.plant, plant)
 
     @authenticate
-    def test_cannot_replace_element_different_type(self):
-        """
-        Pour reduire le scope de changements, temporairement bloque le remplacement d'une demande
-        avec un element d'un type different
-        """
-        InstructionRoleFactory(user=authenticate.user)
-
-        declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration)
-        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
-        microorganism = MicroorganismFactory()
-
-        response = self.client.post(
-            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
-            {"element": {"id": microorganism.id, "type": "microorganism"}},
-            format="json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response.json())
-        declared_plant.refresh_from_db()
-        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
-        self.assertNotEqual(declared_plant.plant, microorganism)
-
-    @authenticate
     def test_can_replace_request_with_different_type(self):
         """
         Ce devrait être possible de remplacer une demande avec un element
@@ -1958,7 +1935,7 @@ class TestDeclaredElementsApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration)
+        declared_plant = DeclaredPlantFactory(declaration=declaration, new_description="Test description")
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
         microorganism = MicroorganismFactory()
 
@@ -1976,11 +1953,15 @@ class TestDeclaredElementsApi(APITestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
-        self.assertEqual(DeclaredPlant.objects.count(), 0)
+        with self.assertRaises(DeclaredPlant.DoesNotExist):
+            DeclaredPlant.objects.get(id=declared_plant.id)
         self.assertEqual(DeclaredMicroorganism.objects.count(), 1)
         declared_microorganism = DeclaredMicroorganism.objects.get(declaration=declaration)
         self.assertEqual(declared_microorganism.microorganism, microorganism)
+        # test new fields saved
         self.assertEqual(declared_microorganism.new_species, "Test species")
         self.assertEqual(declared_microorganism.new_genre, "Test genre")
         self.assertEqual(declared_microorganism.strain, "Test strain")
         self.assertEqual(declared_microorganism.activated, False)
+        # test old fields copied over
+        self.assertEqual(declared_microorganism.new_description, "Test description")

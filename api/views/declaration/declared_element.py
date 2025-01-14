@@ -54,41 +54,42 @@ class DeclaredElementsView(ListAPIView):
         )
 
 
-class ElementMappingMixin:
-    type_mapping = {
-        "plant": {
-            "model": DeclaredPlant,
-            "element_model": Plant,
-            "serializer": DeclaredPlantSerializer,
-        },
-        "microorganism": {
-            "model": DeclaredMicroorganism,
-            "element_model": Microorganism,
-            "serializer": DeclaredMicroorganismSerializer,
-        },
-        "substance": {
-            "model": DeclaredSubstance,
-            "element_model": Substance,
-            "serializer": DeclaredSubstanceSerializer,
-        },
-        "other-ingredient": {
-            "model": DeclaredIngredient,
-            "element_model": Ingredient,
-            "serializer": DeclaredIngredientSerializer,
-        },
-    }
+TYPE_MAPPING = {
+    "plant": {
+        "model": DeclaredPlant,
+        "element_model": Plant,
+        "serializer": DeclaredPlantSerializer,
+    },
+    "microorganism": {
+        "model": DeclaredMicroorganism,
+        "element_model": Microorganism,
+        "serializer": DeclaredMicroorganismSerializer,
+    },
+    "substance": {
+        "model": DeclaredSubstance,
+        "element_model": Substance,
+        "serializer": DeclaredSubstanceSerializer,
+    },
+    "other-ingredient": {
+        "model": DeclaredIngredient,
+        "element_model": Ingredient,
+        "serializer": DeclaredIngredientSerializer,
+    },
+}
 
+
+class ElementMappingMixin:
     @property
     def element_type(self):
         return self.kwargs["type"]
 
     @property
     def type_info(self):
-        if self.element_type not in self.type_mapping:
-            valid_type_list = list(self.type_mapping.keys())
+        if self.element_type not in TYPE_MAPPING:
+            valid_type_list = list(TYPE_MAPPING.keys())
             raise ParseError(detail=f"Unknown type: '{self.element_type}' not in {valid_type_list}")
 
-        return self.type_mapping[self.element_type]
+        return TYPE_MAPPING[self.element_type]
 
     @property
     def type_model(self):
@@ -120,10 +121,10 @@ class DeclaredElementActionAbstractView(APIView, ElementMappingMixin):
     def post(self, request, pk, type):
         element = get_object_or_404(self.type_model, pk=pk)
 
-        self._update_element(element, request)
-        element.save()
+        element_to_save = self._update_element(element, request)
+        element_to_save.save()
 
-        return Response(self.type_serializer(element, context={"request": request}).data)
+        return Response(self.type_serializer(element_to_save, context={"request": request}).data)
 
     @abc.abstractmethod
     def _update_element(self, element, request):
@@ -134,12 +135,14 @@ class DeclaredElementRequestInfoView(DeclaredElementActionAbstractView):
     def _update_element(self, element, request):
         element.request_status = self.type_model.AddableStatus.INFORMATION
         element.request_private_notes = request.data.get("request_private_notes")
+        return element
 
 
 class DeclaredElementRejectView(DeclaredElementActionAbstractView):
     def _update_element(self, element, request):
         element.request_status = self.type_model.AddableStatus.REJECTED
         element.request_private_notes = request.data.get("request_private_notes")
+        return element
 
 
 class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
@@ -150,14 +153,32 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
         except KeyError:
             raise ParseError(detail="Must provide a dict 'element' with id and type")
 
-        if existing_element_type != self.element_type:
-            raise ParseError(detail="Cannot replace element request with existing element of a different type")
+        new_type = TYPE_MAPPING[existing_element_type]
+        existing_element_model = new_type["element_model"]
 
         try:
-            existing_element = self.element_model.objects.get(pk=existing_element_id)
-        except self.element_model.DoesNotExist:
+            existing_element = existing_element_model.objects.get(pk=existing_element_id)
+        except existing_element_model.DoesNotExist:
             raise ParseError(detail=f"No {self.element_type} exists with id {existing_element_id}")
 
-        setattr(element, self.element_type, existing_element)
+        if existing_element_type != self.element_type:
+            additional_fields = request.data.get("additional_fields", {})
+            existing_declaration_model = new_type["model"]
+            old_fields = [field.name for field in self.type_model._meta.get_fields()]
+            new_fields = [field.name for field in existing_declaration_model._meta.get_fields()]
+            same_fields = set(old_fields).intersection(set(new_fields))
+
+            new_declared_element_fields = additional_fields
+            for field in same_fields:
+                new_declared_element_fields[field] = getattr(element, field)
+            new_declared_element_fields[existing_element_type] = existing_element
+
+            new_element = existing_declaration_model(**new_declared_element_fields)
+            element.delete()
+            element = new_element
+            element.full_clean()
+        else:
+            setattr(element, self.element_type, existing_element)
         element.request_status = self.type_model.AddableStatus.REPLACED
         element.new = False
+        return element
