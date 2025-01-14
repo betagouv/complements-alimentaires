@@ -35,6 +35,7 @@ import ContactForm from "@/views/ContactForm"
 import CompliancePage from "@/views/CompliancePage"
 import DeclaredElementPage from "@/views/DeclaredElementPage"
 import MandatedCompaniesPage from "@/views/MandatedCompaniesPage"
+import FaqPage from "@/views/FaqPage"
 import { ref } from "vue"
 
 const routes = [
@@ -370,6 +371,14 @@ const routes = [
     component: CompliancePage,
     meta: {
       title: "Conformité au droit alimentaire",
+    },
+  },
+  {
+    path: "/faq",
+    name: "FaqPage",
+    component: FaqPage,
+    meta: {
+      title: "Foire aux questions",
     },
   },
   {

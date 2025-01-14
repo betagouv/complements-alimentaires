@@ -40,6 +40,10 @@ const navItems = [
     to: "/blog",
     text: "Ressources",
   },
+  {
+    to: "/faq",
+    text: "FAQ",
+  },
 ]
 const loggedOnlyNavItems = [
   {
