@@ -3,12 +3,30 @@ import string
 
 import factory
 import faker
+
 from phonenumber_field.phonenumber import PhoneNumber
+from datetime import datetime, timedelta
+from random import randrange
 
 from data.choices import CountryChoices
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
+from data.models.teleicare_history.ica_declaration import (
+    IcaComplementAlimentaire,
+    IcaDeclaration,
+    IcaVersionDeclaration,
+)
 from data.utils.string_utils import make_random_str
 from data.factories.company import _make_siret, _make_vat, _make_phone_number
+
+
+def random_date(start, end=datetime.now()):
+    """
+    Retourne une date random entre une date de début et une date de fin
+    """
+    delta = end - start
+    int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
+    random_second = randrange(int_delta)
+    return start + timedelta(seconds=random_second)
 
 
 class EtablissementFactory(factory.django.DjangoModelFactory):
@@ -28,3 +46,71 @@ class EtablissementFactory(factory.django.DjangoModelFactory):
     etab_adre_ville = factory.Faker("city", locale="FR")
     etab_adre_cp = factory.Faker("postcode", locale="FR")
     etab_adre_voie = factory.Faker("street_address", locale="FR")
+
+
+class ComplementAlimentaireFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = IcaComplementAlimentaire
+
+    cplalim_ident = factory.Sequence(lambda n: n + 1)
+    frmgal_ident = factory.Faker("pyint", min_value=0, max_value=20)
+    etab = factory.SubFactory(EtablissementFactory)
+    cplalim_marque = factory.Faker("text", max_nb_chars=20)
+    cplalim_gamme = factory.Faker("text", max_nb_chars=20)
+    cplalim_nom = factory.Faker("text", max_nb_chars=20)
+    dclencours_gout_arome_parfum = factory.Faker("text", max_nb_chars=20)
+    cplalim_forme_galenique_autre = factory.Faker("text", max_nb_chars=20)
+
+
+class DeclarationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = IcaDeclaration
+
+    dcl_ident = factory.Sequence(lambda n: n + 1)
+    cplalim = factory.SubFactory(ComplementAlimentaireFactory)
+    tydcl_ident = factory.Faker("pyint", min_value=0, max_value=20)
+    etab = factory.SubFactory(EtablissementFactory)
+    etab_ident_rmm_declarant = factory.Faker("pyint", min_value=0, max_value=20)
+    dcl_date = datetime.strftime(random_date(start=datetime(2016, 1, 1)), "%m/%d/%Y %H:%M:%S %p")
+    dcl_date_fin_commercialisation = factory.LazyFunction(
+        lambda: datetime.strftime(random_date(start=datetime(2016, 1, 1)), "%m/%d/%Y %H:%M:%S %p")
+        if random.random() > 0.3
+        else None
+    )
+
+
+class VersionDeclarationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = IcaVersionDeclaration
+
+    vrsdecl_ident = factory.Sequence(lambda n: n + 1)
+    ag_ident = factory.Faker("pyint", min_value=0, max_value=20)
+    typvrs_ident = factory.Faker("pyint", min_value=0, max_value=20)
+    unt_ident = factory.Faker("pyint", min_value=0, max_value=20)
+    pays_ident_adre = factory.Faker("pyint", min_value=0, max_value=8)
+    etab = factory.SubFactory(EtablissementFactory)
+    pays_ident_pays_de_reference = factory.Faker("pyint", min_value=0, max_value=8)
+    dcl = factory.SubFactory(DeclarationFactory)
+    stattdcl_ident = factory.Faker("pyint", min_value=0, max_value=8)
+    stadcl_ident = factory.Faker("pyint", min_value=0, max_value=8)
+    vrsdecl_numero = factory.Faker("pyint", min_value=0, max_value=20)
+    vrsdecl_commentaires = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_mise_en_garde = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_durabilite = factory.Faker("pyint", min_value=0, max_value=8)
+    vrsdecl_mode_emploi = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_djr = factory.fuzzy.FuzzyText(length=4, chars=string.ascii_uppercase + string.digits)
+    vrsdecl_conditionnement = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_poids_uc = factory.Faker("pyfloat")
+    vrsdecl_forme_galenique_autre = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_date_limite_reponse_pro = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_observations_ac = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_observations_pro = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_numero_dossiel = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_adre_ville = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_adre_cp = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_adre_voie = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_adre_comp = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_adre_comp2 = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_adre_dist = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_adre_region = factory.Faker("text", max_nb_chars=20)
+    vrsdecl_adre_raison_sociale = factory.Faker("text", max_nb_chars=20)
