@@ -43,11 +43,11 @@ export const transformArrayByColumn = (arr, numberOfColumns) => {
   Utile pour l'affichage des checkboxes dans des grilles de colonnes.
   */
   const result = []
-  const numRows = Math.ceil(arr.length / numberOfColumns)
+  const numberOfRows = Math.ceil(arr.length / numberOfColumns)
 
-  for (let row = 0; row < numRows; row++) {
+  for (let row = 0; row < numberOfRows; row++) {
     for (let col = 0; col < numberOfColumns; col++) {
-      const index = col * numRows + row
+      const index = col * numberOfRows + row
       if (index < arr.length) result.push(arr[index])
     }
   }
