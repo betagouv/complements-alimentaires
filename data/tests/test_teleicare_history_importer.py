@@ -36,8 +36,8 @@ class TeleicareHistoryImporterTestCase(TestCase):
         Adapted from: https://stackoverflow.com/a/49800437
         """
         super().setUp()
-        with connection.schema_editor() as schema_editor:
-            for table in [IcaEtablissement, IcaComplementAlimentaire, IcaDeclaration, IcaVersionDeclaration]:
+        for table in [IcaEtablissement, IcaComplementAlimentaire, IcaDeclaration, IcaVersionDeclaration]:
+            with connection.schema_editor() as schema_editor:
                 schema_editor.create_model(table)
 
                 if table._meta.db_table not in connection.introspection.table_names():
@@ -46,11 +46,15 @@ class TeleicareHistoryImporterTestCase(TestCase):
                     )
 
     def tearDown(self):
-        super().tearDown()
-
-        with connection.schema_editor() as schema_editor:
-            for table in [IcaEtablissement, IcaComplementAlimentaire, IcaDeclaration, IcaVersionDeclaration]:
-                schema_editor.delete_model(table)
+        # super().tearDown()
+        for table in [IcaVersionDeclaration, IcaComplementAlimentaire, IcaDeclaration, IcaEtablissement]:
+            for table_item in table.objects.all():
+                table_item.delete()
+            # la suppression des modèles fail avec l'erreur
+            # django.db.utils.OperationalError: cannot DROP TABLE "ica_versiondeclaration" because it has pending trigger events
+            # même avec un sleep(15)
+            # with connection.schema_editor() as schema_editor:
+            # schema_editor.delete_model(table)
 
     def test_match_companies_on_siret_or_vat(self):
         """
@@ -120,7 +124,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
         self.assertEqual(created_company.postal_code, etablissement_to_create_as_company.etab_adre_cp)
         self.assertEqual(created_company.city, etablissement_to_create_as_company.etab_adre_ville)
 
-    def test_create_declaration(self):
+    def test_create_declaration_from_history(self):
         """
         Les déclarations sont créées à partir d'object historiques des modèles Ica_
         """
