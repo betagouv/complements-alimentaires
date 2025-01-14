@@ -17,7 +17,9 @@
       <DsfrAlert
         size="sm"
         title="Historique des déclarations soumises sur Teleicare"
-        description="Les produits que vous avez déjà déclarés sur Teleicare sont en cours d'import grâce à une correspondance entre les SIRET/n° TVA intracommunautaire. Il est possible que vous retrouviez des informations partielles sur vos historiques (pas de composition pour le moment). En attendant, vous pouvez consulter l'historique complet sur Teleicare."
+        description="Les produits que vous avez déjà déclarés sur Téléicare sont en cours d'importation grâce à une correspondance basée sur les SIRET et les numéros de TVA intracommunautaire.
+        Certaines informations apparaissent de manière incomplète dans vos historiques (la composition des produits, l'étiquettage, l'attestation ne sont pas encore disponibles).
+        En attendant, vous pouvez accéder à l'historique complet directement sur Téléicare."
         type="warning"
       ></DsfrAlert>
     </div>
