@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from data.models import Population
 
 
@@ -11,5 +12,6 @@ class PopulationSerializer(serializers.ModelSerializer):
             "is_obsolete",
             "min_age",
             "max_age",
+            "category",
         ]
         read_only_fields = fields

@@ -254,6 +254,14 @@ export const authorizationModesMapping = {
   EU: "Autorisé dans un État membre de l'UE ou EEE",
 }
 
+export const populationCategoriesMapping = {
+  AGE: "Âge",
+  MEDICAL: "Conditions médicales spécifiques",
+  PREGNANCY: "Grossesse et allaitement",
+  MEDICAMENTS: "Interactions médicamenteuses",
+  OTHER: "Autres",
+}
+
 export const getAuthorizationModeInFrench = (type) => {
   return authorizationModesMapping[type] || null
 }

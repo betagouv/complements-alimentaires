@@ -143,23 +143,7 @@
       <DsfrInput v-model="payload.instructions" label-visible label="Mode d'emploi" />
     </DsfrInputGroup>
     <SectionTitle title="Populations cibles et à risque" class="!mt-10" sizeTag="h6" icon="ri-file-user-fill" />
-    <DsfrFieldset legend="Population cible" legendClass="fr-label">
-      <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
-        <div
-          v-for="population in orderedPopulations"
-          :key="`effect-${population.id}`"
-          class="flex col-span-6 sm:col-span-3 lg:col-span-2"
-        >
-          <input
-            :id="`population-${population.id}`"
-            type="checkbox"
-            v-model="payload.populations"
-            :value="population.id"
-          />
-          <label :for="`population-${population.id}`" class="fr-label ml-2">{{ population.name }}</label>
-        </div>
-      </div>
-    </DsfrFieldset>
+    <PopulationsCheckboxes v-model="payload.populations" :populations="populations" />
 
     <DsfrFieldset
       legend="Population à risque, facteurs de risque"
@@ -261,6 +245,7 @@ import OtherChoiceField from "@/components/fields/OtherChoiceField"
 import SectionTitle from "@/components/SectionTitle"
 import NumberField from "@/components/NumberField"
 import { useWindowSize } from "@vueuse/core"
+import PopulationsCheckboxes from "./PopulationsCheckboxes"
 
 const { width } = useWindowSize()
 const payload = defineModel()
@@ -353,18 +338,12 @@ const numberOfColumns = ref()
 watch(
   width,
   () => {
-    const checkboxColumnNumbers = {
-      sm: 1,
-      md: 2,
-      lg: 2,
-      xl: 3,
-    }
+    const checkboxColumnNumbers = { sm: 1, md: 2, lg: 2, xl: 3 }
     numberOfColumns.value = checkboxColumnNumbers[getCurrentBreakpoint()] || 1
   },
   { immediate: true }
 )
 
-const orderedPopulations = computed(() => transformArrayByColumn(populations.value, numberOfColumns.value))
 const orderedConditions = computed(() => transformArrayByColumn(conditions.value, numberOfColumns.value))
 const orderedEffects = computed(() => transformArrayByColumn(effects.value, numberOfColumns.value))
 </script>
