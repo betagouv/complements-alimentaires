@@ -146,7 +146,7 @@
     <DsfrFieldset legend="Population cible" legendClass="fr-label">
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
         <div
-          v-for="population in populations"
+          v-for="population in orderedPopulations"
           :key="`effect-${population.id}`"
           class="flex col-span-6 sm:col-span-3 lg:col-span-2"
         >
@@ -168,7 +168,7 @@
     >
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
         <div
-          v-for="condition in conditions"
+          v-for="condition in orderedConditions"
           :key="`condition-${condition.id}`"
           class="flex col-span-6 sm:col-span-3 lg:col-span-2"
         >
@@ -197,7 +197,11 @@
     <SectionTitle title="Objectifs / effets" class="!mt-10" sizeTag="h6" icon="ri-focus-2-fill" />
     <DsfrFieldset>
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
-        <div v-for="effect in effects" :key="`effect-${effect.id}`" class="flex col-span-6 sm:col-span-3 lg:col-span-2">
+        <div
+          v-for="effect in orderedEffects"
+          :key="`effect-${effect.id}`"
+          class="flex col-span-6 sm:col-span-3 lg:col-span-2"
+        >
           <input :id="`effect-${effect.id}`" type="checkbox" v-model="payload.effects" :value="effect.id" />
           <label :for="`effect-${effect.id}`" class="fr-label ml-2">{{ effect.name }}</label>
         </div>
@@ -249,13 +253,16 @@ import { computed, watch, ref } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useVuelidate } from "@vuelidate/core"
-import { firstErrorMsg } from "@/utils/forms"
+import { firstErrorMsg, transformArrayByColumn } from "@/utils/forms"
+import { getCurrentBreakpoint } from "@/utils/screen"
 import { pushOtherChoiceFieldAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
 import CountryField from "@/components/fields/CountryField.vue"
 import OtherChoiceField from "@/components/fields/OtherChoiceField"
 import SectionTitle from "@/components/SectionTitle"
 import NumberField from "@/components/NumberField"
+import { useWindowSize } from "@vueuse/core"
 
+const { width } = useWindowSize()
 const payload = defineModel()
 const props = defineProps(["externalResults"])
 
@@ -341,6 +348,25 @@ watch(selectedCompany, () => {
 
 // S'il n'y a qu'une entreprise on l'assigne par défaut
 if (companies.value?.length === 1) payload.value.company = companies.value[0].id
+
+const numberOfColumns = ref()
+watch(
+  width,
+  () => {
+    const checkboxColumnNumbers = {
+      sm: 1,
+      md: 2,
+      lg: 2,
+      xl: 3,
+    }
+    numberOfColumns.value = checkboxColumnNumbers[getCurrentBreakpoint()] || 1
+  },
+  { immediate: true }
+)
+
+const orderedPopulations = computed(() => transformArrayByColumn(populations.value, numberOfColumns.value))
+const orderedConditions = computed(() => transformArrayByColumn(conditions.value, numberOfColumns.value))
+const orderedEffects = computed(() => transformArrayByColumn(effects.value, numberOfColumns.value))
 </script>
 
 <style scoped>
