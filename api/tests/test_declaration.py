@@ -1948,3 +1948,39 @@ class TestDeclaredElementsApi(APITestCase):
         declared_plant.refresh_from_db()
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
         self.assertNotEqual(declared_plant.plant, microorganism)
+
+    @authenticate
+    def test_can_replace_request_with_different_type(self):
+        """
+        Ce devrait être possible de remplacer une demande avec un element
+        qui existe en base, et donner des valeurs pour le nouveau element
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
+        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
+        microorganism = MicroorganismFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {
+                "element": {"id": microorganism.id, "type": "microorganism"},
+                "additional_fields": {
+                    "new_species": "Test species",
+                    "new_genre": "Test genre",
+                    "strain": "Test strain",
+                    "activated": False,
+                },
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        self.assertEqual(DeclaredPlant.objects.count(), 0)
+        self.assertEqual(DeclaredMicroorganism.objects.count(), 1)
+        declared_microorganism = DeclaredMicroorganism.objects.get(declaration=declaration)
+        self.assertEqual(declared_microorganism.microorganism, microorganism)
+        self.assertEqual(declared_microorganism.new_species, "Test species")
+        self.assertEqual(declared_microorganism.new_genre, "Test genre")
+        self.assertEqual(declared_microorganism.strain, "Test strain")
+        self.assertEqual(declared_microorganism.activated, False)
