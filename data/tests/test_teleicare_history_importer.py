@@ -46,10 +46,9 @@ class TeleicareHistoryImporterTestCase(TestCase):
                     )
 
     def tearDown(self):
-        # super().tearDown()
+        super().tearDown()
         for table in [IcaVersionDeclaration, IcaComplementAlimentaire, IcaDeclaration, IcaEtablissement]:
-            for table_item in table.objects.all():
-                table_item.delete()
+            table.objects.all().delete()
             # la suppression des modèles fail avec l'erreur
             # django.db.utils.OperationalError: cannot DROP TABLE "ica_versiondeclaration" because it has pending trigger events
             # même avec un sleep(15)
