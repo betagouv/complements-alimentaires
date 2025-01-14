@@ -156,6 +156,7 @@ def create_declaration_from_teleicare_history():
     * télédéclarante de la déclaration (cette relation n'est pour le moment pas conservée, car le BEPIAS ne sait pas ce qu'elle signifie)
     """
     nb_created_declarations = 0
+
     for ica_complement_alimentaire in IcaComplementAlimentaire.objects.all():
         # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
         all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=ica_complement_alimentaire.cplalim_ident)
@@ -207,10 +208,15 @@ def create_declaration_from_teleicare_history():
                     # other_conditions=
                     # effects=
                     # other_effects=
+                    # address=
+                    # postal_code=
+                    # city=
+                    # country=
                     status=Declaration.DeclarationStatus.WITHDRAWN
                     if latest_ica_declaration.dcl_date_fin_commercialisation
                     else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident],
                 )
+
                 try:
                     declaration.save()
                     nb_created_declarations += 1
