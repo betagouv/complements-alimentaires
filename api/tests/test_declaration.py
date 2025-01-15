@@ -38,7 +38,7 @@ from data.factories import (
     VisaRoleFactory,
     PlantSynonymFactory,
 )
-from data.models import Attachment, Declaration, Snapshot, DeclaredMicroorganism, DeclaredPlant
+from data.models import Attachment, Declaration, DeclaredMicroorganism, DeclaredPlant, Snapshot
 
 from .utils import authenticate
 
@@ -1498,6 +1498,56 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(results[2]["id"], declaration_last.id)
 
     @authenticate
+    def test_sort_declarations_by_instruction_limit_with_visa(self):
+        """
+        Le refus d'un visa ne doit pas compter pour le triage par date limite de réponse
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        today = timezone.now()
+
+        declaration_less_urgent = AwaitingInstructionDeclarationFactory()
+        snapshot_less_urgent = SnapshotFactory(
+            declaration=declaration_less_urgent, status=declaration_less_urgent.status
+        )
+        snapshot_less_urgent.creation_date = today - timedelta(days=1)
+        snapshot_less_urgent.save()
+
+        declaration_more_urgent = AwaitingInstructionDeclarationFactory()
+        snapshot_more_urgent = SnapshotFactory(
+            declaration=declaration_more_urgent, status=declaration_more_urgent.status
+        )
+        snapshot_more_urgent.creation_date = today - timedelta(days=10)
+        snapshot_more_urgent.save()
+
+        # Le snapshot du refus de visa ne doit pas affecter la date limite de réponse
+        snapshot_visa_refusal = SnapshotFactory(
+            declaration=declaration_more_urgent,
+            status=declaration_more_urgent.status,
+            action=Snapshot.SnapshotActions.REFUSE_VISA,
+        )
+        snapshot_visa_refusal.creation_date = today - timedelta(days=1)
+        snapshot_visa_refusal.save()
+
+        # Triage par date limite d'instruction
+        sort_url = f"{reverse('api:list_all_declarations')}?ordering=responseLimitDate"
+        response = self.client.get(sort_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+
+        self.assertEqual(results[0]["id"], declaration_more_urgent.id)
+        self.assertEqual(results[1]["id"], declaration_less_urgent.id)
+
+        # Triage par date limite d'instruction inversé
+        reverse_sort_url = f"{reverse('api:list_all_declarations')}?ordering=-responseLimitDate"
+        response = self.client.get(reverse_sort_url, format="json")
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+
+        self.assertEqual(results[0]["id"], declaration_less_urgent.id)
+        self.assertEqual(results[1]["id"], declaration_more_urgent.id)
+
+    @authenticate
     def test_update_article(self):
         """
         Les viseuses ou instructrices peuvent changer l'article d'une déclaration
@@ -1682,7 +1732,7 @@ class TestDeclaredElementsApi(APITestCase):
         ingredient = DeclaredIngredientFactory(declaration=declaration)
 
         response = self.client.get(
-            reverse("api:declared_element", kwargs={"pk": ingredient.id, "type": "ingredient"}), format="json"
+            reverse("api:declared_element", kwargs={"pk": ingredient.id, "type": "other-ingredient"}), format="json"
         )
         body = response.json()
         self.assertEqual(body["id"], ingredient.id)
@@ -1700,7 +1750,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.json()["globalError"],
-            "Unknown type: 'unknown' not in ['plant', 'microorganism', 'substance', 'ingredient']",
+            "Unknown type: 'unknown' not in ['plant', 'microorganism', 'substance', 'other-ingredient']",
         )
 
     def test_get_declared_element_not_allowed_not_authenticated(self):
@@ -1718,7 +1768,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         response = self.client.get(
-            reverse("api:declared_element", kwargs={"pk": 1, "type": "ingredient"}), format="json"
+            reverse("api:declared_element", kwargs={"pk": 1, "type": "other-ingredient"}), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -1738,7 +1788,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         response = self.client.get(
-            reverse("api:declared_element", kwargs={"pk": 1, "type": "ingredient"}), format="json"
+            reverse("api:declared_element", kwargs={"pk": 1, "type": "other-ingredient"}), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -1779,7 +1829,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         response = self.client.get(
-            reverse("api:declared_element_request_info", kwargs={"pk": 1, "type": "ingredient"}), format="json"
+            reverse("api:declared_element_request_info", kwargs={"pk": 1, "type": "other-ingredient"}), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -1819,7 +1869,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         response = self.client.get(
-            reverse("api:declared_element_reject", kwargs={"pk": 1, "type": "ingredient"}), format="json"
+            reverse("api:declared_element_reject", kwargs={"pk": 1, "type": "other-ingredient"}), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 

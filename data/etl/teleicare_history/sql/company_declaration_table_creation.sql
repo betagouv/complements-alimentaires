@@ -46,6 +46,7 @@ CREATE TABLE ICA_ETABLISSEMENT (
 CREATE TABLE ICA_COMPLEMENTALIMENTAIRE (
     CPLALIM_IDENT integer PRIMARY KEY,
     FRMGAL_IDENT integer NULL,
+    -- toujours le même que celui indiqué dans ICA_VERSIONDECLARATION
     ETAB_IDENT integer NOT NULL,
     CPLALIM_MARQUE text NULL,
     CPLALIM_GAMME text NULL,
@@ -57,9 +58,9 @@ CREATE TABLE ICA_COMPLEMENTALIMENTAIRE (
 
 CREATE TABLE ICA_DECLARATION (
     DCL_IDENT integer PRIMARY KEY,
-    CPLALIM_IDENT integer NOT NULL,
+    CPLALIM_IDENT integer NOT NULL, -- dcl_ident et cplalim_ident sont égaux
     TYDCL_IDENT integer NOT NULL,
-    ETAB_IDENT integer NULL,
+    ETAB_IDENT integer NULL, -- si différent de NULL c'est parce qu'il est différent de celui dans ICA_COMPLEMENTALIMENTAIRE et ICA_VERSIONDECLARATION, c'est l'id de l'entp mandatée (qui déclare pour une autre)
     ETAB_IDENT_RMM_DECLARANT integer NOT NULL,
     DCL_DATE text NOT NULL,
     DCL_SAISIE_ADMINISTRATION boolean NOT NULL,
@@ -73,16 +74,17 @@ CREATE TABLE ICA_DECLARATION (
 CREATE TABLE ICA_VERSIONDECLARATION (
     VRSDECL_IDENT integer PRIMARY KEY,
     AG_IDENT integer NULL,
-    TYPVRS_IDENT integer NOT NULL,
+    TYPVRS_IDENT integer NOT NULL, -- le type de version de déclaration
     UNT_IDENT integer NULL,
     PAYS_IDENT_ADRE integer NULL,
+    -- toujours le même que celui indiqué dans ICA_COMPLEMENTALIMENTAIRE
     ETAB_IDENT integer NULL,
-    EX_IDENT integer NOT NULL,
+    EX_IDENT integer NOT NULL, -- le stade d'examen de la déclaration
     PAYS_IDENT_PAYS_DE_REFERENCE integer NULL,
     DCL_IDENT integer NOT NULL,
-    STATTDCL_IDENT integer NULL,
-    STADCL_IDENT integer NULL,
-    VRSDECL_NUMERO integer NOT NULL,
+    STATTDCL_IDENT integer NULL, -- le status de la déclaration
+    STADCL_IDENT integer NULL, -- le stade de la déclaration
+    VRSDECL_NUMERO integer NOT NULL, -- veut dire quoi ?
     VRSDECL_COMMENTAIRES text NULL,
     VRSDECL_MISE_EN_GARDE text NULL,
     VRSDECL_DURABILITE integer NULL,
@@ -105,4 +107,40 @@ CREATE TABLE ICA_VERSIONDECLARATION (
     VRSDECL_ADRE_DIST text NULL,
     VRSDECL_ADRE_REGION text NULL,
     VRSDECL_ADRE_RAISON_SOCIALE text NULL
-)
+);
+
+
+-- EX_IDENT
+-- when 1 then 'en attente'
+-- when 2 then 'examen'
+-- when 3 then 'validation'
+-- when 4 then 'signature'
+-- when 5 then 'envoi'
+-- when 6 then 'reexamen'
+-- when 7 then 'terminé'
+
+-- STATTDCL_IDENT
+-- when 1 then 'en cours'
+-- when 2 then 'autorisé temporaire'
+-- when 3 then 'autorisé prolongé'
+-- when 4 then 'autorisé définitif'
+-- when 5 then 'refusé'
+-- when 6 then 'arrêt commercialisation'
+-- when 7 then 'retiré du marché'
+-- when 8 then 'abandonné'
+
+-- STADCL_IDENT
+-- when 1 then 'saisie par administration'
+-- when 2 then 'en préparation'
+-- when 3 then 'en cours'
+-- when 4 then 'en attente compléments'
+-- when 5 then 'en attente observations'
+-- when 6 then 'compléments hors délais'
+-- when 7 then 'non autorisé (HD)'
+-- when 8 then 'clos'
+
+
+-- TYPVRS_IDENT
+-- when 1 then 'nouvelle'
+-- when 2 then 'compléments d'information'
+-- when 3 then 'observation'

@@ -78,7 +78,7 @@ class ElementMappingMixin:
             "synonym_model": SubstanceSynonym,
             "serializer": DeclaredSubstanceSerializer,
         },
-        "ingredient": {
+        "other-ingredient": {
             "model": DeclaredIngredient,
             "element_model": Ingredient,
             "synonym_model": IngredientSynonym,
