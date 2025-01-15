@@ -15,8 +15,10 @@
           <DsfrModal :opened="!!modalToOpen" :title="modalTitle" :actions="modalActions" @close="closeModal">
             <template #default>
               <div v-if="modalToOpen === 'replace'">
-                <!-- TODO: reuse component logic from ElementCard in here -->
-                <div v-if="changeCrossType">Insert component here</div>
+                <div v-if="changeCrossType">
+                  <!-- TODO: reuse fields for a demand of this type (for new_name/new_species etc) -->
+                  <ElementDetail :objectType="replacement.objectType" v-model="additionalInfo" />
+                </div>
               </div>
               <div v-else>
                 <DsfrInput v-model="notes" label="Notes" label-visible is-textarea />
@@ -38,6 +40,7 @@ import { headers } from "@/utils/data-fetching"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
 import ReplacementSearch from "./ReplacementSearch"
+import ElementDetail from "@/components/ElementDetail"
 
 const props = defineProps({ type: String, id: String })
 
@@ -90,6 +93,10 @@ const openModal = (type) => {
 const replacement = ref()
 // TODO: objectType does not work for other ingredients - need to do API mapping?
 const changeCrossType = computed(() => replacement.value?.objectType !== element.value.type)
+const additionalInfo = ref({})
+watch(replacement, () => {
+  additionalInfo.value = JSON.parse(JSON.stringify(replacement.value))
+})
 
 const actionButtons = computed(() => [
   {

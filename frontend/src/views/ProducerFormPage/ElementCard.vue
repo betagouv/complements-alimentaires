@@ -33,7 +33,7 @@
 
     <div v-if="showFields">
       <hr class="mt-2" />
-      <ElementDetail :objectType="objectType" v-model="model" />
+      <ElementDetail :objectType="objectType" v-model="model" class="md:ml-12" />
     </div>
   </div>
 </template>
