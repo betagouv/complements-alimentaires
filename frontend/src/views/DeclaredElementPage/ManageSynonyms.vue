@@ -1,14 +1,14 @@
 <template>
   <div>
     <DsfrInput
-      label="Ajouter une synonyme (optionnelle)"
+      label="Ajouter une synonyme (facultatif)"
       label-visible
-      :hint="requestName ? `Le nom de la demande : ${requestName}` : ''"
+      :hint="requestName ? `Concernant la demande « ${requestName} »` : ''"
       class="mb-2"
       @update:modelValue="updateNewSynonym"
     />
     <div v-if="initialSynonyms && initialSynonyms.length" class="mt-4">
-      <p class="mb-1">Les synonymes existantes :</p>
+      <p class="mb-1">Les synonymes existants :</p>
       <ul>
         <li v-for="s in initialSynonyms" :key="s.id">{{ s.name }}</li>
       </ul>

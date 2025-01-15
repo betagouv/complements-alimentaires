@@ -1904,7 +1904,7 @@ class TestDeclaredElementsApi(APITestCase):
     def test_can_add_synonym_on_replace(self):
         """
         C'est possible d'envoyer une liste avec un nouvel element pour
-        ajouter une synonyme et laisser des synonymes existantes non-modifiées
+        ajouter un synonyme et laisser des synonymes existantes non-modifiées
         """
         InstructionRoleFactory(user=authenticate.user)
 
