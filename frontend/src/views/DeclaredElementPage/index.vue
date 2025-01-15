@@ -20,7 +20,7 @@
                   Veuillez contacter l'équipe Compl'Alim pour effectuer la substitution.
                 </p>
                 <div v-else>
-                  <ManageSynonyms
+                  <ElementSynonyms
                     v-model="synonyms"
                     :requestElement="element"
                     :initialSynonyms="replacement.synonyms"
@@ -47,7 +47,7 @@ import { headers } from "@/utils/data-fetching"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
 import ReplacementSearch from "./ReplacementSearch"
-import ManageSynonyms from "./ManageSynonyms"
+import ElementSynonyms from "./ElementSynonyms"
 
 const props = defineProps({ type: String, id: String })
 

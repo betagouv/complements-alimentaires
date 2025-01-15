@@ -17,7 +17,6 @@
 </template>
 
 <script setup>
-// TODO: rename file to be just ReplacementModal or something?
 import { ref, computed } from "vue"
 import { getElementName } from "@/utils/elements"
 
