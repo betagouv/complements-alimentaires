@@ -26,11 +26,15 @@ const requestName = computed(() => getElementName(props.requestElement))
 const synonyms = defineModel()
 
 const updateNewSynonym = (value) => {
-  const lastIdx = synonyms.value.length - 1
-  if (synonyms.value[lastIdx].id) {
-    synonyms.value.push({ name: value })
-  } else {
-    synonyms.value.splice(lastIdx, 1, { name: value })
-  }
+  const newSynonym = { name: value }
+
+  const count = synonyms.value.length
+  const lastIdx = count - 1
+  const addSynonym = count && synonyms.value[lastIdx].id
+  const updateSynonym = count && !addSynonym
+
+  if (addSynonym) synonyms.value.push(newSynonym)
+  else if (updateSynonym) synonyms.value.splice(lastIdx, 1, newSynonym)
+  else synonyms.value = [newSynonym]
 }
 </script>
