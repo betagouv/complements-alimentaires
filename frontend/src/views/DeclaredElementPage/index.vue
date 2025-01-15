@@ -15,10 +15,8 @@
           <DsfrModal :opened="!!modalToOpen" :title="modalTitle" :actions="modalActions" @close="closeModal">
             <template #default>
               <div v-if="modalToOpen === 'replace'">
-                <p v-if="cannotReplace">
-                  Ce n'est pas possible pour l'instant de remplacer une demande avec un ingrédient d'un type different.
-                  Veuillez contacter l'équipe Compl'Alim pour effectuer la substitution.
-                </p>
+                <!-- TODO: reuse component logic from ElementCard in here -->
+                <div v-if="changeCrossType">Insert component here</div>
               </div>
               <div v-else>
                 <DsfrInput v-model="notes" label="Notes" label-visible is-textarea />
@@ -90,7 +88,8 @@ const openModal = (type) => {
 }
 
 const replacement = ref()
-const cannotReplace = computed(() => replacement.value?.objectType !== element.value.type)
+// TODO: objectType does not work for other ingredients - need to do API mapping?
+const changeCrossType = computed(() => replacement.value?.objectType !== element.value.type)
 
 const actionButtons = computed(() => [
   {
@@ -139,7 +138,6 @@ const modals = computed(() => {
             // TODO: clear search if we stay on page
             updateElement("replace", payload).then(closeModal)
           },
-          disabled: cannotReplace.value,
         },
       ],
     },
