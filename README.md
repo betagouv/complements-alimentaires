@@ -125,6 +125,7 @@ REDIS_PREPEND_KEY= Optionnel - Ajout ce string au début de chaque clé Redis. U
 S3CFG_FILE_URI= Optionnel - Url de téléchargement du fichier de config s3cmd
 ENABLE_SILK= `True` pour activer le profiling via [django-silk](https://github.com/jazzband/django-silk) ou `False` autrement
 ENABLE_AUTO_VALIDATION= `True` pour activer la validation automatique de déclarations article 15 non instruites.
+INSEE_API_KEY= La clé de l'API pour l'application "API-Siren" (https://portail-api.insee.fr/). Nous avons aujourd'hui trois clés différentes pour chaque environnement : prod, staging et démo.
 ```
 
 #### Créer les différents modèles Django dans la base de données
