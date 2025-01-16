@@ -8,7 +8,7 @@ const getCurrentBreakpoint = () => {
   const screensArray = Object.entries(tailwindConfig.theme.screens).map((x) => [x[0], parseInt(x[1].replace("px", ""))])
   const sortedScreens = screensArray.sort((a, b) => a[1] - b[1])
   for (const [key, value] of sortedScreens) if (width.value < value) return key
-  return null
+  return sortedScreens[sortedScreens.length - 1][0]
 }
 
 export const useCurrentBreakpoint = () => {
