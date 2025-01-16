@@ -15,20 +15,7 @@
     </div>
 
     <div v-else class="mb-4">
-      <DsfrAlert
-        v-if="payload.declaredInTeleicare"
-        type="warning"
-        class="mb-4"
-        title="Cette déclaration est issue de l'historique Teleicare"
-      >
-        <p>L'import de l'historique est en cours. Les informations suivantes arriveront bientôt :</p>
-        <ul>
-          <li>la composition</li>
-          <li>les entreprises mandantes s'il y en a</li>
-          <li>l'étiquettage</li>
-          <li>l'attestation</li>
-        </ul>
-      </DsfrAlert>
+      <DeclarationFromTeleicareAlert v-if="payload.declaredInTeleicare" />
       <DeclarationAlert
         v-else-if="payload"
         role="declarant"
@@ -122,6 +109,7 @@ import FormWrapper from "@/components/FormWrapper"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { tabTitles } from "@/utils/mappings"
+import DeclarationFromTeleicareAlert from "@/components/DeclarationFromTeleicareAlert.vue"
 
 // Il y a deux refs qui stockent des erreurs. $externalResults sert
 // lors qu'on sauvegarde la déclaration (POST ou PUT) mais qu'on ne change
