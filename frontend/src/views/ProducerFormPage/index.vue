@@ -15,11 +15,18 @@
     </div>
 
     <div v-else class="mb-4">
-      <DeclarationAlert v-if="payload" role="declarant" :declaration="payload" :snapshots="snapshots" class="mb-4" />
+      <DeclarationFromTeleicareAlert v-if="payload.declaredInTeleicare" />
+      <DeclarationAlert
+        v-else-if="payload"
+        role="declarant"
+        :declaration="payload"
+        :snapshots="snapshots"
+        class="mb-4"
+      />
 
       <DsfrAlert
         class="mb-4"
-        v-if="payload.id && !payload.author"
+        v-if="payload.id && !payload.author && !payload.declaredInTeleicare"
         type="info"
         title="Cette déclaration n'est gérée par personne"
       >
@@ -28,7 +35,7 @@
       </DsfrAlert>
       <DsfrAlert
         class="mb-4"
-        v-else-if="payload.author && payload.author !== loggedUser.id"
+        v-else-if="payload.author && payload.author !== loggedUser.id && !payload.declaredInTeleicare"
         type="info"
         title="Cette déclaration est gérée par une autre personne"
       >
@@ -102,6 +109,7 @@ import FormWrapper from "@/components/FormWrapper"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { tabTitles } from "@/utils/mappings"
+import DeclarationFromTeleicareAlert from "@/components/DeclarationFromTeleicareAlert.vue"
 
 // Il y a deux refs qui stockent des erreurs. $externalResults sert
 // lors qu'on sauvegarde la déclaration (POST ou PUT) mais qu'on ne change
@@ -199,8 +207,12 @@ const readonly = computed(
     payload.value.status !== "OBJECTION"
 )
 
-const showHistory = computed(() => readonly.value || (!isNewDeclaration.value && payload.value.status !== "DRAFT"))
-const showWithdrawal = computed(() => payload.value.status === "AUTHORIZED")
+const showHistory = computed(
+  () =>
+    !payload.value.declaredInTeleicare &&
+    (readonly.value || (!isNewDeclaration.value && payload.value.status !== "DRAFT"))
+)
+const showWithdrawal = computed(() => !payload.value.declaredInTeleicare && payload.value.status === "AUTHORIZED")
 
 const components = computed(() => {
   const baseComponents = readonly.value ? [SummaryTab] : [ProductTab, CompositionTab, AttachmentTab, SummaryTab]
