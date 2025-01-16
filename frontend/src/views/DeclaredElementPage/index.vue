@@ -95,7 +95,7 @@ const replacement = ref()
 const changeCrossType = computed(() => replacement.value?.objectType !== element.value.type)
 const additionalInfo = ref({})
 watch(replacement, () => {
-  additionalInfo.value = JSON.parse(JSON.stringify(replacement.value))
+  additionalInfo.value = JSON.parse(JSON.stringify(element.value))
 })
 
 const actionButtons = computed(() => [
