@@ -219,8 +219,12 @@ const readonly = computed(
     payload.value.status !== "OBJECTION"
 )
 
-const showHistory = computed(() => readonly.value || (!isNewDeclaration.value && payload.value.status !== "DRAFT"))
-const showWithdrawal = computed(() => payload.value.status === "AUTHORIZED")
+const showHistory = computed(
+  () =>
+    !payload.value.declaredInTeleicare &&
+    (readonly.value || (!isNewDeclaration.value && payload.value.status !== "DRAFT"))
+)
+const showWithdrawal = computed(() => !payload.value.declaredInTeleicare && payload.value.status === "AUTHORIZED")
 
 const components = computed(() => {
   const baseComponents = readonly.value ? [SummaryTab] : [ProductTab, CompositionTab, AttachmentTab, SummaryTab]

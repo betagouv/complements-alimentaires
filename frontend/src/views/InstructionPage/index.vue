@@ -87,7 +87,7 @@
           @forward="selectedTabIndex += 1"
           :removeSaveLabel="true"
         >
-          <template v-slot:content>
+          <template v-slot:content v-if="!declaration.declaredInTeleicare">
             <h6 class="text-left">
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
@@ -217,7 +217,8 @@ onMounted(async () => {
 
 // Tab management
 const components = computed(() => {
-  const baseComponents = [IdentityTab, DeclarationSummary, HistoryTab]
+  const baseComponents = [IdentityTab, DeclarationSummary]
+  if (!declaration.value.declaredInTeleicare) baseComponents.push(HistoryTab)
   if (canInstruct.value) baseComponents.push(DecisionTab)
   return baseComponents
 })
