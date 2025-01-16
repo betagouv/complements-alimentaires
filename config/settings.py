@@ -397,12 +397,7 @@ if SENTRY_DSN:
 
 # API INSEE
 INSEE_API_KEY = env("INSEE_API_KEY", default=None)
-INSEE_API_SECRET = env("INSEE_API_SECRET", default=None)
-INSEE_API_BASE_URL = "https://api.insee.fr/"
-INSEE_TOKEN_API_URL = INSEE_API_BASE_URL + "token/"
-INSEE_SIRET_API_URL = INSEE_API_BASE_URL + "entreprises/sirene/V3.11/siret/"
-
-# Custom settings (used by our apps)
+INSEE_URL = "https://api.insee.fr/api-sirene/3.11/"
 
 # Models to be used with myloaddata/mydumpdata commands
 FIXTURE_FOLDER = BASE_DIR / "fixtures"

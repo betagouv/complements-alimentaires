@@ -4,8 +4,6 @@ from django.conf import settings
 
 import requests
 
-from tokens.models import InseeToken
-
 logger = logging.getLogger(__name__)
 
 
@@ -20,13 +18,12 @@ class SiretData:
     def fetch(siret: str) -> dict | None:
         """Interroge l'API SIRET, et retourne un dict contenant les attributs de l'entreprise à notre format, ou None en cas d'échec."""
 
-        insee_token = InseeToken.load()  # créé ou récupère (et met à jour si besoin) un token de connexion
-        if not insee_token.usable:
-            logger.warn("SIRET API won't be called as no INSEE token can't be used for now")
+        if not settings.INSEE_API_KEY:
+            logger.info("skipping INSEE token fetching because INSEE key is not set")
             return None
 
-        url = settings.INSEE_SIRET_API_URL + siret
-        response = requests.get(url, headers={"Authorization": f"Bearer {insee_token.key}"})
+        url = f"{settings.INSEE_URL}/siret/{siret}"
+        response = requests.get(url, headers={"X-INSEE-Api-Key-Integration": settings.INSEE_API_KEY})
         if not response.ok:
             logger.warn(f"SIRET API call has failed, code {response.status_code} : {response}")
             return None
