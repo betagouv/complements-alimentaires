@@ -8,7 +8,6 @@ from .abstract_models import CommonModel
 class Population(CommonModel):
     class PopulationCategory(models.TextChoices):
         AGE = "AGE", "âge"
-        MEDICAL = "MEDICAL", "conditions médicales spécifiques"
         PREGNANCY = "PREGNANCY", "grossesse et allaitement"
         OTHER = "OTHER", "autres"
 

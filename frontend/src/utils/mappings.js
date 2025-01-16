@@ -255,11 +255,21 @@ export const authorizationModesMapping = {
 }
 
 export const populationCategoriesMapping = {
-  AGE: "Âge",
-  MEDICAL: "Conditions médicales spécifiques",
-  PREGNANCY: "Grossesse et allaitement",
-  MEDICAMENTS: "Interactions médicamenteuses",
-  OTHER: "Autres",
+  AGE: {
+    label: "Âge",
+  },
+  MEDICAL: {
+    label: "Conditions médicales spécifiques",
+  },
+  PREGNANCY: {
+    label: "Grossesse et allaitement",
+  },
+  MEDICAMENTS: {
+    label: "Interactions médicamenteuses",
+  },
+  OTHER: {
+    label: "Autres",
+  },
 }
 
 export const getAuthorizationModeInFrench = (type) => {

@@ -43,13 +43,19 @@ export const transformArrayByColumn = (arr, numberOfColumns) => {
   Utile pour l'affichage des checkboxes dans des grilles de colonnes.
   */
   const result = []
-  const numberOfRows = Math.ceil(arr.length / numberOfColumns)
+  const fullRows = Math.floor(arr.length / numberOfColumns) // Les rangées pleines
+  const remainingItems = arr.length % numberOfColumns // Les éléments qui resterons dans une dernière rangée
 
-  for (let row = 0; row < numberOfRows; row++) {
+  const numRows = remainingItems > 0 ? fullRows + 1 : fullRows
+
+  for (let row = 0; row < numRows; row++) {
     for (let col = 0; col < numberOfColumns; col++) {
-      const index = col * numberOfRows + row
-      if (index < arr.length) result.push(arr[index])
+      const index = col * fullRows + Math.min(col, remainingItems) + row
+      if (row < fullRows || (row === fullRows && col < remainingItems)) result.push(arr[index])
     }
   }
+
   return result
 }
+
+export const checkboxColumnNumbers = { sm: 1, md: 2, lg: 2, xl: 3 }

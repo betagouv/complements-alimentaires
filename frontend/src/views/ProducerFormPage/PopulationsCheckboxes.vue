@@ -1,11 +1,11 @@
 <template>
   <DsfrFieldset legend="Population cible" legendClass="fr-label">
-    <div v-for="(section, index) in populationsSections" :key="`pop-section-${index}`">
-      <p class="mt-4 mb-2 font-bold">{{ section.title }}</p>
+    <div v-for="(section, index) in populationsSections" class="mb-6 last:mb-0" :key="`pop-section-${index}`">
+      <p class="mb-2 font-bold">{{ section.title }}</p>
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
         <div
           v-for="population in section.items"
-          :key="`effect-${population.id}`"
+          :key="`pop-${population.id}`"
           class="flex col-span-6 sm:col-span-3 lg:col-span-2"
         >
           <input :id="`population-${population.id}`" type="checkbox" v-model="modelValue" :value="population.id" />
@@ -17,57 +17,35 @@
 </template>
 
 <script setup>
-import { computed, watch, ref } from "vue"
-import { transformArrayByColumn } from "@/utils/forms"
-import { getCurrentBreakpoint } from "@/utils/screen"
-import { useWindowSize } from "@vueuse/core"
+import { computed } from "vue"
+import { transformArrayByColumn, checkboxColumnNumbers } from "@/utils/forms"
+import { useCurrentBreakpoint } from "@/utils/screen"
+import { populationCategoriesMapping } from "@/utils/mappings"
 
+const currentBreakpoint = useCurrentBreakpoint()
+const numberOfColumns = computed(() => checkboxColumnNumbers[currentBreakpoint.value])
 const modelValue = defineModel()
 const props = defineProps({ populations: { type: Array, default: Array } })
 
+const ageSort = (a, b) => a.maxAge - b.maxAge
+const alphabeticalSort = (a, b) => a.name.localeCompare(b.name)
+
 const populationsSections = computed(() => {
   const p = props.populations
+  const cols = numberOfColumns.value
   return [
     {
-      title: "Âge",
-      items: transformArrayByColumn(
-        p.filter((x) => x.category === "AGE").sort((a, b) => a.minAge - b.minAge),
-        numberOfColumns.value
-      ),
+      title: populationCategoriesMapping.AGE.label,
+      items: transformArrayByColumn(p?.filter((x) => x.category === "AGE").sort(ageSort), cols),
     },
     {
-      title: "Conditions médicales spécifiques",
-      items: transformArrayByColumn(
-        p.filter((x) => x.category === "MEDICAL").sort((a, b) => a.name.localeCompare(b.name)),
-        numberOfColumns.value
-      ),
+      title: populationCategoriesMapping.PREGNANCY.label,
+      items: transformArrayByColumn(p?.filter((x) => x.category === "PREGNANCY").sort(alphabeticalSort), cols),
     },
     {
-      title: "Grossesse et allaitement",
-      items: transformArrayByColumn(
-        p.filter((x) => x.category === "PREGNANCY").sort((a, b) => a.name.localeCompare(b.name)),
-        numberOfColumns.value
-      ),
-    },
-    {
-      title: "Autres",
-      items: transformArrayByColumn(
-        p.filter((x) => x.category === "OTHER").sort((a, b) => a.name.localeCompare(b.name)),
-        numberOfColumns.value
-      ),
+      title: populationCategoriesMapping.OTHER.label,
+      items: transformArrayByColumn(p?.filter((x) => x.category === "OTHER").sort(alphabeticalSort), cols),
     },
   ]
 })
-
-const { width } = useWindowSize()
-const numberOfColumns = ref()
-watch(
-  width,
-  () => {
-    const checkboxColumnNumbers = { sm: 1, md: 2, lg: 2, xl: 3 }
-    numberOfColumns.value = checkboxColumnNumbers[getCurrentBreakpoint()] || 1
-  },
-  { immediate: true }
-)
-const orderedPopulations = computed(() => transformArrayByColumn(props.populations, numberOfColumns.value))
 </script>
