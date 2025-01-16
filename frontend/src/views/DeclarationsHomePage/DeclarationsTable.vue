@@ -42,7 +42,7 @@ const rows = computed(() => {
         ? {
             component: "DsfrBadge",
             label: "issue de Teleicare",
-            type: "info",
+            type: "none",
             small: true,
             noIcon: true,
           }
