@@ -292,15 +292,21 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
 
 
 class OpenDataDeclarationSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
-    article = serializers.SerializerMethodField()
     company = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    brand = serializers.SerializerMethodField()
+    gamme = serializers.SerializerMethodField()
+    article = serializers.SerializerMethodField()
     galenic_formulation = serializers.SerializerMethodField()
+    daily_recommended_dose = serializers.SerializerMethodField()
+    instructions = serializers.SerializerMethodField()
+    warning = serializers.SerializerMethodField()
     effects = serializers.SerializerMethodField()
+    flavor = serializers.SerializerMethodField()
     conditions_not_recommended = serializers.SerializerMethodField()
-
     populations = serializers.SerializerMethodField()
-
     declared_plants = serializers.SerializerMethodField()
     declared_microorganisms = serializers.SerializerMethodField()
     declared_substances = serializers.SerializerMethodField()
@@ -308,11 +314,11 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     declared_nutriments = serializers.SerializerMethodField()
     declared_other_active_ingredients = serializers.SerializerMethodField()
     declared_inactive_ingredients = serializers.SerializerMethodField()
-
     modification_date = serializers.DateTimeField(format="%Y-%m-%d")
 
     class Meta:
         model = Declaration
+
         fields = (
             "id",
             "status",
@@ -340,8 +346,23 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         )
         read_only_fields = fields
 
+    def get_id(self, obj):
+        return obj.id
+
     def get_status(self, obj):
         return obj.get_status_display()
+
+    def get_company(self, obj):
+        return obj.company.commercial_name, obj.company.siret
+
+    def get_name(self, obj):
+        return obj.name
+
+    def get_brand(self, obj):
+        return obj.brand
+
+    def get_gamme(self, obj):
+        return obj.gamme
 
     def get_article(self, obj):
         """
@@ -353,17 +374,26 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         else:
             return obj.get_calculated_article_display()
 
-    def get_company(self, obj):
-        return obj.company.commercial_name, obj.company.siret
-
     def get_galenic_formulation(self, obj):
         if obj.galenic_formulation:
             return obj.galenic_formulation.name
         else:
             return None
 
+    def get_daily_recommended_dose(self, obj):
+        return obj.daily_recommended_dose
+
+    def get_instructions(self, obj):
+        return obj.instructions
+
+    def get_warning(self, obj):
+        return obj.warning
+
     def get_effects(self, obj):
         return [effect.name for effect in obj.effects.all()]
+
+    def get_flavor(self, obj):
+        return obj.flavor
 
     def get_conditions_not_recommended(self, obj):
         return [condition.name for condition in obj.conditions_not_recommended.all()]
