@@ -5,6 +5,12 @@
       <div class="border p-2">
         <VisaInfoLine title="Instructeur·ice" :text="instructorName" icon="ri-account-circle-line" />
         <VisaInfoLine title="Décision" :text="postValidationStatus" icon="ri-focus-2-fill" />
+        <VisaInfoLine
+          v-if="declaration.blockingReasons?.length"
+          title="Raisons de la décision"
+          icon="ri-edit-line"
+          :text="declaration.blockingReasons.join(',\n') || '< non spécifié >'"
+        />
         <VisaInfoLine title="Message au déclarant·e" icon="ri-chat-3-line">
           <template v-slot:value>
             <DsfrInputGroup>
@@ -23,12 +29,9 @@
           icon="ri-time-fill"
           :text="declaration.postValidationExpirationDays || '< non spécifié >'"
         />
-        <VisaInfoLine
-          v-if="declaration.blockingReasons?.length"
-          title="Raisons de la décision"
-          icon="ri-edit-line"
-          :text="declaration.blockingReasons.join(',\n') || '< non spécifié >'"
-        />
+        <div class="px-4 py-2 border bg-gray-50">
+          <DecisionModificationModal :overridenDecision="overridenDecision" />
+        </div>
       </div>
     </div>
 
@@ -64,16 +67,20 @@ import { handleError } from "@/utils/error-handling"
 import useToaster from "@/composables/use-toaster"
 import VisaInfoLine from "./VisaInfoLine.vue"
 import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
+import DecisionModificationModal from "./DecisionModificationModal"
 
 const $externalResults = ref({})
 const emit = defineEmits(["decision-done"])
 const declaration = defineModel()
 
+const overridenDecision = ref({})
+
 const producerMessage = ref(declaration.value.postValidationProducerMessage)
 
-const instructorName = computed(
-  () => `${declaration.value?.instructor?.firstName} ${declaration.value?.instructor?.lastName}`
-)
+const instructorName = computed(() => {
+  if (!declaration.value?.instructor) return "-"
+  return `${declaration.value.instructor.firstName || ""} ${declaration.value.instructor.lastName || ""}`
+})
 const showExpirationDays = computed(
   () =>
     declaration.value.postValidationStatus === "OBJECTION" || declaration.value.postValidationStatus === "OBSERVATION"
