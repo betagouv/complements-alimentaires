@@ -649,8 +649,14 @@ class DeclarationAcceptVisaView(VisaDecisionView):
 
     snapshot_action = Snapshot.SnapshotActions.ACCEPT_VISA
 
-    def get_snapshot_post_validation_status(self, request, declaration):
+    def get_validation_status(self, request, declaration):
+        overriden_status = request.data.get("override")
+        if overriden_status:
+            return Declaration.DeclarationStatus(overriden_status)
         return declaration.post_validation_status
+
+    def get_snapshot_post_validation_status(self, request, declaration):
+        return self.get_validation_status(request, declaration)
 
     def perform_snapshot_creation(self, request, declaration):
         """
@@ -672,7 +678,7 @@ class DeclarationAcceptVisaView(VisaDecisionView):
             Declaration.DeclarationStatus.OBJECTION: "accept_visa_object",
             Declaration.DeclarationStatus.OBSERVATION: "accept_visa_observe",
         }
-        return transition_map.get(declaration.post_validation_status)
+        return transition_map.get(self.get_validation_status(request, declaration))
 
     def get_brevo_template_id(self, request, declaration):
         template_map = {

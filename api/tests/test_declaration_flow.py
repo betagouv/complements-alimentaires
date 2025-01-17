@@ -658,6 +658,30 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(latest_snapshot.expiration_days, 23)
 
     @authenticate
+    def test_visor_can_modify_decision(self):
+        """
+        La viseuse peut modifier la décision de l'instructrice
+        """
+        VisaRoleFactory(user=authenticate.user)
+
+        # L'instructrice à marqué cette déclaration comme « autorisée », mais la viseuse la fera
+        # passer en observation
+        declaration = OngoingVisaDeclarationFactory(
+            post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
+            post_validation_producer_message="À authoriser",
+        )
+
+        body = {"override": "OBSERVATION", "comment": "Observation"}
+        response = self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), body, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.OBSERVATION)
+        self.assertEqual(latest_snapshot.comment, "Observation")
+        self.assertEqual(latest_snapshot.status, Declaration.DeclarationStatus.OBSERVATION)
+
+    @authenticate
     def test_visor_can_modify_comment(self):
         """
         Une personne avec le rôle de visa peut modifier le commentaire à destination du pro
