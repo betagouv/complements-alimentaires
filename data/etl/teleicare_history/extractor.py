@@ -189,6 +189,11 @@ def create_declaration_from_teleicare_history():
     nb_missing_entp = 0
 
     for ica_complement_alimentaire in IcaComplementAlimentaire.objects.all():
+        try:
+            company = Company.objects.get(siccrf_id=ica_complement_alimentaire.etab_id)
+        except Company.DoesNotExist:
+            nb_missing_entp += 1
+            continue
         # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
         all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=ica_complement_alimentaire.cplalim_ident)
         # le champ date est stocké en text, il faut donc faire la conversion en python
@@ -213,11 +218,6 @@ def create_declaration_from_teleicare_history():
             ).first()
             # la déclaration a une version finalisée
             if latest_ica_version_declaration:
-                try:
-                    company = Company.objects.get(siccrf_id=ica_complement_alimentaire.etab_id)
-                except Company.DoesNotExist:
-                    nb_missing_entp += 1
-                    continue
                 declaration_creation_date = (
                     convert_str_date(latest_ica_declaration.dcl_date, aware=True)
                     if latest_ica_declaration.dcl_date
