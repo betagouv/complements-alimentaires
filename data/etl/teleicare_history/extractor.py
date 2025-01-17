@@ -186,14 +186,11 @@ def create_declaration_from_teleicare_history():
     * télédéclarante de la déclaration (cette relation n'est pour le moment pas conservée, car le BEPIAS ne sait pas ce qu'elle signifie)
     """
     nb_created_declarations = 0
-    nb_missing_entp = 0
 
-    for ica_complement_alimentaire in IcaComplementAlimentaire.objects.all():
-        try:
-            company = Company.objects.get(siccrf_id=ica_complement_alimentaire.etab_id)
-        except Company.DoesNotExist:
-            nb_missing_entp += 1
-            continue
+    # Parcourir tous les compléments alimentaires dont l'entreprise déclarante a été matchée
+    for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(
+        etab_id__in=Company.objects.values_list("siccrf_id", flat=True)
+    ):
         # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
         all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=ica_complement_alimentaire.cplalim_ident)
         # le champ date est stocké en text, il faut donc faire la conversion en python
@@ -235,7 +232,9 @@ def create_declaration_from_teleicare_history():
                     galenic_formulation=GalenicFormulation.objects.get(
                         siccrf_id=ica_complement_alimentaire.frmgal_ident
                     ),
-                    company=company,  # resp étiquetage, resp commercialisation
+                    company=Company.objects.get(
+                        siccrf_id=ica_complement_alimentaire.etab_id
+                    ),  # resp étiquetage, resp commercialisation
                     brand=ica_complement_alimentaire.cplalim_marque or "",
                     gamme=ica_complement_alimentaire.cplalim_gamme or "",
                     name=ica_complement_alimentaire.cplalim_nom,
@@ -273,4 +272,3 @@ def create_declaration_from_teleicare_history():
                     pass
 
     logger.info(f"Sur {len(IcaComplementAlimentaire.objects.all())} : {nb_created_declarations} déclarations créées.")
-    logger.info(f"{nb_missing_entp} entreprises à créer.")
