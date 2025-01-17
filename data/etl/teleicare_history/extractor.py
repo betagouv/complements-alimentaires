@@ -3,7 +3,7 @@ import logging
 import re
 from datetime import date, datetime, timezone
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import MultipleObjectsReturned, ValidationError
 from django.db import IntegrityError
 
 from phonenumber_field.phonenumber import PhoneNumber
@@ -152,9 +152,9 @@ def get_most_recent(list_of_declarations):
         current_date = convert_str_date(ica_declaration.dcl_date)
         if most_recent_date < current_date:
             most_recent_date = current_date
-            most_recente_dcl_date = ica_declaration.dcl_date
+            most_recent_dcl_date = ica_declaration.dcl_date
 
-    return list_of_declarations.get(dcl_date=most_recente_dcl_date)
+    return list_of_declarations.get(dcl_date=most_recent_dcl_date)
 
 
 def convert_str_date(value, aware=False):
@@ -186,13 +186,20 @@ def create_declaration_from_teleicare_history():
     * télédéclarante de la déclaration (cette relation n'est pour le moment pas conservée, car le BEPIAS ne sait pas ce qu'elle signifie)
     """
     nb_created_declarations = 0
+    nb_missing_entp = 0
 
     for ica_complement_alimentaire in IcaComplementAlimentaire.objects.all():
         # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
         all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=ica_complement_alimentaire.cplalim_ident)
         # le champ date est stocké en text, il faut donc faire la conversion en python
         if all_ica_declarations.exists():
-            latest_ica_declaration = get_most_recent(all_ica_declarations)
+            try:
+                latest_ica_declaration = get_most_recent(all_ica_declarations)
+            except MultipleObjectsReturned:
+                logger.error(
+                    f"Ce IcaComplementAlimentaire cplalim_ident={ica_complement_alimentaire.cplalim_ident} n'a pas une unique déclaration la plus récente"
+                )
+                continue
             # retrouve la version de déclaration la plus à jour correspondant à cette déclaration
             latest_ica_version_declaration = IcaVersionDeclaration.objects.filter(
                 dcl_id=latest_ica_declaration.dcl_ident,
@@ -209,15 +216,14 @@ def create_declaration_from_teleicare_history():
                 try:
                     company = Company.objects.get(siccrf_id=ica_complement_alimentaire.etab_id)
                 except Company.DoesNotExist:
-                    logger.error(
-                        f"Cette entreprise avec siccrf_id={ica_complement_alimentaire.etab_id} n'existe pas déjà en base"
-                    )
+                    nb_missing_entp += 1
                     continue
                 declaration_creation_date = (
                     convert_str_date(latest_ica_declaration.dcl_date, aware=True)
                     if latest_ica_declaration.dcl_date
                     else ""
                 )
+                unit_quantity = re.findall(r"\d+", latest_ica_version_declaration.vrsdecl_djr)
                 declaration = Declaration(
                     creation_date=declaration_creation_date,
                     modification_date=convert_str_date(
@@ -236,7 +242,7 @@ def create_declaration_from_teleicare_history():
                     flavor=ica_complement_alimentaire.dclencours_gout_arome_parfum or "",
                     other_galenic_formulation=ica_complement_alimentaire.cplalim_forme_galenique_autre or "",
                     # extraction d'un nombre depuis une chaîne de caractères
-                    unit_quantity=re.findall(r"\d+", latest_ica_version_declaration.vrsdecl_djr)[0],
+                    unit_quantity=unit_quantity[0] if unit_quantity else None,
                     unit_measurement=SubstanceUnit.objects.get(siccrf_id=latest_ica_version_declaration.unt_ident),
                     conditioning=latest_ica_version_declaration.vrsdecl_conditionnement or "",
                     daily_recommended_dose=latest_ica_version_declaration.vrsdecl_poids_uc,
@@ -267,3 +273,4 @@ def create_declaration_from_teleicare_history():
                     pass
 
     logger.info(f"Sur {len(IcaComplementAlimentaire.objects.all())} : {nb_created_declarations} déclarations créées.")
+    logger.info(f"{nb_missing_entp} entreprises à créer.")
