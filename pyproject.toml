@@ -74,7 +74,6 @@ sib-api-v3-sdk = "*" # https://github.com/sendinblue/APIv3-python-library
 # Misc
 ######################################################################################################################
 pillow = "*"              # https://github.com/python-pillow/Pillow
-django-ckeditor = "6.7.2" # https://github.com/django-ckeditor/django-ckeditor # we keep it temporarily for migrations
 django-ckeditor-5 = "*"   # https://github.com/hvlads/django-ckeditor-5
 django-viewflow = "*"     # https://github.com/viewflow/viewflow
 
