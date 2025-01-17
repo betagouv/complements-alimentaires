@@ -35,7 +35,7 @@ class IcaDeclaration(models.Model):
     # dcl_ident et cplalim_ident ne sont pas égaux
     dcl_ident = models.IntegerField(primary_key=True)
     cplalim = models.ForeignKey(IcaComplementAlimentaire, on_delete=models.CASCADE, db_column="cplalim_ident")
-    tydcl_ident = models.IntegerField()
+    tydcl_ident = models.IntegerField()  # Article 15 ou 16
     etab = models.ForeignKey(
         IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident"
     )  # correspond à l'entreprise gestionnaire de la déclaration

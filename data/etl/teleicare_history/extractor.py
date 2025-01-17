@@ -147,6 +147,12 @@ DECLARATION_STATUS_MAPPING = {
     8: Declaration.DeclarationStatus.ABANDONED,  # 'abandonné'
 }
 
+DECLARATION_TYPE_TO_ARTICLE_MAPPING = {
+    1: Declaration.Article.ARTICLE_15,
+    2: Declaration.Article.ARTICLE_16,
+    3: None,  # Type "simplifié" dans Teleicare, normalement liées à des modifications de déclarations déjà instruites
+}
+
 
 def create_declaration_from_teleicare_history():
     """
@@ -202,6 +208,7 @@ def create_declaration_from_teleicare_history():
                     minimum_duration=latest_ica_version_declaration.vrsdecl_durabilite,
                     instructions=latest_ica_version_declaration.vrsdecl_mode_emploi or "",
                     warning=latest_ica_version_declaration.vrsdecl_mise_en_garde or "",
+                    calculated_article=DECLARATION_TYPE_TO_ARTICLE_MAPPING[latest_ica_declaration.tydcl_ident],
                     # TODO: ces champs proviennent de tables pas encore importées
                     # populations=
                     # conditions_not_recommended=
