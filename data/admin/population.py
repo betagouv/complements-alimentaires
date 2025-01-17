@@ -17,6 +17,7 @@ class PopulationAdmin(admin.ModelAdmin):
     fields = [
         "name",
         "ca_name",
+        "category",
         "is_obsolete",
         "ca_is_obsolete",
         "is_defined_by_anses",
