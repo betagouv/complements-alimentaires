@@ -42,6 +42,7 @@ class IcaDeclaration(models.Model):
     etab_ident_rmm_declarant = models.IntegerField()
     dcl_date = models.TextField()
     dcl_saisie_administration = models.BooleanField(null=True)  # rendu nullable pour simplifier les Factories
+    # l'identifiant Teleicare est constitué ainsi {dcl_annee}-{dcl_mois}-{dcl_numero}
     dcl_annee = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
     dcl_mois = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
     dcl_numero = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
@@ -55,7 +56,8 @@ class IcaDeclaration(models.Model):
 class IcaVersionDeclaration(models.Model):
     vrsdecl_ident = models.IntegerField(primary_key=True)
     ag_ident = models.IntegerField(blank=True, null=True)
-    typvrs_ident = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
+    typvrs_ident = models.IntegerField(null=True)  # 1: Nouvelle 2: Complément d'information 3: Observations
+    # rendu nullable pour simplifier les Factories
     unt_ident = models.IntegerField(blank=True, null=True)
     pays_ident_adre = models.IntegerField(blank=True, null=True)
     etab = models.ForeignKey(
