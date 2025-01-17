@@ -68,7 +68,7 @@ class DeclarationFactory(factory.django.DjangoModelFactory):
 
     dcl_ident = factory.Sequence(lambda n: n + 1)
     cplalim = factory.SubFactory(ComplementAlimentaireFactory)
-    tydcl_ident = factory.Faker("pyint", min_value=0, max_value=20)
+    tydcl_ident = factory.Faker("pyint", min_value=0, max_value=2)
     etab = factory.SubFactory(EtablissementFactory)
     etab_ident_rmm_declarant = factory.Faker("pyint", min_value=0, max_value=20)
     dcl_date = datetime.strftime(random_date(start=datetime(2016, 1, 1)), "%m/%d/%Y %H:%M:%S %p")
