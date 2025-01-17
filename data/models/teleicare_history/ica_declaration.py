@@ -97,3 +97,29 @@ class IcaVersionDeclaration(models.Model):
     class Meta:
         managed = False
         db_table = "ica_versiondeclaration"
+
+
+class IcaPopulationCibleDeclaree(models.Model):
+    vrsdecl_ident = models.IntegerField(
+        primary_key=True
+    )  # The composite primary key (vrsdecl_ident, popcbl_ident) found, that is not supported. The first column is selected.
+    popcbl_ident = models.IntegerField()
+    vrspcb_popcible_autre = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ica_population_cible_declaree"
+        unique_together = (("vrsdecl_ident", "popcbl_ident"),)
+
+
+class IcaPopulationRisqueDeclaree(models.Model):
+    vrsdecl_ident = models.IntegerField(
+        primary_key=True
+    )  # The composite primary key (vrsdecl_ident, poprs_ident) found, that is not supported. The first column is selected.
+    poprs_ident = models.IntegerField()
+    vrsprs_poprisque_autre = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ica_population_risque_declaree"
+        unique_together = (("vrsdecl_ident", "poprs_ident"),)

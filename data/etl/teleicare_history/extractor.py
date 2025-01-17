@@ -13,6 +13,8 @@ from data.models.declaration import Declaration
 from data.models.teleicare_history.ica_declaration import (
     IcaComplementAlimentaire,
     IcaDeclaration,
+    IcaPopulationCibleDeclaree,
+    IcaPopulationRisqueDeclaree,
     IcaVersionDeclaration,
 )
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
@@ -154,6 +156,14 @@ DECLARATION_TYPE_TO_ARTICLE_MAPPING = {
 }
 
 
+def convert_population(pop):
+    return
+
+
+def convert_condition(cond):
+    return
+
+
 def create_declaration_from_teleicare_history():
     """
     Dans Teleicare une entreprise peut-être relié à une déclaration par 3 relations différentes :
@@ -189,6 +199,9 @@ def create_declaration_from_teleicare_history():
                         f"Cette entreprise avec siccrf_id={ica_complement_alimentaire.etab_id} n'existe pas déjà en base"
                     )
                     continue
+                conditions_not_recommended = IcaPopulationRisqueDeclaree.objects.filter(
+                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident
+                )
                 declaration = Declaration(
                     siccrf_id=ica_complement_alimentaire.cplalim_ident,
                     galenic_formulation=GalenicFormulation.objects.get(
@@ -209,10 +222,14 @@ def create_declaration_from_teleicare_history():
                     instructions=latest_ica_version_declaration.vrsdecl_mode_emploi or "",
                     warning=latest_ica_version_declaration.vrsdecl_mise_en_garde or "",
                     calculated_article=DECLARATION_TYPE_TO_ARTICLE_MAPPING[latest_ica_declaration.tydcl_ident],
+                    populations=convert_population(
+                        IcaPopulationCibleDeclaree.objects.filter(
+                            vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident
+                        )
+                    ),
+                    conditions_not_recommended=convert_condition(conditions_not_recommended),
+                    other_conditions=conditions_not_recommended,
                     # TODO: ces champs proviennent de tables pas encore importées
-                    # populations=
-                    # conditions_not_recommended=
-                    # other_conditions=
                     # effects=
                     # other_effects=
                     # address=
