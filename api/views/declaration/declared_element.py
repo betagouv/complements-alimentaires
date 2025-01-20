@@ -195,8 +195,6 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             elif self.element_type == "microorganism" and replacement_element_type != "microorganism":
                 new_declared_element_fields["new_name"] = element.new_name
 
-            new_declared_element_fields["id"] = None
-
             # utiliser le serializer pour comprendre les valeurs complexes comme used_part
             new_element = new_type["serializer"](data=new_declared_element_fields)
             new_element.is_valid(raise_exception=True)

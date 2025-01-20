@@ -2017,7 +2017,7 @@ class TestDeclaredElementsApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration, new=True)
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
         plant = PlantFactory()
         synonym = PlantSynonymFactory.create(name="Eucalyptus Plant", standard_name=plant)
 
@@ -2042,7 +2042,7 @@ class TestDeclaredElementsApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration, new=True)
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
         plant = PlantFactory()
 
         response = self.client.post(
@@ -2075,13 +2075,7 @@ class TestDeclaredElementsApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_microorganism = DeclaredMicroorganismFactory(
-            declaration=declaration,
-            new_species="test",
-            new_genre="testing",
-            new_description="Test description",
-            new=True,
-        )
+        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration)
         plant = PlantFactory()
 
         response = self.client.post(
@@ -2110,14 +2104,7 @@ class TestDeclaredElementsApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_microorganism = DeclaredMicroorganismFactory(
-            declaration=declaration,
-            new_species="test",
-            new_genre="testing",
-            new_description="Test description",
-            quantity=10,
-            new=True,
-        )
+        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration, quantity=10)
         plant = PlantFactory()
 
         response = self.client.post(
@@ -2137,4 +2124,27 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(still_existing_declared_microorganism.quantity, 10)
         self.assertEqual(DeclaredPlant.objects.count(), 0)
 
-    # TODO: test ignore id passed if changing type?
+    @authenticate
+    def test_id_ignored_in_additional_fields_replace(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration, new_species="test", new=True)
+        plant = PlantFactory()
+        unit = SubstanceUnitFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "additional_fields": {
+                    "id": 99,
+                    "unit": unit.id,
+                },
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        new_declared_plant = DeclaredPlant.objects.first()
+        self.assertEqual(new_declared_plant.unit, unit)
+        self.assertNotEqual(new_declared_plant.id, 99)
