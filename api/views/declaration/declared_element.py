@@ -15,6 +15,10 @@ from data.models import (
     Microorganism,
     Substance,
     Ingredient,
+    PlantSynonym,
+    MicroorganismSynonym,
+    SubstanceSynonym,
+    IngredientSynonym,
 )
 from api.serializers import (
     DeclaredElementSerializer,
@@ -58,21 +62,25 @@ TYPE_MAPPING = {
     "plant": {
         "model": DeclaredPlant,
         "element_model": Plant,
+        "synonym_model": PlantSynonym,
         "serializer": DeclaredPlantSerializer,
     },
     "microorganism": {
         "model": DeclaredMicroorganism,
         "element_model": Microorganism,
+        "synonym_model": MicroorganismSynonym,
         "serializer": DeclaredMicroorganismSerializer,
     },
     "substance": {
         "model": DeclaredSubstance,
         "element_model": Substance,
+        "synonym_model": SubstanceSynonym,
         "serializer": DeclaredSubstanceSerializer,
     },
     "other-ingredient": {
         "model": DeclaredIngredient,
         "element_model": Ingredient,
+        "synonym_model": IngredientSynonym,
         "serializer": DeclaredIngredientSerializer,
     },
 }
@@ -102,6 +110,10 @@ class ElementMappingMixin:
     @property
     def element_model(self):
         return self.type_info["element_model"]
+
+    @property
+    def synonym_model(self):
+        return self.type_info["synonym_model"]
 
 
 class DeclaredElementView(RetrieveAPIView, ElementMappingMixin):
@@ -181,4 +193,15 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             setattr(element, self.element_type, existing_element)
         element.request_status = self.type_model.AddableStatus.REPLACED
         element.new = False
+
+        synonyms = request.data.get("synonyms", [])
+        for synonym in synonyms:
+            if not synonym.get("id"):
+                # add new synonym
+                try:
+                    name = synonym.get("name")
+                except KeyError:
+                    raise ParseError(detail="Must provide 'name' to create new synonym")
+                self.synonym_model.objects.create(standard_name=existing_element, name=name)
+
         return element

@@ -19,6 +19,7 @@
                   <!-- TODO: reuse fields for a demand of this type (for new_name/new_species etc) -->
                   <ElementDetail :objectType="replacement.objectType" v-model="additionalInfo" />
                 </div>
+                <ElementSynonyms v-model="synonyms" :requestElement="element" :initialSynonyms="replacement.synonyms" />
               </div>
               <div v-else>
                 <DsfrInput v-model="notes" label="Notes" label-visible is-textarea />
@@ -41,6 +42,7 @@ import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
 import ReplacementSearch from "./ReplacementSearch"
 import ElementDetail from "@/components/ElementDetail"
+import ElementSynonyms from "./ElementSynonyms"
 
 const props = defineProps({ type: String, id: String })
 
@@ -75,6 +77,7 @@ watch(element, (newElement) => {
     const name = newElement.newName || `${newElement.newSpecies} ${newElement.newGenre}`
     document.title = `${name} - Compl'Alim`
   }
+  additionalInfo.value = JSON.parse(JSON.stringify(element.value))
 })
 
 // Actions
@@ -91,11 +94,15 @@ const openModal = (type) => {
 }
 
 const replacement = ref()
+
 // TODO: objectType does not work for other ingredients - need to do API mapping?
 const changeCrossType = computed(() => replacement.value?.objectType !== element.value.type)
 const additionalInfo = ref({})
-watch(replacement, () => {
-  additionalInfo.value = JSON.parse(JSON.stringify(element.value))
+
+const synonyms = ref()
+
+watch(replacement, (newReplacement) => {
+  synonyms.value = JSON.parse(JSON.stringify(newReplacement.synonyms || [])) // initialise synonyms that might be updated
 })
 
 const actionButtons = computed(() => [
@@ -141,6 +148,7 @@ const modals = computed(() => {
           onClick() {
             const payload = {
               element: { id: replacement.value?.id, type: replacement.value?.objectType },
+              synonyms: synonyms.value,
             }
             // TODO: clear search if we stay on page
             updateElement("replace", payload).then(closeModal)
