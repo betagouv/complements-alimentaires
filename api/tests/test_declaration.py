@@ -1933,7 +1933,7 @@ class TestDeclaredElementsApi(APITestCase):
 
         declaration = DeclarationFactory()
         declared_plant = DeclaredPlantFactory(
-            declaration=declaration, new_name="Test plant", new_description="Test description"
+            declaration=declaration, new_name="Test plant", new_description="Test description", new=True
         )
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
         microorganism = MicroorganismFactory()
@@ -1963,6 +1963,50 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(declared_microorganism.activated, False)
         # test old fields copied over
         self.assertEqual(declared_microorganism.new_description, "Test description")
+        self.assertEqual(declared_microorganism.request_status, DeclaredMicroorganism.AddableStatus.REPLACED)
+
+    @authenticate
+    def test_can_replace_microorganism_request_with_plant(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(
+            declaration=declaration,
+            new_species="test",
+            new_genre="testing",
+            new_description="Test description",
+            new=True,
+        )
+        self.assertEqual(declared_microorganism.request_status, DeclaredMicroorganism.AddableStatus.REQUESTED)
+        plant = PlantFactory()
+        used_part = PlantPartFactory()
+        unit = SubstanceUnitFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "additional_fields": {
+                    "used_part": used_part.id,
+                    "unit": unit.id,
+                },
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        with self.assertRaises(DeclaredMicroorganism.DoesNotExist):
+            DeclaredMicroorganism.objects.get(id=declared_microorganism.id)
+        self.assertEqual(DeclaredPlant.objects.count(), 1)
+        new_declared_plant = DeclaredPlant.objects.get(declaration=declaration)
+        self.assertEqual(new_declared_plant.plant, plant)
+        # test name has been copied into the species field
+        self.assertEqual(new_declared_plant.new_name, "test testing")
+        # test new fields saved
+        self.assertEqual(new_declared_plant.used_part, used_part)
+        self.assertEqual(new_declared_plant.unit, unit)
+        # test old fields copied over
+        self.assertEqual(new_declared_plant.new_description, "Test description")
+        self.assertEqual(new_declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
 
     # TODO: test can replace with plant and get plant part and unit
     # TODO: test move microorganism species and genre into new_name

@@ -181,20 +181,30 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             new_fields = [field.name for field in replacement_declaration_model._meta.get_fields()]
             same_fields = set(old_fields).intersection(set(new_fields))
 
-            new_declared_element_fields = additional_fields
+            new_declared_element_fields = (
+                additional_fields  # TODO: should there be a limit to which fields are overrideable?
+            )
             for field in same_fields:
                 new_declared_element_fields[field] = getattr(element, field)
-            new_declared_element_fields[replacement_element_type] = replacement_element
+                # TODO: this means existing same fields would override provided fields
 
             if self.element_type != "microorganism" and replacement_element_type == "microorganism":
-                new_declared_element_fields["new_species"] = getattr(element, "new_name")
+                new_declared_element_fields["new_species"] = element.new_name
+            elif self.element_type == "microorganism" and replacement_element_type != "microorganism":
+                new_declared_element_fields["new_name"] = element.new_name
 
             new_declared_element_fields["id"] = None
 
-            new_element = replacement_declaration_model(**new_declared_element_fields)
+            # utiliser le serializer pour comprendre les valeurs complexes comme used_part
+            new_element = new_type["serializer"](data=new_declared_element_fields)
+            new_element.is_valid(raise_exception=True)
+            # le serializer a besoin d'un id et non pas l'objet
+            new_element.validated_data["declaration"] = element.declaration
+            # pour reutiliser le serializer, faut mettre les données de l'element dans ce format
+            new_element.validated_data[replacement_element_type] = {"id": replacement_element.id}
+            new_element = new_element.create(new_element.validated_data)
             element.delete()
             element = new_element
-            element.full_clean()
         else:
             setattr(element, self.element_type, replacement_element)
         element.request_status = self.type_model.AddableStatus.REPLACED
