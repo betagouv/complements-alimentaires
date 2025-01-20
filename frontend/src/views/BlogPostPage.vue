@@ -15,7 +15,7 @@
       <p class="!mb-0">{{ author }}</p>
       <p class="fr-text--xs !mb-0">{{ date }}</p>
     </div>
-    <div id="content" v-html="blogPost.content || blogPost.body" class="text-left"></div>
+    <div id="content" v-html="blogPost.content" class="text-left"></div>
   </div>
 </template>
 
