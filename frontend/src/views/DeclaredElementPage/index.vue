@@ -41,7 +41,7 @@ import { headers } from "@/utils/data-fetching"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
 import ReplacementSearch from "./ReplacementSearch"
-import ElementCard from "@/views/ProducerFormPage/ElementCard" // TODO: move to components
+import ElementCard from "@/components/ElementCard"
 import ElementSynonyms from "./ElementSynonyms"
 
 const props = defineProps({ type: String, id: String })
