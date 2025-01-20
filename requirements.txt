@@ -76,7 +76,7 @@ ptyprocess==0.7.0 ; python_version >= "3.11" and python_version < "4" and (sys_p
 pure-eval==0.2.3 ; python_version >= "3.11" and python_version < "4"
 pycodestyle==2.12.1 ; python_version >= "3.11" and python_version < "4"
 pycparser==2.22 ; python_version >= "3.11" and python_version < "4" and platform_python_implementation != "PyPy"
-pygments==2.18.0 ; python_version >= "3.11" and python_version < "4"
+pygments==2.19.1 ; python_version >= "3.11" and python_version < "4"
 pyhanko-certvalidator==0.26.5 ; python_version >= "3.11" and python_version < "4"
 pyhanko==0.25.3 ; python_version >= "3.11" and python_version < "4"
 pypdf==5.1.0 ; python_version >= "3.11" and python_version < "4"
