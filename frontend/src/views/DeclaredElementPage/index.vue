@@ -10,7 +10,7 @@
           <ReplacementSearch @replacement="(obj) => (replacement = obj)" :reset="clearSearch" />
         </div>
         <div v-if="changeCrossType" class="my-4">
-          <ElementCard :objectType="replacement.objectType" v-model="additionalInfo" />
+          <ElementCard :objectType="replacement.objectType" v-model="additionalInfo" :canRemove="false" />
         </div>
         <div class="mt-4">
           <DsfrButtonGroup :buttons="actionButtons" inlineLayoutWhen="md" align="center" class="mb-8" />

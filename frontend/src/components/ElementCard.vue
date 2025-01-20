@@ -27,7 +27,7 @@
           />
         </div>
 
-        <div><DsfrButton secondary @click="$emit('remove', model)">Enlever</DsfrButton></div>
+        <div v-if="props.canRemove"><DsfrButton secondary @click="$emit('remove', model)">Enlever</DsfrButton></div>
       </div>
     </div>
 
@@ -127,7 +127,7 @@ const model = defineModel()
 const store = useRootStore()
 
 defineEmits(["remove"])
-const props = defineProps({ objectType: { type: String } })
+const props = defineProps({ objectType: { type: String }, canRemove: { type: Boolean, default: true } })
 const synonyms = computed(() => model.value.element?.synonyms?.map((x) => x.name)?.join(", "))
 
 const plantParts = computed(() => {
