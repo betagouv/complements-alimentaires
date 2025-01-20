@@ -19,6 +19,13 @@
                   Ce n'est pas possible pour l'instant de remplacer une demande avec un ingrédient d'un type different.
                   Veuillez contacter l'équipe Compl'Alim pour effectuer la substitution.
                 </p>
+                <div v-else>
+                  <ElementSynonyms
+                    v-model="synonyms"
+                    :requestElement="element"
+                    :initialSynonyms="replacement.synonyms"
+                  />
+                </div>
               </div>
               <div v-else>
                 <DsfrInput v-model="notes" label="Notes" label-visible is-textarea />
@@ -40,6 +47,7 @@ import { headers } from "@/utils/data-fetching"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
 import ReplacementSearch from "./ReplacementSearch"
+import ElementSynonyms from "./ElementSynonyms"
 
 const props = defineProps({ type: String, id: String })
 
@@ -90,6 +98,11 @@ const openModal = (type) => {
 }
 
 const replacement = ref()
+const synonyms = ref()
+watch(replacement, () => {
+  synonyms.value = JSON.parse(JSON.stringify(replacement.value.synonyms)) // initialise synonyms that might be updated
+})
+
 const cannotReplace = computed(() => replacement.value?.objectType !== element.value.type)
 
 const actionButtons = computed(() => [
@@ -135,6 +148,7 @@ const modals = computed(() => {
           onClick() {
             const payload = {
               element: { id: replacement.value?.id, type: replacement.value?.objectType },
+              synonyms: synonyms.value,
             }
             // TODO: clear search if we stay on page
             updateElement("replace", payload).then(closeModal)

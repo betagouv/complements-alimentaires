@@ -36,6 +36,7 @@ from data.factories import (
     SubstanceUnitFactory,
     SupervisorRoleFactory,
     VisaRoleFactory,
+    PlantSynonymFactory,
 )
 from data.models import Attachment, Declaration, DeclaredMicroorganism, DeclaredPlant, Snapshot
 
@@ -1948,3 +1949,32 @@ class TestDeclaredElementsApi(APITestCase):
         declared_plant.refresh_from_db()
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
         self.assertNotEqual(declared_plant.plant, microorganism)
+
+    @authenticate
+    def test_can_add_synonym_on_replace(self):
+        """
+        C'est possible d'envoyer une liste avec un nouvel element pour
+        ajouter un synonyme et laisser des synonymes existantes non-modifiées
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration, new=True)
+        plant = PlantFactory()
+        synonym = PlantSynonymFactory.create(name="Eucalyptus Plant", standard_name=plant)
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "synonyms": [{"id": synonym.id, "name": "Eucalyptus Plant"}, {"name": "New synonym"}],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        declared_plant.refresh_from_db()
+        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        plant.refresh_from_db()
+        self.assertEqual(plant.plantsynonym_set.count(), 2)
+        self.assertIsNotNone(plant.plantsynonym_set.get(name="New synonym"))
+        self.assertEqual(plant.plantsynonym_set.get(id=synonym.id).name, synonym.name)
