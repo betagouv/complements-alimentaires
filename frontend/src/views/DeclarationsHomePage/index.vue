@@ -13,14 +13,8 @@
         @click="createNewDeclaration"
       />
     </div>
-    <div class="mb-4">
-      <DsfrAlert
-        size="sm"
-        title="Migration des déclarations soumises sur Teleicare"
-        description="II n'est pas nécessaire de déclarer à nouveau sur Compl'Alim les produits que vous avez déjà déclarés sur Teleicare. Cet historique sera importé d’ici la fin 2024 grâce à une correspondance entre les SIRET/n° TVA intracommunautaire. En attendant, vous pouvez consulter cet historique sur Teleicare."
-        type="info"
-      ></DsfrAlert>
-    </div>
+
+    <HistoryAlert />
 
     <div class="border px-4 pt-4 mb-2 sm:flex gap-8 items-baseline filters">
       <DsfrFieldset class="!mb-0">
@@ -91,6 +85,7 @@ import { storeToRefs } from "pinia"
 import { getPagesForPagination } from "@/utils/components"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import StatusFilter from "@/components/StatusFilter"
+import HistoryAlert from "@/components/HistoryAlert.vue"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)

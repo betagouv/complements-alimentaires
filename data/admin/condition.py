@@ -17,9 +17,12 @@ class ConditionAdmin(admin.ModelAdmin):
     fields = [
         "name",
         "ca_name",
+        "category",
         "siccrf_name_en",
         "is_obsolete",
         "ca_is_obsolete",
+        "min_age",
+        "max_age",
         "creation_date",
         "modification_date",
     ]

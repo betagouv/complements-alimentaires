@@ -22,7 +22,15 @@ const headers = ["ID", "Nom du produit", "Entreprise", "Auteur", "État", "Date 
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
-      x.id,
+      x.declaredInTeleicare
+        ? {
+            component: "DsfrBadge",
+            label: "issue de Teleicare",
+            type: "none",
+            small: true,
+            noIcon: true,
+          }
+        : x.id,
       {
         component: "router-link",
         text: x.name,
@@ -33,7 +41,7 @@ const rows = computed(() =>
         company: x.company?.socialName,
         mandatedCompany: x.mandatedCompany?.socialName,
       },
-      `${x.author.firstName} ${x.author.lastName}`,
+      x.author ? `${x.author.firstName} ${x.author.lastName}` : "",
       getStatusTagForCell(x.status, true),
       timeAgo(x.creationDate),
       timeAgo(x.modificationDate),
