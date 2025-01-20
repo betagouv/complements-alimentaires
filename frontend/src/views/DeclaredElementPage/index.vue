@@ -41,6 +41,7 @@
 <script setup>
 import { computed, watch, ref } from "vue"
 import { useFetch } from "@vueuse/core"
+import { useRouter } from "vue-router"
 import { getApiType } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
@@ -87,6 +88,23 @@ watch(element, (newElement) => {
 // Actions
 const modalToOpen = ref(false)
 const closeModal = () => (modalToOpen.value = false)
+
+const router = useRouter()
+// merci https://github.com/vuejs/vue-router/issues/997#issuecomment-1536254142
+const lastRoute = computed(() => {
+  const backUrl = router.options.history.state.back
+  const route = router.resolve({ path: `${backUrl}` })
+
+  return route
+})
+const navigateBack = (response) => {
+  const successRoute = lastRoute.value
+  successRoute.query = {
+    actionedId: response.id,
+    actionedType: response.type,
+  }
+  router.push(successRoute)
+}
 
 const notes = ref()
 
@@ -136,6 +154,7 @@ const updateElement = async (action, payload) => {
   if (data.value) {
     element.value = data.value
   }
+  return data.value
 }
 
 const modals = computed(() => {
@@ -150,8 +169,10 @@ const modals = computed(() => {
               element: { id: replacement.value?.id, type: replacement.value?.objectType },
               synonyms: synonyms.value,
             }
-            // TODO: clear search if we stay on page
-            updateElement("replace", payload).then(closeModal)
+            updateElement("replace", payload).then((response) => {
+              closeModal()
+              navigateBack(response)
+            })
           },
           disabled: cannotReplace.value,
         },
@@ -165,7 +186,10 @@ const modals = computed(() => {
           onClick() {
             updateElement("request-info", {
               requestPrivateNotes: notes.value || "",
-            }).then(closeModal)
+            }).then((response) => {
+              closeModal()
+              navigateBack(response)
+            })
           },
         },
       ],
@@ -178,7 +202,10 @@ const modals = computed(() => {
           onClick() {
             updateElement("reject", {
               requestPrivateNotes: notes.value || "",
-            }).then(closeModal)
+            }).then((response) => {
+              closeModal()
+              navigateBack(response)
+            })
           },
         },
       ],
