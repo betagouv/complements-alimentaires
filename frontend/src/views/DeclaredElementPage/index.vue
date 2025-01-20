@@ -10,7 +10,6 @@
           <ReplacementSearch @replacement="(obj) => (replacement = obj)" :reset="clearSearch" />
         </div>
         <div v-if="changeCrossType" class="my-4">
-          <!-- TODO: reuse fields for a demand of this type (for new_name/new_species etc) -->
           <ElementCard :objectType="replacement.objectType" v-model="additionalInfo" />
         </div>
         <div class="mt-4">
@@ -80,6 +79,7 @@ watch(element, (newElement) => {
     document.title = `${name} - Compl'Alim`
   }
   additionalInfo.value = JSON.parse(JSON.stringify(element.value))
+  additionalInfo.value.new = false
 })
 
 // Actions
@@ -106,6 +106,7 @@ const synonyms = ref()
 
 watch(replacement, (newReplacement) => {
   synonyms.value = JSON.parse(JSON.stringify(newReplacement.synonyms || [])) // initialise synonyms that might be updated
+  additionalInfo.value.element = JSON.parse(JSON.stringify(newReplacement))
 })
 
 const actionButtons = computed(() => [
