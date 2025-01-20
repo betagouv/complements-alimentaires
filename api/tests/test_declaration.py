@@ -2008,9 +2008,6 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(new_declared_plant.new_description, "Test description")
         self.assertEqual(new_declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
 
-    # TODO: test can replace with plant and get plant part and unit
-    # TODO: test move microorganism species and genre into new_name
-
     @authenticate
     def test_can_add_synonym_on_replace(self):
         """
@@ -2040,7 +2037,104 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertIsNotNone(plant.plantsynonym_set.get(name="New synonym"))
         self.assertEqual(plant.plantsynonym_set.get(id=synonym.id).name, synonym.name)
 
-    # TODO: test that if element type creation or synonym add fails, the whole thing fails
-    #  (example contrary seen when the synonym model was wrong for the cross type change, check no deletion too)
+    @authenticate
+    def test_cannot_provide_synonym_with_no_name(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration, new=True)
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "synonyms": [{"name": ""}],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        plant.refresh_from_db()
+        self.assertEqual(plant.plantsynonym_set.count(), 0)
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "synonyms": [{}],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response.json())
+        self.assertEqual(response.json()["globalError"], "Must provide 'name' to create new synonym")
+        plant.refresh_from_db()
+        self.assertEqual(plant.plantsynonym_set.count(), 0)
+
+    @authenticate
+    def test_elements_unchanged_on_replace_fail(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(
+            declaration=declaration,
+            new_species="test",
+            new_genre="testing",
+            new_description="Test description",
+            new=True,
+        )
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "additional_fields": {
+                    "used_part": 99,  # fail: id unrecognised
+                },
+                "synonyms": [{"name": "New synonym"}],
+            },
+            format="json",
+        )
+        body = response.json()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, body)
+        self.assertEqual(
+            body["fieldErrors"]["usedPart"][0], "Clé primaire «\xa099\xa0» non valide - l'objet n'existe pas.", body
+        )
+        # assertion implicite - l'objet existe tjs
+        DeclaredMicroorganism.objects.get(id=declared_microorganism.id)
+        self.assertFalse(plant.plantsynonym_set.filter(name="New synonym").exists())
+        self.assertEqual(DeclaredPlant.objects.count(), 0)
+
+    @authenticate
+    def test_elements_unchanged_on_synonym_fail(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(
+            declaration=declaration,
+            new_species="test",
+            new_genre="testing",
+            new_description="Test description",
+            quantity=10,
+            new=True,
+        )
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "additional_fields": {
+                    "quantity": 99,
+                },
+                "synonyms": [{}],
+            },
+            format="json",
+        )
+        body = response.json()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, body)
+        still_existing_declared_microorganism = DeclaredMicroorganism.objects.get(id=declared_microorganism.id)
+        self.assertEqual(still_existing_declared_microorganism.quantity, 10)
+        self.assertEqual(DeclaredPlant.objects.count(), 0)
 
     # TODO: test ignore id passed if changing type?

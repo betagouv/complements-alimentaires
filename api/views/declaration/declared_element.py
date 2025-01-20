@@ -1,4 +1,5 @@
 import abc
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ParseError
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -130,6 +131,7 @@ class DeclaredElementActionAbstractView(APIView, ElementMappingMixin):
     permission_classes = [(IsInstructor | IsVisor)]
     __metaclass__ = abc.ABCMeta
 
+    @transaction.atomic
     def post(self, request, pk, type):
         element = get_object_or_404(self.type_model, pk=pk)
 
@@ -215,9 +217,10 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             if not synonym.get("id"):
                 # add new synonym
                 try:
-                    name = synonym.get("name")
+                    name = synonym["name"]
+                    if name:
+                        replacement_synonym_model.objects.create(standard_name=replacement_element, name=name)
                 except KeyError:
                     raise ParseError(detail="Must provide 'name' to create new synonym")
-                replacement_synonym_model.objects.create(standard_name=replacement_element, name=name)
 
         return element
