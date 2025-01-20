@@ -1928,15 +1928,13 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(declared_plant.plant, plant)
 
     @authenticate
-    def test_can_replace_request_with_different_type(self):
-        """
-        Ce devrait être possible de remplacer une demande avec un element
-        qui existe en base, et donner des valeurs pour le nouveau element
-        """
+    def test_can_replace_plant_request_with_microorganism(self):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration, new_description="Test description")
+        declared_plant = DeclaredPlantFactory(
+            declaration=declaration, new_name="Test plant", new_description="Test description"
+        )
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
         microorganism = MicroorganismFactory()
 
@@ -1945,8 +1943,6 @@ class TestDeclaredElementsApi(APITestCase):
             {
                 "element": {"id": microorganism.id, "type": "microorganism"},
                 "additional_fields": {
-                    "new_species": "Test species",
-                    "new_genre": "Test genre",
                     "strain": "Test strain",
                     "activated": False,
                 },
@@ -1959,15 +1955,17 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(DeclaredMicroorganism.objects.count(), 1)
         declared_microorganism = DeclaredMicroorganism.objects.get(declaration=declaration)
         self.assertEqual(declared_microorganism.microorganism, microorganism)
+        # test name has been copied into the species field
+        self.assertEqual(declared_microorganism.new_species, "Test plant")
+        self.assertEqual(declared_microorganism.new_genre, "")
         # test new fields saved
-        self.assertEqual(declared_microorganism.new_species, "Test species")
-        self.assertEqual(declared_microorganism.new_genre, "Test genre")
         self.assertEqual(declared_microorganism.strain, "Test strain")
         self.assertEqual(declared_microorganism.activated, False)
         # test old fields copied over
         self.assertEqual(declared_microorganism.new_description, "Test description")
 
     # TODO: test can replace with plant and get plant part and unit
+    # TODO: test move microorganism species and genre into new_name
 
     @authenticate
     def test_can_add_synonym_on_replace(self):
@@ -1999,6 +1997,6 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(plant.plantsynonym_set.get(id=synonym.id).name, synonym.name)
 
     # TODO: test that if element type creation or synonym add fails, the whole thing fails
-    #  (example contrary seen when the synonym model was wrong for the cross type change)
+    #  (example contrary seen when the synonym model was wrong for the cross type change, check no deletion too)
 
     # TODO: test ignore id passed if changing type?

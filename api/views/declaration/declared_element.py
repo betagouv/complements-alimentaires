@@ -185,6 +185,10 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             for field in same_fields:
                 new_declared_element_fields[field] = getattr(element, field)
             new_declared_element_fields[replacement_element_type] = replacement_element
+
+            if self.element_type != "microorganism" and replacement_element_type == "microorganism":
+                new_declared_element_fields["new_species"] = getattr(element, "new_name")
+
             new_declared_element_fields["id"] = None
 
             new_element = replacement_declaration_model(**new_declared_element_fields)
