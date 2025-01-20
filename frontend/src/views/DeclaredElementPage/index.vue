@@ -9,16 +9,16 @@
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
           <ReplacementSearch @replacement="(obj) => (replacement = obj)" :reset="clearSearch" />
         </div>
+        <div v-if="changeCrossType" class="my-4">
+          <!-- TODO: reuse fields for a demand of this type (for new_name/new_species etc) -->
+          <ElementCard :objectType="replacement.objectType" v-model="additionalInfo" />
+        </div>
         <div class="mt-4">
           <DsfrButtonGroup :buttons="actionButtons" inlineLayoutWhen="md" align="center" class="mb-8" />
 
           <DsfrModal :opened="!!modalToOpen" :title="modalTitle" :actions="modalActions" @close="closeModal">
             <template #default>
               <div v-if="modalToOpen === 'replace'">
-                <div v-if="changeCrossType">
-                  <!-- TODO: reuse fields for a demand of this type (for new_name/new_species etc) -->
-                  <ElementDetail :objectType="replacement.objectType" v-model="additionalInfo" />
-                </div>
                 <ElementSynonyms v-model="synonyms" :requestElement="element" :initialSynonyms="replacement.synonyms" />
               </div>
               <div v-else>
@@ -35,16 +35,18 @@
 <script setup>
 import { computed, watch, ref } from "vue"
 import { useFetch } from "@vueuse/core"
+import { useRootStore } from "@/stores/root"
 import { getApiType } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
 import ReplacementSearch from "./ReplacementSearch"
-import ElementDetail from "@/components/ElementDetail"
+import ElementCard from "@/views/ProducerFormPage/ElementCard" // TODO: move to components
 import ElementSynonyms from "./ElementSynonyms"
 
 const props = defineProps({ type: String, id: String })
+const store = useRootStore()
 
 const declarationId = computed(() => element.value?.declaration)
 const declarationLink = computed(() => {
@@ -96,8 +98,9 @@ const openModal = (type) => {
 const replacement = ref()
 
 // TODO: objectType does not work for other ingredients - need to do API mapping?
-const changeCrossType = computed(() => replacement.value?.objectType !== element.value.type)
+const changeCrossType = computed(() => replacement.value && replacement.value?.objectType !== element.value.type)
 const additionalInfo = ref({})
+store.fetchDeclarationFieldsData()
 
 const synonyms = ref()
 
