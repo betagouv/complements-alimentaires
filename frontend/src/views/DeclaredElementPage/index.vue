@@ -7,6 +7,7 @@
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
+          <!-- TODO: question, can we replace with non authorised? -->
           <ReplacementSearch @replacement="(obj) => (replacement = obj)" :reset="clearSearch" />
         </div>
         <div v-if="changeCrossType" class="my-4">
@@ -107,6 +108,7 @@ const synonyms = ref()
 watch(replacement, (newReplacement) => {
   synonyms.value = JSON.parse(JSON.stringify(newReplacement.synonyms || [])) // initialise synonyms that might be updated
   additionalInfo.value.element = JSON.parse(JSON.stringify(newReplacement))
+  // TODO: do I have to change the active status? Only plant is not readonly, but maybe others can go from inactive to active?
 })
 
 const actionButtons = computed(() => [
@@ -150,12 +152,18 @@ const modals = computed(() => {
         {
           label: "Remplacer",
           onClick() {
+            const info = JSON.parse(JSON.stringify(additionalInfo.value))
+            // TODO: handle new_name vs new_species/new_genre
+            // TODO: save original type somewhere?
+            delete info.element
             const payload = {
               element: { id: replacement.value?.id, type: replacement.value?.objectType },
               synonyms: synonyms.value,
+              additionalInfo: info,
             }
             // TODO: clear search if we stay on page
             updateElement("replace", payload).then(closeModal)
+            // TODO: redirect on save
           },
         },
       ],

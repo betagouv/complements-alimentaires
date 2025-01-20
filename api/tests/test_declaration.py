@@ -1967,6 +1967,8 @@ class TestDeclaredElementsApi(APITestCase):
         # test old fields copied over
         self.assertEqual(declared_microorganism.new_description, "Test description")
 
+    # TODO: test can replace with plant and get plant part and unit
+
     @authenticate
     def test_can_add_synonym_on_replace(self):
         """
@@ -1995,3 +1997,8 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(plant.plantsynonym_set.count(), 2)
         self.assertIsNotNone(plant.plantsynonym_set.get(name="New synonym"))
         self.assertEqual(plant.plantsynonym_set.get(id=synonym.id).name, synonym.name)
+
+    # TODO: test that if element type creation or synonym add fails, the whole thing fails
+    #  (example contrary seen when the synonym model was wrong for the cross type change)
+
+    # TODO: test ignore id passed if changing type?

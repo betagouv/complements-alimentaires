@@ -160,37 +160,39 @@ class DeclaredElementRejectView(DeclaredElementActionAbstractView):
 class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
     def _update_element(self, element, request):
         try:
-            existing_element_id = request.data["element"]["id"]
-            existing_element_type = request.data["element"]["type"]
+            replacement_element_id = request.data["element"]["id"]
+            replacement_element_type = request.data["element"]["type"]
         except KeyError:
             raise ParseError(detail="Must provide a dict 'element' with id and type")
 
-        new_type = TYPE_MAPPING[existing_element_type]
-        existing_element_model = new_type["element_model"]
+        new_type = TYPE_MAPPING[replacement_element_type]
+        replacement_element_model = new_type["element_model"]
+        replacement_synonym_model = new_type["synonym_model"]
 
         try:
-            existing_element = existing_element_model.objects.get(pk=existing_element_id)
-        except existing_element_model.DoesNotExist:
-            raise ParseError(detail=f"No {self.element_type} exists with id {existing_element_id}")
+            replacement_element = replacement_element_model.objects.get(pk=replacement_element_id)
+        except replacement_element_model.DoesNotExist:
+            raise ParseError(detail=f"No {self.element_type} exists with id {replacement_element_id}")
 
-        if existing_element_type != self.element_type:
+        if replacement_element_type != self.element_type:
             additional_fields = request.data.get("additional_fields", {})
-            existing_declaration_model = new_type["model"]
+            replacement_declaration_model = new_type["model"]
             old_fields = [field.name for field in self.type_model._meta.get_fields()]
-            new_fields = [field.name for field in existing_declaration_model._meta.get_fields()]
+            new_fields = [field.name for field in replacement_declaration_model._meta.get_fields()]
             same_fields = set(old_fields).intersection(set(new_fields))
 
             new_declared_element_fields = additional_fields
             for field in same_fields:
                 new_declared_element_fields[field] = getattr(element, field)
-            new_declared_element_fields[existing_element_type] = existing_element
+            new_declared_element_fields[replacement_element_type] = replacement_element
+            new_declared_element_fields["id"] = None
 
-            new_element = existing_declaration_model(**new_declared_element_fields)
+            new_element = replacement_declaration_model(**new_declared_element_fields)
             element.delete()
             element = new_element
             element.full_clean()
         else:
-            setattr(element, self.element_type, existing_element)
+            setattr(element, self.element_type, replacement_element)
         element.request_status = self.type_model.AddableStatus.REPLACED
         element.new = False
 
@@ -202,6 +204,6 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
                     name = synonym.get("name")
                 except KeyError:
                     raise ParseError(detail="Must provide 'name' to create new synonym")
-                self.synonym_model.objects.create(standard_name=existing_element, name=name)
+                replacement_synonym_model.objects.create(standard_name=replacement_element, name=name)
 
         return element
