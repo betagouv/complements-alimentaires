@@ -6,14 +6,15 @@
     </div>
     <div class="comment sm:flex-auto">
       <slot name="value">
-        {{ text }}
+        <p class="mb-0 line-through" v-if="strikethroughText">{{ strikethroughText }}</p>
+        <p class="mb-0">{{ text }}</p>
       </slot>
     </div>
   </div>
 </template>
 
 <script setup>
-defineProps(["icon", "title", "text"])
+defineProps(["icon", "title", "text", "strikethroughText"])
 </script>
 <style scoped>
 .comment {

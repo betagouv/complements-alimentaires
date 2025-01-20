@@ -1,6 +1,15 @@
 <template>
   <div>
     <div class="text-right">
+      <DsfrButton
+        v-if="showUndoButton"
+        label="Annuler la modification"
+        size="sm"
+        secondary
+        icon="ri-close-fill"
+        @click="undo"
+        class="mr-2"
+      />
       <DsfrButton label="Modifier la décision" size="sm" secondary icon="ri-edit-fill" @click="open" />
     </div>
 
@@ -12,9 +21,9 @@
       title="Modifier la décision de l'instruction"
       size="xl"
     >
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-2 gap-4 mb-2">
         <div class="col-span-2 sm:col-span-1">
-          <DsfrInputGroup>
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'proposal')">
             <DsfrSelect
               label="Nouvelle décision"
               v-model="overridenDecision.proposal"
@@ -23,8 +32,8 @@
             />
           </DsfrInputGroup>
         </div>
-        <div class="col-span-2 sm:col-span-1">
-          <DsfrInputGroup>
+        <div class="col-span-2 sm:col-span-1" v-if="showDelayDays">
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'delayDays')">
             <DsfrInput
               v-model="overridenDecision.delayDays"
               label="Délai de réponse (jours)"
@@ -34,16 +43,11 @@
           </DsfrInputGroup>
         </div>
       </div>
-      <DsfrInputGroup>
-        <DsfrInput
-          is-textarea
-          label="Message au déclarant·e"
-          v-model="overridenDecision.producerMessage"
-          label-visible
-        />
+      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'comment')">
+        <DsfrInput is-textarea label="Message au déclarant·e" v-model="overridenDecision.comment" label-visible />
       </DsfrInputGroup>
       <div v-if="showReasons" class="border p-4">
-        <DsfrInputGroup>
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reasons')">
           <div class="mb-8" v-for="reason in blockingReasons" :key="reason.title">
             <p class="font-bold">{{ reason.title }}</p>
             <DsfrCheckboxSet
@@ -58,19 +62,46 @@
 </template>
 
 <script setup>
-import { ref, computed, onUpdated } from "vue"
+import { ref, computed, watch } from "vue"
 import { blockingReasons } from "@/utils/mappings"
-const emit = defineEmits(["override"])
-const props = defineProps({ originalOverridenDecision: { type: Object, default: () => {} } })
+import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
+import { helpers, required } from "@vuelidate/validators"
+import { useVuelidate } from "@vuelidate/core"
 
-const overridenDecision = ref(props.originalOverridenDecision || {})
+const modelValue = defineModel()
+const overridenDecision = ref()
+
+const copyModelValueToRef = () =>
+  (overridenDecision.value = modelValue.value ? JSON.parse(JSON.stringify(modelValue.value)) : { reasons: [] })
+
+copyModelValueToRef()
+
+const rules = computed(() => {
+  if (!overridenDecision.value?.proposal) return { proposal: errorRequiredField }
+  if (overridenDecision.value?.proposal === "AUTHORIZED") return {}
+  return {
+    comment: errorRequiredField,
+    reasons: { required: helpers.withMessage("Au moins une raison doit être selectionnée", required) },
+    proposal: errorRequiredField,
+    delayDays: overridenDecision.value?.proposal !== "REJECTED" ? errorRequiredField : {},
+  }
+})
+
+const $externalResults = ref({})
+const v$ = useVuelidate(rules, overridenDecision, { $externalResults })
 
 const opened = ref(false)
 
 const actions = [
   {
     label: "Modifier la décision",
-    onClick: () => emit("override", overridenDecision.value),
+    onClick: () => {
+      v$.value.$reset()
+      v$.value.$validate()
+      if (v$.value.$error) return
+      modelValue.value = overridenDecision.value
+      close()
+    },
     icon: { name: "ri-edit-fill" },
   },
   {
@@ -80,19 +111,29 @@ const actions = [
   },
 ]
 
-const close = () => (opened.value = false)
+const close = () => {
+  opened.value = false
+  copyModelValueToRef()
+}
 const open = () => (opened.value = true)
+const undo = () => (modelValue.value = undefined)
+
+const showUndoButton = computed(() => !!modelValue.value?.proposal)
 
 const proposalOptions = [
-  { text: "Autorisation", value: "autorisation" },
-  { text: "Observation", value: "observation" },
-  { text: "Objection", value: "objection" },
-  { text: "Refus", value: "rejection" },
+  { text: "Autorisation", value: "AUTHORIZED" },
+  { text: "Observation", value: "OBSERVATION" },
+  { text: "Objection", value: "OBJECTION" },
+  { text: "Refus", value: "REJECTED" },
 ]
 
 const showReasons = computed(
-  () => overridenDecision.value.proposal && overridenDecision.value.proposal !== "autorisation"
+  () => overridenDecision.value.proposal && overridenDecision.value.proposal !== "AUTHORIZED"
 )
 
-onUpdated(() => (overridenDecision.value = props.originalOverridenDecision || {}))
+const showDelayDays = computed(
+  () => overridenDecision.value.proposal === "OBSERVATION" || overridenDecision.value.proposal === "OBJECTION"
+)
+
+watch(modelValue, () => copyModelValueToRef())
 </script>

@@ -4,33 +4,34 @@
       <h3>Proposition à viser / signer</h3>
       <div class="border p-2">
         <VisaInfoLine title="Instructeur·ice" :text="instructorName" icon="ri-account-circle-line" />
-        <VisaInfoLine title="Décision" :text="postValidationStatus" icon="ri-focus-2-fill" />
+        <VisaInfoLine
+          title="Décision"
+          icon="ri-focus-2-fill"
+          :strikethroughText="hasOverridenOriginalDecision ? declarationProposal : ''"
+          :text="hasOverridenOriginalDecision ? overridenProposal : declarationProposal"
+        />
         <VisaInfoLine
           v-if="declaration.blockingReasons?.length"
           title="Raisons de la décision"
           icon="ri-edit-line"
-          :text="declaration.blockingReasons.join(',\n') || '< non spécifié >'"
+          :strikethroughText="hasOverridenOriginalDecision ? declarationReasons : ''"
+          :text="hasOverridenOriginalDecision ? overridenReasons : declarationReasons"
         />
-        <VisaInfoLine title="Message au déclarant·e" icon="ri-chat-3-line">
-          <template v-slot:value>
-            <DsfrInputGroup>
-              <DsfrInput
-                is-textarea
-                label="Motivation de la décision (à destination du professionnel)"
-                v-model="producerMessage"
-                class="!mt-0"
-              />
-            </DsfrInputGroup>
-          </template>
-        </VisaInfoLine>
+        <VisaInfoLine
+          title="Message au déclarant·e"
+          icon="ri-chat-3-line"
+          :strikethroughText="hasOverridenOriginalDecision ? declarationComment : ''"
+          :text="hasOverridenOriginalDecision ? overridenComment : declarationComment"
+        />
         <VisaInfoLine
           v-if="showExpirationDays"
           title="Délai de réponse"
           icon="ri-time-fill"
-          :text="declaration.postValidationExpirationDays || '< non spécifié >'"
+          :strikethroughText="hasOverridenOriginalDecision ? declarationExpirationDays : ''"
+          :text="hasOverridenOriginalDecision ? overridenExpirationDays : declarationExpirationDays"
         />
         <div class="px-4 py-2 border bg-gray-50">
-          <DecisionModificationModal :overridenDecision="overridenDecision" />
+          <DecisionModificationModal v-model="overridenDecision" />
         </div>
       </div>
     </div>
@@ -73,7 +74,10 @@ const $externalResults = ref({})
 const emit = defineEmits(["decision-done"])
 const declaration = defineModel()
 
-const overridenDecision = ref({})
+const overridenDecision = ref()
+const hasOverridenOriginalDecision = computed(
+  () => overridenDecision.value && Object.keys(overridenDecision.value).length > 0
+)
 
 const producerMessage = ref(declaration.value.postValidationProducerMessage)
 
@@ -146,4 +150,16 @@ const decisionCategories = computed(() => {
     },
   ]
 })
+
+const declarationReasons = computed(() => declaration.value?.blockingReasons?.join(",\n"))
+const overridenReasons = computed(() => overridenDecision.value?.reasons?.join(",\n"))
+
+const declarationComment = computed(() => declaration.value?.postValidationProducerMessage)
+const overridenComment = computed(() => overridenDecision.value?.comment)
+
+const declarationExpirationDays = computed(() => declaration.value?.postValidationExpirationDays)
+const overridenExpirationDays = computed(() => overridenDecision.value?.delayDays)
+
+const declarationProposal = computed(() => postValidationStatus)
+const overridenProposal = computed(() => statusProps[overridenDecision.value?.proposal]?.label)
 </script>
