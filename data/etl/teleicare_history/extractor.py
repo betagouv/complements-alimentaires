@@ -7,7 +7,7 @@ from django.db import IntegrityError
 
 from phonenumber_field.phonenumber import PhoneNumber
 
-from data.models import GalenicFormulation, SubstanceUnit
+from data.models import Condition, GalenicFormulation, Population, SubstanceUnit
 from data.models.company import ActivityChoices, Company
 from data.models.declaration import Declaration
 from data.models.teleicare_history.ica_declaration import (
@@ -199,9 +199,6 @@ def create_declaration_from_teleicare_history():
                         f"Cette entreprise avec siccrf_id={ica_complement_alimentaire.etab_id} n'existe pas déjà en base"
                     )
                     continue
-                conditions_not_recommended = IcaPopulationRisqueDeclaree.objects.filter(
-                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident
-                )
                 declaration = Declaration(
                     siccrf_id=ica_complement_alimentaire.cplalim_ident,
                     galenic_formulation=GalenicFormulation.objects.get(
@@ -222,13 +219,7 @@ def create_declaration_from_teleicare_history():
                     instructions=latest_ica_version_declaration.vrsdecl_mode_emploi or "",
                     warning=latest_ica_version_declaration.vrsdecl_mise_en_garde or "",
                     calculated_article=DECLARATION_TYPE_TO_ARTICLE_MAPPING[latest_ica_declaration.tydcl_ident],
-                    populations=convert_population(
-                        IcaPopulationCibleDeclaree.objects.filter(
-                            vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident
-                        )
-                    ),
-                    conditions_not_recommended=convert_condition(conditions_not_recommended),
-                    other_conditions=conditions_not_recommended,
+                    # other_conditions=conditions_not_recommended,
                     # TODO: ces champs proviennent de tables pas encore importées
                     # effects=
                     # other_effects=
@@ -243,6 +234,28 @@ def create_declaration_from_teleicare_history():
 
                 try:
                     declaration.save()
+                    declaration.populations.set(
+                        [
+                            Population.objects.get(siccrf_id=population.popcbl_ident)
+                            for population in (
+                                IcaPopulationCibleDeclaree.objects.filter(
+                                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident
+                                )
+                            )
+                        ]
+                    )
+                    declaration.conditions_not_recommended.set(
+                        [
+                            Condition.objects.get(siccrf_id=condition.poprs_ident)
+                            for condition in (
+                                IcaPopulationRisqueDeclaree.objects.filter(
+                                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident
+                                )
+                            )
+                        ]
+                    )
+                    declaration.save()
+
                     nb_created_declarations += 1
                 except IntegrityError:
                     # cette Déclaration a déjà été créée
