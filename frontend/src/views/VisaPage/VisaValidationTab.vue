@@ -93,7 +93,7 @@ const postValidationStatus = computed(() => statusProps[declaration.value.postVa
 
 const refusalUrl = computed(() => `/api/v1/declarations/${declaration.value.id}/refuse-visa/`)
 const acceptanceUrl = computed(() => `/api/v1/declarations/${declaration.value.id}/accept-visa/`)
-const postData = computed(() => ({ comment: producerMessage.value }))
+const postData = computed(() => overridenDecision.value || {})
 
 const {
   execute: refuseExecute,
@@ -133,9 +133,7 @@ const decisionCategories = computed(() => {
       title: "Je valide cette décision",
       icon: "ri-checkbox-circle-fill",
       iconColor: "green",
-      description: shouldBlockApproval.value
-        ? "La déclaration ne peut pas être autorisée en nécessitant une saisine ANSEES."
-        : "Je vise cette déclaration et signe.",
+      description: validationHelperText.value,
       buttonText: "Valider",
       buttonHandler: acceptVisa,
       blockedByAnses: shouldBlockApproval.value,
@@ -144,11 +142,23 @@ const decisionCategories = computed(() => {
       title: "Je ne suis pas d'accord",
       icon: "ri-close-circle-fill",
       iconColor: "red",
-      description: "Je renvoie le dossier en instruction.",
+      description: refusalHelperText.value,
       buttonText: "Refuser",
       buttonHandler: refuseVisa,
     },
   ]
+})
+
+const validationHelperText = computed(() => {
+  if (shouldBlockApproval.value) return "La déclaration ne peut pas être autorisée en nécessitant une saisine ANSEES."
+  if (hasOverridenOriginalDecision.value) return "Je vise cette déclaration avec les modifications effectuées et signe."
+  return "Je vise cette déclaration et signe."
+})
+
+const refusalHelperText = computed(() => {
+  if (hasOverridenOriginalDecision.value)
+    return "Je renvoie le dossier en instruction. Les modifications effectuées ne seront pas prises en compte."
+  return "Je renvoie le dossier en instruction."
 })
 
 const declarationReasons = computed(() => declaration.value?.blockingReasons?.join(",\n"))

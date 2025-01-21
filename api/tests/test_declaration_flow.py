@@ -671,15 +671,25 @@ class TestDeclarationFlow(APITestCase):
             post_validation_producer_message="À authoriser",
         )
 
-        body = {"override": "OBSERVATION", "comment": "Observation"}
+        body = {
+            "comment": "overriden comment",
+            "proposal": "OBSERVATION",
+            "delayDays": 6,
+            "reasons": [
+                "a",
+                "b",
+            ],
+        }
         response = self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), body, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         declaration.refresh_from_db()
         latest_snapshot = declaration.snapshots.latest("creation_date")
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.OBSERVATION)
-        self.assertEqual(latest_snapshot.comment, "Observation")
+        self.assertEqual(latest_snapshot.comment, "overriden comment")
         self.assertEqual(latest_snapshot.status, Declaration.DeclarationStatus.OBSERVATION)
+        self.assertEqual(latest_snapshot.expiration_days, 6)
+        self.assertEqual(latest_snapshot.blocking_reasons, ["a", "b"])
 
     @authenticate
     def test_visor_can_modify_comment(self):

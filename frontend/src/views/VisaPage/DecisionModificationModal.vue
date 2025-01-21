@@ -39,6 +39,7 @@
               label="Délai de réponse (jours)"
               label-visible
               class="max-w-96"
+              type="number"
             />
           </DsfrInputGroup>
         </div>
@@ -115,7 +116,10 @@ const close = () => {
   opened.value = false
   copyModelValueToRef()
 }
-const open = () => (opened.value = true)
+const open = () => {
+  v$.value.$reset()
+  opened.value = true
+}
 const undo = () => (modelValue.value = undefined)
 
 const showUndoButton = computed(() => !!modelValue.value?.proposal)

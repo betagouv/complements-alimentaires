@@ -645,12 +645,20 @@ class DeclarationRefuseVisaView(VisaDecisionView):
 class DeclarationAcceptVisaView(VisaDecisionView):
     """
     ONGOING_VISA -> { AUTHORIZED | REJECTED | OBJECTION | OBSERVATION }
+    Le ou la viseuse peut surcharger la décision de l'instructrice en envoyant
+    un objet dans le payload de cette forme :
+    {
+        comment: "overriden comment",
+        proposal: "OBSERVATION", // (ou un autre statut)
+        delayDays: 10,
+        reasons: ["a", "b"],
+    }
     """
 
     snapshot_action = Snapshot.SnapshotActions.ACCEPT_VISA
 
     def get_validation_status(self, request, declaration):
-        overriden_status = request.data.get("override")
+        overriden_status = request.data.get("proposal")
         if overriden_status:
             return Declaration.DeclarationStatus(overriden_status)
         return declaration.post_validation_status
@@ -663,12 +671,16 @@ class DeclarationAcceptVisaView(VisaDecisionView):
         Possible de le surcharger si la création du snapshot nécessite un
         traitement spécial
         """
-        declaration.create_snapshot(
+        overriden = request.data.get("proposal")
+        data = request.data
+        d = declaration
+        d.create_snapshot(
             user=request.user,
-            comment=request.data.get("comment", declaration.post_validation_producer_message),
-            expiration_days=declaration.post_validation_expiration_days,
-            action=self.get_snapshot_action(request, declaration),
-            post_validation_status=self.get_snapshot_post_validation_status(request, declaration),
+            comment=data.get("comment") if overriden else d.post_validation_producer_message,
+            expiration_days=data.get("delay_days") if overriden else d.post_validation_expiration_days,
+            action=self.get_snapshot_action(request, d),
+            post_validation_status=self.get_snapshot_post_validation_status(request, d),
+            blocking_reasons=data.get("reasons") if overriden else None,
         )
 
     def get_transition(self, request, declaration):
