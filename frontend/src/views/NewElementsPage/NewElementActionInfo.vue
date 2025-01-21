@@ -14,8 +14,7 @@
         :to="{ name: 'DeclaredElementPage', params: { type: recentAction.type, id: recentAction.id } }"
         class="text-blue-france-sun-113"
       >
-        <!-- TODO: what name do we want to show? For microorganism and for replaced ingredients -->
-        {{ element.newName }}
+        {{ elementName }}
       </router-link>
       :
       <span v-if="element.requestStatus === 'INFORMATION'">Des informations complémentaires sont nécessaires.</span>
@@ -25,7 +24,6 @@
         <router-link :to="elementLink">{{ element.element.name }}</router-link>
         dans la composition de la déclaration.
       </span>
-      <!-- TODO: annuler l'action -->
     </p>
   </DsfrAlert>
 </template>
@@ -35,6 +33,7 @@ import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { getApiType } from "@/utils/mappings"
+import { getNewElementName } from "@/utils/elements"
 
 // retrouver le détail de l'element et l'action prise
 const route = useRoute()
@@ -70,4 +69,6 @@ const alertType = computed(() => {
 })
 
 const closed = ref(false)
+
+const elementName = computed(() => getNewElementName(element.value))
 </script>

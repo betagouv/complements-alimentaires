@@ -45,6 +45,7 @@ import { useRouter } from "vue-router"
 import { getApiType } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
+import { getNewElementName } from "@/utils/elements"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
 import ReplacementSearch from "./ReplacementSearch"
@@ -82,7 +83,7 @@ const getElementFromApi = async () => {
 getElementFromApi()
 watch(element, (newElement) => {
   if (newElement) {
-    const name = newElement.newName || `${newElement.newSpecies} ${newElement.newGenre}`
+    const name = getNewElementName(newElement)
     document.title = `${name} - Compl'Alim`
   }
 })
