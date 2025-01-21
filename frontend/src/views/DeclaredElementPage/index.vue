@@ -100,6 +100,7 @@ const openModal = (type) => {
 const replacement = ref()
 const synonyms = ref()
 watch(replacement, () => {
+  if (!replacement.value?.synonyms) return
   synonyms.value = JSON.parse(JSON.stringify(replacement.value.synonyms)) // initialise synonyms that might be updated
 })
 
