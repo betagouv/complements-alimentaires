@@ -45,7 +45,11 @@ const recentAction = computed(() => {
   }
 })
 
-const url = computed(() => `/api/v1/declared-elements/${getApiType(recentAction.value.type)}/${recentAction.value.id}`)
+const url = computed(
+  () =>
+    recentAction.value.type &&
+    `/api/v1/declared-elements/${getApiType(recentAction.value.type)}/${recentAction.value.id}`
+)
 const { data, execute } = useFetch(url, { immediate: false }).get().json()
 
 const element = computed(() => data.value)
