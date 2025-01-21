@@ -2,8 +2,6 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-from django_ckeditor_5.fields import CKEditor5Field
-
 from data.fields import EnrichedRichTextField
 
 
@@ -19,7 +17,6 @@ class BlogPost(models.Model):
     title = models.TextField(verbose_name="titre")
     tagline = models.TextField(null=True, blank=True, verbose_name="description courte")
     display_date = models.DateField(default=timezone.now, verbose_name="date affichée")
-    body = CKEditor5Field(null=True, blank=True, verbose_name="contenu (legacy)")
     content = EnrichedRichTextField(null=True, blank=True, verbose_name="contenu")
     published = models.BooleanField(default=False, verbose_name="publié")
     author = models.ForeignKey(
