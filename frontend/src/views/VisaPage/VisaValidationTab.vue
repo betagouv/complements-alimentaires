@@ -7,28 +7,28 @@
         <VisaInfoLine
           title="Décision"
           icon="ri-focus-2-fill"
-          :strikethroughText="hasoverriddenOriginalDecision ? declarationProposal : ''"
-          :text="hasoverriddenOriginalDecision ? overriddenProposal : declarationProposal"
+          :strikethroughText="hasOverriddenOriginalDecision ? declarationProposal : ''"
+          :text="hasOverriddenOriginalDecision ? overriddenProposal : declarationProposal"
         />
         <VisaInfoLine
-          v-if="declaration.blockingReasons?.length"
+          v-if="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
           title="Raisons de la décision"
           icon="ri-edit-line"
-          :strikethroughText="hasoverriddenOriginalDecision ? declarationReasons : ''"
-          :text="hasoverriddenOriginalDecision ? overriddenReasons : declarationReasons"
+          :strikethroughText="hasOverriddenOriginalDecision ? declarationReasons : ''"
+          :text="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
         />
         <VisaInfoLine
           title="Message au déclarant·e"
           icon="ri-chat-3-line"
-          :strikethroughText="hasoverriddenOriginalDecision ? declarationComment : ''"
-          :text="hasoverriddenOriginalDecision ? overriddenComment : declarationComment"
+          :strikethroughText="hasOverriddenOriginalDecision ? declarationComment : ''"
+          :text="hasOverriddenOriginalDecision ? overriddenComment : declarationComment"
         />
         <VisaInfoLine
           v-if="showExpirationDays"
           title="Délai de réponse"
           icon="ri-time-fill"
-          :strikethroughText="hasoverriddenOriginalDecision ? declarationExpirationDays : ''"
-          :text="hasoverriddenOriginalDecision ? overriddenExpirationDays : declarationExpirationDays"
+          :strikethroughText="hasOverriddenOriginalDecision ? declarationExpirationDays : ''"
+          :text="hasOverriddenOriginalDecision ? overriddenExpirationDays : declarationExpirationDays"
         />
         <div class="px-4 py-2 border bg-gray-50">
           <DecisionModificationModal v-model="overriddenDecision" />
@@ -75,7 +75,7 @@ const emit = defineEmits(["decision-done"])
 const declaration = defineModel()
 
 const overriddenDecision = ref()
-const hasoverriddenOriginalDecision = computed(
+const hasOverriddenOriginalDecision = computed(
   () => overriddenDecision.value && Object.keys(overriddenDecision.value).length > 0
 )
 
@@ -85,10 +85,13 @@ const instructorName = computed(() => {
   if (!declaration.value?.instructor) return "-"
   return `${declaration.value.instructor.firstName || ""} ${declaration.value.instructor.lastName || ""}`
 })
-const showExpirationDays = computed(
-  () =>
-    declaration.value.postValidationStatus === "OBJECTION" || declaration.value.postValidationStatus === "OBSERVATION"
-)
+const showExpirationDays = computed(() => {
+  const concernedStatuses = ["OBJECTION", "OBSERVATION"]
+  const validationStatus = hasOverriddenOriginalDecision.value
+    ? overriddenDecision.value.proposal
+    : declaration.value.postValidationStatus
+  return concernedStatuses.indexOf(validationStatus) > -1
+})
 const postValidationStatus = computed(() => statusProps[declaration.value.postValidationStatus].label)
 
 const refusalUrl = computed(() => `/api/v1/declarations/${declaration.value.id}/refuse-visa/`)
@@ -151,13 +154,13 @@ const decisionCategories = computed(() => {
 
 const validationHelperText = computed(() => {
   if (shouldBlockApproval.value) return "La déclaration ne peut pas être autorisée en nécessitant une saisine ANSEES."
-  if (hasoverriddenOriginalDecision.value)
+  if (hasOverriddenOriginalDecision.value)
     return "Je vise cette déclaration avec les modifications effectuées et signe."
   return "Je vise cette déclaration et signe."
 })
 
 const refusalHelperText = computed(() => {
-  if (hasoverriddenOriginalDecision.value)
+  if (hasOverriddenOriginalDecision.value)
     return "Je renvoie le dossier en instruction. Les modifications effectuées ne seront pas prises en compte."
   return "Je renvoie le dossier en instruction."
 })
