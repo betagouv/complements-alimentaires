@@ -692,6 +692,38 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(latest_snapshot.blocking_reasons, ["a", "b"])
 
     @authenticate
+    def test_visor_cant_modify_on_refuse(self):
+        """
+        Refuser un visa n'applique pas les modifications
+        """
+        VisaRoleFactory(user=authenticate.user)
+
+        declaration = OngoingVisaDeclarationFactory(
+            post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
+            post_validation_producer_message="À authoriser",
+        )
+
+        body = {
+            "comment": "overridden comment",
+            "proposal": "OBSERVATION",
+            "delayDays": 6,
+            "reasons": [
+                "a",
+                "b",
+            ],
+        }
+        response = self.client.post(reverse("api:refuse_visa", kwargs={"pk": declaration.id}), body, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
+        self.assertEqual(latest_snapshot.comment, "À authoriser")
+        self.assertEqual(latest_snapshot.status, Declaration.DeclarationStatus.AUTHORIZED)
+        self.assertEqual(latest_snapshot.expiration_days, None)
+        self.assertEqual(latest_snapshot.blocking_reasons, None)
+
+    @authenticate
     def accept_visa_unauthorized(self):
         """
         Passage de ONGOING_VISA à à { AUTHORIZED | REJECTED | OBJECTION | OBSERVATION }
