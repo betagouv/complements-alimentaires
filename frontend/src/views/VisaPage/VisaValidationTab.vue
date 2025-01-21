@@ -37,12 +37,12 @@
     </div>
 
     <div class="grid grid-cols-2 gap-10">
-      <div class="border p-4" v-for="decision in decisionCategories" :key="decision.title">
+      <div class="border p-4 flex flex-col" v-for="decision in decisionCategories" :key="decision.title">
         <h6 class="font-bold">
           <v-icon :color="decision.iconColor" :name="decision.icon" scale="1.2" aria-hidden class="mr-1" />
           {{ decision.title }}
         </h6>
-        <p class="fr-text--sm">
+        <p class="fr-text--sm grow">
           {{ decision.description }}
         </p>
         <ArticleInfoRow class="mb-2" v-if="decision.blockedByAnses" v-model="declaration" />
