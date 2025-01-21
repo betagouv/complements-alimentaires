@@ -1928,27 +1928,85 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(declared_plant.plant, plant)
 
     @authenticate
-    def test_cannot_replace_element_different_type(self):
-        """
-        Pour reduire le scope de changements, temporairement bloque le remplacement d'une demande
-        avec un element d'un type different
-        """
+    def test_can_replace_plant_request_with_microorganism(self):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration)
+        declared_plant = DeclaredPlantFactory(
+            declaration=declaration, new_name="Test plant", new_description="Test description", new=True
+        )
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
         microorganism = MicroorganismFactory()
 
         response = self.client.post(
             reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
-            {"element": {"id": microorganism.id, "type": "microorganism"}},
+            {
+                "element": {"id": microorganism.id, "type": "microorganism"},
+                "additional_fields": {
+                    "strain": "Test strain",
+                    "activated": False,
+                },
+            },
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response.json())
-        declared_plant.refresh_from_db()
-        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
-        self.assertNotEqual(declared_plant.plant, microorganism)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        with self.assertRaises(DeclaredPlant.DoesNotExist):
+            DeclaredPlant.objects.get(id=declared_plant.id)
+        self.assertEqual(DeclaredMicroorganism.objects.count(), 1)
+        declared_microorganism = DeclaredMicroorganism.objects.get(declaration=declaration)
+        self.assertEqual(declared_microorganism.microorganism, microorganism)
+        # test name has been copied into the species field
+        self.assertEqual(declared_microorganism.new_species, "Test plant")
+        self.assertEqual(declared_microorganism.new_genre, "")
+        # test new fields saved
+        self.assertEqual(declared_microorganism.strain, "Test strain")
+        self.assertEqual(declared_microorganism.activated, False)
+        # test old fields copied over
+        self.assertEqual(declared_microorganism.new_description, "Test description")
+        self.assertEqual(declared_microorganism.request_status, DeclaredMicroorganism.AddableStatus.REPLACED)
+
+    @authenticate
+    def test_can_replace_microorganism_request_with_plant(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(
+            declaration=declaration,
+            new_species="test",
+            new_genre="testing",
+            new_description="Test description",
+            new=True,
+        )
+        self.assertEqual(declared_microorganism.request_status, DeclaredMicroorganism.AddableStatus.REQUESTED)
+        plant = PlantFactory()
+        used_part = PlantPartFactory()
+        unit = SubstanceUnitFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "additional_fields": {
+                    "used_part": used_part.id,
+                    "unit": unit.id,
+                },
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        with self.assertRaises(DeclaredMicroorganism.DoesNotExist):
+            DeclaredMicroorganism.objects.get(id=declared_microorganism.id)
+        self.assertEqual(DeclaredPlant.objects.count(), 1)
+        new_declared_plant = DeclaredPlant.objects.get(declaration=declaration)
+        self.assertEqual(new_declared_plant.plant, plant)
+        # test name has been copied into the species field
+        self.assertEqual(new_declared_plant.new_name, "test testing")
+        # test new fields saved
+        self.assertEqual(new_declared_plant.used_part, used_part)
+        self.assertEqual(new_declared_plant.unit, unit)
+        # test old fields copied over
+        self.assertEqual(new_declared_plant.new_description, "Test description")
+        self.assertEqual(new_declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
 
     @authenticate
     def test_can_add_synonym_on_replace(self):
@@ -1959,7 +2017,7 @@ class TestDeclaredElementsApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration, new=True)
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
         plant = PlantFactory()
         synonym = PlantSynonymFactory.create(name="Eucalyptus Plant", standard_name=plant)
 
@@ -1978,3 +2036,115 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(plant.plantsynonym_set.count(), 2)
         self.assertIsNotNone(plant.plantsynonym_set.get(name="New synonym"))
         self.assertEqual(plant.plantsynonym_set.get(id=synonym.id).name, synonym.name)
+
+    @authenticate
+    def test_cannot_provide_synonym_with_no_name(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "synonyms": [{"name": ""}],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        plant.refresh_from_db()
+        self.assertEqual(plant.plantsynonym_set.count(), 0)
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "synonyms": [{}],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response.json())
+        self.assertEqual(response.json()["globalError"], "Must provide 'name' to create new synonym")
+        plant.refresh_from_db()
+        self.assertEqual(plant.plantsynonym_set.count(), 0)
+
+    @authenticate
+    def test_elements_unchanged_on_replace_fail(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration)
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "additional_fields": {
+                    "used_part": 99,  # fail: id unrecognised
+                },
+                "synonyms": [{"name": "New synonym"}],
+            },
+            format="json",
+        )
+        body = response.json()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, body)
+        self.assertEqual(
+            body["fieldErrors"]["usedPart"][0], "Clé primaire «\xa099\xa0» non valide - l'objet n'existe pas.", body
+        )
+        # assertion implicite - l'objet existe tjs
+        DeclaredMicroorganism.objects.get(id=declared_microorganism.id)
+        self.assertFalse(plant.plantsynonym_set.filter(name="New synonym").exists())
+        self.assertEqual(DeclaredPlant.objects.count(), 0)
+
+    @authenticate
+    def test_elements_unchanged_on_synonym_fail(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration, quantity=10)
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "additional_fields": {
+                    "quantity": 99,
+                },
+                "synonyms": [{}],
+            },
+            format="json",
+        )
+        body = response.json()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, body)
+        still_existing_declared_microorganism = DeclaredMicroorganism.objects.get(id=declared_microorganism.id)
+        self.assertEqual(still_existing_declared_microorganism.quantity, 10)
+        self.assertEqual(DeclaredPlant.objects.count(), 0)
+
+    @authenticate
+    def test_id_ignored_in_additional_fields_replace(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration, new_species="test", new=True)
+        plant = PlantFactory()
+        unit = SubstanceUnitFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "additional_fields": {
+                    "id": 99,
+                    "unit": unit.id,
+                },
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        new_declared_plant = DeclaredPlant.objects.first()
+        self.assertEqual(new_declared_plant.unit, unit)
+        self.assertNotEqual(new_declared_plant.id, 99)
