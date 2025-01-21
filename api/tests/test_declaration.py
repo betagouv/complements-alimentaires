@@ -1978,3 +1978,36 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(plant.plantsynonym_set.count(), 2)
         self.assertIsNotNone(plant.plantsynonym_set.get(name="New synonym"))
         self.assertEqual(plant.plantsynonym_set.get(id=synonym.id).name, synonym.name)
+
+    @authenticate
+    def test_cannot_provide_synonym_with_no_name(self):
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "synonyms": [{"name": ""}],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        plant.refresh_from_db()
+        self.assertEqual(plant.plantsynonym_set.count(), 0)
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "synonyms": [{}],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response.json())
+        self.assertEqual(response.json()["globalError"], "Must provide 'name' to create new synonym")
+        plant.refresh_from_db()
+        self.assertEqual(plant.plantsynonym_set.count(), 0)

@@ -180,7 +180,8 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             if not synonym.get("id"):
                 # add new synonym
                 try:
-                    name = synonym.get("name")
+                    name = synonym["name"]
+                    if name:
+                        self.synonym_model.objects.create(standard_name=existing_element, name=name)
                 except KeyError:
                     raise ParseError(detail="Must provide 'name' to create new synonym")
-                self.synonym_model.objects.create(standard_name=existing_element, name=name)
