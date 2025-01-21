@@ -187,7 +187,7 @@ DECLARATION_TYPE_TO_ARTICLE_MAPPING = {
 }
 
 
-MANY_TO_MANY_MODELS_MATCHING = {
+MANY_TO_MANY_PRODUCT_MODELS_MATCHING = {
     "effects": {"teleIcare_model": IcaEffetDeclare, "teleIcare_pk": "objeff_ident", "CA_model": Effect},
     "conditions_not_recommended": {
         "teleIcare_model": IcaPopulationRisqueDeclaree,
@@ -195,6 +195,33 @@ MANY_TO_MANY_MODELS_MATCHING = {
         "CA_model": Condition,
     },
     "populations": {
+        "teleIcare_model": IcaPopulationCibleDeclaree,
+        "teleIcare_pk": "popcbl_ident",
+        "CA_model": Population,
+    },
+}
+MANY_TO_MANY_INGREDIENT_MODELS_MATCHING = {
+    "declared_plant": {
+        "teleIcare_model": IcaPreparation,
+        "teleIcare_pk": "popcbl_ident",
+        "CA_model": Population,
+    },
+    "declared_microorganism": {
+        "teleIcare_model": IcaMicroOrganisme,
+        "teleIcare_pk": "popcbl_ident",
+        "CA_model": Population,
+    },
+    "declared_ingredient": {
+        "teleIcare_model": IcaIngredientAutre,
+        "teleIcare_pk": "popcbl_ident",
+        "CA_model": Population,
+    },
+    "declared_substances": {
+        "teleIcare_model": IcaSubstanceDeclaree,
+        "teleIcare_pk": "popcbl_ident",
+        "CA_model": Population,
+    },
+    "computed_substances": {
         "teleIcare_model": IcaPopulationCibleDeclaree,
         "teleIcare_pk": "popcbl_ident",
         "CA_model": Population,
@@ -212,7 +239,8 @@ def update_declaration_from_teleicare_history(declaration, vrsdecl_ident):
     # TODO: other_conditions=conditions_not_recommended,
     # TODO: other_effects=
     # TODO: compostion
-    for CA_field_name, struct in MANY_TO_MANY_MODELS_MATCHING.items():
+    # Set des champs many to many relatifs à l'onglet "Produit"
+    for CA_field_name, struct in MANY_TO_MANY_PRODUCT_MODELS_MATCHING.items():
         # par exemple Declaration.populations
         CA_field = getattr(declaration, CA_field_name)
         # TODO: utiliser les dataclass ici
@@ -225,7 +253,8 @@ def update_declaration_from_teleicare_history(declaration, vrsdecl_ident):
                 for TI_object in (teleIcare_model.objects.filter(vrsdecl_ident=vrsdecl_ident))
             ]
         )
-
+    # Set des champs many to many relatifs à l'onglet "Composition"
+    for CA_field_name, struct in MANY_TO_MANY_INGREDIENT_MODELS_MATCHING.items():
         declaration.save()
 
 
@@ -307,11 +336,11 @@ def create_declaration_from_teleicare_history():
 
                 try:
                     with suppress_autotime(declaration, ["creation_date", "modification_date"]):
-                      declaration.save()
-                      update_declaration_from_teleicare_history(
-                          declaration, latest_ica_version_declaration.vrsdecl_ident
-                      )
-                      nb_created_declarations += 1
+                        declaration.save()
+                        update_declaration_from_teleicare_history(
+                            declaration, latest_ica_version_declaration.vrsdecl_ident
+                        )
+                        nb_created_declarations += 1
                 except IntegrityError:
                     # cette Déclaration a déjà été créée
                     pass
