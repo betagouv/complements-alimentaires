@@ -46,49 +46,32 @@ const rows = computed(() =>
 )
 
 const getRequestStatusTagForCell = (request) => {
-  // TODO: ideally reuse the DSFR icons used in the alerts, but unsure if those classes are working
   const status = {
     REQUESTED: {
       label: "Nouvelle",
-      icon: "ri-todo-fill",
-      class: "info",
+      type: "info",
     },
     INFORMATION: {
       label: "Information",
-      icon: "ri-time-line",
-      class: "warning",
+      type: "warning",
     },
     REJECTED: {
       label: "Refusé",
-      icon: "ri-error-warning-line",
-      class: "error",
+      type: "error",
     },
   }[request.requestStatus]
 
-  return status
-    ? {
-        ...status,
-        component: "DsfrTag",
-      }
-    : {}
+  return (
+    status && {
+      ...status,
+      component: "DsfrBadge",
+    }
+  )
 }
 </script>
 
 <style scoped>
 .fr-table :deep(td) {
   width: calc(100% / 6);
-}
-
-:deep(.info) {
-  color: var(--info-425-625);
-  background-color: var(--info-950-100);
-}
-:deep(.error) {
-  color: var(--error-425-625);
-  background-color: var(--error-950-100);
-}
-:deep(.warning) {
-  color: var(--warning-425-625);
-  background-color: var(--warning-950-100);
 }
 </style>
