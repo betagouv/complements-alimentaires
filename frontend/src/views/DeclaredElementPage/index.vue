@@ -59,11 +59,13 @@ const declarationLink = computed(() => {
 })
 
 const breadcrumbLinks = computed(() => {
-  const links = [
-    { to: { name: "DashboardPage" }, text: "Tableau de bord" },
-    { to: { name: "InstructionDeclarations" }, text: "Déclarations pour instruction" },
-  ]
-  if (declarationLink.value) links.push({ to: declarationLink.value, text: "Instruction" })
+  const links = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]
+  if (lastRoute.value.name === "InstructionPage" && declarationLink.value) {
+    links.push({ to: { name: "InstructionDeclarations" }, text: "Déclarations pour instruction" })
+    links.push({ to: lastRoute.value, text: "Instruction" })
+  } else {
+    links.push({ to: requestTableRoute, text: "Tableau de demandes" })
+  }
   links.push({ text: "Demande d'ajout d'ingrédient" })
   return links
 })
@@ -90,12 +92,11 @@ const modalToOpen = ref(false)
 const closeModal = () => (modalToOpen.value = false)
 
 const router = useRouter()
+const requestTableRoute = { name: "NewElementsPage" }
 // merci https://github.com/vuejs/vue-router/issues/997#issuecomment-1536254142
 const lastRoute = computed(() => {
   const backUrl = router.options.history.state.back
-  const route = router.resolve({ path: `${backUrl}` })
-
-  return route
+  return backUrl ? router.resolve({ path: `${backUrl}` }) : requestTableRoute
 })
 const navigateBack = (response) => {
   const successRoute = lastRoute.value
