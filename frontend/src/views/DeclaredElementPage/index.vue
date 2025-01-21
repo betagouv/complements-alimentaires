@@ -120,7 +120,8 @@ const openModal = (type) => {
 const replacement = ref()
 const synonyms = ref()
 watch(replacement, () => {
-  synonyms.value = JSON.parse(JSON.stringify(replacement.value.synonyms)) // initialise synonyms that might be updated
+  // initialiser les synonymes pour permettre la MAJ
+  synonyms.value = JSON.parse(JSON.stringify(replacement.value.synonyms || []))
 })
 
 const cannotReplace = computed(() => replacement.value?.objectType !== element.value.type)
