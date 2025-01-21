@@ -123,3 +123,16 @@ class IcaPopulationRisqueDeclaree(models.Model):
         managed = False
         db_table = "ica_population_risque_declaree"
         unique_together = (("vrsdecl_ident", "poprs_ident"),)
+
+
+class IcaEffetDeclare(models.Model):
+    vrsdecl_ident = models.IntegerField(
+        primary_key=True
+    )  # The composite primary key (vrsdecl_ident, objeff_ident) found, that is not supported. The first column is selected.
+    objeff_ident = models.IntegerField()
+    vrs_autre_objectif = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ica_effet_declare"
+        unique_together = (("vrsdecl_ident", "objeff_ident"),)

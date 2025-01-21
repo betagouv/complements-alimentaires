@@ -3,16 +3,17 @@ import re
 from datetime import date, datetime
 
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 
 from phonenumber_field.phonenumber import PhoneNumber
 
-from data.models import Condition, GalenicFormulation, Population, SubstanceUnit
+from data.models import Condition, Effect, GalenicFormulation, Population, SubstanceUnit
 from data.models.company import ActivityChoices, Company
 from data.models.declaration import Declaration
 from data.models.teleicare_history.ica_declaration import (
     IcaComplementAlimentaire,
     IcaDeclaration,
+    IcaEffetDeclare,
     IcaPopulationCibleDeclaree,
     IcaPopulationRisqueDeclaree,
     IcaVersionDeclaration,
@@ -156,12 +157,46 @@ DECLARATION_TYPE_TO_ARTICLE_MAPPING = {
 }
 
 
-def convert_population(pop):
-    return
+MANY_TO_MANY_MODELS_MATCHING = {
+    "effects": {"teleIcare_model": IcaEffetDeclare, "teleIcare_pk": "objeff_ident", "CA_model": Effect},
+    "conditions_not_recommended": {
+        "teleIcare_model": IcaPopulationRisqueDeclaree,
+        "teleIcare_pk": "poprs_ident",
+        "CA_model": Condition,
+    },
+    "populations": {
+        "teleIcare_model": IcaPopulationCibleDeclaree,
+        "teleIcare_pk": "popcbl_ident",
+        "CA_model": Population,
+    },
+}
 
 
-def convert_condition(cond):
-    return
+@transaction.atomic
+def update_declaration_from_teleicare_history(declaration, vrsdecl_ident):
+    """
+    Cette function importe les champs ManyToMany des déclarations.
+    Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
+    `create_declaration_from_teleicare_history` pour updater leurs champs ManyToMany.
+    """
+    # TODO: other_conditions=conditions_not_recommended,
+    # TODO: other_effects=
+    # TODO: compostion
+    for CA_field_name, struct in MANY_TO_MANY_MODELS_MATCHING.items():
+        # par exemple Declaration.populations
+        CA_field = getattr(declaration, CA_field_name)
+        # TODO: utiliser les dataclass ici
+        pk_field = struct["teleIcare_pk"]
+        CA_model = struct["CA_model"]
+        teleIcare_model = struct["teleIcare_model"]
+        CA_field.set(
+            [
+                CA_model.objects.get(siccrf_id=getattr(TI_object, pk_field))
+                for TI_object in (teleIcare_model.objects.filter(vrsdecl_ident=vrsdecl_ident))
+            ]
+        )
+
+        declaration.save()
 
 
 def create_declaration_from_teleicare_history():
@@ -219,10 +254,7 @@ def create_declaration_from_teleicare_history():
                     instructions=latest_ica_version_declaration.vrsdecl_mode_emploi or "",
                     warning=latest_ica_version_declaration.vrsdecl_mise_en_garde or "",
                     calculated_article=DECLARATION_TYPE_TO_ARTICLE_MAPPING[latest_ica_declaration.tydcl_ident],
-                    # other_conditions=conditions_not_recommended,
-                    # TODO: ces champs proviennent de tables pas encore importées
-                    # effects=
-                    # other_effects=
+                    # TODO: ces champs sont à importer
                     # address=
                     # postal_code=
                     # city=
@@ -234,28 +266,9 @@ def create_declaration_from_teleicare_history():
 
                 try:
                     declaration.save()
-                    declaration.populations.set(
-                        [
-                            Population.objects.get(siccrf_id=population.popcbl_ident)
-                            for population in (
-                                IcaPopulationCibleDeclaree.objects.filter(
-                                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident
-                                )
-                            )
-                        ]
+                    update_declaration_from_teleicare_history(
+                        declaration, latest_ica_version_declaration.vrsdecl_ident
                     )
-                    declaration.conditions_not_recommended.set(
-                        [
-                            Condition.objects.get(siccrf_id=condition.poprs_ident)
-                            for condition in (
-                                IcaPopulationRisqueDeclaree.objects.filter(
-                                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident
-                                )
-                            )
-                        ]
-                    )
-                    declaration.save()
-
                     nb_created_declarations += 1
                 except IntegrityError:
                     # cette Déclaration a déjà été créée
