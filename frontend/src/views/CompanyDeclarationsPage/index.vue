@@ -7,6 +7,7 @@
         { text: 'Les déclarations de mon entreprise' },
       ]"
     />
+    <HistoryAlert />
     <div class="border px-4 pt-4 pb-0 mb-2 sm:flex gap-8 items-baseline filters">
       <DsfrFieldset class="!mb-0">
         <div class="md:pl-4">
@@ -72,6 +73,7 @@ import { getPagesForPagination } from "@/utils/components"
 import CompanyDeclarationsTable from "./CompanyDeclarationsTable"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import StatusFilter from "@/components/StatusFilter.vue"
+import HistoryAlert from "@/components/HistoryAlert.vue"
 
 const route = useRoute()
 const store = useRootStore()

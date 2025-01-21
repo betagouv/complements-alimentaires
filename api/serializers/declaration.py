@@ -61,7 +61,7 @@ class PassthroughSubstanceSerializer(IdPassthrough, SubstanceSerializer):
 class DeclaredListSerializer(serializers.ListSerializer):
     """
     Pour les modèles liés et les list serializers on a besoin de spécifier le comportement
-    dans une mise à jour car DRF ne peut pas le déviner:
+    dans une mise à jour car DRF ne peut pas le deviner:
     https://www.django-rest-framework.org/api-guide/serializers/#customizing-multiple-update
     """
 
@@ -272,6 +272,8 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
+            "siccrf_id",
+            "declared_in_teleicare",
             "status",
             "author",
             "company",
@@ -441,6 +443,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
+            "declared_in_teleicare",
             "article",
             "status",
             "author",
@@ -519,10 +522,14 @@ class DeclarationSerializer(serializers.ModelSerializer):
         queryset = queryset.prefetch_related(
             "declared_plants__plant__substances",
             "declared_plants__plant",
+            "declared_plants__preparation",
+            "declared_plants__unit",
             "declared_microorganisms__microorganism__substances",
             "declared_ingredients__ingredient__substances",
             "declared_substances__substance",
+            "declared_substances__unit",
             "computed_substances__substance",
+            "computed_substances__unit",
             "attachments",
         )
         return queryset
@@ -579,6 +586,8 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
+            "siccrf_id",
+            "declared_in_teleicare",
             "status",
             "author",
             "company",

@@ -143,45 +143,8 @@
       <DsfrInput v-model="payload.instructions" label-visible label="Mode d'emploi" />
     </DsfrInputGroup>
     <SectionTitle title="Populations cibles et à risque" class="!mt-10" sizeTag="h6" icon="ri-file-user-fill" />
-    <DsfrFieldset legend="Population cible" legendClass="fr-label">
-      <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
-        <div
-          v-for="population in orderedPopulations"
-          :key="`effect-${population.id}`"
-          class="flex col-span-6 sm:col-span-3 lg:col-span-2"
-        >
-          <input
-            :id="`population-${population.id}`"
-            type="checkbox"
-            v-model="payload.populations"
-            :value="population.id"
-          />
-          <label :for="`population-${population.id}`" class="fr-label ml-2">{{ population.name }}</label>
-        </div>
-      </div>
-    </DsfrFieldset>
-
-    <DsfrFieldset
-      legend="Population à risque, facteurs de risque"
-      hint="La consommation du complément alimentaire est déconseillée pour ces populations."
-      legendClass="fr-label"
-    >
-      <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
-        <div
-          v-for="condition in orderedConditions"
-          :key="`condition-${condition.id}`"
-          class="flex col-span-6 sm:col-span-3 lg:col-span-2"
-        >
-          <input
-            :id="`condition-${condition.id}`"
-            type="checkbox"
-            v-model="payload.conditionsNotRecommended"
-            :value="condition.id"
-          />
-          <label :for="`condition-${condition.id}`" class="fr-label ml-2">{{ condition.name }}</label>
-        </div>
-      </div>
-    </DsfrFieldset>
+    <PopulationsCheckboxes v-model="payload.populations" :populations="populations" />
+    <ConditionsCheckboxes v-model="payload.conditionsNotRecommended" :conditions="conditions" />
 
     <OtherChoiceField
       :listOfChoices="payload.conditionsNotRecommended"
@@ -253,16 +216,16 @@ import { computed, watch, ref } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useVuelidate } from "@vuelidate/core"
-import { firstErrorMsg, transformArrayByColumn } from "@/utils/forms"
-import { getCurrentBreakpoint } from "@/utils/screen"
+import { firstErrorMsg, transformArrayByColumn, checkboxColumnNumbers } from "@/utils/forms"
+import { useCurrentBreakpoint } from "@/utils/screen"
 import { pushOtherChoiceFieldAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
 import CountryField from "@/components/fields/CountryField.vue"
 import OtherChoiceField from "@/components/fields/OtherChoiceField"
 import SectionTitle from "@/components/SectionTitle"
 import NumberField from "@/components/NumberField"
-import { useWindowSize } from "@vueuse/core"
+import PopulationsCheckboxes from "./PopulationsCheckboxes"
+import ConditionsCheckboxes from "./ConditionsCheckboxes"
 
-const { width } = useWindowSize()
 const payload = defineModel()
 const props = defineProps(["externalResults"])
 
@@ -349,23 +312,8 @@ watch(selectedCompany, () => {
 // S'il n'y a qu'une entreprise on l'assigne par défaut
 if (companies.value?.length === 1) payload.value.company = companies.value[0].id
 
-const numberOfColumns = ref()
-watch(
-  width,
-  () => {
-    const checkboxColumnNumbers = {
-      sm: 1,
-      md: 2,
-      lg: 2,
-      xl: 3,
-    }
-    numberOfColumns.value = checkboxColumnNumbers[getCurrentBreakpoint()] || 1
-  },
-  { immediate: true }
-)
-
-const orderedPopulations = computed(() => transformArrayByColumn(populations.value, numberOfColumns.value))
-const orderedConditions = computed(() => transformArrayByColumn(conditions.value, numberOfColumns.value))
+const currentBreakpoint = useCurrentBreakpoint()
+const numberOfColumns = computed(() => checkboxColumnNumbers[currentBreakpoint.value])
 const orderedEffects = computed(() => transformArrayByColumn(effects.value, numberOfColumns.value))
 </script>
 

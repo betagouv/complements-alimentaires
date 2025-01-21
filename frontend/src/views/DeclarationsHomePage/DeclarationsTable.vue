@@ -38,7 +38,15 @@ const rows = computed(() => {
 
   return props.data.results.map((d) => ({
     rowData: [
-      d.id,
+      d.declaredInTeleicare
+        ? {
+            component: "DsfrBadge",
+            label: "issue de Teleicare",
+            type: "none",
+            small: true,
+            noIcon: true,
+          }
+        : d.id,
       {
         component: "router-link",
         text: d.name,
@@ -53,11 +61,13 @@ const rows = computed(() => {
       d.author ? `${d.author.firstName} ${d.author.lastName}` : "",
       getStatusTagForCell(d.status, true),
       timeAgo(d.modificationDate),
-      {
-        component: "router-link",
-        text: "Dupliquer",
-        to: { name: "NewDeclaration", query: { duplicate: d.id } },
-      },
+      d.declaredInTeleicare
+        ? ""
+        : {
+            component: "router-link",
+            text: "Dupliquer",
+            to: { name: "NewDeclaration", query: { duplicate: d.id } },
+          },
     ],
   }))
 })

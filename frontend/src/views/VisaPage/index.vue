@@ -21,7 +21,13 @@
         <p>Vous pouvez vous assigner cette déclaration pour visa / signature</p>
         <DsfrButton class="mt-2" label="Prendre pour validation" tertiary @click="takeDeclaration" />
       </DsfrAlert>
-      <DeclarationAlert role="visor" class="mb-4" v-else :declaration="declaration" :snapshots="snapshots" />
+      <DeclarationAlert
+        role="visor"
+        class="mb-4"
+        v-else-if="!declaration.declaredInTeleicare"
+        :declaration="declaration"
+        :snapshots="snapshots"
+      />
       <div v-if="declaration">
         <DeclarationSummary
           :showArticle="true"
@@ -63,7 +69,7 @@
           @forward="selectedTabIndex += 1"
           :removeSaveLabel="true"
         >
-          <template v-slot:content>
+          <template v-slot:content v-if="!declaration.declaredInTeleicare">
             <h6 class="text-left">
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
@@ -194,7 +200,8 @@ const saveComment = useDebounceFn(async () => {
 
 // Tab management
 const components = computed(() => {
-  const baseComponents = [IdentityTab, DeclarationSummary, HistoryTab]
+  const baseComponents = [IdentityTab, DeclarationSummary]
+  if (!declaration.value.declaredInTeleicare) baseComponents.push(HistoryTab)
   if (canInstruct.value) baseComponents.push(VisaValidationTab)
   return baseComponents
 })

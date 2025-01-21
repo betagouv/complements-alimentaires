@@ -21,99 +21,102 @@
       <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
       <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
     </div>
+    <div v-if="!payload.declaredInTeleicare">
+      <h3 class="fr-h6 !mt-8">
+        Composition
+        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
+      </h3>
 
-    <h3 class="fr-h6 !mt-8">
-      Composition
-      <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
-    </h3>
-
-    <SummaryElementList
-      :useAccordions="useAccordions"
-      :showElementAuthorization="showElementAuthorization"
-      objectType="plant"
-      :elements="payload.declaredPlants"
-    />
-    <SummaryElementList
-      :useAccordions="useAccordions"
-      :showElementAuthorization="showElementAuthorization"
-      objectType="microorganism"
-      :elements="payload.declaredMicroorganisms"
-    />
-    <SummaryElementList
-      objectType="form_of_supply"
-      :useAccordions="useAccordions"
-      :showElementAuthorization="showElementAuthorization"
-      :elements="getObjectSubTypeList(payload.declaredIngredients, 'form_of_supply')"
-    />
-    <SummaryElementList
-      :useAccordions="useAccordions"
-      :showElementAuthorization="showElementAuthorization"
-      objectType="aroma"
-      :elements="getObjectSubTypeList(payload.declaredIngredients, 'aroma')"
-    />
-    <SummaryElementList
-      objectType="additive"
-      :useAccordions="useAccordions"
-      :showElementAuthorization="showElementAuthorization"
-      :elements="getObjectSubTypeList(payload.declaredIngredients, 'additive')"
-    />
-    <SummaryElementList
-      objectType="active_ingredient"
-      :useAccordions="useAccordions"
-      :showElementAuthorization="showElementAuthorization"
-      :elements="getObjectSubTypeList(payload.declaredIngredients, 'active_ingredient')"
-    />
-    <SummaryElementList
-      objectType="non_active_ingredient"
-      :useAccordions="useAccordions"
-      :showElementAuthorization="showElementAuthorization"
-      :elements="getObjectSubTypeList(payload.declaredIngredients, 'non_active_ingredient')"
-    />
-    <SummaryElementList
-      objectType="substance"
-      :useAccordions="useAccordions"
-      :showElementAuthorization="showElementAuthorization"
-      :elements="payload.declaredSubstances"
-    />
-
-    <p class="font-bold mt-8">Substances contenues dans la composition :</p>
-    <DsfrAlert
-      v-if="replacedRequestsWithSubstances.length"
-      type="warning"
-      class="mb-4"
-      title="Vérifiez les doses totales des substances"
-    >
-      <p>Les ingrédients suivants, ajoutés pour remplacer une demande, rajoutent des substances dans la composition.</p>
-      <p>
-        Veuillez vérifier que les doses totales des substances restent pertinentes. Si besoin, renvoyez la déclaration
-        vers le déclarant pour les mettre à jour.
-      </p>
-      <ul>
-        <li v-for="i in replacedRequestsWithSubstances" :key="`${i.type}-${i.id}`">
-          {{ i.element.name }}
-        </li>
-      </ul>
-    </DsfrAlert>
-    <SubstancesTable v-model="payload" readonly />
-
-    <h3 class="fr-h6 !mt-8">
-      Adresse sur l'étiquetage
-      <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
-    </h3>
-    <AddressLine :payload="payload" />
-
-    <h3 class="fr-h6 !mt-8">
-      Pièces jointes
-      <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
-    </h3>
-    <div class="grid grid-cols-12 gap-3 mb-8">
-      <FilePreview
-        class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
-        v-for="(file, index) in payload.attachments"
-        :key="`file-${index}`"
-        :file="file"
-        readonly
+      <SummaryElementList
+        :useAccordions="useAccordions"
+        :showElementAuthorization="showElementAuthorization"
+        objectType="plant"
+        :elements="payload.declaredPlants"
       />
+      <SummaryElementList
+        :useAccordions="useAccordions"
+        :showElementAuthorization="showElementAuthorization"
+        objectType="microorganism"
+        :elements="payload.declaredMicroorganisms"
+      />
+      <SummaryElementList
+        objectType="form_of_supply"
+        :useAccordions="useAccordions"
+        :showElementAuthorization="showElementAuthorization"
+        :elements="getObjectSubTypeList(payload.declaredIngredients, 'form_of_supply')"
+      />
+      <SummaryElementList
+        :useAccordions="useAccordions"
+        :showElementAuthorization="showElementAuthorization"
+        objectType="aroma"
+        :elements="getObjectSubTypeList(payload.declaredIngredients, 'aroma')"
+      />
+      <SummaryElementList
+        objectType="additive"
+        :useAccordions="useAccordions"
+        :showElementAuthorization="showElementAuthorization"
+        :elements="getObjectSubTypeList(payload.declaredIngredients, 'additive')"
+      />
+      <SummaryElementList
+        objectType="active_ingredient"
+        :useAccordions="useAccordions"
+        :showElementAuthorization="showElementAuthorization"
+        :elements="getObjectSubTypeList(payload.declaredIngredients, 'active_ingredient')"
+      />
+      <SummaryElementList
+        objectType="non_active_ingredient"
+        :useAccordions="useAccordions"
+        :showElementAuthorization="showElementAuthorization"
+        :elements="getObjectSubTypeList(payload.declaredIngredients, 'non_active_ingredient')"
+      />
+      <SummaryElementList
+        objectType="substance"
+        :useAccordions="useAccordions"
+        :showElementAuthorization="showElementAuthorization"
+        :elements="payload.declaredSubstances"
+      />
+
+      <p class="font-bold mt-8">Substances contenues dans la composition :</p>
+      <DsfrAlert
+        v-if="replacedRequestsWithSubstances.length"
+        type="warning"
+        class="mb-4"
+        title="Vérifiez les doses totales des substances"
+      >
+        <p>
+          Les ingrédients suivants, ajoutés pour remplacer une demande, rajoutent des substances dans la composition.
+        </p>
+        <p>
+          Veuillez vérifier que les doses totales des substances restent pertinentes. Si besoin, renvoyez la déclaration
+          vers le déclarant pour les mettre à jour.
+        </p>
+        <ul>
+          <li v-for="i in replacedRequestsWithSubstances" :key="`${i.type}-${i.id}`">
+            {{ i.element.name }}
+          </li>
+        </ul>
+      </DsfrAlert>
+      <SubstancesTable v-model="payload" readonly />
+
+      <h3 class="fr-h6 !mt-8">
+        Adresse sur l'étiquetage
+        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
+      </h3>
+      <AddressLine :payload="payload" />
+
+      <h3 class="fr-h6 !mt-8">
+        Pièces jointes
+        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
+      </h3>
+      <div class="grid grid-cols-12 gap-3 mb-8">
+        <FilePreview
+          class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
+          v-for="(file, index) in payload.attachments"
+          :key="`file-${index}`"
+          :file="file"
+          readonly
+        />
+      </div>
     </div>
   </div>
 </template>

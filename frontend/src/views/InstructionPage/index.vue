@@ -27,11 +27,12 @@
       </DsfrAlert>
       <DeclarationAlert
         class="mb-6"
-        v-else-if="!canInstruct"
+        v-else-if="!canInstruct && !declaration.declaredInTeleicare"
         role="instructor"
         :declaration="declaration"
         :snapshots="snapshots"
       />
+      <DeclarationFromTeleicareAlert v-else-if="declaration.declaredInTeleicare" />
       <div v-if="declaration">
         <DeclarationSummary
           :showArticle="true"
@@ -73,7 +74,7 @@
           @forward="selectedTabIndex += 1"
           :removeSaveLabel="true"
         >
-          <template v-slot:content>
+          <template v-slot:content v-if="!declaration.declaredInTeleicare">
             <h6 class="text-left">
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
@@ -121,6 +122,7 @@ import { headers } from "@/utils/data-fetching"
 import DeclarationAlert from "@/components/DeclarationAlert"
 import { tabTitles } from "@/utils/mappings"
 import { useRouter } from "vue-router"
+import DeclarationFromTeleicareAlert from "@/components/DeclarationFromTeleicareAlert.vue"
 
 const router = useRouter()
 const previousRoute = router.getPreviousRoute()
@@ -203,7 +205,8 @@ onMounted(async () => {
 
 // Tab management
 const components = computed(() => {
-  const baseComponents = [IdentityTab, DeclarationSummary, HistoryTab]
+  const baseComponents = [IdentityTab, DeclarationSummary]
+  if (!declaration.value.declaredInTeleicare) baseComponents.push(HistoryTab)
   if (canInstruct.value) baseComponents.push(DecisionTab)
   return baseComponents
 })
