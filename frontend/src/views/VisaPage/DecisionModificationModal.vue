@@ -26,7 +26,7 @@
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'proposal')">
             <DsfrSelect
               label="Nouvelle décision"
-              v-model="overridenDecision.proposal"
+              v-model="overriddenDecision.proposal"
               :options="proposalOptions"
               class="max-w-96"
             />
@@ -35,7 +35,7 @@
         <div class="col-span-2 sm:col-span-1" v-if="showDelayDays">
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'delayDays')">
             <DsfrInput
-              v-model="overridenDecision.delayDays"
+              v-model="overriddenDecision.delayDays"
               label="Délai de réponse (jours)"
               label-visible
               class="max-w-96"
@@ -44,14 +44,14 @@
         </div>
       </div>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'comment')">
-        <DsfrInput is-textarea label="Message au déclarant·e" v-model="overridenDecision.comment" label-visible />
+        <DsfrInput is-textarea label="Message au déclarant·e" v-model="overriddenDecision.comment" label-visible />
       </DsfrInputGroup>
       <div v-if="showReasons" class="border p-4">
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reasons')">
           <div class="mb-8" v-for="reason in blockingReasons" :key="reason.title">
             <p class="font-bold">{{ reason.title }}</p>
             <DsfrCheckboxSet
-              v-model="overridenDecision.reasons"
+              v-model="overriddenDecision.reasons"
               :options="reason.items.map((x) => ({ label: x, value: x }))"
             />
           </div>
@@ -69,22 +69,22 @@ import { helpers, required, integer } from "@vuelidate/validators"
 import { useVuelidate } from "@vuelidate/core"
 
 const modelValue = defineModel()
-const overridenDecision = ref()
+const overriddenDecision = ref()
 
 const copyModelValueToRef = () =>
-  (overridenDecision.value = modelValue.value ? JSON.parse(JSON.stringify(modelValue.value)) : { reasons: [] })
+  (overriddenDecision.value = modelValue.value ? JSON.parse(JSON.stringify(modelValue.value)) : { reasons: [] })
 
 copyModelValueToRef()
 
 const rules = computed(() => {
-  if (!overridenDecision.value?.proposal) return { proposal: errorRequiredField }
-  if (overridenDecision.value?.proposal === "AUTHORIZED") return {}
+  if (!overriddenDecision.value?.proposal) return { proposal: errorRequiredField }
+  if (overriddenDecision.value?.proposal === "AUTHORIZED") return {}
   return {
     comment: errorRequiredField,
     reasons: { required: helpers.withMessage("Au moins une raison doit être selectionnée", required) },
     proposal: errorRequiredField,
     delayDays:
-      overridenDecision.value?.proposal !== "REJECTED"
+      overriddenDecision.value?.proposal !== "REJECTED"
         ? {
             required: helpers.withMessage("Ce champ doit être rempli", required),
             integer: helpers.withMessage("Ce champ doit être un chiffre entier", integer),
@@ -94,7 +94,7 @@ const rules = computed(() => {
 })
 
 const $externalResults = ref({})
-const v$ = useVuelidate(rules, overridenDecision, { $externalResults })
+const v$ = useVuelidate(rules, overriddenDecision, { $externalResults })
 
 const opened = ref(false)
 
@@ -105,7 +105,7 @@ const actions = [
       v$.value.$reset()
       v$.value.$validate()
       if (v$.value.$error) return
-      modelValue.value = overridenDecision.value
+      modelValue.value = overriddenDecision.value
       close()
     },
     icon: { name: "ri-edit-fill" },
@@ -137,11 +137,11 @@ const proposalOptions = [
 ]
 
 const showReasons = computed(
-  () => overridenDecision.value.proposal && overridenDecision.value.proposal !== "AUTHORIZED"
+  () => overriddenDecision.value.proposal && overriddenDecision.value.proposal !== "AUTHORIZED"
 )
 
 const showDelayDays = computed(
-  () => overridenDecision.value.proposal === "OBSERVATION" || overridenDecision.value.proposal === "OBJECTION"
+  () => overriddenDecision.value.proposal === "OBSERVATION" || overriddenDecision.value.proposal === "OBJECTION"
 )
 
 watch(modelValue, () => copyModelValueToRef())
