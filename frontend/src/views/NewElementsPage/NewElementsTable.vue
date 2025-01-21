@@ -24,6 +24,7 @@ const headers = [
   "Authorisation marché FR ou EU",
   "Date de demande d'ajout",
   "Statut de la déclaration",
+  "Statut de la demande",
   "",
 ]
 const rows = computed(() =>
@@ -34,6 +35,7 @@ const rows = computed(() =>
       getAuthorizationModeInFrench(x.authorizationMode),
       x.declaration.creationDate && isoToPrettyDate(x.declaration.creationDate),
       getStatusTagForCell(x.declaration.status),
+      getRequestStatusTagForCell(x),
       {
         component: "router-link",
         text: "Contrôler l'ingrédient",
@@ -42,10 +44,51 @@ const rows = computed(() =>
     ],
   }))
 )
+
+const getRequestStatusTagForCell = (request) => {
+  // TODO: ideally reuse the DSFR icons used in the alerts, but unsure if those classes are working
+  const status = {
+    REQUESTED: {
+      label: "Nouvelle",
+      icon: "ri-todo-fill",
+      class: "info",
+    },
+    INFORMATION: {
+      label: "Information",
+      icon: "ri-time-line",
+      class: "warning",
+    },
+    REJECTED: {
+      label: "Refusé",
+      icon: "ri-error-warning-line",
+      class: "error",
+    },
+  }[request.requestStatus]
+
+  return status
+    ? {
+        ...status,
+        component: "DsfrTag",
+      }
+    : {}
+}
 </script>
 
 <style scoped>
 .fr-table :deep(td) {
   width: calc(100% / 6);
+}
+
+:deep(.info) {
+  color: var(--info-425-625);
+  background-color: var(--info-950-100);
+}
+:deep(.error) {
+  color: var(--error-425-625);
+  background-color: var(--error-950-100);
+}
+:deep(.warning) {
+  color: var(--warning-425-625);
+  background-color: var(--warning-950-100);
 }
 </style>
