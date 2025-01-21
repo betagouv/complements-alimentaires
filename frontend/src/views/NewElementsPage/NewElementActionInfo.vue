@@ -8,22 +8,21 @@
     @close="closed = true"
     class="mb-4"
   >
-    <p>
-      La demande d'ajout d'ingrédient
-      <router-link
-        :to="{ name: 'DeclaredElementPage', params: { type: recentAction.type, id: recentAction.id } }"
-        class="text-blue-france-sun-113"
-      >
-        {{ elementName }}
-      </router-link>
-      :
-      <span v-if="element.requestStatus === 'INFORMATION'">Des informations complémentaires sont nécessaires.</span>
-      <span v-else-if="element.requestStatus === 'REJECTED'">La demande a été refusé.</span>
-      <span v-else-if="element.requestStatus === 'REPLACED'">
-        Remplacée par
-        <router-link :to="elementLink">{{ element.element.name }}</router-link>
-        dans la composition de la déclaration.
-      </span>
+    <p v-if="element.requestStatus === 'INFORMATION'">
+      Des informations complémentaires sont nécessaires pour la demande d'ajout de l'ingrédient
+      <ElementLink :element="element" />
+    </p>
+    <p v-else-if="element.requestStatus === 'REJECTED'">
+      La demande d'ajout de l'ingrédient
+      <ElementLink :element="element" />
+      a été refusée
+    </p>
+    <p v-else-if="element.requestStatus === 'REPLACED'">
+      L'ingrédient ajouté
+      <ElementLink :element="element" />
+      a été remplacé par
+      <ElementLink :element="{ id: element.element.id, type: element.type, newName: element.element.name }" />
+      dans la déclaration
     </p>
   </DsfrAlert>
 </template>
@@ -33,7 +32,7 @@ import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { getApiType } from "@/utils/mappings"
-import { getNewElementName } from "@/utils/elements"
+import ElementLink from "./ElementLink"
 
 // retrouver le détail de l'element et l'action prise
 const route = useRoute()
@@ -69,6 +68,4 @@ const alertType = computed(() => {
 })
 
 const closed = ref(false)
-
-const elementName = computed(() => getNewElementName(element.value))
 </script>
