@@ -164,6 +164,7 @@ class DeclaredMicroorganismSerializer(DeclaredIngredientCommonSerializer):
             "id",
             "declaration",
             "element",
+            "new_name",
             "new_species",
             "new_genre",
             "active",

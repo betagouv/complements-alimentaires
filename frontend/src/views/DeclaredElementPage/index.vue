@@ -79,7 +79,7 @@ const getElementFromApi = async () => {
 getElementFromApi()
 watch(element, (newElement) => {
   if (newElement) {
-    const name = newElement.newName || `${newElement.newSpecies} ${newElement.newGenre}`
+    const name = newElement.newName
     document.title = `${name} - Compl'Alim`
   }
 })
