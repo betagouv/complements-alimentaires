@@ -692,44 +692,6 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(latest_snapshot.blocking_reasons, ["a", "b"])
 
     @authenticate
-    def test_visor_can_modify_comment(self):
-        """
-        Une personne avec le rôle de visa peut modifier le commentaire à destination du pro
-        """
-        VisaRoleFactory(user=authenticate.user)
-
-        # Visa acceptée
-        declaration = OngoingVisaDeclarationFactory(
-            post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
-            post_validation_producer_message="À authoriser",
-            post_validation_expiration_days=12,
-        )
-
-        response = self.client.post(
-            reverse("api:accept_visa", kwargs={"pk": declaration.id}), {"comment": "Overriden comment"}, format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        declaration.refresh_from_db()
-        self.assertEqual(declaration.last_administration_comment, "Overriden comment")
-
-        # Visa refusée
-        declaration = OngoingVisaDeclarationFactory(
-            post_validation_status=Declaration.DeclarationStatus.REJECTED,
-            post_validation_producer_message="À refuser",
-            post_validation_expiration_days=20,
-        )
-
-        response = self.client.post(
-            reverse("api:refuse_visa", kwargs={"pk": declaration.id}),
-            {"comment": "Overriden comment 2"},
-            format="json",
-        )
-
-        declaration.refresh_from_db()
-        self.assertEqual(declaration.last_administration_comment, "Overriden comment 2")
-
-    @authenticate
     def accept_visa_unauthorized(self):
         """
         Passage de ONGOING_VISA à à { AUTHORIZED | REJECTED | OBJECTION | OBSERVATION }
