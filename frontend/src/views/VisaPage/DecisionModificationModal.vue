@@ -39,7 +39,6 @@
               label="Délai de réponse (jours)"
               label-visible
               class="max-w-96"
-              type="number"
             />
           </DsfrInputGroup>
         </div>
@@ -66,7 +65,7 @@
 import { ref, computed, watch } from "vue"
 import { blockingReasons } from "@/utils/mappings"
 import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
-import { helpers, required } from "@vuelidate/validators"
+import { helpers, required, integer } from "@vuelidate/validators"
 import { useVuelidate } from "@vuelidate/core"
 
 const modelValue = defineModel()
@@ -84,7 +83,13 @@ const rules = computed(() => {
     comment: errorRequiredField,
     reasons: { required: helpers.withMessage("Au moins une raison doit être selectionnée", required) },
     proposal: errorRequiredField,
-    delayDays: overridenDecision.value?.proposal !== "REJECTED" ? errorRequiredField : {},
+    delayDays:
+      overridenDecision.value?.proposal !== "REJECTED"
+        ? {
+            required: helpers.withMessage("Ce champ doit être rempli", required),
+            integer: helpers.withMessage("Ce champ doit être un chiffre entier", integer),
+          }
+        : {},
   }
 })
 
