@@ -49,10 +49,10 @@
       <div v-if="showReasons" class="border p-4">
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reasons')">
           <div class="mb-8" v-for="reason in blockingReasons" :key="reason.title">
-            <p class="font-bold">{{ reason.title }}</p>
             <DsfrCheckboxSet
               v-model="overriddenDecision.reasons"
               :options="reason.items.map((x) => ({ label: x, value: x }))"
+              :legend="reason.title"
             />
           </div>
         </DsfrInputGroup>
@@ -146,3 +146,9 @@ const showDelayDays = computed(
 
 watch(modelValue, () => copyModelValueToRef())
 </script>
+
+<style scoped>
+div :deep(.fr-fieldset__legend) {
+  @apply !font-bold;
+}
+</style>
