@@ -17,7 +17,6 @@ class BlogPostSerializer(serializers.ModelSerializer):
             "modification_date",
             "title",
             "tagline",
-            "body",
             "content",
             "published",
             "display_date",

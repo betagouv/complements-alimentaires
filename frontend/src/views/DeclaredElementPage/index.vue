@@ -106,6 +106,7 @@ store.fetchDeclarationFieldsData()
 const synonyms = ref()
 
 watch(replacement, (newReplacement) => {
+  // initialiser les synonymes pour permettre la MAJ
   synonyms.value = JSON.parse(JSON.stringify(newReplacement.synonyms || [])) // initialise synonyms that might be updated
   additionalInfo.value.element = JSON.parse(JSON.stringify(newReplacement))
   // TODO: do I have to change the active status? Only plant is not readonly, but maybe others can go from inactive to active?
