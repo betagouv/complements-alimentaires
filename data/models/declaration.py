@@ -649,8 +649,7 @@ class DeclaredMicroorganism(Historisable, Addable):
 
     @property
     def new_name(self):
-        if self.new:
-            return f"{self.new_species} {self.new_genre}"
+        return f"{self.new_species} {self.new_genre}"
 
 
 class DeclaredIngredient(Historisable, Addable):
