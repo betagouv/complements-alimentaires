@@ -198,8 +198,7 @@
                 <table class="data-formatting">
                     <caption>
                         <p class="bold-marianne keep-with-next">
-                            {% firstof declared_microorganism.microorganism.species declared_microorganism.new_species %}
-                            {% firstof declared_microorganism.microorganism.genre declared_microorganism.new_genre %}
+                            {% firstof declared_microorganism.microorganism.name declared_microorganism.new_name %}
                             {% if declared_microorganism.new %}
                             (nouvel ajout)
                             {% endif %}

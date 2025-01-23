@@ -347,6 +347,7 @@ class TestDeclarationApi(APITestCase):
         self.assertIsNone(new_declared_microorganism.microorganism)
         self.assertEqual(new_declared_microorganism.new_species, "New microorganism species")
         self.assertEqual(new_declared_microorganism.new_genre, "New microorganism genre")
+        self.assertEqual(new_declared_microorganism.new_name, "New microorganism species New microorganism genre")
         self.assertEqual(new_declared_microorganism.new_description, "New microorganism description")
         self.assertEqual(new_declared_microorganism.active, True)
         self.assertEqual(new_declared_microorganism.quantity, 345)
