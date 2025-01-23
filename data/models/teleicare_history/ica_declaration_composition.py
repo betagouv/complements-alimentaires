@@ -32,7 +32,7 @@ class IcaMicroOrganisme(models.Model):
     ingr_ident = models.IntegerField(primary_key=True)
     morg_ident = models.IntegerField()
     ingmorg_souche = models.TextField(blank=True, null=True)
-    ingmorg_quantite_par_djr = models.IntegerField(blank=True, null=True)
+    ingmorg_quantite_par_djr = models.BigIntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
