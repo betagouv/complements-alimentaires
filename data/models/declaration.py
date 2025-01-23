@@ -640,12 +640,16 @@ class DeclaredMicroorganism(Historisable, Addable):
 
     def __str__(self):
         if self.new:
-            return f"-NEW- {self.new_species} {self.new_genre}"
-        return f"{self.microorganism.species} {self.microorganism.genus}"
+            return f"-NEW- {self.new_name}"
+        return f"{self.microorganism.name}"
 
     @property
     def type(self):
         return "microorganism"
+
+    @property
+    def new_name(self):
+        return f"{self.new_species} {self.new_genre}"
 
 
 class DeclaredIngredient(Historisable, Addable):

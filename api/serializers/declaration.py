@@ -164,6 +164,7 @@ class DeclaredMicroorganismSerializer(DeclaredIngredientCommonSerializer):
             "id",
             "declaration",
             "element",
+            "new_name",
             "new_species",
             "new_genre",
             "active",
@@ -609,6 +610,7 @@ class DeclaredElementSerializer(serializers.Serializer):
     type = serializers.CharField()
     authorization_mode = serializers.CharField()
     declaration = DeclarationShortSerializer()
+    request_status = serializers.CharField()
 
     def get_name(self, obj):
         return str(obj)
