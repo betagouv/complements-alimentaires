@@ -1924,12 +1924,16 @@ class TestDeclaredElementsApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         declared_plant.refresh_from_db()
+        self.assertEqual(declared_plant.plant, plant)
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
         self.assertFalse(declared_plant.new)
-        self.assertEqual(declared_plant.plant, plant)
 
     @authenticate
     def test_can_replace_plant_request_with_microorganism(self):
+        """
+        Test de remplacement cross-type : plante vers microorganisme
+        Verifier que les données sont copiées, et les nouvelles données sont sauvegardées.
+        """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
@@ -1954,22 +1958,30 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         with self.assertRaises(DeclaredPlant.DoesNotExist):
             DeclaredPlant.objects.get(id=declared_plant.id)
+
         self.assertEqual(DeclaredMicroorganism.objects.count(), 1)
         declared_microorganism = DeclaredMicroorganism.objects.get(declaration=declaration)
+
         self.assertEqual(declared_microorganism.microorganism, microorganism)
-        # test name has been copied into the species field
+        self.assertEqual(declared_microorganism.request_status, DeclaredMicroorganism.AddableStatus.REPLACED)
+        self.assertFalse(declared_microorganism.new)
+
+        # est-ce que le nom est copié dans le champ espèce ?
         self.assertEqual(declared_microorganism.new_species, "Test plant")
         self.assertEqual(declared_microorganism.new_genre, "")
-        # test new fields saved
+        # est-ce que les nouveaux champs sont sauvegardés ?
         self.assertEqual(declared_microorganism.strain, "Test strain")
         self.assertEqual(declared_microorganism.activated, False)
         self.assertEqual(declared_microorganism.quantity, 90)
-        # test old fields copied over
+        # est-ce que les anciens champs sont sauvegardés ?
         self.assertEqual(declared_microorganism.new_description, "Test description")
-        self.assertEqual(declared_microorganism.request_status, DeclaredMicroorganism.AddableStatus.REPLACED)
 
     @authenticate
     def test_can_replace_microorganism_request_with_plant(self):
+        """
+        Test de remplacement cross-type : microoganisme vers plante
+        Verifier que les données sont copiées, et les nouvelles données sont sauvegardées.
+        """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
@@ -1979,6 +1991,7 @@ class TestDeclaredElementsApi(APITestCase):
             new_genre="testing",
             new_description="Test description",
             new=True,
+            quantity=10,
         )
         self.assertEqual(declared_microorganism.request_status, DeclaredMicroorganism.AddableStatus.REQUESTED)
         plant = PlantFactory()
@@ -1992,6 +2005,7 @@ class TestDeclaredElementsApi(APITestCase):
                 "additional_fields": {
                     "used_part": used_part.id,
                     "unit": unit.id,
+                    "quantity": 90,
                 },
             },
             format="json",
@@ -1999,17 +2013,22 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         with self.assertRaises(DeclaredMicroorganism.DoesNotExist):
             DeclaredMicroorganism.objects.get(id=declared_microorganism.id)
+
         self.assertEqual(DeclaredPlant.objects.count(), 1)
-        new_declared_plant = DeclaredPlant.objects.get(declaration=declaration)
-        self.assertEqual(new_declared_plant.plant, plant)
-        # test name has been copied into the species field
-        self.assertEqual(new_declared_plant.new_name, "test testing")
-        # test new fields saved
-        self.assertEqual(new_declared_plant.used_part, used_part)
-        self.assertEqual(new_declared_plant.unit, unit)
-        # test old fields copied over
-        self.assertEqual(new_declared_plant.new_description, "Test description")
-        self.assertEqual(new_declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        declared_plant = DeclaredPlant.objects.get(declaration=declaration)
+
+        self.assertEqual(declared_plant.plant, plant)
+        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        self.assertFalse(declared_plant.new)
+
+        # est-ce que l'espèce + genre sont copiés dans le champ nom ?
+        self.assertEqual(declared_plant.new_name, "test testing")
+        # est-ce que les nouveaux champs sont sauvegardés ?
+        self.assertEqual(declared_plant.used_part, used_part)
+        self.assertEqual(declared_plant.unit, unit)
+        self.assertEqual(declared_plant.quantity, 90)
+        # est-ce que les anciens champs sont sauvegardés ?
+        self.assertEqual(declared_plant.new_description, "Test description")
 
     @authenticate
     def test_can_add_synonym_on_replace(self):
@@ -2042,6 +2061,10 @@ class TestDeclaredElementsApi(APITestCase):
 
     @authenticate
     def test_cannot_provide_synonym_with_no_name(self):
+        """
+        Si on donne un nom vide, ignore-le.
+        Si on ne donne pas de nom, envoie un 400.
+        """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
@@ -2102,6 +2125,9 @@ class TestDeclaredElementsApi(APITestCase):
 
     @authenticate
     def test_elements_unchanged_on_replace_fail(self):
+        """
+        Si on donne des mauvaises données à sauvegarder, annule tout l'action, y compris la MAJ des synonymes
+        """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
@@ -2131,6 +2157,9 @@ class TestDeclaredElementsApi(APITestCase):
 
     @authenticate
     def test_elements_unchanged_on_synonym_fail(self):
+        """
+        Si l'ajout de synonyme ne passe pas, on annule le remplacement complètement
+        """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
@@ -2156,6 +2185,9 @@ class TestDeclaredElementsApi(APITestCase):
 
     @authenticate
     def test_id_ignored_in_additional_fields_replace(self):
+        """
+        Verifier qu'on n'a pas d'erreur de création, ou comportement inattendu, si un identifiant est donné
+        """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
