@@ -1,7 +1,8 @@
 import { slugifyType } from "@/utils/mappings"
 
-export const getElementName = (e) =>
-  e.element?.name || e.substance?.name || e.newName || `${e.newGenre} ${e.newSpecies}`
+export const getElementName = (e) => e.element?.name || e.substance?.name || getNewElementName(e)
+
+export const getNewElementName = (e) => e.newName || `${e.newGenre} ${e.newSpecies}`
 
 export const getObjectSubTypeList = (objectList, subType = null) => {
   return subType
