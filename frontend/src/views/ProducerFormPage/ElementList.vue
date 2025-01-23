@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import ElementCard from "./ElementCard"
+import ElementCard from "@/components/ElementCard"
 import TypeHeader from "./TypeHeader"
 
 defineProps({ objectType: { type: String }, elements: { type: Array } })
