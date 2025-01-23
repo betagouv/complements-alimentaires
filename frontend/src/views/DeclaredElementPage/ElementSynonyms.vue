@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+import { computed } from "vue"
 import { getElementName } from "@/utils/elements"
 
 const props = defineProps({ initialSynonyms: Array, requestElement: Object })
