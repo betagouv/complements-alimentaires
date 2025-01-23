@@ -349,6 +349,10 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_id(self, obj):
+        """
+        This function is useless as the field has the correct name already and no transformation.
+        It is left for lisibilty
+        """
         return obj.id
 
     def get_decision(self, obj):
@@ -367,6 +371,10 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         return obj.brand
 
     def get_gamme(self, obj):
+        """
+        This function is useless as the field has the correct name already and no transformation.
+        It is left for lisibilty
+        """
         return obj.gamme
 
     def get_article_procedure(self, obj):
