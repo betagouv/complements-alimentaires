@@ -299,7 +299,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     nom_commercial = serializers.SerializerMethodField()
     marque = serializers.SerializerMethodField()
     gamme = serializers.SerializerMethodField()
-    article_reference = serializers.SerializerMethodField()
+    article_procedure = serializers.SerializerMethodField()
     forme_galenique = serializers.SerializerMethodField()
     dose_journaliere = serializers.SerializerMethodField()
     mode_emploi = serializers.SerializerMethodField()
@@ -328,7 +328,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             "nom_commercial",
             "marque",
             "gamme",
-            "article_reference",
+            "article_procedure",
             "forme_galenique",
             "dose_journaliere",
             "mode_emploi",
@@ -369,7 +369,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def get_gamme(self, obj):
         return obj.gamme
 
-    def get_article_reference(self, obj):
+    def get_article_procedure(self, obj):
         """
         Unify all types of Articles 15 categories.
         If not part of Article 15, then return display name
