@@ -160,14 +160,14 @@ class DeclaredElementRejectView(DeclaredElementActionAbstractView):
 
 
 class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
-    def _update_element(self, element, request):
+    def _update_element(self, declared_element, request):
         try:
             replacement_element_id = request.data["element"]["id"]
-            replacement_element_type = request.data["element"]["type"]
+            replacement_type = request.data["element"]["type"]
         except KeyError:
             raise ParseError(detail="Must provide a dict 'element' with id and type")
 
-        new_type = TYPE_MAPPING[replacement_element_type]
+        new_type = TYPE_MAPPING[replacement_type]
         replacement_element_model = new_type["element_model"]
         replacement_synonym_model = new_type["synonym_model"]
 
@@ -176,41 +176,44 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
         except replacement_element_model.DoesNotExist:
             raise ParseError(detail=f"No {self.element_type} exists with id {replacement_element_id}")
 
-        if replacement_element_type != self.element_type:
+        if replacement_type == self.element_type:
+            setattr(declared_element, self.element_type, replacement_element)
+        else:
+            # créer le nouveau element a partir des champs de l'ancien et champs donnés par la requête
+            new_declared_element_fields = {}
+
+            # initialiser avec les anciennes valeurs qui sont toujours valides
+            old_fields = [field.name for field in self.type_model._meta.get_fields()]
+            new_fields = [field.name for field in new_type["model"]._meta.get_fields()]
+            same_fields = set(old_fields).intersection(set(new_fields))
+            for field in same_fields:
+                new_declared_element_fields[field] = getattr(declared_element, field)
+
+            # ajouter ou remplacer avec les valeurs données
             # TODO: should there be a limit to which fields are overrideable?
             additional_fields = request.data.get("additional_fields", {})
-            replacement_declaration_model = new_type["model"]
-            old_fields = [field.name for field in self.type_model._meta.get_fields()]
-            new_fields = [field.name for field in replacement_declaration_model._meta.get_fields()]
-            same_fields = set(old_fields).intersection(set(new_fields))
-
-            new_declared_element_fields = {}
-            # initialiser avec les anciennes valeurs qui sont toujours valides
-            for field in same_fields:
-                new_declared_element_fields[field] = getattr(element, field)
-            # ajouter ou remplacer avec les valeurs données
             for field in additional_fields:
                 new_declared_element_fields[field] = additional_fields[field]
 
-            if self.element_type != "microorganism" and replacement_element_type == "microorganism":
-                new_declared_element_fields["new_species"] = element.new_name
-            elif self.element_type == "microorganism" and replacement_element_type != "microorganism":
-                new_declared_element_fields["new_name"] = element.new_name
+            # gerer le difference en nom entre microorganismes et les autres types
+            if self.element_type != "microorganism" and replacement_type == "microorganism":
+                new_declared_element_fields["new_species"] = declared_element.new_name
+            elif self.element_type == "microorganism" and replacement_type != "microorganism":
+                new_declared_element_fields["new_name"] = declared_element.new_name
 
             # utiliser le serializer pour comprendre les valeurs complexes comme used_part
-            new_element = new_type["serializer"](data=new_declared_element_fields)
-            new_element.is_valid(raise_exception=True)
+            new_declared_element = new_type["serializer"](data=new_declared_element_fields)
+            new_declared_element.is_valid(raise_exception=True)
             # le serializer a besoin d'un id et non pas l'objet
-            new_element.validated_data["declaration"] = element.declaration
+            new_declared_element.validated_data["declaration"] = declared_element.declaration
             # pour reutiliser le serializer, faut mettre les données de l'element dans ce format
-            new_element.validated_data[replacement_element_type] = {"id": replacement_element.id}
-            new_element = new_element.create(new_element.validated_data)
-            element.delete()
-            element = new_element
-        else:
-            setattr(element, self.element_type, replacement_element)
-        element.request_status = self.type_model.AddableStatus.REPLACED
-        element.new = False
+            new_declared_element.validated_data[replacement_type] = {"id": replacement_element.id}
+            new_declared_element = new_declared_element.create(new_declared_element.validated_data)
+            declared_element.delete()
+            declared_element = new_declared_element
+
+        declared_element.request_status = self.type_model.AddableStatus.REPLACED
+        declared_element.new = False
 
         synonyms = request.data.get("synonyms", [])
         for synonym in synonyms:
@@ -221,4 +224,4 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             except KeyError:
                 raise ParseError(detail="Must provide 'name' to create new synonym")
 
-        return element
+        return declared_element
