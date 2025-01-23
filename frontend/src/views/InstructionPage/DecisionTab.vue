@@ -105,6 +105,7 @@ import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { handleError } from "@/utils/error-handling"
 import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
+import { blockingReasons, decisionCategories } from "@/utils/mappings"
 
 const decisionCategory = ref(null)
 watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "autorisation" : null))
@@ -120,7 +121,7 @@ const rules = computed(() => {
 })
 const declaration = defineModel()
 const proposal = ref(null)
-const delayDays = ref(15)
+const delayDays = ref()
 const comment = ref(declaration.value?.lastAdministrationComment || "")
 const reasons = ref([])
 
@@ -136,67 +137,11 @@ const disableDelayDays = computed(() => proposal.value === "rejection")
 watch(proposal, (newProposal) => {
   if (mandatoryVisaProposals.indexOf(newProposal) > -1) needsVisa.value = true
   if (newProposal === "objection") delayDays.value = 30
-  else if (newProposal === "rejection") delayDays.value = null
-  else delayDays.value = 15
+  else if (newProposal === "observation") delayDays.value = 15
+  else delayDays.value = null
 })
 
 const needsAnsesReferal = computed(() => declaration.value?.article === "ANSES_REFERAL")
-
-const decisionCategories = [
-  {
-    value: "approve",
-    title: "J’envoie l’attestation de déclaration",
-    icon: "ri-checkbox-circle-fill",
-    description: "La déclaration est conforme et peut être transmise.",
-    color: "green",
-  },
-  {
-    value: "modify",
-    title: "Des changements sont nécessaires",
-    icon: "ri-close-circle-fill",
-    description: "La déclaration ne peut pas être transmise en l'état.",
-    color: "red",
-  },
-]
-
-const blockingReasons = [
-  {
-    title: "Le produit ne répond pas à la définition du complément alimentaire",
-    items: [
-      "Forme assimilable à un aliment courant",
-      "Recommandations d'emploi incompatibles",
-      "Composition (source concentrée, ...)",
-      "Autre raison pour laquelle le produit ne répond pas à la définition du complément alimentaire",
-    ],
-  },
-  {
-    title: "Le produit répond à la définition du médicament",
-    items: ["Médicament par fonction", "Médicament par présentation", "Sevrage tabagique"],
-  },
-  {
-    title: "Les procédures ne sont pas respectées",
-    items: [
-      "Présence d'un Novel Food",
-      "Présence d'une forme d'apport en nutriments non autorisée",
-      "Demande en article 17 attendue",
-      "Demande en article 18 attendue",
-    ],
-  },
-  {
-    title: "Le dossier n'est pas recevable",
-    items: [
-      "Incohérences entre le dossier et l'étiquetage",
-      "Informations manquantes",
-      "Absence de preuve de reconnaissance mutuelle",
-      "Absence ou non conformité de l'étiquetage",
-      "Autre motif d'irrecevabilité",
-    ],
-  },
-  {
-    title: "Le complément alimentaire n'est pas acceptable",
-    items: ["Existence d'un risque"],
-  },
-]
 
 const proposalOptions = computed(() => {
   if (decisionCategory.value === "approve") return [{ text: "Autorisation", value: "autorisation" }]

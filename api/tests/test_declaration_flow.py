@@ -658,42 +658,70 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(latest_snapshot.expiration_days, 23)
 
     @authenticate
-    def test_visor_can_modify_comment(self):
+    def test_visor_can_modify_decision(self):
         """
-        Une personne avec le rôle de visa peut modifier le commentaire à destination du pro
+        La viseuse peut modifier la décision de l'instructrice
         """
         VisaRoleFactory(user=authenticate.user)
 
-        # Visa acceptée
+        # L'instructrice à marqué cette déclaration comme « autorisée », mais la viseuse la fera
+        # passer en observation
         declaration = OngoingVisaDeclarationFactory(
             post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
             post_validation_producer_message="À authoriser",
-            post_validation_expiration_days=12,
         )
 
-        response = self.client.post(
-            reverse("api:accept_visa", kwargs={"pk": declaration.id}), {"comment": "Overriden comment"}, format="json"
-        )
+        body = {
+            "comment": "overridden comment",
+            "proposal": "OBSERVATION",
+            "delayDays": 6,
+            "reasons": [
+                "a",
+                "b",
+            ],
+        }
+        response = self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), body, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         declaration.refresh_from_db()
-        self.assertEqual(declaration.last_administration_comment, "Overriden comment")
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.OBSERVATION)
+        self.assertEqual(latest_snapshot.comment, "overridden comment")
+        self.assertEqual(latest_snapshot.status, Declaration.DeclarationStatus.OBSERVATION)
+        self.assertEqual(latest_snapshot.expiration_days, 6)
+        self.assertEqual(latest_snapshot.blocking_reasons, ["a", "b"])
 
-        # Visa refusée
+    @authenticate
+    def test_visor_cant_modify_on_refuse(self):
+        """
+        Refuser un visa n'applique pas les modifications
+        """
+        VisaRoleFactory(user=authenticate.user)
+
         declaration = OngoingVisaDeclarationFactory(
-            post_validation_status=Declaration.DeclarationStatus.REJECTED,
-            post_validation_producer_message="À refuser",
-            post_validation_expiration_days=20,
+            post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
+            post_validation_producer_message="À authoriser",
         )
 
-        response = self.client.post(
-            reverse("api:refuse_visa", kwargs={"pk": declaration.id}),
-            {"comment": "Overriden comment 2"},
-            format="json",
-        )
+        body = {
+            "comment": "overridden comment",
+            "proposal": "OBSERVATION",
+            "delayDays": 6,
+            "reasons": [
+                "a",
+                "b",
+            ],
+        }
+        response = self.client.post(reverse("api:refuse_visa", kwargs={"pk": declaration.id}), body, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         declaration.refresh_from_db()
-        self.assertEqual(declaration.last_administration_comment, "Overriden comment 2")
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        self.assertEqual(latest_snapshot.comment, "À authoriser")
+        self.assertEqual(latest_snapshot.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        self.assertEqual(latest_snapshot.expiration_days, None)
+        self.assertEqual(latest_snapshot.blocking_reasons, None)
 
     @authenticate
     def accept_visa_unauthorized(self):
