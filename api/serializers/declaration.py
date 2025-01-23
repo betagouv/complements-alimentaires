@@ -382,10 +382,10 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         Unify all types of Articles 15 categories.
         If not part of Article 15, then return display name
         """
-        if "Article 15" in obj.get_calculated_article_display():
+        if "Article 15" in obj.get_article_display():
             return "Article 15"
         else:
-            return obj.get_calculated_article_display()
+            return obj.get_article_display()
 
     def get_forme_galenique(self, obj):
         if obj.galenic_formulation:
