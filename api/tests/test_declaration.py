@@ -38,7 +38,7 @@ from data.factories import (
     VisaRoleFactory,
     PlantSynonymFactory,
 )
-from data.models import Attachment, Declaration, DeclaredMicroorganism, DeclaredPlant, Snapshot
+from data.models import Attachment, Declaration, DeclaredMicroorganism, DeclaredPlant, DeclaredSubstance, Snapshot
 
 from .utils import authenticate
 
@@ -2027,6 +2027,47 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(declared_plant.used_part, used_part)
         self.assertEqual(declared_plant.unit, unit)
         self.assertEqual(declared_plant.quantity, 90)
+        # est-ce que les anciens champs sont sauvegardés ?
+        self.assertEqual(declared_plant.new_description, "Test description")
+
+    @authenticate
+    def test_can_replace_substance_request_with_plant(self):
+        """
+        Test de remplacement cross-type : microoganisme vers plante
+        Verifier que les données complexes, comme unit, sont bien gardées si elles ne sont pas spécifiées.
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        unit = SubstanceUnitFactory()
+        declared_substance = DeclaredSubstanceFactory(
+            declaration=declaration, new_description="Test description", new=True, unit=unit
+        )
+        self.assertEqual(declared_substance.request_status, DeclaredSubstance.AddableStatus.REQUESTED)
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_substance.id, "type": "substance"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        with self.assertRaises(DeclaredSubstance.DoesNotExist):
+            DeclaredSubstance.objects.get(id=declared_substance.id)
+
+        self.assertEqual(DeclaredPlant.objects.count(), 1)
+        declared_plant = DeclaredPlant.objects.get(declaration=declaration)
+
+        self.assertEqual(declared_plant.plant, plant)
+        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        self.assertFalse(declared_plant.new)
+
+        # est-ce que l'espèce + genre sont copiés dans le champ nom ?
+        self.assertEqual(declared_plant.new_name, "test testing")
+        # est-ce que les nouveaux champs sont sauvegardés ?
+        self.assertEqual(declared_plant.unit, unit)
         # est-ce que les anciens champs sont sauvegardés ?
         self.assertEqual(declared_plant.new_description, "Test description")
 
