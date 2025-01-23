@@ -452,6 +452,13 @@ class Declaration(Historisable, TimeStampable):
         """
         return any(x for x in self.populations.all() if x.is_defined_by_anses)
 
+    @property
+    def acceptation_date(self):
+        if self.status == Declaration.DeclarationStatus.AUTHORIZED:
+            latest_snapshot = self.snapshots.filter(creation_date__isnull=False).latest("creation_date")
+            if latest_snapshot:
+                return latest_snapshot.creation_date.strftime('"%Y-%m-%d"')
+
     def assign_calculated_article(self):
         """
         Peuple l'article calculé pour cette déclaration.

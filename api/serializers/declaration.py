@@ -473,7 +473,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         ]
 
     def get_date_decision(self, obj):
-        return obj.modification_date
+        return obj.acceptation_date
 
 
 class DeclarationSerializer(serializers.ModelSerializer):
