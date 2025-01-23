@@ -36,6 +36,7 @@
 import { computed, watch, ref } from "vue"
 import { useFetch } from "@vueuse/core"
 import { useRootStore } from "@/stores/root"
+import { useRouter } from "vue-router"
 import { getApiType } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
@@ -55,11 +56,13 @@ const declarationLink = computed(() => {
 })
 
 const breadcrumbLinks = computed(() => {
-  const links = [
-    { to: { name: "DashboardPage" }, text: "Tableau de bord" },
-    { to: { name: "InstructionDeclarations" }, text: "Déclarations pour instruction" },
-  ]
-  if (declarationLink.value) links.push({ to: declarationLink.value, text: "Instruction" })
+  const links = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]
+  if (lastRoute.value.name === "InstructionPage" && declarationLink.value) {
+    links.push({ to: { name: "InstructionDeclarations" }, text: "Déclarations pour instruction" })
+    links.push({ to: lastRoute.value, text: "Instruction" })
+  } else {
+    links.push({ to: requestTableRoute, text: "Tableau de demandes" })
+  }
   links.push({ text: "Demande d'ajout d'ingrédient" })
   return links
 })
@@ -76,7 +79,7 @@ const getElementFromApi = async () => {
 getElementFromApi()
 watch(element, (newElement) => {
   if (newElement) {
-    const name = newElement.newName || `${newElement.newSpecies} ${newElement.newGenre}`
+    const name = newElement.newName
     document.title = `${name} - Compl'Alim`
   }
   additionalInfo.value = JSON.parse(JSON.stringify(element.value))
@@ -86,6 +89,22 @@ watch(element, (newElement) => {
 // Actions
 const modalToOpen = ref(false)
 const closeModal = () => (modalToOpen.value = false)
+
+const router = useRouter()
+const requestTableRoute = { name: "NewElementsPage" }
+// merci https://github.com/vuejs/vue-router/issues/997#issuecomment-1536254142
+const lastRoute = computed(() => {
+  const backUrl = router.options.history.state.back
+  return backUrl ? router.resolve({ path: `${backUrl}` }) : requestTableRoute
+})
+const navigateBack = (response) => {
+  const successRoute = lastRoute.value
+  successRoute.query = {
+    actionedId: response.id,
+    actionedType: response.type,
+  }
+  router.push(successRoute)
+}
 
 const notes = ref()
 
@@ -143,6 +162,7 @@ const updateElement = async (action, payload) => {
   if (data.value) {
     element.value = data.value
   }
+  return data.value
 }
 
 const modals = computed(() => {
@@ -162,9 +182,10 @@ const modals = computed(() => {
               synonyms: synonyms.value,
               additionalInfo: info,
             }
-            // TODO: clear search if we stay on page
-            updateElement("replace", payload).then(closeModal)
-            // TODO: redirect on save
+            updateElement("replace", payload).then((response) => {
+              closeModal()
+              navigateBack(response)
+            })
           },
         },
       ],
@@ -177,7 +198,10 @@ const modals = computed(() => {
           onClick() {
             updateElement("request-info", {
               requestPrivateNotes: notes.value || "",
-            }).then(closeModal)
+            }).then((response) => {
+              closeModal()
+              navigateBack(response)
+            })
           },
         },
       ],
@@ -190,7 +214,10 @@ const modals = computed(() => {
           onClick() {
             updateElement("reject", {
               requestPrivateNotes: notes.value || "",
-            }).then(closeModal)
+            }).then((response) => {
+              closeModal()
+              navigateBack(response)
+            })
           },
         },
       ],

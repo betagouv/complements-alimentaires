@@ -24,6 +24,7 @@ const headers = [
   "Authorisation marché FR ou EU",
   "Date de demande d'ajout",
   "Statut de la déclaration",
+  "Statut de la demande",
   "",
 ]
 const rows = computed(() =>
@@ -34,6 +35,7 @@ const rows = computed(() =>
       getAuthorizationModeInFrench(x.authorizationMode),
       x.declaration.creationDate && isoToPrettyDate(x.declaration.creationDate),
       getStatusTagForCell(x.declaration.status),
+      getRequestStatusTagForCell(x),
       {
         component: "router-link",
         text: "Contrôler l'ingrédient",
@@ -42,6 +44,30 @@ const rows = computed(() =>
     ],
   }))
 )
+
+const getRequestStatusTagForCell = (request) => {
+  const status = {
+    REQUESTED: {
+      label: "Nouvelle",
+      type: "info",
+    },
+    INFORMATION: {
+      label: "Information",
+      type: "warning",
+    },
+    REJECTED: {
+      label: "Refusé",
+      type: "error",
+    },
+  }[request.requestStatus]
+
+  return (
+    status && {
+      ...status,
+      component: "DsfrBadge",
+    }
+  )
+}
 </script>
 
 <style scoped>

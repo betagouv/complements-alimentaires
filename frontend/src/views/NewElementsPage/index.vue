@@ -7,6 +7,7 @@
         :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Ingrédients pour ajout' }]"
       />
       <h1 class="fr-h4">Liste des demandes en attente d’ajout d’ingrédients</h1>
+      <NewElementActionInfo />
       <div v-if="isFetching" class="flex justify-center my-10">
         <ProgressSpinner />
       </div>
@@ -31,6 +32,7 @@ import { computed, watch } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import NewElementsTable from "./NewElementsTable"
+import NewElementActionInfo from "./NewElementActionInfo"
 import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
 
