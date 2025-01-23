@@ -164,6 +164,7 @@ class DeclaredMicroorganismSerializer(DeclaredIngredientCommonSerializer):
             "id",
             "declaration",
             "element",
+            "new_name",
             "new_species",
             "new_genre",
             "active",
@@ -295,58 +296,130 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
 
 
 class OpenDataDeclarationSerializer(serializers.ModelSerializer):
-    status = serializers.SerializerMethodField()
-    article = serializers.SerializerMethodField()
-    company = serializers.SerializerMethodField()
-    galenic_formulation = serializers.SerializerMethodField()
-
-    declared_plants = serializers.SerializerMethodField()
-    declared_microorganisms = serializers.SerializerMethodField()
-    declared_substances = serializers.SerializerMethodField()
-
-    modification_date = serializers.DateTimeField(format="%Y-%m-%d")
+    id = serializers.SerializerMethodField()
+    decision = serializers.SerializerMethodField()
+    responsable_mise_sur_marche = serializers.SerializerMethodField()
+    siret_responsable_mise_sur_marche = serializers.SerializerMethodField()
+    nom_commercial = serializers.SerializerMethodField()
+    marque = serializers.SerializerMethodField()
+    gamme = serializers.SerializerMethodField()
+    article_procedure = serializers.SerializerMethodField()
+    forme_galenique = serializers.SerializerMethodField()
+    dose_journaliere = serializers.SerializerMethodField()
+    mode_emploi = serializers.SerializerMethodField()
+    mises_en_garde = serializers.SerializerMethodField()
+    objectif_effet = serializers.SerializerMethodField()
+    aromes = serializers.SerializerMethodField()
+    facteurs_risques = serializers.SerializerMethodField()
+    populations_cibles = serializers.SerializerMethodField()
+    plantes = serializers.SerializerMethodField()
+    micro_organismes = serializers.SerializerMethodField()
+    substances = serializers.SerializerMethodField()
+    additifs = serializers.SerializerMethodField()
+    nutriments = serializers.SerializerMethodField()
+    autres_ingredients_actifs = serializers.SerializerMethodField()
+    ingredients_inactifs = serializers.SerializerMethodField()
+    date_decision = serializers.SerializerMethodField()
 
     class Meta:
         model = Declaration
+
         fields = (
             "id",
-            "status",
-            "company",
-            "name",
-            "brand",
+            "decision",
+            "responsable_mise_sur_marche",
+            "siret_responsable_mise_sur_marche",
+            "nom_commercial",
+            "marque",
             "gamme",
-            "article",
-            "galenic_formulation",
-            "daily_recommended_dose",
-            "instructions",
-            "warning",
-            "declared_plants",
-            "declared_microorganisms",
-            "declared_substances",
-            "modification_date",
+            "article_procedure",
+            "forme_galenique",
+            "dose_journaliere",
+            "mode_emploi",
+            "mises_en_garde",
+            "objectif_effet",
+            "aromes",
+            "facteurs_risques",
+            "populations_cibles",
+            "plantes",
+            "micro_organismes",
+            "substances",
+            "additifs",
+            "nutriments",
+            "autres_ingredients_actifs",
+            "ingredients_inactifs",
+            "date_decision",
         )
         read_only_fields = fields
 
-    def get_status(self, obj):
+    def get_id(self, obj):
+        """
+        This function is useless as the field has the correct name already and no transformation.
+        It is left for lisibilty
+        """
+        return obj.id
+
+    def get_decision(self, obj):
         return obj.get_status_display()
 
-    def get_article(self, obj):
+    def get_responsable_mise_sur_marche(self, obj):
+        return obj.company.commercial_name
+
+    def get_siret_responsable_mise_sur_marche(self, obj):
+        return obj.company.siret
+
+    def get_nom_commercial(self, obj):
+        return obj.name
+
+    def get_marque(self, obj):
+        return obj.brand
+
+    def get_gamme(self, obj):
+        """
+        This function is useless as the field has the correct name already and no transformation.
+        It is left for lisibilty
+        """
+        return obj.gamme
+
+    def get_article_procedure(self, obj):
         """
         Unify all types of Articles 15 categories.
         If not part of Article 15, then return display name
         """
-        if "Article 15" in obj.get_calculated_article_display():
+        article = Declaration.Article(obj.article).label
+        if "Article 15" in article:
             return "Article 15"
         else:
-            return obj.get_calculated_article_display()
+            return article
 
-    def get_company(self, obj):
-        return obj.company.commercial_name, obj.company.siret
+    def get_forme_galenique(self, obj):
+        if obj.galenic_formulation:
+            return obj.galenic_formulation.name
+        else:
+            return None
 
-    def get_galenic_formulation(self, obj):
-        return obj.galenic_formulation.name
+    def get_dose_journaliere(self, obj):
+        return obj.daily_recommended_dose
 
-    def get_declared_plants(self, obj):
+    def get_mode_emploi(self, obj):
+        return obj.instructions
+
+    def get_mises_en_garde(self, obj):
+        return obj.warning
+
+    def get_objectif_effet(self, obj):
+        return [effect.name for effect in obj.effects.all()]
+
+    def get_aromes(self, obj):
+        return obj.flavor
+
+    def get_facteurs_risques(self, obj):
+        return [condition.name for condition in obj.conditions_not_recommended.all()]
+
+    def get_populations_cibles(self, obj):
+        return [population.name for population in obj.populations.all()]
+
+    def get_plantes(self, obj):
         return [
             {
                 "nom": declared_plant.plant.name if declared_plant.plant else None,
@@ -360,7 +433,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             for declared_plant in obj.declared_plants.filter(active=True)
         ]
 
-    def get_declared_microorganisms(self, obj):
+    def get_micro_organismes(self, obj):
         return [
             {
                 "genre": declared_microorganism.microorganism.genus if declared_microorganism.microorganism else None,
@@ -376,7 +449,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             for declared_microorganism in obj.declared_microorganisms.all()
         ]
 
-    def get_declared_substances(self, obj):
+    def get_substances(self, obj):
         return [
             {
                 "nom": declared_substance.substance.name,
@@ -387,6 +460,33 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             else {}
             for declared_substance in obj.declared_substances.all()
         ]
+
+    def get_additifs(self, obj):
+        return [
+            str(declared_ingredient.ingredient.name)
+            for declared_ingredient in obj.declared_ingredients.filter(ingredient__ingredient_type=2)
+        ]
+
+    def get_nutriments(self, obj):
+        return [
+            str(declared_ingredient.ingredient.name)
+            for declared_ingredient in obj.declared_ingredients.filter(ingredient__ingredient_type=1)
+        ]
+
+    def get_autres_ingredients_actifs(self, obj):
+        return [
+            str(declared_ingredient.ingredient.name)
+            for declared_ingredient in obj.declared_ingredients.filter(ingredient__ingredient_type=4)
+        ]
+
+    def get_ingredients_inactifs(self, obj):
+        return [
+            str(declared_ingredient.ingredient.name)
+            for declared_ingredient in obj.declared_ingredients.filter(ingredient__ingredient_type=5)
+        ]
+
+    def get_date_decision(self, obj):
+        return obj.acceptation_date
 
 
 class DeclarationSerializer(serializers.ModelSerializer):

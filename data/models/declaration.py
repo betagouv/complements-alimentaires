@@ -468,6 +468,13 @@ class Declaration(Historisable, TimeStampable):
         """
         return any(x for x in self.populations.all() if x.is_defined_by_anses)
 
+    @property
+    def acceptation_date(self):
+        if self.status == Declaration.DeclarationStatus.AUTHORIZED:
+            latest_snapshot = self.snapshots.filter(creation_date__isnull=False).latest("creation_date")
+            if latest_snapshot:
+                return latest_snapshot.creation_date.strftime('"%Y-%m-%d"')
+
     def assign_calculated_article(self):
         """
         Peuple l'article calculé pour cette déclaration.
@@ -640,12 +647,16 @@ class DeclaredMicroorganism(Historisable, Addable):
 
     def __str__(self):
         if self.new:
-            return f"-NEW- {self.new_species} {self.new_genre}"
-        return f"{self.microorganism.species} {self.microorganism.genus}"
+            return f"-NEW- {self.new_name}"
+        return f"{self.microorganism.name}"
 
     @property
     def type(self):
         return "microorganism"
+
+    @property
+    def new_name(self):
+        return f"{self.new_species} {self.new_genre}"
 
 
 class DeclaredIngredient(Historisable, Addable):
