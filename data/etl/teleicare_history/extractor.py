@@ -207,10 +207,12 @@ def create_declaration_from_teleicare_history():
                 dcl_id=latest_ica_declaration.dcl_ident,
                 stattdcl_ident__in=[
                     2,
+                    3,
+                    4,
                     5,
                     6,
                     8,
-                ],  # status 'autorisé', 'refusé', 'arrêt commercialisation', 'abandonné'
+                ],  # status 'autorisé temporaire', 'autorisé prolongé','autorisé définitif','refusé', 'arrêt commercialisation', 'abandonné'
                 stadcl_ident=8,  # état 'clos'
             ).first()
             # la déclaration a une version finalisée
