@@ -177,18 +177,20 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             raise ParseError(detail=f"No {self.element_type} exists with id {replacement_element_id}")
 
         if replacement_element_type != self.element_type:
+            # TODO: should there be a limit to which fields are overrideable?
             additional_fields = request.data.get("additional_fields", {})
             replacement_declaration_model = new_type["model"]
             old_fields = [field.name for field in self.type_model._meta.get_fields()]
             new_fields = [field.name for field in replacement_declaration_model._meta.get_fields()]
             same_fields = set(old_fields).intersection(set(new_fields))
 
-            new_declared_element_fields = (
-                additional_fields  # TODO: should there be a limit to which fields are overrideable?
-            )
+            new_declared_element_fields = {}
+            # initialiser avec les anciennes valeurs qui sont toujours valides
             for field in same_fields:
                 new_declared_element_fields[field] = getattr(element, field)
-                # TODO: this means existing same fields would override provided fields
+            # ajouter ou remplacer avec les valeurs données
+            for field in additional_fields:
+                new_declared_element_fields[field] = additional_fields[field]
 
             if self.element_type != "microorganism" and replacement_element_type == "microorganism":
                 new_declared_element_fields["new_species"] = element.new_name

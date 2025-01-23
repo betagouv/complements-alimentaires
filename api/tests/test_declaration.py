@@ -1934,7 +1934,7 @@ class TestDeclaredElementsApi(APITestCase):
 
         declaration = DeclarationFactory()
         declared_plant = DeclaredPlantFactory(
-            declaration=declaration, new_name="Test plant", new_description="Test description", new=True
+            declaration=declaration, new_name="Test plant", new_description="Test description", new=True, quantity=10
         )
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
         microorganism = MicroorganismFactory()
@@ -1946,6 +1946,7 @@ class TestDeclaredElementsApi(APITestCase):
                 "additional_fields": {
                     "strain": "Test strain",
                     "activated": False,
+                    "quantity": 90,
                 },
             },
             format="json",
@@ -1962,6 +1963,7 @@ class TestDeclaredElementsApi(APITestCase):
         # test new fields saved
         self.assertEqual(declared_microorganism.strain, "Test strain")
         self.assertEqual(declared_microorganism.activated, False)
+        self.assertEqual(declared_microorganism.quantity, 90)
         # test old fields copied over
         self.assertEqual(declared_microorganism.new_description, "Test description")
         self.assertEqual(declared_microorganism.request_status, DeclaredMicroorganism.AddableStatus.REPLACED)
