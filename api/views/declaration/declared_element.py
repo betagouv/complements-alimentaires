@@ -212,13 +212,11 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
 
         synonyms = request.data.get("synonyms", [])
         for synonym in synonyms:
-            if not synonym.get("id"):
-                # add new synonym
-                try:
-                    name = synonym["name"]
-                    if name:
-                        replacement_synonym_model.objects.create(standard_name=replacement_element, name=name)
-                except KeyError:
-                    raise ParseError(detail="Must provide 'name' to create new synonym")
+            try:
+                name = synonym["name"]
+                if name and not replacement_synonym_model.objects.filter(name=name).exists():
+                    replacement_synonym_model.objects.create(standard_name=replacement_element, name=name)
+            except KeyError:
+                raise ParseError(detail="Must provide 'name' to create new synonym")
 
         return element

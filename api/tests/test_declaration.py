@@ -347,6 +347,7 @@ class TestDeclarationApi(APITestCase):
         self.assertIsNone(new_declared_microorganism.microorganism)
         self.assertEqual(new_declared_microorganism.new_species, "New microorganism species")
         self.assertEqual(new_declared_microorganism.new_genre, "New microorganism genre")
+        self.assertEqual(new_declared_microorganism.new_name, "New microorganism species New microorganism genre")
         self.assertEqual(new_declared_microorganism.new_description, "New microorganism description")
         self.assertEqual(new_declared_microorganism.active, True)
         self.assertEqual(new_declared_microorganism.quantity, 345)
@@ -2025,7 +2026,7 @@ class TestDeclaredElementsApi(APITestCase):
             reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
             {
                 "element": {"id": plant.id, "type": "plant"},
-                "synonyms": [{"id": synonym.id, "name": "Eucalyptus Plant"}, {"name": "New synonym"}],
+                "synonyms": [{"name": "New synonym"}],
             },
             format="json",
         )
@@ -2069,6 +2070,33 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.json()["globalError"], "Must provide 'name' to create new synonym")
         plant.refresh_from_db()
         self.assertEqual(plant.plantsynonym_set.count(), 0)
+
+    @authenticate
+    def test_cannot_add_duplicate_synonyms(self):
+        """
+        C'est possible d'envoyer une liste avec un nouvel element pour
+        ajouter un synonyme et laisser des synonymes existantes non-modifiées
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration, new=True)
+        plant = PlantFactory()
+        synonym = PlantSynonymFactory.create(name="Eucalyptus Plant", standard_name=plant)
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "synonyms": [{"name": "Eucalyptus Plant"}, {"name": "New synonym"}],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        plant.refresh_from_db()
+        self.assertEqual(plant.plantsynonym_set.count(), 2)
+        self.assertIsNotNone(plant.plantsynonym_set.get(name="New synonym"))
+        self.assertEqual(plant.plantsynonym_set.get(id=synonym.id).name, synonym.name)
 
     @authenticate
     def test_elements_unchanged_on_replace_fail(self):

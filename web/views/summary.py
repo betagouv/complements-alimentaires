@@ -17,24 +17,26 @@ class SummaryView(PdfView):
         return "summary.html"
 
     def get_context(self, declaration):
+        # List avec trois éléments : le titre, la valeur à afficher et éventuellement le nom de la classe
         product_table_rows = (
-            ("Nom du produit", declaration.name),
-            ("Marque", declaration.brand or "Non spécifiée"),
-            ("Gamme", declaration.gamme or "Non spécifiée"),
-            ("Description", declaration.description or "Non spécifiée"),
-            ("Populations cibles", ", ".join(list(declaration.populations.all().values_list("name", flat=True)))),
-            ("Populations à consommation déconseillée", self.get_conditions_string(declaration)),
-            ("Mise en garde et avertissement", declaration.warning or "Non spécifiée"),
+            ("Nom du produit", declaration.name, ""),
+            ("Marque", declaration.brand or "Non spécifiée", ""),
+            ("Gamme", declaration.gamme or "Non spécifiée", ""),
+            ("Description", declaration.description or "Non spécifiée", ""),
+            ("Populations cibles", ", ".join(list(declaration.populations.all().values_list("name", flat=True))), ""),
+            ("Populations à consommation déconseillée", self.get_conditions_string(declaration), ""),
+            ("Mise en garde et avertissement", declaration.warning or "Non spécifiée", ""),
             (
                 "Forme galénique",
                 declaration.galenic_formulation or declaration.other_galenic_formulation or "Non spécifiée",
+                "",
             ),
-            ("Mode d'emploi", declaration.instructions or "Non spécifié"),
-            ("Unité de consommation", self.get_measurement_unit_string(declaration)),
-            ("Dose journalière recommandée", declaration.daily_recommended_dose or "Non spécifiée"),
-            ("Conditionnement", declaration.conditioning or "Non spécifié"),
-            ("Durabilité minimale / DLUO (en mois)", declaration.minimum_duration or "Non spécifiée"),
-            ("Objectifs / effets", self.get_effects_string(declaration)),
+            ("Mode d'emploi", declaration.instructions or "Non spécifié", ""),
+            ("Unité de consommation", self.get_measurement_unit_string(declaration), "unit-font"),
+            ("Dose journalière recommandée", declaration.daily_recommended_dose or "Non spécifiée", ""),
+            ("Conditionnement", declaration.conditioning or "Non spécifié", ""),
+            ("Durabilité minimale / DLUO (en mois)", declaration.minimum_duration or "Non spécifiée", ""),
+            ("Objectifs / effets", self.get_effects_string(declaration), ""),
         )
         try:
             last_submission_snapshot = declaration.snapshots.filter(action=Snapshot.SnapshotActions.SUBMIT).latest(
