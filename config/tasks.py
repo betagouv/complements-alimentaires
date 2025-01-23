@@ -135,7 +135,7 @@ def approve_declarations():
         logger.info("Automatic validation of declarations disabled. Enable setting ENABLE_AUTO_VALIDATION.")
         return
 
-    cutoff_delta = timezone.now() - relativedelta(months=2)
+    cutoff_delta = timezone.now() - relativedelta(days=30)
 
     declarations = (
         Declaration.objects

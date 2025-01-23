@@ -1,7 +1,9 @@
 import { slugifyType } from "@/utils/mappings"
 
 // on check e.substance car c'est le format des substances calculés
-export const getElementName = (e) => e.element?.name || e.substance?.name || e.newName
+export const getElementName = (e) => e.element?.name || e.substance?.name || getNewElementName(e)
+
+export const getNewElementName = (e) => e.newName
 
 export const getObjectSubTypeList = (objectList, subType = null) => {
   return subType
