@@ -40,6 +40,7 @@ import { useRouter } from "vue-router"
 import { getApiType } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
+import useToaster from "@/composables/use-toaster"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
 import ReplacementSearch from "./ReplacementSearch"
@@ -48,6 +49,7 @@ import ElementSynonyms from "./ElementSynonyms"
 
 const props = defineProps({ type: String, id: String })
 const store = useRootStore()
+const { addErrorMessage } = useToaster()
 
 const declarationId = computed(() => element.value?.declaration)
 const declarationLink = computed(() => {
@@ -69,11 +71,14 @@ const breadcrumbLinks = computed(() => {
 
 // Init
 const url = computed(() => `/api/v1/declared-elements/${getApiType(props.type)}/${props.id}`)
-const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
+const onFetchError = ({ error, data, response, context, execute }) => {
+  addErrorMessage("Une erreur est survenu. Merci de réessayer ultérieurement.")
+  return { error, data }
+}
+const { data: element, execute } = useFetch(url, { immediate: false, onFetchError }).get().json()
 
 const getElementFromApi = async () => {
   await execute()
-  await handleError(response)
 }
 
 getElementFromApi()
@@ -153,16 +158,19 @@ const actionButtons = computed(() => [
 ])
 
 const updateElement = async (action, payload) => {
-  const { data, response } = await useFetch(`${url.value}/${action}`, {
-    headers: headers(),
-  })
+  await useFetch(
+    `${url.value}/${action}`,
+    { headers: headers() },
+    {
+      onFetchResponse(response) {
+        closeModal()
+        navigateBack(response)
+      },
+      onFetchError,
+    }
+  )
     .post(payload)
     .json()
-  handleError(response)
-  if (data.value) {
-    element.value = data.value
-  }
-  return data.value
 }
 
 const modals = computed(() => {
@@ -182,10 +190,7 @@ const modals = computed(() => {
               synonyms: synonyms.value,
               additionalInfo: info,
             }
-            updateElement("replace", payload).then((response) => {
-              closeModal()
-              navigateBack(response)
-            })
+            updateElement("replace", payload)
           },
         },
       ],
@@ -198,9 +203,6 @@ const modals = computed(() => {
           onClick() {
             updateElement("request-info", {
               requestPrivateNotes: notes.value || "",
-            }).then((response) => {
-              closeModal()
-              navigateBack(response)
             })
           },
         },
@@ -214,9 +216,6 @@ const modals = computed(() => {
           onClick() {
             updateElement("reject", {
               requestPrivateNotes: notes.value || "",
-            }).then((response) => {
-              closeModal()
-              navigateBack(response)
             })
           },
         },
