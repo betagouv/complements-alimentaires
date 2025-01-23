@@ -121,7 +121,7 @@ const rules = computed(() => {
 })
 const declaration = defineModel()
 const proposal = ref(null)
-const delayDays = ref(15)
+const delayDays = ref()
 const comment = ref(declaration.value?.lastAdministrationComment || "")
 const reasons = ref([])
 
@@ -137,8 +137,8 @@ const disableDelayDays = computed(() => proposal.value === "rejection")
 watch(proposal, (newProposal) => {
   if (mandatoryVisaProposals.indexOf(newProposal) > -1) needsVisa.value = true
   if (newProposal === "objection") delayDays.value = 30
-  else if (newProposal === "rejection") delayDays.value = null
-  else delayDays.value = 15
+  else if (newProposal === "observation") delayDays.value = 15
+  else delayDays.value = null
 })
 
 const needsAnsesReferal = computed(() => declaration.value?.article === "ANSES_REFERAL")
