@@ -8,9 +8,27 @@ from django.db import IntegrityError, transaction
 
 from phonenumber_field.phonenumber import PhoneNumber
 
-from data.models import Condition, Effect, GalenicFormulation, Population, SubstanceUnit
+from data.models import (
+    Condition,
+    Effect,
+    GalenicFormulation,
+    Ingredient,
+    Microorganism,
+    Plant,
+    PlantPart,
+    Population,
+    Preparation,
+    Substance,
+    SubstanceUnit,
+)
 from data.models.company import ActivityChoices, Company
-from data.models.declaration import Declaration
+from data.models.declaration import (
+    ComputedSubstance,
+    Declaration,
+    DeclaredIngredient,
+    DeclaredMicroorganism,
+    DeclaredPlant,
+)
 from data.models.teleicare_history.ica_declaration import (
     IcaComplementAlimentaire,
     IcaDeclaration,
@@ -18,6 +36,13 @@ from data.models.teleicare_history.ica_declaration import (
     IcaPopulationCibleDeclaree,
     IcaPopulationRisqueDeclaree,
     IcaVersionDeclaration,
+)
+from data.models.teleicare_history.ica_declaration_composition import (
+    IcaIngredient,
+    IcaIngredientAutre,
+    IcaMicroOrganisme,
+    IcaPreparation,
+    IcaSubstanceDeclaree,
 )
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 
@@ -200,46 +225,63 @@ MANY_TO_MANY_PRODUCT_MODELS_MATCHING = {
         "CA_model": Population,
     },
 }
-MANY_TO_MANY_INGREDIENT_MODELS_MATCHING = {
-    "declared_plant": {
-        "teleIcare_model": IcaPreparation,
-        "teleIcare_pk": "popcbl_ident",
-        "CA_model": Population,
-    },
-    "declared_microorganism": {
-        "teleIcare_model": IcaMicroOrganisme,
-        "teleIcare_pk": "popcbl_ident",
-        "CA_model": Population,
-    },
-    "declared_ingredient": {
-        "teleIcare_model": IcaIngredientAutre,
-        "teleIcare_pk": "popcbl_ident",
-        "CA_model": Population,
-    },
-    "declared_substances": {
-        "teleIcare_model": IcaSubstanceDeclaree,
-        "teleIcare_pk": "popcbl_ident",
-        "CA_model": Population,
-    },
-    "computed_substances": {
-        "teleIcare_model": IcaPopulationCibleDeclaree,
-        "teleIcare_pk": "popcbl_ident",
-        "CA_model": Population,
-    },
-}
+
+
+def create_declared_plant(declaration, teleIcare_plant, active=True):
+    declared_plant = DeclaredPlant(
+        declaration=declaration,
+        plant=Plant.objects.get(sirccf_id=teleIcare_plant.plte_ident),
+        # active=active,
+        quantity=teleIcare_plant.prepa_qte,
+        unit=SubstanceUnit.objects.get(siccrf_id=teleIcare_plant.unt_ident),
+        preparation=Preparation.objects.get(siccrf_id=teleIcare_plant.typprep_ident),
+        used_part=PlantPart.objects.get(sirccf_id=teleIcare_plant.pplan_ident),
+    )
+    return declared_plant
+
+
+def create_declared_microorganism(declaration, teleIcare_microorganism):
+    declared_microorganism = DeclaredMicroorganism(
+        declaration=declaration,
+        microorganism=Microorganism.objects.get(siccrf_id=teleIcare_microorganism.morg_ident),
+        # active=True,
+        activated=True,  # activated n'était pas un champ existant dans TeleIcare
+        strain=teleIcare_microorganism.ingmorg_souche,
+        quantity=teleIcare_microorganism.ingmorg_quantite_par_djr,
+    )
+    return declared_microorganism
+
+
+def create_declared_ingredient(declaration, teleIcare_ingredient):
+    declared_ingredient = DeclaredIngredient(
+        declaration=declaration,
+        ingredient=Ingredient.objects.get(siccrf_id=teleIcare_ingredient.inga_ident),
+        # active=True,
+        quantity=None,
+    )
+    return declared_ingredient
+
+
+def create_computed_substance(declaration, teleIcare_substance):
+    computed_substance = ComputedSubstance(
+        declaration=declaration,
+        ingredient=Substance.objects.get(siccrf_id=teleIcare_substance.sbsact_ident),
+        # active=True,
+        quantity=teleIcare_substance.sbsactdecl_quantite_par_djr,
+        # le champ 'sbsact_commentaires' n'est pas repris
+    )
+    return computed_substance
 
 
 @transaction.atomic
-def update_declaration_from_teleicare_history(declaration, vrsdecl_ident):
+def add_product_info_from_teleicare_history(declaration, vrsdecl_ident):
     """
-    Cette function importe les champs ManyToMany des déclarations.
+    Cette function importe les champs ManyToMany des déclarations, relatifs à l'onglet "Produit"
     Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
     `create_declaration_from_teleicare_history` pour updater leurs champs ManyToMany.
     """
     # TODO: other_conditions=conditions_not_recommended,
     # TODO: other_effects=
-    # TODO: compostion
-    # Set des champs many to many relatifs à l'onglet "Produit"
     for CA_field_name, struct in MANY_TO_MANY_PRODUCT_MODELS_MATCHING.items():
         # par exemple Declaration.populations
         CA_field = getattr(declaration, CA_field_name)
@@ -253,12 +295,43 @@ def update_declaration_from_teleicare_history(declaration, vrsdecl_ident):
                 for TI_object in (teleIcare_model.objects.filter(vrsdecl_ident=vrsdecl_ident))
             ]
         )
-    # Set des champs many to many relatifs à l'onglet "Composition"
-    for CA_field_name, struct in MANY_TO_MANY_INGREDIENT_MODELS_MATCHING.items():
-        declaration.save()
 
 
-def create_declaration_from_teleicare_history():
+@transaction.atomic
+def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
+    """
+    Cette function importe les champs ManyToMany des déclarations, relatifs à l'onglet "Composition"
+    Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
+    `create_declaration_from_teleicare_history` pour updater leurs champs ManyToMany.
+    """
+    bulk_ingredients = {DeclaredPlant: [], DeclaredMicroorganism: [], DeclaredIngredient: [], ComputedSubstance: []}
+    for ingredient in IcaIngredient.objects.filter(vrsdecl_ident=vrsdecl_ident):
+        if ingredient.tying_ident == 1:
+            declared_plant = create_declared_plant(
+                declaration, IcaPreparation.objects.get(ingr_ident=ingredient.ingr_ident)
+            )
+            bulk_ingredients[DeclaredPlant].append(declared_plant)
+        elif ingredient.tying_ident == 2:
+            declared_microorganism = create_declared_microorganism(
+                declaration, IcaMicroOrganisme.objects.get(ingr_ident=ingredient.ingr_ident)
+            )
+            bulk_ingredients[DeclaredMicroorganism].append(declared_microorganism)
+        elif ingredient.tying_ident == 3:
+            declared_ingredient = create_declared_ingredient(
+                declaration, IcaIngredientAutre.objects.get(ingr_ident=ingredient.ingr_ident)
+            )
+            bulk_ingredients[DeclaredIngredient].append(declared_ingredient)
+    # dans TeleIcare les declared_substances étaient des ingrédients
+    # donc on ne rempli pas le champ declaration.declared_substances grâce à l'historique
+    for teleIcare_substance in IcaSubstanceDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident):
+        computed_substance = create_computed_substance(declaration, teleIcare_substance)
+        bulk_ingredients[ComputedSubstance].append(computed_substance)
+
+    for model, bulk_of_objects in bulk_ingredients.items():
+        model.objects.bulk_create(bulk_of_objects)
+
+
+def create_declaration_from_teleicare_history(declaration, vrsdecl_ident):
     """
     Dans Teleicare une entreprise peut-être relié à une déclaration par 3 relations différentes :
     * responsable de l'étiquetage (équivalent Declaration.mandated_company)
@@ -342,9 +415,10 @@ def create_declaration_from_teleicare_history():
                 try:
                     with suppress_autotime(declaration, ["creation_date", "modification_date"]):
                         declaration.save()
-                        update_declaration_from_teleicare_history(
+                        add_product_info_from_teleicare_history(
                             declaration, latest_ica_version_declaration.vrsdecl_ident
                         )
+                        add_composition_from_teleicare_history(declaration, vrsdecl_ident)
                         nb_created_declarations += 1
                 except IntegrityError:
                     # cette Déclaration a déjà été créée
