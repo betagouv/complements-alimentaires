@@ -7,7 +7,7 @@
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
-          <ReplacementSearch @replacement="(obj) => (replacement = obj)" :reset="clearSearch" />
+          <ReplacementSearch @replacement="(obj) => (replacement = obj)" />
         </div>
         <div class="mt-4">
           <DsfrButtonGroup :buttons="actionButtons" inlineLayoutWhen="md" align="center" class="mb-8" />
