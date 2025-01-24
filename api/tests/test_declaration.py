@@ -1335,9 +1335,9 @@ class TestDeclarationApi(APITestCase):
         Les déclarations peuvent être filtrées par article
         """
         InstructionRoleFactory(user=authenticate.user)
-        art_15 = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
-        AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_16)
-        AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ANSES_REFERAL)
+        art_15 = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
+        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_16)
+        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ANSES_REFERAL)
 
         # Filtrage pour obtenir les déclarations en article 15
         url = f"{reverse('api:list_all_declarations')}?article=ART_15"
@@ -1579,7 +1579,7 @@ class TestDeclarationApi(APITestCase):
         art_15.refresh_from_db()
         self.assertEqual(art_15.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(art_15.calculated_article, Declaration.Article.ARTICLE_15)
-        self.assertEqual(art_15.overriden_article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(art_15.overridden_article, Declaration.Article.ARTICLE_16)
 
     @authenticate
     def test_update_article_unauthorized(self):

@@ -406,7 +406,7 @@ class ArticleChangeView(GenericAPIView):
         if new_article not in Declaration.Article:
             raise ProjectAPIException(global_error="Merci de spécifier un article valide")
 
-        declaration.overriden_article = Declaration.Article(new_article)
+        declaration.overridden_article = Declaration.Article(new_article)
         declaration.save()
         declaration.refresh_from_db()
         serializer = self.get_serializer(declaration)
