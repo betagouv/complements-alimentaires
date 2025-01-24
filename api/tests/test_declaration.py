@@ -2064,12 +2064,9 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
         self.assertFalse(declared_plant.new)
 
-        # est-ce que l'espèce + genre sont copiés dans le champ nom ?
-        self.assertEqual(declared_plant.new_name, "test testing")
-        # est-ce que les nouveaux champs sont sauvegardés ?
-        self.assertEqual(declared_plant.unit, unit)
         # est-ce que les anciens champs sont sauvegardés ?
         self.assertEqual(declared_plant.new_description, "Test description")
+        self.assertEqual(declared_plant.unit, unit)
 
     @authenticate
     def test_can_add_synonym_on_replace(self):

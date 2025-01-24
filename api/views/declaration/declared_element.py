@@ -180,17 +180,8 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             setattr(declared_element, self.element_type, replacement_element)
         else:
             # créer le nouveau element a partir des champs de l'ancien et champs donnés par la requête
-            new_declared_element_fields = {}
+            new_declared_element_fields = self.type_serializer(declared_element).data
 
-            # initialiser avec les anciennes valeurs qui sont toujours valides
-            old_fields = [field.name for field in self.type_model._meta.get_fields()]
-            new_fields = [field.name for field in new_type["model"]._meta.get_fields()]
-            same_fields = set(old_fields).intersection(set(new_fields))
-            for field in same_fields:
-                new_declared_element_fields[field] = getattr(declared_element, field)
-
-            # ajouter ou remplacer avec les valeurs données
-            # TODO: should there be a limit to which fields are overrideable?
             additional_fields = request.data.get("additional_fields", {})
             for field in additional_fields:
                 new_declared_element_fields[field] = additional_fields[field]
@@ -201,13 +192,13 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             elif self.element_type == "microorganism" and replacement_type != "microorganism":
                 new_declared_element_fields["new_name"] = declared_element.new_name
 
-            # utiliser le serializer pour comprendre les valeurs complexes comme used_part
             new_declared_element = new_type["serializer"](data=new_declared_element_fields)
             new_declared_element.is_valid(raise_exception=True)
-            # le serializer a besoin d'un id et non pas l'objet
+
+            # pour créer le nouveau declared_element, il faut mettre les données de la declaration et l'element dans ce format
             new_declared_element.validated_data["declaration"] = declared_element.declaration
-            # pour reutiliser le serializer, faut mettre les données de l'element dans ce format
             new_declared_element.validated_data[replacement_type] = {"id": replacement_element.id}
+
             new_declared_element = new_declared_element.create(new_declared_element.validated_data)
             declared_element.delete()
             declared_element = new_declared_element
