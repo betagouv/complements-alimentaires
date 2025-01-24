@@ -332,6 +332,9 @@ const routes = [
       title: "Instruction",
       requiredRole: "InstructionRole",
       authenticationRequired: true,
+      defaultQueryParams: {
+        tab: 1,
+      },
     },
   },
   {

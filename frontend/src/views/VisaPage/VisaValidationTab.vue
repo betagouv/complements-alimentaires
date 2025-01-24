@@ -79,8 +79,6 @@ const hasOverriddenOriginalDecision = computed(
   () => overriddenDecision.value && Object.keys(overriddenDecision.value).length > 0
 )
 
-const producerMessage = ref(declaration.value.postValidationProducerMessage)
-
 const instructorName = computed(() => {
   if (!declaration.value?.instructor) return "-"
   return `${declaration.value.instructor.firstName || ""} ${declaration.value.instructor.lastName || ""}`
