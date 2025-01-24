@@ -719,7 +719,7 @@ class TestDeclarationFlow(APITestCase):
         latest_snapshot = declaration.snapshots.latest("creation_date")
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         self.assertEqual(latest_snapshot.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
-        self.assertEqual(latest_snapshot.comment, None)
+        self.assertEqual(latest_snapshot.comment, "")
         self.assertEqual(latest_snapshot.expiration_days, None)
         self.assertEqual(latest_snapshot.blocking_reasons, None)
 
