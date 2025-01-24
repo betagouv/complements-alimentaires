@@ -198,6 +198,13 @@ class Declaration(Historisable, TimeStampable):
         unique=True,
         verbose_name="cplalim_ident dans le modèle IcaComplementAlimentaire si la déclaration provient de Teleicare",
     )
+    teleicare_id = models.TextField(
+        blank=True,
+        null=True,
+        editable=False,
+        unique=True,
+        verbose_name="identifiant Teleicare connu par les déclarants et indiqué dans les attestations",
+    )
 
     def create_snapshot(
         self,

@@ -229,6 +229,11 @@ def create_declaration_from_teleicare_history():
                     if latest_ica_declaration.dcl_date_fin_commercialisation
                     else declaration_creation_date,
                     siccrf_id=ica_complement_alimentaire.cplalim_ident,
+                    teleicare_id=[
+                        latest_ica_declaration.dcl_annee,
+                        latest_ica_declaration.dcl_mois,
+                        latest_ica_declaration.dcl_numero,
+                    ].join("-"),
                     galenic_formulation=GalenicFormulation.objects.get(
                         siccrf_id=ica_complement_alimentaire.frmgal_ident
                     ),
