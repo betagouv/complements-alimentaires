@@ -90,17 +90,20 @@ class DeclaredListSerializer(serializers.ListSerializer):
 
 
 ADDABLE_ELEMENT_FIELDS = (
+    "new",
+    "new_name",
+    "new_description",
     "authorization_mode",
     "fr_reason",
     "fr_details",
     "eu_reference_country",
     "eu_legal_source",
     "eu_details",
-    "new_description",
-    "new",
-    "request_private_notes",
     "request_status",
+    "request_private_notes",
 )
+
+DECLARED_ELEMENT_SHARED_FIELDS = ADDABLE_ELEMENT_FIELDS + ("type",)
 
 
 class DeclaredElementNestedField:
@@ -137,17 +140,15 @@ class DeclaredPlantSerializer(DeclaredIngredientCommonSerializer):
 
     class Meta:
         model = DeclaredPlant
-        fields = ADDABLE_ELEMENT_FIELDS + (
+        fields = DECLARED_ELEMENT_SHARED_FIELDS + (
             "id",
             "declaration",
             "element",
-            "new_name",
             "active",
             "used_part",
-            "unit",
             "quantity",
+            "unit",
             "preparation",
-            "type",
         )
 
 
@@ -160,18 +161,16 @@ class DeclaredMicroorganismSerializer(DeclaredIngredientCommonSerializer):
 
     class Meta:
         model = DeclaredMicroorganism
-        fields = ADDABLE_ELEMENT_FIELDS + (
+        fields = DECLARED_ELEMENT_SHARED_FIELDS + (
             "id",
             "declaration",
             "element",
-            "new_name",
-            "new_species",
-            "new_genre",
             "active",
             "activated",
+            "new_species",
+            "new_genre",
             "strain",
             "quantity",
-            "type",
         )
 
 
@@ -185,16 +184,14 @@ class DeclaredIngredientSerializer(DeclaredIngredientCommonSerializer):
 
     class Meta:
         model = DeclaredIngredient
-        fields = ADDABLE_ELEMENT_FIELDS + (
+        fields = DECLARED_ELEMENT_SHARED_FIELDS + (
             "id",
             "declaration",
             "element",
-            "new_name",
-            "new_type",
             "active",
+            "new_type",
             "quantity",
             "unit",
-            "type",
         )
 
 
@@ -207,15 +204,13 @@ class DeclaredSubstanceSerializer(DeclaredIngredientCommonSerializer):
 
     class Meta:
         model = DeclaredSubstance
-        fields = ADDABLE_ELEMENT_FIELDS + (
+        fields = DECLARED_ELEMENT_SHARED_FIELDS + (
             "id",
             "declaration",
             "element",
-            "new_name",
             "active",
             "quantity",
             "unit",
-            "type",
         )
 
 
