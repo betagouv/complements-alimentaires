@@ -11,7 +11,7 @@
           <ReplacementSearch @replacement="(obj) => (replacement = obj)" :reset="clearSearch" />
         </div>
         <div v-if="changeCrossType" class="my-4">
-          <ElementCard :objectType="replacement.objectType" v-model="additionalInfo" :canRemove="false" />
+          <ElementCard :objectType="replacement.objectType" v-model="additionalFields" :canRemove="false" />
         </div>
         <div class="mt-4">
           <DsfrButtonGroup :buttons="actionButtons" inlineLayoutWhen="md" align="center" class="mb-8" />
@@ -87,8 +87,8 @@ watch(element, (newElement) => {
     const name = newElement.newName
     document.title = `${name} - Compl'Alim`
   }
-  additionalInfo.value = JSON.parse(JSON.stringify(element.value))
-  additionalInfo.value.new = false
+  additionalFields.value = JSON.parse(JSON.stringify(element.value))
+  additionalFields.value.new = false
 })
 
 // Actions
@@ -124,7 +124,7 @@ const replacement = ref()
 
 // TODO: objectType does not work for other ingredients - need to do API mapping?
 const changeCrossType = computed(() => replacement.value && replacement.value?.objectType !== element.value.type)
-const additionalInfo = ref({})
+const additionalFields = ref({})
 store.fetchDeclarationFieldsData()
 
 const synonyms = ref()
@@ -132,7 +132,7 @@ const synonyms = ref()
 watch(replacement, (newReplacement) => {
   // initialiser les synonymes pour permettre la MAJ
   synonyms.value = JSON.parse(JSON.stringify(newReplacement.synonyms || [])) // initialise synonyms that might be updated
-  additionalInfo.value.element = JSON.parse(JSON.stringify(newReplacement))
+  additionalFields.value.element = JSON.parse(JSON.stringify(newReplacement))
   // TODO: do I have to change the active status? Only plant is not readonly, but maybe others can go from inactive to active?
 })
 
@@ -158,19 +158,14 @@ const actionButtons = computed(() => [
 ])
 
 const updateElement = async (action, payload) => {
-  await useFetch(
-    `${url.value}/${action}`,
-    { headers: headers() },
-    {
-      onFetchResponse(response) {
-        closeModal()
-        navigateBack(response)
-      },
-      onFetchError,
-    }
-  )
+  const { data, response } = await useFetch(`${url.value}/${action}`, { headers: headers() }, { onFetchError })
     .post(payload)
     .json()
+
+  if (response.value?.ok) {
+    closeModal()
+    navigateBack(data.value)
+  }
 }
 
 const modals = computed(() => {
@@ -181,14 +176,13 @@ const modals = computed(() => {
         {
           label: "Remplacer",
           onClick() {
-            const info = JSON.parse(JSON.stringify(additionalInfo.value))
-            // TODO: handle new_name vs new_species/new_genre
+            const info = JSON.parse(JSON.stringify(additionalFields.value))
             // TODO: save original type somewhere?
             delete info.element
             const payload = {
               element: { id: replacement.value?.id, type: replacement.value?.objectType },
               synonyms: synonyms.value,
-              additionalInfo: info,
+              additionalFields: info,
             }
             updateElement("replace", payload)
           },
