@@ -123,8 +123,8 @@ class TeleicareHistoryImporterTestCase(TestCase):
         self.assertEqual(created_company.postal_code, etablissement_to_create_as_company.etab_adre_cp)
         self.assertEqual(created_company.city, etablissement_to_create_as_company.etab_adre_ville)
 
-    @mock.patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
-    @mock.patch("data.etl.teleicare_history.extractor.add_product_info_from_teleicare_history")
+    @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
+    @patch("data.etl.teleicare_history.extractor.add_product_info_from_teleicare_history")
     def test_create_declaration_from_history(self, mocked_add_composition_function, mocked_add_product_function):
         """
         Les déclarations sont créées à partir d'object historiques des modèles Ica_
@@ -167,5 +167,6 @@ class TeleicareHistoryImporterTestCase(TestCase):
             str(version_declaration_to_create_as_declaration.vrsdecl_poids_uc),
         )
         self.assertEqual(
-            created_declaration.minimum_duration, str(version_declaration_to_create_as_declaration.vrsdecl_durabilite)
+            created_declaration.minimum_duration,
+            str(version_declaration_to_create_as_declaration.vrsdecl_durabilite),
         )
