@@ -38,8 +38,8 @@ class IngredientAdmin(ElementAdminWithChangeReason):
         SubstanceInlineAdmin,
         IngredientSynonymInline,
     )
-    list_display = ("name", "is_obsolete", "status", "is_risky", "novel_food")
-    list_filter = ("is_obsolete", "status", "is_risky", "novel_food")
+    list_display = ("name", "is_obsolete", "status", "is_risky", "novel_food", "has_linked_substances")
+    list_filter = ("is_obsolete", "status", "is_risky", "novel_food", "ingredient_type")
     show_facets = admin.ShowFacets.NEVER
     readonly_fields = (
         "name",
@@ -49,3 +49,6 @@ class IngredientAdmin(ElementAdminWithChangeReason):
         "siccrf_private_comments",
     )
     search_fields = ["id", "name"]
+
+    def has_linked_substances(self, obj):
+        return "Oui" if obj.substances.count() else "Non"
