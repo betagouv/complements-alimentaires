@@ -38,7 +38,15 @@ from data.factories import (
     VisaRoleFactory,
     PlantSynonymFactory,
 )
-from data.models import Attachment, Declaration, DeclaredMicroorganism, DeclaredPlant, DeclaredSubstance, Snapshot
+from data.models import (
+    Attachment,
+    Declaration,
+    DeclaredMicroorganism,
+    DeclaredPlant,
+    DeclaredSubstance,
+    Snapshot,
+    IngredientType,
+)
 
 from .utils import authenticate
 
@@ -1927,6 +1935,46 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(declared_plant.plant, plant)
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
         self.assertFalse(declared_plant.new)
+
+    @authenticate
+    def test_replace_inactive_ingredient_with_active(self):
+        """
+        Vérifier que c'est possible de remplacer un ingrédient par un autre
+        Le front est responsable d'envoyer les bonnes valeurs pour `active`, `quantity`, `unit`
+        selon la logique gérée là-bas
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_ingredient = DeclaredIngredientFactory(
+            declaration=declaration,
+            new=True,
+            new_type=IngredientType.NON_ACTIVE_INGREDIENT,
+            active=False,
+            quantity=None,
+            unit=None,
+            ingredient=None,
+        )
+        self.assertNotEqual(declared_ingredient.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        active_ingredient = IngredientFactory(ingredient_type=IngredientType.ACTIVE_INGREDIENT)
+        unit = SubstanceUnitFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_ingredient.id, "type": "other-ingredient"}),
+            {
+                "element": {"id": active_ingredient.id, "type": "other-ingredient"},
+                "additional_fields": {"active": True, "quantity": 20, "unit": unit.id},
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        declared_ingredient.refresh_from_db()
+        self.assertEqual(declared_ingredient.ingredient, active_ingredient)
+        self.assertTrue(declared_ingredient.active)
+        self.assertEqual(declared_ingredient.quantity, 20)
+        self.assertEqual(declared_ingredient.unit, unit)
+        self.assertEqual(declared_ingredient.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        self.assertFalse(declared_ingredient.new)
 
     @authenticate
     def test_can_replace_plant_request_with_microorganism(self):
