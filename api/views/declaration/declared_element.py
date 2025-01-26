@@ -83,6 +83,7 @@ TYPE_MAPPING = {
         "element_model": Ingredient,
         "synonym_model": IngredientSynonym,
         "serializer": DeclaredIngredientSerializer,
+        "attribute": "ingredient",
     },
 }
 
@@ -115,6 +116,10 @@ class ElementMappingMixin:
     @property
     def synonym_model(self):
         return self.type_info["synonym_model"]
+
+    @property
+    def type_attribute(self):
+        return self.type_info["attribute"] or self.element_type
 
 
 class DeclaredElementView(RetrieveAPIView, ElementMappingMixin):
@@ -177,7 +182,7 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             raise ParseError(detail=f"No {self.element_type} exists with id {replacement_element_id}")
 
         if replacement_type == self.element_type:
-            setattr(declared_element, self.element_type, replacement_element)
+            setattr(declared_element, self.type_attribute, replacement_element)
         else:
             # créer le nouveau element a partir des champs de l'ancien et champs donnés par la requête
             new_declared_element_fields = self.type_serializer(declared_element).data
