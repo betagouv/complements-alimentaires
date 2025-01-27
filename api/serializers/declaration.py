@@ -392,9 +392,8 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION,
         ]:
             return "Article 15"
-        else:
-            if obj.article:
-                return obj.article.label
+        elif obj.article:
+            return obj.article.label
 
     def get_forme_galenique(self, obj):
         if obj.galenic_formulation:
