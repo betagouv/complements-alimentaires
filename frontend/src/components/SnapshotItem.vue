@@ -19,7 +19,7 @@
     <div class="max-w-xl">
       <div :class="`flex ${rightSide ? 'justify-end' : 'justify-start'}`">
         <div
-          v-if="snapshot.comment"
+          v-if="showComment"
           :class="`comment italic mb-2 rounded-xl p-4 ${rightSide ? 'rounded-tr-none' : 'rounded-tl-none'}`"
         >
           {{ snapshot.comment }}
@@ -66,6 +66,8 @@ const isAdministrativeAction = computed(() => {
   ]
   return instructionActions.indexOf(props.snapshot.action) > -1
 })
+
+const showComment = computed(() => props.snapshot?.comment && props.snapshot?.action !== "REFUSE_VISA")
 
 const initials = computed(() => {
   if (!props.snapshot.user) return "?"
