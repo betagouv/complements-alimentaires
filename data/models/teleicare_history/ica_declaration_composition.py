@@ -53,9 +53,7 @@ class IcaPreparation(models.Model):
 
 
 class IcaSubstanceDeclaree(models.Model):
-    vrsdecl_ident = models.IntegerField(
-        primary_key=True
-    )  # The composite primary key (vrsdecl_ident, sbsact_ident) found, that is not supported. The first column is selected.
+    vrsdecl_ident = models.IntegerField()
     sbsact_ident = models.IntegerField()
     sbsact_commentaires = models.TextField(blank=True, null=True)
     sbsactdecl_quantite_par_djr = models.FloatField(blank=True, null=True)

@@ -100,9 +100,7 @@ class IcaVersionDeclaration(models.Model):
 
 
 class IcaPopulationCibleDeclaree(models.Model):
-    vrsdecl_ident = models.IntegerField(
-        primary_key=True
-    )  # The composite primary key (vrsdecl_ident, popcbl_ident) found, that is not supported. The first column is selected.
+    vrsdecl_ident = models.IntegerField()
     popcbl_ident = models.IntegerField()
     vrspcb_popcible_autre = models.TextField(blank=True, null=True)
 
@@ -113,9 +111,7 @@ class IcaPopulationCibleDeclaree(models.Model):
 
 
 class IcaPopulationRisqueDeclaree(models.Model):
-    vrsdecl_ident = models.IntegerField(
-        primary_key=True
-    )  # The composite primary key (vrsdecl_ident, poprs_ident) found, that is not supported. The first column is selected.
+    vrsdecl_ident = models.IntegerField()
     poprs_ident = models.IntegerField()
     vrsprs_poprisque_autre = models.TextField(blank=True, null=True)
 
@@ -126,9 +122,7 @@ class IcaPopulationRisqueDeclaree(models.Model):
 
 
 class IcaEffetDeclare(models.Model):
-    vrsdecl_ident = models.IntegerField(
-        primary_key=True
-    )  # The composite primary key (vrsdecl_ident, objeff_ident) found, that is not supported. The first column is selected.
+    vrsdecl_ident = models.IntegerField()
     objeff_ident = models.IntegerField()
     vrs_autre_objectif = models.TextField(blank=True, null=True)
 
