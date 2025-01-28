@@ -201,49 +201,6 @@
     @apply mr-2!;
   }
 }
-@utility DRAFT {
-  /* Je spécifier ici les couleurs pour les tags car Tailwind ne fait pas des classes dynamiques pour le bg */
-  /* https://stackoverflow.com/questions/72481680/tailwinds-background-color-is-not-being-applied-when-added-dynamically */
-  .fr-table &.fr-tag {
-    @apply bg-blue-france-925!;
-  }
-}
-@utility AWAITING_INSTRUCTION {
-  .fr-table &.fr-tag {
-    @apply bg-gray-200!;
-  }
-}
-@utility ONGOING_INSTRUCTION {
-  .fr-table &.fr-tag {
-    @apply bg-blue-200!;
-  }
-}
-@utility OBSERVATION {
-  .fr-table &.fr-tag {
-    @apply bg-amber-200!;
-  }
-}
-@utility OBJECTION {
-  .fr-table &.fr-tag {
-    @apply bg-orange-200!;
-  }
-}
-@utility ABANDONED {
-  .fr-table &.fr-tag {
-    @apply bg-red-100!;
-  }
-}
-@utility AUTHORIZED {
-  .fr-table &.fr-tag {
-    @apply bg-success-950!;
-  }
-}
-@utility ov-icon {
-  .fr-table .fr-tag & {
-    @apply mr-2!;
-  }
-}
-
 /* The base layer is for things like reset rules or default styles applied to plain HTML elements. */
 @layer base {
 }
