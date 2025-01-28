@@ -123,6 +123,8 @@ const plantDescription =
 </script>
 
 <style>
+@reference "../../styles/index.css";
+
 .fr-input-group {
   @apply mt-4;
 }

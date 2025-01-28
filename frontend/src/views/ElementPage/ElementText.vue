@@ -1,6 +1,6 @@
 <template>
-  <div v-if="lowercase" class="fr-text--sm !mb-0">{{ text }}</div>
-  <div v-else class="fr-text--sm !mb-0 capitalize">{{ text }}</div>
+  <div v-if="lowercase" class="fr-text--sm mb-0!">{{ text }}</div>
+  <div v-else class="fr-text--sm mb-0! capitalize">{{ text }}</div>
 </template>
 
 <script setup>

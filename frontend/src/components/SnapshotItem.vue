@@ -26,7 +26,7 @@
         </div>
       </div>
       <div
-        :class="`${rightSide ? 'justify-end' : 'justify-start'} fr-text--sm !mb-0 !text-slate-500 flex gap-4 items-center pb-1`"
+        :class="`${rightSide ? 'justify-end' : 'justify-start'} fr-text--sm mb-0! text-slate-500! flex gap-4 items-center pb-1`"
       >
         <div>
           {{ date }}
@@ -100,6 +100,8 @@ const actionText = computed(() => {
 </script>
 
 <style scoped>
+@reference "../styles/index.css";
+
 .initials,
 .comment {
   @apply bg-blue-france-950;

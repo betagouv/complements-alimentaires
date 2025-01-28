@@ -19,11 +19,12 @@
 defineProps(["icon", "title", "text", "strikethroughText"])
 </script>
 <style scoped>
+@reference "../../styles/index.css";
 .comment {
   white-space: pre-line;
 }
 .comment :deep(.fr-input-group) {
-  @apply !mt-0;
+  @apply mt-0!;
 }
 del::before,
 del::after {

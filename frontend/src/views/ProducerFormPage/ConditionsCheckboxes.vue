@@ -13,7 +13,7 @@
           class="flex col-span-6 sm:col-span-3 lg:col-span-2"
         >
           <input :id="`condition-${condition.id}`" type="checkbox" v-model="modelValue" :value="condition.id" />
-          <label :for="`condition-${condition.id}`" class="fr-label ml-2">{{ condition.name }}</label>
+          <label :for="`condition-${condition.id}`" class="fr-label">{{ condition.name }}</label>
         </div>
       </div>
     </div>

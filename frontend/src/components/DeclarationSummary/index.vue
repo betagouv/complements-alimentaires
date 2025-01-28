@@ -27,7 +27,7 @@
       <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
     </div>
     <div v-if="!payload.declaredInTeleicare">
-      <h3 class="fr-h6 !mt-8">
+      <h3 class="fr-h6 mt-8!">
         Composition
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
       </h3>
@@ -103,13 +103,13 @@
       </DsfrAlert>
       <SubstancesTable v-model="payload" readonly />
 
-      <h3 class="fr-h6 !mt-8">
+      <h3 class="fr-h6 mt-8!">
         Adresse sur l'étiquetage
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
       </h3>
       <AddressLine :payload="payload" />
 
-      <h3 class="fr-h6 !mt-8">
+      <h3 class="fr-h6 mt-8!">
         Pièces jointes
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
       </h3>
@@ -213,6 +213,8 @@ const replacedRequestsWithSubstances = computed(() => {
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 h3 {
   @apply border p-2 sm:p-4 bg-blue-france-975;
 }

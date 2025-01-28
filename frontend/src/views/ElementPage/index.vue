@@ -18,7 +18,7 @@
   </div>
   <template v-if="element">
     <div class="fr-container my-8">
-      <h1 class="fr-h4 !mb-1 capitalize">
+      <h1 class="fr-h4 mb-1! capitalize">
         {{ element.name }}
         <DsfrBadge v-if="novelFood" label="Novel Food" small type="new" />
       </h1>
@@ -210,11 +210,13 @@ watch(element, (newElement) => {
 watch(route, getElementFromApi)
 </script>
 <style scoped>
+@reference "../../styles/index.css";
+
 .fr-table :deep(table) {
-  @apply !table;
+  @apply table!;
 }
 .fr-container :deep(input),
 .fr-container :deep(button) {
-  @apply !mt-0;
+  @apply mt-0!;
 }
 </style>

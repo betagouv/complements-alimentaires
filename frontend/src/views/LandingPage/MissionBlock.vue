@@ -1,5 +1,5 @@
 <template>
-  <div class="fr-container p-6 sm:!py-4 sm:!px-0 grid grid-cols-12 gap-0 sm:gap-4 md:gap-10">
+  <div class="fr-container py-6 sm:py-4! sm:px-0! grid grid-cols-12 gap-0 sm:gap-4 md:gap-10">
     <div class="col-span-12 md:col-span-6">
       <h2>Notre Mission</h2>
       <p class="fr-h6">Accroître la transparence du secteur des compléments alimentaires</p>
@@ -10,7 +10,7 @@
       <ul class="list-none">
         <li class="flex" v-for="point in bulletPoints" :key="point.text">
           <div class="mr-3 text-xl">{{ point.icon }}</div>
-          <p class="!mb-2">{{ point.text }}</p>
+          <p class="mb-2!">{{ point.text }}</p>
         </li>
       </ul>
     </div>

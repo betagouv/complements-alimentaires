@@ -10,7 +10,7 @@
       <Suspense><WebinarBlock /></Suspense>
     </div>
     <div class="bg-blue-france-975">
-      <div class="fr-container p-6 md:p-10">
+      <div class="fr-container py-6 md:py-10">
         <NewsletterBlock />
       </div>
     </div>

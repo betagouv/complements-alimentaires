@@ -26,7 +26,7 @@
     <ul
       v-show="displayOptions"
       ref="optionsList"
-      class="list-none absolute m-0 right-0 z-1 left-0 bg-white box-shadow max-h-17 scroll pointer !p-0"
+      class="list-none absolute m-0 right-0 z-1 left-0 bg-white box-shadow max-h-17 scroll pointer p-0!"
       :class="{
         'at-the-top': displayAtTheTop,
         'z-10': true,
