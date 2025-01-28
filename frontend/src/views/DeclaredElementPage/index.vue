@@ -10,8 +10,7 @@
           <!-- TODO: question, can we replace with non authorised? -->
           <ReplacementSearch @replacement="(obj) => (replacement = obj)" :reset="clearSearch" />
         </div>
-        <div class="my-4">
-          <!-- TODO: test other-ingredients -->
+        <div v-if="replacement" class="my-4">
           <ElementCard :objectType="replacement.objectType" v-model="additionalFields" :canRemove="false" />
         </div>
         <div class="mt-4">
@@ -133,7 +132,11 @@ watch(replacement, (newReplacement) => {
   // initialiser les synonymes pour permettre la MAJ
   synonyms.value = JSON.parse(JSON.stringify(newReplacement.synonyms || [])) // initialise synonyms that might be updated
   additionalFields.value.element = JSON.parse(JSON.stringify(newReplacement))
-  // TODO: do I have to change the active status? Only plant is not readonly, but maybe others can go from inactive to active?
+  // the following should reflect the logic of addElement in the CompositionTab
+  additionalFields.value.active = !!newReplacement.activity
+  if (newReplacement.objectType === "microorganism" && newReplacement.objectType !== element.value.objectType) {
+    additionalFields.value.activated = true
+  }
 })
 
 const actionButtons = computed(() => [
