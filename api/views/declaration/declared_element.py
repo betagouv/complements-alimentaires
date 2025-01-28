@@ -185,8 +185,6 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             declared_element.delete()
             declared_element = new_declared_element
         else:
-            # other_type_changed = self.element_type == "other-ingredient" and replacement_type == "other-ingredient" and declared_element.new_type != replacement_element.object_type
-            # TODO: add test for changing new_type?
             serializer = self.type_serializer(declared_element, data=element_data, partial=True)
             serializer.is_valid(raise_exception=True)
             declared_element = serializer.save()

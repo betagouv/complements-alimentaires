@@ -1949,7 +1949,7 @@ class TestDeclaredElementsApi(APITestCase):
         declared_ingredient = DeclaredIngredientFactory(
             declaration=declaration,
             new=True,
-            new_type=IngredientType.NON_ACTIVE_INGREDIENT,
+            new_type=IngredientType.NON_ACTIVE_INGREDIENT.label,
             active=False,
             quantity=None,
             unit=None,
@@ -1970,6 +1970,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         declared_ingredient.refresh_from_db()
         self.assertEqual(declared_ingredient.ingredient, active_ingredient)
+        self.assertEqual(declared_ingredient.new_type, IngredientType.NON_ACTIVE_INGREDIENT.label)  # pas changé
         self.assertTrue(declared_ingredient.active)
         self.assertEqual(declared_ingredient.quantity, 20)
         self.assertEqual(declared_ingredient.unit, unit)
