@@ -124,6 +124,7 @@ const removeElement = (element) => {
     if (index > -1) container.splice(index, 1)
   })
 }
+// si la logique ici change, penser à MAJ la logique de remplacement d'element (DeclaredElementPage)
 const addElement = (item, objectType, newlyAdded = false) => {
   const toAdd = newlyAdded
     ? {

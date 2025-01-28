@@ -7,7 +7,6 @@
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
-          <!-- TODO: question, can we replace with non authorised? -->
           <ReplacementSearch @replacement="(obj) => (replacement = obj)" :reset="clearSearch" />
         </div>
         <div v-if="replacement" class="my-4">
@@ -128,9 +127,9 @@ const synonyms = ref()
 
 watch(replacement, (newReplacement) => {
   // initialiser les synonymes pour permettre la MAJ
-  synonyms.value = JSON.parse(JSON.stringify(newReplacement.synonyms || [])) // initialise synonyms that might be updated
+  synonyms.value = JSON.parse(JSON.stringify(newReplacement.synonyms || []))
   additionalFields.value.element = JSON.parse(JSON.stringify(newReplacement))
-  // the following should reflect the logic of addElement in the CompositionTab
+  // le suivant devrait copier la logique pertinate de addElement, définit dans CompositionTab
   additionalFields.value.active = !!newReplacement.activity
   if (newReplacement.objectType === "microorganism" && newReplacement.objectType !== element.value.objectType) {
     additionalFields.value.activated = true
@@ -178,10 +177,8 @@ const modals = computed(() => {
           label: "Remplacer",
           onClick() {
             const info = JSON.parse(JSON.stringify(additionalFields.value))
-            // TODO: save original type somewhere?
             delete info.element
             const payload = {
-              // TODO: test objectType is working for other ingredients
               element: { id: replacement.value?.id, type: getApiType(replacement.value?.objectType) },
               synonyms: synonyms.value,
               additionalFields: info,
