@@ -23,6 +23,11 @@
         <p class="my-2" v-if="model.active">
           {{ elementInfo }}
         </p>
+        <DsfrAlert v-if="showRequestComment" :type="requestStatusBadge.type" small>
+          <p>
+            {{ model.requestPrivateNotes }}
+          </p>
+        </DsfrAlert>
       </div>
 
       <div v-if="showRequestInspectionLink" class="content-center">
@@ -97,11 +102,11 @@ const requestStatusBadge = computed(() => {
       type: "info",
     },
     INFORMATION: {
-      label: "Nécessite de l'information",
+      label: "Attente d'information",
       type: "warning",
     },
     REJECTED: {
-      label: "Demande refusé",
+      label: "Demande refusée",
       type: "error",
     },
     REPLACED: {
@@ -110,4 +115,10 @@ const requestStatusBadge = computed(() => {
     },
   }[model.value.requestStatus]
 })
+
+const showRequestComment = computed(
+  () =>
+    model.value.requestPrivateNotes &&
+    (model.value.requestStatus === "INFORMATION" || model.value.requestStatus === "REJECTED")
+)
 </script>
