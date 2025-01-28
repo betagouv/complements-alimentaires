@@ -6,6 +6,7 @@
       <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />
     </h3>
     <div>
+      <SummaryInfoSegment v-if="!!payload.teleicareId" label="Identifiant Teleicare" :value="payload.teleicareId" />
       <SummaryInfoSegment label="Nom du produit" :value="payload.name" />
       <SummaryInfoSegment label="Marque" :value="payload.brand" />
       <SummaryInfoSegment label="Gamme" :value="payload.gamme" />
