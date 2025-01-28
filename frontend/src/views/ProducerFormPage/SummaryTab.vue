@@ -10,7 +10,7 @@
       title="Votre démarche"
       sizeTag="h6"
       icon="ri-file-text-line"
-      withHistoryBadge="!!payload.teleicareId"
+      :withHistoryBadge="!!payload.teleicareId"
     />
     <DeclarationSummary v-model="payload" :readonly="readonly" />
     <hr v-if="!readonly" />
