@@ -295,6 +295,14 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+def add_enum_or_personnalized_value(item, custom_value):
+    if item:
+        if "(à préciser)" not in str(item).lower():
+            return item.name
+        else:
+            return "Autre : " + str(custom_value)
+
+
 class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     decision = serializers.SerializerMethodField()
@@ -396,10 +404,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             return obj.article.label
 
     def get_forme_galenique(self, obj):
-        if obj.galenic_formulation:
-            return obj.galenic_formulation.name
-        else:
-            return None
+        return add_enum_or_personnalized_value(obj.galenic_formulation, obj.other_galenic_formulation)
 
     def get_dose_journaliere(self, obj):
         return obj.daily_recommended_dose
@@ -411,13 +416,19 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         return obj.warning
 
     def get_objectif_effet(self, obj):
-        return [effect.name for effect in obj.effects.all()]
+        effects = []
+        for effect in obj.effects.all():
+            effects.append(add_enum_or_personnalized_value(effect, obj.other_effects))
+        return effects
 
     def get_aromes(self, obj):
         return obj.flavor
 
     def get_facteurs_risques(self, obj):
-        return [condition.name for condition in obj.conditions_not_recommended.all()]
+        risk_factors = []
+        for risk_factor in obj.conditions_not_recommended.all():
+            risk_factors.append(add_enum_or_personnalized_value(risk_factor, obj.other_effects))
+        return risk_factors
 
     def get_populations_cibles(self, obj):
         return [population.name for population in obj.populations.all()]
