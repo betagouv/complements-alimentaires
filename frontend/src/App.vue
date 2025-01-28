@@ -33,7 +33,7 @@ watch(route, (to) => {
 </script>
 
 <style>
-@reference "../../styles/index.css";
+@reference "./styles/index.css";
 
 .fr-pagination__list {
   @apply justify-center;
