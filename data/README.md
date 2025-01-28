@@ -44,7 +44,7 @@ REF_ICA_FONCTION_INGREDIENT     |       |       |       |       |       |
 |ICA_POPULATION_RISQUE_DECLAREE     |       |       |
 |ICA_SUBSTANCE_DECLAREE     |       |       |
 |ICA_USAGER     |       |   🕵️anonymisée (contient Foreign Key vers USR, ADM, ETAB)   |
-|REF_ICA_TYPE_DECLARATION     |       |Enum ? ou obsolète ? (Art 1(, Art 1-, Simplifiée))       |
+|REF_ICA_TYPE_DECLARATION     |       |Enum ? ou obsolète ? (Art 15, Art 16, Simplifiée))       |
 |REF_ICA_TYPE_HERITAGE     |       | Enum ? (Simplifié ou Nouvelle formule)|
 |REF_ICA_TYPE_VERSION_DECLARATION     |       |       |
 |REF_ICA_FORME_GALENIQUE   |       |       |
