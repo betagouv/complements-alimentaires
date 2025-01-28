@@ -318,6 +318,8 @@ const orderedEffects = computed(() => transformArrayByColumn(effects.value, numb
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 .address-form .fr-input-group:not(:last-child) {
   @apply mb-0;
 }

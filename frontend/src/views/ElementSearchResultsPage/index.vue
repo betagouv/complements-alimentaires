@@ -121,8 +121,10 @@ watch(page, () => {
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 .fr-container :deep(input),
 .fr-container :deep(button) {
-  @apply !mt-0;
+  @apply mt-0!;
 }
 </style>

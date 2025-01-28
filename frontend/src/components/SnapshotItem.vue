@@ -100,6 +100,8 @@ const actionText = computed(() => {
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 .initials,
 .comment {
   @apply bg-blue-france-950;

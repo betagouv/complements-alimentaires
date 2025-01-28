@@ -45,7 +45,9 @@ defineProps({ user: Object, company: Object })
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 p {
-  @apply !mb-2;
+  @apply mb-2!;
 }
 </style>

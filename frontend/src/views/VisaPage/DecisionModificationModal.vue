@@ -148,7 +148,8 @@ watch(modelValue, () => copyModelValueToRef())
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
 div :deep(.fr-fieldset__legend) {
-  @apply !font-bold;
+  @apply font-bold!;
 }
 </style>
