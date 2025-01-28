@@ -38,7 +38,6 @@ import { useFetch } from "@vueuse/core"
 import { useRootStore } from "@/stores/root"
 import { useRouter } from "vue-router"
 import { getApiType } from "@/utils/mappings"
-import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import ElementInfo from "./ElementInfo"
@@ -122,7 +121,6 @@ const openModal = (type) => {
 
 const replacement = ref()
 
-// TODO: objectType does not work for other ingredients - need to do API mapping?
 const additionalFields = ref({})
 store.fetchDeclarationFieldsData()
 
@@ -184,7 +182,7 @@ const modals = computed(() => {
             delete info.element
             const payload = {
               // TODO: test objectType is working for other ingredients
-              element: { id: replacement.value?.id, type: replacement.value?.objectType },
+              element: { id: replacement.value?.id, type: getApiType(replacement.value?.objectType) },
               synonyms: synonyms.value,
               additionalFields: info,
             }
