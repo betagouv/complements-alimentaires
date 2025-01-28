@@ -7,7 +7,11 @@
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
+          <!-- TODO: question, can we replace with non authorised? -->
           <ReplacementSearch @replacement="(obj) => (replacement = obj)" :reset="clearSearch" />
+        </div>
+        <div v-if="changeCrossType" class="my-4">
+          <ElementCard :objectType="replacement.objectType" v-model="additionalFields" :canRemove="false" />
         </div>
         <div class="mt-4">
           <DsfrButtonGroup :buttons="actionButtons" inlineLayoutWhen="md" align="center" class="mb-8" />
@@ -15,17 +19,7 @@
           <DsfrModal :opened="!!modalToOpen" :title="modalTitle" :actions="modalActions" @close="closeModal">
             <template #default>
               <div v-if="modalToOpen === 'replace'">
-                <p v-if="cannotReplace">
-                  Ce n'est pas possible pour l'instant de remplacer une demande avec un ingrédient d'un type different.
-                  Veuillez contacter l'équipe Compl'Alim pour effectuer la substitution.
-                </p>
-                <div v-else>
-                  <ElementSynonyms
-                    v-model="synonyms"
-                    :requestElement="element"
-                    :initialSynonyms="replacement.synonyms"
-                  />
-                </div>
+                <ElementSynonyms v-model="synonyms" :requestElement="element" :initialSynonyms="replacement.synonyms" />
               </div>
               <div v-else>
                 <DsfrInput v-model="notes" label="Notes" label-visible is-textarea />
@@ -41,16 +35,21 @@
 <script setup>
 import { computed, watch, ref } from "vue"
 import { useFetch } from "@vueuse/core"
+import { useRootStore } from "@/stores/root"
 import { useRouter } from "vue-router"
 import { getApiType } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
+import useToaster from "@/composables/use-toaster"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
 import ReplacementSearch from "./ReplacementSearch"
+import ElementCard from "@/components/ElementCard"
 import ElementSynonyms from "./ElementSynonyms"
 
 const props = defineProps({ type: String, id: String })
+const store = useRootStore()
+const { addErrorMessage } = useToaster()
 
 const declarationId = computed(() => element.value?.declaration)
 const declarationLink = computed(() => {
@@ -72,11 +71,14 @@ const breadcrumbLinks = computed(() => {
 
 // Init
 const url = computed(() => `/api/v1/declared-elements/${getApiType(props.type)}/${props.id}`)
-const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
+const onFetchError = ({ error, data, response, context, execute }) => {
+  addErrorMessage("Une erreur est survenu. Merci de réessayer ultérieurement.")
+  return { error, data }
+}
+const { data: element, execute } = useFetch(url, { immediate: false, onFetchError }).get().json()
 
 const getElementFromApi = async () => {
   await execute()
-  await handleError(response)
 }
 
 getElementFromApi()
@@ -85,6 +87,8 @@ watch(element, (newElement) => {
     const name = newElement.newName
     document.title = `${name} - Compl'Alim`
   }
+  additionalFields.value = JSON.parse(JSON.stringify(element.value))
+  additionalFields.value.new = false
 })
 
 // Actions
@@ -117,13 +121,20 @@ const openModal = (type) => {
 }
 
 const replacement = ref()
-const synonyms = ref()
-watch(replacement, () => {
-  // initialiser les synonymes pour permettre la MAJ
-  synonyms.value = JSON.parse(JSON.stringify(replacement.value.synonyms || []))
-})
 
-const cannotReplace = computed(() => replacement.value?.objectType !== element.value.type)
+// TODO: objectType does not work for other ingredients - need to do API mapping?
+const changeCrossType = computed(() => replacement.value && replacement.value?.objectType !== element.value.type)
+const additionalFields = ref({})
+store.fetchDeclarationFieldsData()
+
+const synonyms = ref()
+
+watch(replacement, (newReplacement) => {
+  // initialiser les synonymes pour permettre la MAJ
+  synonyms.value = JSON.parse(JSON.stringify(newReplacement.synonyms || [])) // initialise synonyms that might be updated
+  additionalFields.value.element = JSON.parse(JSON.stringify(newReplacement))
+  // TODO: do I have to change the active status? Only plant is not readonly, but maybe others can go from inactive to active?
+})
 
 const actionButtons = computed(() => [
   {
@@ -147,16 +158,14 @@ const actionButtons = computed(() => [
 ])
 
 const updateElement = async (action, payload) => {
-  const { data, response } = await useFetch(`${url.value}/${action}`, {
-    headers: headers(),
-  })
+  const { data, response } = await useFetch(`${url.value}/${action}`, { headers: headers() }, { onFetchError })
     .post(payload)
     .json()
-  handleError(response)
-  if (data.value) {
-    element.value = data.value
+
+  if (response.value?.ok) {
+    closeModal()
+    navigateBack(data.value)
   }
-  return data.value
 }
 
 const modals = computed(() => {
@@ -167,16 +176,16 @@ const modals = computed(() => {
         {
           label: "Remplacer",
           onClick() {
+            const info = JSON.parse(JSON.stringify(additionalFields.value))
+            // TODO: save original type somewhere?
+            delete info.element
             const payload = {
               element: { id: replacement.value?.id, type: replacement.value?.objectType },
               synonyms: synonyms.value,
+              additionalFields: info,
             }
-            updateElement("replace", payload).then((response) => {
-              closeModal()
-              navigateBack(response)
-            })
+            updateElement("replace", payload)
           },
-          disabled: cannotReplace.value,
         },
       ],
     },
@@ -188,9 +197,6 @@ const modals = computed(() => {
           onClick() {
             updateElement("request-info", {
               requestPrivateNotes: notes.value || "",
-            }).then((response) => {
-              closeModal()
-              navigateBack(response)
             })
           },
         },
@@ -204,9 +210,6 @@ const modals = computed(() => {
           onClick() {
             updateElement("reject", {
               requestPrivateNotes: notes.value || "",
-            }).then((response) => {
-              closeModal()
-              navigateBack(response)
             })
           },
         },
