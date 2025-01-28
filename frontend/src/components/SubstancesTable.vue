@@ -161,6 +161,8 @@ watch(
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 .ca-cell {
   @apply align-middle p-0 sm:p-2 border-0 sm:border-b;
 }

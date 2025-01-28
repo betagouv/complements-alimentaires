@@ -176,6 +176,8 @@ const search = () => {
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 .filters :deep(legend.fr-fieldset__legend) {
   @apply pb-0 pt-4;
 }

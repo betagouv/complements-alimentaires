@@ -41,6 +41,8 @@ const lowContrastMode = computed(() => route.name === "InstructionPage")
 </script>
 
 <style>
+@reference "../../styles/index.css";
+
 .fr-pagination__list {
   @apply justify-center;
 }

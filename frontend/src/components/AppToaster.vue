@@ -20,6 +20,8 @@ const close = (id) => emit("close-message", id)
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 .list-move, /* apply transition to moving elements */
 .list-enter-active,
 .list-leave-active {

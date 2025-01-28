@@ -187,10 +187,12 @@ const submitDecision = async () => {
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 .reject-reasons:deep(.fr-input-group) {
-  @apply !mb-0;
+  @apply mb-0!;
 }
 .visa-checkbox:deep(.fr-fieldset__element) {
-  @apply !mb-1;
+  @apply mb-1!;
 }
 </style>

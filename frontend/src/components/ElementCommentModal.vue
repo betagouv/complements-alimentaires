@@ -91,11 +91,13 @@ const hasInformationToShow = computed(
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 /* Il est nécessaire de surcharger certains styles di DSFRTooltip car un element a[href] est ajouté */
 div :deep(.tooltip-comments) {
-  @apply !bg-none;
-  @apply !flex;
-  @apply !w-full;
-  @apply !justify-center;
+  @apply bg-none!;
+  @apply flex!;
+  @apply w-full!;
+  @apply justify-center!;
 }
 </style>

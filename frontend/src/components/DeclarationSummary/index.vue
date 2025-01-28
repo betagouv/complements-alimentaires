@@ -239,6 +239,8 @@ const replacedRequestsWithSubstances = computed(() => {
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 h3 {
   @apply border p-2 sm:p-4 bg-blue-france-975;
 }

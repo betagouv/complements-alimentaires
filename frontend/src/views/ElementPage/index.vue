@@ -234,11 +234,13 @@ const isInstructor = computed(() => store.loggedUser?.globalRoles?.some((x) => x
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 .fr-table :deep(table) {
-  @apply !table;
+  @apply table!;
 }
 .fr-container :deep(input),
 .fr-container :deep(button) {
-  @apply !mt-0;
+  @apply mt-0!;
 }
 </style>
