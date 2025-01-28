@@ -156,7 +156,7 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
         except KeyError:
             raise ParseError(detail="Must provide a dict 'element' with id and type")
 
-        # create a serialized dict of values to update
+        # utiliser les valeurs serialisées pour MAJ ou créer l'element déclaré
         element_data = self.type_serializer(declared_element).data
         additional_fields = request.data.get("additional_fields", {})
         element_data.update(additional_fields)
@@ -170,7 +170,7 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
 
         new_type = TYPE_MAPPING[replacement_type]
         if replacement_type != self.element_type:
-            # gerer le difference en nom entre microorganismes et les autres types
+            # gérer le difference en nom entre microorganismes et les autres types
             if replacement_type == "microorganism":
                 element_data["new_species"] = declared_element.new_name
             elif self.element_type == "microorganism":
@@ -188,8 +188,6 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             serializer = self.type_serializer(declared_element, data=element_data, partial=True)
             serializer.is_valid(raise_exception=True)
             declared_element = serializer.save()
-
-        # TODO: always show in the front the possibility to update fields even without type change
 
         replacement_synonym_model = new_type["synonym_model"]
         synonyms = request.data.get("synonyms", [])
