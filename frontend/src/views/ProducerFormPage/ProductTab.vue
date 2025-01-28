@@ -166,7 +166,7 @@
           class="flex col-span-6 sm:col-span-3 lg:col-span-2"
         >
           <input :id="`effect-${effect.id}`" type="checkbox" v-model="payload.effects" :value="effect.id" />
-          <label :for="`effect-${effect.id}`" class="fr-label ml-2">{{ effect.name }}</label>
+          <label :for="`effect-${effect.id}`" class="fr-label">{{ effect.name }}</label>
         </div>
       </div>
     </DsfrFieldset>

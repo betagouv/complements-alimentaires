@@ -9,7 +9,7 @@
           class="flex col-span-6 sm:col-span-3 lg:col-span-2"
         >
           <input :id="`population-${population.id}`" type="checkbox" v-model="modelValue" :value="population.id" />
-          <label :for="`population-${population.id}`" class="fr-label ml-2">{{ population.name }}</label>
+          <label :for="`population-${population.id}`" class="fr-label">{{ population.name }}</label>
         </div>
       </div>
     </div>

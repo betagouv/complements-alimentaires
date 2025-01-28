@@ -1,4 +1,7 @@
-@import 'tailwindcss';
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
 
 @theme {
   --breakpoint-*: initial;
@@ -75,6 +78,11 @@
 }
 
 /* The utilities layer is for small, single-purpose classes that should always take precedence over any other styles. */
+/* Pour que toutes les classes de tailwind prennent précedence de DSFR. https://github.com/tailwindlabs/tailwindcss/discussions/15866#discussioncomment-11954216 */
+#app {
+  @tailwind utilities;
+}
+
 @utility gradient-dsfr {
   @apply bg-linear-to-r from-blue-france-925 via-blue-france-850 via-30% to-transparent;
 }
@@ -201,8 +209,3 @@
     @apply mr-2!;
   }
 }
-/* The base layer is for things like reset rules or default styles applied to plain HTML elements. */
-@layer base {
-}
-
-/* The components layer is for class-based styles that you want to be able to override with utilities. */
