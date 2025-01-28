@@ -109,7 +109,7 @@ import FormWrapper from "@/components/FormWrapper"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { tabTitles } from "@/utils/mappings"
-import DeclarationFromTeleicareAlert from "@/components/DeclarationFromTeleicareAlert.vue"
+import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromTeleicareAlert.vue"
 
 // Il y a deux refs qui stockent des erreurs. $externalResults sert
 // lors qu'on sauvegarde la déclaration (POST ou PUT) mais qu'on ne change

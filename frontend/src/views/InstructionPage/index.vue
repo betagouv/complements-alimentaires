@@ -122,7 +122,7 @@ import { headers } from "@/utils/data-fetching"
 import DeclarationAlert from "@/components/DeclarationAlert"
 import { tabTitles } from "@/utils/mappings"
 import { useRouter } from "vue-router"
-import DeclarationFromTeleicareAlert from "@/components/DeclarationFromTeleicareAlert.vue"
+import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromTeleicareAlert.vue"
 
 const router = useRouter()
 const previousRoute = router.getPreviousRoute()
