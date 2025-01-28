@@ -6,7 +6,7 @@ Tous les changements notables apportés aux jeux de données exposés sur data.g
 
 ## Modification
  - Remplacer dans la colonne `Facteurs Risques` les valeurs 'Autres (à préciser)' par les valeurs renseignées par l'utilisateur
- - Remplacer dans la colonne `Objectif Effrts` les valeurs 'Autres (à préciser)' par les valeurs renseignées par l'utilisateur
+ - Remplacer dans la colonne `Objectif Effets` les valeurs 'Autres (à préciser)' par les valeurs renseignées par l'utilisateur
 
 ## 2025-01-16
 
