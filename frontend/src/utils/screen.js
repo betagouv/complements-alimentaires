@@ -4,7 +4,14 @@ import { useWindowSize } from "@vueuse/core"
 const { width } = useWindowSize()
 
 const getCurrentBreakpoint = () => {
-  const sortedScreens = [576, 768, 992, 1440] // from index.css
+  const screens = {
+    sm: "576px",
+    md: "768px",
+    lg: "992px",
+    xl: "1440px",
+  }
+  const screensArray = Object.entries(screens).map((x) => [x[0], parseInt(x[1].replace("px", ""))])
+  const sortedScreens = screensArray.sort((a, b) => a[1] - b[1])
   for (const [key, value] of sortedScreens) if (width.value < value) return key
   return sortedScreens[sortedScreens.length - 1][0]
 }
