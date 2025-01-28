@@ -406,7 +406,7 @@ class ArticleChangeView(GenericAPIView):
         if new_article not in Declaration.Article:
             raise ProjectAPIException(global_error="Merci de spécifier un article valide")
 
-        declaration.overriden_article = Declaration.Article(new_article)
+        declaration.overridden_article = Declaration.Article(new_article)
         declaration.save()
         declaration.refresh_from_db()
         serializer = self.get_serializer(declaration)
@@ -637,7 +637,6 @@ class DeclarationRefuseVisaView(VisaDecisionView):
         declaration.create_snapshot(
             user=request.user,
             action=self.get_snapshot_action(request, declaration),
-            comment=declaration.post_validation_producer_message,
             post_validation_status=self.get_snapshot_post_validation_status(request, declaration),
         )
 
