@@ -21,7 +21,7 @@
       L'ingrédient ajouté
       <ElementLink :element="element" />
       a été remplacé par
-      <ElementLink :element="{ id: element.element.id, type: element.type, newName: element.element.name }" />
+      <router-link :to="elementLink" class="text-blue-france-sun-113">{{ element.element.name }}</router-link>
       dans la déclaration
     </p>
   </DsfrAlert>
@@ -32,6 +32,7 @@ import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { getApiType } from "@/utils/mappings"
+import { getElementUrlComponent } from "@/utils/elements"
 import ElementLink from "./ElementLink"
 
 // retrouver le détail de l'element et l'action prise
@@ -51,6 +52,14 @@ const url = computed(
 const { data, execute } = useFetch(url, { immediate: false }).get().json()
 
 const element = computed(() => data.value)
+
+const elementLink = computed(() => {
+  if (!element.value.element) return
+  return {
+    name: "ElementPage",
+    params: { urlComponent: getElementUrlComponent(element.value.element, element.value.type) },
+  }
+})
 
 onMounted(() => {
   if (recentAction.value.id) {

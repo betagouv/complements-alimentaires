@@ -35,7 +35,7 @@
       <DeclarationFromTeleicareAlert v-else-if="declaration.declaredInTeleicare" />
       <div v-if="declaration">
         <DeclarationSummary
-          :showArticle="true"
+          :allowArticleChange="true"
           :useAccordions="true"
           :showElementAuthorization="true"
           :readonly="true"
@@ -62,7 +62,7 @@
               :company="company"
               :snapshots="snapshots"
               @decision-done="onDecisionDone"
-              :showArticle="true"
+              :allowArticleChange="true"
             ></component>
           </DsfrTabContent>
         </DsfrTabs>
