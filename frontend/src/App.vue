@@ -1,22 +1,24 @@
 <template>
-  <AppHeader :logo-text="logoText" />
-  <router-view></router-view>
-  <DsfrFooter
-    :logo-text="logoText"
-    :cookiesLink="{ name: 'CookiesInfoPage' }"
-    :legalLink="{ name: 'LegalNoticesPage' }"
-    :personalDataLink="{ name: 'PrivacyPolicyPage' }"
-    :afterMandatoryLinks="[{ label: 'Conditions générales d’utilisation', to: { name: 'CGUPage' } }]"
-  >
-    <template v-slot:description>
-      <p>Compl'Alim</p>
-    </template>
-  </DsfrFooter>
-  <AppToaster :messages="messages" @close-message="removeMessage($event)" />
+  <div :class="lowContrastMode ? '!bg-[#f6f6f6]' : ''">
+    <AppHeader :logo-text="logoText" />
+    <router-view></router-view>
+    <DsfrFooter
+      :logo-text="logoText"
+      :cookiesLink="{ name: 'CookiesInfoPage' }"
+      :legalLink="{ name: 'LegalNoticesPage' }"
+      :personalDataLink="{ name: 'PrivacyPolicyPage' }"
+      :afterMandatoryLinks="[{ label: 'Conditions générales d’utilisation', to: { name: 'CGUPage' } }]"
+    >
+      <template v-slot:description>
+        <p>Compl'Alim</p>
+      </template>
+    </DsfrFooter>
+    <AppToaster :messages="messages" @close-message="removeMessage($event)" />
+  </div>
 </template>
 
 <script setup>
-import { watch } from "vue"
+import { watch, computed } from "vue"
 import { useRoute } from "vue-router"
 import AppToaster from "@/components/AppToaster.vue"
 import useToaster from "@/composables/use-toaster"
@@ -30,6 +32,8 @@ watch(route, (to) => {
   const suffix = "Compl'Alim"
   document.title = to.meta.title ? to.meta.title + " - " + suffix : suffix
 })
+
+const lowContrastMode = computed(() => route.name === "InstructionPage")
 </script>
 
 <style>

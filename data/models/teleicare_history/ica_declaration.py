@@ -35,13 +35,14 @@ class IcaDeclaration(models.Model):
     # dcl_ident et cplalim_ident ne sont pas égaux
     dcl_ident = models.IntegerField(primary_key=True)
     cplalim = models.ForeignKey(IcaComplementAlimentaire, on_delete=models.CASCADE, db_column="cplalim_ident")
-    tydcl_ident = models.IntegerField()
+    tydcl_ident = models.IntegerField()  # Article 15 ou 16
     etab = models.ForeignKey(
         IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident"
     )  # correspond à l'entreprise gestionnaire de la déclaration
     etab_ident_rmm_declarant = models.IntegerField()
     dcl_date = models.TextField()
     dcl_saisie_administration = models.BooleanField(null=True)  # rendu nullable pour simplifier les Factories
+    # l'identifiant Teleicare est constitué ainsi {dcl_annee}-{dcl_mois}-{dcl_numero}
     dcl_annee = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
     dcl_mois = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
     dcl_numero = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
@@ -55,7 +56,8 @@ class IcaDeclaration(models.Model):
 class IcaVersionDeclaration(models.Model):
     vrsdecl_ident = models.IntegerField(primary_key=True)
     ag_ident = models.IntegerField(blank=True, null=True)
-    typvrs_ident = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
+    typvrs_ident = models.IntegerField(null=True)  # 1: Nouvelle 2: Complément d'information 3: Observations
+    # rendu nullable pour simplifier les Factories
     unt_ident = models.IntegerField(blank=True, null=True)
     pays_ident_adre = models.IntegerField(blank=True, null=True)
     etab = models.ForeignKey(
@@ -95,3 +97,36 @@ class IcaVersionDeclaration(models.Model):
     class Meta:
         managed = False
         db_table = "ica_versiondeclaration"
+
+
+class IcaPopulationCibleDeclaree(models.Model):
+    vrsdecl_ident = models.IntegerField()
+    popcbl_ident = models.IntegerField()
+    vrspcb_popcible_autre = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ica_population_cible_declaree"
+        unique_together = (("vrsdecl_ident", "popcbl_ident"),)
+
+
+class IcaPopulationRisqueDeclaree(models.Model):
+    vrsdecl_ident = models.IntegerField()
+    poprs_ident = models.IntegerField()
+    vrsprs_poprisque_autre = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ica_population_risque_declaree"
+        unique_together = (("vrsdecl_ident", "poprs_ident"),)
+
+
+class IcaEffetDeclare(models.Model):
+    vrsdecl_ident = models.IntegerField()
+    objeff_ident = models.IntegerField()
+    vrs_autre_objectif = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = "ica_effet_declare"
+        unique_together = (("vrsdecl_ident", "objeff_ident"),)

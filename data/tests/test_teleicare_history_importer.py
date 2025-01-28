@@ -123,7 +123,9 @@ class TeleicareHistoryImporterTestCase(TestCase):
         self.assertEqual(created_company.postal_code, etablissement_to_create_as_company.etab_adre_cp)
         self.assertEqual(created_company.city, etablissement_to_create_as_company.etab_adre_ville)
 
-    def test_create_declaration_from_history(self):
+    @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
+    @patch("data.etl.teleicare_history.extractor.add_product_info_from_teleicare_history")
+    def test_create_declaration_from_history(self, mocked_add_composition_function, mocked_add_product_function):
         """
         Les déclarations sont créées à partir d'object historiques des modèles Ica_
         """
@@ -136,7 +138,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
         CA_to_create_as_declaration = ComplementAlimentaireFactory(
             etab=etablissement_to_create_as_company, frmgal_ident=galenic_formulation_id
         )
-        declaration_to_create_as_declaration = DeclarationFactory(cplalim=CA_to_create_as_declaration)
+        declaration_to_create_as_declaration = DeclarationFactory(cplalim=CA_to_create_as_declaration, tydcl_ident=1)
         version_declaration_to_create_as_declaration = VersionDeclarationFactory(
             dcl=declaration_to_create_as_declaration,
             stadcl_ident=8,
@@ -157,6 +159,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
         self.assertEqual(created_declaration.galenic_formulation, galenic_formulation)
         self.assertEqual(created_declaration.unit_quantity, 32)
         self.assertEqual(created_declaration.unit_measurement, unit)
+        self.assertEqual(created_declaration.article, Declaration.Article.ARTICLE_15)
         self.assertEqual(
             created_declaration.conditioning, version_declaration_to_create_as_declaration.vrsdecl_conditionnement
         )
@@ -165,5 +168,6 @@ class TeleicareHistoryImporterTestCase(TestCase):
             str(version_declaration_to_create_as_declaration.vrsdecl_poids_uc),
         )
         self.assertEqual(
-            created_declaration.minimum_duration, str(version_declaration_to_create_as_declaration.vrsdecl_durabilite)
+            created_declaration.minimum_duration,
+            str(version_declaration_to_create_as_declaration.vrsdecl_durabilite),
         )

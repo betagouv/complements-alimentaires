@@ -24,6 +24,17 @@ module.exports = defineConfig({
 
     config.resolve.alias.set("__STATIC__", "static")
 
+    // il faut specifier __VUE_PROD_HYDRATION_MISMATCH_DETAILS__ pour éviter un warning dans le console
+    // https://vuejs.org/api/compile-time-flags#vue-cli
+    config.plugin("define").tap((definitions) => {
+      Object.assign(definitions[0], {
+        __VUE_OPTIONS_API__: "true",
+        __VUE_PROD_DEVTOOLS__: "false",
+        __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: "false",
+      })
+      return definitions
+    })
+
     config.devServer
       .host("0.0.0.0")
       .port(8080)
