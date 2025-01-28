@@ -10,7 +10,8 @@
           <!-- TODO: question, can we replace with non authorised? -->
           <ReplacementSearch @replacement="(obj) => (replacement = obj)" :reset="clearSearch" />
         </div>
-        <div v-if="changeCrossType" class="my-4">
+        <div class="my-4">
+          <!-- TODO: test other-ingredients -->
           <ElementCard :objectType="replacement.objectType" v-model="additionalFields" :canRemove="false" />
         </div>
         <div class="mt-4">
@@ -123,7 +124,6 @@ const openModal = (type) => {
 const replacement = ref()
 
 // TODO: objectType does not work for other ingredients - need to do API mapping?
-const changeCrossType = computed(() => replacement.value && replacement.value?.objectType !== element.value.type)
 const additionalFields = ref({})
 store.fetchDeclarationFieldsData()
 
@@ -180,6 +180,7 @@ const modals = computed(() => {
             // TODO: save original type somewhere?
             delete info.element
             const payload = {
+              // TODO: test objectType is working for other ingredients
               element: { id: replacement.value?.id, type: replacement.value?.objectType },
               synonyms: synonyms.value,
               additionalFields: info,
