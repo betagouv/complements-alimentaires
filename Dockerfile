@@ -49,7 +49,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python -m pip install -r requirements.txt
 
 # Switch to the non-privileged user to run the application.
-USER appuser
+# this is commented out because running as root allows to upload files locally
+# USER appuser
 
 # Copy the source code into the container.
 COPY . .

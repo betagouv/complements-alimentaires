@@ -179,11 +179,11 @@ class Declaration(Historisable, TimeStampable):
     other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non listés")
 
     calculated_article = models.TextField("article calculé automatiquement", blank=True, choices=Article)
-    # TODO: les Article.choice pour overriden_article ne devraient pas inclure les choices calculés automatiquement
-    overriden_article = models.TextField("article manuellement spécifié", blank=True, choices=Article)
+    # TODO: les Article.choice pour overridden_article ne devraient pas inclure les choices calculés automatiquement
+    overridden_article = models.TextField("article manuellement spécifié", blank=True, choices=Article)
     article = models.GeneratedField(
         expression=Coalesce(
-            Case(When(overriden_article="", then=Value(None)), default="overriden_article"),
+            Case(When(overridden_article="", then=Value(None)), default="overridden_article"),
             Case(When(calculated_article="", then=Value(None)), default="calculated_article"),
             Value(None),
         ),
