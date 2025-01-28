@@ -27,12 +27,12 @@
       </DsfrAlert>
       <DeclarationAlert
         class="mb-6"
-        v-else-if="!canInstruct && !declaration.declaredInTeleicare"
+        v-else-if="!canInstruct && !declaration.teleicareId"
         role="instructor"
         :declaration="declaration"
         :snapshots="snapshots"
       />
-      <DeclarationFromTeleicareAlert v-else-if="declaration.declaredInTeleicare" />
+      <DeclarationFromTeleicareAlert v-else-if="declaration.teleicareId" />
       <div v-if="declaration">
         <DeclarationSummary
           :showArticle="true"
@@ -74,7 +74,7 @@
           @forward="selectedTabIndex += 1"
           :removeSaveLabel="true"
         >
-          <template v-slot:content v-if="!declaration.declaredInTeleicare">
+          <template v-slot:content v-if="!declaration.teleicareId">
             <h6 class="text-left">
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
@@ -206,7 +206,7 @@ onMounted(async () => {
 // Tab management
 const components = computed(() => {
   const baseComponents = [IdentityTab, DeclarationSummary]
-  if (!declaration.value.declaredInTeleicare) baseComponents.push(HistoryTab)
+  if (!declaration.value.teleicareId) baseComponents.push(HistoryTab)
   if (canInstruct.value) baseComponents.push(DecisionTab)
   return baseComponents
 })

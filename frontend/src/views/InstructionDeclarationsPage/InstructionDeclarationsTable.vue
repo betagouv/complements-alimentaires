@@ -33,15 +33,7 @@ const rows = computed(() =>
         component: CircleIndicators,
         declaration: x,
       },
-      x.declaredInTeleicare
-        ? {
-            component: "DsfrBadge",
-            label: "issue de Teleicare",
-            type: "none",
-            small: true,
-            noIcon: true,
-          }
-        : x.id,
+      x.teleicareId ? x.teleicareId : x.id,
       {
         component: "router-link",
         text: x.name,

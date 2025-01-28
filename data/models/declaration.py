@@ -403,7 +403,7 @@ class Declaration(Historisable, TimeStampable):
 
     @property
     def declared_in_teleicare(self):
-        return self.siccrf_id is not None
+        return self.teleicare_id is not None
 
     @property
     def computed_substances_with_max_quantity_exceeded(self):

@@ -24,7 +24,7 @@
       <DeclarationAlert
         role="visor"
         class="mb-4"
-        v-else-if="!declaration.declaredInTeleicare"
+        v-else-if="!declaration.teleicareId"
         :declaration="declaration"
         :snapshots="snapshots"
       />
@@ -69,7 +69,7 @@
           @forward="selectedTabIndex += 1"
           :removeSaveLabel="true"
         >
-          <template v-slot:content v-if="!declaration.declaredInTeleicare">
+          <template v-slot:content v-if="!declaration.teleicareId">
             <h6 class="text-left">
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
@@ -201,7 +201,7 @@ const saveComment = useDebounceFn(async () => {
 // Tab management
 const components = computed(() => {
   const baseComponents = [IdentityTab, DeclarationSummary]
-  if (!declaration.value.declaredInTeleicare) baseComponents.push(HistoryTab)
+  if (!declaration.value.teleicareId) baseComponents.push(HistoryTab)
   if (canInstruct.value) baseComponents.push(VisaValidationTab)
   return baseComponents
 })
