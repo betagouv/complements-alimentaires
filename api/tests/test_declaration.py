@@ -2270,14 +2270,17 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(DeclaredPlant.objects.count(), 0)
 
     @authenticate
-    def test_id_ignored_in_additional_fields_replace(self):
+    def test_id_ignored_in_replace(self):
         """
-        Verifier qu'on n'a pas d'erreur de création, ou comportement inattendu, si un identifiant est donné
+        Vérifier que l'id d'un nouvel ingrédient déclaré est généré automatiquement, et non pas avec les données passées
         """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration, new_species="test", new=True)
+        declared_microorganism = DeclaredMicroorganismFactory(
+            id=66, declaration=declaration, new_species="test", new=True
+        )
+        self.assertEqual(declared_microorganism.id, 66)
         plant = PlantFactory()
         unit = SubstanceUnitFactory()
 
@@ -2295,4 +2298,5 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         new_declared_plant = DeclaredPlant.objects.first()
         self.assertEqual(new_declared_plant.unit, unit)
+        self.assertNotEqual(new_declared_plant.id, 66)
         self.assertNotEqual(new_declared_plant.id, 99)
