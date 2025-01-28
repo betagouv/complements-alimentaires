@@ -165,6 +165,13 @@ def convert_str_date(value, aware=False):
         return dt.date()
 
 
+def create_teleicare_id(latest_ica_declaration):
+    if latest_ica_declaration.dcl_annee and latest_ica_declaration.dcl_mois and latest_ica_declaration.dcl_numero:
+        return "-".join(
+            [latest_ica_declaration.dcl_annee, latest_ica_declaration.dcl_mois, latest_ica_declaration.dcl_numero]
+        )
+
+
 # Pour les déclarations TeleIcare, le status correspond au champ IcaVersionDeclaration.stattdcl_ident
 DECLARATION_STATUS_MAPPING = {
     1: Declaration.DeclarationStatus.ONGOING_INSTRUCTION,  # 'en cours'
@@ -229,11 +236,7 @@ def create_declaration_from_teleicare_history():
                     if latest_ica_declaration.dcl_date_fin_commercialisation
                     else declaration_creation_date,
                     siccrf_id=ica_complement_alimentaire.cplalim_ident,
-                    teleicare_id=[
-                        latest_ica_declaration.dcl_annee,
-                        latest_ica_declaration.dcl_mois,
-                        latest_ica_declaration.dcl_numero,
-                    ].join("-"),
+                    teleicare_id=create_teleicare_id(latest_ica_declaration),
                     galenic_formulation=GalenicFormulation.objects.get(
                         siccrf_id=ica_complement_alimentaire.frmgal_ident
                     ),
