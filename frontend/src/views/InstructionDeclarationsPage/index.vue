@@ -5,11 +5,11 @@
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Déclarations pour instruction' }]"
     />
     <div class="border px-4 mb-2 md:flex gap-4 items-baseline filters">
-      <DsfrFieldset legend="Nom d'entreprise" class="!mb-0 min-w-44">
+      <DsfrFieldset legend="Nom d'entreprise" class="mb-0! min-w-44">
         <div class="flex gap-4">
           <DsfrInputGroup>
             <DsfrInput
-              class="max-w-16 !text-sm"
+              class="max-w-16 text-sm!"
               label="De :"
               :modelValue="companyNameStart"
               label-visible
@@ -18,7 +18,7 @@
           </DsfrInputGroup>
           <DsfrInputGroup>
             <DsfrInput
-              class="max-w-16 !text-sm"
+              class="max-w-16 text-sm!"
               label="À :"
               :modelValue="companyNameEnd"
               label-visible
@@ -28,7 +28,7 @@
         </div>
       </DsfrFieldset>
       <div class="min-w-52">
-        <DsfrFieldset class="!mb-0">
+        <DsfrFieldset class="mb-0!">
           <div class="md:border-x md:px-4">
             <DsfrInputGroup>
               <DsfrSelect
@@ -37,7 +37,7 @@
                 @update:modelValue="updateInstructorFilter"
                 defaultUnselectedText=""
                 :options="instructorSelectOptions"
-                class="!text-sm"
+                class="text-sm!"
               />
             </DsfrInputGroup>
           </div>
@@ -54,7 +54,7 @@
                 :modelValue="ordering"
                 @update:modelValue="updateOrdering"
                 :options="orderingOptions"
-                class="!text-sm"
+                class="text-sm!"
               />
             </DsfrInputGroup>
           </div>
@@ -66,7 +66,7 @@
                 :modelValue="article"
                 @update:modelValue="updateArticle"
                 :options="articleSelectOptions"
-                class="!text-sm"
+                class="text-sm!"
               />
             </DsfrInputGroup>
           </div>

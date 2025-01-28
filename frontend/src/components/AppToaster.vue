@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full pointer-events-none fixed bottom-4 z-[1751]">
+  <div class="w-full pointer-events-none fixed bottom-4 z-1751">
     <TransitionGroup mode="out-in" name="list" tag="div" class="flex flex-col items-center space-y-3">
       <DsfrAlert
         v-for="message in messages"

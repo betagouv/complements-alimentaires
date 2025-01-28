@@ -24,7 +24,7 @@
         <AddressLine class="inline" :payload="company" />
       </span>
     </p>
-    <SectionTitle class="!mt-8" title="Déclarant ou déclarante" icon="ri-user-fill" />
+    <SectionTitle class="mt-8!" title="Déclarant ou déclarante" icon="ri-user-fill" />
     <div v-if="user">
       <p>{{ user.firstName }} {{ user.lastName }}</p>
       <p>

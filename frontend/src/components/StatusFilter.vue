@@ -3,7 +3,7 @@
     <DsfrModal :opened="opened" @close="opened = false">
       <DsfrCheckboxSet v-model="statuses" :options="options" />
     </DsfrModal>
-    <p class="!mb-2">
+    <p class="mb-2!">
       Types de déclaration affichés :
 
       <span v-if="statuses.length">

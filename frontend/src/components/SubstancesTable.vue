@@ -42,7 +42,7 @@
           </div>
           <div
             :class="{
-              '!text-red-marianne-425 font-bold':
+              'text-red-marianne-425! font-bold':
                 (payload.computedSubstances[rowIndex].substance.maxQuantity ||
                   payload.computedSubstances[rowIndex].substance.maxQuantity === 0) &&
                 payload.computedSubstances[rowIndex].quantity >
@@ -69,7 +69,7 @@
               :required="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
             />
             <div
-              class="!text-neutral-500 mt-1"
+              class="text-neutral-500! mt-1"
               v-if="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
             >
               * champ obligatoire

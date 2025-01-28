@@ -65,7 +65,7 @@
         </DsfrInput>
         <PasswordRules />
       </DsfrInputGroup>
-      <DsfrButton class="!block !w-full" :disabled="isFetching" label="Créer le compte" @click="submit" />
+      <DsfrButton class="block! w-full!" :disabled="isFetching" label="Créer le compte" @click="submit" />
     </FormWrapper>
   </SingleItemWrapper>
 </template>

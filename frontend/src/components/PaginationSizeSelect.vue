@@ -5,7 +5,7 @@
       :options="options"
       @update:modelValue="(val) => emit('update:modelValue', val)"
       :modelValue="limit"
-      class="!text-sm"
+      class="text-sm!"
     />
   </DsfrInputGroup>
 </template>

@@ -11,9 +11,9 @@
   </div>
   <div v-if="blogPost" class="fr-container my-8">
     <div class="p-4 border mb-4">
-      <h1 class="fr-h4 !mb-2">{{ blogPost.title }}</h1>
-      <p class="!mb-0">{{ author }}</p>
-      <p class="fr-text--xs !mb-0">{{ date }}</p>
+      <h1 class="fr-h4 mb-2!">{{ blogPost.title }}</h1>
+      <p class="mb-0!">{{ author }}</p>
+      <p class="fr-text--xs mb-0!">{{ date }}</p>
     </div>
     <div id="content" v-html="blogPost.content" class="text-left"></div>
   </div>

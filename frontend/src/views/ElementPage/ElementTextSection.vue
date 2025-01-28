@@ -1,6 +1,6 @@
 <template>
   <div v-if="text">
-    <h2 class="fr-h6 !mb-1">{{ title }}</h2>
+    <h2 class="fr-h6 mb-1!">{{ title }}</h2>
     <p>
       <slot>{{ text }}</slot>
     </p>

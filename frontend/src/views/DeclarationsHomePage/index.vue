@@ -17,7 +17,7 @@
     <HistoryAlert />
 
     <div class="border px-4 pt-4 mb-2 sm:flex gap-8 items-baseline filters">
-      <DsfrFieldset class="!mb-0">
+      <DsfrFieldset class="mb-0!">
         <div class="md:pl-4">
           <DsfrInputGroup>
             <DsfrSelect
@@ -26,12 +26,12 @@
               @update:modelValue="updateCompany"
               defaultUnselectedText="Toutes"
               :options="companiesOptions"
-              class="!text-sm"
+              class="text-sm!"
             />
           </DsfrInputGroup>
         </div>
       </DsfrFieldset>
-      <DsfrFieldset class="!mb-0">
+      <DsfrFieldset class="mb-0!">
         <div class="md:border-x md:px-4 min-w-44">
           <DsfrInputGroup>
             <DsfrSelect
@@ -40,7 +40,7 @@
               @update:modelValue="updateAuthor"
               defaultUnselectedText="Toutes"
               :options="authorOptions"
-              class="!text-sm"
+              class="text-sm!"
             />
           </DsfrInputGroup>
         </div>
