@@ -17,14 +17,7 @@
           />
 
           <DsfrBadge v-if="novelFood" label="Novel Food" type="new" class="self-center ml-2" small />
-          <DsfrBadge v-if="model.new" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
-          <DsfrBadge
-            v-else-if="model.requestStatus === 'REPLACED'"
-            label="Demande remplacée"
-            type="info"
-            class="self-center ml-2"
-            small
-          />
+          <DsfrBadge v-if="requestStatusBadge" v-bind="requestStatusBadge" class="self-center ml-2" small />
           <DsfrBadge v-if="!model.active" label="Non-actif" type="none" class="self-center ml-2" small />
         </div>
         <p class="my-2" v-if="model.active">
@@ -92,7 +85,29 @@ const elementInfo = computed(() => {
   return ""
 })
 
-const showRequestInspectionLink = computed(
-  () => (model.value.new || model.value.requestStatus === "REPLACED") && isInstructor.value
-)
+const isRequest = computed(() => model.value.new || model.value.requestStatus === "REPLACED")
+
+const showRequestInspectionLink = computed(() => isRequest.value && isInstructor.value)
+
+const requestStatusBadge = computed(() => {
+  if (!isRequest.value) return
+  return {
+    REQUESTED: {
+      label: "Nouvel ingrédient",
+      type: "info",
+    },
+    INFORMATION: {
+      label: "Nécessite de l'information",
+      type: "warning",
+    },
+    REJECTED: {
+      label: "Demande refusé",
+      type: "error",
+    },
+    REPLACED: {
+      label: "Demande remplacée",
+      type: "success",
+    },
+  }[model.value.requestStatus]
+})
 </script>
