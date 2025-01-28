@@ -17,7 +17,9 @@ from data.factories import (
     ObservationDeclarationFactory,
     OngoingInstructionDeclarationFactory,
     OngoingVisaDeclarationFactory,
+    RejectedDeclarationFactory,
     VisaRoleFactory,
+    WithdrawnDeclarationFactory,
 )
 from data.models import Attachment, Declaration, Snapshot
 
@@ -798,3 +800,89 @@ class TestDeclarationFlow(APITestCase):
         response = self.client.post(reverse("api:withdraw", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
+
+    @authenticate
+    def test_abandon_declaration_ok(self):
+        company = CompanyFactory()
+        user = authenticate.user
+
+        # On doit pouvoir effectuer l'abandon en tant que pro, instructrice ou viseuse
+        role_factories = [VisaRoleFactory, InstructionRoleFactory, DeclarantRoleFactory]
+
+        # On doit pouvoir effectuer l'abandon depuis les statuts générés par ces factories:
+        declaration_factories = [
+            OngoingInstructionDeclarationFactory,
+            AwaitingInstructionDeclarationFactory,
+            ObservationDeclarationFactory,
+            AwaitingVisaDeclarationFactory,
+            OngoingVisaDeclarationFactory,
+            ObjectionDeclarationFactory,
+        ]
+        for role_factory in role_factories:
+            role = (
+                role_factory(user=user, company=company)
+                if role_factory == DeclarantRoleFactory
+                else role_factory(user=user)
+            )
+            for declaration_factory in declaration_factories:
+                declaration = declaration_factory(company=company)
+                response = self.client.post(reverse("api:abandon", kwargs={"pk": declaration.id}), format="json")
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                declaration.refresh_from_db()
+                latest_snapshot = declaration.snapshots.latest("creation_date")
+                self.assertEqual(declaration.status, Declaration.DeclarationStatus.ABANDONED)
+                self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.ABANDON)
+                self.assertEqual(declaration.status, Declaration.DeclarationStatus.ABANDONED)
+
+            role.delete()
+
+    @authenticate
+    def test_abandon_declaration_wrong_status(self):
+        """
+        On ne doit pas pouvoir abandoner une déclaration dans certains statuts
+        """
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+
+        # On ne doit pas pouvoir effectuer l'abandon depuis les statuts générés par ces factories:
+        declaration_factories = [
+            InstructionReadyDeclarationFactory,
+            AuthorizedDeclarationFactory,
+            RejectedDeclarationFactory,
+            WithdrawnDeclarationFactory,
+        ]
+
+        for declaration_factory in declaration_factories:
+            declaration = declaration_factory(company=company)
+            response = self.client.post(reverse("api:abandon", kwargs={"pk": declaration.id}), format="json")
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            declaration.refresh_from_db()
+            self.assertNotEqual(declaration.status, Declaration.DeclarationStatus.ABANDONED)
+
+    @authenticate
+    def test_abandon_declaration_other_company(self):
+        """
+        On ne doit pas pouvoir abandoner une déclaration d'une autre compagnie lors qu'on
+        est déclarant·e
+        """
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:abandon", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.status, Declaration.DeclarationStatus.ABANDONED)
+
+    def test_abandon_declaration_unauthenticated(self):
+        """
+        On ne doit pas pouvoir abandoner une déclaration sans être identifié·e
+        """
+
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:abandon", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.status, Declaration.DeclarationStatus.ABANDONED)

@@ -13,6 +13,7 @@ from .declaration.declaration import (
     DeclarationObserveView,
     DeclarationAuthorizeView,
     DeclarationResubmitView,
+    DeclarationAbandonView,
     DeclarationObserveWithVisa,
     DeclarationObjectWithVisa,
     DeclarationRejectWithVisa,

@@ -207,6 +207,11 @@ urlpatterns = {
         views.DeclarationWithdrawView.as_view(),
         name="withdraw",
     ),
+    path(
+        "declarations/<int:pk>/abandon/",
+        views.DeclarationAbandonView.as_view(),
+        name="abandon",
+    ),
     # Contact
     path("contact/", views.ContactView.as_view(), name="contact"),
 }
