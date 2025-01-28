@@ -12,10 +12,6 @@ from data.models import (
     DeclaredIngredient,
     DeclaredMicroorganism,
     Declaration,
-    Plant,
-    Microorganism,
-    Substance,
-    Ingredient,
     PlantSynonym,
     MicroorganismSynonym,
     SubstanceSynonym,
@@ -62,25 +58,21 @@ class DeclaredElementsView(ListAPIView):
 TYPE_MAPPING = {
     "plant": {
         "model": DeclaredPlant,
-        "element_model": Plant,
         "synonym_model": PlantSynonym,
         "serializer": DeclaredPlantSerializer,
     },
     "microorganism": {
         "model": DeclaredMicroorganism,
-        "element_model": Microorganism,
         "synonym_model": MicroorganismSynonym,
         "serializer": DeclaredMicroorganismSerializer,
     },
     "substance": {
         "model": DeclaredSubstance,
-        "element_model": Substance,
         "synonym_model": SubstanceSynonym,
         "serializer": DeclaredSubstanceSerializer,
     },
     "other-ingredient": {
         "model": DeclaredIngredient,
-        "element_model": Ingredient,
         "synonym_model": IngredientSynonym,
         "serializer": DeclaredIngredientSerializer,
         "attribute": "ingredient",
@@ -110,16 +102,8 @@ class ElementMappingMixin:
         return self.type_info["serializer"]
 
     @property
-    def element_model(self):
-        return self.type_info["element_model"]
-
-    @property
     def synonym_model(self):
         return self.type_info["synonym_model"]
-
-    @property
-    def type_attribute(self):
-        return self.type_info["attribute"] or self.element_type
 
 
 class DeclaredElementView(RetrieveAPIView, ElementMappingMixin):
@@ -172,46 +156,47 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
         except KeyError:
             raise ParseError(detail="Must provide a dict 'element' with id and type")
 
+        # create a serialized dict of values to update
+        element_data = self.type_serializer(declared_element).data
+        additional_fields = request.data.get("additional_fields", {})
+        element_data.update(additional_fields)
+        element_data.update(
+            {
+                "element": {"id": replacement_element_id},
+                "request_status": self.type_model.AddableStatus.REPLACED,
+                "new": False,
+            }
+        )
+
         new_type = TYPE_MAPPING[replacement_type]
-        replacement_element_model = new_type["element_model"]
-        replacement_synonym_model = new_type["synonym_model"]
-
-        try:
-            replacement_element = replacement_element_model.objects.get(pk=replacement_element_id)
-        except replacement_element_model.DoesNotExist:
-            raise ParseError(detail=f"No {self.element_type} exists with id {replacement_element_id}")
-
-        if replacement_type == self.element_type:
-            setattr(declared_element, self.type_attribute, replacement_element)
-        else:
-            # créer le nouveau element a partir des champs de l'ancien et champs donnés par la requête
-            new_declared_element_fields = self.type_serializer(declared_element).data
-
-            additional_fields = request.data.get("additional_fields", {})
-            for field in additional_fields:
-                new_declared_element_fields[field] = additional_fields[field]
-
+        if replacement_type != self.element_type:
             # gerer le difference en nom entre microorganismes et les autres types
-            if self.element_type != "microorganism" and replacement_type == "microorganism":
-                new_declared_element_fields["new_species"] = declared_element.new_name
-            elif self.element_type == "microorganism" and replacement_type != "microorganism":
-                new_declared_element_fields["new_name"] = declared_element.new_name
+            if replacement_type == "microorganism":
+                element_data["new_species"] = declared_element.new_name
+            elif self.element_type == "microorganism":
+                element_data["new_name"] = declared_element.new_name
 
-            new_declared_element = new_type["serializer"](data=new_declared_element_fields)
-            new_declared_element.is_valid(raise_exception=True)
+            serializer = new_type["serializer"](data=element_data)
+            serializer.is_valid(raise_exception=True)
 
-            # pour créer le nouveau declared_element, il faut mettre les données de la declaration et l'element dans ce format
-            new_declared_element.validated_data["declaration"] = declared_element.declaration
-            new_declared_element.validated_data[replacement_type] = {"id": replacement_element.id}
+            serializer.validated_data["declaration"] = declared_element.declaration
 
-            new_declared_element = new_declared_element.create(new_declared_element.validated_data)
+            new_declared_element = serializer.create(serializer.validated_data)
             declared_element.delete()
             declared_element = new_declared_element
+        else:
+            # other_type_changed = self.element_type == "other-ingredient" and replacement_type == "other-ingredient" and declared_element.new_type != replacement_element.object_type
+            # TODO: add test for changing new_type?
+            serializer = self.type_serializer(declared_element, data=element_data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            declared_element = serializer.save()
 
-        declared_element.request_status = self.type_model.AddableStatus.REPLACED
-        declared_element.new = False
+        # TODO: always show in the front the possibility to update fields even without type change
 
+        replacement_synonym_model = new_type["synonym_model"]
         synonyms = request.data.get("synonyms", [])
+        replacement_type_attribute = new_type.get("attribute", replacement_type)
+        replacement_element = getattr(declared_element, replacement_type_attribute)
         for synonym in synonyms:
             try:
                 name = synonym["name"]

@@ -107,9 +107,17 @@ DECLARED_ELEMENT_SHARED_FIELDS = ADDABLE_ELEMENT_FIELDS + ("type",)
 
 
 class DeclaredElementNestedField:
+    # DRF ne gère pas automatiquement la création des nested-fields :
+    # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
     def create(self, validated_data):
-        # DRF ne gère pas automatiquement la création des nested-fields :
-        # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
+        self._set_element(validated_data)
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        self._set_element(validated_data)
+        return super().update(instance, validated_data)
+
+    def _set_element(self, validated_data):
         element = validated_data.pop(self.nested_field_name, None)
         if element:
             id = element.get("id")
@@ -121,8 +129,6 @@ class DeclaredElementNestedField:
                         f"declared_{self.nested_field_name}s": f"L'ingrédient avec l'id « {id} » spécifiée n'existe pas."
                     }
                 )
-
-        return super().create(validated_data)
 
 
 class DeclaredIngredientCommonSerializer(DeclaredElementNestedField, PrivateFieldsSerializer):
