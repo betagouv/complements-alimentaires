@@ -235,11 +235,15 @@ const savePayload = async (successMessage = "Votre démarche a été sauvegardé
   const { response, data } = await useFetch(url, { headers: headers() })[httpMethod](payload).json()
   requestInProgress.value = false
   $externalResults.value = await handleError(response)
-  if ($externalResults.value) {
-    useToaster().addErrorMessage(
-      "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis pour pouvoir changer d'onglet"
-    )
-    window.scrollTo(0, 0)
+  const hasError = !!$externalResults.value
+  if (hasError) {
+    const fieldErrors = $externalResults.value.fieldErrors
+    if (fieldErrors && Object.keys(fieldErrors).length > 0) {
+      useToaster().addErrorMessage(
+        "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis pour pouvoir changer d'onglet"
+      )
+      window.scrollTo(0, 0)
+    }
     return false
   } else {
     payload.value = data.value

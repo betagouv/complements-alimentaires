@@ -264,7 +264,7 @@ class DeclarationAdmin(SimpleHistoryAdmin):
                     "gamme",
                     "flavor",
                     "calculated_article",
-                    "overriden_article",
+                    "overridden_article",
                 )
             },
         ),
