@@ -435,7 +435,7 @@ const activeAccordion = ref()
 </script>
 
 <style scoped>
-@reference "../../styles/index.css";
+@reference "../styles/index.css";
 
 h2 {
   @apply mb-4 mt-6;

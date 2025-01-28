@@ -106,7 +106,7 @@ const getWithdrawalText = (snapshot) => {
 </script>
 
 <style scoped>
-@reference "../../styles/index.css";
+@reference "../styles/index.css";
 
 .initials,
 .comment {
