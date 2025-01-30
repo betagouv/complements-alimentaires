@@ -21,3 +21,28 @@ Tous les changements notables apportés aux jeux de données exposés sur data.g
 - Champ Additifs
 - Champ Nutriments
 - Champ Autres Ingrédients Actifs
+
+## 2025-01-17
+
+## Augmentation des données
+- 56160 déclarations historiques importées de TeleIcare avec leurs champs :
+  -id
+  -decision
+  -nom_commercial
+  -marque
+  -gamme
+  -responsable_mise_sur_marche
+  -siret_responsable_mise_sur_marche
+  -forme_galenique
+  -dose_journaliere
+  -mode_emploi
+  -mises_en_garde
+
+
+## 2025-01-31
+
+## Augmentation des données
+- ajout des champs de compositions des 56160 déclarations historiques importées de TeleIcare :
+  -plantes
+  -micro_organismes
+  -substances
