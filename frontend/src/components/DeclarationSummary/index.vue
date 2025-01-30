@@ -1,6 +1,13 @@
 <template>
   <div>
-    <ArticleInfoRow v-model="payload" :hideArticle15Subtypes="!showArticle" v-if="showArticle" class="mb-2" />
+    <HistoryBadge v-if="!!payload.teleicareId" class="mb-2" />
+    <ArticleInfoRow
+      v-model="payload"
+      :hideArticle15Subtypes="!showArticle"
+      :articleReadOnly="!!payload.teleicareId"
+      v-if="showArticle"
+      class="mb-2"
+    />
     <h3 class="fr-h6">
       Informations sur le produit
       <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />
@@ -139,6 +146,7 @@ import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRouter } from "vue-router"
 import SummaryModificationButton from "./SummaryModificationButton"
+import HistoryBadge from "../History/HistoryBadge.vue"
 
 const router = useRouter()
 const { units, populations, conditions, effects, galenicFormulations } = storeToRefs(useRootStore())

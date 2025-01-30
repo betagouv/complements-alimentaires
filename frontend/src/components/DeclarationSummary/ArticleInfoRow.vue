@@ -1,6 +1,7 @@
 <template>
   <div class="flex justify-between items-center border-2 p-2">
     <DsfrModal
+      v-if="!articleReadOnly"
       :actions="[{ label: 'Valider', onClick: changeArticle }]"
       @close="articleModalOpened = false"
       :opened="articleModalOpened"
@@ -15,6 +16,7 @@
     <DsfrBadge type="warning" label="Article inconnu" v-if="!payload.article" />
     <DsfrBadge no-icon v-else :label="articleOptionsWith15Subtypes.find((x) => x.value === payload.article)?.text" />
     <DsfrButton
+      v-if="!articleReadOnly"
       size="sm"
       tertiary
       :label="!!payload.article ? 'Changer l\'article' : 'Renseigner l\'article'"
@@ -35,7 +37,7 @@ const newArticle = ref()
 onMounted(() => (newArticle.value = payload.value.article))
 
 const payload = defineModel()
-const props = defineProps({ hideArticle15Subtypes: Boolean })
+const props = defineProps({ hideArticle15Subtypes: Boolean, articleReadOnly: Boolean })
 
 // Aujourd'hui les subtypes (WARNING, et HIGH_RISK_POPULATION) doivent être cachés aux déclarants,
 // Mais le DeclarationSummary de la page déclarants n'affiche pas le composant ArticleInfoRow aujourd'hui

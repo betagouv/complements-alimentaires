@@ -16,6 +16,7 @@ import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import CompanyTableCell from "@/components/CompanyTableCell"
 import DeclarationName from "@/components/DeclarationName.vue"
+import HistoryBadge from "@/components/History/HistoryBadge.vue"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
@@ -26,6 +27,7 @@ const rows = computed(() =>
       x.teleicareId ? x.teleicareId : x.id,
       {
         component: DeclarationName,
+        withHistoryBadge: !!x.teleicareId,
         text: x.name,
         to: { name: "DeclarationPage", params: { id: x.id } }, // TODO Change to a more enteprisey view
       },

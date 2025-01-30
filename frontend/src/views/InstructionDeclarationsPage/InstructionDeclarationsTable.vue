@@ -37,6 +37,7 @@ const rows = computed(() =>
       x.teleicareId ? x.teleicareId : x.id,
       {
         component: DeclarationName,
+        withHistoryBadge: !!x.teleicareId,
         text: x.name,
         to: { name: "InstructionPage", params: { declarationId: x.id } },
       },
