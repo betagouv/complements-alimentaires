@@ -215,5 +215,5 @@
   "homepage": "https://github.com/betagouv/complements-alimentaires",
   "name": "liste-des-complements-alimentaires-declares",
   "path": "https://raw.githubusercontent.com/betagouv/complements-alimentaires/refs/heads/staging/data/schemas/schema_declarations.json",
-  "scheme": "file"
+  "title": "Schema export des déclarations de compléments alimentaires"
 }
