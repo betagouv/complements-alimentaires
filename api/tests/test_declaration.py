@@ -38,7 +38,15 @@ from data.factories import (
     VisaRoleFactory,
     PlantSynonymFactory,
 )
-from data.models import Attachment, Declaration, DeclaredMicroorganism, DeclaredPlant, Snapshot
+from data.models import (
+    Attachment,
+    Declaration,
+    DeclaredMicroorganism,
+    DeclaredPlant,
+    DeclaredSubstance,
+    Snapshot,
+    IngredientType,
+)
 
 from .utils import authenticate
 
@@ -1924,43 +1932,201 @@ class TestDeclaredElementsApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         declared_plant.refresh_from_db()
+        self.assertEqual(declared_plant.plant, plant)
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
         self.assertFalse(declared_plant.new)
-        self.assertEqual(declared_plant.plant, plant)
 
     @authenticate
-    def test_cannot_replace_element_different_type(self):
+    def test_replace_inactive_ingredient_with_active(self):
         """
-        Pour reduire le scope de changements, temporairement bloque le remplacement d'une demande
-        avec un element d'un type different
+        Vérifier que c'est possible de remplacer un ingrédient par un autre
+        Le front est responsable d'envoyer les bonnes valeurs pour `active`, `quantity`, `unit`
+        selon la logique gérée là-bas
         """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration)
+        declared_ingredient = DeclaredIngredientFactory(
+            declaration=declaration,
+            new=True,
+            new_type=IngredientType.NON_ACTIVE_INGREDIENT.label,
+            active=False,
+            quantity=None,
+            unit=None,
+            ingredient=None,
+        )
+        self.assertNotEqual(declared_ingredient.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        active_ingredient = IngredientFactory(ingredient_type=IngredientType.ACTIVE_INGREDIENT)
+        unit = SubstanceUnitFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_ingredient.id, "type": "other-ingredient"}),
+            {
+                "element": {"id": active_ingredient.id, "type": "other-ingredient"},
+                "additional_fields": {"active": True, "quantity": 20, "unit": unit.id},
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        declared_ingredient.refresh_from_db()
+        self.assertEqual(declared_ingredient.ingredient, active_ingredient)
+        self.assertEqual(declared_ingredient.new_type, IngredientType.NON_ACTIVE_INGREDIENT.label)  # pas changé
+        self.assertTrue(declared_ingredient.active)
+        self.assertEqual(declared_ingredient.quantity, 20)
+        self.assertEqual(declared_ingredient.unit, unit)
+        self.assertEqual(declared_ingredient.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        self.assertFalse(declared_ingredient.new)
+
+    @authenticate
+    def test_can_replace_plant_request_with_microorganism(self):
+        """
+        Test de remplacement cross-type : plante vers microorganisme
+        Verifier que les données sont copiées, et les nouvelles données sont sauvegardées.
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(
+            declaration=declaration, new_name="Test plant", new_description="Test description", new=True, quantity=10
+        )
         self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
         microorganism = MicroorganismFactory()
 
         response = self.client.post(
             reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
-            {"element": {"id": microorganism.id, "type": "microorganism"}},
+            {
+                "element": {"id": microorganism.id, "type": "microorganism"},
+                "additional_fields": {
+                    "strain": "Test strain",
+                    "activated": False,
+                    "quantity": 90,
+                },
+            },
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response.json())
-        declared_plant.refresh_from_db()
-        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REQUESTED)
-        self.assertNotEqual(declared_plant.plant, microorganism)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        with self.assertRaises(DeclaredPlant.DoesNotExist):
+            DeclaredPlant.objects.get(id=declared_plant.id)
+
+        self.assertEqual(DeclaredMicroorganism.objects.count(), 1)
+        declared_microorganism = DeclaredMicroorganism.objects.get(declaration=declaration)
+
+        self.assertEqual(declared_microorganism.microorganism, microorganism)
+        self.assertEqual(declared_microorganism.request_status, DeclaredMicroorganism.AddableStatus.REPLACED)
+        self.assertFalse(declared_microorganism.new)
+
+        # est-ce que le nom est copié dans le champ espèce ?
+        self.assertEqual(declared_microorganism.new_species, "Test plant")
+        self.assertEqual(declared_microorganism.new_genre, "")
+        # est-ce que les nouveaux champs sont sauvegardés ?
+        self.assertEqual(declared_microorganism.strain, "Test strain")
+        self.assertEqual(declared_microorganism.activated, False)
+        self.assertEqual(declared_microorganism.quantity, 90)
+        # est-ce que les anciens champs sont sauvegardés ?
+        self.assertEqual(declared_microorganism.new_description, "Test description")
 
     @authenticate
-    def test_can_add_synonym_on_replace(self):
+    def test_can_replace_microorganism_request_with_plant(self):
         """
-        C'est possible d'envoyer une liste avec un nouvel element pour
-        ajouter un synonyme et laisser des synonymes existantes non-modifiées
+        Test de remplacement cross-type : microoganisme vers plante
+        Verifier que les données sont copiées, et les nouvelles données sont sauvegardées.
         """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration, new=True)
+        declared_microorganism = DeclaredMicroorganismFactory(
+            declaration=declaration,
+            new_species="test",
+            new_genre="testing",
+            new_description="Test description",
+            new=True,
+            quantity=10,
+        )
+        self.assertEqual(declared_microorganism.request_status, DeclaredMicroorganism.AddableStatus.REQUESTED)
+        plant = PlantFactory()
+        used_part = PlantPartFactory()
+        unit = SubstanceUnitFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "additional_fields": {
+                    "used_part": used_part.id,
+                    "unit": unit.id,
+                    "quantity": 90,
+                },
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        with self.assertRaises(DeclaredMicroorganism.DoesNotExist):
+            DeclaredMicroorganism.objects.get(id=declared_microorganism.id)
+
+        self.assertEqual(DeclaredPlant.objects.count(), 1)
+        declared_plant = DeclaredPlant.objects.get(declaration=declaration)
+
+        self.assertEqual(declared_plant.plant, plant)
+        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        self.assertFalse(declared_plant.new)
+
+        # est-ce que l'espèce + genre sont copiés dans le champ nom ?
+        self.assertEqual(declared_plant.new_name, "test testing")
+        # est-ce que les nouveaux champs sont sauvegardés ?
+        self.assertEqual(declared_plant.used_part, used_part)
+        self.assertEqual(declared_plant.unit, unit)
+        self.assertEqual(declared_plant.quantity, 90)
+        # est-ce que les anciens champs sont sauvegardés ?
+        self.assertEqual(declared_plant.new_description, "Test description")
+
+    @authenticate
+    def test_can_replace_substance_request_with_plant(self):
+        """
+        Test de remplacement cross-type : microoganisme vers plante
+        Verifier que les données complexes, comme unit, sont bien gardées si elles ne sont pas spécifiées.
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        unit = SubstanceUnitFactory()
+        declared_substance = DeclaredSubstanceFactory(
+            declaration=declaration, new_description="Test description", new=True, unit=unit
+        )
+        self.assertEqual(declared_substance.request_status, DeclaredSubstance.AddableStatus.REQUESTED)
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_substance.id, "type": "substance"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        with self.assertRaises(DeclaredSubstance.DoesNotExist):
+            DeclaredSubstance.objects.get(id=declared_substance.id)
+
+        self.assertEqual(DeclaredPlant.objects.count(), 1)
+        declared_plant = DeclaredPlant.objects.get(declaration=declaration)
+
+        self.assertEqual(declared_plant.plant, plant)
+        self.assertEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        self.assertFalse(declared_plant.new)
+
+        # est-ce que les anciens champs sont sauvegardés ?
+        self.assertEqual(declared_plant.new_description, "Test description")
+        self.assertEqual(declared_plant.unit, unit)
+
+    @authenticate
+    def test_can_add_synonym_on_replace(self):
+        """
+        C'est possible d'envoyer une liste avec un element pour ajouter un synonyme
+        et laisser des synonymes existantes non-modifiées
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
         plant = PlantFactory()
         synonym = PlantSynonymFactory.create(name="Eucalyptus Plant", standard_name=plant)
 
@@ -1982,6 +2148,10 @@ class TestDeclaredElementsApi(APITestCase):
 
     @authenticate
     def test_cannot_provide_synonym_with_no_name(self):
+        """
+        Si on donne un nom vide, ignore-le.
+        Si on ne donne pas de nom, envoie un 400.
+        """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
@@ -2016,13 +2186,12 @@ class TestDeclaredElementsApi(APITestCase):
     @authenticate
     def test_cannot_add_duplicate_synonyms(self):
         """
-        C'est possible d'envoyer une liste avec un nouvel element pour
-        ajouter un synonyme et laisser des synonymes existantes non-modifiées
+        Ignorer les synonymes qui matchent des synonymes existantes
         """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration, new=True)
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
         plant = PlantFactory()
         synonym = PlantSynonymFactory.create(name="Eucalyptus Plant", standard_name=plant)
 
@@ -2039,3 +2208,93 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(plant.plantsynonym_set.count(), 2)
         self.assertIsNotNone(plant.plantsynonym_set.get(name="New synonym"))
         self.assertEqual(plant.plantsynonym_set.get(id=synonym.id).name, synonym.name)
+
+    @authenticate
+    def test_elements_unchanged_on_replace_fail(self):
+        """
+        Si on donne des mauvaises données à sauvegarder, annule tout l'action, y compris la MAJ des synonymes
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration)
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "additional_fields": {
+                    "used_part": 99,  # fail: id unrecognised
+                },
+                "synonyms": [{"name": "New synonym"}],
+            },
+            format="json",
+        )
+        body = response.json()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, body)
+        self.assertEqual(
+            body["fieldErrors"]["usedPart"][0], "Clé primaire «\xa099\xa0» non valide - l'objet n'existe pas.", body
+        )
+        # assertion implicite - l'objet existe tjs
+        DeclaredMicroorganism.objects.get(id=declared_microorganism.id)
+        self.assertFalse(plant.plantsynonym_set.filter(name="New synonym").exists())
+        self.assertEqual(DeclaredPlant.objects.count(), 0)
+
+    @authenticate
+    def test_elements_unchanged_on_synonym_fail(self):
+        """
+        Si l'ajout de synonyme ne passe pas, on annule le remplacement complètement
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration, quantity=10)
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "additional_fields": {
+                    "quantity": 99,
+                },
+                "synonyms": [{}],
+            },
+            format="json",
+        )
+        body = response.json()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, body)
+        still_existing_declared_microorganism = DeclaredMicroorganism.objects.get(id=declared_microorganism.id)
+        self.assertEqual(still_existing_declared_microorganism.quantity, 10)
+        self.assertEqual(DeclaredPlant.objects.count(), 0)
+
+    @authenticate
+    def test_id_ignored_in_replace(self):
+        """
+        Vérifier que l'id d'un nouvel ingrédient déclaré est généré automatiquement, et non pas avec les données passées
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(id=66, declaration=declaration, new_species="test")
+        self.assertEqual(declared_microorganism.id, 66)
+        plant = PlantFactory()
+        unit = SubstanceUnitFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {
+                "element": {"id": plant.id, "type": "plant"},
+                "additional_fields": {
+                    "id": 99,
+                    "unit": unit.id,
+                },
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        new_declared_plant = DeclaredPlant.objects.first()
+        self.assertEqual(new_declared_plant.unit, unit)
+        self.assertNotEqual(new_declared_plant.id, 66)
+        self.assertNotEqual(new_declared_plant.id, 99)

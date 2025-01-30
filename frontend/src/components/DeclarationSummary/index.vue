@@ -1,11 +1,9 @@
 <template>
   <div>
-    <HistoryBadge v-if="!!payload.teleicareId" class="mb-2" />
     <ArticleInfoRow
       v-model="payload"
-      :hideArticle15Subtypes="!showArticle"
-      :articleReadOnly="!!payload.teleicareId"
-      v-if="showArticle"
+      :hideArticle15Subtypes="!allowArticleChange"
+      :allowChange="allowArticleChange"
       class="mb-2"
     />
     <h3 class="fr-h6">
@@ -152,7 +150,12 @@ const router = useRouter()
 const { units, populations, conditions, effects, galenicFormulations } = storeToRefs(useRootStore())
 
 const payload = defineModel()
-defineProps({ readonly: Boolean, showArticle: Boolean, useAccordions: Boolean, showElementAuthorization: Boolean })
+defineProps({
+  readonly: Boolean,
+  allowArticleChange: Boolean,
+  useAccordions: Boolean,
+  showElementAuthorization: Boolean,
+})
 const unitInfo = computed(() => {
   if (!payload.value.unitQuantity) return null
   const unitMeasurement = units.value?.find?.((x) => x.id === payload.value.unitMeasurement)?.name || "-"

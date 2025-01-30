@@ -50,6 +50,7 @@
         :tab-titles="titles"
         v-model="selectedTabIndex"
         @update:modelValue="selectTab"
+        class="allow-overflow"
       >
         <div class="absolute opacity-50 bg-slate-200 inset-0 z-10 flex justify-center pt-20" v-if="requestInProgress">
           <ProgressSpinner />
@@ -361,3 +362,9 @@ const performDuplication = (originalDeclaration) => {
   payload.value.computedSubstances.forEach((x) => delete x.id)
 }
 </script>
+
+<style scoped>
+.allow-overflow {
+  overflow: visible;
+}
+</style>

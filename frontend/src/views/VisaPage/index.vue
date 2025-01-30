@@ -30,7 +30,7 @@
       />
       <div v-if="declaration">
         <DeclarationSummary
-          :showArticle="true"
+          :allowArticleChange="true"
           :useAccordions="true"
           :showElementAuthorization="true"
           :readonly="true"
@@ -47,7 +47,7 @@
           >
             <component
               :is="component"
-              :showArticle="true"
+              :allowArticleChange="true"
               v-model="declaration"
               :externalResults="$externalResults"
               :readonly="true"
