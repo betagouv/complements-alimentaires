@@ -2,6 +2,8 @@ import logging
 from abc import ABC, abstractmethod
 import json
 import io
+import csv
+
 import pandas as pd
 import requests
 from api.views.declaration.declaration import OpenDataDeclarationsListView
@@ -16,7 +18,17 @@ def prepare_file_validata_post_request(df: pd.DataFrame):
     Prepare a pandas Dataframe in order to be sent via a API Post request using the param "files"
     """
     buffer = io.StringIO()
-    df.to_csv(buffer, sep=";", index=False)
+    # df.to_csv(buffer, sep=";", index=False)
+    df.to_csv(
+        buffer,
+        sep=";",
+        index=False,
+        na_rep="",
+        encoding="utf_8_sig",
+        quoting=csv.QUOTE_NONNUMERIC,
+        escapechar="\\",
+        date_format="%Y-%m-%d",
+    )
     buffer.seek(0)
     return {
         "file": ("data.csv", buffer, "text/csv"),
