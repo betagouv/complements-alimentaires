@@ -51,4 +51,4 @@ class IngredientAdmin(ElementAdminWithChangeReason):
     search_fields = ["id", "name"]
 
     def has_linked_substances(self, obj):
-        return "Oui" if obj.substances.count() else "Non"
+        return "Oui" if obj.substances.exists() else "Non"

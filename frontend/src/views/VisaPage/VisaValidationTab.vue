@@ -4,41 +4,45 @@
       <h3>Proposition à viser / signer</h3>
       <div class="border p-2">
         <VisaInfoLine title="Instructeur·ice" :text="instructorName" icon="ri-account-circle-line" />
-        <VisaInfoLine title="Décision" :text="postValidationStatus" icon="ri-focus-2-fill" />
-        <VisaInfoLine title="Message au déclarant·e" icon="ri-chat-3-line">
-          <template v-slot:value>
-            <DsfrInputGroup>
-              <DsfrInput
-                is-textarea
-                label="Motivation de la décision (à destination du professionnel)"
-                v-model="producerMessage"
-                class="!mt-0"
-              />
-            </DsfrInputGroup>
-          </template>
-        </VisaInfoLine>
+        <VisaInfoLine
+          title="Décision"
+          icon="ri-focus-2-fill"
+          :strikethroughText="hasOverriddenOriginalDecision ? declarationProposal : ''"
+          :text="hasOverriddenOriginalDecision ? overriddenProposal : declarationProposal"
+        />
+        <VisaInfoLine
+          v-if="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
+          title="Raisons de la décision"
+          icon="ri-edit-line"
+          :strikethroughText="hasOverriddenOriginalDecision ? declarationReasons : ''"
+          :text="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
+        />
+        <VisaInfoLine
+          title="Message au déclarant·e"
+          icon="ri-chat-3-line"
+          :strikethroughText="hasOverriddenOriginalDecision ? declarationComment : ''"
+          :text="hasOverriddenOriginalDecision ? overriddenComment : declarationComment"
+        />
         <VisaInfoLine
           v-if="showExpirationDays"
           title="Délai de réponse"
           icon="ri-time-fill"
-          :text="declaration.postValidationExpirationDays || '< non spécifié >'"
+          :strikethroughText="hasOverriddenOriginalDecision ? declarationExpirationDays : ''"
+          :text="hasOverriddenOriginalDecision ? overriddenExpirationDays : declarationExpirationDays"
         />
-        <VisaInfoLine
-          v-if="declaration.blockingReasons?.length"
-          title="Raisons de la décision"
-          icon="ri-edit-line"
-          :text="declaration.blockingReasons.join(',\n') || '< non spécifié >'"
-        />
+        <div class="px-4 py-2 border bg-gray-50">
+          <DecisionModificationModal v-model="overriddenDecision" />
+        </div>
       </div>
     </div>
 
     <div class="grid grid-cols-2 gap-10">
-      <div class="border p-4" v-for="decision in decisionCategories" :key="decision.title">
+      <div class="border p-4 flex flex-col" v-for="decision in decisionCategories" :key="decision.title">
         <h6 class="font-bold">
           <v-icon :color="decision.iconColor" :name="decision.icon" scale="1.2" aria-hidden class="mr-1" />
           {{ decision.title }}
         </h6>
-        <p class="fr-text--sm">
+        <p class="fr-text--sm grow">
           {{ decision.description }}
         </p>
         <ArticleInfoRow class="mb-2" v-if="decision.blockedByAnses" v-model="declaration" />
@@ -64,25 +68,33 @@ import { handleError } from "@/utils/error-handling"
 import useToaster from "@/composables/use-toaster"
 import VisaInfoLine from "./VisaInfoLine.vue"
 import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
+import DecisionModificationModal from "./DecisionModificationModal"
 
 const $externalResults = ref({})
 const emit = defineEmits(["decision-done"])
 const declaration = defineModel()
 
-const producerMessage = ref(declaration.value.postValidationProducerMessage)
+const overriddenDecision = ref()
+const hasOverriddenOriginalDecision = computed(
+  () => overriddenDecision.value && Object.keys(overriddenDecision.value).length > 0
+)
 
-const instructorName = computed(
-  () => `${declaration.value?.instructor?.firstName} ${declaration.value?.instructor?.lastName}`
-)
-const showExpirationDays = computed(
-  () =>
-    declaration.value.postValidationStatus === "OBJECTION" || declaration.value.postValidationStatus === "OBSERVATION"
-)
+const instructorName = computed(() => {
+  if (!declaration.value?.instructor) return "-"
+  return `${declaration.value.instructor.firstName || ""} ${declaration.value.instructor.lastName || ""}`
+})
+const showExpirationDays = computed(() => {
+  const concernedStatuses = ["OBJECTION", "OBSERVATION"]
+  const validationStatus = hasOverriddenOriginalDecision.value
+    ? overriddenDecision.value.proposal
+    : declaration.value.postValidationStatus
+  return concernedStatuses.indexOf(validationStatus) > -1
+})
 const postValidationStatus = computed(() => statusProps[declaration.value.postValidationStatus].label)
 
 const refusalUrl = computed(() => `/api/v1/declarations/${declaration.value.id}/refuse-visa/`)
 const acceptanceUrl = computed(() => `/api/v1/declarations/${declaration.value.id}/accept-visa/`)
-const postData = computed(() => ({ comment: producerMessage.value }))
+const postData = computed(() => overriddenDecision.value || {})
 
 const {
   execute: refuseExecute,
@@ -122,9 +134,7 @@ const decisionCategories = computed(() => {
       title: "Je valide cette décision",
       icon: "ri-checkbox-circle-fill",
       iconColor: "green",
-      description: shouldBlockApproval.value
-        ? "La déclaration ne peut pas être autorisée en nécessitant une saisine ANSEES."
-        : "Je vise cette déclaration et signe.",
+      description: validationHelperText.value,
       buttonText: "Valider",
       buttonHandler: acceptVisa,
       blockedByAnses: shouldBlockApproval.value,
@@ -133,10 +143,35 @@ const decisionCategories = computed(() => {
       title: "Je ne suis pas d'accord",
       icon: "ri-close-circle-fill",
       iconColor: "red",
-      description: "Je renvoie le dossier en instruction.",
+      description: refusalHelperText.value,
       buttonText: "Refuser",
       buttonHandler: refuseVisa,
     },
   ]
 })
+
+const validationHelperText = computed(() => {
+  if (shouldBlockApproval.value) return "La déclaration ne peut pas être autorisée en nécessitant une saisine ANSEES."
+  if (hasOverriddenOriginalDecision.value)
+    return "Je vise cette déclaration avec les modifications effectuées et signe."
+  return "Je vise cette déclaration et signe."
+})
+
+const refusalHelperText = computed(() => {
+  if (hasOverriddenOriginalDecision.value)
+    return "Je renvoie le dossier en instruction. Les modifications effectuées ne seront pas prises en compte."
+  return "Je renvoie le dossier en instruction."
+})
+
+const declarationReasons = computed(() => declaration.value?.blockingReasons?.join(",\n"))
+const overriddenReasons = computed(() => overriddenDecision.value?.reasons?.join(",\n"))
+
+const declarationComment = computed(() => declaration.value?.postValidationProducerMessage)
+const overriddenComment = computed(() => overriddenDecision.value?.comment)
+
+const declarationExpirationDays = computed(() => declaration.value?.postValidationExpirationDays)
+const overriddenExpirationDays = computed(() => overriddenDecision.value?.delayDays)
+
+const declarationProposal = computed(() => postValidationStatus)
+const overriddenProposal = computed(() => statusProps[overriddenDecision.value?.proposal]?.label)
 </script>

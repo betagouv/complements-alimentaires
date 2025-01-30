@@ -49,11 +49,11 @@ class TestAutomaticApproval(TestCase):
          * aucune action d'instruction n'a été effectuée dessus
          * son snapshot de soumission date de plus de trente jours.
         """
-        declaration_15 = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+        declaration_15 = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
         TestAutomaticApproval._create_submission_snapshot(declaration_15)
 
         declaration_high_risk_population = AwaitingInstructionDeclarationFactory(
-            overriden_article=Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
+            overridden_article=Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
         )
         TestAutomaticApproval._create_submission_snapshot(declaration_high_risk_population)
 
@@ -76,7 +76,7 @@ class TestAutomaticApproval(TestCase):
         deux snapshots type SUBMIT sont créés. Le bot doit quand même approuver ces déclarations.
         Plus d'infos : https://github.com/betagouv/complements-alimentaires/issues/1395
         """
-        declaration_15 = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+        declaration_15 = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
 
         # Double soumission
         TestAutomaticApproval._create_submission_snapshot(declaration_15)
@@ -94,7 +94,7 @@ class TestAutomaticApproval(TestCase):
         Si au moins un snapshot est présent avec un type différent de "SUBMIT" la déclaration
         ne devra pas être autorisée
         """
-        declaration_15 = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+        declaration_15 = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
 
         # Double soumission
         TestAutomaticApproval._create_submission_snapshot(declaration_15)
@@ -117,7 +117,7 @@ class TestAutomaticApproval(TestCase):
         """
         L'email d'approbation doit être envoyé lors d'une approbation automatique
         """
-        declaration = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+        declaration = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
         TestAutomaticApproval._create_submission_snapshot(declaration)
 
         approve_declarations()
@@ -137,7 +137,7 @@ class TestAutomaticApproval(TestCase):
         Le bot ne doit pas approuver des déclarations si le setting ENABLE_AUTO_VALIDATION
         n'est pas True
         """
-        declaration = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+        declaration = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
         TestAutomaticApproval._create_submission_snapshot(declaration)
 
         approve_declarations()
@@ -150,7 +150,7 @@ class TestAutomaticApproval(TestCase):
         Une déclaration en attente d'instruction de doit pas se valider si elle a l'article
         15 vigilance
         """
-        declaration = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15_WARNING)
+        declaration = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15_WARNING)
         TestAutomaticApproval._create_submission_snapshot(declaration)
 
         approve_declarations()
@@ -162,7 +162,7 @@ class TestAutomaticApproval(TestCase):
         """
         Une déclaration en attente d'instruction de doit pas se valider si elle a l'article 16
         """
-        declaration = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_16)
+        declaration = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_16)
         TestAutomaticApproval._create_submission_snapshot(declaration)
 
         approve_declarations()
@@ -174,7 +174,7 @@ class TestAutomaticApproval(TestCase):
         """
         Une déclaration en attente d'instruction de doit pas se valider si elle a l'article ANSES
         """
-        declaration = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ANSES_REFERAL)
+        declaration = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ANSES_REFERAL)
         TestAutomaticApproval._create_submission_snapshot(declaration)
 
         approve_declarations()
@@ -200,7 +200,7 @@ class TestAutomaticApproval(TestCase):
         actions d'instruction ont été effectuées dessus, par exemple des observations,
         objections, requêtes de visa, etc.
         """
-        declaration = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+        declaration = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
         TestAutomaticApproval._create_submission_snapshot(declaration)
 
         # On crée un autre snapshot indiquant que la déclaration a subi des actions autres
@@ -224,7 +224,7 @@ class TestAutomaticApproval(TestCase):
         Une déclaration dont l'instruction est en cours ne doit pas se valider
         toute seule
         """
-        declaration = OngoingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+        declaration = OngoingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
         TestAutomaticApproval._create_submission_snapshot(declaration)
 
         approve_declarations()
@@ -236,7 +236,7 @@ class TestAutomaticApproval(TestCase):
         """
         Une déclaration en observation ne doit pas se valider toute seule
         """
-        declaration = ObservationDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+        declaration = ObservationDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
         TestAutomaticApproval._create_submission_snapshot(declaration)
 
         approve_declarations()
@@ -248,7 +248,7 @@ class TestAutomaticApproval(TestCase):
         """
         Une déclaration en objection ne doit pas se valider toute seule
         """
-        declaration = ObjectionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
+        declaration = ObjectionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
         TestAutomaticApproval._create_submission_snapshot(declaration)
 
         approve_declarations()
@@ -261,7 +261,7 @@ class TestAutomaticApproval(TestCase):
         Une déclaration en abandon ne doit pas se valider toute seule
         """
         declaration = InstructionReadyDeclarationFactory(
-            status=Declaration.DeclarationStatus.ABANDONED, overriden_article=Declaration.Article.ARTICLE_15
+            status=Declaration.DeclarationStatus.ABANDONED, overridden_article=Declaration.Article.ARTICLE_15
         )
         TestAutomaticApproval._create_submission_snapshot(declaration)
 
@@ -275,7 +275,7 @@ class TestAutomaticApproval(TestCase):
         Une déclaration refusée ne doit pas se valider toute seule
         """
         declaration = InstructionReadyDeclarationFactory(
-            status=Declaration.DeclarationStatus.REJECTED, overriden_article=Declaration.Article.ARTICLE_15
+            status=Declaration.DeclarationStatus.REJECTED, overridden_article=Declaration.Article.ARTICLE_15
         )
         TestAutomaticApproval._create_submission_snapshot(declaration)
 
@@ -289,7 +289,7 @@ class TestAutomaticApproval(TestCase):
         Une déclaration retirée du marché ne doit pas se valider toute seule
         """
         declaration = InstructionReadyDeclarationFactory(
-            status=Declaration.DeclarationStatus.WITHDRAWN, overriden_article=Declaration.Article.ARTICLE_15
+            status=Declaration.DeclarationStatus.WITHDRAWN, overridden_article=Declaration.Article.ARTICLE_15
         )
         TestAutomaticApproval._create_submission_snapshot(declaration)
 

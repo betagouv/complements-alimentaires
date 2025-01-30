@@ -7,7 +7,7 @@
       title="Avant de créer un nouvel ingrédient"
       :description="model.objectType == 'plant' ? simpleDescription + ' ' + plantDescription : simpleDescription"
       title-tag="h2"
-      small="true"
+      :small="true"
     />
     <DsfrInputGroup :error-message="firstErrorMsg(v$, 'objectType')">
       <DsfrSelect

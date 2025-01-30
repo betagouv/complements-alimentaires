@@ -179,11 +179,11 @@ class Declaration(Historisable, TimeStampable):
     other_effects = models.TextField(blank=True, verbose_name="autres objectifs ou effets non listés")
 
     calculated_article = models.TextField("article calculé automatiquement", blank=True, choices=Article)
-    # TODO: les Article.choice pour overriden_article ne devraient pas inclure les choices calculés automatiquement
-    overriden_article = models.TextField("article manuellement spécifié", blank=True, choices=Article)
+    # TODO: les Article.choice pour overridden_article ne devraient pas inclure les choices calculés automatiquement
+    overridden_article = models.TextField("article manuellement spécifié", blank=True, choices=Article)
     article = models.GeneratedField(
         expression=Coalesce(
-            Case(When(overriden_article="", then=Value(None)), default="overriden_article"),
+            Case(When(overridden_article="", then=Value(None)), default="overridden_article"),
             Case(When(calculated_article="", then=Value(None)), default="calculated_article"),
             Value(None),
         ),
@@ -467,6 +467,13 @@ class Declaration(Historisable, TimeStampable):
         et contre-indications sont considérées comme étant à surveiller avec vigilance lorsqu'utilisées comme population cible
         """
         return any(x for x in self.populations.all() if x.is_defined_by_anses)
+
+    @property
+    def acceptation_date(self):
+        if self.status == Declaration.DeclarationStatus.AUTHORIZED:
+            latest_snapshot = self.snapshots.filter(creation_date__isnull=False).latest("creation_date")
+            if latest_snapshot:
+                return latest_snapshot.creation_date.strftime('"%Y-%m-%d"')
 
     def assign_calculated_article(self):
         """

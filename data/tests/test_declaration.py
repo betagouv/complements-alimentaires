@@ -135,7 +135,7 @@ class DeclarationTestCase(TestCase):
 
         self.assertIsNone(declaration.article)
         self.assertEqual(declaration.calculated_article, "")
-        self.assertEqual(declaration.overriden_article, "")
+        self.assertEqual(declaration.overridden_article, "")
 
     def test_article_15(self):
         declaration = InstructionReadyDeclarationFactory(
@@ -152,7 +152,7 @@ class DeclarationTestCase(TestCase):
 
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
-        self.assertEqual(declaration.overriden_article, "")
+        self.assertEqual(declaration.overridden_article, "")
 
     def test_article_15_warning(self):
         """
@@ -173,7 +173,7 @@ class DeclarationTestCase(TestCase):
         declaration_with_risky_substance.refresh_from_db()
         self.assertEqual(declaration_with_risky_substance.article, Declaration.Article.ARTICLE_15_WARNING)
         self.assertEqual(declaration_with_risky_substance.calculated_article, Declaration.Article.ARTICLE_15_WARNING)
-        self.assertEqual(declaration_with_risky_substance.overriden_article, "")
+        self.assertEqual(declaration_with_risky_substance.overridden_article, "")
 
         declaration_with_risky_prepared_plant = InstructionReadyDeclarationFactory(
             declared_plants=[],
@@ -188,7 +188,7 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(
             declaration_with_risky_prepared_plant.calculated_article, Declaration.Article.ARTICLE_15_WARNING
         )
-        self.assertEqual(declaration_with_risky_prepared_plant.overriden_article, "")
+        self.assertEqual(declaration_with_risky_prepared_plant.overridden_article, "")
 
         risky_galenic_formulation = GalenicFormulationFactory(is_risky=True)
         declaration_with_risky_galenic_formulation = InstructionReadyDeclarationFactory(
@@ -202,7 +202,7 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(
             declaration_with_risky_galenic_formulation.calculated_article, Declaration.Article.ARTICLE_15_WARNING
         )
-        self.assertEqual(declaration_with_risky_galenic_formulation.overriden_article, "")
+        self.assertEqual(declaration_with_risky_galenic_formulation.overridden_article, "")
 
         risky_target_population = PopulationFactory(is_defined_by_anses=True)
         declaration_with_risky_population = InstructionReadyDeclarationFactory(
@@ -218,7 +218,7 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(
             declaration_with_risky_population.calculated_article, Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
         )
-        self.assertEqual(declaration_with_risky_population.overriden_article, "")
+        self.assertEqual(declaration_with_risky_population.overridden_article, "")
 
     def test_article_15_override(self):
         declaration = InstructionReadyDeclarationFactory(
@@ -230,14 +230,14 @@ class DeclarationTestCase(TestCase):
         )
         # La PlantFactory utilisée dans DeclaredPlantFactory a par défaut un status = AUTHORIZED
         DeclaredPlantFactory(new=False, declaration=declaration)
-        declaration.overriden_article = Declaration.Article.ARTICLE_16
+        declaration.overridden_article = Declaration.Article.ARTICLE_16
         declaration.assign_calculated_article()
         declaration.save()
         declaration.refresh_from_db()
 
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
-        self.assertEqual(declaration.overriden_article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration.overridden_article, Declaration.Article.ARTICLE_16)
 
     def test_article_16(self):
         """
@@ -259,7 +259,7 @@ class DeclarationTestCase(TestCase):
 
         self.assertEqual(declaration_new.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_new.calculated_article, Declaration.Article.ARTICLE_16)
-        self.assertEqual(declaration_new.overriden_article, "")
+        self.assertEqual(declaration_new.overridden_article, "")
 
         declaration_not_autorized = InstructionReadyDeclarationFactory(
             declared_plants=[],
@@ -277,7 +277,7 @@ class DeclarationTestCase(TestCase):
 
         self.assertEqual(declaration_not_autorized.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_not_autorized.calculated_article, Declaration.Article.ARTICLE_16)
-        self.assertEqual(declaration_not_autorized.overriden_article, "")
+        self.assertEqual(declaration_not_autorized.overridden_article, "")
 
     def test_article_anses_referal(self):
         SUBSTANCE_MAX_QUANTITY = 1.0
@@ -298,7 +298,7 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(
             declaration_with_computed_substance_max_exceeded.calculated_article, Declaration.Article.ANSES_REFERAL
         )
-        self.assertEqual(declaration_with_computed_substance_max_exceeded.overriden_article, "")
+        self.assertEqual(declaration_with_computed_substance_max_exceeded.overridden_article, "")
 
         # La déclaration ne doit pas passer en saisine ANSES si la dose est exactement égale à la dose maximale
         declaration_with_computed_substance_equals_max = InstructionReadyDeclarationFactory(
@@ -317,7 +317,7 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(
             declaration_with_computed_substance_equals_max.calculated_article, Declaration.Article.ARTICLE_15
         )
-        self.assertEqual(declaration_with_computed_substance_equals_max.overriden_article, "")
+        self.assertEqual(declaration_with_computed_substance_equals_max.overridden_article, "")
 
         declaration_with_declared_substance_max_exceeded = InstructionReadyDeclarationFactory(
             computed_substances=[],
@@ -335,7 +335,7 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(
             declaration_with_declared_substance_max_exceeded.calculated_article, Declaration.Article.ANSES_REFERAL
         )
-        self.assertEqual(declaration_with_declared_substance_max_exceeded.overriden_article, "")
+        self.assertEqual(declaration_with_declared_substance_max_exceeded.overridden_article, "")
 
     def test_visa_refused(self):
         """

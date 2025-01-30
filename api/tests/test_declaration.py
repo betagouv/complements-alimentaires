@@ -1343,9 +1343,9 @@ class TestDeclarationApi(APITestCase):
         Les déclarations peuvent être filtrées par article
         """
         InstructionRoleFactory(user=authenticate.user)
-        art_15 = AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_15)
-        AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ARTICLE_16)
-        AwaitingInstructionDeclarationFactory(overriden_article=Declaration.Article.ANSES_REFERAL)
+        art_15 = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
+        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_16)
+        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ANSES_REFERAL)
 
         # Filtrage pour obtenir les déclarations en article 15
         url = f"{reverse('api:list_all_declarations')}?article=ART_15"
@@ -1587,7 +1587,7 @@ class TestDeclarationApi(APITestCase):
         art_15.refresh_from_db()
         self.assertEqual(art_15.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(art_15.calculated_article, Declaration.Article.ARTICLE_15)
-        self.assertEqual(art_15.overriden_article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(art_15.overridden_article, Declaration.Article.ARTICLE_16)
 
     @authenticate
     def test_update_article_unauthorized(self):
@@ -2120,8 +2120,8 @@ class TestDeclaredElementsApi(APITestCase):
     @authenticate
     def test_can_add_synonym_on_replace(self):
         """
-        C'est possible d'envoyer une liste avec un nouvel element pour
-        ajouter un synonyme et laisser des synonymes existantes non-modifiées
+        C'est possible d'envoyer une liste avec un element pour ajouter un synonyme
+        et laisser des synonymes existantes non-modifiées
         """
         InstructionRoleFactory(user=authenticate.user)
 
@@ -2186,13 +2186,12 @@ class TestDeclaredElementsApi(APITestCase):
     @authenticate
     def test_cannot_add_duplicate_synonyms(self):
         """
-        C'est possible d'envoyer une liste avec un nouvel element pour
-        ajouter un synonyme et laisser des synonymes existantes non-modifiées
+        Ignorer les synonymes qui matchent des synonymes existantes
         """
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration, new=True)
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
         plant = PlantFactory()
         synonym = PlantSynonymFactory.create(name="Eucalyptus Plant", standard_name=plant)
 
@@ -2278,9 +2277,7 @@ class TestDeclaredElementsApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_microorganism = DeclaredMicroorganismFactory(
-            id=66, declaration=declaration, new_species="test", new=True
-        )
+        declared_microorganism = DeclaredMicroorganismFactory(id=66, declaration=declaration, new_species="test")
         self.assertEqual(declared_microorganism.id, 66)
         plant = PlantFactory()
         unit = SubstanceUnitFactory()

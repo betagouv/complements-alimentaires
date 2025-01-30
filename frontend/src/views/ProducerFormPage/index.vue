@@ -50,6 +50,7 @@
         :tab-titles="titles"
         v-model="selectedTabIndex"
         @update:modelValue="selectTab"
+        class="allow-overflow"
       >
         <div class="absolute opacity-50 bg-slate-200 inset-0 z-10 flex justify-center pt-20" v-if="requestInProgress">
           <ProgressSpinner />
@@ -235,11 +236,15 @@ const savePayload = async (successMessage = "Votre démarche a été sauvegardé
   const { response, data } = await useFetch(url, { headers: headers() })[httpMethod](payload).json()
   requestInProgress.value = false
   $externalResults.value = await handleError(response)
-  if ($externalResults.value) {
-    useToaster().addErrorMessage(
-      "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis pour pouvoir changer d'onglet"
-    )
-    window.scrollTo(0, 0)
+  const hasError = !!$externalResults.value
+  if (hasError) {
+    const fieldErrors = $externalResults.value.fieldErrors
+    if (fieldErrors && Object.keys(fieldErrors).length > 0) {
+      useToaster().addErrorMessage(
+        "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis pour pouvoir changer d'onglet"
+      )
+      window.scrollTo(0, 0)
+    }
     return false
   } else {
     payload.value = data.value
@@ -359,3 +364,9 @@ const performDuplication = (originalDeclaration) => {
   payload.value.computedSubstances.forEach((x) => delete x.id)
 }
 </script>
+
+<style scoped>
+.allow-overflow {
+  overflow: visible;
+}
+</style>

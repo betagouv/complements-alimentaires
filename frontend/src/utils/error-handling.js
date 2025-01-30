@@ -26,10 +26,11 @@ export const handleError = async (response) => {
   // Handle display of the errors (directly on the form or in a toast)
   // https://vuelidate-next.netlify.app/advanced_usage.html#config-with-composition-api
   const backErrorData = await response.value.json()
-  if (backErrorData.globalError) {
-    // show an error toast
-    addErrorMessage(backErrorData.globalError)
-  }
+  const isCsrfError = backErrorData.globalError?.indexOf?.("CSRF Failed") > -1
+
+  if (isCsrfError) addErrorMessage("Veuillez rafraîchir la page pour mettre à jour votre session.")
+  else if (backErrorData.globalError) addErrorMessage(backErrorData.globalError)
+
   // Return other errors to be handled by Vuelidate directly (and "extra" parameters to get additional data)
   // If you don't have a form and expect global errors only, just ignore the result of this function when called.
   return {

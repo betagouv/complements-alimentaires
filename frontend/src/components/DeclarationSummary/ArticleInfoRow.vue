@@ -5,6 +5,7 @@
       @close="articleModalOpened = false"
       :opened="articleModalOpened"
       title="Changer l'article"
+      v-if="allowChange"
     >
       <p>Vous pouvez changer l'article de cette déclaration en le sélectionnant ci-dessous.</p>
       <DsfrInputGroup>
@@ -19,6 +20,7 @@
       tertiary
       :label="!!payload.article ? 'Changer l\'article' : 'Renseigner l\'article'"
       @click="articleModalOpened = true"
+      v-if="allowChange"
     />
   </div>
 </template>
@@ -35,7 +37,7 @@ const newArticle = ref()
 onMounted(() => (newArticle.value = payload.value.article))
 
 const payload = defineModel()
-const props = defineProps({ hideArticle15Subtypes: Boolean })
+const props = defineProps({ hideArticle15Subtypes: Boolean, allowChange: Boolean })
 
 // Aujourd'hui les subtypes (WARNING, et HIGH_RISK_POPULATION) doivent être cachés aux déclarants,
 // Mais le DeclarationSummary de la page déclarants n'affiche pas le composant ArticleInfoRow aujourd'hui
