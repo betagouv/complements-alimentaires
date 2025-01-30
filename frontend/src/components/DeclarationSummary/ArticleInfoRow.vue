@@ -40,7 +40,6 @@ const payload = defineModel()
 
 const props = defineProps({ hideArticle15Subtypes: Boolean, allowChange: Boolean })
 
-
 // Aujourd'hui les subtypes (WARNING, et HIGH_RISK_POPULATION) doivent être cachés aux déclarants,
 // Mais le DeclarationSummary de la page déclarants n'affiche pas le composant ArticleInfoRow aujourd'hui
 // TODO: lorsqu'il l'affichera il faudra désactiver la possibilité de modifier l'article

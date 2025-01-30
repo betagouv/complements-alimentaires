@@ -30,7 +30,7 @@
       />
       <div v-if="declaration">
         <DeclarationSummary
-          :allowArticleChange="true"
+          :allowArticleChange="!declaration.teleicareId"
           :useAccordions="true"
           :showElementAuthorization="true"
           :readonly="true"
@@ -47,7 +47,7 @@
           >
             <component
               :is="component"
-              :allowArticleChange="true"
+              :allowArticleChange="!declaration.teleicareId"
               v-model="declaration"
               :externalResults="$externalResults"
               :readonly="true"
