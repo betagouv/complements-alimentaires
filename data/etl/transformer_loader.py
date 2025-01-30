@@ -22,7 +22,7 @@ class OPEN_DATA(TRANSFORMER_LOADER):
                 index=False,
                 na_rep="",
                 encoding="utf_8_sig",
-                quoting=csv.QUOTE_NONE,
+                quoting=csv.QUOTE_NONNUMERIC,
                 escapechar="\\",
             )
 
