@@ -60,7 +60,7 @@ class ETL(ABC):
         # ---------------------------------------------------
         self.df = self.df[columns_to_keep]
         self.filter_dataframe_with_schema_cols()
-        self.df = self.df.replace({"\n": " ", "\r": " ", ";": ""}, regex=True)
+        self.df = self.df.replace({"\n": " ", "\r": " "}, regex=True)
 
     def is_valid(self) -> bool:
         files = prepare_file_validata_post_request(self.df)
@@ -99,7 +99,7 @@ class DECLARATIONS(EXTRACTOR):
     def __init__(self):
         super().__init__()
         self.dataset_name = "declarations"
-        self.schema = json.load(open("data/schemas/schema_declarations.json"))
+        self.schema = json.load(open("data/schemas/schema_declarations.json"))["schema"]
         self.schema_url = (
             "https://github.com/betagouv/complements-alimentaires/blob/staging/data/schemas/schema_declarations.json"
         )
