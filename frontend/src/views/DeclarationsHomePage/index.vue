@@ -85,7 +85,7 @@ import { storeToRefs } from "pinia"
 import { getPagesForPagination } from "@/utils/components"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import StatusFilter from "@/components/StatusFilter"
-import HistoryAlert from "@/components/HistoryAlert.vue"
+import HistoryAlert from "@/components/History/HistoryAlert.vue"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)

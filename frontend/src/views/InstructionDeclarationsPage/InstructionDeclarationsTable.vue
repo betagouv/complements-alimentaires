@@ -19,6 +19,7 @@ import { storeToRefs } from "pinia"
 import { articleOptionsWith15Subtypes } from "@/utils/mappings"
 import CompanyTableCell from "@/components/CompanyTableCell"
 import CircleIndicators from "./CircleIndicators"
+import DeclarationName from "@/components/DeclarationName"
 
 const { loggedUser } = storeToRefs(useRootStore())
 
@@ -35,7 +36,7 @@ const rows = computed(() =>
       },
       x.teleicareId ? x.teleicareId : x.id,
       {
-        component: "router-link",
+        component: DeclarationName,
         text: x.name,
         to: { name: "InstructionPage", params: { declarationId: x.id } },
       },

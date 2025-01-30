@@ -15,6 +15,7 @@ import { computed, ref } from "vue"
 import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import CompanyTableCell from "@/components/CompanyTableCell"
+import DeclarationName from "@/components/DeclarationName"
 import { useResizeObserver, useDebounceFn } from "@vueuse/core"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
@@ -40,7 +41,7 @@ const rows = computed(() => {
     rowData: [
       d.teleicareId ? d.teleicareId : d.id,
       {
-        component: "router-link",
+        component: DeclarationName,
         text: d.name,
         class: "font-medium",
         to: { name: "DeclarationPage", params: { id: d.id } },

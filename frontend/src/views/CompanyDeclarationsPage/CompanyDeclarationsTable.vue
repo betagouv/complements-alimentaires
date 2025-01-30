@@ -15,6 +15,7 @@ import { computed } from "vue"
 import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import CompanyTableCell from "@/components/CompanyTableCell"
+import DeclarationName from "@/components/DeclarationName.vue"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
@@ -24,7 +25,7 @@ const rows = computed(() =>
     rowData: [
       x.teleicareId ? x.teleicareId : x.id,
       {
-        component: "router-link",
+        component: DeclarationName,
         text: x.name,
         to: { name: "DeclarationPage", params: { id: x.id } }, // TODO Change to a more enteprisey view
       },
