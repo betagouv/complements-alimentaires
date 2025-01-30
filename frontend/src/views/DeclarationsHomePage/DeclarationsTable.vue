@@ -42,6 +42,7 @@ const rows = computed(() => {
       d.teleicareId ? d.teleicareId : d.id,
       {
         component: DeclarationName,
+        withHistoryBadge: !!d.teleicareId,
         text: d.name,
         class: "font-medium",
         to: { name: "DeclarationPage", params: { id: d.id } },

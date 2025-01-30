@@ -1,5 +1,6 @@
 <template>
   <div>
+    <HistoryBadge v-if="!!payload.teleicareId" class="mb-2" />
     <ArticleInfoRow
       v-model="payload"
       :hideArticle15Subtypes="!allowArticleChange"
