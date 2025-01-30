@@ -212,11 +212,8 @@
       "type": "string"
     }
   ],
-  "format": "csv",
   "homepage": "https://github.com/betagouv/complements-alimentaires",
-  "mediatype": "text/csv",
   "name": "liste-des-complements-alimentaires-declares",
   "path": "https://raw.githubusercontent.com/betagouv/complements-alimentaires/refs/heads/staging/data/schemas/schema_declarations.json",
-  "scheme": "file",
-  "type": "table"
+  "scheme": "file"
 }
