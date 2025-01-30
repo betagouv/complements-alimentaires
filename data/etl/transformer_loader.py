@@ -24,6 +24,7 @@ class OPEN_DATA(TRANSFORMER_LOADER):
                 encoding="utf_8_sig",
                 quoting=csv.QUOTE_NONNUMERIC,
                 escapechar="\\",
+                date_format="%Y-%m-%d",
             )
 
     def load_dataset(self):
