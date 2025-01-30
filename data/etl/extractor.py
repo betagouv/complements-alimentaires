@@ -44,12 +44,6 @@ class ETL(ABC):
         else:
             return 0
 
-    def filter_dataframe_with_schema_cols(self):
-        try:
-            self.df = self.df[self.columns]
-        except KeyError:
-            logger.warning("Le jeu de données ne respecte pas le schéma")
-
     def clean_dataset(self):
         self.df = self.df.loc[:, ~self.df.columns.duplicated()]
         ## Code temporaire en attendant d'avoir tous les champs du schéma
@@ -59,7 +53,6 @@ class ETL(ABC):
                 columns_to_keep.append(col)
         # ---------------------------------------------------
         self.df = self.df[columns_to_keep]
-        self.filter_dataframe_with_schema_cols()
         self.df = self.df.replace({"\n": " ", "\r": " "}, regex=True)
 
     def is_valid(self) -> bool:
