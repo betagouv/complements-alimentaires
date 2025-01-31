@@ -267,25 +267,19 @@ def add_product_info_from_teleicare_history(declaration, vrsdecl_ident):
     declaration.effects.set(
         [
             Effect.objects.get(siccrf_id=TIcare_effect.objeff_ident)
-            for TIcare_effect in IcaEffetDeclare.objects.filter(vrsdecl_ident=vrsdecl_ident).exclude(
-                objeff_ident=4  # Autre
-            )
+            for TIcare_effect in IcaEffetDeclare.objects.filter(vrsdecl_ident=vrsdecl_ident)
         ]
     )
     declaration.conditions_not_recommended.set(
         [
             Condition.objects.get(siccrf_id=TIcare_condition.poprs_ident)
-            for TIcare_condition in IcaPopulationRisqueDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident).exclude(
-                poprs_ident=6  # Autre
-            )
+            for TIcare_condition in IcaPopulationRisqueDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident)
         ]
     )
     declaration.populations.set(
         [
             Population.objects.get(siccrf_id=TIcare_population.popcbl_ident)
-            for TIcare_population in IcaPopulationCibleDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident).exclude(
-                popcbl_ident=2  # Autre
-            )
+            for TIcare_population in IcaPopulationCibleDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident)
         ]
     )
 
@@ -421,12 +415,14 @@ def create_declaration_from_teleicare_history():
                 # aucun de ces champs `other_` n'est rempli dans Teleicare
                 # IcaPopulationCibleDeclaree.vrspcb_popcible_autre n'est pas importé
                 other_effects = IcaEffetDeclare.objects.filter(
-                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident, objeff_ident=4
+                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident,
+                    objeff_ident=4,  # Autre
                 )
                 if other_effects.exists():
                     declaration.other_effects = other_effects.first().vrs_autre_objectif
                 other_conditions = IcaPopulationRisqueDeclaree.objects.filter(
-                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident, poprs_ident=6
+                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident,
+                    poprs_ident=6,  # Autre
                 )
                 if other_conditions.exists():
                     declaration.other_conditions = other_conditions.first().vrsprs_poprisque_autre
