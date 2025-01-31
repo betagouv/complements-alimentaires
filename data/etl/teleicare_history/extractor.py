@@ -7,6 +7,7 @@ from django.core.exceptions import MultipleObjectsReturned, ValidationError
 from django.db import IntegrityError, transaction
 
 from phonenumber_field.phonenumber import PhoneNumber
+from phonenumbers import NumberParseException
 
 from data.models import (
     Condition,
@@ -75,8 +76,11 @@ def suppress_autotime(model, fields):
 
 def convert_phone_number(phone_number_to_parse):
     if phone_number_to_parse:
-        phone_number = PhoneNumber.from_string(phone_number_to_parse, region="FR")
-        return phone_number
+        try:
+            phone_number = PhoneNumber.from_string(phone_number_to_parse, region="FR")
+            return phone_number
+        except NumberParseException:
+            return ""
     return ""
 
 
@@ -196,7 +200,14 @@ def convert_str_date(value, aware=False):
 def create_teleicare_id(latest_ica_declaration):
     if latest_ica_declaration.dcl_annee and latest_ica_declaration.dcl_mois and latest_ica_declaration.dcl_numero:
         return "-".join(
-            [latest_ica_declaration.dcl_annee, latest_ica_declaration.dcl_mois, latest_ica_declaration.dcl_numero]
+            [
+                str(getattr(latest_ica_declaration, field))
+                for field in [
+                    "dcl_annee",
+                    "dcl_mois",
+                    "dcl_numero",
+                ]
+            ]
         )
 
 
