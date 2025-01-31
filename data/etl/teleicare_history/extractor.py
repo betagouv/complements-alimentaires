@@ -264,35 +264,26 @@ def add_product_info_from_teleicare_history(declaration, vrsdecl_ident):
     Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
     `create_declaration_from_teleicare_history` pour updater leurs champs ManyToMany.
     """
-    # IcaPopulationCibleDeclaree.vrspcb_popcible_autre n'est pas importé
     declaration.effects.set(
         [
-            Effect.object.get(siccrf_id=TIcare_effect.objeff_ident)
-            for TIcare_effect in IcaEffetDeclare.object.filter(vrsdecl_ident=vrsdecl_ident).exclude(
+            Effect.objects.get(siccrf_id=TIcare_effect.objeff_ident)
+            for TIcare_effect in IcaEffetDeclare.objects.filter(vrsdecl_ident=vrsdecl_ident).exclude(
                 objeff_ident=4  # Autre
             )
         ]
     )
-    declaration.other_effects = IcaEffetDeclare.object.get(
-        vrsdecl_ident=vrsdecl_ident, objeff_ident=4
-    ).vrs_autre_objectif
-
     declaration.conditions_not_recommended.set(
         [
-            Condition.object.get(siccrf_id=TIcare_condition.poprs_ident)
-            for TIcare_condition in IcaPopulationRisqueDeclaree.object.filter(vrsdecl_ident=vrsdecl_ident).exclude(
+            Condition.objects.get(siccrf_id=TIcare_condition.poprs_ident)
+            for TIcare_condition in IcaPopulationRisqueDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident).exclude(
                 poprs_ident=6  # Autre
             )
         ]
     )
-    declaration.other_conditions = IcaPopulationRisqueDeclaree.object.get(
-        vrsdecl_ident=vrsdecl_ident, poprs_ident=6
-    ).vrsprs_poprisque_autre
-
     declaration.populations.set(
         [
-            Population.object.get(siccrf_id=TIcare_population.popcbl_ident)
-            for TIcare_population in IcaPopulationCibleDeclaree.object.filter(vrsdecl_ident=vrsdecl_ident).exclude(
+            Population.objects.get(siccrf_id=TIcare_population.popcbl_ident)
+            for TIcare_population in IcaPopulationCibleDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident).exclude(
                 popcbl_ident=2  # Autre
             )
         ]
@@ -427,6 +418,18 @@ def create_declaration_from_teleicare_history():
                     if latest_ica_declaration.dcl_date_fin_commercialisation
                     else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident],
                 )
+                # aucun de ces champs `other_` n'est rempli dans Teleicare
+                # IcaPopulationCibleDeclaree.vrspcb_popcible_autre n'est pas importé
+                other_effects = IcaEffetDeclare.objects.filter(
+                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident, objeff_ident=4
+                )
+                if other_effects.exists():
+                    declaration.other_effects = other_effects.first().vrs_autre_objectif
+                other_conditions = IcaPopulationRisqueDeclaree.objects.filter(
+                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident, poprs_ident=6
+                )
+                if other_conditions.exists():
+                    declaration.other_conditions = other_conditions.first().vrsprs_poprisque_autre
 
                 try:
                     with suppress_autotime(declaration, ["creation_date", "modification_date"]):
