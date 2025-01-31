@@ -212,21 +212,6 @@ DECLARATION_TYPE_TO_ARTICLE_MAPPING = {
 }
 
 
-MANY_TO_MANY_PRODUCT_MODELS_MATCHING = {
-    "effects": {"teleIcare_model": IcaEffetDeclare, "teleIcare_pk": "objeff_ident", "CA_model": Effect},
-    "conditions_not_recommended": {
-        "teleIcare_model": IcaPopulationRisqueDeclaree,
-        "teleIcare_pk": "poprs_ident",
-        "CA_model": Condition,
-    },
-    "populations": {
-        "teleIcare_model": IcaPopulationCibleDeclaree,
-        "teleIcare_pk": "popcbl_ident",
-        "CA_model": Population,
-    },
-}
-
-
 def create_declared_plant(declaration, teleIcare_plant, active):
     declared_plant = DeclaredPlant(
         declaration=declaration,
@@ -279,21 +264,39 @@ def add_product_info_from_teleicare_history(declaration, vrsdecl_ident):
     Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
     `create_declaration_from_teleicare_history` pour updater leurs champs ManyToMany.
     """
-    # TODO: other_conditions=conditions_not_recommended,
-    # TODO: other_effects=
-    for CA_field_name, struct in MANY_TO_MANY_PRODUCT_MODELS_MATCHING.items():
-        # par exemple Declaration.populations
-        CA_field = getattr(declaration, CA_field_name)
-        # TODO: utiliser les dataclass ici
-        pk_field = struct["teleIcare_pk"]
-        CA_model = struct["CA_model"]
-        teleIcare_model = struct["teleIcare_model"]
-        CA_field.set(
-            [
-                CA_model.objects.get(siccrf_id=getattr(TI_object, pk_field))
-                for TI_object in (teleIcare_model.objects.filter(vrsdecl_ident=vrsdecl_ident))
-            ]
-        )
+    # IcaPopulationCibleDeclaree.vrspcb_popcible_autre n'est pas importé
+    declaration.effects.set(
+        [
+            Effect.object.get(siccrf_id=TIcare_effect.objeff_ident)
+            for TIcare_effect in IcaEffetDeclare.object.filter(vrsdecl_ident=vrsdecl_ident).exclude(
+                objeff_ident=4  # Autre
+            )
+        ]
+    )
+    declaration.other_effects = IcaEffetDeclare.object.get(
+        vrsdecl_ident=vrsdecl_ident, objeff_ident=4
+    ).vrs_autre_objectif
+
+    declaration.conditions_not_recommended.set(
+        [
+            Condition.object.get(siccrf_id=TIcare_condition.poprs_ident)
+            for TIcare_condition in IcaPopulationRisqueDeclaree.object.filter(vrsdecl_ident=vrsdecl_ident).exclude(
+                poprs_ident=6  # Autre
+            )
+        ]
+    )
+    declaration.other_conditions = IcaPopulationRisqueDeclaree.object.get(
+        vrsdecl_ident=vrsdecl_ident, poprs_ident=6
+    ).vrsprs_poprisque_autre
+
+    declaration.populations.set(
+        [
+            Population.object.get(siccrf_id=TIcare_population.popcbl_ident)
+            for TIcare_population in IcaPopulationCibleDeclaree.object.filter(vrsdecl_ident=vrsdecl_ident).exclude(
+                popcbl_ident=2  # Autre
+            )
+        ]
+    )
 
 
 @transaction.atomic
