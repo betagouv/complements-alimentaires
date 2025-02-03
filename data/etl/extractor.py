@@ -99,7 +99,7 @@ class DECLARATIONS(EXTRACTOR):
     def __init__(self):
         super().__init__()
         self.dataset_name = "declarations"
-        self.schema = json.load(open("data/schemas/schema_declarations.json"))["schema"]
+        self.schema = json.load(open("data/schemas/schema_declarations.json"))
         self.schema_url = (
             "https://github.com/betagouv/complements-alimentaires/blob/staging/data/schemas/schema_declarations.json"
         )

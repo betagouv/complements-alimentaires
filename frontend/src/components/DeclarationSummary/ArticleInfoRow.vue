@@ -37,6 +37,7 @@ const newArticle = ref()
 onMounted(() => (newArticle.value = payload.value.article))
 
 const payload = defineModel()
+
 const props = defineProps({ hideArticle15Subtypes: Boolean, allowChange: Boolean })
 
 // Aujourd'hui les subtypes (WARNING, et HIGH_RISK_POPULATION) doivent être cachés aux déclarants,

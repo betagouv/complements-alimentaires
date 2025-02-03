@@ -274,8 +274,8 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
+            "teleicare_id",
             "siccrf_id",
-            "declared_in_teleicare",
             "status",
             "author",
             "company",
@@ -402,7 +402,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         ]:
             return "Article 15"
         elif obj.article:
-            return obj.article.label
+            return Declaration.Article(obj.article).label
 
     def get_forme_galenique(self, obj):
         return add_enum_or_personnalized_value(obj.galenic_formulation, obj.other_galenic_formulation)
@@ -558,7 +558,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
-            "declared_in_teleicare",
+            "teleicare_id",
             "article",
             "status",
             "author",
@@ -701,8 +701,8 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
+            "teleicare_id",
             "siccrf_id",
-            "declared_in_teleicare",
             "status",
             "author",
             "company",
