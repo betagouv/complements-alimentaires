@@ -7,6 +7,7 @@ from django.core.exceptions import MultipleObjectsReturned, ValidationError
 from django.db import IntegrityError, transaction
 
 from phonenumber_field.phonenumber import PhoneNumber
+from phonenumbers import NumberParseException
 
 from data.models import (
     Condition,
@@ -75,8 +76,11 @@ def suppress_autotime(model, fields):
 
 def convert_phone_number(phone_number_to_parse):
     if phone_number_to_parse:
-        phone_number = PhoneNumber.from_string(phone_number_to_parse, region="FR")
-        return phone_number
+        try:
+            phone_number = PhoneNumber.from_string(phone_number_to_parse, region="FR")
+            return phone_number
+        except NumberParseException:
+            return ""
     return ""
 
 
@@ -191,6 +195,20 @@ def convert_str_date(value, aware=False):
         return dt.replace(tzinfo=timezone.utc)
     else:
         return dt.date()
+
+
+def create_teleicare_id(latest_ica_declaration):
+    if latest_ica_declaration.dcl_annee and latest_ica_declaration.dcl_mois and latest_ica_declaration.dcl_numero:
+        return "-".join(
+            [
+                str(getattr(latest_ica_declaration, field))
+                for field in [
+                    "dcl_annee",
+                    "dcl_mois",
+                    "dcl_numero",
+                ]
+            ]
+        )
 
 
 # Pour les déclarations TeleIcare, le status correspond au champ IcaVersionDeclaration.stattdcl_ident
@@ -395,6 +413,7 @@ def create_declaration_from_teleicare_history():
                     if latest_ica_declaration.dcl_date_fin_commercialisation
                     else declaration_creation_date,
                     siccrf_id=ica_complement_alimentaire.cplalim_ident,
+                    teleicare_id=create_teleicare_id(latest_ica_declaration),
                     galenic_formulation=GalenicFormulation.objects.get(
                         siccrf_id=ica_complement_alimentaire.frmgal_ident
                     ),

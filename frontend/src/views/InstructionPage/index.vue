@@ -27,15 +27,15 @@
       </DsfrAlert>
       <DeclarationAlert
         class="mb-6"
-        v-else-if="!canInstruct && !declaration.declaredInTeleicare"
+        v-else-if="!canInstruct && !declaration.teleicareId"
         role="instructor"
         :declaration="declaration"
         :snapshots="snapshots"
       />
-      <DeclarationFromTeleicareAlert v-else-if="declaration.declaredInTeleicare" />
+      <DeclarationFromTeleicareAlert v-else-if="declaration.teleicareId" />
       <div v-if="declaration">
         <DeclarationSummary
-          :allowArticleChange="true"
+          :allowArticleChange="!declaration.teleicareId"
           :useAccordions="true"
           :showElementAuthorization="true"
           :readonly="true"
@@ -62,7 +62,7 @@
               :company="company"
               :snapshots="snapshots"
               @decision-done="onDecisionDone"
-              :allowArticleChange="true"
+              :allowArticleChange="!declaration.teleicareId"
             ></component>
           </DsfrTabContent>
         </DsfrTabs>
@@ -74,7 +74,7 @@
           @forward="selectedTabIndex += 1"
           :removeSaveLabel="true"
         >
-          <template v-slot:content v-if="!declaration.declaredInTeleicare">
+          <template v-slot:content v-if="!declaration.teleicareId">
             <h6 class="text-left">
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
@@ -122,7 +122,7 @@ import { headers } from "@/utils/data-fetching"
 import DeclarationAlert from "@/components/DeclarationAlert"
 import { tabTitles } from "@/utils/mappings"
 import { useRouter, useRoute } from "vue-router"
-import DeclarationFromTeleicareAlert from "@/components/DeclarationFromTeleicareAlert.vue"
+import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromTeleicareAlert.vue"
 
 const router = useRouter()
 const route = useRoute()
@@ -207,7 +207,7 @@ onMounted(async () => {
 // Tab management
 const components = computed(() => {
   const baseComponents = [IdentityTab, DeclarationSummary]
-  if (!declaration.value.declaredInTeleicare) baseComponents.push(HistoryTab)
+  if (!declaration.value.teleicareId) baseComponents.push(HistoryTab)
   if (canInstruct.value) baseComponents.push(DecisionTab)
   return baseComponents
 })

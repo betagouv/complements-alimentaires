@@ -15,6 +15,8 @@ import { computed } from "vue"
 import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import CompanyTableCell from "@/components/CompanyTableCell"
+import DeclarationName from "@/components/DeclarationName.vue"
+import HistoryBadge from "@/components/History/HistoryBadge.vue"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
@@ -22,17 +24,10 @@ const headers = ["ID", "Nom du produit", "Entreprise", "Auteur", "État", "Date 
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
-      x.declaredInTeleicare
-        ? {
-            component: "DsfrBadge",
-            label: "issue de Teleicare",
-            type: "none",
-            small: true,
-            noIcon: true,
-          }
-        : x.id,
+      x.teleicareId ? x.teleicareId : x.id,
       {
-        component: "router-link",
+        component: DeclarationName,
+        withHistoryBadge: !!x.teleicareId,
         text: x.name,
         to: { name: "DeclarationPage", params: { id: x.id } }, // TODO Change to a more enteprisey view
       },
