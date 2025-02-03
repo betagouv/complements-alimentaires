@@ -11,12 +11,12 @@ from data.factories import (
     PlantPartFactory,
     SubstanceFactory,
 )
-from data.models import IngredientType
+from data.models import IngredientType, Plant
 
 from .utils import authenticate
 
 
-class TestElementsApi(APITestCase):
+class TestElementsFetchApi(APITestCase):
     def test_get_single_plant(self):
         plant = PlantFactory.create()
         response = self.client.get(reverse("api:single_plant", kwargs={"pk": plant.id}))
@@ -206,3 +206,16 @@ class TestElementsApi(APITestCase):
         self.assertEqual(len(body), 2)
         self.assertIsNotNone(filter(lambda x: x["id"] == part_1.id, body))
         self.assertIsNotNone(filter(lambda x: x["id"] == part_2.id, body))
+
+
+class TestElementsCreateApi(APITestCase):
+    def test_create_single_plant(self):
+        self.assertEqual(Plant.objects.count(), 0)
+        payload = {"name": "My new plant"}
+        response = self.client.post(reverse("api:plant_list"), payload)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        body = response.json()
+
+        self.assertIn("id", body)
+        plant = Plant.objects.get(id=body["id"])
+        self.assertEqual(plant.name, "My new plant")
