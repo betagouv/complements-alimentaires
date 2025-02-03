@@ -24,7 +24,7 @@ const emit = defineEmits("open")
 // Les données pour la table
 const headers = computed(() => {
   if (useShortTable.value) return ["Nom", "État"]
-  return ["ID", "Nom du produit", "Entreprise", "Déclarant·e", "État", "Date de modification", ""]
+  return ["ID", "Nom du produit", "Entreprise", "Déclarant·e", "État", "Date de création", ""]
 })
 
 const rows = computed(() => {
@@ -54,7 +54,7 @@ const rows = computed(() => {
       },
       d.author ? `${d.author.firstName} ${d.author.lastName}` : "",
       getStatusTagForCell(d.status, true),
-      timeAgo(d.modificationDate),
+      timeAgo(d.creationDate),
       d.teleicareId
         ? ""
         : {
