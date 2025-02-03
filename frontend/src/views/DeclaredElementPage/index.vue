@@ -69,7 +69,7 @@ const breadcrumbLinks = computed(() => {
 
 // Init
 const url = computed(() => `/api/v1/declared-elements/${getApiType(props.type)}/${props.id}`)
-const onFetchError = ({ error, data, response, context, execute }) => {
+const onFetchError = ({ error, data }) => {
   addErrorMessage("Une erreur est survenu. Merci de réessayer ultérieurement.")
   return { error, data }
 }
