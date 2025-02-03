@@ -126,7 +126,8 @@ import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromT
 
 const router = useRouter()
 const route = useRoute()
-const previousRoute = router.getPreviousRoute()
+const previousQueryParams =
+  router.getPreviousRoute().value.name === "InstructionDeclarations" ? router.getPreviousRoute().value.query : {}
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -227,8 +228,7 @@ const instructDeclaration = async () => {
 }
 
 const onDecisionDone = () => {
-  const previousQuery = previousRoute.value.name === "InstructionDeclarations" ? previousRoute.value.query : {}
-  router.push({ name: "InstructionDeclarations", query: previousQuery })
+  router.push({ name: "InstructionDeclarations", query: previousQueryParams })
 }
 </script>
 
