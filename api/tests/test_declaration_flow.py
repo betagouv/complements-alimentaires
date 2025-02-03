@@ -806,8 +806,8 @@ class TestDeclarationFlow(APITestCase):
         company = CompanyFactory()
         user = authenticate.user
 
-        # On doit pouvoir effectuer l'abandon en tant que pro, instructrice ou viseuse
-        role_factories = [VisaRoleFactory, InstructionRoleFactory, DeclarantRoleFactory]
+        # On doit pouvoir effectuer l'abandon en tant que pro seulement
+        DeclarantRoleFactory(user=user, company=company)
 
         # On doit pouvoir effectuer l'abandon depuis les statuts générés par ces factories:
         declaration_factories = [
@@ -818,23 +818,16 @@ class TestDeclarationFlow(APITestCase):
             OngoingVisaDeclarationFactory,
             ObjectionDeclarationFactory,
         ]
-        for role_factory in role_factories:
-            role = (
-                role_factory(user=user, company=company)
-                if role_factory == DeclarantRoleFactory
-                else role_factory(user=user)
-            )
-            for declaration_factory in declaration_factories:
-                declaration = declaration_factory(company=company)
-                response = self.client.post(reverse("api:abandon", kwargs={"pk": declaration.id}), format="json")
-                self.assertEqual(response.status_code, status.HTTP_200_OK)
-                declaration.refresh_from_db()
-                latest_snapshot = declaration.snapshots.latest("creation_date")
-                self.assertEqual(declaration.status, Declaration.DeclarationStatus.ABANDONED)
-                self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.ABANDON)
-                self.assertEqual(declaration.status, Declaration.DeclarationStatus.ABANDONED)
 
-            role.delete()
+        for declaration_factory in declaration_factories:
+            declaration = declaration_factory(company=company)
+            response = self.client.post(reverse("api:abandon", kwargs={"pk": declaration.id}), format="json")
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            declaration.refresh_from_db()
+            latest_snapshot = declaration.snapshots.latest("creation_date")
+            self.assertEqual(declaration.status, Declaration.DeclarationStatus.ABANDONED)
+            self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.ABANDON)
+            self.assertEqual(declaration.status, Declaration.DeclarationStatus.ABANDONED)
 
     @authenticate
     def test_abandon_declaration_wrong_status(self):
@@ -868,6 +861,32 @@ class TestDeclarationFlow(APITestCase):
         company = CompanyFactory()
         DeclarantRoleFactory(user=authenticate.user, company=company)
 
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:abandon", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.status, Declaration.DeclarationStatus.ABANDONED)
+
+    @authenticate
+    def test_abandon_declaration_instructor(self):
+        """
+        On ne doit pas pouvoir abandoner une déclaration en étant instructrice
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(reverse("api:abandon", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        declaration.refresh_from_db()
+        self.assertNotEqual(declaration.status, Declaration.DeclarationStatus.ABANDONED)
+
+    @authenticate
+    def test_abandon_declaration_visor(self):
+        """
+        On ne doit pas pouvoir abandoner une déclaration en étant viseuse
+        """
+        VisaRoleFactory(user=authenticate.user)
         declaration = OngoingInstructionDeclarationFactory()
 
         response = self.client.post(reverse("api:abandon", kwargs={"pk": declaration.id}), format="json")

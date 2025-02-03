@@ -613,7 +613,7 @@ class DeclarationWithdrawView(DeclarationFlowView):
 
 
 class DeclarationAbandonView(DeclarationFlowView):
-    permission_classes = [(IsInstructor | IsVisor | IsDeclarationAuthor | IsDeclarant)]
+    permission_classes = [(IsDeclarationAuthor | IsDeclarant)]
     transition = "abandon"
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.ABANDON
