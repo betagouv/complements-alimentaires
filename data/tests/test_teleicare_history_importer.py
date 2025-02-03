@@ -171,3 +171,48 @@ class TeleicareHistoryImporterTestCase(TestCase):
             created_declaration.minimum_duration,
             str(version_declaration_to_create_as_declaration.vrsdecl_durabilite),
         )
+
+    @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
+    @patch("data.etl.teleicare_history.extractor.add_product_info_from_teleicare_history")
+    def test_create_declaration_from_history_for_specific_company(
+        self, mocked_add_composition_function, mocked_add_product_function
+    ):
+        """
+        Les déclarations sont créées à partir d'object historiques des modèles Ica_ seulement pour les companies spécifiées
+        """
+        galenic_formulation_id = 1
+        _ = GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
+        unit_id = 1
+        _ = SubstanceUnitFactory(siccrf_id=unit_id)
+        etablissement_to_create_as_company = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
+        matching_company = CompanyFactory(siccrf_id=etablissement_to_create_as_company.etab_ident)
+
+        CA_to_create_as_declaration = ComplementAlimentaireFactory(
+            etab=etablissement_to_create_as_company, frmgal_ident=galenic_formulation_id
+        )
+        declaration_to_create_as_declaration = DeclarationFactory(cplalim=CA_to_create_as_declaration, tydcl_ident=1)
+        version_declaration_to_create_as_declaration = VersionDeclarationFactory(
+            dcl=declaration_to_create_as_declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        other_etablissement = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
+        _ = CompanyFactory(siccrf_id=other_etablissement.etab_ident)
+        other_CA = ComplementAlimentaireFactory(etab=other_etablissement)
+        other_declaration = DeclarationFactory(cplalim=other_CA, tydcl_ident=1)
+        _ = VersionDeclarationFactory(
+            dcl=other_declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            vrsdecl_djr="32 kg of ppo",
+        )
+
+        create_declaration_from_teleicare_history(company_ids=[matching_company.id])
+
+        version_declaration_to_create_as_declaration.refresh_from_db()
+        self.assertEqual(Declaration.objects.all().count(), 1)
+        self.assertEqual(Declaration.objects.all()[0].name, CA_to_create_as_declaration.cplalim_nom)
+        self.assertEqual(Declaration.objects.all()[0].siccrf_id, CA_to_create_as_declaration.cplalim_ident)
+        self.assertEqual(Declaration.objects.filter(siccrf_id=other_CA.cplalim_ident).exists(), False)
