@@ -362,7 +362,7 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
         model.objects.bulk_create(bulk_of_objects)
 
 
-def create_declaration_from_teleicare_history():
+def create_declaration_from_teleicare_history(company_ids=[]):
     """
     Dans Teleicare une entreprise peut-être relié à une déclaration par 3 relations différentes :
     * responsable de l'étiquetage (équivalent Declaration.mandated_company)
@@ -371,10 +371,11 @@ def create_declaration_from_teleicare_history():
     """
     nb_created_declarations = 0
 
+    etab_ids = (Company.objects.all() if not company_ids else Company.objects.filter(id__in=company_ids)).values_list(
+        "siccrf_id", flat=True
+    )
     # Parcourir tous les compléments alimentaires dont l'entreprise déclarante a été matchée
-    for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(
-        etab_id__in=Company.objects.values_list("siccrf_id", flat=True)
-    ):
+    for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(etab_id__in=etab_ids):
         # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
         all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=ica_complement_alimentaire.cplalim_ident)
         # le champ date est stocké en text, il faut donc faire la conversion en python
