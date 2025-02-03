@@ -1,5 +1,11 @@
 <template>
   <li class="border-l-2 border-b pl-4 py-2">
+    <DsfrAlert v-if="treatedRequest" :type="treatedRequest.type" small class="mb-2">
+      <p>{{ treatedRequest.label }}</p>
+      <p v-if="showRequestComment">
+        <i>{{ model.requestPrivateNotes }}</i>
+      </p>
+    </DsfrAlert>
     <div class="md:flex justify-between">
       <div>
         <div class="flex content-center">
@@ -17,17 +23,19 @@
           />
 
           <DsfrBadge v-if="novelFood" label="Novel Food" type="new" class="self-center ml-2" small />
-          <DsfrBadge v-if="requestStatusBadge" v-bind="requestStatusBadge" class="self-center ml-2" small />
+          <DsfrBadge v-if="isRequest" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
+          <DsfrBadge
+            v-if="treatedRequest"
+            label="Demande traitée"
+            class="self-center ml-2 purple-glycine"
+            noIcon
+            small
+          />
           <DsfrBadge v-if="!model.active" label="Non-actif" type="none" class="self-center ml-2" small />
         </div>
         <p class="my-2" v-if="model.active">
           {{ elementInfo }}
         </p>
-        <DsfrAlert v-if="showRequestComment" :type="requestStatusBadge.type" small>
-          <p>
-            {{ model.requestPrivateNotes }}
-          </p>
-        </DsfrAlert>
       </div>
 
       <div v-if="showRequestInspectionLink" class="content-center">
@@ -94,31 +102,33 @@ const isRequest = computed(() => model.value.new || model.value.requestStatus ==
 
 const showRequestInspectionLink = computed(() => isRequest.value && isInstructor.value)
 
-const requestStatusBadge = computed(() => {
-  if (!isRequest.value) return
-  return {
-    REQUESTED: {
-      label: "Nouvel ingrédient",
-      type: "info",
-    },
-    INFORMATION: {
-      label: "Attente d'information",
-      type: "warning",
-    },
-    REJECTED: {
-      label: "Demande refusée",
-      type: "error",
-    },
-    REPLACED: {
-      label: "Demande remplacée",
-      type: "success",
-    },
-  }[model.value.requestStatus]
-})
-
 const showRequestComment = computed(
   () =>
     model.value.requestPrivateNotes &&
     (model.value.requestStatus === "INFORMATION" || model.value.requestStatus === "REJECTED")
 )
+
+const treatedRequest = computed(() => {
+  return {
+    INFORMATION: {
+      label: "Des informations complémentaires sont nécessaires concernant la demande d'ajout d'ingrédient",
+      type: "warning",
+    },
+    REJECTED: {
+      label: "La demande d'ajout d'ingrédient a été refusée",
+      type: "error",
+    },
+    REPLACED: {
+      label: "Demande initiale remplacée dans la composition",
+      type: "info",
+    },
+  }[model.value.requestStatus]
+})
 </script>
+
+<style scoped>
+.purple-glycine.fr-badge :deep() {
+  color: var(--purple-glycine-sun-319-moon-630);
+  background-color: var(--purple-glycine-950-100);
+}
+</style>

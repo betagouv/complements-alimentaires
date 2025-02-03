@@ -52,6 +52,8 @@ module.exports = {
         "ca-aroma": "#a94645",
         "ca-additive": "#006A6F",
         "ca-form-of-supply": "#E4794A",
+        "purple-glycine-950-100": "#FEE7FC",
+        "purple-glycine-sun-319-moon-630": "#6E445A",
       },
     },
     // DSFR breakpoints taken from here:
