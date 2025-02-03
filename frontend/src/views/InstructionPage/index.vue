@@ -43,7 +43,7 @@
           v-if="isAwaitingInstruction"
         />
 
-        <DsfrTabs v-else v-model="selectedTabIndex" ref="tabs" :tab-titles="titles">
+        <DsfrTabs v-else v-model="selectedTabIndex" ref="tabs" :tab-titles="titles" @update:modelValue="selectTab">
           <DsfrTabContent
             v-for="(component, idx) in components"
             :key="`component-${idx}`"
@@ -121,10 +121,11 @@ import DecisionTab from "./DecisionTab"
 import { headers } from "@/utils/data-fetching"
 import DeclarationAlert from "@/components/DeclarationAlert"
 import { tabTitles } from "@/utils/mappings"
-import { useRouter } from "vue-router"
+import { useRouter, useRoute } from "vue-router"
 import DeclarationFromTeleicareAlert from "@/components/DeclarationFromTeleicareAlert.vue"
 
 const router = useRouter()
+const route = useRoute()
 const previousRoute = router.getPreviousRoute()
 
 const store = useRootStore()
@@ -211,7 +212,9 @@ const components = computed(() => {
   return baseComponents
 })
 const titles = computed(() => tabTitles(components.value))
-const selectedTabIndex = ref(0)
+
+const selectedTabIndex = ref(parseInt(route.query.tab))
+const selectTab = async (index) => router.replace({ query: { tab: index } })
 
 const instructDeclaration = async () => {
   const url = `/api/v1/declarations/${props.declarationId}/take-for-instruction/`

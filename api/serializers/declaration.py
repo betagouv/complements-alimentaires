@@ -402,7 +402,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         ]:
             return "Article 15"
         elif obj.article:
-            return obj.article.label
+            return Declaration.Article(obj.article).label
 
     def get_forme_galenique(self, obj):
         return add_enum_or_personnalized_value(obj.galenic_formulation, obj.other_galenic_formulation)
