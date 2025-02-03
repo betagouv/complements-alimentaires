@@ -27,15 +27,15 @@
       </DsfrAlert>
       <DeclarationAlert
         class="mb-6"
-        v-else-if="!canInstruct && !declaration.declaredInTeleicare"
+        v-else-if="!canInstruct && !declaration.teleicareId"
         role="instructor"
         :declaration="declaration"
         :snapshots="snapshots"
       />
-      <DeclarationFromTeleicareAlert v-else-if="declaration.declaredInTeleicare" />
+      <DeclarationFromTeleicareAlert v-else-if="declaration.teleicareId" />
       <div v-if="declaration">
         <DeclarationSummary
-          :allowArticleChange="true"
+          :allowArticleChange="!declaration.teleicareId"
           :useAccordions="true"
           :showElementAuthorization="true"
           :readonly="true"
@@ -43,7 +43,7 @@
           v-if="isAwaitingInstruction"
         />
 
-        <DsfrTabs v-else v-model="selectedTabIndex" ref="tabs" :tab-titles="titles">
+        <DsfrTabs v-else v-model="selectedTabIndex" ref="tabs" :tab-titles="titles" @update:modelValue="selectTab">
           <DsfrTabContent
             v-for="(component, idx) in components"
             :key="`component-${idx}`"
@@ -62,7 +62,7 @@
               :company="company"
               :snapshots="snapshots"
               @decision-done="onDecisionDone"
-              :allowArticleChange="true"
+              :allowArticleChange="!declaration.teleicareId"
             ></component>
           </DsfrTabContent>
         </DsfrTabs>
@@ -74,7 +74,7 @@
           @forward="selectedTabIndex += 1"
           :removeSaveLabel="true"
         >
-          <template v-slot:content v-if="!declaration.declaredInTeleicare">
+          <template v-slot:content v-if="!declaration.teleicareId">
             <h6 class="text-left">
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
@@ -121,10 +121,11 @@ import DecisionTab from "./DecisionTab"
 import { headers } from "@/utils/data-fetching"
 import DeclarationAlert from "@/components/DeclarationAlert"
 import { tabTitles } from "@/utils/mappings"
-import { useRouter } from "vue-router"
-import DeclarationFromTeleicareAlert from "@/components/DeclarationFromTeleicareAlert.vue"
+import { useRouter, useRoute } from "vue-router"
+import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromTeleicareAlert.vue"
 
 const router = useRouter()
+const route = useRoute()
 const previousRoute = router.getPreviousRoute()
 
 const store = useRootStore()
@@ -206,12 +207,14 @@ onMounted(async () => {
 // Tab management
 const components = computed(() => {
   const baseComponents = [IdentityTab, DeclarationSummary]
-  if (!declaration.value.declaredInTeleicare) baseComponents.push(HistoryTab)
+  if (!declaration.value.teleicareId) baseComponents.push(HistoryTab)
   if (canInstruct.value) baseComponents.push(DecisionTab)
   return baseComponents
 })
 const titles = computed(() => tabTitles(components.value))
-const selectedTabIndex = ref(0)
+
+const selectedTabIndex = ref(parseInt(route.query.tab))
+const selectTab = async (index) => router.replace({ query: { tab: index } })
 
 const instructDeclaration = async () => {
   const url = `/api/v1/declarations/${props.declarationId}/take-for-instruction/`

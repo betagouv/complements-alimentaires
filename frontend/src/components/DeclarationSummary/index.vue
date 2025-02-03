@@ -1,5 +1,6 @@
 <template>
   <div>
+    <HistoryBadge v-if="!!payload.teleicareId" class="mb-2" />
     <ArticleInfoRow
       v-model="payload"
       :hideArticle15Subtypes="!allowArticleChange"
@@ -11,6 +12,7 @@
       <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />
     </h3>
     <div>
+      <SummaryInfoSegment v-if="!!payload.teleicareId" label="Identifiant Teleicare" :value="payload.teleicareId" />
       <SummaryInfoSegment label="Nom du produit" :value="payload.name" />
       <SummaryInfoSegment label="Marque" :value="payload.brand" />
       <SummaryInfoSegment label="Gamme" :value="payload.gamme" />
@@ -26,7 +28,7 @@
       <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
       <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
     </div>
-    <div v-if="!payload.declaredInTeleicare">
+    <div v-if="!payload.teleicareId">
       <h3 class="fr-h6 !mt-8">
         Composition
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
@@ -143,6 +145,7 @@ import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRouter } from "vue-router"
 import SummaryModificationButton from "./SummaryModificationButton"
+import HistoryBadge from "../History/HistoryBadge.vue"
 
 const router = useRouter()
 const { units, populations, conditions, effects, galenicFormulations } = storeToRefs(useRootStore())
