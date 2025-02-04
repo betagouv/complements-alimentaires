@@ -73,7 +73,7 @@ import { getPagesForPagination } from "@/utils/components"
 import CompanyDeclarationsTable from "./CompanyDeclarationsTable"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import StatusFilter from "@/components/StatusFilter.vue"
-import HistoryAlert from "@/components/HistoryAlert.vue"
+import HistoryAlert from "@/components/History/HistoryAlert.vue"
 
 const route = useRoute()
 const store = useRootStore()
