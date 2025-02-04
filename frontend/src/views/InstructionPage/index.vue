@@ -27,15 +27,15 @@
       </DsfrAlert>
       <DeclarationAlert
         class="mb-6"
-        v-else-if="!canInstruct && !declaration.teleicareId"
+        v-else-if="!canInstruct && !declaration.siccrfId"
         role="instructor"
         :declaration="declaration"
         :snapshots="snapshots"
       />
-      <DeclarationFromTeleicareAlert v-else-if="declaration.teleicareId" />
+      <DeclarationFromTeleicareAlert v-else-if="declaration.siccrfId" />
       <div v-if="declaration">
         <DeclarationSummary
-          :allowArticleChange="!declaration.teleicareId"
+          :allowArticleChange="!declaration.siccrfId"
           :useAccordions="true"
           :showElementAuthorization="true"
           :readonly="true"
@@ -62,7 +62,7 @@
               :company="company"
               :snapshots="snapshots"
               @decision-done="onDecisionDone"
-              :allowArticleChange="!declaration.teleicareId"
+              :allowArticleChange="!declaration.siccrfId"
             ></component>
           </DsfrTabContent>
         </DsfrTabs>
@@ -74,7 +74,7 @@
           @forward="selectedTabIndex += 1"
           :removeSaveLabel="true"
         >
-          <template v-slot:content v-if="!declaration.teleicareId">
+          <template v-slot:content v-if="!declaration.siccrfId">
             <h6 class="text-left">
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
@@ -208,7 +208,7 @@ onMounted(async () => {
 // Tab management
 const components = computed(() => {
   const baseComponents = [IdentityTab, DeclarationSummary]
-  if (!declaration.value.teleicareId) baseComponents.push(HistoryTab)
+  if (!declaration.value.siccrfId) baseComponents.push(HistoryTab)
   if (canInstruct.value) baseComponents.push(DecisionTab)
   return baseComponents
 })
