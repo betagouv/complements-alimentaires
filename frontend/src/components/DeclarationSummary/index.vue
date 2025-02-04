@@ -7,6 +7,26 @@
       :allowChange="allowArticleChange"
       class="mb-2"
     />
+    <div v-if="useCompactAttachmentView">
+      <h3 class="fr-h6 !mt-8">
+        Pièces jointes
+        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
+      </h3>
+      <div class="grid grid-cols-12 gap-3 mb-8">
+        <div
+          class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 overflow-auto"
+          v-for="(file, index) in payload.attachments"
+          :key="`file-download-${index}`"
+        >
+          <DsfrFileDownload
+            :title="`${file.typeDisplay} : ${file.name}`"
+            :href="file.file"
+            :size="file.size"
+            :format="file.extension?.toUpperCase()"
+          />
+        </div>
+      </div>
+    </div>
     <h3 class="fr-h6">
       Informations sur le produit
       <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />
@@ -111,18 +131,20 @@
       </h3>
       <AddressLine :payload="payload" />
 
-      <h3 class="fr-h6 !mt-8">
-        Pièces jointes
-        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
-      </h3>
-      <div class="grid grid-cols-12 gap-3 mb-8">
-        <FilePreview
-          class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
-          v-for="(file, index) in payload.attachments"
-          :key="`file-${index}`"
-          :file="file"
-          readonly
-        />
+      <div v-if="!useCompactAttachmentView">
+        <h3 class="fr-h6 !mt-8">
+          Pièces jointes
+          <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
+        </h3>
+        <div class="grid grid-cols-12 gap-3 mb-8">
+          <FilePreview
+            class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
+            v-for="(file, index) in payload.attachments"
+            :key="`file-${index}`"
+            :file="file"
+            readonly
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -156,6 +178,7 @@ defineProps({
   allowArticleChange: Boolean,
   useAccordions: Boolean,
   showElementAuthorization: Boolean,
+  useCompactAttachmentView: Boolean,
 })
 const unitInfo = computed(() => {
   if (!payload.value.unitQuantity) return null

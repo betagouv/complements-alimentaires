@@ -1,12 +1,14 @@
 import json
 import logging
 from datetime import timedelta
+from pathlib import Path
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Case, F, Q, Value, When
 from django.db.models.functions import Coalesce
+from django.template.defaultfilters import filesizeformat
 
 from dateutil.relativedelta import relativedelta
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
@@ -808,6 +810,20 @@ class Attachment(Historisable):
     @property
     def has_pdf_extension(self):
         return self.file and self.file.url.endswith(".pdf")
+
+    @property
+    def size(self):
+        try:
+            return self.file and self.file.size and filesizeformat(self.file.size)
+        except Exception as _:
+            return ""
+
+    @property
+    def extension(self):
+        try:
+            return self.file and self.file.name and Path(self.file.size).suffix
+        except Exception as _:
+            return ""
 
     @property
     def type_display(self):
