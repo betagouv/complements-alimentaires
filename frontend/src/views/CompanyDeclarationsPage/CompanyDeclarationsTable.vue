@@ -23,10 +23,10 @@ const headers = ["ID", "Nom du produit", "Entreprise", "Auteur", "État", "Date 
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
-      x.teleicareId ? x.teleicareId : x.id,
+      x.siccrfId ? (x.teleicareId ? x.teleicareId : "") : x.id,
       {
         component: DeclarationName,
-        withHistoryBadge: !!x.teleicareId,
+        withHistoryBadge: !!x.siccrfId,
         text: x.name,
         to: { name: "DeclarationPage", params: { id: x.id } }, // TODO Change to a more enteprisey view
       },

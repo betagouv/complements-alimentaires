@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HistoryBadge v-if="!!payload.teleicareId" class="mb-2" />
+    <HistoryBadge v-if="!!payload.siccrfId" class="mb-2" />
     <ArticleInfoRow
       v-model="payload"
       :hideArticle15Subtypes="!allowArticleChange"
@@ -28,7 +28,7 @@
       <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
       <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
     </div>
-    <div v-if="!payload.teleicareId">
+    <div v-if="!payload.siccrfId">
       <h3 class="fr-h6 !mt-8">
         Composition
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />

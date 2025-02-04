@@ -39,10 +39,10 @@ const rows = computed(() => {
 
   return props.data.results.map((d) => ({
     rowData: [
-      d.teleicareId ? d.teleicareId : d.id,
+      d.siccrfId ? (d.teleicareId ? d.teleicareId : "") : d.id,
       {
         component: DeclarationName,
-        withHistoryBadge: !!d.teleicareId,
+        withHistoryBadge: !!d.siccrfId,
         text: d.name,
         class: "font-medium",
         to: { name: "DeclarationPage", params: { id: d.id } },
@@ -55,7 +55,7 @@ const rows = computed(() => {
       d.author ? `${d.author.firstName} ${d.author.lastName}` : "",
       getStatusTagForCell(d.status, true),
       timeAgo(d.creationDate),
-      d.teleicareId
+      d.siccrfId
         ? ""
         : {
             component: "router-link",

@@ -15,7 +15,7 @@
     </div>
 
     <div v-else class="mb-4">
-      <DeclarationFromTeleicareAlert v-if="payload.teleicareId" />
+      <DeclarationFromTeleicareAlert v-if="payload.siccrfId" />
       <DeclarationAlert
         v-else-if="payload"
         role="declarant"
@@ -26,7 +26,7 @@
 
       <DsfrAlert
         class="mb-4"
-        v-if="payload.id && !payload.author && !payload.teleicareId"
+        v-if="payload.id && !payload.author && !payload.siccrfId"
         type="info"
         title="Cette déclaration n'est gérée par personne"
       >
@@ -35,7 +35,7 @@
       </DsfrAlert>
       <DsfrAlert
         class="mb-4"
-        v-else-if="payload.author && payload.author !== loggedUser.id && !payload.teleicareId"
+        v-else-if="payload.author && payload.author !== loggedUser.id && !payload.siccrfId"
         type="info"
         title="Cette déclaration est gérée par une autre personne"
       >
@@ -209,9 +209,9 @@ const readonly = computed(
 )
 
 const showHistory = computed(
-  () => !payload.value.teleicareId && (readonly.value || (!isNewDeclaration.value && payload.value.status !== "DRAFT"))
+  () => !payload.value.siccrfId && (readonly.value || (!isNewDeclaration.value && payload.value.status !== "DRAFT"))
 )
-const showWithdrawal = computed(() => !payload.value.teleicareId && payload.value.status === "AUTHORIZED")
+const showWithdrawal = computed(() => !payload.value.siccrfId && payload.value.status === "AUTHORIZED")
 
 const components = computed(() => {
   const baseComponents = readonly.value ? [SummaryTab] : [ProductTab, CompositionTab, AttachmentTab, SummaryTab]
