@@ -13,7 +13,7 @@
     </div>
 
     <div v-else class="mb-4">
-      <DeclarationFromTeleicareAlert v-if="payload.declaredInTeleicare" />
+      <DeclarationFromTeleicareAlert v-if="payload.siccrfId" />
       <DeclarationAlert
         v-else-if="payload"
         role="declarant"
@@ -24,7 +24,7 @@
 
       <DsfrAlert
         class="mb-4"
-        v-if="payload.id && !payload.author && !payload.declaredInTeleicare"
+        v-if="payload.id && !payload.author && !payload.siccrfId"
         type="info"
         title="Cette déclaration n'est gérée par personne"
       >
@@ -33,7 +33,7 @@
       </DsfrAlert>
       <DsfrAlert
         class="mb-4"
-        v-else-if="payload.author && payload.author !== loggedUser.id && !payload.declaredInTeleicare"
+        v-else-if="payload.author && payload.author !== loggedUser.id && !payload.siccrfId"
         type="info"
         title="Cette déclaration est gérée par une autre personne"
       >
@@ -122,7 +122,7 @@ import FormWrapper from "@/components/FormWrapper"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { tabTitles } from "@/utils/mappings"
-import DeclarationFromTeleicareAlert from "@/components/DeclarationFromTeleicareAlert.vue"
+import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromTeleicareAlert.vue"
 
 // Il y a deux refs qui stockent des erreurs. $externalResults sert
 // lors qu'on sauvegarde la déclaration (POST ou PUT) mais qu'on ne change
@@ -221,9 +221,9 @@ const readonly = computed(
 )
 
 const showHistory = computed(
-  () => !payload.value.declaredInTeleicare && (readonly.value || (!isNewDeclaration.value && !isDraft.value))
+  () => !payload.value.siccrfId && (readonly.value || (!isNewDeclaration.value && !isDraft.value))
 )
-const showWithdrawal = computed(() => !payload.value.declaredInTeleicare && payload.value.status === "AUTHORIZED")
+const showWithdrawal = computed(() => !payload.value.siccrfId && payload.value.status === "AUTHORIZED")
 
 const components = computed(() => {
   const baseComponents = readonly.value ? [SummaryTab] : [ProductTab, CompositionTab, AttachmentTab, SummaryTab]

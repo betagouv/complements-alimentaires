@@ -44,6 +44,7 @@ module.exports = {
         "warning-950": "#ffe9e6",
         "warning-925": "#ffded9",
         "warning-850": "#ffbeb4",
+        "purple-glycine-950": "#fee7fc",
         "ca-plant": "#18753c",
         "ca-microorganism": "#6E445A",
         "ca-substance": "#465F9D",
