@@ -19,10 +19,10 @@
           :key="`file-download-${index}`"
         >
           <DsfrFileDownload
-            :title="`${file.typeDisplay} : ${file.name}`"
+            :title="`${truncateMiddle(file.name, 22)}`"
             :href="file.file"
             :size="file.size"
-            :format="file.extension?.toUpperCase()"
+            :format="file.typeDisplay"
           />
         </div>
       </div>
@@ -168,6 +168,7 @@ import { storeToRefs } from "pinia"
 import { useRouter } from "vue-router"
 import SummaryModificationButton from "./SummaryModificationButton"
 import HistoryBadge from "../History/HistoryBadge.vue"
+import { truncateMiddle } from "@/utils/string"
 
 const router = useRouter()
 const { units, populations, conditions, effects, galenicFormulations } = storeToRefs(useRootStore())

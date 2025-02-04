@@ -249,7 +249,6 @@ class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
             "type_display",
             "name",
             "size",
-            "extension",
         )
         read_only_fields = ("file",)
 
