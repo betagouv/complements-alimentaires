@@ -20,7 +20,7 @@ import HistoryBadge from "@/components/History/HistoryBadge.vue"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
-const headers = ["ID", "Nom du produit", "Entreprise", "Auteur", "État", "Date de création", "Date de modification"]
+const headers = ["ID", "Nom du produit", "Entreprise", "Auteur", "État", "Date de création"]
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
@@ -39,7 +39,6 @@ const rows = computed(() =>
       x.author ? `${x.author.firstName} ${x.author.lastName}` : "",
       getStatusTagForCell(x.status, true),
       timeAgo(x.creationDate),
-      timeAgo(x.modificationDate),
     ],
   }))
 )
