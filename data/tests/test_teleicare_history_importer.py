@@ -21,6 +21,9 @@ from data.models.declaration import Declaration
 from data.models.teleicare_history.ica_declaration import (
     IcaComplementAlimentaire,
     IcaDeclaration,
+    IcaEffetDeclare,
+    IcaPopulationCibleDeclaree,
+    IcaPopulationRisqueDeclaree,
     IcaVersionDeclaration,
 )
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
@@ -36,7 +39,15 @@ class TeleicareHistoryImporterTestCase(TestCase):
         Adapted from: https://stackoverflow.com/a/49800437
         """
         super().setUp()
-        for table in [IcaEtablissement, IcaComplementAlimentaire, IcaDeclaration, IcaVersionDeclaration]:
+        for table in [
+            IcaEtablissement,
+            IcaComplementAlimentaire,
+            IcaDeclaration,
+            IcaVersionDeclaration,
+            IcaEffetDeclare,
+            IcaPopulationCibleDeclaree,
+            IcaPopulationRisqueDeclaree,
+        ]:
             with connection.schema_editor() as schema_editor:
                 schema_editor.create_model(table)
 
