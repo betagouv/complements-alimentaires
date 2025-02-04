@@ -83,7 +83,7 @@
         :elements="payload.declaredSubstances"
       />
 
-      <p class="font-bold mt-8">Substances contenues dans la composition :</p>
+      <p class="font-bold mt-8" v-if="payload.computedSubstances.length">Substances contenues dans la composition :</p>
       <DsfrAlert
         v-if="replacedRequestsWithSubstances.length"
         type="warning"

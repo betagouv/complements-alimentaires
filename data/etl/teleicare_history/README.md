@@ -17,7 +17,7 @@ done
 
 4. Execute migration scripts in shell
 ~~~
-from data.etl.teleicare_history.extractor import match_companies_on_siret_or_vat, create_declaration_from_teleicare_history
+from data.etl.teleicare_history.extractor import match_companies_on_siret_or_vat, create_declarations_from_teleicare_history
 match_companies_on_siret_or_vat()
-create_declaration_from_teleicare_history()
+create_declarations_from_teleicare_history()
 ~~~
