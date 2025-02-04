@@ -39,7 +39,7 @@ Tous les changements notables apportés aux jeux de données exposés sur data.g
   -mises_en_garde
 
 
-## 2025-01-31
+## 2025-02-04
 
 ## Augmentation des données
 - ajout des champs de compositions des 56160 déclarations historiques importées de TeleIcare :
