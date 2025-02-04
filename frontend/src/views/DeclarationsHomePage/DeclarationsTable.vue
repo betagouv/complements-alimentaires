@@ -15,6 +15,7 @@ import { computed, ref } from "vue"
 import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import CompanyTableCell from "@/components/CompanyTableCell"
+import DeclarationName from "@/components/DeclarationName"
 import { useResizeObserver, useDebounceFn } from "@vueuse/core"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
@@ -23,7 +24,7 @@ const emit = defineEmits("open")
 // Les données pour la table
 const headers = computed(() => {
   if (useShortTable.value) return ["Nom", "État"]
-  return ["ID", "Nom du produit", "Entreprise", "Déclarant·e", "État", "Date de modification", ""]
+  return ["ID", "Nom du produit", "Entreprise", "Déclarant·e", "État", "Date de création", ""]
 })
 
 const rows = computed(() => {
@@ -38,17 +39,10 @@ const rows = computed(() => {
 
   return props.data.results.map((d) => ({
     rowData: [
-      d.declaredInTeleicare
-        ? {
-            component: "DsfrBadge",
-            label: "issue de Teleicare",
-            type: "none",
-            small: true,
-            noIcon: true,
-          }
-        : d.id,
+      d.teleicareId ? d.teleicareId : d.id,
       {
-        component: "router-link",
+        component: DeclarationName,
+        withHistoryBadge: !!d.teleicareId,
         text: d.name,
         class: "font-medium",
         to: { name: "DeclarationPage", params: { id: d.id } },
@@ -60,8 +54,8 @@ const rows = computed(() => {
       },
       d.author ? `${d.author.firstName} ${d.author.lastName}` : "",
       getStatusTagForCell(d.status, true),
-      timeAgo(d.modificationDate),
-      d.declaredInTeleicare
+      timeAgo(d.creationDate),
+      d.teleicareId
         ? ""
         : {
             component: "router-link",

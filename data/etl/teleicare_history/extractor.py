@@ -7,6 +7,7 @@ from django.core.exceptions import MultipleObjectsReturned, ValidationError
 from django.db import IntegrityError, transaction
 
 from phonenumber_field.phonenumber import PhoneNumber
+from phonenumbers import NumberParseException
 
 from data.models import (
     Condition,
@@ -75,8 +76,11 @@ def suppress_autotime(model, fields):
 
 def convert_phone_number(phone_number_to_parse):
     if phone_number_to_parse:
-        phone_number = PhoneNumber.from_string(phone_number_to_parse, region="FR")
-        return phone_number
+        try:
+            phone_number = PhoneNumber.from_string(phone_number_to_parse, region="FR")
+            return phone_number
+        except NumberParseException:
+            return ""
     return ""
 
 
@@ -193,6 +197,20 @@ def convert_str_date(value, aware=False):
         return dt.date()
 
 
+def create_teleicare_id(latest_ica_declaration):
+    if latest_ica_declaration.dcl_annee and latest_ica_declaration.dcl_mois and latest_ica_declaration.dcl_numero:
+        return "-".join(
+            [
+                str(getattr(latest_ica_declaration, field))
+                for field in [
+                    "dcl_annee",
+                    "dcl_mois",
+                    "dcl_numero",
+                ]
+            ]
+        )
+
+
 # Pour les déclarations TeleIcare, le status correspond au champ IcaVersionDeclaration.stattdcl_ident
 DECLARATION_STATUS_MAPPING = {
     1: Declaration.DeclarationStatus.ONGOING_INSTRUCTION,  # 'en cours'
@@ -262,7 +280,7 @@ def add_product_info_from_teleicare_history(declaration, vrsdecl_ident):
     """
     Cette function importe les champs ManyToMany des déclarations, relatifs à l'onglet "Produit"
     Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
-    `create_declaration_from_teleicare_history` pour updater leurs champs ManyToMany.
+    `create_declarations_from_teleicare_history` pour updater leurs champs ManyToMany.
     """
     declaration.effects.set(
         [
@@ -289,7 +307,7 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
     """
     Cette function importe les champs ManyToMany des déclarations, relatifs à l'onglet "Composition"
     Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
-    `create_declaration_from_teleicare_history` pour updater leurs champs ManyToMany.
+    `create_declarations_from_teleicare_history` pour updater leurs champs ManyToMany.
     """
     bulk_ingredients = {DeclaredPlant: [], DeclaredMicroorganism: [], DeclaredIngredient: [], ComputedSubstance: []}
     for ingredient in IcaIngredient.objects.filter(vrsdecl_ident=vrsdecl_ident):
@@ -332,7 +350,7 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
         model.objects.bulk_create(bulk_of_objects)
 
 
-def create_declaration_from_teleicare_history():
+def create_declarations_from_teleicare_history(company_ids=[]):
     """
     Dans Teleicare une entreprise peut-être relié à une déclaration par 3 relations différentes :
     * responsable de l'étiquetage (équivalent Declaration.mandated_company)
@@ -341,10 +359,11 @@ def create_declaration_from_teleicare_history():
     """
     nb_created_declarations = 0
 
+    etab_ids = (Company.objects.all() if not company_ids else Company.objects.filter(id__in=company_ids)).values_list(
+        "siccrf_id", flat=True
+    )
     # Parcourir tous les compléments alimentaires dont l'entreprise déclarante a été matchée
-    for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(
-        etab_id__in=Company.objects.values_list("siccrf_id", flat=True)
-    ):
+    for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(etab_id__in=etab_ids):
         # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
         all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=ica_complement_alimentaire.cplalim_ident)
         # le champ date est stocké en text, il faut donc faire la conversion en python
@@ -383,6 +402,7 @@ def create_declaration_from_teleicare_history():
                     if latest_ica_declaration.dcl_date_fin_commercialisation
                     else declaration_creation_date,
                     siccrf_id=ica_complement_alimentaire.cplalim_ident,
+                    teleicare_id=create_teleicare_id(latest_ica_declaration),
                     galenic_formulation=GalenicFormulation.objects.get(
                         siccrf_id=ica_complement_alimentaire.frmgal_ident
                     ),
