@@ -85,6 +85,7 @@
       <hr class="mt-6" />
       <DeletionModal
         @delete="deleteDeclaration"
+        v-if="showDeletionModal"
         class="mb-4"
         :buttonLabel="isDraft ? 'Supprimer mon brouillon' : 'Abandonner cette déclaration'"
         :helperText="isDraft ? 'Votre déclaration est en brouillon' : ''"
@@ -297,6 +298,19 @@ const submitPayload = async (comment) => {
     router.replace({ name: "DeclarationsHomePage" })
   }
 }
+
+const showDeletionModal = computed(() => {
+  const statuses = [
+    "DRAFT",
+    "AWAITING_INSTRUCTION",
+    "ONGOING_INSTRUCTION",
+    "AWAITING_VISA",
+    "ONGOING_VISA",
+    "OBJECTION",
+    "OBSERVATION",
+  ]
+  return statuses.indexOf(payload.value?.status) > -1
+})
 
 const deleteDeclaration = async () => {
   if (requestInProgress.value) return
