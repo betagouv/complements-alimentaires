@@ -295,7 +295,7 @@ def add_product_info_from_teleicare_history(declaration, vrsdecl_ident):
     """
     Cette function importe les champs ManyToMany des déclarations, relatifs à l'onglet "Produit"
     Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
-    `create_declaration_from_teleicare_history` pour updater leurs champs ManyToMany.
+    `create_declarations_from_teleicare_history` pour updater leurs champs ManyToMany.
     """
     # TODO: other_conditions=conditions_not_recommended,
     # TODO: other_effects=
@@ -319,7 +319,7 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
     """
     Cette function importe les champs ManyToMany des déclarations, relatifs à l'onglet "Composition"
     Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
-    `create_declaration_from_teleicare_history` pour updater leurs champs ManyToMany.
+    `create_declarations_from_teleicare_history` pour updater leurs champs ManyToMany.
     """
     bulk_ingredients = {DeclaredPlant: [], DeclaredMicroorganism: [], DeclaredIngredient: [], ComputedSubstance: []}
     for ingredient in IcaIngredient.objects.filter(vrsdecl_ident=vrsdecl_ident):
@@ -362,7 +362,7 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
         model.objects.bulk_create(bulk_of_objects)
 
 
-def create_declaration_from_teleicare_history(company_ids=[]):
+def create_declarations_from_teleicare_history(company_ids=[]):
     """
     Dans Teleicare une entreprise peut-être relié à une déclaration par 3 relations différentes :
     * responsable de l'étiquetage (équivalent Declaration.mandated_company)

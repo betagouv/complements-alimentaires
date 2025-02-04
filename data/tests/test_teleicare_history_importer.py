@@ -4,7 +4,7 @@ from django.db import connection
 from django.test import TestCase
 
 from data.etl.teleicare_history.extractor import (
-    create_declaration_from_teleicare_history,
+    create_declarations_from_teleicare_history,
     match_companies_on_siret_or_vat,
 )
 from data.factories.company import CompanyFactory, _make_siret, _make_vat
@@ -125,7 +125,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
     @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
     @patch("data.etl.teleicare_history.extractor.add_product_info_from_teleicare_history")
-    def test_create_declaration_from_history(self, mocked_add_composition_function, mocked_add_product_function):
+    def test_create_declarations_from_history(self, mocked_add_composition_function, mocked_add_product_function):
         """
         Les déclarations sont créées à partir d'object historiques des modèles Ica_
         """
@@ -148,7 +148,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
         )
 
         match_companies_on_siret_or_vat(create_if_not_exist=True)
-        create_declaration_from_teleicare_history()
+        create_declarations_from_teleicare_history()
 
         version_declaration_to_create_as_declaration.refresh_from_db()
         created_declaration = Declaration.objects.get(siccrf_id=CA_to_create_as_declaration.cplalim_ident)
@@ -174,7 +174,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
     @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
     @patch("data.etl.teleicare_history.extractor.add_product_info_from_teleicare_history")
-    def test_create_declaration_from_history_for_specific_company(
+    def test_create_declarations_from_history_for_specific_company(
         self, mocked_add_composition_function, mocked_add_product_function
     ):
         """
@@ -209,7 +209,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             vrsdecl_djr="32 kg of ppo",
         )
 
-        create_declaration_from_teleicare_history(company_ids=[matching_company.id])
+        create_declarations_from_teleicare_history(company_ids=[matching_company.id])
 
         version_declaration_to_create_as_declaration.refresh_from_db()
         self.assertEqual(Declaration.objects.all().count(), 1)
