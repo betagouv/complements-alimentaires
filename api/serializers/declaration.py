@@ -559,6 +559,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "teleicare_id",
+            "siccrf_id",
             "article",
             "status",
             "author",
