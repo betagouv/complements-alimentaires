@@ -16,7 +16,6 @@ import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import CompanyTableCell from "@/components/CompanyTableCell"
 import DeclarationName from "@/components/DeclarationName.vue"
-import HistoryBadge from "@/components/History/HistoryBadge.vue"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
