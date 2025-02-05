@@ -9,6 +9,7 @@ from data.factories import (
     MicroorganismFactory,
     PlantFactory,
     PlantPartFactory,
+    PlantFamilyFactory,
     SubstanceFactory,
 )
 from data.models import IngredientType, Plant
@@ -211,15 +212,19 @@ class TestElementsFetchApi(APITestCase):
 class TestElementsCreateApi(APITestCase):
     # TODO: test permissions
     def test_create_single_plant(self):
+        family = PlantFamilyFactory.create()
         part_1 = PlantPartFactory.create()
         part_2 = PlantPartFactory.create()
         substance = SubstanceFactory.create()
         self.assertEqual(Plant.objects.count(), 0)
         payload = {
             "caName": "My new plant",
+            "caFamily": family.id,
             "synonyms": [{"name": "A latin name"}, {"name": "A latin name"}, {"name": "A second one"}],
             "plantParts": [part_1.id, part_2.id],
             "substances": [substance.id],
+            "ca_public_comments": "Test",
+            "ca_private_comments": "Test private",
         }
         response = self.client.post(reverse("api:plant_list"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -228,10 +233,13 @@ class TestElementsCreateApi(APITestCase):
         self.assertIn("id", body)
         plant = Plant.objects.get(id=body["id"])
         self.assertEqual(plant.name, "My new plant")
+        self.assertEqual(plant.family, family)
         self.assertEqual(plant.plantsynonym_set.count(), 2)  # deduplication of synonym
         self.assertTrue(plant.plantsynonym_set.filter(name="A latin name").exists())
         self.assertTrue(plant.plantsynonym_set.filter(name="A second one").exists())
         self.assertEqual(plant.plant_parts.count(), 2)
         self.assertEqual(plant.substances.count(), 1)
+        self.assertEqual(plant.public_comments, "Test")
+        self.assertEqual(plant.private_comments, "Test private")
 
     # TODO: also prevent the addition of a synonym that matches original name?

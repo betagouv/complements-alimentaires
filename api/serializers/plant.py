@@ -95,10 +95,10 @@ class PlantModificationSerializer(serializers.ModelSerializer):
             "id",
             "ca_name",
             "name",
-            # "family",
+            "ca_family",
             "plant_parts",
             "synonyms",
-            "substances",
+            "substances",  # TODO: should I be setting ca_is_related?
             "ca_public_comments",
             "public_comments",
             "ca_private_comments",
