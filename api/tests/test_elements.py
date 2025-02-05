@@ -252,11 +252,6 @@ class TestElementsCreateApi(APITestCase):
 
     @authenticate
     def test_cannot_create_single_plant_not_authorized(self):
-        payload = {
-            "caName": "My new plant",
-            "plantParts": [PlantPartFactory.create().id],
-            "synonyms": [],
-            "substances": [],
-        }
+        payload = {"caName": "My new plant"}
         response = self.client.post(reverse("api:plant_list"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
