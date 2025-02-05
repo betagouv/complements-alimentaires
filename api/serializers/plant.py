@@ -104,7 +104,7 @@ class PlantModificationSerializer(serializers.ModelSerializer):
             "ca_private_comments",
             "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
             "activity",
-            # "status",
+            "ca_status",
             "novel_food",
             # "history",
         )

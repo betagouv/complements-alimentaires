@@ -12,7 +12,7 @@ from data.factories import (
     PlantFamilyFactory,
     SubstanceFactory,
 )
-from data.models import IngredientType, Plant
+from data.models import IngredientType, Plant, IngredientStatus
 
 from .utils import authenticate
 
@@ -220,6 +220,7 @@ class TestElementsCreateApi(APITestCase):
         payload = {
             "caName": "My new plant",
             "caFamily": family.id,
+            "caStatus": IngredientStatus.AUTHORIZED,  # TODO: est-ce qu'on a besoin de soutenir les quatre valeurs ?
             "synonyms": [{"name": "A latin name"}, {"name": "A latin name"}, {"name": "A second one"}],
             "plantParts": [part_1.id, part_2.id],
             "substances": [substance.id],
@@ -241,5 +242,6 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(plant.substances.count(), 1)
         self.assertEqual(plant.public_comments, "Test")
         self.assertEqual(plant.private_comments, "Test private")
+        self.assertEqual(plant.status, IngredientStatus.AUTHORIZED)
 
     # TODO: also prevent the addition of a synonym that matches original name?
