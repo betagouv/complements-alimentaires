@@ -13,6 +13,7 @@ urlpatterns = {
     path("webinars/", views.WebinarView.as_view(), name="webinar_list"),
     # Ingredients
     path("search/", views.SearchView.as_view(), name="search"),
+    path("plants/", views.PlantCreateView.as_view(), name="plant_list"),
     path("plants/<int:pk>", views.PlantRetrieveView.as_view(), name="single_plant"),
     path("plant-parts/", views.PlantPartListView.as_view(), name="plant_part_list"),
     path("other-ingredients/<int:pk>", views.IngredientRetrieveView.as_view(), name="single_ingredient"),

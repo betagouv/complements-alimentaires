@@ -209,10 +209,11 @@ class TestElementsFetchApi(APITestCase):
 
 
 class TestElementsCreateApi(APITestCase):
+    # TODO: test permissions
     def test_create_single_plant(self):
         self.assertEqual(Plant.objects.count(), 0)
-        payload = {"name": "My new plant"}
-        response = self.client.post(reverse("api:plant_list"), payload)
+        payload = {"caName": "My new plant"}
+        response = self.client.post(reverse("api:plant_list"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         body = response.json()
 

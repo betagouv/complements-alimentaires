@@ -75,3 +75,32 @@ class PlantSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
             "history",
         )
         read_only_fields = fields
+
+
+class PlantModificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Plant
+        fields = (
+            "id",
+            "ca_name",
+            "name",
+            # "family",
+            # "plant_parts",
+            # "synonyms",
+            # "substances",
+            "ca_public_comments",
+            "public_comments",
+            "ca_private_comments",
+            "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
+            "activity",
+            # "status",
+            "novel_food",
+            # "history",
+        )
+        read_only = (
+            "id",
+            "name",
+            "public_comments",
+            "private_comments",
+            "activity",
+        )
