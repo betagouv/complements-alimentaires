@@ -213,11 +213,13 @@ class TestElementsCreateApi(APITestCase):
     def test_create_single_plant(self):
         part_1 = PlantPartFactory.create()
         part_2 = PlantPartFactory.create()
+        substance = SubstanceFactory.create()
         self.assertEqual(Plant.objects.count(), 0)
         payload = {
             "caName": "My new plant",
             "synonyms": [{"name": "A latin name"}, {"name": "A latin name"}, {"name": "A second one"}],
             "plantParts": [part_1.id, part_2.id],
+            "substances": [substance.id],
         }
         response = self.client.post(reverse("api:plant_list"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -230,5 +232,6 @@ class TestElementsCreateApi(APITestCase):
         self.assertTrue(plant.plantsynonym_set.filter(name="A latin name").exists())
         self.assertTrue(plant.plantsynonym_set.filter(name="A second one").exists())
         self.assertEqual(plant.plant_parts.count(), 2)
+        self.assertEqual(plant.substances.count(), 1)
 
     # TODO: also prevent the addition of a synonym that matches original name?

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 
 from api.utils.choice_field import GoodReprChoiceField
-from data.models import IngredientStatus, Part, Plant, PlantFamily, PlantPart, PlantSynonym
+from data.models import IngredientStatus, Part, Plant, PlantFamily, PlantPart, PlantSynonym, Substance
 
 from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
@@ -87,6 +87,7 @@ class PlantSynonymModificationSerializer(serializers.ModelSerializer):
 class PlantModificationSerializer(serializers.ModelSerializer):
     synonyms = PlantSynonymModificationSerializer(many=True, source="plantsynonym_set")
     plant_parts = serializers.PrimaryKeyRelatedField(many=True, queryset=PlantPart.objects.all())
+    substances = serializers.PrimaryKeyRelatedField(many=True, queryset=Substance.objects.all())
 
     class Meta:
         model = Plant
@@ -97,7 +98,7 @@ class PlantModificationSerializer(serializers.ModelSerializer):
             # "family",
             "plant_parts",
             "synonyms",
-            # "substances",
+            "substances",
             "ca_public_comments",
             "public_comments",
             "ca_private_comments",
