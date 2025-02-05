@@ -210,8 +210,13 @@ class TestElementsFetchApi(APITestCase):
 
 
 class TestElementsCreateApi(APITestCase):
-    # TODO: test permissions
+    @authenticate
     def test_create_single_plant(self):
+        """
+        Une instructrice peut créer une nouvelle plante avec des synonymes
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
         family = PlantFamilyFactory.create()
         part_1 = PlantPartFactory.create()
         part_2 = PlantPartFactory.create()
@@ -221,6 +226,7 @@ class TestElementsCreateApi(APITestCase):
             "caName": "My new plant",
             "caFamily": family.id,
             "caStatus": IngredientStatus.AUTHORIZED,  # TODO: est-ce qu'on a besoin de soutenir les quatre valeurs ?
+            # TODO: also prevent the addition of a synonym that matches original name?
             "synonyms": [{"name": "A latin name"}, {"name": "A latin name"}, {"name": "A second one"}],
             "plantParts": [part_1.id, part_2.id],
             "substances": [substance.id],
@@ -244,4 +250,13 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(plant.private_comments, "Test private")
         self.assertEqual(plant.status, IngredientStatus.AUTHORIZED)
 
-    # TODO: also prevent the addition of a synonym that matches original name?
+    @authenticate
+    def test_cannot_create_single_plant_not_authorized(self):
+        payload = {
+            "caName": "My new plant",
+            "plantParts": [PlantPartFactory.create().id],
+            "synonyms": [],
+            "substances": [],
+        }
+        response = self.client.post(reverse("api:plant_list"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
