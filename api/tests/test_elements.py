@@ -234,8 +234,8 @@ class TestElementsCreateApi(APITestCase):
             ],
             "plantParts": [part_1.id, part_2.id],
             "substances": [substance.id],
-            "ca_public_comments": "Test",
-            "ca_private_comments": "Test private",
+            "caPublicComments": "Test",
+            "caPrivateComments": "Test private",
         }
         response = self.client.post(reverse("api:plant_list"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

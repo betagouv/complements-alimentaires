@@ -102,18 +102,15 @@ class PlantModificationSerializer(serializers.ModelSerializer):
             "ca_public_comments",
             "public_comments",
             "ca_private_comments",
-            "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
-            "activity",
+            "private_comments",
             "ca_status",
             "novel_food",
-            # "history",
         )
         read_only = (
             "id",
             "name",
             "public_comments",
             "private_comments",
-            "activity",
         )
 
     # DRF ne gère pas automatiquement la création des nested-fields :
