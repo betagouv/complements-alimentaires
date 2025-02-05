@@ -86,6 +86,7 @@ class PlantSynonymModificationSerializer(serializers.ModelSerializer):
 
 class PlantModificationSerializer(serializers.ModelSerializer):
     synonyms = PlantSynonymModificationSerializer(many=True, source="plantsynonym_set")
+    plant_parts = serializers.PrimaryKeyRelatedField(many=True, queryset=PlantPart.objects.all())
 
     class Meta:
         model = Plant
@@ -94,7 +95,7 @@ class PlantModificationSerializer(serializers.ModelSerializer):
             "ca_name",
             "name",
             # "family",
-            # "plant_parts",
+            "plant_parts",
             "synonyms",
             # "substances",
             "ca_public_comments",
@@ -118,7 +119,7 @@ class PlantModificationSerializer(serializers.ModelSerializer):
     # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
     def create(self, validated_data):
         synonyms = validated_data.pop("plantsynonym_set", [])
-        plant = Plant.objects.create(**validated_data)
+        plant = super().create(validated_data)
 
         synonym_model = PlantSynonym
         for synonym in synonyms:
