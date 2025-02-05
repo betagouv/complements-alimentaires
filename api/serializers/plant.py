@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ParseError
 
 from api.utils.choice_field import GoodReprChoiceField
 from data.models import IngredientStatus, Part, Plant, PlantFamily, PlantPart, PlantSynonym
@@ -77,7 +78,15 @@ class PlantSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
         read_only_fields = fields
 
 
+class PlantSynonymModificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlantSynonym
+        fields = ("name",)
+
+
 class PlantModificationSerializer(serializers.ModelSerializer):
+    synonyms = PlantSynonymModificationSerializer(many=True, source="plantsynonym_set")
+
     class Meta:
         model = Plant
         fields = (
@@ -86,7 +95,7 @@ class PlantModificationSerializer(serializers.ModelSerializer):
             "name",
             # "family",
             # "plant_parts",
-            # "synonyms",
+            "synonyms",
             # "substances",
             "ca_public_comments",
             "public_comments",
@@ -104,3 +113,20 @@ class PlantModificationSerializer(serializers.ModelSerializer):
             "private_comments",
             "activity",
         )
+
+    # DRF ne gère pas automatiquement la création des nested-fields :
+    # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
+    def create(self, validated_data):
+        synonyms = validated_data.pop("plantsynonym_set", [])
+        plant = Plant.objects.create(**validated_data)
+
+        synonym_model = PlantSynonym
+        for synonym in synonyms:
+            try:
+                name = synonym["name"]
+                if name and not synonym_model.objects.filter(name=name).exists():
+                    synonym_model.objects.create(standard_name=plant, name=name)
+            except KeyError:
+                raise ParseError(detail="Must provide 'name' to create new synonym")
+
+        return plant

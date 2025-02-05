@@ -212,7 +212,10 @@ class TestElementsCreateApi(APITestCase):
     # TODO: test permissions
     def test_create_single_plant(self):
         self.assertEqual(Plant.objects.count(), 0)
-        payload = {"caName": "My new plant"}
+        payload = {
+            "caName": "My new plant",
+            "synonyms": [{"name": "A latin name"}, {"name": "A latin name"}, {"name": "A second one"}],
+        }
         response = self.client.post(reverse("api:plant_list"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         body = response.json()
@@ -220,3 +223,8 @@ class TestElementsCreateApi(APITestCase):
         self.assertIn("id", body)
         plant = Plant.objects.get(id=body["id"])
         self.assertEqual(plant.name, "My new plant")
+        self.assertEqual(plant.plantsynonym_set.count(), 2)  # deduplication of synonym
+        self.assertTrue(plant.plantsynonym_set.filter(name="A latin name").exists())
+        self.assertTrue(plant.plantsynonym_set.filter(name="A second one").exists())
+
+    # TODO: also prevent the addition of a synonym that matches original name?
