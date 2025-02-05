@@ -193,6 +193,7 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
         synonyms = request.data.get("synonyms", [])
         replacement_type_attribute = new_type.get("attribute", replacement_type)
         replacement_element = getattr(declared_element, replacement_type_attribute)
+        # TODO: refactor to share logic with create/update ingredient endpoints?
         for synonym in synonyms:
             try:
                 name = synonym["name"]

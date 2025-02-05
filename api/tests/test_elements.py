@@ -226,8 +226,12 @@ class TestElementsCreateApi(APITestCase):
             "caName": "My new plant",
             "caFamily": family.id,
             "caStatus": IngredientStatus.AUTHORIZED,  # TODO: est-ce qu'on a besoin de soutenir les quatre valeurs ?
-            # TODO: also prevent the addition of a synonym that matches original name?
-            "synonyms": [{"name": "A latin name"}, {"name": "A latin name"}, {"name": "A second one"}],
+            "synonyms": [
+                {"name": "A latin name"},
+                {"name": "A latin name"},
+                {"name": "A second one"},
+                {"name": "My new plant"},
+            ],
             "plantParts": [part_1.id, part_2.id],
             "substances": [substance.id],
             "ca_public_comments": "Test",

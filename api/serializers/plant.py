@@ -126,7 +126,7 @@ class PlantModificationSerializer(serializers.ModelSerializer):
         for synonym in synonyms:
             try:
                 name = synonym["name"]
-                if name and not synonym_model.objects.filter(name=name).exists():
+                if name and name != plant.name and not synonym_model.objects.filter(name=name).exists():
                     synonym_model.objects.create(standard_name=plant, name=name)
             except KeyError:
                 raise ParseError(detail="Must provide 'name' to create new synonym")
