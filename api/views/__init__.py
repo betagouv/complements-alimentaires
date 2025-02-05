@@ -34,7 +34,7 @@ from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
 from .preparation import PreparationListView
 from .ingredient import IngredientRetrieveView
-from .microorganism import MicroorganismRetrieveView
+from .microorganism import MicroorganismRetrieveView, MicroorganismCreateView
 from .newsletter import SubscribeNewsletter
 from .plant import PlantPartListView, PlantRetrieveView, PlantCreateView
 from .population import PopulationListView

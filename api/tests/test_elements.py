@@ -12,7 +12,7 @@ from data.factories import (
     PlantFamilyFactory,
     SubstanceFactory,
 )
-from data.models import IngredientType, Plant, IngredientStatus
+from data.models import IngredientType, Plant, IngredientStatus, Microorganism
 
 from .utils import authenticate
 
@@ -258,4 +258,47 @@ class TestElementsCreateApi(APITestCase):
     def test_cannot_create_single_plant_not_authorized(self):
         payload = {"caName": "My new plant"}
         response = self.client.post(reverse("api:plant_list"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_create_single_microorganism(self):
+        """
+        Une instructrice peut créer un nouveau microorganisme avec des synonymes
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        substance = SubstanceFactory.create()
+        self.assertEqual(Microorganism.objects.count(), 0)
+        payload = {
+            "caGenus": "My new microorganism",
+            "caSpecies": "A species",
+            "caStatus": IngredientStatus.AUTHORIZED,  # TODO: est-ce qu'on a besoin de soutenir les quatre valeurs ?
+            "synonyms": [
+                {"name": "A latin name"},
+                {"name": "A second one"},
+            ],
+            "substances": [substance.id],
+            "caPublicComments": "Test",
+            "caPrivateComments": "Test private",
+        }
+        response = self.client.post(reverse("api:microorganism_list"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        body = response.json()
+
+        self.assertIn("id", body)
+        microorganism = Microorganism.objects.get(id=body["id"])
+        self.assertEqual(microorganism.genus, "My new microorganism")
+        self.assertEqual(microorganism.species, "A species")
+        self.assertEqual(microorganism.microorganismsynonym_set.count(), 2)  # deduplication of synonym
+        self.assertTrue(microorganism.microorganismsynonym_set.filter(name="A latin name").exists())
+        self.assertTrue(microorganism.microorganismsynonym_set.filter(name="A second one").exists())
+        self.assertEqual(microorganism.substances.count(), 1)
+        self.assertEqual(microorganism.public_comments, "Test")
+        self.assertEqual(microorganism.private_comments, "Test private")
+        self.assertEqual(microorganism.status, IngredientStatus.AUTHORIZED)
+
+    @authenticate
+    def test_cannot_create_single_microorganism_not_authorized(self):
+        payload = {"caName": "My new microorganism"}
+        response = self.client.post(reverse("api:microorganism_list"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

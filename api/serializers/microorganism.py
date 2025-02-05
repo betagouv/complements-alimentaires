@@ -6,6 +6,12 @@ from data.models import IngredientStatus, Microorganism, MicroorganismSynonym
 from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
 from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
+from .common_ingredient import (
+    COMMON_FIELDS,
+    COMMON_READ_ONLY_FIELDS,
+    CommonIngredientModificationSerializer,
+    WithSubstances,
+)
 
 
 class MicroorganismSynonymSerializer(serializers.ModelSerializer):
@@ -41,3 +47,25 @@ class MicroorganismSerializer(HistoricalModelSerializer, PrivateFieldsSerializer
             "history",
         )
         read_only_fields = fields
+
+
+class MicroorganismSynonymModificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MicroorganismSynonym
+        fields = ("name",)
+
+
+class MicroorganismModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
+    synonyms = MicroorganismSynonymModificationSerializer(many=True, source="microorganismsynonym_set")
+
+    synonym_model = MicroorganismSynonym
+    synonym_set_field_name = "microorganismsynonym_set"
+
+    class Meta:
+        model = Microorganism
+        fields = COMMON_FIELDS + (
+            "ca_genus",
+            "ca_species",
+            "substances",  # TODO: should I be setting ca_is_related?
+        )
+        read_only = COMMON_READ_ONLY_FIELDS
