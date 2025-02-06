@@ -73,30 +73,29 @@
     },
     {
       "constraints": {
-        "pattern": "^[0-9]{14}$",
-        "required": true
+        "pattern": "^[0-9]{14}$"
       },
-      "description": "Siret de l'entreprise responsable de la mise sur le marché du complément alimentaire",
+      "description": "Siret de l'entreprise responsable de la mise sur le marché du complément alimentaire.",
       "example": "11007001800012",
       "name": "siret_responsable_mise_sur_marche",
       "title": "Siret responsable de la mise sur le marché",
-      "type": "integer"
+      "type": "string"
     },
     {
       "constraints": {
         "enum": [
-          "15",
-          "16",
-          "17",
-          "18"
+          "Article 15",
+          "Article 16",
+          "Article 17",
+          "Article 18"
         ],
         "required": true
       },
       "description": "Réference de l'article juridique qui encadre la déclaration du produit. La déclaration du complément ne suit pas la même procédure en fonction de l'article dans lequel il tombe. Voir sur : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000638341",
-      "example": "15",
+      "example": "Article 15",
       "name": "article_procedure",
       "title": "Article de procédure",
-      "type": "integer"
+      "type": "string"
     },
     {
       "constraints": {
@@ -135,7 +134,7 @@
     {
       "description": "Objectifs du complément alimentaire (fourni par le fabricant)",
       "name": "objectif_effet",
-      "type": "array"
+      "type": "string"
     },
     {
       "description": "Arômes (fourni par le fabricant)",
@@ -149,74 +148,64 @@
       "example": "Hypertension, Maladie rénale",
       "name": "facteurs_risques",
       "title": "facteurs_risques",
-      "type": "array"
+      "type": "string"
     },
     {
       "description": "Les populations ciblées par le complément alimentaire déclaré. Le fabricant choisi parmi une liste fournie par Compl'Alim",
       "example": "Femmes enceintes, Femmes allaitantes",
       "name": "populations_cibles",
       "title": "Population cibles",
-      "type": "array"
+      "type": "string"
     },
     {
       "description": "Liste des plantes actives composants le complément alimentaire. Pour chaque plante nous retrouvons son nom en latin, sa famille, la partie utilisée ainsi que la quantité par DJR.",
       "example": "{'nom': 'Juglans regia L.', 'partie': 'Fleur', 'preparation': 'Alcoolat', 'quantité_par_djr': '2', 'unité': 'ml'}",
       "name": "plantes",
       "title": "Plantes",
-      "type": "array"
+      "type": "string"
     },
     {
       "description": "Liste des plantes/autres ingrédients inactifs composants le complément alimentaire. Pour chaque plante nous retrouvons son nom en latin, sa famille et la partie utilisée",
       "example": "carotte, miel, fibre",
       "name": "ingredients_inactifs",
       "title": "Ingrédients inactifs",
-      "type": "array"
+      "type": "string"
     },
     {
       "description": "Micro organismes composants le complément alimentaire. Si le micro-organisme a été inactivé, il n'est pas nécessaire de renseigner la quantité.",
       "example": "{'genre': 'Lactobacillus', 'espèce': 'lactis', 'souche': '', 'quantité_par_djr': '2', 'unité': 'cfu', 'inactivé': 'True'}",
       "name": "micro_organismes",
-      "type": "array"
+      "type": "string"
     },
     {
       "description": "Additifs",
       "example": "E416",
       "name": "additifs",
-      "type": "array"
+      "type": "string"
     },
     {
       "description": "Nutriments (ou forme d'apports)",
       "example": "Cyanocobalamine",
       "name": "nutriments",
-      "type": "array"
+      "type": "string"
     },
     {
       "description": "Autres ingrédients actifs",
       "example": "dextrine",
       "name": "autres_ingredients_actifs",
       "title": "Autres ingredients actifs",
-      "type": "array"
+      "type": "string"
     },
     {
       "description": "Substances (composant actif)",
       "example": "['nom': 'cafféine', 'quantité_par_djr': '2', 'unité': 'ml']",
       "name": "substances",
       "title": "Substances",
-      "type": "array"
-    },
-    {
-      "description": "Lien vers une image de l'étiquette (limité à 4Mb)",
-      "example": "www.lienverslimage.com",
-      "name": "etiquette",
-      "title": "Etiquette",
       "type": "string"
     }
   ],
-  "format": "csv",
   "homepage": "https://github.com/betagouv/complements-alimentaires",
-  "mediatype": "text/csv",
   "name": "liste-des-complements-alimentaires-declares",
   "path": "https://raw.githubusercontent.com/betagouv/complements-alimentaires/refs/heads/staging/data/schemas/schema_declarations.json",
-  "scheme": "file",
-  "type": "table"
+  "title": "Schema export des déclarations de compléments alimentaires"
 }
