@@ -478,9 +478,12 @@ class Declaration(Historisable, TimeStampable):
     @property
     def acceptation_date(self):
         if self.status == Declaration.DeclarationStatus.AUTHORIZED:
-            latest_snapshot = self.snapshots.filter(creation_date__isnull=False).latest("creation_date")
-            if latest_snapshot:
-                return latest_snapshot.creation_date.strftime('"%Y-%m-%d"')
+            if self.snapshots.exists():  ## Déclaration complalim
+                latest_snapshot = self.snapshots.filter(creation_date__isnull=False).latest("creation_date")
+                if latest_snapshot:
+                    return latest_snapshot.creation_date
+            else:  ## Déclaration Téléicare
+                return self.creation_date
 
     def assign_calculated_article(self):
         """
