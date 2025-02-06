@@ -105,7 +105,7 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
             + (
                 "ca_family",
                 "plant_parts",
-                "substances",  # TODO: should I be setting ca_is_related?
+                "substances",
             )
         )
         read_only = COMMON_READ_ONLY_FIELDS
