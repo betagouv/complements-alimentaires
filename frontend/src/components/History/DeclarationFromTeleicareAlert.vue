@@ -4,7 +4,7 @@
       <p>L'import de l'historique est en cours. Les informations suivantes arriveront bientôt :</p>
       <ul>
         <li>les entreprises mandataires s'il y en a</li>
-        <li>l'étiquettage</li>
+        <li>l'étiquetage</li>
         <li>l'attestation</li>
       </ul>
     </DsfrAlert>
