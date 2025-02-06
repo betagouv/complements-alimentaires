@@ -103,10 +103,9 @@ const routes = [
     },
   },
   {
-    path: "/element-detail/:urlComponent",
+    path: "/element-detail",
     name: "ElementForm",
     component: ElementForm,
-    props: true,
     meta: {
       authenticationRequired: true,
       requiredRole: "InstructionRole",

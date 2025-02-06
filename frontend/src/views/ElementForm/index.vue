@@ -17,17 +17,19 @@
       <FormWrapper class="mx-auto">
         <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4">
           <!-- TODO: validation -->
-          <div class="flex gap-x-4 -mb-8">
-            <DsfrInputGroup>
-              <DsfrInput v-model="state.caName" :label="formForType.name.label" required labelVisible />
-            </DsfrInputGroup>
-            <DsfrInputGroup v-if="formForType.nameEn">
-              <DsfrInput v-model="state.caNameEn" :label="formForType.nameEn.label" labelVisible />
-            </DsfrInputGroup>
-            <DsfrInputGroup v-if="formForType.family">
-              <!-- Question: multiselect or single? -->
-              <DsfrSelect v-model="state.caFamily" label="Famille de la plante" :options="plantFamilies" required />
-            </DsfrInputGroup>
+          <div class="flex gap-x-4">
+            <div class="flex-1">
+              <DsfrInputGroup>
+                <DsfrInput v-model="state.caName" :label="formForType.name.label" required labelVisible />
+              </DsfrInputGroup>
+            </div>
+            <div class="flex-1">
+              <DsfrInputGroup v-if="formForType.family">
+                <!-- Question: multiselect or single? -->
+                <DsfrSelect v-model="state.caFamily" label="Famille de la plante" :options="plantFamilies" required />
+              </DsfrInputGroup>
+            </div>
+            <!-- TODO: add species -->
             <DsfrInputGroup v-if="formForType.genre">
               <DsfrInput v-model="state.genre" label="Genre" labelVisible />
             </DsfrInputGroup>
@@ -35,12 +37,6 @@
               <!-- Question: multiselect or single? -->
               <!-- Question: do we have this in the DB? -->
               <DsfrSelect v-model="state.ingredientType" label="Type ingrédient" :options="ingredientTypes" required />
-            </DsfrInputGroup>
-            <!-- TODO: sort out row col wrapping for default -->
-            <DsfrInputGroup v-if="formForType.function">
-              <!-- Question: multiselect or single? -->
-              <!-- Question: do we have this in the DB? -->
-              <DsfrSelect v-model="state.function" label="Fonction de l'ingrédient" :options="functions" required />
             </DsfrInputGroup>
             <DsfrInputGroup v-if="formForType.substanceType">
               <!-- Question: multiselect or single? -->
@@ -57,24 +53,18 @@
               class="self-center"
             />
           </div>
-          <div class="flex gap-x-4 -mb-4">
+          <div class="flex gap-x-4">
             <DsfrInputGroup v-if="formForType.einecsNumber">
-              <DsfrInput v-model="state.einecsNumber" label="Numéro EINECS" labelVisible />
+              <DsfrInput v-model="state.caEinecsNumber" label="Numéro EINECS" labelVisible />
             </DsfrInputGroup>
             <DsfrInputGroup v-if="formForType.casNumber">
-              <DsfrInput v-model="state.casNumber" label="Numéro CAS" labelVisible />
+              <DsfrInput v-model="state.caCasNumber" label="Numéro CAS" labelVisible />
             </DsfrInputGroup>
             <DsfrInputGroup v-if="formForType.source">
-              <DsfrInput v-model="state.source" label="Source" labelVisible />
-            </DsfrInputGroup>
-            <DsfrInputGroup v-if="formForType.sourceEn">
-              <DsfrInput v-model="state.sourceEn" label="Source en anglais" labelVisible />
+              <DsfrInput v-model="state.caSource" label="Source" labelVisible />
             </DsfrInputGroup>
           </div>
-          <DsfrInputGroup>
-            <DsfrInput v-model="state.description" label="Description" labelVisible />
-          </DsfrInputGroup>
-          <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg">
+          <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4">
             <ul>
               <li v-for="(synonym, idx) in synonyms" :key="idx">{{ synonym.label }}, {{ synonym.type }}</li>
             </ul>
@@ -92,35 +82,31 @@
           // authorise: true for every type
           // description is true for every type -->
         </DsfrFieldset>
-        <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4">
-          <div v-if="formForType.usedParts" class="flex items-center my-4">
-            <DsfrMultiselect v-model="state.usedParts" :options="usedParts" label="Partie(s) utilisée(s)" search />
+        <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 !pb-0">
+          <div v-if="formForType.plantParts" class="flex items-center my-4">
+            <DsfrMultiselect v-model="state.plantParts" :options="plantParts" label="Partie(s) utilisée(s)" search />
             <div class="ml-4">
               <DsfrTag
-                v-for="id in state.usedParts"
+                v-for="id in state.plantParts"
                 :key="id"
-                :label="optionLabel(usedParts, id)"
+                :label="optionLabel(plantParts, id)"
                 class="mx-1"
               ></DsfrTag>
             </div>
           </div>
-          <div v-if="formForType.activeSubstances" class="flex items-center my-4">
+          <div v-if="formForType.substances" class="flex items-center my-4">
             <!-- TODO: option to create new active substance -->
-            <DsfrMultiselect
-              v-model="state.activeSubstances"
-              :options="activeSubstances"
-              label="Substances actives"
-              search
-            />
+            <DsfrMultiselect v-model="state.substances" :options="substances" label="Substances actives" search />
             <div class="ml-4">
               <DsfrTag
-                v-for="id in state.activeSubstances"
+                v-for="id in state.substances"
                 :key="id"
-                :label="optionLabel(activeSubstances, id)"
+                :label="optionLabel(substances, id)"
                 class="mx-1"
               ></DsfrTag>
             </div>
           </div>
+          <!-- TODO: add max quantity, nutritional reference, unit for substance -->
           <p><i>Population cible et à risque en construction</i></p>
         </DsfrFieldset>
         <DsfrFieldset legend="Commentaire à destination du public" legendClass="fr-h4">
@@ -139,7 +125,7 @@
           <!-- Question: cancel button? -->
           <!-- Question: use DsfrButtonGroup? -->
           <DsfrButton label="Enregistrer ingrédient" @click="saveElement" :disabled="isFetching" />
-          <DsfrButton label="Sauvegarder brouillon" @click="saveAsDraft" :disabled="isFetching" secondary />
+          <!-- <DsfrButton label="Sauvegarder brouillon" @click="saveAsDraft" :disabled="isFetching" secondary /> -->
         </div>
       </FormWrapper>
     </div>
@@ -155,21 +141,22 @@ import { getTypeIcon, getTypeInFrench, unSlugifyType /*, getApiType*/ } from "@/
 // import { handleError } from "@/utils/error-handling"
 import FormWrapper from "@/components/FormWrapper"
 
-const props = defineProps({ urlComponent: String })
-const elementId = computed(() => props.urlComponent.split("--")[0])
-const type = computed(() => unSlugifyType(props.urlComponent.split("--")[1]))
+// const props = defineProps({ urlComponent: String })
+// const elementId = computed(() => props.urlComponent.split("--")[0])
+// const type = computed(() => unSlugifyType(props.urlComponent.split("--")[1]))
+const type = ref("plant")
 const icon = computed(() => getTypeIcon(type.value))
 const typeName = computed(() => getTypeInFrench(type.value))
 
 const breadcrumbLinks = computed(() => {
   const links = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]
-  links.push({ text: `Modification élément ${elementId.value}` })
+  // links.push({ text: `Modification élément ${elementId.value}` })
   return links
 })
 
 const state = ref({
-  usedParts: [],
-  activeSubstances: [],
+  plantParts: [],
+  substances: [],
 }) // TODO: prefill with existing data if modifying
 
 const isFetching = false // TODO: set to true when fetching data or sending update, see CompanyForm
@@ -188,8 +175,8 @@ const formQuestions = {
     // authorise: true for every type
     // description is true for every type
     // synonymes are true for every type
-    usedParts: true,
-    activeSubstances: true,
+    plantParts: true,
+    substances: true,
     // population cible: true for everyone also not yet in our database
     // public notes true for every type
   },
@@ -212,7 +199,7 @@ const formQuestions = {
     },
     genre: true,
     function: true,
-    activeSubstances: true,
+    substances: true,
   },
   default: {
     name: {
@@ -223,7 +210,7 @@ const formQuestions = {
     },
     ingredientType: true,
     function: true,
-    activeSubstances: true,
+    substances: true,
   },
 }
 const formForType = computed(() => {
@@ -231,7 +218,6 @@ const formForType = computed(() => {
 })
 
 const plantFamilies = [] // TODO: fetch options from DB
-const functions = [] // TODO: fetch options from DB
 const substanceTypes = [] // TODO: fetch options from DB
 const ingredientTypes = [] // TODO: fetch options from DB
 
@@ -240,11 +226,11 @@ const synonyms = [
   { label: "Cassius", type: "Nom en latin" },
 ]
 
-const usedParts = [
+const plantParts = [
   { label: "Root", id: 1 },
   { label: "Leaf", id: 2 },
 ]
-const activeSubstances = [
+const substances = [
   { label: "Ex 1", id: 1 },
   { label: "Ex 2", id: 2 },
 ]
