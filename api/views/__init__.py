@@ -21,6 +21,7 @@ from .declaration.declaration import (
     DeclarationAcceptVisaView,
     DeclarationWithdrawView,
     DeclarationTakeAuthorshipView,
+    DeclarationAssignInstruction,
     ArticleChangeView,
 )
 from .declaration.declared_element import (

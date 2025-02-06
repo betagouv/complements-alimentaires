@@ -390,6 +390,27 @@ class DeclarationTakeAuthorshipView(GenericAPIView):
         return Response(serializer.data)
 
 
+class DeclarationAssignInstruction(GenericAPIView):
+    """
+    Contrairement à `DeclarationTakeForInstructionView`, cette view ne change pas
+    le statut de la déclaration, elle sert simplement à transférer l'instruction d'un
+    dossier à l'instrutrice faisant la requête
+    """
+
+    serializer_class = SimpleDeclarationSerializer
+    permission_classes = [IsInstructor]
+    queryset = Declaration.objects.all()
+
+    def post(self, request, pk):
+        declaration = self.get_object()
+
+        declaration.instructor = request.user.instructionrole
+        declaration.save()
+        declaration.refresh_from_db()
+        serializer = self.get_serializer(declaration)
+        return Response(serializer.data)
+
+
 class ArticleChangeView(GenericAPIView):
     permission_classes = [(IsInstructor | IsVisor)]
     serializer_class = DeclarationSerializer
