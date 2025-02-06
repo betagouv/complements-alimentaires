@@ -11,8 +11,9 @@ from data.factories import (
     PlantPartFactory,
     PlantFamilyFactory,
     SubstanceFactory,
+    SubstanceUnitFactory,
 )
-from data.models import IngredientType, Plant, IngredientStatus, Microorganism
+from data.models import IngredientType, Plant, IngredientStatus, Microorganism, Substance
 
 from .utils import authenticate
 
@@ -305,4 +306,43 @@ class TestElementsCreateApi(APITestCase):
     def test_cannot_create_single_microorganism_not_authorized(self):
         payload = {"caName": "My new microorganism"}
         response = self.client.post(reverse("api:microorganism_list"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_create_single_substance(self):
+        """
+        Une instructrice peut créer une nouvelle substance avec des synonymes
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        unit = SubstanceUnitFactory.create()
+        self.assertEqual(Substance.objects.count(), 0)
+        payload = {
+            "caName": "My new substance",
+            "synonyms": [],
+            "caStatus": IngredientStatus.AUTHORIZED,
+            "caCasNumber": "1234",
+            "caEinecNumber": "5678",
+            "caMaxQuantity": 3.4,
+            "caNutritionalReference": 1.2,
+            "unit": unit.id,
+        }
+        response = self.client.post(reverse("api:substance_list"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        body = response.json()
+
+        self.assertIn("id", body)
+        substance = Substance.objects.get(id=body["id"])
+        self.assertEqual(substance.name, "My new substance")
+        self.assertEqual(substance.status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(substance.cas_number, "1234")
+        self.assertEqual(substance.einec_number, "5678")
+        self.assertEqual(substance.max_quantity, 3.4)
+        self.assertEqual(substance.nutritional_reference, 1.2)
+        self.assertEqual(substance.unit, unit)
+
+    @authenticate
+    def test_cannot_create_single_substance_not_authorized(self):
+        payload = {"caName": "My new substance"}
+        response = self.client.post(reverse("api:substance_list"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

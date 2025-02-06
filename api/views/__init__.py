@@ -40,7 +40,7 @@ from .plant import PlantPartListView, PlantRetrieveView, PlantCreateView
 from .population import PopulationListView
 from .report_issue import ReportIssue
 from .search import SearchView
-from .substance import SubstanceRetrieveView
+from .substance import SubstanceRetrieveView, SubstanceCreateView
 from .unit import UnitListView
 from .user import (
     ChangePasswordView,

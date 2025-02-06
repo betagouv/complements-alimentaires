@@ -5,6 +5,13 @@ from data.models import IngredientStatus, Substance, SubstanceSynonym
 
 from .historical_record import HistoricalRecordField
 from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
+from .common_ingredient import (
+    COMMON_FIELDS,
+    COMMON_NAME_FIELDS,
+    COMMON_READ_ONLY_FIELDS,
+    CommonIngredientModificationSerializer,
+    WithSubstances,
+)
 
 
 class SubstanceSynonymSerializer(serializers.ModelSerializer):
@@ -70,3 +77,31 @@ class SubstanceShortSerializer(PrivateFieldsSerializer):
             "must_specify_quantity",
         )
         read_only_fields = fields
+
+
+class SubstanceSynonymModificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubstanceSynonym
+        fields = ("name",)
+
+
+class SubstanceModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
+    synonyms = SubstanceSynonymModificationSerializer(many=True, source="substancesynonym_set")
+
+    synonym_model = SubstanceSynonym
+    synonym_set_field_name = "substancesynonym_set"
+
+    class Meta:
+        model = Substance
+        fields = (
+            COMMON_FIELDS
+            + COMMON_NAME_FIELDS
+            + (
+                "ca_cas_number",
+                "ca_einec_number",
+                "ca_max_quantity",
+                "ca_nutritional_reference",
+                "unit",
+            )
+        )
+        read_only = COMMON_READ_ONLY_FIELDS
