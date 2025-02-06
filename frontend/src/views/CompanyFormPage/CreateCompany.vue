@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DsfrAlert size="sm">
+    <DsfrAlert>
       L'entreprise dont le n°
       {{ company.identifierType.toUpperCase() + " " }}
       est
