@@ -33,7 +33,7 @@ from .declaration.declared_element import (
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
 from .preparation import PreparationListView
-from .ingredient import IngredientRetrieveView
+from .ingredient import IngredientRetrieveView, IngredientCreateView
 from .microorganism import MicroorganismRetrieveView, MicroorganismCreateView
 from .newsletter import SubscribeNewsletter
 from .plant import PlantPartListView, PlantRetrieveView, PlantCreateView

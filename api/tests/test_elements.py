@@ -13,7 +13,8 @@ from data.factories import (
     SubstanceFactory,
     SubstanceUnitFactory,
 )
-from data.models import IngredientType, Plant, IngredientStatus, Microorganism, Substance
+from data.models import IngredientType, Plant, IngredientStatus, Microorganism, Substance, Ingredient
+from data.choices import IngredientActivity
 
 from .utils import authenticate
 
@@ -345,4 +346,38 @@ class TestElementsCreateApi(APITestCase):
     def test_cannot_create_single_substance_not_authorized(self):
         payload = {"caName": "My new substance"}
         response = self.client.post(reverse("api:substance_list"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_create_single_ingredient(self):
+        """
+        Une instructrice peut créer un nouvel ingredient avec des synonymes
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        substance = SubstanceFactory.create()
+        self.assertEqual(Ingredient.objects.count(), 0)
+        payload = {
+            "caName": "My new ingredient",
+            "synonyms": [],
+            "caStatus": IngredientStatus.AUTHORIZED,
+            "ingredientType": 4,
+            "substances": [substance.id],
+        }
+        response = self.client.post(reverse("api:ingredient_list"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        body = response.json()
+
+        self.assertIn("id", body)
+        ingredient = Ingredient.objects.get(id=body["id"])
+        self.assertEqual(ingredient.name, "My new ingredient")
+        self.assertEqual(ingredient.status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(ingredient.ingredient_type, IngredientType.ACTIVE_INGREDIENT)
+        self.assertEqual(ingredient.activity, IngredientActivity.ACTIVE)
+        self.assertEqual(ingredient.substances.count(), 1)
+
+    @authenticate
+    def test_cannot_create_single_ingredient_not_authorized(self):
+        payload = {"caName": "My new ingredient"}
+        response = self.client.post(reverse("api:ingredient_list"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
