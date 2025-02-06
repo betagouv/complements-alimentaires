@@ -28,7 +28,7 @@
       <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
       <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
     </div>
-    <div v-if="!payload.siccrfId">
+    <div>
       <h3 class="fr-h6 !mt-8">
         Composition
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
@@ -83,7 +83,7 @@
         :elements="payload.declaredSubstances"
       />
 
-      <p class="font-bold mt-8">Substances contenues dans la composition :</p>
+      <p class="font-bold mt-8" v-if="payload.computedSubstances.length">Substances contenues dans la composition :</p>
       <DsfrAlert
         v-if="replacedRequestsWithSubstances.length"
         type="warning"
@@ -104,25 +104,26 @@
         </ul>
       </DsfrAlert>
       <SubstancesTable v-model="payload" readonly />
+      <div v-if="!payload.siccrfId">
+        <h3 class="fr-h6 !mt-8">
+          Adresse sur l'étiquetage
+          <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
+        </h3>
+        <AddressLine :payload="payload" />
 
-      <h3 class="fr-h6 !mt-8">
-        Adresse sur l'étiquetage
-        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
-      </h3>
-      <AddressLine :payload="payload" />
-
-      <h3 class="fr-h6 !mt-8">
-        Pièces jointes
-        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
-      </h3>
-      <div class="grid grid-cols-12 gap-3 mb-8">
-        <FilePreview
-          class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
-          v-for="(file, index) in payload.attachments"
-          :key="`file-${index}`"
-          :file="file"
-          readonly
-        />
+        <h3 class="fr-h6 !mt-8">
+          Pièces jointes
+          <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
+        </h3>
+        <div class="grid grid-cols-12 gap-3 mb-8">
+          <FilePreview
+            class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
+            v-for="(file, index) in payload.attachments"
+            :key="`file-${index}`"
+            :file="file"
+            readonly
+          />
+        </div>
       </div>
     </div>
   </div>
