@@ -63,6 +63,7 @@
               :snapshots="snapshots"
               @decision-done="onDecisionDone"
               :allowArticleChange="!declaration.siccrfId"
+              :useCompactAttachmentView="true"
             ></component>
           </DsfrTabContent>
         </DsfrTabs>
