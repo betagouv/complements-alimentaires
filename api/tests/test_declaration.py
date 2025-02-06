@@ -29,6 +29,7 @@ from data.factories import (
     OngoingVisaDeclarationFactory,
     PlantFactory,
     PlantPartFactory,
+    PlantSynonymFactory,
     PopulationFactory,
     PreparationFactory,
     SnapshotFactory,
@@ -36,7 +37,6 @@ from data.factories import (
     SubstanceUnitFactory,
     SupervisorRoleFactory,
     VisaRoleFactory,
-    PlantSynonymFactory,
 )
 from data.models import (
     Attachment,
@@ -44,8 +44,8 @@ from data.models import (
     DeclaredMicroorganism,
     DeclaredPlant,
     DeclaredSubstance,
-    Snapshot,
     IngredientType,
+    Snapshot,
 )
 
 from .utils import authenticate
@@ -1643,6 +1643,36 @@ class TestDeclarationApi(APITestCase):
 
         declaration.refresh_from_db()
         self.assertNotEqual(declaration.author, authenticate.user)
+
+    @authenticate
+    def test_assign_instruction(self):
+        """
+        Une instructrice peut à tout moment s'assigner un dossier d'instruction.
+        """
+        old_instructor = InstructionRoleFactory()
+        new_instructor = InstructionRoleFactory(user=authenticate.user)
+
+        declaration = AwaitingInstructionDeclarationFactory(instructor=old_instructor)
+
+        url = reverse("api:assign_instruction", kwargs={"pk": declaration.id})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.instructor, new_instructor)
+
+    @authenticate
+    def test_assign_instruction_unauthorized(self):
+        old_instructor = InstructionRoleFactory()
+
+        declaration = AwaitingInstructionDeclarationFactory(instructor=old_instructor)
+
+        url = reverse("api:assign_instruction", kwargs={"pk": declaration.id})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.instructor, old_instructor)
 
     @authenticate
     def test_visa_refusal_field(self):

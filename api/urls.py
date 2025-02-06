@@ -149,6 +149,11 @@ urlpatterns = {
         views.DeclarationTakeAuthorshipView.as_view(),
         name="take_authorship",
     ),
+    path(
+        "declarations/<int:pk>/assign-instruction/",
+        views.DeclarationAssignInstruction.as_view(),
+        name="assign_instruction",
+    ),
     # Flow de la déclaration (state machine)
     path("declarations/<int:pk>/submit/", views.DeclarationSubmitView.as_view(), name="submit_declaration"),
     path(
