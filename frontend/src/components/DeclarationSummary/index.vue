@@ -48,7 +48,7 @@
       <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
       <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
     </div>
-    <div v-if="!payload.siccrfId">
+    <div>
       <h3 class="fr-h6 !mt-8">
         Composition
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
@@ -103,7 +103,7 @@
         :elements="payload.declaredSubstances"
       />
 
-      <p class="font-bold mt-8">Substances contenues dans la composition :</p>
+      <p class="font-bold mt-8" v-if="payload.computedSubstances.length">Substances contenues dans la composition :</p>
       <DsfrAlert
         v-if="replacedRequestsWithSubstances.length"
         type="warning"
@@ -124,14 +124,14 @@
         </ul>
       </DsfrAlert>
       <SubstancesTable v-model="payload" readonly />
-
-      <h3 class="fr-h6 !mt-8">
-        Adresse sur l'étiquetage
-        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
-      </h3>
-      <AddressLine :payload="payload" />
-
-      <div v-if="!useCompactAttachmentView">
+      <div v-if="!payload.siccrfId">
+        <h3 class="fr-h6 !mt-8">
+          Adresse sur l'étiquetage
+          <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
+        </h3>
+        <AddressLine :payload="payload" />
+      </div>
+      <div v-if="!useCompactAttachmentView & !payload.siccrfId">
         <h3 class="fr-h6 !mt-8">
           Pièces jointes
           <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
