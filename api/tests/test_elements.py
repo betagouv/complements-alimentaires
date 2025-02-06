@@ -274,7 +274,7 @@ class TestElementsCreateApi(APITestCase):
         payload = {
             "caGenus": "My new microorganism",
             "caSpecies": "A species",
-            "caStatus": IngredientStatus.AUTHORIZED,  # TODO: est-ce qu'on a besoin de soutenir les quatre valeurs ?
+            "caStatus": IngredientStatus.AUTHORIZED,
             "synonyms": [
                 {"name": "A latin name"},
                 {"name": "A second one"},
@@ -282,6 +282,7 @@ class TestElementsCreateApi(APITestCase):
             "substances": [substance.id],
             "caPublicComments": "Test",
             "caPrivateComments": "Test private",
+            "novelFood": True,
         }
         response = self.client.post(reverse("api:microorganism_list"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -298,6 +299,7 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(microorganism.public_comments, "Test")
         self.assertEqual(microorganism.private_comments, "Test private")
         self.assertEqual(microorganism.status, IngredientStatus.AUTHORIZED)
+        self.assertTrue(microorganism.novel_food)
 
     @authenticate
     def test_cannot_create_single_microorganism_not_authorized(self):
