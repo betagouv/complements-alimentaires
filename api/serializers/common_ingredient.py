@@ -14,6 +14,7 @@ COMMON_FIELDS = (
     "ca_private_comments",
     "private_comments",
     "ca_status",
+    "novel_food",
 )
 
 COMMON_READ_ONLY_FIELDS = (

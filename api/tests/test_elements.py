@@ -225,7 +225,7 @@ class TestElementsCreateApi(APITestCase):
         payload = {
             "caName": "My new plant",
             "caFamily": family.id,
-            "caStatus": IngredientStatus.AUTHORIZED,  # TODO: est-ce qu'on a besoin de soutenir les quatre valeurs ?
+            "caStatus": IngredientStatus.AUTHORIZED,
             "synonyms": [
                 {"name": "A latin name"},
                 {"name": "A latin name"},
@@ -236,6 +236,7 @@ class TestElementsCreateApi(APITestCase):
             "substances": [substance.id],
             "caPublicComments": "Test",
             "caPrivateComments": "Test private",
+            "novelFood": True,
         }
         response = self.client.post(reverse("api:plant_list"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -253,6 +254,7 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(plant.public_comments, "Test")
         self.assertEqual(plant.private_comments, "Test private")
         self.assertEqual(plant.status, IngredientStatus.AUTHORIZED)
+        self.assertTrue(plant.novel_food)
 
     @authenticate
     def test_cannot_create_single_plant_not_authorized(self):
