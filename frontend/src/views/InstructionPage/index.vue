@@ -25,6 +25,15 @@
         <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
         <DsfrButton class="mt-2" label="Instruire" tertiary @click="instructDeclaration" />
       </DsfrAlert>
+      <DsfrAlert
+        class="mb-4"
+        v-else-if="declaration.instructor && declaration.instructor.id !== loggedUser.id"
+        type="info"
+        :title="`Cette déclaration est assignée à ${declaration.instructor.firstName} ${declaration.instructor.lastName}`"
+      >
+        <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
+        <DsfrButton class="mt-2" label="M'assigner cette déclaration" tertiary @click="assignInstruction" />
+      </DsfrAlert>
       <DeclarationAlert
         class="mb-6"
         v-else-if="!canInstruct && !declaration.siccrfId"
@@ -123,6 +132,7 @@ import DeclarationAlert from "@/components/DeclarationAlert"
 import { tabTitles } from "@/utils/mappings"
 import { useRouter, useRoute } from "vue-router"
 import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromTeleicareAlert.vue"
+import useToaster from "@/composables/use-toaster"
 
 const router = useRouter()
 const route = useRoute()
@@ -216,6 +226,17 @@ const titles = computed(() => tabTitles(components.value))
 
 const selectedTabIndex = ref(parseInt(route.query.tab))
 const selectTab = async (index) => router.replace({ query: { tab: index } })
+
+const assignInstruction = async () => {
+  const url = `/api/v1/declarations/${props.declarationId}/assign-instruction/`
+  const { response } = await useFetch(url, { headers: headers() }).post({}).json()
+  $externalResults.value = await handleError(response)
+
+  if (response.value.ok) {
+    await executeDeclarationFetch()
+    useToaster().addSuccessMessage("La déclaration vous a été assignée")
+  }
+}
 
 const instructDeclaration = async () => {
   const url = `/api/v1/declarations/${props.declarationId}/take-for-instruction/`
