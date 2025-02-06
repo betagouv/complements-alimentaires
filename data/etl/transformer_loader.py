@@ -1,6 +1,6 @@
 import csv
-import os
 import logging
+from data.etl import datagouv
 
 from django.core.files.storage import default_storage
 from .extractor import TRANSFORMER_LOADER, DECLARATIONS
@@ -24,19 +24,17 @@ class OPEN_DATA(TRANSFORMER_LOADER):
                 encoding="utf_8_sig",
                 quoting=csv.QUOTE_NONNUMERIC,
                 escapechar="\\",
+                date_format="%Y-%m-%d",
             )
 
     def load_dataset(self):
         filepath = f"{self.dataset_name}"
-        if (
-            os.environ.get("STATICFILES_STORAGE") == "dstorages.backends.s3boto3.S3StaticStorage"
-            and os.environ.get("DEFAULT_FILE_STORAGE") == "storages.backends.s3boto3.S3Boto3Storage"
-        ):
-            if not self.is_valid():
-                logger.error(f"The dataset {self.name} is invalid and therefore will not be exported to s3")
-                return
+        if not self.is_valid():
+            logger.error(f"The dataset {self.dataset_name} is invalid and therefore will not be exported to s3")
+            return
         try:
             self._load_data_csv(filepath)
+            datagouv.update_resources()
 
         except Exception as e:
             logger.error(f"Error saving validated data: {e}")

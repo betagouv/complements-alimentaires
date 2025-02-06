@@ -57,6 +57,7 @@
               :user="declarant"
               :company="company"
               :snapshots="snapshots"
+              :useCompactAttachmentView="true"
               @decision-done="onDecisionDone"
             ></component>
           </DsfrTabContent>

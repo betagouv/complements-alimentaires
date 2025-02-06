@@ -1,5 +1,11 @@
 <template>
   <li class="border-l-2 border-b pl-4 py-2">
+    <DsfrAlert v-if="treatedRequest" :type="treatedRequest.type" small class="mb-2">
+      <p>{{ treatedRequest.label }}</p>
+      <p v-if="showRequestComment">
+        <i>{{ model.requestPrivateNotes }}</i>
+      </p>
+    </DsfrAlert>
     <div class="md:flex justify-between">
       <div>
         <div class="flex content-center">
@@ -17,12 +23,12 @@
           />
 
           <DsfrBadge v-if="novelFood" label="Novel Food" type="new" class="self-center ml-2" small />
-          <DsfrBadge v-if="model.new" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
+          <DsfrBadge v-if="isRequest" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
           <DsfrBadge
-            v-else-if="model.requestStatus === 'REPLACED'"
-            label="Demande remplacée"
-            type="info"
-            class="self-center ml-2"
+            v-if="treatedRequest"
+            label="Demande traitée"
+            class="self-center ml-2 purple-glycine"
+            noIcon
             small
           />
           <DsfrBadge v-if="!model.active" label="Non-actif" type="none" class="self-center ml-2" small />
@@ -92,7 +98,37 @@ const elementInfo = computed(() => {
   return ""
 })
 
-const showRequestInspectionLink = computed(
-  () => (model.value.new || model.value.requestStatus === "REPLACED") && isInstructor.value
+const isRequest = computed(() => model.value.new || model.value.requestStatus === "REPLACED")
+
+const showRequestInspectionLink = computed(() => isRequest.value && isInstructor.value)
+
+const showRequestComment = computed(
+  () =>
+    model.value.requestPrivateNotes &&
+    (model.value.requestStatus === "INFORMATION" || model.value.requestStatus === "REJECTED")
 )
+
+const treatedRequest = computed(() => {
+  return {
+    INFORMATION: {
+      label: "Des informations complémentaires sont nécessaires concernant la demande d'ajout d'ingrédient",
+      type: "warning",
+    },
+    REJECTED: {
+      label: "La demande d'ajout d'ingrédient a été refusée",
+      type: "error",
+    },
+    REPLACED: {
+      label: "Demande initiale remplacée dans la composition",
+      type: "info",
+    },
+  }[model.value.requestStatus]
+})
 </script>
+
+<style scoped>
+.purple-glycine.fr-badge :deep() {
+  color: var(--purple-glycine-sun-319-moon-630);
+  background-color: var(--purple-glycine-950-100);
+}
+</style>
