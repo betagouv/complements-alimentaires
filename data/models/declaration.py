@@ -63,7 +63,8 @@ class Declaration(Historisable, TimeStampable):
         ARTICLE_15_WARNING = "ART_15_WARNING", "Article 15 Vigilance"
         ARTICLE_15_HIGH_RISK_POPULATION = "ART_15_HIGH_RISK_POPULATION", "Article 15 Population à risque"
         ARTICLE_16 = "ART_16", "Article 16"
-        # ARTICLE_17 = "ART_17", "Article 17" # Article 17 et 18 sont pour le moment regroupés sous le label "nécessite saisine ANSES"
+        # ARTICLE_17 = "ART_17", "Article 17"
+        ARTICLE_18 = "ART_18", "Article 18"
         ANSES_REFERAL = "ANSES_REFERAL", "nécessite saisine ANSES"
 
     status = models.CharField(

@@ -170,6 +170,18 @@ class TestAutomaticApproval(TestCase):
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         mocked_brevo.assert_not_called()
 
+    def test_awaiting_declaration_not_approved_art_18(self, mocked_brevo):
+        """
+        Une déclaration en attente d'instruction de doit pas se valider si elle a l'article 18
+        """
+        declaration = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_18)
+        TestAutomaticApproval._create_submission_snapshot(declaration)
+
+        approve_declarations()
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        mocked_brevo.assert_not_called()
+
     def test_awaiting_declaration_not_approved_art_anses(self, mocked_brevo):
         """
         Une déclaration en attente d'instruction de doit pas se valider si elle a l'article ANSES

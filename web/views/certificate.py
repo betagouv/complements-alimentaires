@@ -21,6 +21,7 @@ class CertificateView(PdfView):
             Declaration.Article.ARTICLE_15_WARNING: 15,
             Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION: 15,
             Declaration.Article.ARTICLE_16: 16,
+            Declaration.Article.ARTICLE_18: 18,
             Declaration.Article.ANSES_REFERAL: "anses",
         }
         article = article_map.get(declaration.article, 15)
