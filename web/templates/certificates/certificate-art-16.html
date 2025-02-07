@@ -10,7 +10,8 @@
         <span style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
             {% if declaration.company %}{{ declaration.company.social_name }}{% endif %}
         </span>
-        a effectuéa effectué {% if declaration.teleicare_id %}sur la plateforme TELEICARE{% endif %}, le {{ last_submission_date|date:"l j F Y" }}, la déclaration mentionnée à l’article 16 du décret
+        a effectuéa effectué {% if declaration.teleicare_id %}sur la plateforme TELEICARE{% endif %}
+        , le {{ last_submission_date|date:"l j F Y" }}, la déclaration mentionnée à l’article 16 du décret
         n°2006-352 du 20 mars 2006 relatif aux compléments alimentaires pour le produit :
     </p>
     <p style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
@@ -28,7 +29,7 @@
             {% if declaration.teleicare_id %}
             {{ declaration.teleicare_id }}
             {% else %}
-            TELEICARE {{ declaration.id }}
+            {{ declaration.id }}
             {% endif %}
         </span>.
     </p>

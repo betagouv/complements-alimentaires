@@ -1,7 +1,11 @@
 {% extends 'certificates/certificate-base-template.html' %}
 {% block 'body' %}
 <h1 style="font-family: 'Marianne-Bold'; font-weight: bold;">
-    Réf. : Dossier n° {{declaration.id}}
+    Réf. : Dossier {% if declaration.teleicare_id %}
+    TELEICARE n° {{ declaration.teleicare_id }}
+    {% else %}
+    n° {{ declaration.id }}
+    {% endif %}
 </h1>
 <div style="font-size: 1.2em;">
     <p>
