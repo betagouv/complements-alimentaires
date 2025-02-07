@@ -20,13 +20,13 @@
           <div class="flex gap-x-4">
             <div class="flex-1">
               <DsfrInputGroup>
-                <DsfrInput v-model="state.caName" :label="formForType.name.label" required labelVisible />
+                <DsfrInput v-model="state.name" :label="formForType.name.label" required labelVisible />
               </DsfrInputGroup>
             </div>
             <div class="flex-1">
               <DsfrInputGroup v-if="formForType.family">
                 <!-- Question: multiselect or single? -->
-                <DsfrSelect v-model="state.caFamily" label="Famille de la plante" :options="plantFamilies" required />
+                <DsfrSelect v-model="state.family" label="Famille de la plante" :options="plantFamilies" required />
               </DsfrInputGroup>
             </div>
             <!-- TODO: add species -->
@@ -55,13 +55,13 @@
           </div>
           <div class="flex gap-x-4">
             <DsfrInputGroup v-if="formForType.einecsNumber">
-              <DsfrInput v-model="state.caEinecsNumber" label="Numéro EINECS" labelVisible />
+              <DsfrInput v-model="state.einecsNumber" label="Numéro EINECS" labelVisible />
             </DsfrInputGroup>
             <DsfrInputGroup v-if="formForType.casNumber">
-              <DsfrInput v-model="state.caCasNumber" label="Numéro CAS" labelVisible />
+              <DsfrInput v-model="state.casNumber" label="Numéro CAS" labelVisible />
             </DsfrInputGroup>
             <DsfrInputGroup v-if="formForType.source">
-              <DsfrInput v-model="state.caSource" label="Source" labelVisible />
+              <DsfrInput v-model="state.source" label="Source" labelVisible />
             </DsfrInputGroup>
           </div>
           <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4">
@@ -162,7 +162,7 @@ const state = ref({
 const isFetching = false // TODO: set to true when fetching data or sending update, see CompanyForm
 
 const saveElement = async () => {}
-const saveAsDraft = async () => {}
+// const saveAsDraft = async () => {}
 const addNewSynonym = async () => {}
 
 const formQuestions = {
