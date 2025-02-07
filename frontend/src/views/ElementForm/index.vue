@@ -102,12 +102,23 @@
           </div>
           <div v-if="formForType.substances" class="flex items-center my-4">
             <!-- TODO: option to create new active substance -->
-            <DsfrMultiselect v-model="state.substances" :options="substances" label="Substances actives" search />
+            <ElementAutocomplete
+              autocomplete="nothing"
+              label="Substances actives"
+              label-visible
+              class="max-w-md grow"
+              hint="Tapez au moins trois caractères pour démarrer la recherche"
+              :hideSearchButton="true"
+              @selected="selectOption"
+            />
             <div class="ml-4">
+              <!-- TODO: align tags with input -->
+              <!-- TODO: filter to only include substances -->
+              <!-- TODO: make tags deleteable -->
               <DsfrTag
-                v-for="id in state.substances"
-                :key="id"
-                :label="optionLabel(substances, id)"
+                v-for="substance in state.substances"
+                :key="substance.id"
+                :label="substance.name"
                 class="mx-1"
               ></DsfrTag>
             </div>
@@ -148,6 +159,7 @@ import { storeToRefs } from "pinia"
 // import { useFetch } from "@vueuse/core"
 // import { handleError } from "@/utils/error-handling"
 import FormWrapper from "@/components/FormWrapper"
+import ElementAutocomplete from "@/components/ElementAutocomplete"
 
 // const props = defineProps({ urlComponent: String })
 // const elementId = computed(() => props.urlComponent.split("--")[0])
@@ -238,10 +250,9 @@ const synonyms = [
   { label: "Cassius", type: "Nom en latin" },
 ]
 
-const substances = [
-  { label: "Ex 1", id: 1 },
-  { label: "Ex 2", id: 2 },
-]
+const selectOption = async (result) => {
+  state.value.substances.push(result)
+}
 
 const optionLabel = (options, id) => {
   return options.find((o) => o.id === id)?.name || "Inconnu"
