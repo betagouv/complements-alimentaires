@@ -92,7 +92,7 @@ class PlantSynonymModificationSerializer(serializers.ModelSerializer):
 
 
 class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSubstances, WithName):
-    synonyms = PlantSynonymModificationSerializer(many=True, source="plantsynonym_set")
+    synonyms = PlantSynonymModificationSerializer(many=True, source="plantsynonym_set", required=False)
     plant_parts = serializers.PrimaryKeyRelatedField(many=True, queryset=PlantPart.objects.all())
     family = serializers.PrimaryKeyRelatedField(queryset=PlantFamily.objects.all(), source="ca_family")
 

@@ -271,7 +271,6 @@ class TestElementsCreateApi(APITestCase):
         """
         InstructionRoleFactory(user=authenticate.user)
 
-        substance = SubstanceFactory.create()
         self.assertEqual(Microorganism.objects.count(), 0)
         payload = {
             "genus": "My new microorganism",
@@ -281,7 +280,6 @@ class TestElementsCreateApi(APITestCase):
                 {"name": "A latin name"},
                 {"name": "A second one"},
             ],
-            "substances": [substance.id],
             "publicComments": "Test",
             "privateComments": "Test private",
             "novelFood": True,
@@ -297,7 +295,7 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(microorganism.microorganismsynonym_set.count(), 2)  # deduplication of synonym
         self.assertTrue(microorganism.microorganismsynonym_set.filter(name="A latin name").exists())
         self.assertTrue(microorganism.microorganismsynonym_set.filter(name="A second one").exists())
-        self.assertEqual(microorganism.substances.count(), 1)
+        self.assertEqual(microorganism.substances.count(), 0)
         self.assertEqual(microorganism.ca_public_comments, "Test")
         self.assertEqual(microorganism.ca_private_comments, "Test private")
         self.assertEqual(microorganism.ca_status, IngredientStatus.AUTHORIZED)
@@ -320,7 +318,6 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(Substance.objects.count(), 0)
         payload = {
             "name": "My new substance",
-            "synonyms": [],
             "status": IngredientStatus.AUTHORIZED,
             "casNumber": "1234",
             "einecNumber": "5678",
@@ -359,7 +356,6 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(Ingredient.objects.count(), 0)
         payload = {
             "name": "My new ingredient",
-            "synonyms": [],
             "status": IngredientStatus.AUTHORIZED,
             "ingredientType": 4,
             "substances": [substance.id],

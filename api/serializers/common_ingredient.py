@@ -19,7 +19,7 @@ COMMON_READ_ONLY_FIELDS = ("id",)
 
 
 class WithSubstances(serializers.ModelSerializer):
-    substances = serializers.PrimaryKeyRelatedField(many=True, queryset=Substance.objects.all())
+    substances = serializers.PrimaryKeyRelatedField(many=True, queryset=Substance.objects.all(), required=False)
 
 
 class WithName(serializers.ModelSerializer):

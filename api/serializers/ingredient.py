@@ -59,7 +59,7 @@ class IngredientSynonymModificationSerializer(serializers.ModelSerializer):
 
 
 class IngredientModificationSerializer(CommonIngredientModificationSerializer, WithSubstances, WithName):
-    synonyms = IngredientSynonymModificationSerializer(many=True, source="ingredientsynonym_set")
+    synonyms = IngredientSynonymModificationSerializer(many=True, source="ingredientsynonym_set", required=False)
 
     synonym_model = IngredientSynonym
     synonym_set_field_name = "ingredientsynonym_set"
