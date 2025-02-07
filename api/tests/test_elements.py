@@ -240,7 +240,7 @@ class TestElementsCreateApi(APITestCase):
             "caPrivateComments": "Test private",
             "novelFood": True,
         }
-        response = self.client.post(reverse("api:plant_list"), payload, format="json")
+        response = self.client.post(reverse("api:plant_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         body = response.json()
 
@@ -261,7 +261,7 @@ class TestElementsCreateApi(APITestCase):
     @authenticate
     def test_cannot_create_single_plant_not_authorized(self):
         payload = {"caName": "My new plant"}
-        response = self.client.post(reverse("api:plant_list"), payload, format="json")
+        response = self.client.post(reverse("api:plant_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
@@ -286,7 +286,7 @@ class TestElementsCreateApi(APITestCase):
             "caPrivateComments": "Test private",
             "novelFood": True,
         }
-        response = self.client.post(reverse("api:microorganism_list"), payload, format="json")
+        response = self.client.post(reverse("api:microorganism_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         body = response.json()
 
@@ -306,7 +306,7 @@ class TestElementsCreateApi(APITestCase):
     @authenticate
     def test_cannot_create_single_microorganism_not_authorized(self):
         payload = {"caName": "My new microorganism"}
-        response = self.client.post(reverse("api:microorganism_list"), payload, format="json")
+        response = self.client.post(reverse("api:microorganism_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
@@ -328,7 +328,7 @@ class TestElementsCreateApi(APITestCase):
             "caNutritionalReference": 1.2,
             "unit": unit.id,
         }
-        response = self.client.post(reverse("api:substance_list"), payload, format="json")
+        response = self.client.post(reverse("api:substance_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         body = response.json()
 
@@ -345,7 +345,7 @@ class TestElementsCreateApi(APITestCase):
     @authenticate
     def test_cannot_create_single_substance_not_authorized(self):
         payload = {"caName": "My new substance"}
-        response = self.client.post(reverse("api:substance_list"), payload, format="json")
+        response = self.client.post(reverse("api:substance_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
@@ -364,7 +364,7 @@ class TestElementsCreateApi(APITestCase):
             "ingredientType": 4,
             "substances": [substance.id],
         }
-        response = self.client.post(reverse("api:ingredient_list"), payload, format="json")
+        response = self.client.post(reverse("api:ingredient_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         body = response.json()
 
@@ -379,5 +379,5 @@ class TestElementsCreateApi(APITestCase):
     @authenticate
     def test_cannot_create_single_ingredient_not_authorized(self):
         payload = {"caName": "My new ingredient"}
-        response = self.client.post(reverse("api:ingredient_list"), payload, format="json")
+        response = self.client.post(reverse("api:ingredient_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
