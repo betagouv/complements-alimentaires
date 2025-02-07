@@ -8,6 +8,7 @@ from .substance import SubstanceShortSerializer
 from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
 from .common_ingredient import (
     COMMON_FIELDS,
+    COMMON_NAME_FIELDS,
     COMMON_READ_ONLY_FIELDS,
     CommonIngredientModificationSerializer,
     WithSubstances,
@@ -98,9 +99,13 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
 
     class Meta:
         model = Plant
-        fields = COMMON_FIELDS + (
-            "ca_family",
-            "plant_parts",
-            "substances",
+        fields = (
+            COMMON_FIELDS
+            + COMMON_NAME_FIELDS
+            + (
+                "ca_family",
+                "plant_parts",
+                "substances",
+            )
         )
         read_only = COMMON_READ_ONLY_FIELDS

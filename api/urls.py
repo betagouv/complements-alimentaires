@@ -16,8 +16,11 @@ urlpatterns = {
     path("plants/", views.PlantCreateView.as_view(), name="plant_list"),
     path("plants/<int:pk>", views.PlantRetrieveView.as_view(), name="single_plant"),
     path("plant-parts/", views.PlantPartListView.as_view(), name="plant_part_list"),
+    path("other-ingredients/", views.IngredientCreateView.as_view(), name="ingredient_list"),
     path("other-ingredients/<int:pk>", views.IngredientRetrieveView.as_view(), name="single_ingredient"),
+    path("microorganisms/", views.MicroorganismCreateView.as_view(), name="microorganism_list"),
     path("microorganisms/<int:pk>", views.MicroorganismRetrieveView.as_view(), name="single_microorganism"),
+    path("substances/", views.SubstanceCreateView.as_view(), name="substance_list"),
     path("substances/<int:pk>", views.SubstanceRetrieveView.as_view(), name="single_substance"),
     path("elements/autocomplete/", views.AutocompleteView.as_view(), name="substance_autocomplete"),
     # Declared elements

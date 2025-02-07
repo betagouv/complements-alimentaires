@@ -4,10 +4,13 @@ from rest_framework.exceptions import ParseError
 from data.models import Substance
 
 
-COMMON_FIELDS = (
-    "id",
+COMMON_NAME_FIELDS = (
     "ca_name",
     "name",
+)
+
+COMMON_FIELDS = (
+    "id",
     "synonyms",
     "ca_public_comments",
     "public_comments",
