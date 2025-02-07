@@ -55,13 +55,11 @@ const rows = computed(() => {
       d.author ? `${d.author.firstName} ${d.author.lastName}` : "",
       getStatusTagForCell(d.status, true),
       timeAgo(d.creationDate),
-      d.siccrfId
-        ? ""
-        : {
-            component: "router-link",
-            text: "Dupliquer",
-            to: { name: "NewDeclaration", query: { duplicate: d.id } },
-          },
+      {
+        component: "router-link",
+        text: "Dupliquer",
+        to: { name: "NewDeclaration", query: { duplicate: d.id } },
+      },
     ],
   }))
 })
