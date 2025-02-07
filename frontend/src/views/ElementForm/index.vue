@@ -84,7 +84,13 @@
         </DsfrFieldset>
         <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 !pb-0">
           <div v-if="formForType.plantParts" class="flex items-center my-4">
-            <DsfrMultiselect v-model="state.plantParts" :options="plantParts" label="Partie(s) utilisée(s)" search />
+            <DsfrMultiselect
+              v-model="state.plantParts"
+              :options="plantParts"
+              label="Partie(s) utilisée(s)"
+              search
+              labelKey="name"
+            />
             <div class="ml-4">
               <DsfrTag
                 v-for="id in state.plantParts"
@@ -135,6 +141,8 @@
 <script setup>
 import { ref, computed /*, watch*/ } from "vue"
 import { getTypeIcon, getTypeInFrench, unSlugifyType /*, getApiType*/ } from "@/utils/mappings"
+import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
 // import { firstErrorMsg } from "@/utils/forms"
 // import { useRoute, useRouter } from "vue-router"
 // import { useFetch } from "@vueuse/core"
@@ -217,6 +225,10 @@ const formForType = computed(() => {
   return formQuestions[type.value] || formQuestions.default
 })
 
+const store = useRootStore()
+const { plantParts } = storeToRefs(store)
+store.fetchDeclarationFieldsData()
+
 const plantFamilies = [] // TODO: fetch options from DB
 const substanceTypes = [] // TODO: fetch options from DB
 const ingredientTypes = [] // TODO: fetch options from DB
@@ -226,16 +238,12 @@ const synonyms = [
   { label: "Cassius", type: "Nom en latin" },
 ]
 
-const plantParts = [
-  { label: "Root", id: 1 },
-  { label: "Leaf", id: 2 },
-]
 const substances = [
   { label: "Ex 1", id: 1 },
   { label: "Ex 2", id: 2 },
 ]
 
 const optionLabel = (options, id) => {
-  return options.find((o) => o.id === id)?.label || "Inconnu"
+  return options.find((o) => o.id === id)?.name || "Inconnu"
 }
 </script>
