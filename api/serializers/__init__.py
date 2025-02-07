@@ -10,9 +10,9 @@ from .global_roles import SimpleInstructorSerializer, SimpleVisorSerializer
 from .webinar import WebinarSerializer
 from .search_result import SearchResultSerializer
 from .plant import PlantSerializer, PlantPartSerializer, PlantModificationSerializer
-from .ingredient import IngredientSerializer
+from .ingredient import IngredientSerializer, IngredientModificationSerializer
 from .microorganism import MicroorganismSerializer, MicroorganismModificationSerializer
-from .substance import SubstanceSerializer, SubstanceShortSerializer
+from .substance import SubstanceSerializer, SubstanceShortSerializer, SubstanceModificationSerializer
 from .population import PopulationSerializer
 from .condition import ConditionSerializer
 from .effect import EffectSerializer
