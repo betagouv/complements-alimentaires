@@ -1,5 +1,4 @@
 from rest_framework.generics import ListAPIView, CreateAPIView
-from rest_framework.permissions import IsAuthenticated
 
 from api.serializers import PlantPartSerializer, PlantSerializer, PlantModificationSerializer
 from data.models import Plant, PlantPart
@@ -24,4 +23,4 @@ class PlantCreateView(CreateAPIView):
     model = Plant
     queryset = Plant.objects.all()
     serializer_class = PlantModificationSerializer
-    permission_classes = [IsAuthenticated, IsInstructor]
+    permission_classes = [IsInstructor]

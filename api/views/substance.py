@@ -1,5 +1,4 @@
 from rest_framework.generics import CreateAPIView
-from rest_framework.permissions import IsAuthenticated
 
 from api.serializers import SubstanceSerializer, SubstanceModificationSerializer
 from data.models import Substance
@@ -18,4 +17,4 @@ class SubstanceCreateView(CreateAPIView):
     model = Substance
     queryset = Substance.objects.all()
     serializer_class = SubstanceModificationSerializer
-    permission_classes = [IsAuthenticated, IsInstructor]
+    permission_classes = [IsInstructor]

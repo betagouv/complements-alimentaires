@@ -1,5 +1,4 @@
 from rest_framework.generics import CreateAPIView
-from rest_framework.permissions import IsAuthenticated
 
 from api.serializers import MicroorganismSerializer, MicroorganismModificationSerializer
 from data.models import Microorganism
@@ -18,4 +17,4 @@ class MicroorganismCreateView(CreateAPIView):
     model = Microorganism
     queryset = Microorganism.objects.all()
     serializer_class = MicroorganismModificationSerializer
-    permission_classes = [IsAuthenticated, IsInstructor]
+    permission_classes = [IsInstructor]
