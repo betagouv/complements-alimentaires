@@ -16,13 +16,7 @@
 
     <div v-else class="mb-4">
       <DeclarationFromTeleicareAlert v-if="payload.siccrfId" />
-      <DeclarationAlert
-        v-else-if="payload"
-        role="declarant"
-        :declaration="payload"
-        :snapshots="snapshots"
-        class="mb-4"
-      />
+      <DeclarationAlert v-if="payload" role="declarant" :declaration="payload" :snapshots="snapshots" class="mb-4" />
 
       <DsfrAlert
         class="mb-4"
