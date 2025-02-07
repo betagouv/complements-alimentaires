@@ -19,6 +19,7 @@ from data.models import (
     PlantPart,
     Population,
     Preparation,
+    Snapshot,
     Substance,
     SubstanceUnit,
 )
@@ -178,15 +179,23 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
     logger.info(f"Sur {len(IcaEtablissement.objects.all())} : {nb_created_companies} entreprises créées.")
 
 
-def get_most_recent(list_of_declarations):
-    most_recent_date = date.min
+def get_oldest_and_latest(list_of_declarations):
+    """
+    Cette fonction n'utilise pas les outils de comparaison de date de la BDD
+    car le champ `dcl_date` est un champ text et non date
+    """
+    latest_date = date.min
+    oldest_date = date.max
     for ica_declaration in list_of_declarations:
         current_date = convert_str_date(ica_declaration.dcl_date)
-        if most_recent_date < current_date:
-            most_recent_date = current_date
-            most_recent_dcl_date = ica_declaration.dcl_date
+        if current_date > latest_date:
+            latest_date = current_date
+            latest_dcl_date = ica_declaration.dcl_date
+        if current_date < oldest_date:
+            oldest_date = current_date
+            oldest_dcl_date = ica_declaration.dcl_date
 
-    return list_of_declarations.get(dcl_date=most_recent_dcl_date)
+    return list_of_declarations.get(dcl_date=oldest_dcl_date), list_of_declarations.get(dcl_date=latest_dcl_date)
 
 
 def convert_str_date(value, aware=False):
@@ -350,6 +359,22 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
         model.objects.bulk_create(bulk_of_objects)
 
 
+@transaction.atomic
+def add_final_state_snapshot(declaration, latest_ica_version_declaration, declaration_acceptation_date):
+    snapshot = Snapshot(
+        creation_date=declaration_acceptation_date,
+        modification_date=declaration_acceptation_date,
+        declaration=declaration,
+        status=Declaration.DeclarationStatus.AUTHORIZED,
+        json_declaration="",
+        comment=latest_ica_version_declaration.vrsdecl_observations_ac,
+        action="",
+        post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
+    )
+    with suppress_autotime(snapshot, ["creation_date", "modification_date"]):
+        snapshot.save()
+
+
 def create_declarations_from_teleicare_history(company_ids=[]):
     """
     Dans Teleicare une entreprise peut-être relié à une déclaration par 3 relations différentes :
@@ -369,7 +394,7 @@ def create_declarations_from_teleicare_history(company_ids=[]):
         # le champ date est stocké en text, il faut donc faire la conversion en python
         if all_ica_declarations.exists():
             try:
-                latest_ica_declaration = get_most_recent(all_ica_declarations)
+                oldest_ica_declaration, latest_ica_declaration = get_oldest_and_latest(all_ica_declarations)
             except MultipleObjectsReturned:
                 logger.error(
                     f"Ce IcaComplementAlimentaire cplalim_ident={ica_complement_alimentaire.cplalim_ident} n'a pas une unique déclaration la plus récente"
@@ -389,6 +414,11 @@ def create_declarations_from_teleicare_history(company_ids=[]):
             # la déclaration a une version finalisée
             if latest_ica_version_declaration:
                 declaration_creation_date = (
+                    convert_str_date(oldest_ica_declaration.dcl_date, aware=True)
+                    if oldest_ica_declaration.dcl_date
+                    else ""
+                )
+                declaration_acceptation_date = (
                     convert_str_date(latest_ica_declaration.dcl_date, aware=True)
                     if latest_ica_declaration.dcl_date
                     else ""
@@ -396,11 +426,12 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                 unit_quantity = re.findall(r"\d+", latest_ica_version_declaration.vrsdecl_djr)
                 declaration = Declaration(
                     creation_date=declaration_creation_date,
+                    # la date de modification est la date de fin de commercialisation si elle existe ou la date d'acceptation
                     modification_date=convert_str_date(
                         latest_ica_declaration.dcl_date_fin_commercialisation, aware=True
                     )
                     if latest_ica_declaration.dcl_date_fin_commercialisation
-                    else declaration_creation_date,
+                    else declaration_acceptation_date,
                     siccrf_id=ica_complement_alimentaire.cplalim_ident,
                     teleicare_id=create_teleicare_id(latest_ica_declaration),
                     galenic_formulation=GalenicFormulation.objects.get(
@@ -455,6 +486,9 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                         )
                         add_composition_from_teleicare_history(
                             declaration, latest_ica_version_declaration.vrsdecl_ident
+                        )
+                        add_final_state_snapshot(
+                            declaration, latest_ica_version_declaration, declaration_acceptation_date
                         )
                         nb_created_declarations += 1
                 except IntegrityError:
