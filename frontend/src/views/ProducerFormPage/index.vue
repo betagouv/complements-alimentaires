@@ -211,7 +211,7 @@ const readonly = computed(
 const showHistory = computed(
   () => !payload.value.siccrfId && (readonly.value || (!isNewDeclaration.value && payload.value.status !== "DRAFT"))
 )
-const showWithdrawal = computed(() => !payload.value.siccrfId && payload.value.status === "AUTHORIZED")
+const showWithdrawal = computed(() => payload.value.status === "AUTHORIZED")
 
 const components = computed(() => {
   const baseComponents = readonly.value ? [SummaryTab] : [ProductTab, CompositionTab, AttachmentTab, SummaryTab]
