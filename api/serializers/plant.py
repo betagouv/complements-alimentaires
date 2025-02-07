@@ -20,6 +20,7 @@ class PlantFamilySerializer(serializers.ModelSerializer):
     class Meta:
         model = PlantFamily
         fields = (
+            "id",
             "name",
             "is_obsolete",
             "name_en",

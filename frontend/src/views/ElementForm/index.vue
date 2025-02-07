@@ -24,9 +24,15 @@
               </DsfrInputGroup>
             </div>
             <div class="flex-1">
-              <DsfrInputGroup v-if="formForType.family">
+              <DsfrInputGroup v-if="formForType.family && plantFamiliesDisplay">
                 <!-- Question: multiselect or single? -->
-                <DsfrSelect v-model="state.family" label="Famille de la plante" :options="plantFamilies" required />
+                <DsfrSelect
+                  v-model="state.family"
+                  label="Famille de la plante"
+                  :options="plantFamiliesDisplay"
+                  labelKey="name"
+                  required
+                />
               </DsfrInputGroup>
             </div>
             <!-- TODO: add species -->
@@ -238,10 +244,10 @@ const formForType = computed(() => {
 })
 
 const store = useRootStore()
-const { plantParts } = storeToRefs(store)
+const { plantParts, plantFamilies } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
+store.fetchPlantFamilies()
 
-const plantFamilies = [] // TODO: fetch options from DB
 const substanceTypes = [] // TODO: fetch options from DB
 const ingredientTypes = [] // TODO: fetch options from DB
 
@@ -257,4 +263,8 @@ const selectOption = async (result) => {
 const optionLabel = (options, id) => {
   return options.find((o) => o.id === id)?.name || "Inconnu"
 }
+
+const plantFamiliesDisplay = computed(() => {
+  return plantFamilies.value?.map((family) => ({ value: family.id, text: family.name }))
+})
 </script>
