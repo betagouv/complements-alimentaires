@@ -10,6 +10,7 @@ from .common_ingredient import (
     COMMON_NAME_FIELDS,
     COMMON_READ_ONLY_FIELDS,
     CommonIngredientModificationSerializer,
+    WithName,
 )
 
 
@@ -84,8 +85,12 @@ class SubstanceSynonymModificationSerializer(serializers.ModelSerializer):
         fields = ("name",)
 
 
-class SubstanceModificationSerializer(CommonIngredientModificationSerializer):
+class SubstanceModificationSerializer(CommonIngredientModificationSerializer, WithName):
     synonyms = SubstanceSynonymModificationSerializer(many=True, source="substancesynonym_set")
+    cas_number = serializers.CharField(source="ca_cas_number", required=False)
+    einec_number = serializers.CharField(source="ca_einec_number", required=False)
+    max_quantity = serializers.FloatField(source="ca_max_quantity", required=False)
+    nutritional_reference = serializers.FloatField(source="ca_nutritional_reference", required=False)
 
     synonym_model = SubstanceSynonym
     synonym_set_field_name = "substancesynonym_set"
@@ -96,10 +101,10 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer):
             COMMON_FIELDS
             + COMMON_NAME_FIELDS
             + (
-                "ca_cas_number",
-                "ca_einec_number",
-                "ca_max_quantity",
-                "ca_nutritional_reference",
+                "cas_number",
+                "einec_number",
+                "max_quantity",
+                "nutritional_reference",
                 "unit",
             )
         )

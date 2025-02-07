@@ -225,9 +225,9 @@ class TestElementsCreateApi(APITestCase):
         substance = SubstanceFactory.create()
         self.assertEqual(Plant.objects.count(), 0)
         payload = {
-            "caName": "My new plant",
-            "caFamily": family.id,
-            "caStatus": IngredientStatus.AUTHORIZED,
+            "name": "My new plant",
+            "family": family.id,
+            "status": IngredientStatus.AUTHORIZED,
             "synonyms": [
                 {"name": "A latin name"},
                 {"name": "A latin name"},
@@ -236,8 +236,8 @@ class TestElementsCreateApi(APITestCase):
             ],
             "plantParts": [part_1.id, part_2.id],
             "substances": [substance.id],
-            "caPublicComments": "Test",
-            "caPrivateComments": "Test private",
+            "publicComments": "Test",
+            "privateComments": "Test private",
             "novelFood": True,
         }
         response = self.client.post(reverse("api:plant_create"), payload, format="json")
@@ -246,21 +246,21 @@ class TestElementsCreateApi(APITestCase):
 
         self.assertIn("id", body)
         plant = Plant.objects.get(id=body["id"])
-        self.assertEqual(plant.name, "My new plant")
-        self.assertEqual(plant.family, family)
+        self.assertEqual(plant.ca_name, "My new plant")
+        self.assertEqual(plant.ca_family, family)
         self.assertEqual(plant.plantsynonym_set.count(), 2)  # deduplication of synonym
         self.assertTrue(plant.plantsynonym_set.filter(name="A latin name").exists())
         self.assertTrue(plant.plantsynonym_set.filter(name="A second one").exists())
         self.assertEqual(plant.plant_parts.count(), 2)
         self.assertEqual(plant.substances.count(), 1)
-        self.assertEqual(plant.public_comments, "Test")
-        self.assertEqual(plant.private_comments, "Test private")
-        self.assertEqual(plant.status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(plant.ca_public_comments, "Test")
+        self.assertEqual(plant.ca_private_comments, "Test private")
+        self.assertEqual(plant.ca_status, IngredientStatus.AUTHORIZED)
         self.assertTrue(plant.novel_food)
 
     @authenticate
     def test_cannot_create_single_plant_not_authorized(self):
-        payload = {"caName": "My new plant"}
+        payload = {"name": "My new plant"}
         response = self.client.post(reverse("api:plant_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -274,16 +274,16 @@ class TestElementsCreateApi(APITestCase):
         substance = SubstanceFactory.create()
         self.assertEqual(Microorganism.objects.count(), 0)
         payload = {
-            "caGenus": "My new microorganism",
-            "caSpecies": "A species",
-            "caStatus": IngredientStatus.AUTHORIZED,
+            "genus": "My new microorganism",
+            "species": "A species",
+            "status": IngredientStatus.AUTHORIZED,
             "synonyms": [
                 {"name": "A latin name"},
                 {"name": "A second one"},
             ],
             "substances": [substance.id],
-            "caPublicComments": "Test",
-            "caPrivateComments": "Test private",
+            "publicComments": "Test",
+            "privateComments": "Test private",
             "novelFood": True,
         }
         response = self.client.post(reverse("api:microorganism_create"), payload, format="json")
@@ -292,20 +292,20 @@ class TestElementsCreateApi(APITestCase):
 
         self.assertIn("id", body)
         microorganism = Microorganism.objects.get(id=body["id"])
-        self.assertEqual(microorganism.genus, "My new microorganism")
-        self.assertEqual(microorganism.species, "A species")
+        self.assertEqual(microorganism.ca_genus, "My new microorganism")
+        self.assertEqual(microorganism.ca_species, "A species")
         self.assertEqual(microorganism.microorganismsynonym_set.count(), 2)  # deduplication of synonym
         self.assertTrue(microorganism.microorganismsynonym_set.filter(name="A latin name").exists())
         self.assertTrue(microorganism.microorganismsynonym_set.filter(name="A second one").exists())
         self.assertEqual(microorganism.substances.count(), 1)
-        self.assertEqual(microorganism.public_comments, "Test")
-        self.assertEqual(microorganism.private_comments, "Test private")
-        self.assertEqual(microorganism.status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(microorganism.ca_public_comments, "Test")
+        self.assertEqual(microorganism.ca_private_comments, "Test private")
+        self.assertEqual(microorganism.ca_status, IngredientStatus.AUTHORIZED)
         self.assertTrue(microorganism.novel_food)
 
     @authenticate
     def test_cannot_create_single_microorganism_not_authorized(self):
-        payload = {"caName": "My new microorganism"}
+        payload = {"name": "My new microorganism"}
         response = self.client.post(reverse("api:microorganism_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -319,13 +319,13 @@ class TestElementsCreateApi(APITestCase):
         unit = SubstanceUnitFactory.create()
         self.assertEqual(Substance.objects.count(), 0)
         payload = {
-            "caName": "My new substance",
+            "name": "My new substance",
             "synonyms": [],
-            "caStatus": IngredientStatus.AUTHORIZED,
-            "caCasNumber": "1234",
-            "caEinecNumber": "5678",
-            "caMaxQuantity": 3.4,
-            "caNutritionalReference": 1.2,
+            "status": IngredientStatus.AUTHORIZED,
+            "casNumber": "1234",
+            "einecNumber": "5678",
+            "maxQuantity": 3.4,
+            "nutritionalReference": 1.2,
             "unit": unit.id,
         }
         response = self.client.post(reverse("api:substance_create"), payload, format="json")
@@ -334,17 +334,17 @@ class TestElementsCreateApi(APITestCase):
 
         self.assertIn("id", body)
         substance = Substance.objects.get(id=body["id"])
-        self.assertEqual(substance.name, "My new substance")
-        self.assertEqual(substance.status, IngredientStatus.AUTHORIZED)
-        self.assertEqual(substance.cas_number, "1234")
-        self.assertEqual(substance.einec_number, "5678")
-        self.assertEqual(substance.max_quantity, 3.4)
-        self.assertEqual(substance.nutritional_reference, 1.2)
+        self.assertEqual(substance.ca_name, "My new substance")
+        self.assertEqual(substance.ca_status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(substance.ca_cas_number, "1234")
+        self.assertEqual(substance.ca_einec_number, "5678")
+        self.assertEqual(substance.ca_max_quantity, 3.4)
+        self.assertEqual(substance.ca_nutritional_reference, 1.2)
         self.assertEqual(substance.unit, unit)
 
     @authenticate
     def test_cannot_create_single_substance_not_authorized(self):
-        payload = {"caName": "My new substance"}
+        payload = {"name": "My new substance"}
         response = self.client.post(reverse("api:substance_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -358,9 +358,9 @@ class TestElementsCreateApi(APITestCase):
         substance = SubstanceFactory.create()
         self.assertEqual(Ingredient.objects.count(), 0)
         payload = {
-            "caName": "My new ingredient",
+            "name": "My new ingredient",
             "synonyms": [],
-            "caStatus": IngredientStatus.AUTHORIZED,
+            "status": IngredientStatus.AUTHORIZED,
             "ingredientType": 4,
             "substances": [substance.id],
         }
@@ -370,14 +370,14 @@ class TestElementsCreateApi(APITestCase):
 
         self.assertIn("id", body)
         ingredient = Ingredient.objects.get(id=body["id"])
-        self.assertEqual(ingredient.name, "My new ingredient")
-        self.assertEqual(ingredient.status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(ingredient.ca_name, "My new ingredient")
+        self.assertEqual(ingredient.ca_status, IngredientStatus.AUTHORIZED)
         self.assertEqual(ingredient.ingredient_type, IngredientType.ACTIVE_INGREDIENT)
         self.assertEqual(ingredient.activity, IngredientActivity.ACTIVE)
         self.assertEqual(ingredient.substances.count(), 1)
 
     @authenticate
     def test_cannot_create_single_ingredient_not_authorized(self):
-        payload = {"caName": "My new ingredient"}
+        payload = {"name": "My new ingredient"}
         response = self.client.post(reverse("api:ingredient_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

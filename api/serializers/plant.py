@@ -12,6 +12,7 @@ from .common_ingredient import (
     COMMON_READ_ONLY_FIELDS,
     CommonIngredientModificationSerializer,
     WithSubstances,
+    WithName,
 )
 
 
@@ -90,9 +91,10 @@ class PlantSynonymModificationSerializer(serializers.ModelSerializer):
         fields = ("name",)
 
 
-class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
+class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSubstances, WithName):
     synonyms = PlantSynonymModificationSerializer(many=True, source="plantsynonym_set")
     plant_parts = serializers.PrimaryKeyRelatedField(many=True, queryset=PlantPart.objects.all())
+    family = serializers.PrimaryKeyRelatedField(queryset=PlantFamily.objects.all(), source="ca_family")
 
     synonym_model = PlantSynonym
     synonym_set_field_name = "plantsynonym_set"
@@ -103,7 +105,7 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
             COMMON_FIELDS
             + COMMON_NAME_FIELDS
             + (
-                "ca_family",
+                "family",
                 "plant_parts",
                 "substances",
             )

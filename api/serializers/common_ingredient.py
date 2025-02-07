@@ -4,35 +4,33 @@ from rest_framework.exceptions import ParseError
 from data.models import Substance
 
 
-COMMON_NAME_FIELDS = (
-    "ca_name",
-    "name",
-)
+COMMON_NAME_FIELDS = ("name",)
 
 COMMON_FIELDS = (
     "id",
     "synonyms",
-    "ca_public_comments",
     "public_comments",
-    "ca_private_comments",
     "private_comments",
-    "ca_status",
+    "status",
     "novel_food",
 )
 
-COMMON_READ_ONLY_FIELDS = (
-    "id",
-    "name",
-    "public_comments",
-    "private_comments",
-)
+COMMON_READ_ONLY_FIELDS = ("id",)
 
 
 class WithSubstances(serializers.ModelSerializer):
     substances = serializers.PrimaryKeyRelatedField(many=True, queryset=Substance.objects.all())
 
 
+class WithName(serializers.ModelSerializer):
+    name = serializers.CharField(source="ca_name")
+
+
 class CommonIngredientModificationSerializer(serializers.ModelSerializer):
+    public_comments = serializers.CharField(source="ca_public_comments", required=False)
+    private_comments = serializers.CharField(source="ca_private_comments", required=False)
+    status = serializers.IntegerField(source="ca_status", required=False)
+
     # DRF ne gère pas automatiquement la création des nested-fields :
     # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
     def create(self, validated_data):

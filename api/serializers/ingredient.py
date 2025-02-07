@@ -12,6 +12,7 @@ from .common_ingredient import (
     COMMON_READ_ONLY_FIELDS,
     CommonIngredientModificationSerializer,
     WithSubstances,
+    WithName,
 )
 
 
@@ -57,7 +58,7 @@ class IngredientSynonymModificationSerializer(serializers.ModelSerializer):
         fields = ("name",)
 
 
-class IngredientModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
+class IngredientModificationSerializer(CommonIngredientModificationSerializer, WithSubstances, WithName):
     synonyms = IngredientSynonymModificationSerializer(many=True, source="ingredientsynonym_set")
 
     synonym_model = IngredientSynonym

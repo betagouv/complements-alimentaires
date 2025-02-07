@@ -57,6 +57,8 @@ class MicroorganismSynonymModificationSerializer(serializers.ModelSerializer):
 
 class MicroorganismModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
     synonyms = MicroorganismSynonymModificationSerializer(many=True, source="microorganismsynonym_set")
+    genus = serializers.CharField(source="ca_genus", required=False)
+    species = serializers.CharField(source="ca_species", required=False)
 
     synonym_model = MicroorganismSynonym
     synonym_set_field_name = "microorganismsynonym_set"
@@ -64,8 +66,8 @@ class MicroorganismModificationSerializer(CommonIngredientModificationSerializer
     class Meta:
         model = Microorganism
         fields = COMMON_FIELDS + (
-            "ca_genus",
-            "ca_species",
+            "genus",
+            "species",
             "substances",
         )
         read_only = COMMON_READ_ONLY_FIELDS
