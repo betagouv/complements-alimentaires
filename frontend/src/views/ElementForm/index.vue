@@ -17,14 +17,13 @@
       <FormWrapper class="mx-auto">
         <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4">
           <!-- TODO: validation -->
-          <!-- TODO: responsiveness -->
-          <div class="flex gap-x-4">
-            <div class="flex-1">
+          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-4">
+            <div class="col-span-2">
               <DsfrInputGroup>
                 <DsfrInput v-model="state.name" :label="formForType.name.label" required labelVisible />
               </DsfrInputGroup>
             </div>
-            <div class="flex-1">
+            <div class="col-span-2">
               <DsfrInputGroup v-if="formForType.family && plantFamiliesDisplay">
                 <!-- Question: multiselect or single? -->
                 <DsfrSelect
@@ -57,10 +56,8 @@
               activeText="Authorisé"
               inactiveText="Non authorisé"
               label-left
-              class="self-center"
+              class="self-center col-span-2 md:col-span-1"
             />
-          </div>
-          <div class="flex gap-x-4">
             <DsfrInputGroup v-if="formForType.einecsNumber">
               <DsfrInput v-model="state.einecsNumber" label="Numéro EINECS" labelVisible />
             </DsfrInputGroup>
@@ -71,7 +68,7 @@
               <DsfrInput v-model="state.source" label="Source" labelVisible />
             </DsfrInputGroup>
           </div>
-          <div class="grid md:grid-cols-2">
+          <div class="grid md:grid-cols-2 mt-4">
             <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4">
               <DsfrInput
                 v-for="(_, idx) in state.synonyms"
