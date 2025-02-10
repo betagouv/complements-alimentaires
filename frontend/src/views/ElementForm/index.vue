@@ -15,7 +15,7 @@
 
       <!-- TODO: tabs -->
       <FormWrapper class="mx-auto">
-        <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4">
+        <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
           <!-- TODO: validation -->
           <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-4">
             <div class="col-span-2">
@@ -88,8 +88,8 @@
             </DsfrFieldset>
           </div>
         </DsfrFieldset>
-        <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 !pb-0">
-          <div v-if="formForType.plantParts" class="flex items-center my-4">
+        <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
+          <div v-if="formForType.plantParts" class="grid md:grid-cols-3 items-end my-4 md:my-2">
             <DsfrMultiselect
               v-model="state.plantParts"
               :options="plantParts"
@@ -97,7 +97,7 @@
               search
               labelKey="name"
             />
-            <div class="ml-4">
+            <div class="md:ml-4 md:my-8 md:col-span-2">
               <DsfrTag
                 v-for="id in state.plantParts"
                 :key="id"
@@ -106,19 +106,19 @@
               ></DsfrTag>
             </div>
           </div>
-          <div v-if="formForType.substances" class="flex items-center my-4">
+          <div v-if="formForType.substances" class="grid md:grid-cols-3 items-end my-4 md:my-2">
             <!-- TODO: option to create new active substance -->
             <ElementAutocomplete
               autocomplete="nothing"
               label="Substances actives"
               label-visible
-              class="max-w-md grow"
+              class="max-w-md grow mb-3"
               hint="Tapez au moins trois caractères pour démarrer la recherche"
               :hideSearchButton="true"
               @selected="selectOption"
               type="substance"
             />
-            <div class="ml-4">
+            <div class="md:ml-4 md:my-7 md:col-span-2">
               <!-- TODO: align tags with input -->
               <!-- TODO: filter to only include substances -->
               <!-- TODO: make tags deleteable -->
@@ -131,14 +131,14 @@
             </div>
           </div>
           <!-- TODO: add max quantity, nutritional reference, unit for substance -->
-          <p><i>Population cible et à risque en construction</i></p>
+          <p class="my-4"><i>Population cible et à risque en construction</i></p>
         </DsfrFieldset>
-        <DsfrFieldset legend="Commentaires" legendClass="fr-h4">
+        <DsfrFieldset legend="Commentaires" legendClass="fr-h4 !mb-0">
           <div class="grid md:grid-cols-2 md:gap-4">
-            <div>
+            <div class="mb-4">
               <DsfrInput label="Commentaire public" v-model="state.publicComments" :isTextarea="true" label-visible />
             </div>
-            <div>
+            <div class="mb-4">
               <DsfrInput label="Commentaire privé" v-model="state.privateComments" :isTextarea="true" label-visible />
             </div>
           </div>
