@@ -13,7 +13,6 @@
         {{ typeName }}
       </p>
 
-      <!-- TODO: tabs -->
       <FormWrapper class="mx-auto">
         <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
           <!-- TODO: validation -->
@@ -25,7 +24,6 @@
             </div>
             <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
               <DsfrInputGroup>
-                <!-- Question: multiselect or single? -->
                 <DsfrSelect
                   v-model="state.family"
                   label="Famille de la plante"
@@ -46,7 +44,6 @@
               </DsfrInputGroup>
             </div>
             <DsfrInputGroup v-if="formForType.ingredientType">
-              <!-- Question: multiselect or single? -->
               <!-- Question: do we have this in the DB? -->
               <DsfrSelect v-model="state.ingredientType" label="Type ingrédient" :options="ingredientTypes" required />
             </DsfrInputGroup>
@@ -82,7 +79,6 @@
                 v-model="state.synonyms[idx].name"
                 class="mb-4"
               />
-              <!-- TODO: delete/edit per line -->
               <DsfrButton
                 label="Ajouter un synonyme"
                 @click="addNewSynonym"
@@ -125,8 +121,6 @@
               type="substance"
             />
             <div class="md:ml-4 md:my-7 md:col-span-2">
-              <!-- TODO: align tags with input -->
-              <!-- TODO: filter to only include substances -->
               <!-- TODO: make tags deleteable -->
               <DsfrTag
                 v-for="substance in state.substances"
@@ -158,7 +152,6 @@
               />
             </div>
           </div>
-          <!-- TODO: add max quantity, nutritional reference, unit for substance -->
           <p class="my-4"><i>Population cible et à risque en construction</i></p>
         </DsfrFieldset>
         <DsfrFieldset legend="Commentaires" legendClass="fr-h4 !mb-0">
@@ -172,10 +165,7 @@
           </div>
         </DsfrFieldset>
         <div class="flex gap-x-2 mt-4">
-          <!-- Question: cancel button? -->
-          <!-- Question: use DsfrButtonGroup? -->
           <DsfrButton label="Enregistrer ingrédient" @click="saveElement" :disabled="isFetching" />
-          <!-- <DsfrButton label="Sauvegarder brouillon" @click="saveAsDraft" :disabled="isFetching" secondary /> -->
         </div>
       </FormWrapper>
     </div>
@@ -183,7 +173,7 @@
 </template>
 
 <script setup>
-import { ref, computed /*, watch*/ } from "vue"
+import { ref, computed } from "vue"
 import { getTypeIcon, getTypeInFrench, unSlugifyType /*, getApiType*/ } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
@@ -197,9 +187,7 @@ import FormWrapper from "@/components/FormWrapper"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 import NumberField from "@/components/NumberField"
 
-// const props = defineProps({ urlComponent: String })
-// const elementId = computed(() => props.urlComponent.split("--")[0])
-// const type = computed(() => unSlugifyType(props.urlComponent.split("--")[1]))
+// TODO: make type changeable and prefillable via query param
 const type = ref("substance")
 const icon = computed(() => getTypeIcon(type.value))
 const typeName = computed(() => getTypeInFrench(type.value))
@@ -220,7 +208,7 @@ const state = ref({
   plantParts: [],
   substances: [],
   synonyms: [newSynonym(), newSynonym(), newSynonym()],
-}) // TODO: prefill with existing data if modifying
+})
 
 const isFetching = false // TODO: set to true when fetching data or sending update, see CompanyForm
 
@@ -232,7 +220,6 @@ const saveElement = async () => {
   if (payload.substances.length) {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
-  // TODO: this will need updating when modifying ingredients
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
   payload.status = payload.status ? 1 : 2
   const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
@@ -246,7 +233,6 @@ const saveElement = async () => {
     router.push({ name: "DashboardPage" })
   }
 }
-// const saveAsDraft = async () => {}
 const addNewSynonym = async () => {
   state.value.synonyms.push(newSynonym())
 }
