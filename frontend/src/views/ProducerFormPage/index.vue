@@ -8,8 +8,6 @@
       ]"
     />
 
-    <DeletionModal @delete="deleteDeclaration" v-if="payload.status === 'DRAFT' && payload.author === loggedUser.id" />
-
     <div v-if="isFetching" class="flex justify-center items-center min-h-60">
       <ProgressSpinner />
     </div>
@@ -83,6 +81,20 @@
         @back="selectTab(selectedTabIndex - 1)"
         @forward="selectTab(selectedTabIndex + 1)"
         :removeSaveLabel="readonly"
+      />
+      <hr class="mt-6" />
+      <DeletionModal
+        @delete="deleteDeclaration"
+        v-if="showDeletionModal"
+        class="mb-4"
+        :buttonLabel="isDraft ? 'Supprimer mon brouillon' : 'Abandonner cette déclaration'"
+        :helperText="isDraft ? 'Votre déclaration est en brouillon' : ''"
+        :actionButtonLabel="isDraft ? 'Supprimer' : 'Abandonner'"
+        :modalText="
+          isDraft
+            ? 'La suppression de votre déclaration n\'est pas réversible. Êtes-vous sûr de vouloir procéder ?'
+            : 'En mettant votre déclaration en abandon le procesus d\'instruction sera interrompu. Êtes-vous sûr de vouloir continuer ?'
+        "
       />
     </div>
   </div>
@@ -209,7 +221,7 @@ const readonly = computed(
 )
 
 const showHistory = computed(
-  () => !payload.value.siccrfId && (readonly.value || (!isNewDeclaration.value && payload.value.status !== "DRAFT"))
+  () => !payload.value.siccrfId && (readonly.value || (!isNewDeclaration.value && !isDraft.value))
 )
 const showWithdrawal = computed(() => !payload.value.siccrfId && payload.value.status === "AUTHORIZED")
 
@@ -266,9 +278,11 @@ const savePayload = async (successMessage = "Votre démarche a été sauvegardé
   }
 }
 
+const isDraft = computed(() => payload.value?.status === "DRAFT")
+
 const submitPayload = async (comment) => {
   if (requestInProgress.value) return
-  const path = payload.value.status === "DRAFT" ? "submit" : "resubmit"
+  const path = isDraft.value ? "submit" : "resubmit"
   const url = `/api/v1/declarations/${payload.value.id}/${path}/`
 
   requestInProgress.value = true
@@ -285,18 +299,39 @@ const submitPayload = async (comment) => {
   }
 }
 
+const showDeletionModal = computed(() => {
+  const statuses = [
+    "DRAFT",
+    "AWAITING_INSTRUCTION",
+    "ONGOING_INSTRUCTION",
+    "AWAITING_VISA",
+    "ONGOING_VISA",
+    "OBJECTION",
+    "OBSERVATION",
+  ]
+  return statuses.indexOf(payload.value?.status) > -1
+})
+
 const deleteDeclaration = async () => {
-  if (requestInProgress.value || !payload.value.status === "DRAFT") return
-  const url = `/api/v1/declarations/${payload.value.id}`
+  if (requestInProgress.value) return
+  const url = isDraft.value
+    ? `/api/v1/declarations/${payload.value.id}`
+    : `/api/v1/declarations/${payload.value.id}/abandon/`
+
+  const requestFunction = isDraft.value
+    ? useFetch(url, { headers: headers() }).delete
+    : useFetch(url, { headers: headers() }).post
+
   requestInProgress.value = true
-  const { response } = await useFetch(url, { headers: headers() }).delete().json()
+  const { response } = await requestFunction().json()
   requestInProgress.value = false
 
   statusChangeErrors.value = await handleError(response)
   if (statusChangeErrors.value) {
     window.scrollTo(0, 0)
   } else {
-    useToaster().addSuccessMessage("Votre déclaration a été supprimée")
+    const message = isDraft.value ? "Votre brouillon a été supprimée" : "Votre déclaration a été mise en abandon"
+    useToaster().addSuccessMessage(message)
     router.replace({ name: "DeclarationsHomePage" })
   }
 }

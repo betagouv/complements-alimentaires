@@ -15,6 +15,7 @@ from rest_framework.generics import (
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from unidecode import unidecode
+from viewflow.fsm.base import TransitionNotAllowed
 
 from api.exceptions import ProjectAPIException
 from api.permissions import (
@@ -508,7 +509,11 @@ class DeclarationFlowView(GenericAPIView):
         flow_permission_method = getattr(transition_method, "has_permission", None)
         if flow_permission_method and not flow_permission_method(request.user):
             raise PermissionDenied()
-        transition_method()
+        try:
+            transition_method()
+        except TransitionNotAllowed as e:
+            logger.exception(e)
+            raise ProjectAPIException(global_error="Erreur lors du changement de statut de la déclaration")
         self.to_status = declaration.status
         brevo_template_id = self.get_brevo_template_id(request, declaration)
         if self.create_snapshot:
@@ -626,6 +631,13 @@ class DeclarationWithdrawView(DeclarationFlowView):
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.WITHDRAW
     brevo_template_id = 8
+
+
+class DeclarationAbandonView(DeclarationFlowView):
+    permission_classes = [(IsDeclarationAuthor | IsDeclarant)]
+    transition = "abandon"
+    create_snapshot = True
+    snapshot_action = Snapshot.SnapshotActions.ABANDON
 
 
 class VisaDecisionView(DeclarationFlowView):
