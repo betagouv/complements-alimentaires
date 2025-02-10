@@ -17,6 +17,7 @@
       <FormWrapper class="mx-auto">
         <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4">
           <!-- TODO: validation -->
+          <!-- TODO: responsiveness -->
           <div class="flex gap-x-4">
             <div class="flex-1">
               <DsfrInputGroup>
@@ -70,23 +71,28 @@
               <DsfrInput v-model="state.source" label="Source" labelVisible />
             </DsfrInputGroup>
           </div>
-          <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4">
-            <ul>
-              <li v-for="(synonym, idx) in synonyms" :key="idx">{{ synonym.label }}, {{ synonym.type }}</li>
-            </ul>
-            <!-- TODO: table -->
-            <!-- TODO: delete/edit per line -->
-            <!-- TODO: add new line -->
-            <!-- TODO: if new, three ? editable lines by default -->
-            <DsfrButton label="Ajouter un synonyme" @click="addNewSynonym" icon="ri-add-line" size="sm" />
-          </DsfrFieldset>
-          <!-- name: {
-            label: "Nom de la plante",
-          },
-          family: true,
-          function: true,
-          // authorise: true for every type
-          // description is true for every type -->
+          <div class="grid md:grid-cols-2">
+            <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4">
+              <DsfrInput
+                v-for="(_, idx) in state.synonyms"
+                :key="`synonym-${idx}`"
+                v-model="state.synonyms[idx].name"
+                class="mb-4"
+              />
+              <!-- TODO: table -->
+              <!-- TODO: delete/edit per line -->
+              <!-- TODO: add new line -->
+              <!-- TODO: if new, three ? editable lines by default -->
+              <DsfrButton
+                label="Ajouter un synonyme"
+                @click="addNewSynonym"
+                icon="ri-add-line"
+                size="sm"
+                class="mt-2"
+                secondary
+              />
+            </DsfrFieldset>
+          </div>
         </DsfrFieldset>
         <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 !pb-0">
           <div v-if="formForType.plantParts" class="flex items-center my-4">
@@ -185,9 +191,13 @@ const breadcrumbLinks = computed(() => {
   return links
 })
 
+const EMPTY_SYNONYM = { name: "" }
+const newSynonym = () => JSON.parse(JSON.stringify(EMPTY_SYNONYM))
+
 const state = ref({
   plantParts: [],
   substances: [],
+  synonyms: [newSynonym(), newSynonym(), newSynonym()],
 }) // TODO: prefill with existing data if modifying
 
 const isFetching = false // TODO: set to true when fetching data or sending update, see CompanyForm
@@ -200,6 +210,8 @@ const saveElement = async () => {
   if (payload.substances.length) {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
+  // TODO: this will need updating when modifying ingredients
+  payload.synonyms = payload.synonyms.filter((s) => !!s.name)
   const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
   await handleError(response)
   if (response.value.ok) {
@@ -212,7 +224,9 @@ const saveElement = async () => {
   }
 }
 // const saveAsDraft = async () => {}
-const addNewSynonym = async () => {}
+const addNewSynonym = async () => {
+  state.value.synonyms.push(newSynonym())
+}
 
 const formQuestions = {
   plant: {
@@ -273,11 +287,6 @@ store.fetchPlantFamilies()
 
 const substanceTypes = [] // TODO: fetch options from DB
 const ingredientTypes = [] // TODO: fetch options from DB
-
-const synonyms = [
-  { label: "Example", type: "Nom en anglais" },
-  { label: "Cassius", type: "Nom en latin" },
-]
 
 const selectOption = async (result) => {
   state.value.substances.push(result)
