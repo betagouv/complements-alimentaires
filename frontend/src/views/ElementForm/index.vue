@@ -161,10 +161,11 @@ import { getTypeIcon, getTypeInFrench, unSlugifyType /*, getApiType*/ } from "@/
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 // import { firstErrorMsg } from "@/utils/forms"
-// import { useRoute, useRouter } from "vue-router"
+import { /*useRoute,*/ useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
+import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 
@@ -174,6 +175,7 @@ import ElementAutocomplete from "@/components/ElementAutocomplete"
 const type = ref("plant")
 const icon = computed(() => getTypeIcon(type.value))
 const typeName = computed(() => getTypeInFrench(type.value))
+const router = useRouter()
 
 const breadcrumbLinks = computed(() => {
   const links = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]
@@ -198,7 +200,12 @@ const saveElement = async () => {
   const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
   await handleError(response)
   if (response.value.ok) {
-    // TODO: redirect
+    useToaster().addMessage({
+      type: "success",
+      id: "element-creation-success",
+      description: "L'élément a été créé",
+    })
+    router.push({ name: "DashboardPage" })
   }
 }
 // const saveAsDraft = async () => {}
