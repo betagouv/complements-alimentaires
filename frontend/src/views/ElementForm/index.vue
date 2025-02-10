@@ -162,8 +162,9 @@ import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 // import { firstErrorMsg } from "@/utils/forms"
 // import { useRoute, useRouter } from "vue-router"
-// import { useFetch } from "@vueuse/core"
-// import { handleError } from "@/utils/error-handling"
+import { useFetch } from "@vueuse/core"
+import { headers } from "@/utils/data-fetching"
+import { handleError } from "@/utils/error-handling"
 import FormWrapper from "@/components/FormWrapper"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 
@@ -187,7 +188,19 @@ const state = ref({
 
 const isFetching = false // TODO: set to true when fetching data or sending update, see CompanyForm
 
-const saveElement = async () => {}
+const saveElement = async () => {
+  // TODO: map misc ingredient types to other-ingrediet with getApiType or whatever
+  const url = `/api/v1/${type.value}s/`
+  const payload = state.value
+  if (payload.substances.length) {
+    payload.substances = payload.substances.map((substance) => substance.id)
+  }
+  const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
+  await handleError(response)
+  if (response.value.ok) {
+    // TODO: redirect
+  }
+}
 // const saveAsDraft = async () => {}
 const addNewSynonym = async () => {}
 
