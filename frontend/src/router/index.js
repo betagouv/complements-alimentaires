@@ -107,6 +107,7 @@ const routes = [
     name: "ElementForm",
     component: ElementForm,
     meta: {
+      title: "Création élément",
       authenticationRequired: true,
       requiredRole: "InstructionRole",
     },

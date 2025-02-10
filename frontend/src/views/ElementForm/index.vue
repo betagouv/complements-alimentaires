@@ -4,7 +4,7 @@
       <div class="fr-container">
         <DsfrBreadcrumb :links="breadcrumbLinks" />
 
-        <h1 class="-mt-6 mb-4">Modification élément</h1>
+        <h1 class="-mt-6 mb-4">{{ pageTitle }}</h1>
       </div>
     </div>
     <div class="fr-container">
@@ -177,9 +177,11 @@ const icon = computed(() => getTypeIcon(type.value))
 const typeName = computed(() => getTypeInFrench(type.value))
 const router = useRouter()
 
+const pageTitle = "Création élément" // eventually will be computed on the action (create/modify)
+
 const breadcrumbLinks = computed(() => {
   const links = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]
-  // links.push({ text: `Modification élément ${elementId.value}` })
+  links.push({ text: pageTitle })
   return links
 })
 
@@ -191,6 +193,7 @@ const state = ref({
 const isFetching = false // TODO: set to true when fetching data or sending update, see CompanyForm
 
 const saveElement = async () => {
+  // TODO: validate form before anything else
   // TODO: map misc ingredient types to other-ingrediet with getApiType or whatever
   const url = `/api/v1/${type.value}s/`
   const payload = state.value
