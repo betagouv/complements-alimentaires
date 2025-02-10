@@ -18,13 +18,13 @@
         <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
           <!-- TODO: validation -->
           <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-8">
-            <div class="col-span-2 lg:col-span-5">
+            <div class="col-span-2 lg:col-span-5" v-if="formForType.name">
               <DsfrInputGroup>
                 <DsfrInput v-model="state.name" :label="formForType.name.label" required labelVisible />
               </DsfrInputGroup>
             </div>
-            <div class="col-span-2">
-              <DsfrInputGroup v-if="formForType.family && plantFamiliesDisplay">
+            <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
+              <DsfrInputGroup>
                 <!-- Question: multiselect or single? -->
                 <DsfrSelect
                   v-model="state.family"
@@ -35,10 +35,16 @@
                 />
               </DsfrInputGroup>
             </div>
-            <!-- TODO: add species -->
-            <DsfrInputGroup v-if="formForType.genre">
-              <DsfrInput v-model="state.genre" label="Genre" labelVisible />
-            </DsfrInputGroup>
+            <div v-if="formForType.species" class="col-span-2">
+              <DsfrInputGroup>
+                <DsfrInput v-model="state.species" label="Espèce du micro organisme" labelVisible required />
+              </DsfrInputGroup>
+            </div>
+            <div v-if="formForType.genus" class="col-span-2">
+              <DsfrInputGroup>
+                <DsfrInput v-model="state.genus" label="Genre" labelVisible required />
+              </DsfrInputGroup>
+            </div>
             <DsfrInputGroup v-if="formForType.ingredientType">
               <!-- Question: multiselect or single? -->
               <!-- Question: do we have this in the DB? -->
@@ -56,7 +62,7 @@
               activeText="Oui"
               inactiveText="Non"
               label-left
-              class="self-center"
+              class="self-center mt-4"
             />
             <DsfrToggleSwitch
               v-model="state.status"
@@ -64,7 +70,7 @@
               activeText="Authorisé"
               inactiveText="Non authorisé"
               label-left
-              class="self-center"
+              class="self-center mt-4"
             />
             <DsfrInputGroup v-if="formForType.einecsNumber">
               <DsfrInput v-model="state.einecsNumber" label="Numéro EINECS" labelVisible />
@@ -179,7 +185,7 @@ import ElementAutocomplete from "@/components/ElementAutocomplete"
 // const props = defineProps({ urlComponent: String })
 // const elementId = computed(() => props.urlComponent.split("--")[0])
 // const type = computed(() => unSlugifyType(props.urlComponent.split("--")[1]))
-const type = ref("plant")
+const type = ref("microorganism")
 const icon = computed(() => getTypeIcon(type.value))
 const typeName = computed(() => getTypeInFrench(type.value))
 const router = useRouter()
@@ -260,10 +266,8 @@ const formQuestions = {
     sourceEn: true,
   },
   microorganism: {
-    name: {
-      label: "Espèce du micro organisme",
-    },
-    genre: true,
+    species: true,
+    genus: true,
     function: true,
     substances: true,
   },
