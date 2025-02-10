@@ -79,10 +79,7 @@
                 v-model="state.synonyms[idx].name"
                 class="mb-4"
               />
-              <!-- TODO: table -->
               <!-- TODO: delete/edit per line -->
-              <!-- TODO: add new line -->
-              <!-- TODO: if new, three ? editable lines by default -->
               <DsfrButton
                 label="Ajouter un synonyme"
                 @click="addNewSynonym"
@@ -122,6 +119,7 @@
               hint="Tapez au moins trois caractères pour démarrer la recherche"
               :hideSearchButton="true"
               @selected="selectOption"
+              type="substance"
             />
             <div class="ml-4">
               <!-- TODO: align tags with input -->
