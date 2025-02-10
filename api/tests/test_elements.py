@@ -9,14 +9,17 @@ from data.factories import (
     MicroorganismFactory,
     PlantFactory,
     PlantPartFactory,
+    PlantFamilyFactory,
     SubstanceFactory,
+    SubstanceUnitFactory,
 )
-from data.models import IngredientType
+from data.models import IngredientType, Plant, IngredientStatus, Microorganism, Substance, Ingredient
+from data.choices import IngredientActivity
 
 from .utils import authenticate
 
 
-class TestElementsApi(APITestCase):
+class TestElementsFetchApi(APITestCase):
     def test_get_single_plant(self):
         plant = PlantFactory.create()
         response = self.client.get(reverse("api:single_plant", kwargs={"pk": plant.id}))
@@ -206,3 +209,171 @@ class TestElementsApi(APITestCase):
         self.assertEqual(len(body), 2)
         self.assertIsNotNone(filter(lambda x: x["id"] == part_1.id, body))
         self.assertIsNotNone(filter(lambda x: x["id"] == part_2.id, body))
+
+
+class TestElementsCreateApi(APITestCase):
+    @authenticate
+    def test_create_single_plant(self):
+        """
+        Une instructrice peut créer une nouvelle plante avec des synonymes
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        family = PlantFamilyFactory.create()
+        part_1 = PlantPartFactory.create()
+        part_2 = PlantPartFactory.create()
+        substance = SubstanceFactory.create()
+        self.assertEqual(Plant.objects.count(), 0)
+        payload = {
+            "name": "My new plant",
+            "family": family.id,
+            "status": IngredientStatus.AUTHORIZED,
+            "synonyms": [
+                {"name": "A latin name"},
+                {"name": "A latin name"},
+                {"name": "A second one"},
+                {"name": "My new plant"},
+            ],
+            "plantParts": [part_1.id, part_2.id],
+            "substances": [substance.id],
+            "publicComments": "Test",
+            "privateComments": "Test private",
+            "novelFood": True,
+        }
+        response = self.client.post(reverse("api:plant_create"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        body = response.json()
+
+        self.assertIn("id", body)
+        plant = Plant.objects.get(id=body["id"])
+        self.assertEqual(plant.ca_name, "My new plant")
+        self.assertEqual(plant.ca_family, family)
+        self.assertEqual(plant.plantsynonym_set.count(), 2)  # deduplication of synonym
+        self.assertTrue(plant.plantsynonym_set.filter(name="A latin name").exists())
+        self.assertTrue(plant.plantsynonym_set.filter(name="A second one").exists())
+        self.assertEqual(plant.plant_parts.count(), 2)
+        self.assertEqual(plant.substances.count(), 1)
+        self.assertEqual(plant.ca_public_comments, "Test")
+        self.assertEqual(plant.ca_private_comments, "Test private")
+        self.assertEqual(plant.ca_status, IngredientStatus.AUTHORIZED)
+        self.assertTrue(plant.novel_food)
+
+    @authenticate
+    def test_cannot_create_single_plant_not_authorized(self):
+        payload = {"name": "My new plant"}
+        response = self.client.post(reverse("api:plant_create"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_create_single_microorganism(self):
+        """
+        Une instructrice peut créer un nouveau microorganisme avec des synonymes
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        self.assertEqual(Microorganism.objects.count(), 0)
+        payload = {
+            "genus": "My new microorganism",
+            "species": "A species",
+            "status": IngredientStatus.AUTHORIZED,
+            "synonyms": [
+                {"name": "A latin name"},
+                {"name": "A second one"},
+            ],
+            "publicComments": "Test",
+            "privateComments": "Test private",
+            "novelFood": True,
+        }
+        response = self.client.post(reverse("api:microorganism_create"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        body = response.json()
+
+        self.assertIn("id", body)
+        microorganism = Microorganism.objects.get(id=body["id"])
+        self.assertEqual(microorganism.ca_genus, "My new microorganism")
+        self.assertEqual(microorganism.ca_species, "A species")
+        self.assertEqual(microorganism.microorganismsynonym_set.count(), 2)  # deduplication of synonym
+        self.assertTrue(microorganism.microorganismsynonym_set.filter(name="A latin name").exists())
+        self.assertTrue(microorganism.microorganismsynonym_set.filter(name="A second one").exists())
+        self.assertEqual(microorganism.substances.count(), 0)
+        self.assertEqual(microorganism.ca_public_comments, "Test")
+        self.assertEqual(microorganism.ca_private_comments, "Test private")
+        self.assertEqual(microorganism.ca_status, IngredientStatus.AUTHORIZED)
+        self.assertTrue(microorganism.novel_food)
+
+    @authenticate
+    def test_cannot_create_single_microorganism_not_authorized(self):
+        payload = {"name": "My new microorganism"}
+        response = self.client.post(reverse("api:microorganism_create"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_create_single_substance(self):
+        """
+        Une instructrice peut créer une nouvelle substance avec des synonymes
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        unit = SubstanceUnitFactory.create()
+        self.assertEqual(Substance.objects.count(), 0)
+        payload = {
+            "name": "My new substance",
+            "status": IngredientStatus.AUTHORIZED,
+            "casNumber": "1234",
+            "einecNumber": "5678",
+            "maxQuantity": 3.4,
+            "nutritionalReference": 1.2,
+            "unit": unit.id,
+        }
+        response = self.client.post(reverse("api:substance_create"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        body = response.json()
+
+        self.assertIn("id", body)
+        substance = Substance.objects.get(id=body["id"])
+        self.assertEqual(substance.ca_name, "My new substance")
+        self.assertEqual(substance.ca_status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(substance.ca_cas_number, "1234")
+        self.assertEqual(substance.ca_einec_number, "5678")
+        self.assertEqual(substance.ca_max_quantity, 3.4)
+        self.assertEqual(substance.ca_nutritional_reference, 1.2)
+        self.assertEqual(substance.unit, unit)
+
+    @authenticate
+    def test_cannot_create_single_substance_not_authorized(self):
+        payload = {"name": "My new substance"}
+        response = self.client.post(reverse("api:substance_create"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_create_single_ingredient(self):
+        """
+        Une instructrice peut créer un nouvel ingredient avec des synonymes
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        substance = SubstanceFactory.create()
+        self.assertEqual(Ingredient.objects.count(), 0)
+        payload = {
+            "name": "My new ingredient",
+            "status": IngredientStatus.AUTHORIZED,
+            "ingredientType": 4,
+            "substances": [substance.id],
+        }
+        response = self.client.post(reverse("api:ingredient_create"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        body = response.json()
+
+        self.assertIn("id", body)
+        ingredient = Ingredient.objects.get(id=body["id"])
+        self.assertEqual(ingredient.ca_name, "My new ingredient")
+        self.assertEqual(ingredient.ca_status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(ingredient.ingredient_type, IngredientType.ACTIVE_INGREDIENT)
+        self.assertEqual(ingredient.activity, IngredientActivity.ACTIVE)
+        self.assertEqual(ingredient.substances.count(), 1)
+
+    @authenticate
+    def test_cannot_create_single_ingredient_not_authorized(self):
+        payload = {"name": "My new ingredient"}
+        response = self.client.post(reverse("api:ingredient_create"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
