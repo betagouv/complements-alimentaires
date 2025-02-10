@@ -136,15 +136,13 @@
           <!-- TODO: add max quantity, nutritional reference, unit for substance -->
           <p><i>Population cible et à risque en construction</i></p>
         </DsfrFieldset>
-        <DsfrFieldset legend="Commentaire à destination du public" legendClass="fr-h4">
-          <div class="flex">
-            <DsfrInput label="Commentaire" v-model="state.publicComment" :isTextarea="true" />
-            <div class="mt-2">
-              <DsfrCheckbox
-                v-model="state.copyPublicCommentToPrivate"
-                name="copy-comment"
-                label="Copier dans les notes internes"
-              />
+        <DsfrFieldset legend="Commentaires" legendClass="fr-h4">
+          <div class="grid md:grid-cols-2 md:gap-4">
+            <div>
+              <DsfrInput label="Commentaire public" v-model="state.publicComments" :isTextarea="true" label-visible />
+            </div>
+            <div>
+              <DsfrInput label="Commentaire privé" v-model="state.privateComments" :isTextarea="true" label-visible />
             </div>
           </div>
         </DsfrFieldset>
