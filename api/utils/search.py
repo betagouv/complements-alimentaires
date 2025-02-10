@@ -7,15 +7,31 @@ from data.models.substance import Substance, SubstanceType
 
 
 def search_elements(query, deduplicate=False, exclude_not_authorized=False, exclude_vitamines_minerals=False):
+    term = query["term"]
+    query_type = query["type"]
     # Les plantes non autorisées peuvent être ajoutées en infimes quantités dans les elixirs
     # elles sont donc systématiquement renvoyées
-    plants = _get_plants(query, deduplicate, exclude_not_authorized=False)
-    microorganisms = _get_microorganisms(query, deduplicate, exclude_not_authorized)
-    ingredients = _get_ingredients(query, deduplicate, exclude_not_authorized)
-    substances = _get_substances(query, deduplicate, exclude_not_authorized, exclude_vitamines_minerals)
+    plants = (
+        _get_plants(term, deduplicate, exclude_not_authorized=False) if not query_type or query_type == "plant" else []
+    )
+    microorganisms = (
+        _get_microorganisms(term, deduplicate, exclude_not_authorized)
+        if not query_type or query_type == "microorganism"
+        else []
+    )
+    ingredients = (
+        _get_ingredients(term, deduplicate, exclude_not_authorized)
+        if not query_type or query_type == "other-ingredient"
+        else []
+    )
+    substances = (
+        _get_substances(term, deduplicate, exclude_not_authorized, exclude_vitamines_minerals)
+        if not query_type or query_type == "substance"
+        else []
+    )
 
     results = plants + microorganisms + ingredients + substances
-    results.sort(key=lambda x: SequenceMatcher(None, x.autocomplete_match, query).ratio(), reverse=True)
+    results.sort(key=lambda x: SequenceMatcher(None, x.autocomplete_match, term).ratio(), reverse=True)
 
     return results
 

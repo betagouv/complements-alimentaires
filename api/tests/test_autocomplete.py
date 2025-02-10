@@ -22,14 +22,14 @@ class TestAutocomplete(APITestCase):
         """
         A missing autocomplete term is considered a bad request
         """
-        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {})
+        response = self.client.post(f"{reverse('api:element_autocomplete')}", {})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_short_autocomplete_term(self):
         """
         A autocomplete term of less than three chars is considered a bad request
         """
-        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": "ab"})
+        response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": "ab"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.json()["globalError"], "Le terme de recherche doit être supérieur ou égal à 3 caractères"
@@ -54,7 +54,7 @@ class TestAutocomplete(APITestCase):
         # Ne devrait pas apparaître
         PlantFactory.create(ca_name="vanille")
 
-        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})
+        response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json()
 
@@ -87,7 +87,7 @@ class TestAutocomplete(APITestCase):
         # Ne devrait pas apparaître
         PlantFactory.create(ca_name="vanille")
 
-        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})
+        response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json()
 
@@ -125,7 +125,7 @@ class TestAutocomplete(APITestCase):
             ca_name="Ephedralite", siccrf_status=IngredientStatus.AUTHORIZED, to_be_entered_in_next_decree=True
         )
 
-        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})
+        response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json()
         returned_names = [result.get("name") for result in results]
@@ -154,7 +154,7 @@ class TestAutocomplete(APITestCase):
         ingredient_form_of_supply.substances.add(substance_not_to_be_returned)
         IngredientSynonymFactory.create(name="Vitamine C", standard_name=ingredient_form_of_supply)
 
-        response = self.client.post(f"{reverse('api:substance_autocomplete')}", {"term": autocomplete_term})
+        response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json()
@@ -163,3 +163,26 @@ class TestAutocomplete(APITestCase):
         self.assertFalse(substance_not_to_be_returned.name in returned_names)
         self.assertTrue(ingredient_form_of_supply.name in returned_names)
         self.assertEqual(len(returned_names), 1)
+
+    def test_autocomplete_filtered_by_type(self):
+        """
+        On peut filtrer les résultats par type
+        """
+        autocomplete_term = "eucal"
+
+        # Devrait apparaître en première position à cause de son score SequenceMatcher
+        eucalyptus_1 = SubstanceFactory.create(ca_name="eucalyptus")
+
+        # ne pas faire apparaître
+        IngredientFactory.create(ca_name="eucalyptus tree")
+
+        response = self.client.post(
+            f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term, "type": "substance"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()
+
+        returned_ids = [result.get("id") for result in results]
+        self.assertEqual(len(returned_ids), 1)
+        self.assertEqual(returned_ids[0], eucalyptus_1.id)
+        self.assertEqual(results[0]["objectType"], "substance")
