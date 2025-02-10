@@ -17,8 +17,8 @@
       <FormWrapper class="mx-auto">
         <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
           <!-- TODO: validation -->
-          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-4">
-            <div class="col-span-2">
+          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-8">
+            <div class="col-span-2 lg:col-span-5">
               <DsfrInputGroup>
                 <DsfrInput v-model="state.name" :label="formForType.name.label" required labelVisible />
               </DsfrInputGroup>
@@ -51,12 +51,20 @@
             </DsfrInputGroup>
 
             <DsfrToggleSwitch
+              v-model="state.novelFood"
+              label="Novel food"
+              activeText="Oui"
+              inactiveText="Non"
+              label-left
+              class="self-center"
+            />
+            <DsfrToggleSwitch
               v-model="state.status"
               label="Autorisation de l’ingrédient"
               activeText="Authorisé"
               inactiveText="Non authorisé"
               label-left
-              class="self-center col-span-2 md:col-span-1"
+              class="self-center"
             />
             <DsfrInputGroup v-if="formForType.einecsNumber">
               <DsfrInput v-model="state.einecsNumber" label="Numéro EINECS" labelVisible />
@@ -232,6 +240,7 @@ const formQuestions = {
     // authorise: true for every type
     // description is true for every type
     // synonymes are true for every type
+    // novelFood is true for every type TODO: not for aromes
     plantParts: true,
     substances: true,
     // population cible: true for everyone also not yet in our database
