@@ -52,7 +52,7 @@
             </DsfrInputGroup>
 
             <DsfrToggleSwitch
-              v-model="state.authorised"
+              v-model="state.status"
               label="Autorisation de l’ingrédient"
               activeText="Authorisé"
               inactiveText="Non authorisé"
@@ -208,6 +208,7 @@ const saveElement = async () => {
   }
   // TODO: this will need updating when modifying ingredients
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
+  payload.status = payload.status ? 1 : 2
   const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
   await handleError(response)
   if (response.value.ok) {
