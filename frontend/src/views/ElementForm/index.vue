@@ -50,11 +50,6 @@
               <!-- Question: do we have this in the DB? -->
               <DsfrSelect v-model="state.ingredientType" label="Type ingrédient" :options="ingredientTypes" required />
             </DsfrInputGroup>
-            <DsfrInputGroup v-if="formForType.substanceType">
-              <!-- Question: multiselect or single? -->
-              <!-- Question: do we have this in the DB? -->
-              <DsfrSelect v-model="state.substanceType" label="Type de substance" :options="substanceTypes" required />
-            </DsfrInputGroup>
 
             <DsfrToggleSwitch
               v-model="state.novelFood"
@@ -72,14 +67,11 @@
               label-left
               class="self-center mt-4"
             />
-            <DsfrInputGroup v-if="formForType.einecsNumber">
-              <DsfrInput v-model="state.einecsNumber" label="Numéro EINECS" labelVisible />
+            <DsfrInputGroup v-if="formForType.einecNumber">
+              <DsfrInput v-model="state.einecNumber" label="Numéro EINECS" labelVisible />
             </DsfrInputGroup>
             <DsfrInputGroup v-if="formForType.casNumber">
               <DsfrInput v-model="state.casNumber" label="Numéro CAS" labelVisible />
-            </DsfrInputGroup>
-            <DsfrInputGroup v-if="formForType.source">
-              <DsfrInput v-model="state.source" label="Source" labelVisible />
             </DsfrInputGroup>
           </div>
           <div class="grid md:grid-cols-2 mt-4">
@@ -144,6 +136,28 @@
               ></DsfrTag>
             </div>
           </div>
+          <div class="grid grid-cols-3 gap-x-8" v-if="formForType.nutritionalReference">
+            <div>
+              <NumberField
+                label="Apport nutritionnel de référence"
+                label-visible
+                v-model="state.nutritionalReference"
+              />
+            </div>
+            <div>
+              <NumberField label="Quantité maximale autorisée" label-visible v-model="state.maxQuantity" />
+            </div>
+            <div class="max-w-32">
+              <DsfrSelect
+                label="Unité"
+                label-visible
+                required
+                :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
+                v-model="state.unit"
+                defaultUnselectedText="Unité"
+              />
+            </div>
+          </div>
           <!-- TODO: add max quantity, nutritional reference, unit for substance -->
           <p class="my-4"><i>Population cible et à risque en construction</i></p>
         </DsfrFieldset>
@@ -181,11 +195,12 @@ import { handleError } from "@/utils/error-handling"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
+import NumberField from "@/components/NumberField"
 
 // const props = defineProps({ urlComponent: String })
 // const elementId = computed(() => props.urlComponent.split("--")[0])
 // const type = computed(() => unSlugifyType(props.urlComponent.split("--")[1]))
-const type = ref("microorganism")
+const type = ref("substance")
 const icon = computed(() => getTypeIcon(type.value))
 const typeName = computed(() => getTypeInFrench(type.value))
 const router = useRouter()
@@ -256,14 +271,11 @@ const formQuestions = {
     name: {
       label: "Nom de la substance",
     },
-    nameEn: {
-      label: "Nom de la substance en anglais",
-    },
-    substanceType: true,
-    einecsNumber: true,
+    einecNumber: true,
     casNumber: true,
-    source: true,
-    sourceEn: true,
+    nutritionalReference: true,
+    maxQuantity: true,
+    unit: true,
   },
   microorganism: {
     species: true,
@@ -274,9 +286,6 @@ const formQuestions = {
   default: {
     name: {
       label: "Nom ingrédient",
-    },
-    nameEn: {
-      label: "Nom ingrédient en anglais",
     },
     ingredientType: true,
     function: true,
@@ -292,7 +301,6 @@ const { plantParts, plantFamilies } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
 
-const substanceTypes = [] // TODO: fetch options from DB
 const ingredientTypes = [] // TODO: fetch options from DB
 
 const selectOption = async (result) => {
