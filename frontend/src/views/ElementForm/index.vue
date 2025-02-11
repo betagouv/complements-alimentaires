@@ -70,6 +70,7 @@
               <DsfrInput v-model="state.casNumber" label="Numéro CAS" labelVisible />
             </DsfrInputGroup>
             <DsfrToggleSwitch
+              v-if="!state.ingredientType || state.ingredientType != AROMA"
               v-model="state.novelFood"
               label="Novel food"
               activeText="Oui"
@@ -249,6 +250,7 @@ const saveElement = async () => {
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
   payload.status = payload.status ? 1 : 2
+  if (payload.ingredientType && payload.ingredientType == AROMA.value) delete payload.novelFood
 
   const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
   $externalResults.value = await handleError(response)
@@ -276,7 +278,7 @@ const formQuestions = {
     family: true,
     function: true,
     // authorise: true for every type
-    // novelFood is true for every type TODO: not for aromes
+    // novelFood is true for every type
     // synonymes are true for every type
     plantParts: true,
     substances: true,
@@ -360,4 +362,6 @@ const optionLabel = (options, id) => {
 const plantFamiliesDisplay = computed(() => {
   return plantFamilies.value?.map((family) => ({ value: family.id, text: family.name }))
 })
+
+const AROMA = ref(3)
 </script>
