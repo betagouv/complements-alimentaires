@@ -39,7 +39,6 @@
               label-left
               class="self-center mt-4 col-span-2 sm:col-span-1"
             />
-            <!-- TODO: either sort alphabetically or allow for search to select -->
             <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'family')">
                 <DsfrSelect
@@ -173,7 +172,7 @@
           </div>
         </DsfrFieldset>
         <div class="flex gap-x-2 mt-4">
-          <DsfrButton label="Enregistrer ingrédient" @click="saveElement" :disabled="isFetching" />
+          <DsfrButton label="Enregistrer ingrédient" @click="saveElement" />
         </div>
       </FormWrapper>
     </div>
@@ -352,7 +351,9 @@ const optionLabel = (options, id) => {
 }
 
 const plantFamiliesDisplay = computed(() => {
-  return plantFamilies.value?.map((family) => ({ value: family.id, text: family.name }))
+  return plantFamilies.value
+    ?.map((family) => ({ value: family.id, text: family.name }))
+    .sort((a, b) => a.text.localeCompare(b.text))
 })
 
 const AROMA = ref(3)
