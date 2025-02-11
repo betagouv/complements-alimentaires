@@ -15,7 +15,6 @@
 
       <FormWrapper :externalResults="$externalResults" class="mx-auto">
         <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
-          <!-- TODO: validation -->
           <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-8">
             <div class="col-span-2 lg:col-span-4" v-if="formForType.name">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'name')">
@@ -117,8 +116,6 @@
             </div>
           </div>
           <div v-if="formForType.substances" class="grid md:grid-cols-3 items-end my-4 md:my-2">
-            <!-- TODO: option to create new active substance -->
-            <!-- TODO: remove asterix -->
             <ElementAutocomplete
               autocomplete="nothing"
               label="Substances actives"
@@ -128,6 +125,7 @@
               :hideSearchButton="true"
               @selected="selectOption"
               type="substance"
+              :required="false"
             />
             <div class="md:ml-4 md:my-7 md:col-span-2">
               <!-- TODO: make tags deleteable -->
@@ -145,18 +143,16 @@
                 label="Apport nutritionnel de référence"
                 label-visible
                 v-model="state.nutritionalReference"
-                required
               />
             </DsfrInputGroup>
             <DsfrInputGroup :error-message="firstErrorMsg(v$, 'maxQuantity')">
-              <NumberField label="Quantité maximale autorisée" label-visible v-model="state.maxQuantity" required />
+              <NumberField label="Quantité maximale autorisée" label-visible v-model="state.maxQuantity" />
             </DsfrInputGroup>
             <div class="max-w-32">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'unit')">
                 <DsfrSelect
                   label="Unité"
                   label-visible
-                  required
                   :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
                   v-model="state.unit"
                   defaultUnselectedText="Unité"
@@ -203,7 +199,7 @@ import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
-import { firstErrorMsg, errorRequiredField, errorRequiredPositiveNumber } from "@/utils/forms"
+import { firstErrorMsg, errorRequiredField, errorNumeric } from "@/utils/forms"
 import { useVuelidate } from "@vuelidate/core"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
@@ -232,8 +228,6 @@ const state = ref({
   substances: [],
   synonyms: [newSynonym(), newSynonym(), newSynonym()],
 })
-
-const isFetching = false // TODO: set to true when fetching data or sending update, see CompanyForm
 
 const saveElement = async () => {
   v$.value.$reset()
@@ -277,7 +271,7 @@ const formQuestions = {
     },
     family: true,
     function: true,
-    // authorise: true for every type
+    // status: true for every type
     // novelFood is true for every type
     // synonymes are true for every type
     plantParts: true,
@@ -327,10 +321,8 @@ const rules = computed(() => {
     genus: form?.genus ? errorRequiredField : {},
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
-    // TODO: the following are optional
-    nutritionalReference: form?.nutritionalReference ? errorRequiredPositiveNumber : {},
-    maxQuantity: form?.maxQuantity ? errorRequiredPositiveNumber : {},
-    unit: form?.unit ? errorRequiredField : {},
+    nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
+    maxQuantity: form?.maxQuantity ? errorNumeric : {},
   }
 })
 watch(formForType, () => v$.value.$reset())
