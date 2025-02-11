@@ -43,10 +43,16 @@
                 <DsfrInput v-model="state.genus" label="Genre" labelVisible required />
               </DsfrInputGroup>
             </div>
-            <DsfrInputGroup v-if="formForType.ingredientType">
-              <!-- Question: do we have this in the DB? -->
-              <DsfrSelect v-model="state.ingredientType" label="Type ingrédient" :options="ingredientTypes" required />
-            </DsfrInputGroup>
+            <div class="col-span-2">
+              <DsfrInputGroup v-if="formForType.ingredientType">
+                <DsfrSelect
+                  v-model="state.ingredientType"
+                  label="Type de l'ingrédient"
+                  :options="ingredientTypes"
+                  required
+                />
+              </DsfrInputGroup>
+            </div>
 
             <DsfrToggleSwitch
               v-model="state.novelFood"
@@ -174,7 +180,7 @@
 
 <script setup>
 import { ref, computed } from "vue"
-import { getTypeIcon, getTypeInFrench, unSlugifyType /*, getApiType*/ } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 // import { firstErrorMsg } from "@/utils/forms"
@@ -188,7 +194,7 @@ import ElementAutocomplete from "@/components/ElementAutocomplete"
 import NumberField from "@/components/NumberField"
 
 // TODO: make type changeable and prefillable via query param
-const type = ref("substance")
+const type = ref("ingredient")
 const icon = computed(() => getTypeIcon(type.value))
 const typeName = computed(() => getTypeInFrench(type.value))
 const router = useRouter()
@@ -214,8 +220,7 @@ const isFetching = false // TODO: set to true when fetching data or sending upda
 
 const saveElement = async () => {
   // TODO: validate form before anything else
-  // TODO: map misc ingredient types to other-ingrediet with getApiType or whatever
-  const url = `/api/v1/${type.value}s/`
+  const url = `/api/v1/${getApiType(type.value)}s/`
   const payload = state.value
   if (payload.substances.length) {
     payload.substances = payload.substances.map((substance) => substance.id)
@@ -287,7 +292,13 @@ const { plantParts, plantFamilies } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
 
-const ingredientTypes = [] // TODO: fetch options from DB
+const ingredientTypes = [
+  { value: 1, text: "Nutriment (Forme d'apport)" },
+  { value: 2, text: "Additif" },
+  { value: 3, text: "Arôme" },
+  { value: 4, text: "Autre ingrédient actif" },
+  { value: 5, text: "Autre ingrédient" },
+]
 
 const selectOption = async (result) => {
   state.value.substances.push(result)
