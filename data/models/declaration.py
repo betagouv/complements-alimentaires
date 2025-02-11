@@ -28,6 +28,7 @@ from data.models import (
     Population,
     Preparation,
     Substance,
+    SubstanceType,
     SubstanceUnit,
     VisaRole,
 )
@@ -502,12 +503,34 @@ class Declaration(Historisable, TimeStampable):
                 self.declared_plants,
                 self.declared_microorganisms,
                 self.declared_substances,
+                self.computed_substances,
                 self.declared_ingredients,
             )
             empty_composition = all(not x.exists() for x in composition_ingredients)
             # cela ne devrait être possible que pour les plantes qui même non autorisées peuvent être ajoutées en infime quantité dans des elixirs
 
-            has_not_authorized_ingredients = (
+            if empty_composition:
+                self.calculated_article = ""
+                return
+
+            nutriment_filter = Q(substance__substance_types__contains=[SubstanceType.VITAMIN]) | Q(
+                substance__substance_types__contains=[SubstanceType.MINERAL]
+            )
+
+            has_overdose_nutriments = (
+                self.computed_substances_with_max_quantity_exceeded.filter(nutriment_filter).exists()
+                or self.declared_substances_with_max_quantity_exceeded.filter(nutriment_filter).exists()
+            )
+
+            if has_overdose_nutriments:
+                self.calculated_article = Declaration.Article.ARTICLE_18
+                return
+
+            if self.has_max_quantity_exceeded:
+                self.calculated_article = Declaration.Article.ANSES_REFERAL
+                return
+
+            has_unauthorized_ingredients = (
                 any(self.declared_plants.filter(plant__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_microorganisms.filter(microorganism__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
@@ -515,17 +538,15 @@ class Declaration(Historisable, TimeStampable):
                 or any(self.declared_ingredients.filter(ingredient__status=IngredientStatus.NOT_AUTHORIZED))
             )
 
+            if has_unauthorized_ingredients:
+                self.calculated_article = Declaration.Article.ARTICLE_16
+                return
+
             has_new_ingredients = any(
                 x.filter(new=True).exists() for x in composition_ingredients if issubclass(x.model, Addable)
             )
 
-            if empty_composition:
-                self.calculated_article = ""
-            elif self.has_max_quantity_exceeded:
-                self.calculated_article = Declaration.Article.ANSES_REFERAL
-            elif has_not_authorized_ingredients:
-                self.calculated_article = Declaration.Article.ARTICLE_16
-            elif has_new_ingredients:
+            if has_new_ingredients:
                 self.calculated_article = Declaration.Article.ARTICLE_16
             elif self.has_risky_ingredients or (self.galenic_formulation and self.galenic_formulation.is_risky):
                 self.calculated_article = Declaration.Article.ARTICLE_15_WARNING

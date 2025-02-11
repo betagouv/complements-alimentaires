@@ -11,7 +11,7 @@ from .ingredient import Ingredient, IngredientSynonym, IngredientSubstanceRelati
 from .ingredient_type import IngredientType
 from .microorganism import Microorganism, MicroorganismSynonym
 from .plant import Plant, PlantSynonym, PlantPart, PlantFamily, Part, PlantSubstanceRelation
-from .substance import Substance, SubstanceSynonym
+from .substance import Substance, SubstanceSynonym, SubstanceType
 from .population import Population
 from .condition import Condition
 from .effect import Effect

@@ -17,7 +17,7 @@ from data.factories import (
     SnapshotFactory,
     SubstanceFactory,
 )
-from data.models import Declaration, Snapshot
+from data.models import Declaration, Snapshot, SubstanceType
 from data.models.ingredient_status import IngredientStatus
 
 
@@ -278,6 +278,64 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration_not_autorized.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_not_autorized.calculated_article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_not_autorized.overridden_article, "")
+
+    def test_article_18(self):
+        SUBSTANCE_MAX_QUANTITY = 1.0
+        declaration_with_computed_nutriment_max_exceeded = InstructionReadyDeclarationFactory(
+            computed_substances=[],
+        )
+        substance = SubstanceFactory(ca_max_quantity=SUBSTANCE_MAX_QUANTITY, substance_types=[SubstanceType.VITAMIN])
+        ComputedSubstanceFactory(
+            substance=substance,
+            unit=substance.unit,
+            quantity=1.2,
+            declaration=declaration_with_computed_nutriment_max_exceeded,
+        )
+        declaration_with_computed_nutriment_max_exceeded.assign_calculated_article()
+        declaration_with_computed_nutriment_max_exceeded.save()
+        declaration_with_computed_nutriment_max_exceeded.refresh_from_db()
+        self.assertEqual(declaration_with_computed_nutriment_max_exceeded.article, Declaration.Article.ARTICLE_18)
+        self.assertEqual(
+            declaration_with_computed_nutriment_max_exceeded.calculated_article, Declaration.Article.ARTICLE_18
+        )
+        self.assertEqual(declaration_with_computed_nutriment_max_exceeded.overridden_article, "")
+
+        # La déclaration ne doit pas passer en saisine ANSES si la dose est exactement égale à la dose maximale
+        declaration_with_computed_nutriment_equals_max = InstructionReadyDeclarationFactory(
+            computed_substances=[],
+        )
+        ComputedSubstanceFactory(
+            substance=substance,
+            unit=substance.unit,
+            quantity=SUBSTANCE_MAX_QUANTITY,
+            declaration=declaration_with_computed_nutriment_equals_max,
+        )
+        declaration_with_computed_nutriment_equals_max.assign_calculated_article()
+        declaration_with_computed_nutriment_equals_max.save()
+        declaration_with_computed_nutriment_equals_max.refresh_from_db()
+        self.assertEqual(declaration_with_computed_nutriment_equals_max.article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(
+            declaration_with_computed_nutriment_equals_max.calculated_article, Declaration.Article.ARTICLE_15
+        )
+        self.assertEqual(declaration_with_computed_nutriment_equals_max.overridden_article, "")
+
+        declaration_with_declared_nutriment_max_exceeded = InstructionReadyDeclarationFactory(
+            computed_substances=[],
+        )
+        DeclaredSubstanceFactory(
+            substance=substance,
+            unit=substance.unit,
+            quantity=1.2,
+            declaration=declaration_with_declared_nutriment_max_exceeded,
+        )
+        declaration_with_declared_nutriment_max_exceeded.assign_calculated_article()
+        declaration_with_declared_nutriment_max_exceeded.save()
+        declaration_with_declared_nutriment_max_exceeded.refresh_from_db()
+        self.assertEqual(declaration_with_declared_nutriment_max_exceeded.article, Declaration.Article.ARTICLE_18)
+        self.assertEqual(
+            declaration_with_declared_nutriment_max_exceeded.calculated_article, Declaration.Article.ARTICLE_18
+        )
+        self.assertEqual(declaration_with_declared_nutriment_max_exceeded.overridden_article, "")
 
     def test_article_anses_referal(self):
         SUBSTANCE_MAX_QUANTITY = 1.0
