@@ -8,7 +8,7 @@ from data.models.substance import Substance, SubstanceType
 
 def search_elements(query, deduplicate=False, exclude_not_authorized=False, exclude_vitamines_minerals=False):
     term = query["term"]
-    query_type = query["type"]
+    query_type = query.get("type")
     # Les plantes non autorisées peuvent être ajoutées en infimes quantités dans les elixirs
     # elles sont donc systématiquement renvoyées
     plants = (
