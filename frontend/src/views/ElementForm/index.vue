@@ -40,6 +40,7 @@
               label-left
               class="self-center mt-4 col-span-2 sm:col-span-1"
             />
+            <!-- TODO: either sort alphabetically or allow for search to select -->
             <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'family')">
                 <DsfrSelect
@@ -116,6 +117,7 @@
           </div>
           <div v-if="formForType.substances" class="grid md:grid-cols-3 items-end my-4 md:my-2">
             <!-- TODO: option to create new active substance -->
+            <!-- TODO: remove asterix -->
             <ElementAutocomplete
               autocomplete="nothing"
               label="Substances actives"
@@ -213,7 +215,7 @@ const icon = computed(() => formForType.value.icon)
 const typeName = computed(() => getTypeInFrench(type.value))
 const router = useRouter()
 
-const pageTitle = "Création élément" // eventually will be computed on the action (create/modify)
+const pageTitle = "Nouvel ingrédient" // eventually will be computed on the action (create/modify)
 
 const breadcrumbLinks = computed(() => {
   const links = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]
@@ -323,6 +325,7 @@ const rules = computed(() => {
     genus: form?.genus ? errorRequiredField : {},
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
+    // TODO: the following are optional
     nutritionalReference: form?.nutritionalReference ? errorRequiredPositiveNumber : {},
     maxQuantity: form?.maxQuantity ? errorRequiredPositiveNumber : {},
     unit: form?.unit ? errorRequiredField : {},

@@ -92,7 +92,7 @@ const routes = [
     props: true,
   },
   {
-    path: "/nouvel-element/:type/:id",
+    path: "/ingredient-demande/:type/:id",
     name: "DeclaredElementPage",
     component: DeclaredElementPage,
     props: true,
@@ -103,7 +103,7 @@ const routes = [
     },
   },
   {
-    path: "/element-detail",
+    path: "/nouvel-ingredient",
     name: "ElementForm",
     component: ElementForm,
     meta: {
