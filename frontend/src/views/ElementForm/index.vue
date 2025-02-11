@@ -7,7 +7,7 @@
         <h1 class="-mt-6 mb-4">{{ pageTitle }}</h1>
       </div>
     </div>
-    <div class="fr-container">
+    <div v-if="formForType" class="fr-container">
       <p class="mt-6">
         <v-icon :name="icon" />
         {{ typeName }}
@@ -43,8 +43,8 @@
                 <DsfrInput v-model="state.genus" label="Genre" labelVisible required />
               </DsfrInputGroup>
             </div>
-            <div class="col-span-2">
-              <DsfrInputGroup v-if="formForType.ingredientType">
+            <div v-if="formForType.ingredientType" class="col-span-2">
+              <DsfrInputGroup>
                 <DsfrSelect
                   v-model="state.ingredientType"
                   label="Type de l'ingrédient"
@@ -175,16 +175,26 @@
         </div>
       </FormWrapper>
     </div>
+    <div v-else class="fr-container">
+      <div class="grid sm:grid-cols-2 gap-8 sm:p-8 m-8">
+        <DsfrTile
+          v-for="(content, type) in formQuestions"
+          :key="type"
+          :title="content.title"
+          :to="{ query: { type: type } }"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+import { ref, computed, watch } from "vue"
 import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 // import { firstErrorMsg } from "@/utils/forms"
-import { /*useRoute,*/ useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
@@ -193,9 +203,9 @@ import FormWrapper from "@/components/FormWrapper"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 import NumberField from "@/components/NumberField"
 
-// TODO: make type changeable and prefillable via query param
-const type = ref("ingredient")
-const icon = computed(() => getTypeIcon(type.value))
+const route = useRoute()
+const type = computed(() => route.query.type)
+const icon = computed(() => formForType.value.icon)
 const typeName = computed(() => getTypeInFrench(type.value))
 const router = useRouter()
 
@@ -244,6 +254,8 @@ const addNewSynonym = async () => {
 
 const formQuestions = {
   plant: {
+    title: "Plante",
+    icon: getTypeIcon("plant"),
     name: {
       label: "Nom de la plante",
     },
@@ -259,6 +271,8 @@ const formQuestions = {
     // public notes true for every type
   },
   substance: {
+    title: "Substance",
+    icon: getTypeIcon("substance"),
     name: {
       label: "Nom de la substance",
     },
@@ -269,12 +283,16 @@ const formQuestions = {
     unit: true,
   },
   microorganism: {
+    title: "Micro organisme",
+    icon: getTypeIcon("microorganism"),
     species: true,
     genus: true,
     function: true,
     substances: true,
   },
-  default: {
+  ingredient: {
+    title: "Autre ingrédient",
+    icon: getTypeIcon("ingredient"),
     name: {
       label: "Nom ingrédient",
     },
@@ -284,7 +302,7 @@ const formQuestions = {
   },
 }
 const formForType = computed(() => {
-  return formQuestions[type.value] || formQuestions.default
+  return formQuestions[type.value]
 })
 
 const store = useRootStore()
