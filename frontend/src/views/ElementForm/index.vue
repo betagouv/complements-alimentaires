@@ -13,22 +13,22 @@
         {{ typeName }}
       </p>
 
-      <FormWrapper class="mx-auto">
+      <FormWrapper :externalResults="$externalResults" class="mx-auto">
         <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
           <!-- TODO: validation -->
           <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-8">
             <div class="col-span-2 lg:col-span-4" v-if="formForType.name">
-              <DsfrInputGroup>
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'name')">
                 <DsfrInput v-model="state.name" :label="formForType.name.label" required labelVisible />
               </DsfrInputGroup>
             </div>
             <div v-if="formForType.species" class="col-span-2">
-              <DsfrInputGroup>
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'species')">
                 <DsfrInput v-model="state.species" label="Espèce du micro-organisme" labelVisible required />
               </DsfrInputGroup>
             </div>
             <div v-if="formForType.genus" class="col-span-2">
-              <DsfrInputGroup>
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'genus')">
                 <DsfrInput v-model="state.genus" label="Genre" labelVisible required />
               </DsfrInputGroup>
             </div>
@@ -41,7 +41,7 @@
               class="self-center mt-4 col-span-2 sm:col-span-1"
             />
             <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
-              <DsfrInputGroup>
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'family')">
                 <DsfrSelect
                   v-model="state.family"
                   label="Famille de la plante"
@@ -52,7 +52,7 @@
               </DsfrInputGroup>
             </div>
             <div v-if="formForType.ingredientType" class="col-span-2">
-              <DsfrInputGroup>
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'ingredientType')">
                 <DsfrSelect
                   v-model="state.ingredientType"
                   label="Type de l'ingrédient"
@@ -193,11 +193,12 @@ import { ref, computed, watch } from "vue"
 import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-// import { firstErrorMsg } from "@/utils/forms"
 import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
+import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
+import { useVuelidate } from "@vuelidate/core"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
@@ -229,7 +230,13 @@ const state = ref({
 const isFetching = false // TODO: set to true when fetching data or sending update, see CompanyForm
 
 const saveElement = async () => {
-  // TODO: validate form before anything else
+  v$.value.$reset()
+  v$.value.$validate()
+  if (v$.value.$error) {
+    window.scrollTo(0, 0)
+    return
+  }
+
   const url = `/api/v1/${getApiType(type.value)}s/`
   const payload = state.value
   if (payload.substances.length) {
@@ -237,8 +244,10 @@ const saveElement = async () => {
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
   payload.status = payload.status ? 1 : 2
+
   const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
-  await handleError(response)
+  $externalResults.value = await handleError(response)
+
   if (response.value.ok) {
     useToaster().addMessage({
       type: "success",
@@ -262,9 +271,8 @@ const formQuestions = {
     family: true,
     function: true,
     // authorise: true for every type
-    // description is true for every type
-    // synonymes are true for every type
     // novelFood is true for every type TODO: not for aromes
+    // synonymes are true for every type
     plantParts: true,
     substances: true,
     // population cible: true for everyone also not yet in our database
@@ -304,6 +312,20 @@ const formQuestions = {
 const formForType = computed(() => {
   return formQuestions[type.value]
 })
+const rules = computed(() => {
+  const form = formForType.value
+  return {
+    name: form?.name ? errorRequiredField : {},
+    species: form?.species ? errorRequiredField : {},
+    genus: form?.genus ? errorRequiredField : {},
+    ingredientType: form?.ingredientType ? errorRequiredField : {},
+    family: form?.family ? errorRequiredField : {},
+  }
+})
+watch(formForType, () => v$.value.$reset())
+
+const $externalResults = ref({})
+const v$ = useVuelidate(rules, state, { $externalResults })
 
 const store = useRootStore()
 const { plantParts, plantFamilies } = storeToRefs(store)
