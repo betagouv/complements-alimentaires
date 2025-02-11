@@ -143,7 +143,12 @@ const selectedTabIndex = ref(parseInt(route.query.tab))
 
 const selectTab = async (index) => {
   if (requestInProgress.value) return
-  const allowTransition = readonly.value || (await savePayload())
+
+  // Si on vient du `CompositionTab` on calcule l'article. Ceci est un workaround pour éviter
+  // de calculer l'article dans le backend à chaque modification (ça peut être cher en termes
+  // de performance).
+  const forceArticleCalculation = components.value[previouslySelectedTabIndex.value] === CompositionTab
+  const allowTransition = readonly.value || (await savePayload({ forceArticleCalculation }))
   if (allowTransition) {
     router.replace({ query: { tab: index } })
     previouslySelectedTabIndex.value = index
@@ -198,7 +203,8 @@ watch(data, () => {
   const shouldDuplicate = route.query.duplicate && !props.id
   if (shouldDuplicate) {
     performDuplication(data.value)
-    savePayload("Votre déclaration a été dupliquée. Merci de renseigner les pièces jointes.")
+    const successMessage = "Votre déclaration a été dupliquée. Merci de renseigner les pièces jointes."
+    savePayload({ successMessage })
   } else payload.value = data.value
 })
 
@@ -236,11 +242,14 @@ const components = computed(() => {
 
 const titles = computed(() => tabTitles(components.value, !readonly.value))
 
-const savePayload = async (successMessage = "Votre démarche a été sauvegardée") => {
+const savePayload = async ({
+  successMessage = "Votre démarche a été sauvegardée",
+  forceArticleCalculation = false,
+} = {}) => {
   const isNewDeclaration = !payload.value.id
   const url = isNewDeclaration
-    ? `/api/v1/users/${loggedUser.value.id}/declarations/`
-    : `/api/v1/declarations/${payload.value.id}`
+    ? `/api/v1/users/${loggedUser.value.id}/declarations/${forceArticleCalculation ? "?force-article-calculation=true" : ""}`
+    : `/api/v1/declarations/${payload.value.id}${forceArticleCalculation ? "?force-article-calculation=true" : ""}`
   const httpMethod = isNewDeclaration ? "post" : "put"
   requestInProgress.value = true
   const { response, data } = await useFetch(url, { headers: headers() })[httpMethod](payload).json()
