@@ -137,25 +137,28 @@
             </div>
           </div>
           <div class="grid grid-cols-3 gap-x-8" v-if="formForType.nutritionalReference">
-            <div>
+            <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
               <NumberField
                 label="Apport nutritionnel de référence"
                 label-visible
                 v-model="state.nutritionalReference"
-              />
-            </div>
-            <div>
-              <NumberField label="Quantité maximale autorisée" label-visible v-model="state.maxQuantity" />
-            </div>
-            <div class="max-w-32">
-              <DsfrSelect
-                label="Unité"
-                label-visible
                 required
-                :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
-                v-model="state.unit"
-                defaultUnselectedText="Unité"
               />
+            </DsfrInputGroup>
+            <DsfrInputGroup :error-message="firstErrorMsg(v$, 'maxQuantity')">
+              <NumberField label="Quantité maximale autorisée" label-visible v-model="state.maxQuantity" required />
+            </DsfrInputGroup>
+            <div class="max-w-32">
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'unit')">
+                <DsfrSelect
+                  label="Unité"
+                  label-visible
+                  required
+                  :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
+                  v-model="state.unit"
+                  defaultUnselectedText="Unité"
+                />
+              </DsfrInputGroup>
             </div>
           </div>
           <p class="my-4"><i>Population cible et à risque en construction</i></p>
@@ -197,7 +200,7 @@ import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
-import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
+import { firstErrorMsg, errorRequiredField, errorRequiredPositiveNumber } from "@/utils/forms"
 import { useVuelidate } from "@vuelidate/core"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
@@ -320,6 +323,9 @@ const rules = computed(() => {
     genus: form?.genus ? errorRequiredField : {},
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
+    nutritionalReference: form?.nutritionalReference ? errorRequiredPositiveNumber : {},
+    maxQuantity: form?.maxQuantity ? errorRequiredPositiveNumber : {},
+    unit: form?.unit ? errorRequiredField : {},
   }
 })
 watch(formForType, () => v$.value.$reset())
