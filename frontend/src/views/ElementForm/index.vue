@@ -17,20 +17,9 @@
         <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
           <!-- TODO: validation -->
           <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-8">
-            <div class="col-span-2 lg:col-span-5" v-if="formForType.name">
+            <div class="col-span-2 lg:col-span-4" v-if="formForType.name">
               <DsfrInputGroup>
                 <DsfrInput v-model="state.name" :label="formForType.name.label" required labelVisible />
-              </DsfrInputGroup>
-            </div>
-            <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
-              <DsfrInputGroup>
-                <DsfrSelect
-                  v-model="state.family"
-                  label="Famille de la plante"
-                  :options="plantFamiliesDisplay"
-                  labelKey="name"
-                  required
-                />
               </DsfrInputGroup>
             </div>
             <div v-if="formForType.species" class="col-span-2">
@@ -41,6 +30,25 @@
             <div v-if="formForType.genus" class="col-span-2">
               <DsfrInputGroup>
                 <DsfrInput v-model="state.genus" label="Genre" labelVisible required />
+              </DsfrInputGroup>
+            </div>
+            <DsfrToggleSwitch
+              v-model="state.status"
+              label="Autorisation de l’ingrédient"
+              activeText="Authorisé"
+              inactiveText="Non authorisé"
+              label-left
+              class="self-center mt-4 col-span-2 sm:col-span-1"
+            />
+            <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
+              <DsfrInputGroup>
+                <DsfrSelect
+                  v-model="state.family"
+                  label="Famille de la plante"
+                  :options="plantFamiliesDisplay"
+                  labelKey="name"
+                  required
+                />
               </DsfrInputGroup>
             </div>
             <div v-if="formForType.ingredientType" class="col-span-2">
@@ -54,28 +62,20 @@
               </DsfrInputGroup>
             </div>
 
-            <DsfrToggleSwitch
-              v-model="state.novelFood"
-              label="Novel food"
-              activeText="Oui"
-              inactiveText="Non"
-              label-left
-              class="self-center mt-4"
-            />
-            <DsfrToggleSwitch
-              v-model="state.status"
-              label="Autorisation de l’ingrédient"
-              activeText="Authorisé"
-              inactiveText="Non authorisé"
-              label-left
-              class="self-center mt-4"
-            />
             <DsfrInputGroup v-if="formForType.einecNumber">
               <DsfrInput v-model="state.einecNumber" label="Numéro EINECS" labelVisible />
             </DsfrInputGroup>
             <DsfrInputGroup v-if="formForType.casNumber">
               <DsfrInput v-model="state.casNumber" label="Numéro CAS" labelVisible />
             </DsfrInputGroup>
+            <DsfrToggleSwitch
+              v-model="state.novelFood"
+              label="Novel food"
+              activeText="Oui"
+              inactiveText="Non"
+              label-left
+              class="self-center mt-4 col-span-2 sm:col-span-1"
+            />
           </div>
           <div class="grid md:grid-cols-2 mt-4">
             <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4">
