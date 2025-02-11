@@ -22,7 +22,7 @@ click-plugins==1.1.1 ; python_version >= "3.11" and python_version < "4"
 click-repl==0.3.0 ; python_version >= "3.11" and python_version < "4"
 click==8.1.7 ; python_version >= "3.11" and python_version < "4"
 colorama==0.4.6 ; python_version >= "3.11" and python_version < "4" and (sys_platform == "win32" or platform_system == "Windows")
-cryptography==44.0.0 ; python_version >= "3.11" and python_version < "4"
+cryptography==44.0.1 ; python_version >= "3.11" and python_version < "4"
 cssselect2==0.7.0 ; python_version >= "3.11" and python_version < "4"
 decorator==5.1.1 ; python_version >= "3.11" and python_version < "4"
 distlib==0.3.9 ; python_version >= "3.11" and python_version < "4"
