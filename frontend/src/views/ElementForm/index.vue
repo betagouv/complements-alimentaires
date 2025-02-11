@@ -24,7 +24,7 @@
             </div>
             <div v-if="formForType.species" class="col-span-2">
               <DsfrInputGroup>
-                <DsfrInput v-model="state.species" label="Espèce du micro organisme" labelVisible required />
+                <DsfrInput v-model="state.species" label="Espèce du micro-organisme" labelVisible required />
               </DsfrInputGroup>
             </div>
             <div v-if="formForType.genus" class="col-span-2">
@@ -283,7 +283,7 @@ const formQuestions = {
     unit: true,
   },
   microorganism: {
-    title: "Micro organisme",
+    title: "Micro-organisme",
     icon: getTypeIcon("microorganism"),
     species: true,
     genus: true,
