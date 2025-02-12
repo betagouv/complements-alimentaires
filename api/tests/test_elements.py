@@ -12,6 +12,7 @@ from data.factories import (
     PlantFamilyFactory,
     SubstanceFactory,
     SubstanceUnitFactory,
+    PlantSynonymFactory,
 )
 from data.models import IngredientType, Plant, IngredientStatus, Microorganism, Substance, Ingredient
 from data.choices import IngredientActivity
@@ -426,7 +427,35 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(substance.ca_name, "test")
         self.assertEqual(substance.unit, new_unit, "Les champs sans ca_ équivelant sont aussi sauvegardés")
 
-    # TODO: modify main fields
+    @authenticate
+    def test_can_modify_add_delete_synonyms(self):
+        """
+        En passant tous les synonyms c'est possible de MAJ les synonymes
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        plant = PlantFactory.create()
+        PlantSynonymFactory.create(name="Old name", standard_name=plant)
+        synonym_2 = PlantSynonymFactory.create(name="Don't change", standard_name=plant)
+        synonym_to_delete = PlantSynonymFactory.create(standard_name=plant)
+
+        response = self.client.patch(
+            reverse("api:single_plant", kwargs={"pk": plant.id}),
+            {"synonyms": [{"name": "New synonyme"}, {"name": "New name"}, {"name": synonym_2.name}]},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        plant.refresh_from_db()
+        self.assertEqual(plant.plantsynonym_set.count(), 3)
+        self.assertTrue(plant.plantsynonym_set.filter(name="New synonyme").exists())
+        self.assertTrue(plant.plantsynonym_set.filter(name="New name").exists())
+        self.assertTrue(plant.plantsynonym_set.filter(name="Don't change").exists())
+        self.assertFalse(plant.plantsynonym_set.filter(name=synonym_to_delete.name).exists())
+        # TODO: how to handle invalid ids?
+        # TODO: how to handle ids not attached to this ingredient?
+        # TODO: what about modifying to then match an existing synonym?
+        # TODO: what about invalid synonym format?
+        # -> atomicise transaction
+
     # TODO: modify synonymes
     # TODO: modify substances
     # TODO: delete by marking as obsolete
