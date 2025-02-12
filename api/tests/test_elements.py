@@ -393,18 +393,22 @@ class TestElementsCreateApi(APITestCase):
 
 
 class TestElementsModifyApi(APITestCase):
-    # def test_cannot_modify_ingredient_not_authenticated(self):
-    #     substance = SubstanceFactory.create(siccrf_name="original name")
-    #     response = self.client.patch(reverse("api:single_substance", kwargs={"pk": substance.id}), {"name": "test"}, format="json")
-    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-    #     self.assertEqual(substance.name, "original name")
+    def test_cannot_modify_ingredient_not_authenticated(self):
+        substance = SubstanceFactory.create(siccrf_name="original name", ca_name="")
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}), {"name": "test"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(substance.name, "original name")
 
-    # @authenticate
-    # def test_cannot_modify_ingredient_not_instructor(self):
-    #     substance = SubstanceFactory.create(siccrf_name="original name")
-    #     response = self.client.patch(reverse("api:single_substance", kwargs={"pk": substance.id}), {"name": "test"}, format="json")
-    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-    #     self.assertEqual(substance.name, "original name")
+    @authenticate
+    def test_cannot_modify_ingredient_not_instructor(self):
+        substance = SubstanceFactory.create(siccrf_name="original name", ca_name="")
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}), {"name": "test"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(substance.name, "original name")
 
     @authenticate
     def test_can_modify_ingredient_ca_fields(self):

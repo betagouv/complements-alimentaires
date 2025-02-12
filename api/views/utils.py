@@ -1,4 +1,7 @@
+from rest_framework import permissions
 from rest_framework.generics import RetrieveUpdateAPIView
+
+from api.permissions import IsInstructor
 
 
 class IngredientRetrieveUpdateView(RetrieveUpdateAPIView):
@@ -8,8 +11,11 @@ class IngredientRetrieveUpdateView(RetrieveUpdateAPIView):
             context["history"] = True
         return context
 
-    # TODO: limit modifications to Instructors
-    # def update(self, instance, validated_data):
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return []
+        else:
+            return [IsInstructor()]
 
     def get_serializer_class(self):
         if self.request.method != "GET":
