@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 
@@ -33,6 +35,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
 
     # DRF ne gère pas automatiquement la création des nested-fields :
     # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
+    @transaction.atomic
     def create(self, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
         ingredient = super().create(validated_data)
@@ -42,11 +45,15 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
 
         return ingredient
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
         super().update(instance, validated_data)
 
-        new_synonym_list = [s["name"] for s in synonyms]
+        try:
+            new_synonym_list = [s["name"] for s in synonyms]
+        except KeyError:
+            raise ParseError(detail="Must provide 'name' to create new synonym")
         existing_synonyms = getattr(instance, self.synonym_set_field_name)
 
         # TODO: is it important to update, rather delete and recreate, 'new' synonyms ?

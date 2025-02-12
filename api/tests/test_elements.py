@@ -461,8 +461,24 @@ class TestElementsModifyApi(APITestCase):
         self.assertTrue(plant.plantsynonym_set.filter(name="New name").exists())
         self.assertTrue(plant.plantsynonym_set.filter(name="Don't change").exists())
         self.assertFalse(plant.plantsynonym_set.filter(name=synonym_to_delete.name).exists())
-        # TODO: what about invalid synonym format?
-        # -> atomicise transaction
+
+    @authenticate
+    def test_atomic_transaction_synonym_fail(self):
+        """
+        Si la MAJ de synonymes échoue, ignore toutes les modifs
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        plant = PlantFactory.create()
+        PlantSynonymFactory.create(name="a plant", standard_name=plant)
+        self.client.patch(
+            reverse("api:single_plant", kwargs={"pk": plant.id}),
+            {"name": "New name", "synonyms": [{"name": "New synonym"}, {"test": "bad format"}]},
+            format="json",
+        )
+        plant.refresh_from_db()
+        self.assertNotEqual(plant.name, "New name")
+        self.assertEqual(plant.plantsynonym_set.count(), 1)
+        self.assertTrue(plant.plantsynonym_set.filter(name="a plant").exists())
 
     @authenticate
     def test_can_modify_add_delete_substances(self):
@@ -487,5 +503,3 @@ class TestElementsModifyApi(APITestCase):
         self.assertTrue(microorganism.substances.filter(id=substance.id).exists())
         self.assertTrue(microorganism.substances.filter(id=new_substance.id).exists())
         self.assertFalse(microorganism.substances.filter(id=substance_to_delete.id).exists())
-
-    # TODO: delete by marking as obsolete
