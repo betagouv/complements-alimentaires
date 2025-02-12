@@ -456,6 +456,28 @@ class TestElementsModifyApi(APITestCase):
         # TODO: what about invalid synonym format?
         # -> atomicise transaction
 
-    # TODO: modify synonymes
-    # TODO: modify substances
+    @authenticate
+    def test_can_modify_add_delete_substances(self):
+        """
+        C'est possible de modifier la liste de substances associées à l'ingrédient
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        substance = SubstanceFactory.create()
+        substance_to_delete = SubstanceFactory.create()
+        new_substance = SubstanceFactory.create()
+
+        microorganism = MicroorganismFactory.create(substances=[substance, substance_to_delete])
+
+        response = self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {"substances": [substance.id, new_substance.id]},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        microorganism.refresh_from_db()
+        self.assertEqual(microorganism.substances.count(), 2)
+        self.assertTrue(microorganism.substances.filter(id=substance.id).exists())
+        self.assertTrue(microorganism.substances.filter(id=new_substance.id).exists())
+        self.assertFalse(microorganism.substances.filter(id=substance_to_delete.id).exists())
+
     # TODO: delete by marking as obsolete
