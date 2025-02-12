@@ -210,6 +210,18 @@ class TestElementsFetchApi(APITestCase):
         self.assertIsNotNone(filter(lambda x: x["id"] == part_1.id, body))
         self.assertIsNotNone(filter(lambda x: x["id"] == part_2.id, body))
 
+    def test_get_ingredient_returns_generated_fields(self):
+        """
+        L'endpoint utilisé pour modifier un ingrédient devrait rendre les données des champs générés
+        et non pas que le champ ca_X
+        J'ajoute un test en supposant qu'on réutilise la même logique entre les 4 types.
+        """
+        plant = PlantFactory.create(ca_name="", siccrf_name="SICCRF name")
+        response = self.client.get(reverse("api:single_plant", kwargs={"pk": plant.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+        self.assertEqual(body["name"], "SICCRF name")
+
 
 class TestElementsCreateApi(APITestCase):
     @authenticate
@@ -377,3 +389,10 @@ class TestElementsCreateApi(APITestCase):
         payload = {"name": "My new ingredient"}
         response = self.client.post(reverse("api:ingredient_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+# class TestElementsModifyApi(APITestCase):
+# TODO: modify main fields
+# TODO: modify synonymes
+# TODO: modify substances
+# TODO: delete by marking as obsolete
