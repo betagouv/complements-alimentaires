@@ -391,8 +391,42 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
-# class TestElementsModifyApi(APITestCase):
-# TODO: modify main fields
-# TODO: modify synonymes
-# TODO: modify substances
-# TODO: delete by marking as obsolete
+class TestElementsModifyApi(APITestCase):
+    # def test_cannot_modify_ingredient_not_authenticated(self):
+    #     substance = SubstanceFactory.create(siccrf_name="original name")
+    #     response = self.client.patch(reverse("api:single_substance", kwargs={"pk": substance.id}), {"name": "test"}, format="json")
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    #     self.assertEqual(substance.name, "original name")
+
+    # @authenticate
+    # def test_cannot_modify_ingredient_not_instructor(self):
+    #     substance = SubstanceFactory.create(siccrf_name="original name")
+    #     response = self.client.patch(reverse("api:single_substance", kwargs={"pk": substance.id}), {"name": "test"}, format="json")
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    #     self.assertEqual(substance.name, "original name")
+
+    @authenticate
+    def test_can_modify_ingredient_ca_fields(self):
+        """
+        Les instructrices peuvent modifier un ingrédient, et un mapping est fait entre le nom du champ sans prefix -> ca_
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        substance = SubstanceFactory.create(
+            siccrf_name="original name", ca_name="", unit=SubstanceUnitFactory.create()
+        )
+        new_unit = SubstanceUnitFactory.create()
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {"name": "test", "unit": new_unit.id},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        substance.refresh_from_db()
+        self.assertEqual(substance.siccrf_name, "original name")
+        self.assertEqual(substance.ca_name, "test")
+        self.assertEqual(substance.unit, new_unit, "Les champs sans ca_ équivelant sont aussi sauvegardés")
+
+    # TODO: modify main fields
+    # TODO: modify synonymes
+    # TODO: modify substances
+    # TODO: delete by marking as obsolete
