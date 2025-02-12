@@ -444,7 +444,14 @@ class TestElementsModifyApi(APITestCase):
 
         response = self.client.patch(
             reverse("api:single_plant", kwargs={"pk": plant.id}),
-            {"synonyms": [{"name": "New synonyme"}, {"name": "New name"}, {"name": synonym_2.name}]},
+            {
+                "synonyms": [
+                    {"name": "New synonyme"},
+                    {"name": "New name"},
+                    {"name": synonym_2.name},
+                    {"name": synonym_2.name},
+                ]
+            },
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -454,9 +461,6 @@ class TestElementsModifyApi(APITestCase):
         self.assertTrue(plant.plantsynonym_set.filter(name="New name").exists())
         self.assertTrue(plant.plantsynonym_set.filter(name="Don't change").exists())
         self.assertFalse(plant.plantsynonym_set.filter(name=synonym_to_delete.name).exists())
-        # TODO: how to handle invalid ids?
-        # TODO: how to handle ids not attached to this ingredient?
-        # TODO: what about modifying to then match an existing synonym?
         # TODO: what about invalid synonym format?
         # -> atomicise transaction
 
