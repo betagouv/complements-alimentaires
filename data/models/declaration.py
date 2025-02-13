@@ -1,12 +1,14 @@
 import json
 import logging
 from datetime import timedelta
+from pathlib import Path
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Case, F, Q, Value, When
 from django.db.models.functions import Coalesce
+from django.template.defaultfilters import filesizeformat
 
 from dateutil.relativedelta import relativedelta
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
@@ -478,9 +480,12 @@ class Declaration(Historisable, TimeStampable):
     @property
     def acceptation_date(self):
         if self.status == Declaration.DeclarationStatus.AUTHORIZED:
-            latest_snapshot = self.snapshots.filter(creation_date__isnull=False).latest("creation_date")
-            if latest_snapshot:
-                return latest_snapshot.creation_date.strftime('"%Y-%m-%d"')
+            if self.snapshots.exists():  ## Déclaration complalim
+                latest_snapshot = self.snapshots.filter(creation_date__isnull=False).latest("creation_date")
+                if latest_snapshot:
+                    return latest_snapshot.creation_date
+            else:  ## Déclaration Téléicare
+                return self.creation_date
 
     def assign_calculated_article(self):
         """
@@ -808,6 +813,20 @@ class Attachment(Historisable):
     @property
     def has_pdf_extension(self):
         return self.file and self.file.url.endswith(".pdf")
+
+    @property
+    def size(self):
+        try:
+            return self.file and self.file.size and filesizeformat(self.file.size)
+        except Exception as _:
+            return ""
+
+    @property
+    def extension(self):
+        try:
+            return self.file and self.file.name and Path(self.file.size).suffix
+        except Exception as _:
+            return ""
 
     @property
     def type_display(self):

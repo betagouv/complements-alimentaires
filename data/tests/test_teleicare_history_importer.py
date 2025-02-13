@@ -1,10 +1,11 @@
+import datetime
 from unittest.mock import patch
 
 from django.db import connection
 from django.test import TestCase
 
 from data.etl.teleicare_history.extractor import (
-    create_declaration_from_teleicare_history,
+    create_declarations_from_teleicare_history,
     match_companies_on_siret_or_vat,
 )
 from data.factories.company import CompanyFactory, _make_siret, _make_vat
@@ -21,6 +22,9 @@ from data.models.declaration import Declaration
 from data.models.teleicare_history.ica_declaration import (
     IcaComplementAlimentaire,
     IcaDeclaration,
+    IcaEffetDeclare,
+    IcaPopulationCibleDeclaree,
+    IcaPopulationRisqueDeclaree,
     IcaVersionDeclaration,
 )
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
@@ -36,7 +40,15 @@ class TeleicareHistoryImporterTestCase(TestCase):
         Adapted from: https://stackoverflow.com/a/49800437
         """
         super().setUp()
-        for table in [IcaEtablissement, IcaComplementAlimentaire, IcaDeclaration, IcaVersionDeclaration]:
+        for table in [
+            IcaEtablissement,
+            IcaComplementAlimentaire,
+            IcaDeclaration,
+            IcaVersionDeclaration,
+            IcaEffetDeclare,
+            IcaPopulationCibleDeclaree,
+            IcaPopulationRisqueDeclaree,
+        ]:
             with connection.schema_editor() as schema_editor:
                 schema_editor.create_model(table)
 
@@ -94,9 +106,9 @@ class TeleicareHistoryImporterTestCase(TestCase):
         n'est pas évident
         """
         vat_used_twice = _make_vat()
-        _ = EtablissementFactory(etab_siret=None, etab_numero_tva_intra=vat_used_twice)
-        _ = EtablissementFactory(etab_siret=None, etab_numero_tva_intra=vat_used_twice)
-        _ = CompanyFactory(vat=vat_used_twice)
+        EtablissementFactory(etab_siret=None, etab_numero_tva_intra=vat_used_twice)
+        EtablissementFactory(etab_siret=None, etab_numero_tva_intra=vat_used_twice)
+        CompanyFactory(vat=vat_used_twice)
 
         match_companies_on_siret_or_vat()
         mocked_logger.error.assert_called_with(
@@ -110,7 +122,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
         etablissement_to_create_as_company = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
         # devrait être créée malgré le numéro de téléphone mal formaté
-        _ = EtablissementFactory(etab_siret=None, etab_ica_importateur=True, etab_telephone="0345")
+        EtablissementFactory(etab_siret=None, etab_ica_importateur=True, etab_telephone="0345")
         self.assertEqual(Company.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident).count(), 0)
 
         match_companies_on_siret_or_vat(create_if_not_exist=True)
@@ -125,7 +137,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
     @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
     @patch("data.etl.teleicare_history.extractor.add_product_info_from_teleicare_history")
-    def test_create_declaration_from_history(self, mocked_add_composition_function, mocked_add_product_function):
+    def test_create_declarations_from_history(self, mocked_add_composition_function, mocked_add_product_function):
         """
         Les déclarations sont créées à partir d'object historiques des modèles Ica_
         """
@@ -148,7 +160,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
         )
 
         match_companies_on_siret_or_vat(create_if_not_exist=True)
-        create_declaration_from_teleicare_history()
+        create_declarations_from_teleicare_history()
 
         version_declaration_to_create_as_declaration.refresh_from_db()
         created_declaration = Declaration.objects.get(siccrf_id=CA_to_create_as_declaration.cplalim_ident)
@@ -170,4 +182,106 @@ class TeleicareHistoryImporterTestCase(TestCase):
         self.assertEqual(
             created_declaration.minimum_duration,
             str(version_declaration_to_create_as_declaration.vrsdecl_durabilite),
+        )
+
+    @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
+    @patch("data.etl.teleicare_history.extractor.add_product_info_from_teleicare_history")
+    def test_create_declarations_from_history_for_specific_company(
+        self, mocked_add_composition_function, mocked_add_product_function
+    ):
+        """
+        Les déclarations sont créées à partir d'object historiques des modèles Ica_ seulement pour les companies spécifiées
+        """
+        galenic_formulation_id = 1
+        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
+        unit_id = 1
+        SubstanceUnitFactory(siccrf_id=unit_id)
+        etablissement_to_create_as_company = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
+        matching_company = CompanyFactory(siccrf_id=etablissement_to_create_as_company.etab_ident)
+
+        CA_to_create_as_declaration = ComplementAlimentaireFactory(
+            etab=etablissement_to_create_as_company, frmgal_ident=galenic_formulation_id
+        )
+        declaration_to_create_as_declaration = DeclarationFactory(cplalim=CA_to_create_as_declaration, tydcl_ident=1)
+        version_declaration_to_create_as_declaration = VersionDeclarationFactory(
+            dcl=declaration_to_create_as_declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        other_etablissement = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
+        CompanyFactory(siccrf_id=other_etablissement.etab_ident)
+        other_CA = ComplementAlimentaireFactory(etab=other_etablissement)
+        other_declaration = DeclarationFactory(cplalim=other_CA, tydcl_ident=1)
+        VersionDeclarationFactory(
+            dcl=other_declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            vrsdecl_djr="32 kg of ppo",
+        )
+
+        create_declarations_from_teleicare_history(company_ids=[matching_company.id])
+
+        version_declaration_to_create_as_declaration.refresh_from_db()
+        self.assertEqual(Declaration.objects.all().count(), 1)
+        self.assertEqual(Declaration.objects.all()[0].name, CA_to_create_as_declaration.cplalim_nom)
+        self.assertEqual(Declaration.objects.all()[0].siccrf_id, CA_to_create_as_declaration.cplalim_ident)
+        self.assertEqual(Declaration.objects.filter(siccrf_id=other_CA.cplalim_ident).exists(), False)
+
+    @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
+    @patch("data.etl.teleicare_history.extractor.add_product_info_from_teleicare_history")
+    def test_acceptation_snapshot_is_created(self, mocked_add_composition_function, mocked_add_product_function):
+        galenic_formulation_id = 1
+        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
+        unit_id = 1
+        SubstanceUnitFactory(siccrf_id=unit_id)
+        etablissement = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
+        CA = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=galenic_formulation_id)
+        oldest_declaration = DeclarationFactory(
+            cplalim=CA,
+            tydcl_ident=1,
+            dcl_date="06/20/2017 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        latest_declaration = DeclarationFactory(
+            cplalim=CA,
+            tydcl_ident=1,
+            dcl_date="03/20/2021 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        VersionDeclarationFactory(
+            dcl=oldest_declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        VersionDeclarationFactory(
+            dcl=latest_declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        match_companies_on_siret_or_vat(create_if_not_exist=True)
+        create_declarations_from_teleicare_history()
+        declaration = Declaration.objects.get(siccrf_id=CA.cplalim_ident)
+        self.assertEqual(
+            declaration.creation_date, datetime.datetime(2017, 6, 20, 20, 20, 20, tzinfo=datetime.timezone.utc)
+        )
+        self.assertEqual(
+            declaration.modification_date, datetime.datetime(2021, 3, 20, 20, 20, 20, tzinfo=datetime.timezone.utc)
+        )
+        self.assertEqual(
+            declaration.snapshots.all().count(),
+            1,
+        )
+        self.assertEqual(
+            declaration.acceptation_date,
+            datetime.datetime(2021, 3, 20, 20, 20, 20, tzinfo=datetime.timezone.utc),
+        )
+        self.assertEqual(
+            declaration.snapshots.all().first().creation_date,
+            datetime.datetime(2021, 3, 20, 20, 20, 20, tzinfo=datetime.timezone.utc),
         )

@@ -12,6 +12,7 @@ from data.factories import (
     PlantFamilyFactory,
     SubstanceFactory,
     SubstanceUnitFactory,
+    PlantSynonymFactory,
 )
 from data.models import IngredientType, Plant, IngredientStatus, Microorganism, Substance, Ingredient
 from data.choices import IngredientActivity
@@ -210,6 +211,18 @@ class TestElementsFetchApi(APITestCase):
         self.assertIsNotNone(filter(lambda x: x["id"] == part_1.id, body))
         self.assertIsNotNone(filter(lambda x: x["id"] == part_2.id, body))
 
+    def test_get_ingredient_returns_generated_fields(self):
+        """
+        L'endpoint utilisé pour modifier un ingrédient devrait rendre les données des champs générés
+        et non pas que le champ ca_X
+        J'ajoute un test en supposant qu'on réutilise la même logique entre les 4 types.
+        """
+        plant = PlantFactory.create(ca_name="", siccrf_name="SICCRF name")
+        response = self.client.get(reverse("api:single_plant", kwargs={"pk": plant.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+        self.assertEqual(body["name"], "SICCRF name")
+
 
 class TestElementsCreateApi(APITestCase):
     @authenticate
@@ -393,3 +406,116 @@ class TestElementsCreateApi(APITestCase):
 
         ingredient = Ingredient.objects.get(name="My new ingredient")
         self.assertEqual(ingredient.history.first().history_change_reason, "CommonIngredientModificationSerializer")
+
+
+class TestElementsModifyApi(APITestCase):
+    def test_cannot_modify_ingredient_not_authenticated(self):
+        substance = SubstanceFactory.create(siccrf_name="original name", ca_name="")
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}), {"name": "test"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(substance.name, "original name")
+
+    @authenticate
+    def test_cannot_modify_ingredient_not_instructor(self):
+        substance = SubstanceFactory.create(siccrf_name="original name", ca_name="")
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}), {"name": "test"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(substance.name, "original name")
+
+    @authenticate
+    def test_can_modify_ingredient_ca_fields(self):
+        """
+        Les instructrices peuvent modifier un ingrédient, et un mapping est fait entre le nom du champ sans prefix -> ca_
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        substance = SubstanceFactory.create(
+            siccrf_name="original name", ca_name="", unit=SubstanceUnitFactory.create()
+        )
+        new_unit = SubstanceUnitFactory.create()
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {"name": "test", "unit": new_unit.id},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        substance.refresh_from_db()
+        self.assertEqual(substance.siccrf_name, "original name")
+        self.assertEqual(substance.ca_name, "test")
+        self.assertEqual(substance.unit, new_unit, "Les champs sans ca_ équivelant sont aussi sauvegardés")
+
+    @authenticate
+    def test_can_modify_add_delete_synonyms(self):
+        """
+        En passant tous les synonyms c'est possible de MAJ les synonymes
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        plant = PlantFactory.create()
+        PlantSynonymFactory.create(name="Old name", standard_name=plant)
+        synonym_2 = PlantSynonymFactory.create(name="Don't change", standard_name=plant)
+        synonym_to_delete = PlantSynonymFactory.create(standard_name=plant)
+
+        response = self.client.patch(
+            reverse("api:single_plant", kwargs={"pk": plant.id}),
+            {
+                "synonyms": [
+                    {"name": "New synonyme"},
+                    {"name": "New name"},
+                    {"name": synonym_2.name},
+                    {"name": synonym_2.name},
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        plant.refresh_from_db()
+        self.assertEqual(plant.plantsynonym_set.count(), 3)
+        self.assertTrue(plant.plantsynonym_set.filter(name="New synonyme").exists())
+        self.assertTrue(plant.plantsynonym_set.filter(name="New name").exists())
+        self.assertTrue(plant.plantsynonym_set.filter(name="Don't change").exists())
+        self.assertFalse(plant.plantsynonym_set.filter(name=synonym_to_delete.name).exists())
+
+    @authenticate
+    def test_atomic_transaction_synonym_fail(self):
+        """
+        Si la MAJ de synonymes échoue, ignore toutes les modifs
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        plant = PlantFactory.create()
+        PlantSynonymFactory.create(name="a plant", standard_name=plant)
+        self.client.patch(
+            reverse("api:single_plant", kwargs={"pk": plant.id}),
+            {"name": "New name", "synonyms": [{"name": "New synonym"}, {"test": "bad format"}]},
+            format="json",
+        )
+        plant.refresh_from_db()
+        self.assertNotEqual(plant.name, "New name")
+        self.assertEqual(plant.plantsynonym_set.count(), 1)
+        self.assertTrue(plant.plantsynonym_set.filter(name="a plant").exists())
+
+    @authenticate
+    def test_can_modify_add_delete_substances(self):
+        """
+        C'est possible de modifier la liste de substances associées à l'ingrédient
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        substance = SubstanceFactory.create()
+        substance_to_delete = SubstanceFactory.create()
+        new_substance = SubstanceFactory.create()
+
+        microorganism = MicroorganismFactory.create(substances=[substance, substance_to_delete])
+
+        response = self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {"substances": [substance.id, new_substance.id]},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        microorganism.refresh_from_db()
+        self.assertEqual(microorganism.substances.count(), 2)
+        self.assertTrue(microorganism.substances.filter(id=substance.id).exists())
+        self.assertTrue(microorganism.substances.filter(id=new_substance.id).exists())
+        self.assertFalse(microorganism.substances.filter(id=substance_to_delete.id).exists())

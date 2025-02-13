@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 from simple_history.utils import update_change_reason
@@ -34,17 +36,42 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
 
     # DRF ne gère pas automatiquement la création des nested-fields :
     # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
+    @transaction.atomic
     def create(self, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
         ingredient = super().create(validated_data)
         update_change_reason(ingredient, "CommonIngredientModificationSerializer")
 
         for synonym in synonyms:
-            try:
-                name = synonym["name"]
-                if name and name != ingredient.name and not self.synonym_model.objects.filter(name=name).exists():
-                    self.synonym_model.objects.create(standard_name=ingredient, name=name)
-            except KeyError:
-                raise ParseError(detail="Must provide 'name' to create new synonym")
+            self.add_synonym(ingredient, synonym)
 
         return ingredient
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        synonyms = validated_data.pop(self.synonym_set_field_name, [])
+        super().update(instance, validated_data)
+
+        try:
+            new_synonym_list = [s["name"] for s in synonyms]
+        except KeyError:
+            raise ParseError(detail="Must provide 'name' to create new synonym")
+        existing_synonyms = getattr(instance, self.synonym_set_field_name)
+
+        # TODO: is it important to update, rather delete and recreate, 'new' synonyms ?
+        synonyms_to_delete = existing_synonyms.exclude(name__in=new_synonym_list)
+        synonyms_to_delete.delete()
+
+        for synonym in synonyms:
+            if not existing_synonyms.filter(name=synonym["name"]).exists():
+                self.add_synonym(instance, synonym)
+
+        return instance
+
+    def add_synonym(self, instance, synonym):
+        try:
+            name = synonym["name"]
+            if name and name != instance.name and not self.synonym_model.objects.filter(name=name).exists():
+                self.synonym_model.objects.create(standard_name=instance, name=name)
+        except KeyError:
+            raise ParseError(detail="Must provide 'name' to create new synonym")

@@ -8,14 +8,12 @@
       ]"
     />
 
-    <DeletionModal @delete="deleteDeclaration" v-if="payload.status === 'DRAFT' && payload.author === loggedUser.id" />
-
     <div v-if="isFetching" class="flex justify-center items-center min-h-60">
       <ProgressSpinner />
     </div>
 
     <div v-else class="mb-4">
-      <DeclarationFromTeleicareAlert v-if="payload.teleicareId" />
+      <DeclarationFromTeleicareAlert v-if="payload.siccrfId" />
       <DeclarationAlert
         v-else-if="payload"
         role="declarant"
@@ -26,7 +24,7 @@
 
       <DsfrAlert
         class="mb-4"
-        v-if="payload.id && !payload.author && !payload.teleicareId"
+        v-if="payload.id && !payload.author && !payload.siccrfId"
         type="info"
         title="Cette déclaration n'est gérée par personne"
       >
@@ -35,7 +33,7 @@
       </DsfrAlert>
       <DsfrAlert
         class="mb-4"
-        v-else-if="payload.author && payload.author !== loggedUser.id && !payload.teleicareId"
+        v-else-if="payload.author && payload.author !== loggedUser.id && !payload.siccrfId"
         type="info"
         title="Cette déclaration est gérée par une autre personne"
       >
@@ -84,6 +82,20 @@
         @forward="selectTab(selectedTabIndex + 1)"
         :removeSaveLabel="readonly"
       />
+      <hr class="mt-6" />
+      <DeletionModal
+        @delete="deleteDeclaration"
+        v-if="showDeletionModal"
+        class="mb-4"
+        :buttonLabel="isDraft ? 'Supprimer mon brouillon' : 'Abandonner cette déclaration'"
+        :helperText="isDraft ? 'Votre déclaration est en brouillon' : ''"
+        :actionButtonLabel="isDraft ? 'Supprimer' : 'Abandonner'"
+        :modalText="
+          isDraft
+            ? 'La suppression de votre déclaration n\'est pas réversible. Êtes-vous sûr de vouloir procéder ?'
+            : 'En mettant votre déclaration en abandon le procesus d\'instruction sera interrompu. Êtes-vous sûr de vouloir continuer ?'
+        "
+      />
     </div>
   </div>
 </template>
@@ -131,7 +143,12 @@ const selectedTabIndex = ref(parseInt(route.query.tab))
 
 const selectTab = async (index) => {
   if (requestInProgress.value) return
-  const allowTransition = readonly.value || (await savePayload())
+
+  // Si va vers le `SummaryTab` on calcule l'article. Ceci est un workaround pour éviter
+  // de calculer l'article dans le backend à chaque modification (ça peut être cher en termes
+  // de performance).
+  const forceArticleCalculation = !readonly.value && components.value[index] === SummaryTab
+  const allowTransition = readonly.value || (await savePayload({ forceArticleCalculation }))
   if (allowTransition) {
     router.replace({ query: { tab: index } })
     previouslySelectedTabIndex.value = index
@@ -186,7 +203,8 @@ watch(data, () => {
   const shouldDuplicate = route.query.duplicate && !props.id
   if (shouldDuplicate) {
     performDuplication(data.value)
-    savePayload("Votre déclaration a été dupliquée. Merci de renseigner les pièces jointes.")
+    const successMessage = "Votre déclaration a été dupliquée. Merci de renseigner les pièces jointes."
+    savePayload({ successMessage })
   } else payload.value = data.value
 })
 
@@ -209,9 +227,9 @@ const readonly = computed(
 )
 
 const showHistory = computed(
-  () => !payload.value.teleicareId && (readonly.value || (!isNewDeclaration.value && payload.value.status !== "DRAFT"))
+  () => !payload.value.siccrfId && (readonly.value || (!isNewDeclaration.value && !isDraft.value))
 )
-const showWithdrawal = computed(() => !payload.value.teleicareId && payload.value.status === "AUTHORIZED")
+const showWithdrawal = computed(() => !payload.value.siccrfId && payload.value.status === "AUTHORIZED")
 
 const components = computed(() => {
   const baseComponents = readonly.value ? [SummaryTab] : [ProductTab, CompositionTab, AttachmentTab, SummaryTab]
@@ -224,11 +242,14 @@ const components = computed(() => {
 
 const titles = computed(() => tabTitles(components.value, !readonly.value))
 
-const savePayload = async (successMessage = "Votre démarche a été sauvegardée") => {
+const savePayload = async ({
+  successMessage = "Votre démarche a été sauvegardée",
+  forceArticleCalculation = false,
+} = {}) => {
   const isNewDeclaration = !payload.value.id
   const url = isNewDeclaration
-    ? `/api/v1/users/${loggedUser.value.id}/declarations/`
-    : `/api/v1/declarations/${payload.value.id}`
+    ? `/api/v1/users/${loggedUser.value.id}/declarations/${forceArticleCalculation ? "?force-article-calculation=true" : ""}`
+    : `/api/v1/declarations/${payload.value.id}${forceArticleCalculation ? "?force-article-calculation=true" : ""}`
   const httpMethod = isNewDeclaration ? "post" : "put"
   requestInProgress.value = true
   const { response, data } = await useFetch(url, { headers: headers() })[httpMethod](payload).json()
@@ -266,9 +287,11 @@ const savePayload = async (successMessage = "Votre démarche a été sauvegardé
   }
 }
 
+const isDraft = computed(() => payload.value?.status === "DRAFT")
+
 const submitPayload = async (comment) => {
   if (requestInProgress.value) return
-  const path = payload.value.status === "DRAFT" ? "submit" : "resubmit"
+  const path = isDraft.value ? "submit" : "resubmit"
   const url = `/api/v1/declarations/${payload.value.id}/${path}/`
 
   requestInProgress.value = true
@@ -285,18 +308,39 @@ const submitPayload = async (comment) => {
   }
 }
 
+const showDeletionModal = computed(() => {
+  const statuses = [
+    "DRAFT",
+    "AWAITING_INSTRUCTION",
+    "ONGOING_INSTRUCTION",
+    "AWAITING_VISA",
+    "ONGOING_VISA",
+    "OBJECTION",
+    "OBSERVATION",
+  ]
+  return statuses.indexOf(payload.value?.status) > -1
+})
+
 const deleteDeclaration = async () => {
-  if (requestInProgress.value || !payload.value.status === "DRAFT") return
-  const url = `/api/v1/declarations/${payload.value.id}`
+  if (requestInProgress.value) return
+  const url = isDraft.value
+    ? `/api/v1/declarations/${payload.value.id}`
+    : `/api/v1/declarations/${payload.value.id}/abandon/`
+
+  const requestFunction = isDraft.value
+    ? useFetch(url, { headers: headers() }).delete
+    : useFetch(url, { headers: headers() }).post
+
   requestInProgress.value = true
-  const { response } = await useFetch(url, { headers: headers() }).delete().json()
+  const { response } = await requestFunction().json()
   requestInProgress.value = false
 
   statusChangeErrors.value = await handleError(response)
   if (statusChangeErrors.value) {
     window.scrollTo(0, 0)
   } else {
-    useToaster().addSuccessMessage("Votre déclaration a été supprimée")
+    const message = isDraft.value ? "Votre brouillon a été supprimée" : "Votre déclaration a été mise en abandon"
+    useToaster().addSuccessMessage(message)
     router.replace({ name: "DeclarationsHomePage" })
   }
 }

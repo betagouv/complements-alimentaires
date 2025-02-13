@@ -24,13 +24,13 @@
       <DeclarationAlert
         role="visor"
         class="mb-4"
-        v-else-if="!declaration.teleicareId"
+        v-else-if="!declaration.siccrfId"
         :declaration="declaration"
         :snapshots="snapshots"
       />
       <div v-if="declaration">
         <DeclarationSummary
-          :allowArticleChange="!declaration.teleicareId"
+          :allowArticleChange="!declaration.siccrfId"
           :useAccordions="true"
           :showElementAuthorization="true"
           :readonly="true"
@@ -47,7 +47,7 @@
           >
             <component
               :is="component"
-              :allowArticleChange="!declaration.teleicareId"
+              :allowArticleChange="!declaration.siccrfId"
               v-model="declaration"
               :externalResults="$externalResults"
               :readonly="true"
@@ -57,6 +57,7 @@
               :user="declarant"
               :company="company"
               :snapshots="snapshots"
+              :useCompactAttachmentView="true"
               @decision-done="onDecisionDone"
             ></component>
           </DsfrTabContent>
@@ -69,7 +70,7 @@
           @forward="selectedTabIndex += 1"
           :removeSaveLabel="true"
         >
-          <template v-slot:content v-if="!declaration.teleicareId">
+          <template v-slot:content v-if="!declaration.siccrfId">
             <h6 class="text-left">
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
@@ -201,7 +202,7 @@ const saveComment = useDebounceFn(async () => {
 // Tab management
 const components = computed(() => {
   const baseComponents = [IdentityTab, DeclarationSummary]
-  if (!declaration.value.teleicareId) baseComponents.push(HistoryTab)
+  if (!declaration.value.siccrfId) baseComponents.push(HistoryTab)
   if (canInstruct.value) baseComponents.push(VisaValidationTab)
   return baseComponents
 })

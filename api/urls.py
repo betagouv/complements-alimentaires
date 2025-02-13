@@ -14,15 +14,15 @@ urlpatterns = {
     # Ingredients
     path("search/", views.SearchView.as_view(), name="search"),
     path("plants/", views.PlantCreateView.as_view(), name="plant_create"),
-    path("plants/<int:pk>", views.PlantRetrieveView.as_view(), name="single_plant"),
+    path("plants/<int:pk>", views.PlantRetrieveUpdateView.as_view(), name="single_plant"),
     path("plant-parts/", views.PlantPartListView.as_view(), name="plant_part_list"),
     path("plant-families/", views.PlantFamilyListView.as_view(), name="plant_family_list"),
     path("other-ingredients/", views.IngredientCreateView.as_view(), name="ingredient_create"),
-    path("other-ingredients/<int:pk>", views.IngredientRetrieveView.as_view(), name="single_ingredient"),
+    path("other-ingredients/<int:pk>", views.IngredientRetrieveUpdateView.as_view(), name="single_ingredient"),
     path("microorganisms/", views.MicroorganismCreateView.as_view(), name="microorganism_create"),
-    path("microorganisms/<int:pk>", views.MicroorganismRetrieveView.as_view(), name="single_microorganism"),
+    path("microorganisms/<int:pk>", views.MicroorganismRetrieveUpdateView.as_view(), name="single_microorganism"),
     path("substances/", views.SubstanceCreateView.as_view(), name="substance_create"),
-    path("substances/<int:pk>", views.SubstanceRetrieveView.as_view(), name="single_substance"),
+    path("substances/<int:pk>", views.SubstanceRetrieveUpdateView.as_view(), name="single_substance"),
     path("elements/autocomplete/", views.AutocompleteView.as_view(), name="element_autocomplete"),
     # Declared elements
     path("new-declared-elements/", views.DeclaredElementsView.as_view(), name="list_new_declared_elements"),
@@ -154,6 +154,11 @@ urlpatterns = {
         views.DeclarationTakeAuthorshipView.as_view(),
         name="take_authorship",
     ),
+    path(
+        "declarations/<int:pk>/assign-instruction/",
+        views.DeclarationAssignInstruction.as_view(),
+        name="assign_instruction",
+    ),
     # Flow de la déclaration (state machine)
     path("declarations/<int:pk>/submit/", views.DeclarationSubmitView.as_view(), name="submit_declaration"),
     path(
@@ -211,6 +216,11 @@ urlpatterns = {
         "declarations/<int:pk>/withdraw/",
         views.DeclarationWithdrawView.as_view(),
         name="withdraw",
+    ),
+    path(
+        "declarations/<int:pk>/abandon/",
+        views.DeclarationAbandonView.as_view(),
+        name="abandon",
     ),
     # Contact
     path("contact/", views.ContactView.as_view(), name="contact"),

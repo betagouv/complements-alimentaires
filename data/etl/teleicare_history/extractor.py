@@ -19,6 +19,7 @@ from data.models import (
     PlantPart,
     Population,
     Preparation,
+    Snapshot,
     Substance,
     SubstanceUnit,
 )
@@ -178,15 +179,23 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
     logger.info(f"Sur {len(IcaEtablissement.objects.all())} : {nb_created_companies} entreprises créées.")
 
 
-def get_most_recent(list_of_declarations):
-    most_recent_date = date.min
+def get_oldest_and_latest(list_of_declarations):
+    """
+    Cette fonction n'utilise pas les outils de comparaison de date de la BDD
+    car le champ `dcl_date` est un champ text et non date
+    """
+    latest_date = date.min
+    oldest_date = date.max
     for ica_declaration in list_of_declarations:
         current_date = convert_str_date(ica_declaration.dcl_date)
-        if most_recent_date < current_date:
-            most_recent_date = current_date
-            most_recent_dcl_date = ica_declaration.dcl_date
+        if current_date > latest_date:
+            latest_date = current_date
+            latest_dcl_date = ica_declaration.dcl_date
+        if current_date < oldest_date:
+            oldest_date = current_date
+            oldest_dcl_date = ica_declaration.dcl_date
 
-    return list_of_declarations.get(dcl_date=most_recent_dcl_date)
+    return list_of_declarations.get(dcl_date=oldest_dcl_date), list_of_declarations.get(dcl_date=latest_dcl_date)
 
 
 def convert_str_date(value, aware=False):
@@ -227,21 +236,6 @@ DECLARATION_TYPE_TO_ARTICLE_MAPPING = {
     1: Declaration.Article.ARTICLE_15,
     2: Declaration.Article.ARTICLE_16,
     3: None,  # Type "simplifié" dans Teleicare, normalement liées à des modifications de déclarations déjà instruites
-}
-
-
-MANY_TO_MANY_PRODUCT_MODELS_MATCHING = {
-    "effects": {"teleIcare_model": IcaEffetDeclare, "teleIcare_pk": "objeff_ident", "CA_model": Effect},
-    "conditions_not_recommended": {
-        "teleIcare_model": IcaPopulationRisqueDeclaree,
-        "teleIcare_pk": "poprs_ident",
-        "CA_model": Condition,
-    },
-    "populations": {
-        "teleIcare_model": IcaPopulationCibleDeclaree,
-        "teleIcare_pk": "popcbl_ident",
-        "CA_model": Population,
-    },
 }
 
 
@@ -295,23 +289,26 @@ def add_product_info_from_teleicare_history(declaration, vrsdecl_ident):
     """
     Cette function importe les champs ManyToMany des déclarations, relatifs à l'onglet "Produit"
     Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
-    `create_declaration_from_teleicare_history` pour updater leurs champs ManyToMany.
+    `create_declarations_from_teleicare_history` pour updater leurs champs ManyToMany.
     """
-    # TODO: other_conditions=conditions_not_recommended,
-    # TODO: other_effects=
-    for CA_field_name, struct in MANY_TO_MANY_PRODUCT_MODELS_MATCHING.items():
-        # par exemple Declaration.populations
-        CA_field = getattr(declaration, CA_field_name)
-        # TODO: utiliser les dataclass ici
-        pk_field = struct["teleIcare_pk"]
-        CA_model = struct["CA_model"]
-        teleIcare_model = struct["teleIcare_model"]
-        CA_field.set(
-            [
-                CA_model.objects.get(siccrf_id=getattr(TI_object, pk_field))
-                for TI_object in (teleIcare_model.objects.filter(vrsdecl_ident=vrsdecl_ident))
-            ]
-        )
+    declaration.effects.set(
+        [
+            Effect.objects.get(siccrf_id=TIcare_effect.objeff_ident)
+            for TIcare_effect in IcaEffetDeclare.objects.filter(vrsdecl_ident=vrsdecl_ident)
+        ]
+    )
+    declaration.conditions_not_recommended.set(
+        [
+            Condition.objects.get(siccrf_id=TIcare_condition.poprs_ident)
+            for TIcare_condition in IcaPopulationRisqueDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident)
+        ]
+    )
+    declaration.populations.set(
+        [
+            Population.objects.get(siccrf_id=TIcare_population.popcbl_ident)
+            for TIcare_population in IcaPopulationCibleDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident)
+        ]
+    )
 
 
 @transaction.atomic
@@ -319,7 +316,7 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
     """
     Cette function importe les champs ManyToMany des déclarations, relatifs à l'onglet "Composition"
     Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
-    `create_declaration_from_teleicare_history` pour updater leurs champs ManyToMany.
+    `create_declarations_from_teleicare_history` pour updater leurs champs ManyToMany.
     """
     bulk_ingredients = {DeclaredPlant: [], DeclaredMicroorganism: [], DeclaredIngredient: [], ComputedSubstance: []}
     for ingredient in IcaIngredient.objects.filter(vrsdecl_ident=vrsdecl_ident):
@@ -362,7 +359,23 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
         model.objects.bulk_create(bulk_of_objects)
 
 
-def create_declaration_from_teleicare_history():
+@transaction.atomic
+def add_final_state_snapshot(declaration, latest_ica_version_declaration, declaration_acceptation_date):
+    snapshot = Snapshot(
+        creation_date=declaration_acceptation_date,
+        modification_date=declaration_acceptation_date,
+        declaration=declaration,
+        status=Declaration.DeclarationStatus.AUTHORIZED,
+        json_declaration="",
+        comment=latest_ica_version_declaration.vrsdecl_observations_ac,
+        action="",
+        post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
+    )
+    with suppress_autotime(snapshot, ["creation_date", "modification_date"]):
+        snapshot.save()
+
+
+def create_declarations_from_teleicare_history(company_ids=[]):
     """
     Dans Teleicare une entreprise peut-être relié à une déclaration par 3 relations différentes :
     * responsable de l'étiquetage (équivalent Declaration.mandated_company)
@@ -371,16 +384,17 @@ def create_declaration_from_teleicare_history():
     """
     nb_created_declarations = 0
 
+    etab_ids = (Company.objects.all() if not company_ids else Company.objects.filter(id__in=company_ids)).values_list(
+        "siccrf_id", flat=True
+    )
     # Parcourir tous les compléments alimentaires dont l'entreprise déclarante a été matchée
-    for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(
-        etab_id__in=Company.objects.values_list("siccrf_id", flat=True)
-    ):
+    for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(etab_id__in=etab_ids):
         # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
         all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=ica_complement_alimentaire.cplalim_ident)
         # le champ date est stocké en text, il faut donc faire la conversion en python
         if all_ica_declarations.exists():
             try:
-                latest_ica_declaration = get_most_recent(all_ica_declarations)
+                oldest_ica_declaration, latest_ica_declaration = get_oldest_and_latest(all_ica_declarations)
             except MultipleObjectsReturned:
                 logger.error(
                     f"Ce IcaComplementAlimentaire cplalim_ident={ica_complement_alimentaire.cplalim_ident} n'a pas une unique déclaration la plus récente"
@@ -400,6 +414,11 @@ def create_declaration_from_teleicare_history():
             # la déclaration a une version finalisée
             if latest_ica_version_declaration:
                 declaration_creation_date = (
+                    convert_str_date(oldest_ica_declaration.dcl_date, aware=True)
+                    if oldest_ica_declaration.dcl_date
+                    else ""
+                )
+                declaration_acceptation_date = (
                     convert_str_date(latest_ica_declaration.dcl_date, aware=True)
                     if latest_ica_declaration.dcl_date
                     else ""
@@ -407,11 +426,12 @@ def create_declaration_from_teleicare_history():
                 unit_quantity = re.findall(r"\d+", latest_ica_version_declaration.vrsdecl_djr)
                 declaration = Declaration(
                     creation_date=declaration_creation_date,
+                    # la date de modification est la date de fin de commercialisation si elle existe ou la date d'acceptation
                     modification_date=convert_str_date(
                         latest_ica_declaration.dcl_date_fin_commercialisation, aware=True
                     )
                     if latest_ica_declaration.dcl_date_fin_commercialisation
-                    else declaration_creation_date,
+                    else declaration_acceptation_date,
                     siccrf_id=ica_complement_alimentaire.cplalim_ident,
                     teleicare_id=create_teleicare_id(latest_ica_declaration),
                     galenic_formulation=GalenicFormulation.objects.get(
@@ -443,6 +463,20 @@ def create_declaration_from_teleicare_history():
                     if latest_ica_declaration.dcl_date_fin_commercialisation
                     else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident],
                 )
+                # aucun de ces champs `other_` n'est rempli dans Teleicare
+                # IcaPopulationCibleDeclaree.vrspcb_popcible_autre n'est pas importé
+                other_effects = IcaEffetDeclare.objects.filter(
+                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident,
+                    objeff_ident=4,  # Autre
+                )
+                if other_effects.exists():
+                    declaration.other_effects = other_effects.first().vrs_autre_objectif
+                other_conditions = IcaPopulationRisqueDeclaree.objects.filter(
+                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident,
+                    poprs_ident=6,  # Autre
+                )
+                if other_conditions.exists():
+                    declaration.other_conditions = other_conditions.first().vrsprs_poprisque_autre
 
                 try:
                     with suppress_autotime(declaration, ["creation_date", "modification_date"]):
@@ -452,6 +486,9 @@ def create_declaration_from_teleicare_history():
                         )
                         add_composition_from_teleicare_history(
                             declaration, latest_ica_version_declaration.vrsdecl_ident
+                        )
+                        add_final_state_snapshot(
+                            declaration, latest_ica_version_declaration, declaration_acceptation_date
                         )
                         nb_created_declarations += 1
                 except IntegrityError:

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DsfrAlert size="sm">
+    <DsfrAlert>
       L'entreprise
       <strong>{{ company.socialName }}</strong>
       avec le n° {{ company.identifierType.toUpperCase() + " " }}

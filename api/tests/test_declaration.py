@@ -29,6 +29,7 @@ from data.factories import (
     OngoingVisaDeclarationFactory,
     PlantFactory,
     PlantPartFactory,
+    PlantSynonymFactory,
     PopulationFactory,
     PreparationFactory,
     SnapshotFactory,
@@ -36,7 +37,6 @@ from data.factories import (
     SubstanceUnitFactory,
     SupervisorRoleFactory,
     VisaRoleFactory,
-    PlantSynonymFactory,
 )
 from data.models import (
     Attachment,
@@ -44,8 +44,8 @@ from data.models import (
     DeclaredMicroorganism,
     DeclaredPlant,
     DeclaredSubstance,
-    Snapshot,
     IngredientType,
+    Snapshot,
 )
 
 from .utils import authenticate
@@ -262,6 +262,55 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(new_declared_plant.quantity, 890)
         self.assertEqual(existing_declared_plant.unit, unit)
         self.assertEqual(new_declared_plant.preparation.name, "Autre macérât")
+
+    @authenticate
+    def test_create_declaration_calculate_article(self):
+        """
+        Il est possible d'ajouter un query_param pour forcer le calcul de l'article
+        dans la sauvegarde
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        plant = PlantFactory()
+        plant_part = PlantPartFactory()
+        plant.plant_parts.add(plant_part)
+        unit = SubstanceUnitFactory()
+        preparation_autre = PreparationFactory(ca_name="Autre macérât")
+
+        payload = {
+            "name": "Name",
+            "company": company.id,
+            "declaredPlants": [
+                {
+                    "newName": "New plant name",
+                    "newDescription": "New plant description",
+                    "new": True,
+                    "active": True,
+                    "usedPart": plant_part.id,
+                    "quantity": "890",
+                    "preparation": preparation_autre.id,
+                    "unit": unit.id,
+                },
+            ],
+        }
+        # Une requête normale ne calculera pas l'article
+        response = self.client.post(
+            reverse("api:list_create_declaration", kwargs={"user_pk": authenticate.user.id}), payload, format="json"
+        )
+        declaration = Declaration.objects.get(pk=response.json()["id"])
+        self.assertIsNone(declaration.article)
+
+        # Maintenant on fait une requête mais en spécifiant qu'on veut recalculer l'article avec
+        # le query parameter force-article-calculation=true
+        response = self.client.post(
+            reverse("api:list_create_declaration", kwargs={"user_pk": authenticate.user.id})
+            + "?force-article-calculation=true",
+            payload,
+            format="json",
+        )
+        declaration = Declaration.objects.get(pk=response.json()["id"])
+        self.assertEqual(declaration.article, Declaration.Article.ARTICLE_16)
 
     @authenticate
     def test_create_declaration_unknown_plant(self):
@@ -822,6 +871,49 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         user_declaration.refresh_from_db()
         self.assertEqual(user_declaration.name, "New name")
+
+    @authenticate
+    def test_update_single_declaration_calculating_article(self):
+        """
+        Il est possible d'ajouter un query_param pour forcer le calcul de l'article
+        dans la sauvegarde
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+        user_declaration = DeclarationFactory(author=authenticate.user, name="Old name", company=company)
+
+        payload = {
+            "name": "New name",
+            "company": user_declaration.company.id,
+            "declaredPlants": [
+                {
+                    "active": True,
+                    "new": True,
+                    "newDescription": "as",
+                    "newName": "as",
+                    "newType": "plant",
+                },
+            ],
+        }
+        # Une requête normale ne calculera pas l'article
+        self.client.put(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": user_declaration.id}),
+            payload,
+            format="json",
+        )
+        user_declaration.refresh_from_db()
+        self.assertIsNone(user_declaration.article)
+
+        # Maintenant on fait une requête mais en spécifiant qu'on veut recalculer l'article avec
+        # le query parameter force-article-calculation=true
+        self.client.put(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": user_declaration.id})
+            + "?force-article-calculation=true",
+            payload,
+            format="json",
+        )
+        user_declaration.refresh_from_db()
+        self.assertEqual(user_declaration.article, Declaration.Article.ARTICLE_16)
 
     @authenticate
     def test_update_single_declaration_supervisor(self):
@@ -1645,6 +1737,36 @@ class TestDeclarationApi(APITestCase):
         self.assertNotEqual(declaration.author, authenticate.user)
 
     @authenticate
+    def test_assign_instruction(self):
+        """
+        Une instructrice peut à tout moment s'assigner un dossier d'instruction.
+        """
+        old_instructor = InstructionRoleFactory()
+        new_instructor = InstructionRoleFactory(user=authenticate.user)
+
+        declaration = AwaitingInstructionDeclarationFactory(instructor=old_instructor)
+
+        url = reverse("api:assign_instruction", kwargs={"pk": declaration.id})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.instructor, new_instructor)
+
+    @authenticate
+    def test_assign_instruction_unauthorized(self):
+        old_instructor = InstructionRoleFactory()
+
+        declaration = AwaitingInstructionDeclarationFactory(instructor=old_instructor)
+
+        url = reverse("api:assign_instruction", kwargs={"pk": declaration.id})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.instructor, old_instructor)
+
+    @authenticate
     def test_visa_refusal_field(self):
         VisaRoleFactory(user=authenticate.user)
         declaration = OngoingVisaDeclarationFactory()
@@ -1885,7 +2007,7 @@ class TestDeclaredElementsApi(APITestCase):
     @authenticate
     def test_fields_hidden_from_declarant(self):
         """
-        La déclaration doit pas contenir les champs statut et notes privés pour des ingrédients
+        La déclaration ne doit pas contenir les champs statut et notes privés pour des ingrédients
         si l'user est un déclarant
         """
         DeclarantRoleFactory(user=authenticate.user)

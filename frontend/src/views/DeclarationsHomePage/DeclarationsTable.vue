@@ -24,7 +24,7 @@ const emit = defineEmits("open")
 // Les données pour la table
 const headers = computed(() => {
   if (useShortTable.value) return ["Nom", "État"]
-  return ["ID", "Nom du produit", "Entreprise", "Déclarant·e", "État", "Date de modification", ""]
+  return ["ID", "Nom du produit", "Entreprise", "Déclarant·e", "État", "Date de création", ""]
 })
 
 const rows = computed(() => {
@@ -39,10 +39,10 @@ const rows = computed(() => {
 
   return props.data.results.map((d) => ({
     rowData: [
-      d.teleicareId ? d.teleicareId : d.id,
+      d.siccrfId ? (d.teleicareId ? d.teleicareId : "") : d.id,
       {
         component: DeclarationName,
-        withHistoryBadge: !!d.teleicareId,
+        withHistoryBadge: !!d.siccrfId,
         text: d.name,
         class: "font-medium",
         to: { name: "DeclarationPage", params: { id: d.id } },
@@ -54,14 +54,12 @@ const rows = computed(() => {
       },
       d.author ? `${d.author.firstName} ${d.author.lastName}` : "",
       getStatusTagForCell(d.status, true),
-      timeAgo(d.modificationDate),
-      d.teleicareId
-        ? ""
-        : {
-            component: "router-link",
-            text: "Dupliquer",
-            to: { name: "NewDeclaration", query: { duplicate: d.id } },
-          },
+      timeAgo(d.creationDate),
+      {
+        component: "router-link",
+        text: "Dupliquer",
+        to: { name: "NewDeclaration", query: { duplicate: d.id } },
+      },
     ],
   }))
 })

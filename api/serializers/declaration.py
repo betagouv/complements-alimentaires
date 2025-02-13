@@ -248,6 +248,7 @@ class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
             "type",
             "type_display",
             "name",
+            "size",
         )
         read_only_fields = ("file",)
 
@@ -559,6 +560,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "teleicare_id",
+            "siccrf_id",
             "article",
             "status",
             "author",
@@ -649,18 +651,39 @@ class DeclarationSerializer(serializers.ModelSerializer):
         )
         return queryset
 
+    @property
+    def should_calculate_article(self):
+        """
+        Pour ne pas calculer l'article à chaque changement, nous le calculons seulement si
+        le queryparam force-article-calculation=true est présent dans l'URL de la requête
+        """
+        request = self.context.get("request")
+        return request and request.query_params.get("force-article-calculation", "").lower() == "true"
+
+    def calculate_article(self, declaration):
+        declaration.refresh_from_db()  # Besoin de ce refresh pour prendre en compte les changements sur la compo
+        declaration.assign_calculated_article()
+        declaration.save()
+        declaration.refresh_from_db()  # Besoin de ce refresh pour le generated field "article"
+
     def create(self, validated_data):
         # DRF ne gère pas automatiquement la création des nested-fields :
         # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
         if self.context.get("request"):
             validated_data["author"] = self.context.get("request").user
 
-        return self._assign_declared_items(None, validated_data)
+        declaration = self._assign_declared_items(None, validated_data)
+        if self.should_calculate_article:
+            self.calculate_article(declaration)
+        return declaration
 
     def update(self, instance, validated_data):
         # DRF ne gère pas automatiquement la création des nested-fields :
         # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
-        return self._assign_declared_items(instance, validated_data)
+        declaration = self._assign_declared_items(instance, validated_data)
+        if self.should_calculate_article:
+            self.calculate_article(declaration)
+        return declaration
 
     def _assign_declared_items(self, instance, validated_data):
         """

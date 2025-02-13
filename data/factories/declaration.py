@@ -245,6 +245,18 @@ class AuthorizedDeclarationFactory(CompleteDeclarationFactory):
     instructor = factory.SubFactory(InstructionRoleFactory)
 
 
+class RejectedDeclarationFactory(CompleteDeclarationFactory):
+    status = Declaration.DeclarationStatus.REJECTED
+    author = factory.SubFactory(UserFactory)
+    instructor = factory.SubFactory(InstructionRoleFactory)
+
+
+class WithdrawnDeclarationFactory(CompleteDeclarationFactory):
+    status = Declaration.DeclarationStatus.WITHDRAWN
+    author = factory.SubFactory(UserFactory)
+    instructor = factory.SubFactory(InstructionRoleFactory)
+
+
 class OngoingVisaDeclarationFactory(CompleteDeclarationFactory):
     status = Declaration.DeclarationStatus.ONGOING_VISA
     author = factory.SubFactory(UserFactory)

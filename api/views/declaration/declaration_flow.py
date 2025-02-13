@@ -77,11 +77,19 @@ class DeclarationFlow:
     def withdraw(self):
         pass
 
-    @status.transition(source=Status.OBSERVATION, target=Status.ABANDONED)
+    @status.transition(
+        source={
+            Status.OBSERVATION,
+            Status.OBJECTION,
+            Status.AWAITING_INSTRUCTION,
+            Status.ONGOING_INSTRUCTION,
+            Status.AWAITING_VISA,
+            Status.ONGOING_VISA,
+        },
+        target=Status.ABANDONED,
+    )
     def abandon(self):
-        # Il n'est pas possible d'effectuer un abandon depuis l'API. Pour le FSM qui le prend
-        # en charge, regarder tasks.py.
-        self.error()
+        pass
 
     def ensure_validators(self, validators):
         field_errors = []

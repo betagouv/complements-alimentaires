@@ -28,6 +28,8 @@ from .declaration import (
     OngoingVisaDeclarationFactory,
     ObjectionDeclarationFactory,
     AuthorizedDeclarationFactory,
+    RejectedDeclarationFactory,
+    WithdrawnDeclarationFactory,
     DeclaredPlantFactory,
     DeclaredMicroorganismFactory,
     DeclaredIngredientFactory,

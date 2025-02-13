@@ -34,10 +34,10 @@ const rows = computed(() =>
         component: CircleIndicators,
         declaration: x,
       },
-      x.teleicareId ? x.teleicareId : x.id,
+      x.siccrfId ? (x.teleicareId ? x.teleicareId : "") : x.id,
       {
         component: DeclarationName,
-        withHistoryBadge: !!x.teleicareId,
+        withHistoryBadge: !!x.siccrfId,
         text: x.name,
         to: { name: "InstructionPage", params: { declarationId: x.id } },
       },

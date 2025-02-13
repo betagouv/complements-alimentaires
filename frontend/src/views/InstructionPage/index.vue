@@ -25,17 +25,26 @@
         <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
         <DsfrButton class="mt-2" label="Instruire" tertiary @click="instructDeclaration" />
       </DsfrAlert>
+      <DsfrAlert
+        class="mb-4"
+        v-else-if="declaration.instructor && declaration.instructor.id !== loggedUser.id"
+        type="info"
+        :title="`Cette déclaration est assignée à ${declaration.instructor.firstName} ${declaration.instructor.lastName}`"
+      >
+        <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
+        <DsfrButton class="mt-2" label="M'assigner cette déclaration" tertiary @click="assignInstruction" />
+      </DsfrAlert>
       <DeclarationAlert
         class="mb-6"
-        v-else-if="!canInstruct && !declaration.teleicareId"
+        v-else-if="!canInstruct && !declaration.siccrfId"
         role="instructor"
         :declaration="declaration"
         :snapshots="snapshots"
       />
-      <DeclarationFromTeleicareAlert v-else-if="declaration.teleicareId" />
+      <DeclarationFromTeleicareAlert v-else-if="declaration.siccrfId" />
       <div v-if="declaration">
         <DeclarationSummary
-          :allowArticleChange="!declaration.teleicareId"
+          :allowArticleChange="!declaration.siccrfId"
           :useAccordions="true"
           :showElementAuthorization="true"
           :readonly="true"
@@ -62,7 +71,8 @@
               :company="company"
               :snapshots="snapshots"
               @decision-done="onDecisionDone"
-              :allowArticleChange="!declaration.teleicareId"
+              :allowArticleChange="!declaration.siccrfId"
+              :useCompactAttachmentView="true"
             ></component>
           </DsfrTabContent>
         </DsfrTabs>
@@ -74,7 +84,7 @@
           @forward="selectedTabIndex += 1"
           :removeSaveLabel="true"
         >
-          <template v-slot:content v-if="!declaration.teleicareId">
+          <template v-slot:content v-if="!declaration.siccrfId">
             <h6 class="text-left">
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
@@ -123,10 +133,12 @@ import DeclarationAlert from "@/components/DeclarationAlert"
 import { tabTitles } from "@/utils/mappings"
 import { useRouter, useRoute } from "vue-router"
 import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromTeleicareAlert.vue"
+import useToaster from "@/composables/use-toaster"
 
 const router = useRouter()
 const route = useRoute()
-const previousRoute = router.getPreviousRoute()
+const previousQueryParams =
+  router.getPreviousRoute().value.name === "InstructionDeclarations" ? router.getPreviousRoute().value.query : {}
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -207,7 +219,7 @@ onMounted(async () => {
 // Tab management
 const components = computed(() => {
   const baseComponents = [IdentityTab, DeclarationSummary]
-  if (!declaration.value.teleicareId) baseComponents.push(HistoryTab)
+  if (!declaration.value.siccrfId) baseComponents.push(HistoryTab)
   if (canInstruct.value) baseComponents.push(DecisionTab)
   return baseComponents
 })
@@ -215,6 +227,17 @@ const titles = computed(() => tabTitles(components.value))
 
 const selectedTabIndex = ref(parseInt(route.query.tab))
 const selectTab = async (index) => router.replace({ query: { tab: index } })
+
+const assignInstruction = async () => {
+  const url = `/api/v1/declarations/${props.declarationId}/assign-instruction/`
+  const { response } = await useFetch(url, { headers: headers() }).post({}).json()
+  $externalResults.value = await handleError(response)
+
+  if (response.value.ok) {
+    await executeDeclarationFetch()
+    useToaster().addSuccessMessage("La déclaration vous a été assignée")
+  }
+}
 
 const instructDeclaration = async () => {
   const url = `/api/v1/declarations/${props.declarationId}/take-for-instruction/`
@@ -227,8 +250,7 @@ const instructDeclaration = async () => {
 }
 
 const onDecisionDone = () => {
-  const previousQuery = previousRoute.value.name === "InstructionDeclarations" ? previousRoute.value.query : {}
-  router.push({ name: "InstructionDeclarations", query: previousQuery })
+  router.push({ name: "InstructionDeclarations", query: previousQueryParams })
 }
 </script>
 

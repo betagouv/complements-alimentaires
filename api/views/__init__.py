@@ -13,6 +13,7 @@ from .declaration.declaration import (
     DeclarationObserveView,
     DeclarationAuthorizeView,
     DeclarationResubmitView,
+    DeclarationAbandonView,
     DeclarationObserveWithVisa,
     DeclarationObjectWithVisa,
     DeclarationRejectWithVisa,
@@ -21,6 +22,7 @@ from .declaration.declaration import (
     DeclarationAcceptVisaView,
     DeclarationWithdrawView,
     DeclarationTakeAuthorshipView,
+    DeclarationAssignInstruction,
     ArticleChangeView,
 )
 from .declaration.declared_element import (
@@ -33,14 +35,14 @@ from .declaration.declared_element import (
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
 from .preparation import PreparationListView
-from .ingredient import IngredientRetrieveView, IngredientCreateView
-from .microorganism import MicroorganismRetrieveView, MicroorganismCreateView
+from .ingredient import IngredientRetrieveUpdateView, IngredientCreateView
+from .microorganism import MicroorganismRetrieveUpdateView, MicroorganismCreateView
 from .newsletter import SubscribeNewsletter
-from .plant import PlantPartListView, PlantRetrieveView, PlantCreateView, PlantFamilyListView
+from .plant import PlantPartListView, PlantRetrieveUpdateView, PlantCreateView, PlantFamilyListView
 from .population import PopulationListView
 from .report_issue import ReportIssue
 from .search import SearchView
-from .substance import SubstanceRetrieveView, SubstanceCreateView
+from .substance import SubstanceRetrieveUpdateView, SubstanceCreateView
 from .unit import UnitListView
 from .user import (
     ChangePasswordView,
