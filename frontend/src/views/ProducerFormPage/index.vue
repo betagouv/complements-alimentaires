@@ -144,10 +144,10 @@ const selectedTabIndex = ref(parseInt(route.query.tab))
 const selectTab = async (index) => {
   if (requestInProgress.value) return
 
-  // Si on vient du `CompositionTab` on calcule l'article. Ceci est un workaround pour éviter
+  // Si va vers le `SummaryTab` on calcule l'article. Ceci est un workaround pour éviter
   // de calculer l'article dans le backend à chaque modification (ça peut être cher en termes
   // de performance).
-  const forceArticleCalculation = components.value[previouslySelectedTabIndex.value] === CompositionTab
+  const forceArticleCalculation = !readonly.value && components.value[index] === SummaryTab
   const allowTransition = readonly.value || (await savePayload({ forceArticleCalculation }))
   if (allowTransition) {
     router.replace({ query: { tab: index } })
