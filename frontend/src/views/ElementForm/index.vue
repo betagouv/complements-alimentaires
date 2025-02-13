@@ -207,16 +207,19 @@ import NumberField from "@/components/NumberField"
 
 const props = defineProps({ urlComponent: String })
 
-const newIngredient = computed(() => !!props.urlComponent)
+const isNewIngredient = computed(() => !props.urlComponent)
 
 const elementId = computed(() => props.urlComponent?.split("--")[0])
 const route = useRoute()
-const type = computed(() => (newIngredient.value ? unSlugifyType(props.urlComponent.split("--")[1]) : route.query.type))
+const type = computed(() =>
+  isNewIngredient.value ? route.query.type : unSlugifyType(props.urlComponent.split("--")[1])
+)
+const apiType = computed(() => type.value && getApiType(type.value))
 const icon = computed(() => formForType.value.icon)
 const typeName = computed(() => getTypeInFrench(type.value))
 const router = useRouter()
 
-const url = computed(() => `/api/v1/${getApiType(type.value)}s/${elementId.value}?history=true`)
+const url = computed(() => `/api/v1/${apiType.value}s/${elementId.value}?history=true`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
 const getElementFromApi = async () => {
@@ -224,11 +227,21 @@ const getElementFromApi = async () => {
   if (!type.value || !elementId.value) return // create new ingredient
   await execute()
   await handleError(response)
-  if (response.value.ok) state.value = element.value
+  if (response.value.ok) {
+    state.value = JSON.parse(JSON.stringify(element.value))
+    // TODO: what to do with "sans objet" ?
+    // TODO: is there a nicer way of handling the data to avoid all this custom mapping?
+    state.value.status = state.value.status === "autorisé"
+    if (state.value.family) state.value.family = state.value.family.id
+    if (state.value.plantParts) state.value.plantParts = state.value.plantParts.map((p) => p.id)
+    if (state.value.objectType && apiType.value === "other-ingredient")
+      state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
+    if (state.value.unitId) state.value.unit = state.value.unitId
+  }
 }
 getElementFromApi()
 
-const pageTitle = computed(() => (newIngredient.value ? "Nouvel ingrédient" : "Modification ingrédient"))
+const pageTitle = computed(() => (isNewIngredient.value ? "Nouvel ingrédient" : "Modification ingrédient"))
 
 const breadcrumbLinks = computed(() => {
   const links = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]
@@ -327,7 +340,7 @@ const formQuestions = {
   },
 }
 const formForType = computed(() => {
-  return formQuestions[type.value]
+  return formQuestions[type.value] || (!isNewIngredient.value && formQuestions.ingredient)
 })
 const rules = computed(() => {
   const form = formForType.value
@@ -352,11 +365,11 @@ store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
 
 const ingredientTypes = [
-  { value: 1, text: "Nutriment (Forme d'apport)" },
-  { value: 2, text: "Additif" },
-  { value: 3, text: "Arôme" },
-  { value: 4, text: "Autre ingrédient actif" },
-  { value: 5, text: "Autre ingrédient" },
+  { value: 1, text: "Nutriment (Forme d'apport)", apiValue: "form_of_supply" },
+  { value: 2, text: "Additif", apiValue: "additif" },
+  { value: 3, text: "Arôme", apiValue: "aroma" },
+  { value: 4, text: "Autre ingrédient actif", apiValue: "active_ingredient" },
+  { value: 5, text: "Autre ingrédient", apiValue: "non_active_ingredient" },
 ]
 
 const selectOption = async (result) => {
