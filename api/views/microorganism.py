@@ -3,14 +3,15 @@ from rest_framework.generics import CreateAPIView
 from api.serializers import MicroorganismSerializer, MicroorganismModificationSerializer
 from data.models import Microorganism
 
-from .utils import IngredientRetrieveView
+from .utils import IngredientRetrieveUpdateView
 from ..permissions import IsInstructor
 
 
-class MicroorganismRetrieveView(IngredientRetrieveView):
+class MicroorganismRetrieveUpdateView(IngredientRetrieveUpdateView):
     model = Microorganism
     queryset = Microorganism.objects.filter(missing_import_data=False)
     serializer_class = MicroorganismSerializer
+    modification_serializer_class = MicroorganismModificationSerializer
 
 
 class MicroorganismCreateView(CreateAPIView):
