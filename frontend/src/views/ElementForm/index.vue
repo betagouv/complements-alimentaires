@@ -205,13 +205,30 @@ import FormWrapper from "@/components/FormWrapper"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 import NumberField from "@/components/NumberField"
 
+const props = defineProps({ urlComponent: String })
+
+const newIngredient = computed(() => !!props.urlComponent)
+
+const elementId = computed(() => props.urlComponent?.split("--")[0])
 const route = useRoute()
-const type = computed(() => route.query.type)
+const type = computed(() => (newIngredient.value ? unSlugifyType(props.urlComponent.split("--")[1]) : route.query.type))
 const icon = computed(() => formForType.value.icon)
 const typeName = computed(() => getTypeInFrench(type.value))
 const router = useRouter()
 
-const pageTitle = "Nouvel ingrédient" // eventually will be computed on the action (create/modify)
+const url = computed(() => `/api/v1/${getApiType(type.value)}s/${elementId.value}?history=true`)
+const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
+
+const getElementFromApi = async () => {
+  // TODO: handle 404 if bad urlComponent
+  if (!type.value || !elementId.value) return // create new ingredient
+  await execute()
+  await handleError(response)
+  if (response.value.ok) state.value = element.value
+}
+getElementFromApi()
+
+const pageTitle = computed(() => (newIngredient.value ? "Nouvel ingrédient" : "Modification ingrédient"))
 
 const breadcrumbLinks = computed(() => {
   const links = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]

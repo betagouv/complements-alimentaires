@@ -113,6 +113,17 @@ const routes = [
     },
   },
   {
+    path: "/modification-ingredient/:urlComponent",
+    name: "ElementForm",
+    component: ElementForm,
+    props: true,
+    meta: {
+      title: "Modification ingrédient",
+      authenticationRequired: true,
+      requiredRole: "InstructionRole",
+    },
+  },
+  {
     path: "/mentions-legales",
     name: "LegalNoticesPage",
     component: LegalNoticesPage,
