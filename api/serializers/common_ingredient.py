@@ -53,8 +53,12 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
         data_items = copy.deepcopy(validated_data).items()
         for key, value in data_items:
-            if not value and key.startswith("ca_"):
-                validated_data[key.replace("ca_", "siccrf_")] = value  # set to None or blank as required
+            if key.startswith("ca_"):
+                siccrf_key = key.replace("ca_", "siccrf_")
+                if not value:
+                    validated_data[siccrf_key] = value  # set to None or blank as required
+                elif value == getattr(instance, siccrf_key, None):
+                    validated_data.pop(key, None)
 
         super().update(instance, validated_data)
 

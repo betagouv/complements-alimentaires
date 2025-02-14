@@ -482,7 +482,23 @@ class TestElementsModifyApi(APITestCase):
         self.assertIsNone(substance.siccrf_max_quantity)
         self.assertEqual(substance.substancesynonym_set.count(), 0)
 
-    # TODO: do not save data into ca_ fields if it's a copy of what is in the siccrf_ field
+    @authenticate
+    def test_deduplicate_siccrf_data(self):
+        """
+        Si la valeur passée est égale à la valeur dans un champ siccrf_
+        la valeur n'est pas copiée dans le champ ca_
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        microorganism = MicroorganismFactory.create(siccrf_genus="siccrf genus", ca_genus="")
+        response = self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {"genus": "siccrf genus"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        microorganism.refresh_from_db()
+        self.assertEqual(microorganism.ca_genus, "")
+        self.assertEqual(microorganism.siccrf_genus, "siccrf genus")
 
     @authenticate
     def test_can_modify_add_delete_synonyms(self):

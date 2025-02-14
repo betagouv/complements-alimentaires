@@ -39,15 +39,15 @@ class Microorganism(IngredientCommonModel):
         db_persist=True,
     )
 
-    siccrf_genus = models.TextField(verbose_name="genre de micro-organisme (selon la base SICCRF)")
-    ca_genus = models.TextField(verbose_name="genre de micro-organisme")
+    siccrf_genus = models.TextField(editable=False, verbose_name="genre de micro-organisme (selon la base SICCRF)")
+    ca_genus = models.TextField(blank=True, verbose_name="genre de micro-organisme")
     genus = models.GeneratedField(
         expression=Coalesce(NullIf(F("ca_genus"), Value("")), F("siccrf_genus")),
         output_field=models.TextField(verbose_name="genre de micro-organisme"),
         db_persist=True,
     )
-    siccrf_species = models.TextField(verbose_name="espèce de micro-organisme (selon la base SICCRF)")
-    ca_species = models.TextField(verbose_name="espèce de micro-organisme")
+    siccrf_species = models.TextField(editable=False, verbose_name="espèce de micro-organisme (selon la base SICCRF)")
+    ca_species = models.TextField(blank=True, verbose_name="espèce de micro-organisme")
     species = models.GeneratedField(
         expression=Coalesce(NullIf(F("ca_species"), Value("")), F("siccrf_species")),
         output_field=models.TextField(verbose_name="espèce de micro-organisme"),
