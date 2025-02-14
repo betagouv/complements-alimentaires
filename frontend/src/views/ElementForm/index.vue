@@ -275,14 +275,18 @@ const saveElement = async () => {
   payload.status = payload.status ? 1 : 2
   if (payload.ingredientType && payload.ingredientType == AROMA.value) delete payload.novelFood
 
-  const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
+  const { response } = isNewIngredient.value
+    ? await useFetch(url, { headers: headers() }).post(payload).json()
+    : await useFetch(url + elementId.value, { headers: headers() })
+        .patch(payload)
+        .json()
   $externalResults.value = await handleError(response)
 
   if (response.value.ok) {
     useToaster().addMessage({
       type: "success",
       id: "element-creation-success",
-      description: "L'élément a été créé",
+      description: `L'élément a été ${isNewIngredient.value ? "créé" : "modifié"}`,
     })
     router.push({ name: "DashboardPage" })
   }
