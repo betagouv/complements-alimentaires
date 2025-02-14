@@ -381,7 +381,7 @@ const selectOption = async (result) => {
 }
 
 const optionLabel = (options, id) => {
-  return options.find((o) => o.id === id)?.name || "Inconnu"
+  return options?.find((o) => o.id === id)?.name || "Inconnu"
 }
 
 const plantFamiliesDisplay = computed(() => {
