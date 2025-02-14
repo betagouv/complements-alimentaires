@@ -90,6 +90,18 @@
       <DsfrAccordion title="Historique de l'ingrédient" id="accordion-history">
         <DsfrTable :rows="historyDataDedup"></DsfrTable>
       </DsfrAccordion>
+
+      <!-- bouton temporaire à enlever quand on a une page dédiée à la recherche d'ingrédients interne -->
+      <div v-if="isInstructor" class="text-right mt-4">
+        <p class="mb-2"><em>Vous tenez le role d'instruction :</em></p>
+        <router-link
+          :to="{ name: 'ModifyElement', params: { urlComponent: props.urlComponent } }"
+          class="fr-btn fr-btn--tertiary fr-btn--sm"
+        >
+          <v-icon name="ri-pencil-line" :scale="0.85" class="mr-1"></v-icon>
+          Modifier
+        </router-link>
+      </div>
     </div>
 
     <!-- Rapporter un problème dans les données -->
@@ -107,6 +119,7 @@ import { getTypeIcon, getTypeInFrench, unSlugifyType, slugifyType, getApiType } 
 import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
+import { useRootStore } from "@/stores/root"
 import ElementColumn from "./ElementColumn.vue"
 import ElementTag from "./ElementTag.vue"
 import ElementStatusBadge from "@/components/ElementStatusBadge.vue"
@@ -208,7 +221,11 @@ watch(element, (newElement) => {
 })
 
 watch(route, getElementFromApi)
+
+const store = useRootStore()
+const isInstructor = computed(() => store.loggedUser?.globalRoles?.some((x) => x.name === "InstructionRole"))
 </script>
+
 <style scoped>
 .fr-table :deep(table) {
   @apply !table;
