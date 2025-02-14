@@ -41,7 +41,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
         ingredient = super().create(validated_data)
-        update_change_reason(ingredient, "CommonIngredientModificationSerializer")
+        update_change_reason(ingredient, "Création via Compl'Alim")
 
         for synonym in synonyms:
             self.add_synonym(ingredient, synonym)
@@ -56,11 +56,13 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             if key.startswith("ca_"):
                 siccrf_key = key.replace("ca_", "siccrf_")
                 if not value:
-                    validated_data[siccrf_key] = value  # set to None or blank as required
+                    validated_data[siccrf_key] = value  # mettre comme None ou "" selon la requête
                 elif value == getattr(instance, siccrf_key, None):
                     validated_data.pop(key, None)
 
         super().update(instance, validated_data)
+        # TODO: la raison devrait pouvoir être renseingée dans le form? Voir le TODO dans abstract_admin
+        update_change_reason(instance, "Modification via Compl'Alim")
 
         try:
             new_synonym_list = [s["name"] for s in synonyms]

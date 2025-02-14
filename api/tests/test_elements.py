@@ -406,7 +406,7 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         ingredient = Ingredient.objects.get(name="My new ingredient")
-        self.assertEqual(ingredient.history.first().history_change_reason, "CommonIngredientModificationSerializer")
+        self.assertEqual(ingredient.history.first().history_change_reason, "Création via Compl'Alim")
 
 
 class TestElementsModifyApi(APITestCase):
@@ -447,6 +447,7 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(substance.siccrf_name, "original name")
         self.assertEqual(substance.ca_name, "test")
         self.assertEqual(substance.unit, new_unit, "Les champs sans ca_ équivelant sont aussi sauvegardés")
+        self.assertEqual(substance.history.first().history_change_reason, "Modification via Compl'Alim")
 
     @authenticate
     def test_delete_data(self):
