@@ -12,6 +12,7 @@ from data.factories import (
     PlantFamilyFactory,
     SubstanceFactory,
     SubstanceUnitFactory,
+    SubstanceSynonymFactory,
     PlantSynonymFactory,
 )
 from data.models import IngredientType, Plant, IngredientStatus, Microorganism, Substance, Ingredient
@@ -463,10 +464,10 @@ class TestElementsModifyApi(APITestCase):
             siccrf_max_quantity=1.2,
             ca_max_quantity=3.4,
         )
-        # TODO: test deleting all synonyms too
+        SubstanceSynonymFactory.create(name="To delete", standard_name=substance)
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
-            {"public_comments": "", "private_comments": "", "cas_number": "", "max_quantity": None},
+            {"public_comments": "", "private_comments": "", "cas_number": "", "max_quantity": None, "synonyms": []},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -479,6 +480,7 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(substance.ca_cas_number, "")
         self.assertIsNone(substance.ca_max_quantity)
         self.assertIsNone(substance.siccrf_max_quantity)
+        self.assertEqual(substance.substancesynonym_set.count(), 0)
 
     # TODO: do not save data into ca_ fields if it's a copy of what is in the siccrf_ field
 
