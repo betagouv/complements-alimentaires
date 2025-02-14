@@ -171,9 +171,7 @@ watch(
 
 const search = () => {
   updateQuery({ recherche: searchTerm.value })
-  console.log("Search")
-  console.log(url.value)
-  // fetchSearchResults()
+  fetchSearchResults()
 }
 </script>
 

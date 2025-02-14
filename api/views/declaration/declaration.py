@@ -38,6 +38,7 @@ from api.serializers import (
     SimpleVisorSerializer,
 )
 from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
+from api.utils.search import UnaccentSearchFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
 from config import email
 from data.models import Company, Declaration, InstructionRole, Snapshot, User, VisaRole
@@ -351,7 +352,12 @@ class OngoingDeclarationsListView(GenericDeclarationsListView):
     pagination_class = InstructionDeclarationPagination
     serializer_class = SimpleDeclarationSerializer
     permission_classes = [(IsInstructor | IsVisor)]
-    filter_backends = [django_filters.DjangoFilterBackend, InstructionDateOrderingFilter]
+    search_fields = ["name", "id", "company__social_name"]
+    filter_backends = [
+        django_filters.DjangoFilterBackend,
+        InstructionDateOrderingFilter,
+        UnaccentSearchFilter,
+    ]
     ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT)
 

@@ -1779,6 +1779,43 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(len(results), 1)
         self.assertTrue(results[0]["visaRefused"])
 
+    @authenticate
+    def test_search_fields(self):
+        def get_search_results(search_term):
+            response = self.client.get(f"{reverse('api:list_all_declarations')}?search={search_term}", format="json")
+            return response.json()["results"]
+
+        InstructionRoleFactory(user=authenticate.user)
+
+        umbrella_corp = CompanyFactory(social_name="Umbrella corporation")
+        globex = CompanyFactory(social_name="Globex")
+
+        omega = AwaitingInstructionDeclarationFactory(company=umbrella_corp, name="Omega")
+        magnesium = AwaitingInstructionDeclarationFactory(company=umbrella_corp, name="Magnésium")
+
+        fer = AwaitingInstructionDeclarationFactory(company=globex, name="Fer")
+        creatine = AwaitingInstructionDeclarationFactory(company=globex, name="Créatine")
+
+        # Checher "globex". Les deux compléments de l'entreprise Globex doivent être renvoyés
+        results = get_search_results("Globex")
+        self.assertEqual(len(results), 2)
+        (self.assertIn(x.id, map(lambda x: x["id"], results)) for x in [fer, creatine])
+
+        # Checher "omega". Seulement omega devrait sortir
+        results = get_search_results("omega")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], omega.id)
+
+        # Checher par ID (magnésium)
+        results = get_search_results(magnesium.id)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], magnesium.id)
+
+        # Chercher en ignorant les accents (magnésium)
+        results = get_search_results("magnesium")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], magnesium.id)
+
 
 class TestDeclaredElementsApi(APITestCase):
     @authenticate
