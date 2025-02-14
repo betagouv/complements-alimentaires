@@ -199,6 +199,7 @@ import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { firstErrorMsg, errorRequiredField, errorNumeric } from "@/utils/forms"
+import { navigateBack, getLastRouteMaybe } from "@/utils/navigation"
 import { useVuelidate } from "@vuelidate/core"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
@@ -244,7 +245,15 @@ getElementFromApi()
 const pageTitle = computed(() => (isNewIngredient.value ? "Nouvel ingrédient" : "Modification ingrédient"))
 
 const breadcrumbLinks = computed(() => {
-  const links = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]
+  const lastRoute = getLastRouteMaybe(router)
+  const links = []
+  if (lastRoute?.name == "ElementPage") {
+    links.push({ to: { name: "ProducerHomePage" }, text: "Recherche ingrédients" })
+    // ce n'est pas possible d'accèder l'URL -2 pour "Résultats de la recherche" en utilisant history ou router
+    links.push({ to: { name: "ElementPage", params: { urlComponent: props.urlComponent } }, text: element.value?.name })
+  } else {
+    links.push({ to: { name: "DashboardPage" }, text: "Tableau de bord" })
+  }
   links.push({ text: pageTitle })
   return links
 })
@@ -286,9 +295,9 @@ const saveElement = async () => {
     useToaster().addMessage({
       type: "success",
       id: "element-creation-success",
-      description: `L'élément a été ${isNewIngredient.value ? "créé" : "modifié"}`,
+      description: `L'ingrédient a été ${isNewIngredient.value ? "créé" : "modifié"}`,
     })
-    router.push({ name: "DashboardPage" })
+    navigateBack(router, { name: "DashboardPage" })
   }
 }
 const addNewSynonym = async () => {

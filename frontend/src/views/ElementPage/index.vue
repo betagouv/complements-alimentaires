@@ -205,7 +205,7 @@ const getElementFromApi = async () => {
 const searchPageSource = ref(null)
 
 const breadcrumbLinks = computed(() => {
-  const links = [{ to: "/", text: "Accueil" }]
+  const links = [{ to: { name: "ProducerHomePage" }, text: "Recherche ingrédients" }]
   if (searchPageSource.value) links.push({ to: searchPageSource, text: "Résultats de recherche" })
   links.push({ text: element.value?.name || "" })
   return links

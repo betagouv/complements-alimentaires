@@ -38,6 +38,7 @@ import { useRootStore } from "@/stores/root"
 import { useRouter } from "vue-router"
 import { getApiType } from "@/utils/mappings"
 import { headers } from "@/utils/data-fetching"
+import { navigateBack, getLastRouteMaybe } from "@/utils/navigation"
 import useToaster from "@/composables/use-toaster"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
@@ -55,9 +56,10 @@ const declarationLink = computed(() => {
   return { name: "InstructionPage", params: { declarationId: declarationId.value } }
 })
 
+const lastRoute = computed(() => getLastRouteMaybe(router))
 const breadcrumbLinks = computed(() => {
   const links = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]
-  if (lastRoute.value.name === "InstructionPage" && declarationLink.value) {
+  if (lastRoute.value?.name === "InstructionPage" && declarationLink.value) {
     links.push({ to: { name: "InstructionDeclarations" }, text: "Déclarations pour instruction" })
     links.push({ to: lastRoute.value, text: "Instruction" })
   } else {
@@ -95,19 +97,6 @@ const closeModal = () => (modalToOpen.value = false)
 
 const router = useRouter()
 const requestTableRoute = { name: "NewElementsPage" }
-// merci https://github.com/vuejs/vue-router/issues/997#issuecomment-1536254142
-const lastRoute = computed(() => {
-  const backUrl = router.options.history.state.back
-  return backUrl ? router.resolve({ path: `${backUrl}` }) : requestTableRoute
-})
-const navigateBack = (response) => {
-  const successRoute = lastRoute.value
-  successRoute.query = {
-    actionedId: response.id,
-    actionedType: response.type,
-  }
-  router.push(successRoute)
-}
 
 const notes = ref()
 
@@ -164,7 +153,7 @@ const updateElement = async (action, payload) => {
 
   if (response.value?.ok) {
     closeModal()
-    navigateBack(data.value)
+    navigateBack(router, requestTableRoute, { query: { actionedId: data.value.id, actionedType: data.value.type } })
   }
 }
 
