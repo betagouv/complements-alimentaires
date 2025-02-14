@@ -87,10 +87,10 @@ class SubstanceSynonymModificationSerializer(serializers.ModelSerializer):
 
 class SubstanceModificationSerializer(CommonIngredientModificationSerializer, WithName):
     synonyms = SubstanceSynonymModificationSerializer(many=True, source="substancesynonym_set", required=False)
-    cas_number = serializers.CharField(source="ca_cas_number", required=False)
-    einec_number = serializers.CharField(source="ca_einec_number", required=False)
-    max_quantity = serializers.FloatField(source="ca_max_quantity", required=False)
-    nutritional_reference = serializers.FloatField(source="ca_nutritional_reference", required=False)
+    cas_number = serializers.CharField(source="ca_cas_number", required=False, allow_blank=True)
+    einec_number = serializers.CharField(source="ca_einec_number", required=False, allow_blank=True)
+    max_quantity = serializers.FloatField(source="ca_max_quantity", required=False, allow_null=True)
+    nutritional_reference = serializers.FloatField(source="ca_nutritional_reference", required=False, allow_null=True)
 
     synonym_model = SubstanceSynonym
     synonym_set_field_name = "substancesynonym_set"

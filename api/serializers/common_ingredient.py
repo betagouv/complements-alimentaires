@@ -1,3 +1,4 @@
+import copy
 from django.db import transaction
 
 from rest_framework import serializers
@@ -30,8 +31,8 @@ class WithName(serializers.ModelSerializer):
 
 
 class CommonIngredientModificationSerializer(serializers.ModelSerializer):
-    public_comments = serializers.CharField(source="ca_public_comments", required=False)
-    private_comments = serializers.CharField(source="ca_private_comments", required=False)
+    public_comments = serializers.CharField(source="ca_public_comments", required=False, allow_blank=True)
+    private_comments = serializers.CharField(source="ca_private_comments", required=False, allow_blank=True)
     status = serializers.IntegerField(source="ca_status", required=False)
 
     # DRF ne gère pas automatiquement la création des nested-fields :
@@ -50,6 +51,11 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def update(self, instance, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
+        data_items = copy.deepcopy(validated_data).items()
+        for key, value in data_items:
+            if not value and key.startswith("ca_"):
+                validated_data[key.replace("ca_", "siccrf_")] = value  # set to None or blank as required
+
         super().update(instance, validated_data)
 
         try:

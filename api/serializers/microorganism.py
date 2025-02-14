@@ -57,6 +57,7 @@ class MicroorganismSynonymModificationSerializer(serializers.ModelSerializer):
 
 class MicroorganismModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
     synonyms = MicroorganismSynonymModificationSerializer(many=True, source="microorganismsynonym_set", required=False)
+    # TODO: aren't these required? what about for update?
     genus = serializers.CharField(source="ca_genus", required=False)
     species = serializers.CharField(source="ca_species", required=False)
 

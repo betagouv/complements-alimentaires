@@ -448,6 +448,41 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(substance.unit, new_unit, "Les champs sans ca_ équivelant sont aussi sauvegardés")
 
     @authenticate
+    def test_delete_data(self):
+        """
+        C'est possible de supprimer des données optionnelles en passant un string vide
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        substance = SubstanceFactory.create(
+            siccrf_public_comments="SICCRF comment",
+            ca_public_comments="CA comment",
+            siccrf_private_comments="private comment",
+            ca_private_comments="",
+            siccrf_cas_number="",
+            ca_cas_number="CA number",
+            siccrf_max_quantity=1.2,
+            ca_max_quantity=3.4,
+        )
+        # TODO: test deleting all synonyms too
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {"public_comments": "", "private_comments": "", "cas_number": "", "max_quantity": None},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        substance.refresh_from_db()
+        self.assertEqual(substance.siccrf_public_comments, "")
+        self.assertEqual(substance.ca_public_comments, "")
+        self.assertEqual(substance.siccrf_private_comments, "")
+        self.assertEqual(substance.ca_private_comments, "")
+        self.assertEqual(substance.siccrf_cas_number, "")
+        self.assertEqual(substance.ca_cas_number, "")
+        self.assertIsNone(substance.ca_max_quantity)
+        self.assertIsNone(substance.siccrf_max_quantity)
+
+    # TODO: do not save data into ca_ fields if it's a copy of what is in the siccrf_ field
+
+    @authenticate
     def test_can_modify_add_delete_synonyms(self):
         """
         En passant tous les synonyms c'est possible de MAJ les synonymes
