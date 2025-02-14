@@ -104,7 +104,7 @@ const routes = [
   },
   {
     path: "/nouvel-ingredient",
-    name: "ElementForm",
+    name: "CreateElement",
     component: ElementForm,
     meta: {
       title: "Nouvel ingrédient",
@@ -114,7 +114,7 @@ const routes = [
   },
   {
     path: "/modification-ingredient/:urlComponent",
-    name: "ElementForm",
+    name: "ModifyElement",
     component: ElementForm,
     props: true,
     meta: {
