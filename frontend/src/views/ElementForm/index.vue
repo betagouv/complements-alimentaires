@@ -249,7 +249,7 @@ const breadcrumbLinks = computed(() => {
   const links = []
   if (lastRoute?.name == "ElementPage") {
     links.push({ to: { name: "ProducerHomePage" }, text: "Recherche ingrédients" })
-    // ce n'est pas possible d'accèder l'URL -2 pour "Résultats de la recherche" en utilisant history ou router
+    // ce n'est pas possible d'accèder l'URL -2 pour "Résultats de recherche" en utilisant history ou router
     links.push({ to: { name: "ElementPage", params: { urlComponent: props.urlComponent } }, text: element.value?.name })
   } else {
     links.push({ to: { name: "DashboardPage" }, text: "Tableau de bord" })

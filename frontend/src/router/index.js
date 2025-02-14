@@ -56,6 +56,9 @@ const routes = [
     path: "/entreprises",
     name: "ProducerHomePage",
     component: ProducerHomePage,
+    meta: {
+      title: "Recherche ingrédients",
+    },
   },
   {
     path: "/contactez-nous",
@@ -83,6 +86,9 @@ const routes = [
     props: true,
     beforeEnter(to) {
       if (!to.query?.q) return { to: "LandingPage" }
+    },
+    meta: {
+      title: "Résultats de recherche",
     },
   },
   {
