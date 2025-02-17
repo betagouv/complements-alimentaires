@@ -19,12 +19,13 @@ class AutocompleteView(APIView):
     max_autocomplete_items = 20
 
     def post(self, request, *args, **kwargs):
-        query = request.data.get("term")
-        if not query or len(query) < self.min_query_length:
+        term = request.data.get("term")
+        if not term or len(term) < self.min_query_length:
             raise ProjectAPIException(
                 global_error=f"Le terme de recherche doit être supérieur ou égal à {self.min_query_length} caractères"
             )
 
+        query = {"term": term, "type": request.data.get("type")}
         results = search_elements(
             query, deduplicate=False, exclude_not_authorized=True, exclude_vitamines_minerals=True
         )[: self.max_autocomplete_items]

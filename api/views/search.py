@@ -32,7 +32,7 @@ class SearchView(APIView):
         if int(self.request.data.get("limit", 0)) > self.max_pagination_limit:
             raise ProjectAPIException(global_error=f"La limite de pagination excède {self.max_pagination_limit}")
 
-        results = search_elements(query, deduplicate=True)
+        results = search_elements({"term": query}, deduplicate=True)
         paginated_results = self.paginate_results(results)
         serialized_data = self.serialize_results(paginated_results)
         return self.get_paginated_response(serialized_data)

@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView, CreateAPIView
 
-from api.serializers import PlantPartSerializer, PlantSerializer, PlantModificationSerializer
-from data.models import Plant, PlantPart
+from api.serializers import PlantPartSerializer, PlantSerializer, PlantModificationSerializer, PlantFamilySerializer
+from data.models import Plant, PlantPart, PlantFamily
 
 from .utils import IngredientRetrieveUpdateView
 from ..permissions import IsInstructor
@@ -18,6 +18,12 @@ class PlantPartListView(ListAPIView):
     model = PlantPart
     queryset = PlantPart.objects.all()
     serializer_class = PlantPartSerializer
+
+
+class PlantFamilyListView(ListAPIView):
+    model = PlantFamily
+    queryset = PlantFamily.objects.all()
+    serializer_class = PlantFamilySerializer
 
 
 class PlantCreateView(CreateAPIView):
