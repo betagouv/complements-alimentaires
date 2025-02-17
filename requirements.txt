@@ -46,7 +46,7 @@ djangorestframework-camel-case==1.4.2 ; python_version >= "3.11" and python_vers
 djangorestframework==3.15.2 ; python_version >= "3.11" and python_version < "4"
 drf-base64==2.0 ; python_version >= "3.11" and python_version < "4"
 executing==2.1.0 ; python_version >= "3.11" and python_version < "4"
-factory-boy==3.3.1 ; python_version >= "3.11" and python_version < "4"
+factory-boy==3.3.3 ; python_version >= "3.11" and python_version < "4"
 faker==33.1.0 ; python_version >= "3.11" and python_version < "4"
 filelock==3.16.1 ; python_version >= "3.11" and python_version < "4"
 gprof2dot==2024.6.6 ; python_version >= "3.11" and python_version < "4"
