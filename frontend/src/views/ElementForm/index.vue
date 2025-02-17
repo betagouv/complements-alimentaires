@@ -219,13 +219,12 @@ const breadcrumbLinks = computed(() => {
   return links
 })
 
-const EMPTY_SYNONYM = { name: "" }
-const newSynonym = () => JSON.parse(JSON.stringify(EMPTY_SYNONYM))
+const createEmptySynonym = () => ({ name: "" })
 
 const state = ref({
   plantParts: [],
   substances: [],
-  synonyms: [newSynonym(), newSynonym(), newSynonym()],
+  synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
 })
 
 const saveElement = async () => {
@@ -258,7 +257,7 @@ const saveElement = async () => {
   }
 }
 const addNewSynonym = async () => {
-  state.value.synonyms.push(newSynonym())
+  state.value.synonyms.push(createEmptySynonym())
 }
 
 const formQuestions = {
