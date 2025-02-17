@@ -34,6 +34,7 @@ import A11yPage from "@/views/A11yPage.vue"
 import ContactForm from "@/views/ContactForm"
 import CompliancePage from "@/views/CompliancePage"
 import DeclaredElementPage from "@/views/DeclaredElementPage"
+import ElementForm from "@/views/ElementForm"
 import MandatedCompaniesPage from "@/views/MandatedCompaniesPage"
 import FaqPage from "@/views/FaqPage"
 import { ref } from "vue"
@@ -91,7 +92,7 @@ const routes = [
     props: true,
   },
   {
-    path: "/nouvel-element/:type/:id",
+    path: "/ingredient-demande/:type/:id",
     name: "DeclaredElementPage",
     component: DeclaredElementPage,
     props: true,
@@ -99,6 +100,16 @@ const routes = [
       title: "Demande d'ajout d'ingrédient",
       requiredRole: "InstructionRole",
       authenticationRequired: true,
+    },
+  },
+  {
+    path: "/nouvel-ingredient",
+    name: "ElementForm",
+    component: ElementForm,
+    meta: {
+      title: "Nouvel ingrédient",
+      authenticationRequired: true,
+      requiredRole: "InstructionRole",
     },
   },
   {

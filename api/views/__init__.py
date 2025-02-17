@@ -38,7 +38,7 @@ from .preparation import PreparationListView
 from .ingredient import IngredientRetrieveUpdateView, IngredientCreateView
 from .microorganism import MicroorganismRetrieveUpdateView, MicroorganismCreateView
 from .newsletter import SubscribeNewsletter
-from .plant import PlantPartListView, PlantRetrieveUpdateView, PlantCreateView
+from .plant import PlantPartListView, PlantRetrieveUpdateView, PlantCreateView, PlantFamilyListView
 from .population import PopulationListView
 from .report_issue import ReportIssue
 from .search import SearchView

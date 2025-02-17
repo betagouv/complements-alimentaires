@@ -2,6 +2,7 @@ from django.db import transaction
 
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
+from simple_history.utils import update_change_reason
 
 from data.models import Substance
 
@@ -39,6 +40,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
         ingredient = super().create(validated_data)
+        update_change_reason(ingredient, "CommonIngredientModificationSerializer")
 
         for synonym in synonyms:
             self.add_synonym(ingredient, synonym)

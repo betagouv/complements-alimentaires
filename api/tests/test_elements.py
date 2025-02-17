@@ -391,6 +391,22 @@ class TestElementsCreateApi(APITestCase):
         response = self.client.post(reverse("api:ingredient_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    @authenticate
+    def test_change_reason_on_create_ingredient(self):
+        """
+        Une raison de changement est donnée quand une création est effectué depuis cet API
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        payload = {
+            "name": "My new ingredient",
+        }
+        response = self.client.post(reverse("api:ingredient_create"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        ingredient = Ingredient.objects.get(name="My new ingredient")
+        self.assertEqual(ingredient.history.first().history_change_reason, "CommonIngredientModificationSerializer")
+
 
 class TestElementsModifyApi(APITestCase):
     def test_cannot_modify_ingredient_not_authenticated(self):
