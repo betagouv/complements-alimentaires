@@ -110,10 +110,10 @@
                 v-for="(id, idx) in state.plantParts"
                 :key="`plant-part-${id}`"
                 :label="optionLabel(plantParts, id)"
-                :aria-pressed="true"
                 tagName="button"
                 @click="state.plantParts.splice(idx, 1)"
-                class="mx-1"
+                :aria-label="`Retirer ${optionLabel(plantParts, id)}`"
+                class="mx-1 fr-tag--dismiss"
               ></DsfrTag>
             </div>
           </div>
@@ -134,10 +134,10 @@
                 v-for="(substance, idx) in state.substances"
                 :key="`substance-${substance.id}`"
                 :label="substance.name"
-                :aria-pressed="true"
                 tagName="button"
                 @click="state.substances.splice(idx, 1)"
-                class="mx-1"
+                :aria-label="`Retirer ${substance.name}`"
+                class="mx-1 fr-tag--dismiss"
               ></DsfrTag>
             </div>
           </div>
