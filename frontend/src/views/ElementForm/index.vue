@@ -68,7 +68,7 @@
               <DsfrInput v-model="state.casNumber" label="Numéro CAS" labelVisible />
             </DsfrInputGroup>
             <DsfrToggleSwitch
-              v-if="!state.ingredientType || state.ingredientType != AROMA"
+              v-if="!state.ingredientType || state.ingredientType != aromaId"
               v-model="state.novelFood"
               label="Novel food"
               activeText="Oui"
@@ -242,7 +242,7 @@ const saveElement = async () => {
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
   payload.status = payload.status ? 1 : 2
-  if (payload.ingredientType && payload.ingredientType == AROMA.value) delete payload.novelFood
+  if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
 
   const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
   $externalResults.value = await handleError(response)
@@ -355,5 +355,5 @@ const plantFamiliesDisplay = computed(() => {
     .sort((a, b) => a.text.localeCompare(b.text))
 })
 
-const AROMA = ref(3)
+const aromaId = 3
 </script>
