@@ -191,7 +191,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue"
-import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, getApiType } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRoute, useRouter } from "vue-router"
