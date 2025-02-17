@@ -34,8 +34,8 @@
             <DsfrToggleSwitch
               v-model="state.status"
               label="Autorisation de l’ingrédient"
-              activeText="Authorisé"
-              inactiveText="Non authorisé"
+              activeText="Autorisé"
+              inactiveText="Non autorisé"
               label-left
               class="self-center mt-4 col-span-2 sm:col-span-1"
             />
@@ -108,7 +108,7 @@
             <div class="md:ml-4 md:my-8 md:col-span-2">
               <DsfrTag
                 v-for="id in state.plantParts"
-                :key="id"
+                :key="`plant-part-${id}`"
                 :label="optionLabel(plantParts, id)"
                 class="mx-1"
               ></DsfrTag>
