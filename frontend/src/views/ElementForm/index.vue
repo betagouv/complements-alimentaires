@@ -224,14 +224,11 @@ const url = computed(() => `/api/v1/${apiType.value}s/${elementId.value}?history
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
 const getElementFromApi = async () => {
-  // TODO: handle 404 if bad urlComponent
   if (!type.value || !elementId.value) return // create new ingredient
   await execute()
   await handleError(response)
   if (response.value.ok) {
     state.value = JSON.parse(JSON.stringify(element.value))
-    // TODO: what to do with "sans objet" ?
-    // TODO: is there a nicer way of handling the data to avoid all this custom mapping?
     state.value.status = state.value.status === "autorisé"
     if (state.value.family) state.value.family = state.value.family.id
     if (state.value.plantParts) state.value.plantParts = state.value.plantParts.map((p) => p.id)
