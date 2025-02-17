@@ -314,6 +314,7 @@ const routes = [
         triage: "responseLimitDate",
         article: "",
         limit: "10",
+        recherche: "",
       },
     },
   },
