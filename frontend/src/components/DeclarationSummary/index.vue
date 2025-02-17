@@ -24,6 +24,8 @@
             :href="file.file"
             :size="file.size"
             :format="file.typeDisplay"
+            :download="null"
+            target="_blank"
           />
         </div>
       </div>
