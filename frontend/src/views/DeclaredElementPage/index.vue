@@ -38,7 +38,7 @@ import { useRootStore } from "@/stores/root"
 import { useRouter } from "vue-router"
 import { getApiType } from "@/utils/mappings"
 import { headers } from "@/utils/data-fetching"
-import { navigateBack, getLastRouteMaybe } from "@/utils/navigation"
+import { navigateBack } from "@/utils/navigation"
 import useToaster from "@/composables/use-toaster"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
@@ -56,7 +56,7 @@ const declarationLink = computed(() => {
   return { name: "InstructionPage", params: { declarationId: declarationId.value } }
 })
 
-const lastRoute = computed(() => getLastRouteMaybe(router))
+const lastRoute = computed(() => router.getPreviousRoute().value)
 const breadcrumbLinks = computed(() => {
   const links = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]
   if (lastRoute.value?.name === "InstructionPage" && declarationLink.value) {

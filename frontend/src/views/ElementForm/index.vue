@@ -204,7 +204,7 @@ import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { firstErrorMsg, errorRequiredField, errorNumeric } from "@/utils/forms"
-import { navigateBack, getLastRouteMaybe } from "@/utils/navigation"
+import { navigateBack } from "@/utils/navigation"
 import { useVuelidate } from "@vuelidate/core"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
@@ -247,7 +247,7 @@ getElementFromApi()
 const pageTitle = computed(() => (isNewIngredient.value ? "Nouvel ingrédient" : "Modification ingrédient"))
 
 const breadcrumbLinks = computed(() => {
-  const lastRoute = getLastRouteMaybe(router)
+  const lastRoute = router.getPreviousRoute().value
   const links = []
   if (lastRoute?.name == "ElementPage") {
     links.push({ to: { name: "ProducerHomePage" }, text: "Recherche ingrédients" })
