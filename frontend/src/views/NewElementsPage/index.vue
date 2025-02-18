@@ -47,9 +47,7 @@ const pages = computed(() => getPagesForPagination(data.value?.count, limit.valu
 
 // Valeurs obtenus du queryparams
 const page = computed(() => parseInt(route.query.page))
-const name = computed(() => route.query.nom)
-const type = computed(() => route.query.type)
-const ordering = computed(() => route.query.triage)
+const statusFilter = computed(() => route.query.statut)
 const limit = computed(() => parseInt(route.query.limit) || 10)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
@@ -58,8 +56,7 @@ const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 
 // Obtention de la donnée via API
 const url = computed(
-  () =>
-    `/api/v1/new-declared-elements/?limit=${limit.value}&offset=${offset.value}&name=${name.value}&type=${type.value}`
+  () => `/api/v1/new-declared-elements/?limit=${limit.value}&offset=${offset.value}&requestStatus=${statusFilter.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -67,5 +64,5 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
-watch([page, name, type, ordering, limit], fetchSearchResults)
+watch([page, statusFilter, limit], fetchSearchResults)
 </script>
