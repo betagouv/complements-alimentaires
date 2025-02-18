@@ -1878,8 +1878,8 @@ class TestDeclaredElementsApi(APITestCase):
         results = response.json()
         self.assertEqual(results["count"], 2)
         returned_ids = [results["results"][0]["id"], results["results"][1]["id"]]
-        self.assertIn(returned_ids, plant.id)
-        self.assertIn(returned_ids, ingredient.id)
+        self.assertIn(plant.id, returned_ids)
+        self.assertIn(ingredient.id, returned_ids)
 
 
 class TestSingleDeclaredElementApi(APITestCase):
