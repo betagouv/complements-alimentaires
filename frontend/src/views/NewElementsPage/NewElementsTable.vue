@@ -19,6 +19,7 @@ import { getTypeInFrench, getAuthorizationModeInFrench } from "@/utils/mappings"
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
 const headers = [
+  "Entreprise",
   "Nom de l'ingrédient",
   "Type d'ingrédient",
   "Authorisation marché FR ou EU",
@@ -30,6 +31,7 @@ const headers = [
 const rows = computed(() =>
   props.data.results?.map((x) => ({
     rowData: [
+      x.declaration.company?.socialName,
       x.name,
       getTypeInFrench(x.type),
       getAuthorizationModeInFrench(x.authorizationMode),
