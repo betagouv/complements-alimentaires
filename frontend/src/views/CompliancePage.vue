@@ -50,7 +50,7 @@ const items = [
   },
   {
     title: "Règlement (CE) n°852/2004",
-    body: "du parlement européen et du Conseil du 29 avril 2004 relatif à l 'hygiène des denrées alimentaires.",
+    body: "du Parlement européen et du Conseil du 29 avril 2004 relatif à l 'hygiène des denrées alimentaires.",
     link: "https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=celex%3A32004R0852",
   },
   {
