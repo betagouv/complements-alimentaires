@@ -28,6 +28,7 @@ from .declaration import (
     DeclaredSubstance,
     ComputedSubstance,
     Attachment,
+    Addable,
 )
 from .solicitation import SupervisionClaim, CompanyAccessClaim, CollaborationInvitation
 from .snapshot import Snapshot
