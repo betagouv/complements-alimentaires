@@ -107,10 +107,13 @@
             />
             <div class="md:ml-4 md:my-8 md:col-span-2">
               <DsfrTag
-                v-for="id in state.plantParts"
-                :key="id"
+                v-for="(id, idx) in state.plantParts"
+                :key="`plant-part-${id}`"
                 :label="optionLabel(plantParts, id)"
-                class="mx-1"
+                tagName="button"
+                @click="state.plantParts.splice(idx, 1)"
+                :aria-label="`Retirer ${optionLabel(plantParts, id)}`"
+                class="mx-1 fr-tag--dismiss"
               ></DsfrTag>
             </div>
           </div>
@@ -127,12 +130,14 @@
               :required="false"
             />
             <div class="md:ml-4 md:my-7 md:col-span-2">
-              <!-- TODO: make tags deleteable -->
               <DsfrTag
-                v-for="substance in state.substances"
-                :key="substance.id"
+                v-for="(substance, idx) in state.substances"
+                :key="`substance-${substance.id}`"
                 :label="substance.name"
-                class="mx-1"
+                tagName="button"
+                @click="state.substances.splice(idx, 1)"
+                :aria-label="`Retirer ${substance.name}`"
+                class="mx-1 fr-tag--dismiss"
               ></DsfrTag>
             </div>
           </div>
