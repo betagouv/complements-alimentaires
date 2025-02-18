@@ -172,7 +172,7 @@ class TestAutomaticApproval(TestCase):
 
     def test_awaiting_declaration_not_approved_art_18(self, mocked_brevo):
         """
-        Une déclaration en attente d'instruction de doit pas se valider si elle a l'article 18
+        Une déclaration en attente d'instruction ne doit pas se valider si elle a l'article 18
         """
         declaration = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_18)
         TestAutomaticApproval._create_submission_snapshot(declaration)
