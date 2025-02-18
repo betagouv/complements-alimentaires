@@ -15,7 +15,7 @@
 
       <FormWrapper :externalResults="$externalResults" class="mx-auto">
         <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
-          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-8">
+          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-8">
             <div class="col-span-2 lg:col-span-4" v-if="formForType.name">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'name')">
                 <DsfrInput v-model="state.name" :label="formForType.name.label" required labelVisible />
@@ -31,14 +31,11 @@
                 <DsfrInput v-model="state.genus" label="Genre" labelVisible required />
               </DsfrInputGroup>
             </div>
-            <DsfrToggleSwitch
-              v-model="state.status"
-              label="Autorisation de l’ingrédient"
-              activeText="Autorisé"
-              inactiveText="Non autorisé"
-              label-left
-              class="self-center mt-4 col-span-2 sm:col-span-1"
-            />
+            <div class="col-span-2">
+              <DsfrInputGroup>
+                <DsfrSelect v-model="state.status" label="Autorisation de l’ingrédient" :options="statuses" />
+              </DsfrInputGroup>
+            </div>
             <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'family')">
                 <DsfrSelect
@@ -191,7 +188,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue"
-import { getTypeIcon, getTypeInFrench, getApiType } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, getApiType, authorizationModesMapping } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRoute, useRouter } from "vue-router"
@@ -241,7 +238,6 @@ const saveElement = async () => {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
-  payload.status = payload.status ? 1 : 2
   if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
 
   const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
@@ -339,6 +335,12 @@ const ingredientTypes = [
   { value: 3, text: "Arôme" },
   { value: 4, text: "Autre ingrédient actif" },
   { value: 5, text: "Autre ingrédient" },
+]
+
+const statuses = [
+  { value: 1, text: "Autorisé" },
+  { value: 2, text: "Non autorisé" },
+  { value: 3, text: "Sans objet" },
 ]
 
 const selectOption = async (result) => {
