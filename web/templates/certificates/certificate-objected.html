@@ -8,7 +8,10 @@
         Madame, Monsieur,
     </p>
     <p>
-        Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré la mise sur le marché du produit :
+        Le {{ last_submission_date|date:"l j F Y" }}, en application des dispositions du décret
+        n°2006-352 du 20 mars 2006, vous avez déclaré pour le compte de la société
+        {% if declaration.company %}« {{ declaration.company.social_name }} »{% endif %}
+        la mise sur le marché du produit :
         <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
             {{ declaration.name }} / {{ declaration.galenic_formulation }}
         </span>

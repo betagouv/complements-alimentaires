@@ -50,7 +50,7 @@ const items = [
   },
   {
     title: "Règlement (CE) n°852/2004",
-    body: "du parlement européen et du Conseil du 29 avril 2004 relatif à l 'hygiène des denrées alimentaires.",
+    body: "du Parlement européen et du Conseil du 29 avril 2004 relatif à l'hygiène des denrées alimentaires.",
     link: "https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=celex%3A32004R0852",
   },
   {
@@ -65,7 +65,7 @@ const items = [
   },
   {
     title: "Règlement (CE) n°1925/2006",
-    body: "du Parlement européen et du Conseil du 20 décembre 2006 concernant l' adjonction de vitamines, de minéraux et de certaines autres substances aux denrées alimentaires.",
+    body: "du Parlement européen et du Conseil du 20 décembre 2006 concernant l'adjonction de vitamines, de minéraux et de certaines autres substances aux denrées alimentaires.",
     link: "https://eur-lex.europa.eu/legal-content/FR/ALL/?uri=celex:32006R1925",
   },
   {

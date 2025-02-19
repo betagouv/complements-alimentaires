@@ -10,8 +10,8 @@
         <span style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
             {% if declaration.company %}{{ declaration.company.social_name }}{% endif %}
         </span>
-        a effectué, le {{ last_submission_date|date:"l j F Y" }}, la déclaration mentionnée à l’article 15 du décret
-        n°2006-352 du 20 mars 2006 relatif aux compléments alimentaires pour le produit :
+        a effectué, le {{ last_submission_date|date:"l j F Y" }}, la déclaration prévue par les dispositions
+        du décret n°2006-352 du 20 mars 2006 relatif aux compléments alimentaires pour le produit :
     </p>
     <p style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
         {{ declaration.name }}
@@ -23,7 +23,22 @@
         {% endif %}
     </p>
     <p>
-        Cette déclaration, acceptée, est enregistrée sous le numéro
+        Votre complément alimentaire conduisant à un dépassement de la dose journalière recommandée actuellement
+        admise pour les nutriments, votre déclaration a, dans un premier temps, été examinée au titre des
+        dispositions de l’article 18 dudit décret. Le nouveau niveau d’apport combiné aux apports en nutriments
+        provenant d’autres sources alimentaires ne pose pas de difficulté au regard des données qui figurent dans
+        l’avis de l’Anses du 31 juillet 2024
+        (<a href="https://www.anses.fr/fr/system/files/NUT2023SA0165.pdf">https://www.anses.fr/fr/system/files/NUT2023SA0165.pdf</a>).
+    </p>
+    <p>
+        Pour votre information, l’arrêté du 9 mai 2006 relatif aux nutriments pouvant être employés dans la
+        fabrication des compléments alimentaires est en cours de révision : dans ce cadre, il sera tenu compte de
+        la nouvelle dose journalière ainsi admise. Dans l’attente, la base de données Compl’Alim sera modifiée en
+        conséquence.
+    </p>
+    <p>
+        Votre déclaration a donc été acceptée au titre de l’article 15 du décret n°2006-352 et est enregistrée
+        sous le numéro
         <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
             {{ declaration.id }}
         </span>.
