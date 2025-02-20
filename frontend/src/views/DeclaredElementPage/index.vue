@@ -38,7 +38,6 @@ import { useRootStore } from "@/stores/root"
 import { useRouter } from "vue-router"
 import { getApiType } from "@/utils/mappings"
 import { headers } from "@/utils/data-fetching"
-import { navigateBack } from "@/utils/navigation"
 import useToaster from "@/composables/use-toaster"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
@@ -153,7 +152,7 @@ const updateElement = async (action, payload) => {
 
   if (response.value?.ok) {
     closeModal()
-    navigateBack(router, requestTableRoute, { query: { actionedId: data.value.id, actionedType: data.value.type } })
+    router.navigateBack(requestTableRoute, { query: { actionedId: data.value.id, actionedType: data.value.type } })
   }
 }
 

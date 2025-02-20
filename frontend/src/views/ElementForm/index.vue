@@ -204,7 +204,6 @@ import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { firstErrorMsg, errorRequiredField, errorNumeric } from "@/utils/forms"
-import { navigateBack } from "@/utils/navigation"
 import { useVuelidate } from "@vuelidate/core"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
@@ -299,7 +298,7 @@ const saveElement = async () => {
       id: "element-creation-success",
       description: `L'ingrédient a été ${isNewIngredient.value ? "créé" : "modifié"}`,
     })
-    navigateBack(router, { name: "DashboardPage" })
+    router.navigateBack({ name: "DashboardPage" })
   }
 }
 const addNewSynonym = async () => {

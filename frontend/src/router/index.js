@@ -478,6 +478,14 @@ const ensureDefaultQueryParams = (route, next) => {
 const previousRoute = ref(null)
 router.getPreviousRoute = () => previousRoute
 
+router.navigateBack = (defaultRoute, additionalParameters) => {
+  const backRoute = router.getPreviousRoute().value || defaultRoute
+  if (additionalParameters) {
+    Object.assign(backRoute, additionalParameters)
+  }
+  router.push(backRoute)
+}
+
 router.beforeEach((to, from, next) => {
   const store = useRootStore()
   previousRoute.value = from
