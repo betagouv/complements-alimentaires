@@ -240,48 +240,64 @@ DECLARATION_TYPE_TO_ARTICLE_MAPPING = {
 
 
 def create_declared_plant(declaration, teleIcare_plant, active):
-    declared_plant = DeclaredPlant(
-        declaration=declaration,
-        plant=Plant.objects.get(siccrf_id=teleIcare_plant.plte_ident),
-        active=active,
-        quantity=teleIcare_plant.prepa_qte if active else None,
-        unit=SubstanceUnit.objects.get(siccrf_id=teleIcare_plant.unt_ident) if active else None,
-        preparation=Preparation.objects.get(siccrf_id=teleIcare_plant.typprep_ident) if active else None,
-        used_part=PlantPart.objects.get(siccrf_id=teleIcare_plant.pplan_ident) if active else None,
-    )
-    return declared_plant
+    try:
+        declared_plant = DeclaredPlant(
+            declaration=declaration,
+            plant=Plant.objects.get(siccrf_id=teleIcare_plant.plte_ident),
+            active=active,
+            quantity=teleIcare_plant.prepa_qte if active else None,
+            unit=SubstanceUnit.objects.get(siccrf_id=teleIcare_plant.unt_ident) if active else None,
+            preparation=Preparation.objects.get(siccrf_id=teleIcare_plant.typprep_ident) if active else None,
+            used_part=PlantPart.objects.get(siccrf_id=teleIcare_plant.pplan_ident) if active else None,
+        )
+        return declared_plant
+    except Plant.DoesNotExist as e:
+        logger.error(e)
+        return
 
 
 def create_declared_microorganism(declaration, teleIcare_microorganism, active):
-    declared_microorganism = DeclaredMicroorganism(
-        declaration=declaration,
-        microorganism=Microorganism.objects.get(siccrf_id=teleIcare_microorganism.morg_ident),
-        active=active,
-        activated=True,  # dans TeleIcare, le champ `activated` n'existait pas, les MO inactivés étaient des `ingrédients autres`
-        strain=teleIcare_microorganism.ingmorg_souche,
-        quantity=teleIcare_microorganism.ingmorg_quantite_par_djr,
-    )
-    return declared_microorganism
+    try:
+        declared_microorganism = DeclaredMicroorganism(
+            declaration=declaration,
+            microorganism=Microorganism.objects.get(siccrf_id=teleIcare_microorganism.morg_ident),
+            active=active,
+            activated=True,  # dans TeleIcare, le champ `activated` n'existait pas, les MO inactivés étaient des `ingrédients autres`
+            strain=teleIcare_microorganism.ingmorg_souche or "",
+            quantity=teleIcare_microorganism.ingmorg_quantite_par_djr,
+        )
+        return declared_microorganism
+    except Microorganism.DoesNotExist as e:
+        logger.error(e)
+        return
 
 
 def create_declared_ingredient(declaration, teleIcare_ingredient, active):
-    declared_ingredient = DeclaredIngredient(
-        declaration=declaration,
-        ingredient=Ingredient.objects.get(siccrf_id=teleIcare_ingredient.inga_ident),
-        active=active,
-        quantity=None,  # dans TeleIcare, les ingrédients n'avaient pas de quantité associée
-    )
-    return declared_ingredient
+    try:
+        declared_ingredient = DeclaredIngredient(
+            declaration=declaration,
+            ingredient=Ingredient.objects.get(siccrf_id=teleIcare_ingredient.inga_ident),
+            active=active,
+            quantity=None,  # dans TeleIcare, les ingrédients n'avaient pas de quantité associée
+        )
+        return declared_ingredient
+    except Ingredient.DoesNotExist as e:
+        logger.error(e)
+        return
 
 
 def create_computed_substance(declaration, teleIcare_substance):
-    computed_substance = ComputedSubstance(
-        declaration=declaration,
-        substance=Substance.objects.get(siccrf_id=teleIcare_substance.sbsact_ident),
-        quantity=teleIcare_substance.sbsactdecl_quantite_par_djr,
-        # le champ de TeleIcare 'sbsact_commentaires' n'est pas repris
-    )
-    return computed_substance
+    try:
+        computed_substance = ComputedSubstance(
+            declaration=declaration,
+            substance=Substance.objects.get(siccrf_id=teleIcare_substance.sbsact_ident),
+            quantity=teleIcare_substance.sbsactdecl_quantite_par_djr,
+            # le champ de TeleIcare 'sbsact_commentaires' n'est pas repris
+        )
+        return computed_substance
+    except Substance.DoesNotExist as e:
+        logger.error(e)
+        return
 
 
 @transaction.atomic
@@ -328,7 +344,8 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
                 ),
                 active=ingredient.fctingr_ident == 1,
             )
-            bulk_ingredients[DeclaredPlant].append(declared_plant)
+            if declared_plant:
+                bulk_ingredients[DeclaredPlant].append(declared_plant)
         elif ingredient.tying_ident == 2:
             declared_microorganism = create_declared_microorganism(
                 declaration=declaration,
@@ -337,7 +354,8 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
                 ),
                 active=ingredient.fctingr_ident == 1,
             )
-            bulk_ingredients[DeclaredMicroorganism].append(declared_microorganism)
+            if declared_microorganism:
+                bulk_ingredients[DeclaredMicroorganism].append(declared_microorganism)
         elif ingredient.tying_ident == 3:
             declared_ingredient = create_declared_ingredient(
                 declaration=declaration,
@@ -346,14 +364,16 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
                 ),
                 active=ingredient.fctingr_ident == 1,
             )
-            bulk_ingredients[DeclaredIngredient].append(declared_ingredient)
+            if declared_ingredient:
+                bulk_ingredients[DeclaredIngredient].append(declared_ingredient)
     # dans TeleIcare les `declared_substances` étaient des ingrédients
     # donc on ne rempli pas le champ declaration.declared_substances grâce à l'historique
     for teleIcare_substance in IcaSubstanceDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident):
         computed_substance = create_computed_substance(
             declaration=declaration, teleIcare_substance=teleIcare_substance
         )
-        bulk_ingredients[ComputedSubstance].append(computed_substance)
+        if computed_substance:
+            bulk_ingredients[ComputedSubstance].append(computed_substance)
 
     for model, bulk_of_objects in bulk_ingredients.items():
         model.objects.bulk_create(bulk_of_objects)
@@ -361,18 +381,19 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
 
 @transaction.atomic
 def add_final_state_snapshot(declaration, latest_ica_version_declaration, declaration_acceptation_date):
-    snapshot = Snapshot(
-        creation_date=declaration_acceptation_date,
-        modification_date=declaration_acceptation_date,
-        declaration=declaration,
-        status=Declaration.DeclarationStatus.AUTHORIZED,
-        json_declaration="",
-        comment=latest_ica_version_declaration.vrsdecl_observations_ac,
-        action="",
-        post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
-    )
-    with suppress_autotime(snapshot, ["creation_date", "modification_date"]):
-        snapshot.save()
+    if not declaration.snapshots.exists():
+        snapshot = Snapshot(
+            creation_date=declaration_acceptation_date,
+            modification_date=declaration_acceptation_date,
+            declaration=declaration,
+            status=Declaration.DeclarationStatus.AUTHORIZED,
+            json_declaration="",
+            comment=latest_ica_version_declaration.vrsdecl_observations_ac or "",
+            action="",
+            post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
+        )
+        with suppress_autotime(snapshot, ["creation_date", "modification_date"]):
+            snapshot.save()
 
 
 def create_declarations_from_teleicare_history(company_ids=[]):
@@ -470,17 +491,18 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     objeff_ident=4,  # Autre
                 )
                 if other_effects.exists():
-                    declaration.other_effects = other_effects.first().vrs_autre_objectif
+                    declaration.other_effects = other_effects.first().vrs_autre_objectif or ""
                 other_conditions = IcaPopulationRisqueDeclaree.objects.filter(
                     vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident,
                     poprs_ident=6,  # Autre
                 )
                 if other_conditions.exists():
-                    declaration.other_conditions = other_conditions.first().vrsprs_poprisque_autre
+                    declaration.other_conditions = other_conditions.first().vrsprs_poprisque_autre or ""
 
                 try:
                     with suppress_autotime(declaration, ["creation_date", "modification_date"]):
                         declaration.save()
+
                         add_product_info_from_teleicare_history(
                             declaration, latest_ica_version_declaration.vrsdecl_ident
                         )
@@ -491,8 +513,19 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                             declaration, latest_ica_version_declaration, declaration_acceptation_date
                         )
                         nb_created_declarations += 1
-                except IntegrityError:
-                    # cette Déclaration a déjà été créée
-                    pass
+                except IntegrityError as err:
+                    if 'duplicate key value violates unique constraint "data_declaration_siccrf_id_key"' not in str(
+                        err
+                    ):
+                        raise
+                    else:
+                        declaration = Declaration.objects.get(siccrf_id=ica_complement_alimentaire.cplalim_ident)
+                        declaration.creation_date = declaration_creation_date
+                        declaration.save()
+                        add_final_state_snapshot(
+                            declaration, latest_ica_version_declaration, declaration_acceptation_date
+                        )
+                        # cette Déclaration a déjà été créée
+                        pass
 
     logger.info(f"Sur {len(IcaComplementAlimentaire.objects.all())} : {nb_created_declarations} déclarations créées.")
