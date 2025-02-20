@@ -15,6 +15,9 @@
           small
         />
       </span>
+      <span v-else-if="noFilterText">
+        <DsfrTag class="ml-2 mt-1" label="Toutes les déclarations" small />
+      </span>
     </p>
     <p>
       <DsfrButton @click="opened = true" tertiary size="small" label="Changer" />
@@ -30,6 +33,7 @@ const props = defineProps({
   options: { type: Array },
   selectedString: { type: String, required: false },
   filterTitle: { type: String },
+  noFilterText: { type: String, required: false },
 })
 const selectedOptions = ref([])
 const opened = ref(false)

@@ -50,7 +50,7 @@
           </DsfrFieldset>
         </div>
       </div>
-      <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" v-model="filteredStatus" />
+      <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" :statusString="filteredStatus" />
       <div class="min-w-96 md:border-l">
         <div class="md:pl-4 min-w-36 flex flex-row gap-4">
           <div class="w-2/4">

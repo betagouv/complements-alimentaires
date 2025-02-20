@@ -41,7 +41,7 @@
         :exclude="['DRAFT']"
         class="max-w-xl"
         @updateFilter="updateStatusFilter"
-        v-model="filteredStatus"
+        :statusString="filteredStatus"
         :groupInstruction="true"
       />
     </div>
