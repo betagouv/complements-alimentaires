@@ -5,6 +5,7 @@ from datetime import date, datetime, timezone
 
 from django.core.exceptions import MultipleObjectsReturned, ValidationError
 from django.db import IntegrityError, transaction
+from django.db.models import Q
 
 from phonenumber_field.phonenumber import PhoneNumber
 from phonenumbers import NumberParseException
@@ -120,7 +121,7 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
         matched = False
         # recherche de l'etablissement dans les Company déjà enregistrées
         if etab.etab_siret is not None:
-            siret_matching = Company.objects.filter(siret=etab.etab_siret)
+            siret_matching = Company.objects.filter(Q(siret=etab.etab_siret) | Q(old_siret=etab.etab_siret))
             # seulement 2 options possible pour len(siret_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.siret
             if len(siret_matching) == 1:
                 if siret_matching[0].siccrf_id is not None and etab.etab_ident != siret_matching[0].siccrf_id:
@@ -135,7 +136,9 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                     siret_matching[0].save()
 
         elif etab.etab_numero_tva_intra is not None:
-            vat_matching = Company.objects.filter(vat=etab.etab_numero_tva_intra)
+            vat_matching = Company.objects.filter(
+                Q(vat=etab.etab_numero_tva_intra) | Q(old_vat=etab.etab_numero_tva_intra)
+            )
             # seulement 2 options possible pour len(vat_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.vat
             if len(vat_matching) == 1:
                 if vat_matching[0].siccrf_id is not None and etab.etab_ident != vat_matching[0].siccrf_id:

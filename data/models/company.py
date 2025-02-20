@@ -79,6 +79,17 @@ class TeleicareCompany(models.Model):
     matched = models.BooleanField(
         default=False, verbose_name="La Company Compl'Alim a été matchée avec un Etablissement TeleIcare"
     )
+    old_siret = models.CharField(
+        "n° SIRET dans TeleIcare",
+        help_text="14 chiffres",
+        unique=True,
+        blank=True,
+        null=True,
+        validators=[validate_siret],
+    )
+    old_vat = models.CharField(
+        "n° TVA intracommunautaire", unique=True, blank=True, null=True, validators=[validate_vat]
+    )
 
 
 class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.Model):
