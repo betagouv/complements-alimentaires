@@ -8,20 +8,24 @@
       />
       <h1 class="fr-h4">Liste des demandes en attente d’ajout d’ingrédients</h1>
       <NewElementActionInfo />
-      <div class="border px-4 pt-4 pb-0 mb-2 sm:flex gap-8 items-baseline filters">
+      <div class="border px-4 py-4 mb-2 sm:flex gap-8 items-baseline filters">
         <MultiselectFilter
-          filterTitle="Statut de demande :"
+          filterTitle="Statut de la demande :"
           :options="statusOptions"
           :selectedString="statusFilter"
           @updateFilter="(v) => updateQuery({ statut: v })"
+          class="-mb-4 py-1"
         />
-        <MultiselectFilter
-          filterTitle="Statut de déclaration :"
-          :options="declarationStatusOptions"
-          :selectedString="declarationStatusFilter"
-          noFilterText="Toutes les déclarations ouvertes"
-          @updateFilter="(v) => updateQuery({ statutDeclaration: v })"
-        />
+        <div class="md:border-l md:pl-4">
+          <MultiselectFilter
+            filterTitle="Statut de la déclaration :"
+            :options="declarationStatusOptions"
+            :selectedString="declarationStatusFilter"
+            noFilterText="Toutes les déclarations ouvertes"
+            @updateFilter="(v) => updateQuery({ statutDeclaration: v })"
+            class="-mb-4 py-1"
+          />
+        </div>
       </div>
       <div v-if="isFetching" class="flex justify-center my-10">
         <ProgressSpinner />
