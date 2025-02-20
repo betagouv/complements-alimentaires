@@ -329,6 +329,7 @@ const routes = [
       defaultQueryParams: {
         page: 1,
         statut: "REQUESTED,INFORMATION",
+        statutDeclaration: "", // par défaut on filtre par les statuts ouverts
         limit: "10",
       },
     },

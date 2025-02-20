@@ -16,7 +16,7 @@
         />
       </span>
       <span v-else-if="noFilterText">
-        <DsfrTag class="ml-2 mt-1" label="Toutes les déclarations" small />
+        <DsfrTag class="ml-2 mt-1" :label="noFilterText" small />
       </span>
     </p>
     <p>
