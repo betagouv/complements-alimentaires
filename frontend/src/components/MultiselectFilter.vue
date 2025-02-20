@@ -1,0 +1,44 @@
+<template>
+  <div>
+    <DsfrModal :opened="opened" @close="opened = false">
+      <DsfrCheckboxSet v-model="selectedOptions" :options="options" />
+    </DsfrModal>
+    <p class="!mb-2">
+      {{ filterTitle }}
+
+      <span v-if="selectedOptions.length">
+        <DsfrTag
+          class="mr-2 mt-1"
+          v-for="option in selectedOptions"
+          :key="`filter-opt-${option}`"
+          :label="findLabel(option)"
+          small
+        />
+      </span>
+    </p>
+    <p>
+      <DsfrButton @click="opened = true" tertiary size="small" label="Changer" />
+    </p>
+  </div>
+</template>
+
+<script setup>
+import { watch, ref, onMounted } from "vue"
+const emit = defineEmits(["updateFilter"])
+
+const props = defineProps({
+  options: { type: Array },
+  selectedString: { type: String, required: false },
+  filterTitle: { type: String },
+})
+const selectedOptions = ref([])
+const opened = ref(false)
+
+onMounted(() => (selectedOptions.value = props.selectedString ? props.selectedString.split(",") : []))
+watch(selectedOptions, () => emit("updateFilter", selectedOptions.value.join(",")))
+
+const findLabel = (value) => {
+  const option = props.options.find((o) => o.value === value)
+  return option?.tagLabel || option?.label
+}
+</script>

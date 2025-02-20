@@ -8,6 +8,14 @@
       />
       <h1 class="fr-h4">Liste des demandes en attente d’ajout d’ingrédients</h1>
       <NewElementActionInfo />
+      <div class="border px-4 pt-4 pb-0 mb-2 sm:flex gap-8 items-baseline filters">
+        <MultiselectFilter
+          filterTitle="Statut de demande :"
+          :options="statusOptions"
+          :selectedString="statusFilter"
+          @updateFilter="(v) => updateQuery({ statut: v })"
+        />
+      </div>
       <div v-if="isFetching" class="flex justify-center my-10">
         <ProgressSpinner />
       </div>
@@ -28,13 +36,14 @@
 
 <script setup>
 import { useFetch } from "@vueuse/core"
-import { computed, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import NewElementsTable from "./NewElementsTable"
 import NewElementActionInfo from "./NewElementActionInfo"
 import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
+import MultiselectFilter from "@/components/MultiselectFilter"
 
 const router = useRouter()
 const route = useRoute()
@@ -65,4 +74,11 @@ const fetchSearchResults = async () => {
 }
 
 watch([page, statusFilter, limit], fetchSearchResults)
+
+const statusOptions = [
+  { value: "REQUESTED", label: "Nouvelle" },
+  { value: "INFORMATION", label: "Nécessite plus d'information", tagLabel: "Information" },
+  { value: "REJECTED", label: "Refusé" },
+  { value: "REPLACED", label: "Remplacé" },
+]
 </script>
