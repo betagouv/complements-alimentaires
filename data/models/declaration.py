@@ -817,6 +817,10 @@ class Attachment(Historisable):
             "Bulletin d'analyse",
         )
 
+    class Meta:
+        verbose_name = "pièce jointe"
+        verbose_name_plural = "pièces jointes"
+
     type = models.CharField(
         max_length=50,
         choices=AttachmentType.choices,

@@ -39,12 +39,39 @@ class AttachmentInline(admin.TabularInline):
         return False
 
 
+@admin.register(Attachment)
+class AttachmentAdmin(SimpleHistoryAdmin):
+    list_display = (
+        "name",
+        "type",
+        "declaration__name",
+        "declaration__id",
+    )
+
+    search_fields = (
+        "declaration__id",
+        "declaration__name",
+        "name",
+    )
+
+    list_filter = ["type"]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+# Declared Plants inline
+
 REQUEST_FIELDS = (
     "request_status",
     "request_private_notes",
 )
-
-# Declared Plants inline
 
 
 class DeclaredPlantInlineForm(forms.ModelForm):
