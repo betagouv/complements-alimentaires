@@ -48,12 +48,17 @@ class DeclaredElementsView(ListAPIView):
             request_status_queries = [DeclaredElementsView.get_query_for_request_status(r) for r in request_statuses]
             request_status_filter = reduce(lambda x, y: x | y, request_status_queries)
 
+        declaration_statuses = self.request.query_params.get("declarationStatus")
         closed_statuses = [
             Declaration.DeclarationStatus.DRAFT,
             Declaration.DeclarationStatus.ABANDONED,
             Declaration.DeclarationStatus.REJECTED,
             Declaration.DeclarationStatus.WITHDRAWN,
         ]
+        open_statuses = [x.value for x in Declaration.DeclarationStatus if x not in closed_statuses]
+        declaration_statuses = declaration_statuses.split(",") if declaration_statuses else open_statuses
+        declaration_status_filter = Q(declaration__status__in=declaration_statuses)
+
         querysets = [
             DeclaredPlant.objects,
             DeclaredSubstance.objects,
@@ -61,8 +66,7 @@ class DeclaredElementsView(ListAPIView):
             DeclaredMicroorganism.objects,
         ]
         filtered_querysets = [
-            queryset.filter(request_status_filter).exclude(declaration__status__in=closed_statuses)
-            for queryset in querysets
+            queryset.filter(request_status_filter & declaration_status_filter) for queryset in querysets
         ]
         return list(chain(*filtered_querysets))
 
