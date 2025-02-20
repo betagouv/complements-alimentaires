@@ -46,6 +46,7 @@ class AttachmentAdmin(SimpleHistoryAdmin):
         "type",
         "declaration__name",
         "declaration__id",
+        "has_file",
     )
 
     search_fields = (
@@ -64,6 +65,11 @@ class AttachmentAdmin(SimpleHistoryAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    # ça devrait pas arriver mais on avait un bug, et ça nous aide de le régler
+    # https://github.com/betagouv/complements-alimentaires/issues/1655
+    def has_file(self, obj):
+        return "✅ Oui" if obj.file else "❌ Non"
 
 
 # Declared Plants inline
