@@ -279,7 +279,7 @@ const saveElement = async () => {
 
   const url = `/api/v1/${getApiType(type.value)}s/`
   const payload = state.value
-  if (payload.substances.length) {
+  if (payload.substances?.length) {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
