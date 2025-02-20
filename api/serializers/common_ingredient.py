@@ -1,4 +1,5 @@
 import copy
+import logging
 from django.db import transaction
 
 from rest_framework import serializers
@@ -7,6 +8,7 @@ from simple_history.utils import update_change_reason
 
 from data.models import Substance
 
+logger = logging.getLogger(__name__)
 
 COMMON_NAME_FIELDS = ("name",)
 
@@ -55,9 +57,13 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
         for key, value in data_items:
             if key.startswith("ca_"):
                 siccrf_key = key.replace("ca_", "siccrf_")
-                if not value:
+                siccrf_value = getattr(instance, siccrf_key, None)
+                if not value and siccrf_value:
                     validated_data[siccrf_key] = value  # mettre comme None ou "" selon la requête
-                elif value == getattr(instance, siccrf_key, None):
+                    logger.info(
+                        f"SICCRF champ supprimé : le champ '{siccrf_key}' a été supprimé sur l'ingrédient type '{instance.object_type}', id '{instance.id}'"
+                    )
+                elif value == siccrf_value:
                     validated_data.pop(key, None)
 
         super().update(instance, validated_data)
