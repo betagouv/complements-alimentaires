@@ -12,6 +12,7 @@ from data.factories import (
     PlantFamilyFactory,
     SubstanceFactory,
     SubstanceUnitFactory,
+    SubstanceSynonymFactory,
     PlantSynonymFactory,
 )
 from data.models import IngredientType, Plant, IngredientStatus, Microorganism, Substance, Ingredient
@@ -405,7 +406,7 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         ingredient = Ingredient.objects.get(name="My new ingredient")
-        self.assertEqual(ingredient.history.first().history_change_reason, "CommonIngredientModificationSerializer")
+        self.assertEqual(ingredient.history.first().history_change_reason, "Création via Compl'Alim")
 
 
 class TestElementsModifyApi(APITestCase):
@@ -433,12 +434,16 @@ class TestElementsModifyApi(APITestCase):
         """
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
-            siccrf_name="original name", ca_name="", unit=SubstanceUnitFactory.create()
+            siccrf_name="original name",
+            ca_name="",
+            unit=SubstanceUnitFactory.create(),
+            siccrf_status=IngredientStatus.NO_STATUS,
+            ca_status=IngredientStatus.AUTHORIZED,
         )
         new_unit = SubstanceUnitFactory.create()
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
-            {"name": "test", "unit": new_unit.id},
+            {"name": "test", "unit": new_unit.id, "status": IngredientStatus.NO_STATUS},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -446,6 +451,62 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(substance.siccrf_name, "original name")
         self.assertEqual(substance.ca_name, "test")
         self.assertEqual(substance.unit, new_unit, "Les champs sans ca_ équivelant sont aussi sauvegardés")
+        self.assertEqual(
+            substance.status, IngredientStatus.NO_STATUS, "C'est possible de remettre la valeur originelle"
+        )
+        self.assertEqual(substance.history.first().history_change_reason, "Modification via Compl'Alim")
+
+    @authenticate
+    def test_delete_data(self):
+        """
+        C'est possible de supprimer des données optionnelles en passant un string vide
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        substance = SubstanceFactory.create(
+            siccrf_public_comments="SICCRF comment",
+            ca_public_comments="CA comment",
+            siccrf_private_comments="private comment",
+            ca_private_comments="",
+            siccrf_cas_number="",
+            ca_cas_number="CA number",
+            siccrf_max_quantity=1.2,
+            ca_max_quantity=3.4,
+        )
+        SubstanceSynonymFactory.create(name="To delete", standard_name=substance)
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {"public_comments": "", "private_comments": "", "cas_number": "", "max_quantity": None, "synonyms": []},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        substance.refresh_from_db()
+        self.assertEqual(substance.siccrf_public_comments, "")
+        self.assertEqual(substance.ca_public_comments, "")
+        self.assertEqual(substance.siccrf_private_comments, "")
+        self.assertEqual(substance.ca_private_comments, "")
+        self.assertEqual(substance.siccrf_cas_number, "")
+        self.assertEqual(substance.ca_cas_number, "")
+        self.assertIsNone(substance.ca_max_quantity)
+        self.assertIsNone(substance.siccrf_max_quantity)
+        self.assertEqual(substance.substancesynonym_set.count(), 0)
+
+    @authenticate
+    def test_deduplicate_siccrf_data(self):
+        """
+        Si la valeur passée est égale à la valeur dans un champ siccrf_
+        la valeur n'est pas copiée dans le champ ca_
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        microorganism = MicroorganismFactory.create(siccrf_genus="siccrf genus", ca_genus="")
+        response = self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {"genus": "siccrf genus"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        microorganism.refresh_from_db()
+        self.assertEqual(microorganism.ca_genus, "")
+        self.assertEqual(microorganism.siccrf_genus, "siccrf genus")
 
     @authenticate
     def test_can_modify_add_delete_synonyms(self):

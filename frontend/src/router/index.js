@@ -56,6 +56,9 @@ const routes = [
     path: "/entreprises",
     name: "ProducerHomePage",
     component: ProducerHomePage,
+    meta: {
+      title: "Recherche ingrédients",
+    },
   },
   {
     path: "/contactez-nous",
@@ -84,6 +87,9 @@ const routes = [
     beforeEnter(to) {
       if (!to.query?.q) return { to: "LandingPage" }
     },
+    meta: {
+      title: "Résultats de recherche",
+    },
   },
   {
     path: "/element/:urlComponent",
@@ -104,10 +110,21 @@ const routes = [
   },
   {
     path: "/nouvel-ingredient",
-    name: "ElementForm",
+    name: "CreateElement",
     component: ElementForm,
     meta: {
       title: "Nouvel ingrédient",
+      authenticationRequired: true,
+      requiredRole: "InstructionRole",
+    },
+  },
+  {
+    path: "/modification-ingredient/:urlComponent",
+    name: "ModifyElement",
+    component: ElementForm,
+    props: true,
+    meta: {
+      title: "Modification ingrédient",
       authenticationRequired: true,
       requiredRole: "InstructionRole",
     },
@@ -459,6 +476,14 @@ const ensureDefaultQueryParams = (route, next) => {
 // This utility function allows us to find the previous route
 const previousRoute = ref(null)
 router.getPreviousRoute = () => previousRoute
+
+router.navigateBack = (defaultRoute, additionalParameters) => {
+  const backRoute = router.getPreviousRoute().value || defaultRoute
+  if (additionalParameters) {
+    Object.assign(backRoute, additionalParameters)
+  }
+  router.push(backRoute)
+}
 
 router.beforeEach((to, from, next) => {
   const store = useRootStore()

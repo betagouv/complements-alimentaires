@@ -33,7 +33,7 @@
             </div>
             <div class="col-span-2">
               <DsfrInputGroup>
-                <DsfrSelect v-model="state.status" label="Autorisation de l’ingrédient" :options="statuses" />
+                <DsfrSelect v-model.number="state.status" label="Autorisation de l’ingrédient" :options="statuses" />
               </DsfrInputGroup>
             </div>
             <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
@@ -50,7 +50,7 @@
             <div v-if="formForType.ingredientType" class="col-span-2">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'ingredientType')">
                 <DsfrSelect
-                  v-model="state.ingredientType"
+                  v-model.number="state.ingredientType"
                   label="Type de l'ingrédient"
                   :options="ingredientTypes"
                   required
@@ -104,10 +104,13 @@
             />
             <div class="md:ml-4 md:my-8 md:col-span-2">
               <DsfrTag
-                v-for="id in state.plantParts"
+                v-for="(id, idx) in state.plantParts"
                 :key="`plant-part-${id}`"
                 :label="optionLabel(plantParts, id)"
-                class="mx-1"
+                tagName="button"
+                @click="state.plantParts.splice(idx, 1)"
+                :aria-label="`Retirer ${optionLabel(plantParts, id)}`"
+                class="mx-1 fr-tag--dismiss"
               ></DsfrTag>
             </div>
           </div>
@@ -124,12 +127,14 @@
               :required="false"
             />
             <div class="md:ml-4 md:my-7 md:col-span-2">
-              <!-- TODO: make tags deleteable -->
               <DsfrTag
-                v-for="substance in state.substances"
-                :key="substance.id"
+                v-for="(substance, idx) in state.substances"
+                :key="`substance-${substance.id}`"
                 :label="substance.name"
-                class="mx-1"
+                tagName="button"
+                @click="state.substances.splice(idx, 1)"
+                :aria-label="`Retirer ${substance.name}`"
+                class="mx-1 fr-tag--dismiss"
               ></DsfrTag>
             </div>
           </div>
@@ -188,7 +193,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue"
-import { getTypeIcon, getTypeInFrench, getApiType, authorizationModesMapping } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRoute, useRouter } from "vue-router"
@@ -202,19 +207,52 @@ import FormWrapper from "@/components/FormWrapper"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 import NumberField from "@/components/NumberField"
 
+const props = defineProps({ urlComponent: String })
+
+const isNewIngredient = computed(() => !props.urlComponent)
+
+const elementId = computed(() => props.urlComponent?.split("--")[0])
 const route = useRoute()
-const type = computed(() => route.query.type)
+const type = computed(() =>
+  isNewIngredient.value ? route.query.type : unSlugifyType(props.urlComponent.split("--")[1])
+)
+const apiType = computed(() => type.value && getApiType(type.value))
 const icon = computed(() => formForType.value.icon)
 const typeName = computed(() => getTypeInFrench(type.value))
 const router = useRouter()
 
-const pageTitle = "Nouvel ingrédient" // eventually will be computed on the action (create/modify)
+const url = computed(() => `/api/v1/${apiType.value}s/${elementId.value}?history=true`)
+const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
+
+const getElementFromApi = async () => {
+  if (!type.value || !elementId.value) return // create new ingredient
+  await execute()
+  await handleError(response)
+  if (response.value.ok) {
+    state.value = JSON.parse(JSON.stringify(element.value))
+    state.value.status = statuses.find((s) => s.apiValue === state.value.status)?.value
+    if (state.value.family) state.value.family = state.value.family.id
+    if (state.value.plantParts) state.value.plantParts = state.value.plantParts.map((p) => p.id)
+    if (state.value.objectType && apiType.value === "other-ingredient")
+      state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
+    if (state.value.unitId) state.value.unit = state.value.unitId
+  }
+}
+getElementFromApi()
+
+const pageTitle = computed(() => (isNewIngredient.value ? "Nouvel ingrédient" : "Modification ingrédient"))
 
 const breadcrumbLinks = computed(() => {
-  const links = [
-    { to: { name: "DashboardPage" }, text: "Tableau de bord" },
-    { to: { name: "NewElementsPage" }, text: "Ingrédients pour ajout" },
-  ]
+  const lastRoute = router.getPreviousRoute().value
+  const links = []
+  if (lastRoute?.name == "ElementPage") {
+    links.push({ to: { name: "ProducerHomePage" }, text: "Recherche ingrédients" })
+    // ce n'est pas possible d'accèder l'URL -2 pour "Résultats de recherche" en utilisant history ou router
+    links.push({ to: { name: "ElementPage", params: { urlComponent: props.urlComponent } }, text: element.value?.name })
+  } else {
+    links.push({ to: { name: "DashboardPage" }, text: "Tableau de bord" })
+    links.push({ to: { name: "NewElementsPage" }, text: "Ingrédients pour ajout" })
+  }
   links.push({ text: pageTitle })
   return links
 })
@@ -237,22 +275,26 @@ const saveElement = async () => {
 
   const url = `/api/v1/${getApiType(type.value)}s/`
   const payload = state.value
-  if (payload.substances.length) {
+  if (payload.substances?.length) {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
   if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
 
-  const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
+  const { response } = isNewIngredient.value
+    ? await useFetch(url, { headers: headers() }).post(payload).json()
+    : await useFetch(url + elementId.value, { headers: headers() })
+        .patch(payload)
+        .json()
   $externalResults.value = await handleError(response)
 
   if (response.value.ok) {
     useToaster().addMessage({
       type: "success",
       id: "element-creation-success",
-      description: "L'élément a été créé",
+      description: `L'ingrédient a été ${isNewIngredient.value ? "créé" : "modifié"}`,
     })
-    router.push({ name: "DashboardPage" })
+    router.navigateBack({ name: "DashboardPage" })
   }
 }
 const addNewSynonym = async () => {
@@ -308,7 +350,7 @@ const formQuestions = {
   },
 }
 const formForType = computed(() => {
-  return formQuestions[type.value]
+  return formQuestions[type.value] || (!isNewIngredient.value && formQuestions.ingredient)
 })
 const rules = computed(() => {
   const form = formForType.value
@@ -333,17 +375,17 @@ store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
 
 const ingredientTypes = [
-  { value: 1, text: "Nutriment (Forme d'apport)" },
-  { value: 2, text: "Additif" },
-  { value: 3, text: "Arôme" },
-  { value: 4, text: "Autre ingrédient actif" },
-  { value: 5, text: "Autre ingrédient" },
+  { value: 1, text: "Nutriment (Forme d'apport)", apiValue: "form_of_supply" },
+  { value: 2, text: "Additif", apiValue: "additif" },
+  { value: 3, text: "Arôme", apiValue: "aroma" },
+  { value: 4, text: "Autre ingrédient actif", apiValue: "active_ingredient" },
+  { value: 5, text: "Autre ingrédient", apiValue: "non_active_ingredient" },
 ]
 
 const statuses = [
-  { value: 1, text: "Autorisé" },
-  { value: 2, text: "Non autorisé" },
-  { value: 3, text: "Sans objet" },
+  { value: 1, text: "Autorisé", apiValue: "autorisé" },
+  { value: 2, text: "Non autorisé", apiValue: "non autorisé" },
+  { value: 3, text: "Sans objet", apiValue: "sans objet" },
 ]
 
 const selectOption = async (result) => {
@@ -351,7 +393,7 @@ const selectOption = async (result) => {
 }
 
 const optionLabel = (options, id) => {
-  return options.find((o) => o.id === id)?.name || "Inconnu"
+  return options?.find((o) => o.id === id)?.name || "Inconnu"
 }
 
 const plantFamiliesDisplay = computed(() => {

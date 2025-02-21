@@ -1,3 +1,5 @@
+import copy
+import logging
 from django.db import transaction
 
 from rest_framework import serializers
@@ -6,6 +8,7 @@ from simple_history.utils import update_change_reason
 
 from data.models import Substance
 
+logger = logging.getLogger(__name__)
 
 COMMON_NAME_FIELDS = ("name",)
 
@@ -30,8 +33,8 @@ class WithName(serializers.ModelSerializer):
 
 
 class CommonIngredientModificationSerializer(serializers.ModelSerializer):
-    public_comments = serializers.CharField(source="ca_public_comments", required=False)
-    private_comments = serializers.CharField(source="ca_private_comments", required=False)
+    public_comments = serializers.CharField(source="ca_public_comments", required=False, allow_blank=True)
+    private_comments = serializers.CharField(source="ca_private_comments", required=False, allow_blank=True)
     status = serializers.IntegerField(source="ca_status", required=False)
 
     # DRF ne gère pas automatiquement la création des nested-fields :
@@ -40,7 +43,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
         ingredient = super().create(validated_data)
-        update_change_reason(ingredient, "CommonIngredientModificationSerializer")
+        update_change_reason(ingredient, "Création via Compl'Alim")
 
         for synonym in synonyms:
             self.add_synonym(ingredient, synonym)
@@ -50,7 +53,24 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def update(self, instance, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
+        data_items = copy.deepcopy(validated_data).items()
+        for key, value in data_items:
+            if key.startswith("ca_"):
+                siccrf_key = key.replace("ca_", "siccrf_")
+                siccrf_value = getattr(instance, siccrf_key, None)
+                ca_value = getattr(instance, key, None)
+                if not value and (siccrf_value or ca_value):
+                    validated_data[siccrf_key] = value  # mettre comme None ou "" selon la requête
+                    logger.info(
+                        f"SICCRF champ supprimé : le champ '{siccrf_key}' a été supprimé sur l'ingrédient type '{instance.object_type}', id '{instance.id}'"
+                    )
+                elif value == siccrf_value and not ca_value:
+                    # si la valeur siccrf n'a pas été surpassée par une valeur CA, et la valeur donnée est la même que l'existante, pas besoin de la sauvegarder
+                    validated_data.pop(key, None)
+
         super().update(instance, validated_data)
+        # TODO: la raison devrait pouvoir être renseingée dans le form? Voir le TODO dans abstract_admin
+        update_change_reason(instance, "Modification via Compl'Alim")
 
         try:
             new_synonym_list = [s["name"] for s in synonyms]
