@@ -434,12 +434,16 @@ class TestElementsModifyApi(APITestCase):
         """
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
-            siccrf_name="original name", ca_name="", unit=SubstanceUnitFactory.create()
+            siccrf_name="original name",
+            ca_name="",
+            unit=SubstanceUnitFactory.create(),
+            siccrf_status=IngredientStatus.NO_STATUS,
+            ca_status=IngredientStatus.AUTHORIZED,
         )
         new_unit = SubstanceUnitFactory.create()
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
-            {"name": "test", "unit": new_unit.id},
+            {"name": "test", "unit": new_unit.id, "status": IngredientStatus.NO_STATUS},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -447,6 +451,9 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(substance.siccrf_name, "original name")
         self.assertEqual(substance.ca_name, "test")
         self.assertEqual(substance.unit, new_unit, "Les champs sans ca_ équivelant sont aussi sauvegardés")
+        self.assertEqual(
+            substance.status, IngredientStatus.NO_STATUS, "C'est possible de remettre la valeur originelle"
+        )
         self.assertEqual(substance.history.first().history_change_reason, "Modification via Compl'Alim")
 
     @authenticate
