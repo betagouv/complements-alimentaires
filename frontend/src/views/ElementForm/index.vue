@@ -211,7 +211,10 @@ const router = useRouter()
 const pageTitle = "Nouvel ingrédient" // eventually will be computed on the action (create/modify)
 
 const breadcrumbLinks = computed(() => {
-  const links = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]
+  const links = [
+    { to: { name: "DashboardPage" }, text: "Tableau de bord" },
+    { to: { name: "NewElementsPage" }, text: "Ingrédients pour ajout" },
+  ]
   links.push({ text: pageTitle })
   return links
 })
