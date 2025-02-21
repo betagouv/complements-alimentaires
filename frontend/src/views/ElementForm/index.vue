@@ -33,7 +33,7 @@
             </div>
             <div class="col-span-2">
               <DsfrInputGroup>
-                <DsfrSelect v-model="state.status" label="Autorisation de l’ingrédient" :options="statuses" />
+                <DsfrSelect v-model.number="state.status" label="Autorisation de l’ingrédient" :options="statuses" />
               </DsfrInputGroup>
             </div>
             <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
@@ -50,7 +50,7 @@
             <div v-if="formForType.ingredientType" class="col-span-2">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'ingredientType')">
                 <DsfrSelect
-                  v-model="state.ingredientType"
+                  v-model.number="state.ingredientType"
                   label="Type de l'ingrédient"
                   :options="ingredientTypes"
                   required
@@ -193,7 +193,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue"
-import { getTypeIcon, getTypeInFrench, getApiType } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRoute, useRouter } from "vue-router"
@@ -230,7 +230,7 @@ const getElementFromApi = async () => {
   await handleError(response)
   if (response.value.ok) {
     state.value = JSON.parse(JSON.stringify(element.value))
-    state.value.status = state.value.status === "autorisé"
+    state.value.status = statuses.find((s) => s.apiValue === state.value.status)?.value
     if (state.value.family) state.value.family = state.value.family.id
     if (state.value.plantParts) state.value.plantParts = state.value.plantParts.map((p) => p.id)
     if (state.value.objectType && apiType.value === "other-ingredient")
@@ -383,9 +383,9 @@ const ingredientTypes = [
 ]
 
 const statuses = [
-  { value: 1, text: "Autorisé" },
-  { value: 2, text: "Non autorisé" },
-  { value: 3, text: "Sans objet" },
+  { value: 1, text: "Autorisé", apiValue: "autorisé" },
+  { value: 2, text: "Non autorisé", apiValue: "non autorisé" },
+  { value: 3, text: "Sans objet", apiValue: "sans objet" },
 ]
 
 const selectOption = async (result) => {
