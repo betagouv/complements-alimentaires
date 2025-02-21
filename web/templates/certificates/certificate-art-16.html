@@ -6,12 +6,12 @@
 </h1>
 <div style="font-size: 1.2em;">
     <p>
-        La Direction générale de l'alimentation (DGAL) atteste que
+        La {{ direction }} atteste que
         <span style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
             {% if declaration.company %}{{ declaration.company.social_name }}{% endif %}
         </span>
-        a effectuéa effectué {% if declaration.teleicare_id %}sur la plateforme TELEICARE{% endif %}
-        , le {{ last_submission_date|date:"l j F Y" }}, la déclaration mentionnée à l’article 16 du décret
+        a effectué {% if declaration.teleicare_id %}sur la plateforme TELEICARE,{% endif %}
+        le {{ last_submission_date|date:"l j F Y" }}, la déclaration mentionnée à l’article 16 du décret
         n°2006-352 du 20 mars 2006 relatif aux compléments alimentaires pour le produit :
     </p>
     <p style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
@@ -58,7 +58,7 @@
     </p>
     <p>
         Pour tout renseignement d’ordre général sur le cadre réglementaire applicable aux compléments alimentaires,
-        rendez-vous sur le site de la DGAL à l’adresse suivante :
+        rendez-vous sur le site de la DGAL {% if declaration.teleicare_id %}(autorité compétente depuis le 1° janvier 2023 pour la sécurité sanitaire des compléments alimentaires){% endif %} à l’adresse suivante :
         <a href="https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire">
             https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire
         </a>.

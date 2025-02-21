@@ -6,11 +6,11 @@
 </h1>
 <div style="font-size: 1.2em;">
     <p>
-        La Direction générale de l'alimentation (DGAL) atteste que
+        La {{ direction }} atteste que
         <span style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
             {% if declaration.company %}{{ declaration.company.social_name }}{% endif %}
         </span>
-        a effectué {% if declaration.teleicare_id %}sur la plateforme TELEICARE{% endif %},
+        a effectué {% if declaration.teleicare_id %}sur la plateforme TELEICARE,{% endif %}
         le {{ last_submission_date|date:"l j F Y" }}, la déclaration mentionnée à l’article 15 du décret
         n°2006-352 du 20 mars 2006 relatif aux compléments alimentaires pour le produit :
     </p>

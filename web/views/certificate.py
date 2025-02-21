@@ -52,6 +52,21 @@ class CertificateView(PdfView):
     def get_context(self, declaration):
         status = Declaration.DeclarationStatus
         date_statuses = [status.AWAITING_INSTRUCTION, status.AUTHORIZED, status.REJECTED]
+        direction = (
+            "Direction générale de la concurrence, de la consommation et de la répression des fraudes (DGCCRF)"
+            if declaration.siccrf_id
+            else "Direction générale de l'alimentation (DGAL)"
+        )
+        address_street = "59 BD VINCENT AURIOL - TÉLÉDOC 223" if declaration.siccrf_id else "251 RUE DE VAUGIRARD"
+        address_cedex = "75703 PARIS CEDEX 13" if declaration.siccrf_id else "75732 PARIS CEDEX 15"
+        bureau = (
+            "Bureau 4A - Nutrition et information sur les denrées alimentaires"
+            if declaration.siccrf_id
+            else "BEPIAS (Bureau des Etablissements et Produits des Industries Alimentaires Spécialisées)"
+        )
+        mail = (
+            "bureau-4A@dgccrf.finances.gouv.fr" if declaration.siccrf_id else "bepias.sdssa.dgal@agriculture.gouv.fr"
+        )
         try:
             date = (
                 declaration.snapshots.filter(status__in=date_statuses)
@@ -88,6 +103,11 @@ class CertificateView(PdfView):
                 f"{declaration.company.city} {declaration.company.country}",
             ],
             "declaration": declaration,
+            "direction": direction,
+            "address_street": address_street,
+            "address_cedex": address_cedex,
+            "bureau": bureau,
+            "mail": mail,
         }
 
     def get_pdf_file_name(self, declaration):
