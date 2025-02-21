@@ -93,7 +93,7 @@
 
       <!-- bouton temporaire à enlever quand on a une page dédiée à la recherche d'ingrédients interne -->
       <div v-if="isInstructor" class="text-right mt-4">
-        <p class="mb-2"><em>Vous tenez le role d'instruction :</em></p>
+        <p class="mb-2"><em>Vous avez le role d'instruction :</em></p>
         <router-link
           :to="{ name: 'ModifyElement', params: { urlComponent: props.urlComponent } }"
           class="fr-btn fr-btn--tertiary fr-btn--sm"
