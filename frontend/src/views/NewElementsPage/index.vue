@@ -7,7 +7,7 @@
         :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Ingrédients pour ajout' }]"
       />
       <h1 class="fr-h4">Liste des demandes en attente d’ajout d’ingrédients</h1>
-      <router-link :to="{ name: 'ElementForm' }" class="fr-btn fr-btn--secondary fr-btn--sm">
+      <router-link :to="{ name: 'CreateElement' }" class="fr-btn fr-btn--secondary fr-btn--sm mb-4">
         Créer un nouvel ingrédient
       </router-link>
       <NewElementActionInfo />
