@@ -5,6 +5,7 @@
       v-model="payload"
       :hideArticle15Subtypes="!allowArticleChange"
       :allowChange="allowArticleChange"
+      v-if="allowArticleChange || payload.article"
       class="mb-2"
     />
     <div v-if="useCompactAttachmentView">
@@ -23,6 +24,8 @@
             :href="file.file"
             :size="file.size"
             :format="file.typeDisplay"
+            :download="null"
+            target="_blank"
           />
         </div>
       </div>

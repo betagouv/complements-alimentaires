@@ -15,6 +15,7 @@ from rest_framework.generics import (
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from unidecode import unidecode
+from viewflow.fsm.base import TransitionNotAllowed
 
 from api.exceptions import ProjectAPIException
 from api.permissions import (
@@ -37,6 +38,7 @@ from api.serializers import (
     SimpleVisorSerializer,
 )
 from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
+from api.utils.search import UnaccentSearchFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
 from config import email
 from data.models import Company, Declaration, InstructionRole, Snapshot, User, VisaRole
@@ -350,7 +352,12 @@ class OngoingDeclarationsListView(GenericDeclarationsListView):
     pagination_class = InstructionDeclarationPagination
     serializer_class = SimpleDeclarationSerializer
     permission_classes = [(IsInstructor | IsVisor)]
-    filter_backends = [django_filters.DjangoFilterBackend, InstructionDateOrderingFilter]
+    search_fields = ["name", "id", "company__social_name"]
+    filter_backends = [
+        django_filters.DjangoFilterBackend,
+        InstructionDateOrderingFilter,
+        UnaccentSearchFilter,
+    ]
     ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT)
 
@@ -508,7 +515,11 @@ class DeclarationFlowView(GenericAPIView):
         flow_permission_method = getattr(transition_method, "has_permission", None)
         if flow_permission_method and not flow_permission_method(request.user):
             raise PermissionDenied()
-        transition_method()
+        try:
+            transition_method()
+        except TransitionNotAllowed as e:
+            logger.exception(e)
+            raise ProjectAPIException(global_error="Erreur lors du changement de statut de la déclaration")
         self.to_status = declaration.status
         brevo_template_id = self.get_brevo_template_id(request, declaration)
         if self.create_snapshot:
@@ -626,6 +637,13 @@ class DeclarationWithdrawView(DeclarationFlowView):
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.WITHDRAW
     brevo_template_id = 8
+
+
+class DeclarationAbandonView(DeclarationFlowView):
+    permission_classes = [(IsDeclarationAuthor | IsDeclarant)]
+    transition = "abandon"
+    create_snapshot = True
+    snapshot_action = Snapshot.SnapshotActions.ABANDON
 
 
 class VisaDecisionView(DeclarationFlowView):

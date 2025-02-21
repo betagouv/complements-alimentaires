@@ -6,12 +6,21 @@ from data.models import IngredientStatus, Part, Plant, PlantFamily, PlantPart, P
 from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
 from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
+from .common_ingredient import (
+    COMMON_FIELDS,
+    COMMON_NAME_FIELDS,
+    COMMON_READ_ONLY_FIELDS,
+    CommonIngredientModificationSerializer,
+    WithSubstances,
+    WithName,
+)
 
 
 class PlantFamilySerializer(serializers.ModelSerializer):
     class Meta:
         model = PlantFamily
         fields = (
+            "id",
             "name",
             "is_obsolete",
             "name_en",
@@ -75,3 +84,31 @@ class PlantSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
             "history",
         )
         read_only_fields = fields
+
+
+class PlantSynonymModificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlantSynonym
+        fields = ("name",)
+
+
+class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSubstances, WithName):
+    synonyms = PlantSynonymModificationSerializer(many=True, source="plantsynonym_set", required=False)
+    plant_parts = serializers.PrimaryKeyRelatedField(many=True, queryset=PlantPart.objects.all())
+    family = serializers.PrimaryKeyRelatedField(queryset=PlantFamily.objects.all(), source="ca_family")
+
+    synonym_model = PlantSynonym
+    synonym_set_field_name = "plantsynonym_set"
+
+    class Meta:
+        model = Plant
+        fields = (
+            COMMON_FIELDS
+            + COMMON_NAME_FIELDS
+            + (
+                "family",
+                "plant_parts",
+                "substances",
+            )
+        )
+        read_only = COMMON_READ_ONLY_FIELDS

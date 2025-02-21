@@ -12,6 +12,7 @@ export const useRootStore = defineStore("root", () => {
   const galenicFormulations = ref(null)
   const preparations = ref(null)
   const plantParts = ref(null)
+  const plantFamilies = ref(null)
   const units = ref(null)
 
   const fetchInitialData = async () => {
@@ -61,6 +62,10 @@ export const useRootStore = defineStore("root", () => {
     const { data } = await useFetch("/api/v1/plant-parts/").json()
     plantParts.value = data.value
   }
+  const fetchPlantFamilies = async () => {
+    const { data } = await useFetch("/api/v1/plant-families/").json()
+    plantFamilies.value = data.value
+  }
   const fetchUnits = async () => {
     const { data } = await useFetch("/api/v1/units/").json()
     units.value = data.value
@@ -91,8 +96,10 @@ export const useRootStore = defineStore("root", () => {
     fetchPreparations,
     fetchDeclarationFieldsData,
     fetchPlantParts,
+    fetchPlantFamilies,
     fetchUnits,
     plantParts,
+    plantFamilies,
     populations,
     conditions,
     effects,

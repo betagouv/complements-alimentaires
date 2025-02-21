@@ -9,42 +9,41 @@
         Madame, Monsieur,
     </p>
     <p>
-        Le {{ last_submission_date|date:"l j F Y" }} vous avez déclaré par voie électronique le produit suivant :
+        Le {{ last_submission_date|date:"l j F Y" }} vous avez déclaré par voie électronique
+        le produit suivant :
     </p>
     <p style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
         {{ declaration.name }}
         {% if declaration.galenic_formulation %}
         <br />{{ declaration.galenic_formulation.name }}
         {% endif %}
-        {% if declaration.company %}
-        <br />{{ declaration.company.social_name }}
-        {% endif %}
     </p>
     <p>
-        Cette déclaration a été effectuée au titre de l’article 15 du décret n°2006-352 du 20 mars 2006 relatif aux
-        compléments alimentaires, pour le compte de la société <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
-            {% if declaration.company %}{{ declaration.company.social_name }}{% endif %}
-        </span>.
+        La composition de votre produit et notamment le fait qu’au moins une des doses journalières
+        recommandées en nutriment soit supérieure aux quantités maximales actuellement
+        admises en France fait que votre demande, effectuée pour le compte de la société
+        {% if declaration.company %}« {{ declaration.company.social_name }} »{% endif %}, doit être
+        examinée au titre de l’article 18 du décret n°2006-352 du 20 mars 2006 relatif aux
+        compléments alimentaires. Dans ce contexte, vous voudrez bien noter que l’examen de votre
+        déclaration peut prendre plus de cinq mois, notamment s’il est nécessaire de saisir l’Anses,
+        Agence nationale de sécurité sanitaire de l’alimentation, de l’environnement et du travail.
     </p>
     <p>
-        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">Votre dossier porte le numéro : {{ declaration.id }}.</span>
+        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">Votre dossier porte
+        le numéro : {{ declaration.id }}.</span>
     </p>
     <p>
         Ce numéro unique facilitera le suivi de votre dossier.
     </p>
     <p>
-        Nous vous rappelons qu’il est de votre responsabilité de déclarer et mettre en marché un produit conforme à la
-        réglementation applicable aux denrées alimentaires (notamment les règlements (CE) n°178/2002, (UE) n°1169/ 2011 et
-        n°2283/2015).
-    </p>
-        Sauf incomplétude du dossier de déclaration, examen défavorable par nos services, ou contrordre de votre part,
-        votre produit fera l’objet, sous deux mois, d’une attestation de déclaration et d’une inscription à la liste des
-        compléments alimentaires.
+        Nous vous rappelons qu’il est de votre responsabilité de déclarer et mettre en marché un
+        produit conforme à la réglementation applicable aux denrées alimentaires (notamment les
+        règlements (CE) n°178/2002, (UE) n°1169/2011 et n°2283/2015).
     </p>
 
     <p>
-        Pour tout renseignement d’ordre général sur le cadre réglementaire applicable aux compléments alimentaires, nous
-        vous invitons à vous rendre sur le site de la DGAL à l’adresse suivante :
+        Pour tout renseignement d’ordre général sur le cadre réglementaire applicable aux compléments
+        alimentaires, nous vous invitons à vous rendre sur le site de la DGAL à l’adresse suivante :
         <a href="https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire">
             https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire
         </a>.
@@ -128,7 +127,7 @@
                 Règlement (UE) n°1169/2011
             </a>
             du Parlement européen et du Conseil du 25 octobre 2011 concernant l’information
-            des consommateurs sur les denrées alimentaires, modifiant les règlements (CE) n°1924/ 2006 et (CE) n°1925/2006
+            des consommateurs sur les denrées alimentaires, modifiant les règlements (CE) n°1924/2006 et (CE) n°1925/2006
             du Parlement européen et du Conseil et abrogeant la directive 87/250/CEE de la Commission, la directive 90/496/CEE
             du Conseil, la directive 1999/10/CE de la Commission, la directive 2000/13/CE du Parlement européen et du Conseil,
             les directives 2002/67/CE et 2008/5/CE de la Commission et le règlement (CE) n°608/2004 de la Commission ;

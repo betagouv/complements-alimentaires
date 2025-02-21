@@ -91,6 +91,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  type: {
+    type: String,
+    default: null,
+  },
 })
 
 const emit = defineEmits(["selected", "search"])
@@ -182,7 +186,7 @@ const fetchAutocompleteResults = useDebounceFn(async () => {
     return
   }
 
-  const body = { term: searchTerm.value }
+  const body = { term: searchTerm.value, type: props.type }
   const { error, data } = await useFetch("/api/v1/elements/autocomplete/", { headers: headers() }).post(body).json()
 
   if (error.value) {

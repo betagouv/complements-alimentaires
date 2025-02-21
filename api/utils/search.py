@@ -1,21 +1,39 @@
 from difflib import SequenceMatcher
 
-from django.db.models import F
+from django.db.models import CharField, F, Q, TextField
+
+from rest_framework import filters
 
 from data.models import Ingredient, IngredientStatus, Microorganism, Plant
 from data.models.substance import Substance, SubstanceType
 
 
 def search_elements(query, deduplicate=False, exclude_not_authorized=False, exclude_vitamines_minerals=False):
+    term = query["term"]
+    query_type = query.get("type")
     # Les plantes non autorisées peuvent être ajoutées en infimes quantités dans les elixirs
     # elles sont donc systématiquement renvoyées
-    plants = _get_plants(query, deduplicate, exclude_not_authorized=False)
-    microorganisms = _get_microorganisms(query, deduplicate, exclude_not_authorized)
-    ingredients = _get_ingredients(query, deduplicate, exclude_not_authorized)
-    substances = _get_substances(query, deduplicate, exclude_not_authorized, exclude_vitamines_minerals)
+    plants = (
+        _get_plants(term, deduplicate, exclude_not_authorized=False) if not query_type or query_type == "plant" else []
+    )
+    microorganisms = (
+        _get_microorganisms(term, deduplicate, exclude_not_authorized)
+        if not query_type or query_type == "microorganism"
+        else []
+    )
+    ingredients = (
+        _get_ingredients(term, deduplicate, exclude_not_authorized)
+        if not query_type or query_type == "other-ingredient"
+        else []
+    )
+    substances = (
+        _get_substances(term, deduplicate, exclude_not_authorized, exclude_vitamines_minerals)
+        if not query_type or query_type == "substance"
+        else []
+    )
 
     results = plants + microorganisms + ingredients + substances
-    results.sort(key=lambda x: SequenceMatcher(None, x.autocomplete_match, query).ratio(), reverse=True)
+    results.sort(key=lambda x: SequenceMatcher(None, x.autocomplete_match, term).ratio(), reverse=True)
 
     return results
 
@@ -98,3 +116,47 @@ def _get_element_list(q1, q2, deduplicate, exclude_not_authorized):
         if not list(filter(lambda x: x.id == element.id, unique_list)):
             unique_list.append(element)
     return unique_list
+
+
+class UnaccentSearchFilter(filters.SearchFilter):
+    """
+    Ce filtre ajoute automatiquement le modificateur "unaccent" aux champs de recherche pertinents
+    (çad CharField et TextField).
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        search_terms = self.get_search_terms(request)
+        search_fields = self.get_search_fields(view, request)
+
+        if not search_terms or not search_fields:
+            return queryset
+
+        orm_lookups = []
+        for search_term in search_terms:
+            for search_field in search_fields:
+                field = self.get_field_from_path(queryset.model, search_field)
+                ignore_accents = isinstance(field, (CharField, TextField))
+                updated_search = (
+                    Q(**{f"{search_field}__unaccent__icontains": search_term})
+                    if ignore_accents
+                    else Q(**{f"{search_field}__icontains": search_term})
+                )
+                orm_lookups.append(updated_search)
+
+        if orm_lookups:
+            return queryset.filter(self.get_q_objects(orm_lookups))
+        return queryset
+
+    def get_field_from_path(self, model, path):
+        parts = path.split("__")
+        field = None
+        for part in parts:
+            field = model._meta.get_field(part)
+            model = field.related_model if hasattr(field, "related_model") else None
+        return field
+
+    def get_q_objects(self, orm_lookups):
+        combined_lookup = orm_lookups[0]
+        for lookup in orm_lookups[1:]:
+            combined_lookup |= lookup
+        return combined_lookup
