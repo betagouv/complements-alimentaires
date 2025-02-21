@@ -84,10 +84,15 @@ class TeleicareCompany(models.Model):
         help_text="14 chiffres",
         unique=True,
         null=True,
+        blank=True,  # nécessaire pour valider les données issues de l'admin form, avec la méthode custom save()
         validators=[validate_siret],
     )
     old_vat = models.CharField(
-        "n° TVA intracommunautaire dans TeleIcare, si différent", unique=True, null=True, validators=[validate_vat]
+        "n° TVA intracommunautaire dans TeleIcare, si différent",
+        unique=True,
+        null=True,
+        blank=True,  # nécessaire pour valider les données issues de l'admin form, avec la méthode custom save()
+        validators=[validate_vat],
     )
 
 
@@ -103,9 +108,16 @@ class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.M
         help_text="14 chiffres",
         unique=True,
         null=True,
+        blank=True,  # nécessaire pour valider les données issues de l'admin form, avec la méthode custom save()
         validators=[validate_siret],
     )
-    vat = models.CharField("n° TVA intracommunautaire", unique=True, null=True, validators=[validate_vat])
+    vat = models.CharField(
+        "n° TVA intracommunautaire",
+        unique=True,
+        null=True,
+        blank=True,  # nécessaire pour valider les données issues de l'admin form, avec la méthode custom save()
+        validators=[validate_vat],
+    )
     activities = MultipleChoiceField(
         models.CharField(choices=ActivityChoices), verbose_name="activités", default=list, blank=True
     )
@@ -152,6 +164,18 @@ class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.M
 
     def __str__(self):
         return self.social_name
+
+    def save(self, *args, **kwargs):
+        # Les valeurs "" ne sont pas unique, mais None oui
+        if not self.vat:
+            self.vat = None
+        if not self.siret:
+            self.siret = None
+        if not self.old_vat:
+            self.old_vat = None
+        if not self.old_siret:
+            self.old_siret = None
+        super().save(*args, **kwargs)
 
 
 class CompanyRoleClassChoices(models.TextChoices):

@@ -43,6 +43,15 @@ class CompanyAdmin(admin.ModelAdmin):
             },
         ),
         (
+            "Changement de n°TVA intracommunautaire ou siret",
+            {
+                "fields": (
+                    "old_siret",
+                    "old_vat",
+                )
+            },
+        ),
+        (
             "Contact",
             {
                 "fields": (
