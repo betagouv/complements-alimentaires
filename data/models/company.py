@@ -80,15 +80,14 @@ class TeleicareCompany(models.Model):
         default=False, verbose_name="La Company Compl'Alim a été matchée avec un Etablissement TeleIcare"
     )
     old_siret = models.CharField(
-        "n° SIRET dans TeleIcare",
+        "n° SIRET dans TeleIcare, si différent",
         help_text="14 chiffres",
         unique=True,
-        blank=True,
         null=True,
         validators=[validate_siret],
     )
     old_vat = models.CharField(
-        "n° TVA intracommunautaire", unique=True, blank=True, null=True, validators=[validate_vat]
+        "n° TVA intracommunautaire dans TeleIcare, si différent", unique=True, null=True, validators=[validate_vat]
     )
 
 
@@ -103,11 +102,10 @@ class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.M
         "n° SIRET",
         help_text="14 chiffres",
         unique=True,
-        blank=True,
         null=True,
         validators=[validate_siret],
     )
-    vat = models.CharField("n° TVA intracommunautaire", unique=True, blank=True, null=True, validators=[validate_vat])
+    vat = models.CharField("n° TVA intracommunautaire", unique=True, null=True, validators=[validate_vat])
     activities = MultipleChoiceField(
         models.CharField(choices=ActivityChoices), verbose_name="activités", default=list, blank=True
     )
