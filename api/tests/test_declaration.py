@@ -1923,6 +1923,37 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(results["count"], 1)
         self.assertEqual(results["results"][0]["id"], ingredient_draft.id)
 
+    @authenticate
+    def test_order_by_creation_date(self):
+        """
+        C'est possible de trier par date de création
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        today = timezone.now()
+        declaration_today = DeclarationFactory(
+            creation_date=today, status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+        )
+        declaration_yesterday = DeclarationFactory(
+            creation_date=(today - timedelta(days=1)), status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+        )
+        ancient_declaration = DeclarationFactory(
+            creation_date=(today - timedelta(days=365)), status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION
+        )
+
+        plant = DeclaredPlantFactory(new=True, declaration=declaration_yesterday)
+        microorganism = DeclaredMicroorganismFactory(new=True, declaration=declaration_today)
+        ingredient = DeclaredIngredientFactory(new=True, declaration=ancient_declaration)
+
+        order_url = f"{reverse('api:list_new_declared_elements')}?ordering=-declarationCreationDate"
+        response = self.client.get(order_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 3)
+        results = results["results"]
+        self.assertEqual(results[0]["id"], microorganism.id)
+        self.assertEqual(results[1]["id"], plant.id)
+        self.assertEqual(results[3]["id"], ingredient.id)
+
 
 class TestSingleDeclaredElementApi(APITestCase):
     @authenticate
