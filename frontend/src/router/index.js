@@ -328,9 +328,7 @@ const routes = [
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
-        nom: "",
-        type: "",
-        triage: "-creationDate",
+        statut: "REQUESTED,INFORMATION",
         limit: "10",
       },
     },

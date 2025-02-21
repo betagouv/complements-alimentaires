@@ -1,41 +1,29 @@
 <template>
   <div>
-    <DsfrModal :opened="opened" @close="opened = false">
-      <DsfrCheckboxSet v-model="statuses" :options="options" />
-    </DsfrModal>
-    <p class="!mb-2">
-      Types de déclaration affichés :
-
-      <span v-if="statuses.length">
-        <DsfrTag
-          class="mr-2 mt-1"
-          v-for="status in statuses"
-          :key="`status-${status}`"
-          :label="statusProps[status].label"
-          small
-        />
-      </span>
-      <span v-else>
-        <DsfrTag class="ml-2 mt-1" label="Toutes les déclarations" small />
-      </span>
-    </p>
-    <p>
-      <DsfrButton @click="opened = true" tertiary size="small" label="Changer" />
-    </p>
+    <MultiselectFilter
+      :options="options"
+      :selectedString="statusString"
+      filterTitle="Types de déclaration affichés :"
+      noFilterText="Toutes les déclarations"
+      @updateFilter="emitUpdate"
+    />
   </div>
 </template>
 
 <script setup>
-import { watch, ref, onMounted } from "vue"
+import { ref, onMounted } from "vue"
 import { statusProps } from "@/utils/mappings"
+import MultiselectFilter from "./MultiselectFilter"
 const emit = defineEmits(["updateFilter"])
-const statusString = defineModel()
-const props = defineProps({ exclude: { type: Array, default: Array }, groupInstruction: { type: Boolean } })
+const props = defineProps({
+  exclude: { type: Array, default: Array },
+  groupInstruction: { type: Boolean },
+  statusString: { type: String },
+})
 const statuses = ref([])
-const opened = ref(false)
 
-onMounted(() => (statuses.value = statusString.value ? statusString.value.split(",") : []))
-watch(statuses, () => emit("updateFilter", statuses.value.join(",")))
+onMounted(() => (statuses.value = props.statusString ? props.statusString.split(",") : []))
+const emitUpdate = (v) => emit("updateFilter", v)
 
 const baseFilterOptions = [
   { value: "DRAFT", label: "Brouillon" },
@@ -63,5 +51,5 @@ const statusFilterOptions = props.groupInstruction
 
 const options = statusFilterOptions
   .filter((x) => props.exclude.indexOf(x.value) === -1)
-  .map((x) => ({ label: x.label, value: x.value }))
+  .map((x) => ({ label: x.label, value: x.value, tagLabel: statusProps[x.value].label }))
 </script>

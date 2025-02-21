@@ -61,6 +61,10 @@ const getRequestStatusTagForCell = (request) => {
       label: "Refusé",
       type: "error",
     },
+    REPLACED: {
+      label: "Remplacé",
+      type: "success",
+    },
   }[request.requestStatus]
 
   return (

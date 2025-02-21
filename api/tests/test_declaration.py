@@ -41,6 +41,7 @@ from data.factories import (
 from data.models import (
     Attachment,
     Declaration,
+    Addable,
     DeclaredMicroorganism,
     DeclaredPlant,
     DeclaredSubstance,
@@ -1853,6 +1854,35 @@ class TestDeclaredElementsApi(APITestCase):
         response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    @authenticate
+    def test_filter_by_request_status(self):
+        """
+        La liste de demandes peut être filtrer par un ou plusieurs statuts de la demande
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        draft = DeclarationFactory(status=Declaration.DeclarationStatus.DRAFT)
+
+        plant = DeclaredPlantFactory(new=True, declaration=declaration, request_status=Addable.AddableStatus.REQUESTED)
+        DeclaredSubstanceFactory(new=True, declaration=declaration, request_status=Addable.AddableStatus.INFORMATION)
+        DeclaredMicroorganismFactory(new=True, declaration=declaration, request_status=Addable.AddableStatus.REJECTED)
+        ingredient = DeclaredIngredientFactory(
+            new=False, declaration=declaration, request_status=Addable.AddableStatus.REPLACED
+        )
+        # don't return ones attached to draft declarations
+        DeclaredIngredientFactory(new=True, declaration=draft, request_status=Addable.AddableStatus.REQUESTED)
+
+        filter_url = f"{reverse('api:list_new_declared_elements')}?requestStatus=REQUESTED,REPLACED"
+        response = self.client.get(filter_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 2)
+        returned_ids = [results["results"][0]["id"], results["results"][1]["id"]]
+        self.assertIn(plant.id, returned_ids)
+        self.assertIn(ingredient.id, returned_ids)
+
+
+class TestSingleDeclaredElementApi(APITestCase):
     @authenticate
     def test_get_single_declared_plant(self):
         InstructionRoleFactory(user=authenticate.user)
