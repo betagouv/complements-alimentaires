@@ -1952,7 +1952,16 @@ class TestDeclaredElementsApi(APITestCase):
         results = results["results"]
         self.assertEqual(results[0]["id"], microorganism.id)
         self.assertEqual(results[1]["id"], plant.id)
-        self.assertEqual(results[3]["id"], ingredient.id)
+        self.assertEqual(results[2]["id"], ingredient.id)
+
+        order_url = f"{reverse('api:list_new_declared_elements')}?ordering=declarationCreationDate"
+        response = self.client.get(order_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 3)
+        results = results["results"]
+        self.assertEqual(results[0]["id"], ingredient.id)
+        self.assertEqual(results[1]["id"], plant.id)
+        self.assertEqual(results[2]["id"], microorganism.id)
 
 
 class TestSingleDeclaredElementApi(APITestCase):

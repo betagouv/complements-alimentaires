@@ -68,6 +68,17 @@ class DeclaredElementsView(ListAPIView):
         filtered_querysets = [
             queryset.filter(request_status_filter & declaration_status_filter) for queryset in querysets
         ]
+
+        ordering = self.request.query_params.get("ordering")
+        if ordering and ordering.endswith("declarationCreationDate"):
+            # for qs in filtered_querysets:
+            #     qs.annotate(date=Q("declaration__creation_date"))
+            return sorted(
+                chain(*filtered_querysets),
+                key=lambda instance: instance.declaration.creation_date,
+                reverse=not ordering.startswith("-"),
+            )
+
         return list(chain(*filtered_querysets))
 
     @staticmethod
