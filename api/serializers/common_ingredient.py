@@ -58,12 +58,14 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             if key.startswith("ca_"):
                 siccrf_key = key.replace("ca_", "siccrf_")
                 siccrf_value = getattr(instance, siccrf_key, None)
-                if not value and (siccrf_value or getattr(instance, key, None)):
+                ca_value = getattr(instance, key, None)
+                if not value and (siccrf_value or ca_value):
                     validated_data[siccrf_key] = value  # mettre comme None ou "" selon la requête
                     logger.info(
                         f"SICCRF champ supprimé : le champ '{siccrf_key}' a été supprimé sur l'ingrédient type '{instance.object_type}', id '{instance.id}'"
                     )
-                elif value == siccrf_value:
+                elif value == siccrf_value and not ca_value:
+                    # si la valeur siccrf n'a pas été surpassée par une valeur CA, et la valeur donnée est la même que l'existante, pas besoin de la sauvegarder
                     validated_data.pop(key, None)
 
         super().update(instance, validated_data)
