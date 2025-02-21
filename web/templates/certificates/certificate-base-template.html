@@ -34,7 +34,11 @@
         <table class="bg-marianne">
             <tr>
                 <td>
+                    {% if declaration.teleicare_id %}
+                    <img width="160" src="{% static '../../static/images/certificate/republique-francaise-logo.png' %}" alt="">
+                    {% else %}
                     <img width="160" src="{% static '../../static/images/certificate/masa.png' %}" alt="">
+                    {% endif %}
                 </td>
                 <td align="right" style="font-weight: bold; font-size: 1.7em; font-family: 'Marianne-Bold'">
                     Direction générale<br />{{direction}}
