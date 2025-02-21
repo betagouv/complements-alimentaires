@@ -2457,3 +2457,33 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(new_declared_plant.unit, unit)
         self.assertNotEqual(new_declared_plant.id, 66)
         self.assertNotEqual(new_declared_plant.id, 99)
+
+    @authenticate
+    def test_article_recalculated_on_replace(self):
+        """
+        Vérifier que l'article est recalculé avec un remplacement d'une demande
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration, new_species="test", new=True)
+        declaration.assign_calculated_article()
+        declaration.save()
+
+        # on suppose que, avec les nouveaux ingrédients, la déclaration récoit un article 16
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_16)
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {"element": {"id": plant.id, "type": "plant"}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        declaration.refresh_from_db()
+        self.assertEqual(
+            declaration.calculated_article,
+            Declaration.Article.ARTICLE_15,
+            "L'article passe à 15 maintenant qu'il n'y a plus de nouveaux ingrédients",
+        )
