@@ -136,6 +136,7 @@ const disableVisaCheckbox = computed(() => !proposal.value || mandatoryVisaPropo
 const disableDelayDays = computed(() => proposal.value === "rejection")
 watch(proposal, (newProposal) => {
   if (mandatoryVisaProposals.indexOf(newProposal) > -1) needsVisa.value = true
+  else needsVisa.value = false
   if (newProposal === "objection") delayDays.value = 30
   else if (newProposal === "observation") delayDays.value = 15
   else delayDays.value = null
