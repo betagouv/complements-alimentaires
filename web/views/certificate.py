@@ -54,25 +54,27 @@ class CertificateView(PdfView):
         date_statuses = [status.AWAITING_INSTRUCTION, status.AUTHORIZED, status.REJECTED]
         direction = (
             "de la concurrence, de la consommation et de la répression des fraudes (DGCCRF)"
-            if declaration.siccrf_id
+            if declaration.teleicare_id
             else "de l'alimentation (DGAL)"
         )
-        address_street = "59 BD VINCENT AURIOL - TÉLÉDOC 223" if declaration.siccrf_id else "251 RUE DE VAUGIRARD"
-        address_cedex = "75703 PARIS CEDEX 13" if declaration.siccrf_id else "75732 PARIS CEDEX 15"
+        address_street = "59 BD VINCENT AURIOL - TÉLÉDOC 223" if declaration.teleicare_id else "251 RUE DE VAUGIRARD"
+        address_cedex = "75703 PARIS CEDEX 13" if declaration.teleicare_id else "75732 PARIS CEDEX 15"
         bureau = (
             "Bureau 4A - Nutrition et information sur les denrées alimentaires"
-            if declaration.siccrf_id
+            if declaration.teleicare_id
             else "BEPIAS (Bureau des Etablissements et Produits des Industries Alimentaires Spécialisées)"
         )
         mail = (
-            "bureau-4A@dgccrf.finances.gouv.fr" if declaration.siccrf_id else "bepias.sdssa.dgal@agriculture.gouv.fr"
+            "bureau-4A@dgccrf.finances.gouv.fr"
+            if declaration.teleicare_id
+            else "bepias.sdssa.dgal@agriculture.gouv.fr"
         )
         signature_title = (
             "La Sous-Direction"
-            if declaration.siccrf_id
+            if declaration.teleicare_id
             else "La Sous-Directrice de la sécurité sanitaire des aliments"
         )
-        signature_name = "" if declaration.siccrf_id else "Vanessa HUMMEL-FOURRAT"
+        signature_name = "" if declaration.teleicare_id else "Vanessa HUMMEL-FOURRAT"
         try:
             date = (
                 declaration.snapshots.filter(status__in=date_statuses)
