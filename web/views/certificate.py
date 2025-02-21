@@ -53,9 +53,9 @@ class CertificateView(PdfView):
         status = Declaration.DeclarationStatus
         date_statuses = [status.AWAITING_INSTRUCTION, status.AUTHORIZED, status.REJECTED]
         direction = (
-            "Direction générale de la concurrence, de la consommation et de la répression des fraudes (DGCCRF)"
+            "de la concurrence, de la consommation et de la répression des fraudes (DGCCRF)"
             if declaration.siccrf_id
-            else "Direction générale de l'alimentation (DGAL)"
+            else "de l'alimentation (DGAL)"
         )
         address_street = "59 BD VINCENT AURIOL - TÉLÉDOC 223" if declaration.siccrf_id else "251 RUE DE VAUGIRARD"
         address_cedex = "75703 PARIS CEDEX 13" if declaration.siccrf_id else "75732 PARIS CEDEX 15"
@@ -67,6 +67,12 @@ class CertificateView(PdfView):
         mail = (
             "bureau-4A@dgccrf.finances.gouv.fr" if declaration.siccrf_id else "bepias.sdssa.dgal@agriculture.gouv.fr"
         )
+        signature_title = (
+            "La Sous-Direction"
+            if declaration.siccrf_id
+            else "La Sous-Directrice de la sécurité sanitaire des aliments"
+        )
+        signature_name = "" if declaration.siccrf_id else "Vanessa HUMMEL-FOURRAT"
         try:
             date = (
                 declaration.snapshots.filter(status__in=date_statuses)
@@ -108,6 +114,8 @@ class CertificateView(PdfView):
             "address_cedex": address_cedex,
             "bureau": bureau,
             "mail": mail,
+            "signature_title": signature_title,
+            "signature_name": signature_name,
         }
 
     def get_pdf_file_name(self, declaration):
