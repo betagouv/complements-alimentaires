@@ -14,13 +14,7 @@
 
     <div v-else class="mb-4">
       <DeclarationFromTeleicareAlert v-if="payload.siccrfId" />
-      <DeclarationAlert
-        v-else-if="payload"
-        role="declarant"
-        :declaration="payload"
-        :snapshots="snapshots"
-        class="mb-4"
-      />
+      <DeclarationAlert v-if="payload" role="declarant" :declaration="payload" :snapshots="snapshots" class="mb-4" />
 
       <DsfrAlert
         class="mb-4"
@@ -229,7 +223,7 @@ const readonly = computed(
 const showHistory = computed(
   () => !payload.value.siccrfId && (readonly.value || (!isNewDeclaration.value && !isDraft.value))
 )
-const showWithdrawal = computed(() => !payload.value.siccrfId && payload.value.status === "AUTHORIZED")
+const showWithdrawal = computed(() => payload.value.status === "AUTHORIZED")
 
 const components = computed(() => {
   const baseComponents = readonly.value ? [SummaryTab] : [ProductTab, CompositionTab, AttachmentTab, SummaryTab]

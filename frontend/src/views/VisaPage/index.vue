@@ -21,13 +21,7 @@
         <p>Vous pouvez vous assigner cette déclaration pour visa / signature</p>
         <DsfrButton class="mt-2" label="Prendre pour validation" tertiary @click="takeDeclaration" />
       </DsfrAlert>
-      <DeclarationAlert
-        role="visor"
-        class="mb-4"
-        v-else-if="!declaration.siccrfId"
-        :declaration="declaration"
-        :snapshots="snapshots"
-      />
+      <DeclarationAlert role="visor" class="mb-4" :declaration="declaration" :snapshots="snapshots" />
       <div v-if="declaration">
         <DeclarationSummary
           :allowArticleChange="!declaration.siccrfId"

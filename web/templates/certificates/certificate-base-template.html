@@ -34,24 +34,27 @@
         <table class="bg-marianne">
             <tr>
                 <td>
+                    {% if declaration.teleicare_id %}
+                    <img width="160" src="{% static '../../static/images/certificate/republique-francaise-logo.png' %}" alt="">
+                    {% else %}
                     <img width="160" src="{% static '../../static/images/certificate/masa.png' %}" alt="">
+                    {% endif %}
                 </td>
                 <td align="right" style="font-weight: bold; font-size: 1.7em; font-family: 'Marianne-Bold'">
-                    Direction générale<br />de l'alimentation
+                    Direction générale<br />{{direction}}
                 </td>
             </tr>
 
             <tr style="padding-top: 20px;">
                 <td>
                     <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
-                        DIRECTION GÉNÉRALE DE L'ALIMENTATION<br />
-                        251 RUE DE VAUGIRARD<br />
-                        75732 PARIS CEDEX 15<br />
+                    Direction générale {{ direction }}<br />
+                    {{ address_street }}<br />
+                    {{ address_cedex }}<br />
                     </span>
-
-                        BEPIAS (Bureau des Etablissements et Produits des<br />
-                        Industries Alimentaires Spécialisées)<br />
-                        Mél : <a href="mailto:bepias.sdssa.dgal@agriculture.gouv.fr">bepias.sdssa.dgal@agriculture.gouv.fr</a><br />
+                        {{ bureau }}
+                        <br />
+                        Mél : <a href="mailto:{{mail}}">{{ mail }}</a><br />
                 </td>
                 <td align="right" style="font-size: 1.2em;">
                     Paris, le {{ date|date:"l j F Y" }}

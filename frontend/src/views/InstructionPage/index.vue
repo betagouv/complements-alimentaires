@@ -36,7 +36,7 @@
       </DsfrAlert>
       <DeclarationAlert
         class="mb-6"
-        v-else-if="!canInstruct && !declaration.siccrfId"
+        v-else-if="!canInstruct"
         role="instructor"
         :declaration="declaration"
         :snapshots="snapshots"

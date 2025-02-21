@@ -1,14 +1,18 @@
 {% extends 'certificates/certificate-base-template.html' %}
 {% block 'body' %}
 <h1 style="font-family: 'Marianne-Bold'; font-weight: bold;">
-    Réf. : Dossier n° {{declaration.id}}
+    Réf. : Dossier {% if declaration.teleicare_id %}
+    TELEICARE n° {{ declaration.teleicare_id }}
+    {% else %}
+    n° {{ declaration.id }}
+    {% endif %}
 </h1>
 <div style="font-size: 1.2em;">
     <p>
         Madame, Monsieur,
     </p>
     <p>
-        Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré la mise sur le marché du produit :
+        Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré{% if declaration.teleicare_id %}, sur la plateforme TELEICARE,{% endif %} la mise sur le marché du produit :
         <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
             {{ declaration.name }} / {{ declaration.galenic_formulation }}
         </span>
@@ -48,11 +52,10 @@
         Je vous prie d’agréer, Madame, Monsieur, l’expression de ma considération distinguée.
     </p>
     <p style="padding-left: 10cm;">
-        La Sous-Directrice de la sécurité sanitaire<br />
-        des aliments
+        {{ signature_title }}
     </p>
     <p style="padding-left: 10cm;">
-        Vanessa HUMMEL-FOURRAT
+        {{ signature_name }}
     </p>
 </div>
 {% endblock %}
