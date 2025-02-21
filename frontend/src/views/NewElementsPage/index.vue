@@ -7,6 +7,9 @@
         :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Ingrédients pour ajout' }]"
       />
       <h1 class="fr-h4">Liste des demandes en attente d’ajout d’ingrédients</h1>
+      <router-link :to="{ name: 'ElementForm' }" class="fr-btn fr-btn--secondary fr-btn--sm">
+        Créer un nouvel ingrédient
+      </router-link>
       <NewElementActionInfo />
       <div v-if="isFetching" class="flex justify-center my-10">
         <ProgressSpinner />
