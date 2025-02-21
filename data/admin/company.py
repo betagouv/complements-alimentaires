@@ -25,6 +25,8 @@ class CompanyAdmin(admin.ModelAdmin):
         "commercial_name",
         "vat",
         "siret",
+        "old_vat",
+        "old_siret",
     )
 
     fieldsets = (
