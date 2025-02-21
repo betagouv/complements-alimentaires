@@ -51,7 +51,7 @@
       <StatusFilter
         class="max-w-lg"
         @updateFilter="updateStatusFilter"
-        v-model="filteredStatus"
+        :statusString="filteredStatus"
         :groupInstruction="true"
       />
     </div>

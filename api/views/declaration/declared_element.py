@@ -1,5 +1,6 @@
 import abc
 from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ParseError
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -26,6 +27,7 @@ from api.serializers import (
 )
 from api.permissions import IsInstructor, IsVisor
 from itertools import chain
+from functools import reduce
 
 
 class DeclaredElementsPagination(LimitOffsetPagination):
@@ -39,20 +41,37 @@ class DeclaredElementsView(ListAPIView):
     permission_classes = [(IsInstructor | IsVisor)]
 
     def get_queryset(self):
+        request_statuses = self.request.query_params.get("requestStatus")
+        request_status_filter = Q(new=True)  # by default, only show new elements
+        if request_statuses:
+            request_statuses = request_statuses.split(",")
+            request_status_queries = [DeclaredElementsView.get_query_for_request_status(r) for r in request_statuses]
+            request_status_filter = reduce(lambda x, y: x | y, request_status_queries)
+
         closed_statuses = [
             Declaration.DeclarationStatus.DRAFT,
             Declaration.DeclarationStatus.ABANDONED,
             Declaration.DeclarationStatus.REJECTED,
             Declaration.DeclarationStatus.WITHDRAWN,
         ]
-        return list(
-            chain(
-                DeclaredPlant.objects.filter(new=True).exclude(declaration__status__in=closed_statuses),
-                DeclaredSubstance.objects.filter(new=True).exclude(declaration__status__in=closed_statuses),
-                DeclaredIngredient.objects.filter(new=True).exclude(declaration__status__in=closed_statuses),
-                DeclaredMicroorganism.objects.filter(new=True).exclude(declaration__status__in=closed_statuses),
-            )
-        )
+        querysets = [
+            DeclaredPlant.objects,
+            DeclaredSubstance.objects,
+            DeclaredIngredient.objects,
+            DeclaredMicroorganism.objects,
+        ]
+        filtered_querysets = [
+            queryset.filter(request_status_filter).exclude(declaration__status__in=closed_statuses)
+            for queryset in querysets
+        ]
+        return list(chain(*filtered_querysets))
+
+    @staticmethod
+    def get_query_for_request_status(status):
+        if status == "REQUESTED":
+            return Q(new=True) & Q(request_status=status)
+        else:
+            return Q(request_status=status)
 
 
 TYPE_MAPPING = {
@@ -127,10 +146,16 @@ class DeclaredElementActionAbstractView(APIView, ElementMappingMixin):
         element_to_save = self._update_element(element, request)
         element_to_save.save()
 
+        self._post_save_declared_element(element_to_save)
+
         return Response(self.type_serializer(element_to_save, context={"request": request}).data)
 
     @abc.abstractmethod
     def _update_element(self, element, request):
+        pass
+
+    @abc.abstractmethod
+    def _post_save_declared_element(self, element):
         pass
 
 
@@ -203,3 +228,7 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
                 raise ParseError(detail="Must provide 'name' to create new synonym")
 
         return declared_element
+
+    def _post_save_declared_element(self, declared_element):
+        declared_element.declaration.assign_calculated_article()
+        declared_element.declaration.save()

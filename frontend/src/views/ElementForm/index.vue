@@ -15,7 +15,7 @@
 
       <FormWrapper :externalResults="$externalResults" class="mx-auto">
         <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
-          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-8">
+          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-8">
             <div class="col-span-2 lg:col-span-4" v-if="formForType.name">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'name')">
                 <DsfrInput v-model="state.name" :label="formForType.name.label" required labelVisible />
@@ -31,14 +31,11 @@
                 <DsfrInput v-model="state.genus" label="Genre" labelVisible required />
               </DsfrInputGroup>
             </div>
-            <DsfrToggleSwitch
-              v-model="state.status"
-              label="Autorisation de l’ingrédient"
-              activeText="Authorisé"
-              inactiveText="Non authorisé"
-              label-left
-              class="self-center mt-4 col-span-2 sm:col-span-1"
-            />
+            <div class="col-span-2">
+              <DsfrInputGroup>
+                <DsfrSelect v-model="state.status" label="Autorisation de l’ingrédient" :options="statuses" />
+              </DsfrInputGroup>
+            </div>
             <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'family')">
                 <DsfrSelect
@@ -68,7 +65,7 @@
               <DsfrInput v-model="state.casNumber" label="Numéro CAS" labelVisible />
             </DsfrInputGroup>
             <DsfrToggleSwitch
-              v-if="!state.ingredientType || state.ingredientType != AROMA"
+              v-if="!state.ingredientType || state.ingredientType != aromaId"
               v-model="state.novelFood"
               label="Novel food"
               activeText="Oui"
@@ -196,7 +193,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue"
-import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, getApiType } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRoute, useRouter } from "vue-router"
@@ -254,18 +251,18 @@ const breadcrumbLinks = computed(() => {
     links.push({ to: { name: "ElementPage", params: { urlComponent: props.urlComponent } }, text: element.value?.name })
   } else {
     links.push({ to: { name: "DashboardPage" }, text: "Tableau de bord" })
+    links.push({ to: { name: "NewElementsPage" }, text: "Ingrédients pour ajout" })
   }
   links.push({ text: pageTitle })
   return links
 })
 
-const EMPTY_SYNONYM = { name: "" }
-const newSynonym = () => JSON.parse(JSON.stringify(EMPTY_SYNONYM))
+const createEmptySynonym = () => ({ name: "" })
 
 const state = ref({
   plantParts: [],
   substances: [],
-  synonyms: [newSynonym(), newSynonym(), newSynonym()],
+  synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
 })
 
 const saveElement = async () => {
@@ -282,8 +279,7 @@ const saveElement = async () => {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
-  payload.status = payload.status ? 1 : 2
-  if (payload.ingredientType && payload.ingredientType == AROMA.value) delete payload.novelFood
+  if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
 
   const { response } = isNewIngredient.value
     ? await useFetch(url, { headers: headers() }).post(payload).json()
@@ -302,7 +298,7 @@ const saveElement = async () => {
   }
 }
 const addNewSynonym = async () => {
-  state.value.synonyms.push(newSynonym())
+  state.value.synonyms.push(createEmptySynonym())
 }
 
 const formQuestions = {
@@ -386,6 +382,12 @@ const ingredientTypes = [
   { value: 5, text: "Autre ingrédient", apiValue: "non_active_ingredient" },
 ]
 
+const statuses = [
+  { value: 1, text: "Autorisé" },
+  { value: 2, text: "Non autorisé" },
+  { value: 3, text: "Sans objet" },
+]
+
 const selectOption = async (result) => {
   state.value.substances.push(result)
 }
@@ -400,5 +402,5 @@ const plantFamiliesDisplay = computed(() => {
     .sort((a, b) => a.text.localeCompare(b.text))
 })
 
-const AROMA = ref(3)
+const aromaId = 3
 </script>

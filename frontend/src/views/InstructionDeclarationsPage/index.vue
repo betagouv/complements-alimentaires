@@ -5,47 +5,54 @@
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Déclarations pour instruction' }]"
     />
     <div class="border px-4 mb-2 md:flex gap-4 items-baseline filters">
-      <DsfrFieldset legend="Nom d'entreprise" class="!mb-0 min-w-44">
-        <div class="flex gap-4">
-          <DsfrInputGroup>
-            <DsfrInput
-              class="max-w-16 !text-sm"
-              label="De :"
-              :modelValue="companyNameStart"
-              label-visible
-              @update:modelValue="updateCompanyNameStartFilter"
-            />
-          </DsfrInputGroup>
-          <DsfrInputGroup>
-            <DsfrInput
-              class="max-w-16 !text-sm"
-              label="À :"
-              :modelValue="companyNameEnd"
-              label-visible
-              @update:modelValue="updateCompanyNameEndFilter"
-            />
-          </DsfrInputGroup>
+      <div>
+        <div class="sm:flex gap-4 items-baseline md:border-r">
+          <DsfrFieldset legend="Nom d'entreprise" class="!mb-0 min-w-44">
+            <div class="flex gap-4">
+              <DsfrInputGroup>
+                <DsfrInput
+                  class="max-w-16 !text-sm"
+                  label="De :"
+                  :modelValue="companyNameStart"
+                  label-visible
+                  @update:modelValue="updateCompanyNameStartFilter"
+                />
+              </DsfrInputGroup>
+              <DsfrInputGroup>
+                <DsfrInput
+                  class="max-w-16 !text-sm"
+                  label="À :"
+                  :modelValue="companyNameEnd"
+                  label-visible
+                  @update:modelValue="updateCompanyNameEndFilter"
+                />
+              </DsfrInputGroup>
+            </div>
+          </DsfrFieldset>
+          <DsfrFieldset class="!mb-0 min-w-52">
+            <div class="md:px-4 md:border-l">
+              <DsfrInputGroup>
+                <DsfrSelect
+                  label="Personne assignée"
+                  :modelValue="assignedInstructor"
+                  @update:modelValue="updateInstructorFilter"
+                  defaultUnselectedText=""
+                  :options="instructorSelectOptions"
+                  class="!text-sm"
+                />
+              </DsfrInputGroup>
+            </div>
+          </DsfrFieldset>
         </div>
-      </DsfrFieldset>
-      <div class="min-w-52">
-        <DsfrFieldset class="!mb-0">
-          <div class="md:border-x md:px-4">
-            <DsfrInputGroup>
-              <DsfrSelect
-                label="Personne assignée"
-                :modelValue="assignedInstructor"
-                @update:modelValue="updateInstructorFilter"
-                defaultUnselectedText=""
-                :options="instructorSelectOptions"
-                class="!text-sm"
-              />
-            </DsfrInputGroup>
-          </div>
-        </DsfrFieldset>
+        <div class="md:pr-4 md:border-r md:border-t md:-mt-3">
+          <DsfrFieldset legend="Recherche" class="!mb-0">
+            <DsfrSearchBar v-model="searchTerm" placeholder="Nom, ID ou entreprise" @search="search" />
+          </DsfrFieldset>
+        </div>
       </div>
-      <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" v-model="filteredStatus" />
-      <div class="min-w-96">
-        <div class="md:border-l md:pl-4 min-w-36 flex flex-row gap-4">
+      <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" :statusString="filteredStatus" />
+      <div class="min-w-96 md:border-l">
+        <div class="md:pl-4 min-w-36 flex flex-row gap-4">
           <div class="w-2/4">
             <DsfrInputGroup>
               <DsfrSelect
@@ -72,7 +79,7 @@
           </div>
         </div>
 
-        <div class="md:border-l md:pl-4 min-w-36 pb-2">
+        <div class="md:pl-4 min-w-36 pb-2">
           <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
         </div>
       </div>
@@ -96,19 +103,19 @@
 
 <script setup>
 import { useFetch } from "@vueuse/core"
-import { computed, watch } from "vue"
+import { computed, watch, ref } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import InstructionDeclarationsTable from "./InstructionDeclarationsTable"
 import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
-import { DsfrInput } from "@gouvminint/vue-dsfr"
 import StatusFilter from "@/components/StatusFilter.vue"
 import { orderingOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 
 const router = useRouter()
 const route = useRoute()
+const searchTerm = ref(route.query.recherche)
 
 const articleSelectOptions = [...articleOptionsWith15Subtypes, ...[{ value: "", text: "Tous" }]]
 
@@ -149,7 +156,7 @@ const updateLimit = (newValue) => updateQuery({ limit: newValue, page: 1 })
 // Obtention de la donnée via API
 const url = computed(
   () =>
-    `/api/v1/declarations/?limit=${limit.value}&offset=${offset.value}&status=${filteredStatus.value || ""}&company_name_start=${companyNameStart.value}&company_name_end=${companyNameEnd.value}&ordering=${ordering.value}&instructor=${assignedInstructor.value}&article=${article.value}`
+    `/api/v1/declarations/?limit=${limit.value}&offset=${offset.value}&status=${filteredStatus.value || ""}&company_name_start=${companyNameStart.value}&company_name_end=${companyNameEnd.value}&ordering=${ordering.value}&instructor=${assignedInstructor.value}&article=${article.value}&search=${searchTerm.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -161,6 +168,11 @@ watch(
   [page, filteredStatus, companyNameStart, companyNameEnd, assignedInstructor, ordering, article, limit],
   fetchSearchResults
 )
+
+const search = () => {
+  updateQuery({ recherche: searchTerm.value })
+  fetchSearchResults()
+}
 </script>
 
 <style scoped>

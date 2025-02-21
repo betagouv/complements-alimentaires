@@ -7,7 +7,18 @@
         :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Ingrédients pour ajout' }]"
       />
       <h1 class="fr-h4">Liste des demandes en attente d’ajout d’ingrédients</h1>
+      <router-link :to="{ name: 'ElementForm' }" class="fr-btn fr-btn--secondary fr-btn--sm">
+        Créer un nouvel ingrédient
+      </router-link>
       <NewElementActionInfo />
+      <div class="border px-4 pt-4 pb-0 mb-2 sm:flex gap-8 items-baseline filters">
+        <MultiselectFilter
+          filterTitle="Statut de demande :"
+          :options="statusOptions"
+          :selectedString="statusFilter"
+          @updateFilter="(v) => updateQuery({ statut: v })"
+        />
+      </div>
       <div v-if="isFetching" class="flex justify-center my-10">
         <ProgressSpinner />
       </div>
@@ -28,13 +39,14 @@
 
 <script setup>
 import { useFetch } from "@vueuse/core"
-import { computed, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import NewElementsTable from "./NewElementsTable"
 import NewElementActionInfo from "./NewElementActionInfo"
 import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
+import MultiselectFilter from "@/components/MultiselectFilter"
 
 const router = useRouter()
 const route = useRoute()
@@ -47,9 +59,7 @@ const pages = computed(() => getPagesForPagination(data.value?.count, limit.valu
 
 // Valeurs obtenus du queryparams
 const page = computed(() => parseInt(route.query.page))
-const name = computed(() => route.query.nom)
-const type = computed(() => route.query.type)
-const ordering = computed(() => route.query.triage)
+const statusFilter = computed(() => route.query.statut)
 const limit = computed(() => parseInt(route.query.limit) || 10)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
@@ -58,8 +68,7 @@ const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 
 // Obtention de la donnée via API
 const url = computed(
-  () =>
-    `/api/v1/new-declared-elements/?limit=${limit.value}&offset=${offset.value}&name=${name.value}&type=${type.value}`
+  () => `/api/v1/new-declared-elements/?limit=${limit.value}&offset=${offset.value}&requestStatus=${statusFilter.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -67,5 +76,12 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
-watch([page, name, type, ordering, limit], fetchSearchResults)
+watch([page, statusFilter, limit], fetchSearchResults)
+
+const statusOptions = [
+  { value: "REQUESTED", label: "Nouvelle" },
+  { value: "INFORMATION", label: "Nécessite plus d'information", tagLabel: "Information" },
+  { value: "REJECTED", label: "Refusé" },
+  { value: "REPLACED", label: "Remplacé" },
+]
 </script>

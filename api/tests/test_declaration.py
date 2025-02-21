@@ -41,6 +41,7 @@ from data.factories import (
 from data.models import (
     Attachment,
     Declaration,
+    Addable,
     DeclaredMicroorganism,
     DeclaredPlant,
     DeclaredSubstance,
@@ -1779,6 +1780,43 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(len(results), 1)
         self.assertTrue(results[0]["visaRefused"])
 
+    @authenticate
+    def test_search_fields(self):
+        def get_search_results(search_term):
+            response = self.client.get(f"{reverse('api:list_all_declarations')}?search={search_term}", format="json")
+            return response.json()["results"]
+
+        InstructionRoleFactory(user=authenticate.user)
+
+        umbrella_corp = CompanyFactory(social_name="Umbrella corporation")
+        globex = CompanyFactory(social_name="Globex")
+
+        omega = AwaitingInstructionDeclarationFactory(company=umbrella_corp, name="Omega")
+        magnesium = AwaitingInstructionDeclarationFactory(company=umbrella_corp, name="Magnésium")
+
+        fer = AwaitingInstructionDeclarationFactory(company=globex, name="Fer")
+        creatine = AwaitingInstructionDeclarationFactory(company=globex, name="Créatine")
+
+        # Checher "globex". Les deux compléments de l'entreprise Globex doivent être renvoyés
+        results = get_search_results("Globex")
+        self.assertEqual(len(results), 2)
+        (self.assertIn(x.id, map(lambda x: x["id"], results)) for x in [fer, creatine])
+
+        # Checher "omega". Seulement omega devrait sortir
+        results = get_search_results("omega")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], omega.id)
+
+        # Checher par ID (magnésium)
+        results = get_search_results(magnesium.id)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], magnesium.id)
+
+        # Chercher en ignorant les accents (magnésium)
+        results = get_search_results("magnesium")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], magnesium.id)
+
 
 class TestDeclaredElementsApi(APITestCase):
     @authenticate
@@ -1816,6 +1854,35 @@ class TestDeclaredElementsApi(APITestCase):
         response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    @authenticate
+    def test_filter_by_request_status(self):
+        """
+        La liste de demandes peut être filtrer par un ou plusieurs statuts de la demande
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        draft = DeclarationFactory(status=Declaration.DeclarationStatus.DRAFT)
+
+        plant = DeclaredPlantFactory(new=True, declaration=declaration, request_status=Addable.AddableStatus.REQUESTED)
+        DeclaredSubstanceFactory(new=True, declaration=declaration, request_status=Addable.AddableStatus.INFORMATION)
+        DeclaredMicroorganismFactory(new=True, declaration=declaration, request_status=Addable.AddableStatus.REJECTED)
+        ingredient = DeclaredIngredientFactory(
+            new=False, declaration=declaration, request_status=Addable.AddableStatus.REPLACED
+        )
+        # don't return ones attached to draft declarations
+        DeclaredIngredientFactory(new=True, declaration=draft, request_status=Addable.AddableStatus.REQUESTED)
+
+        filter_url = f"{reverse('api:list_new_declared_elements')}?requestStatus=REQUESTED,REPLACED"
+        response = self.client.get(filter_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 2)
+        returned_ids = [results["results"][0]["id"], results["results"][1]["id"]]
+        self.assertIn(plant.id, returned_ids)
+        self.assertIn(ingredient.id, returned_ids)
+
+
+class TestSingleDeclaredElementApi(APITestCase):
     @authenticate
     def test_get_single_declared_plant(self):
         InstructionRoleFactory(user=authenticate.user)
@@ -2420,3 +2487,33 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(new_declared_plant.unit, unit)
         self.assertNotEqual(new_declared_plant.id, 66)
         self.assertNotEqual(new_declared_plant.id, 99)
+
+    @authenticate
+    def test_article_recalculated_on_replace(self):
+        """
+        Vérifier que l'article est recalculé avec un remplacement d'une demande
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration, new_species="test", new=True)
+        declaration.assign_calculated_article()
+        declaration.save()
+
+        # on suppose que, avec les nouveaux ingrédients, la déclaration récoit un article 16
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_16)
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {"element": {"id": plant.id, "type": "plant"}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        declaration.refresh_from_db()
+        self.assertEqual(
+            declaration.calculated_article,
+            Declaration.Article.ARTICLE_15,
+            "L'article passe à 15 maintenant qu'il n'y a plus de nouveaux ingrédients",
+        )

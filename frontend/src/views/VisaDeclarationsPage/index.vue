@@ -9,7 +9,7 @@
         :exclude="['DRAFT']"
         class="max-w-2xl"
         @updateFilter="updateStatusFilter"
-        v-model="filteredStatus"
+        :statusString="filteredStatus"
       />
 
       <div class="md:border-l md:pl-4">
@@ -65,7 +65,7 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import VisaDeclarationsTable from "./VisaDeclarationsTable"
 import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
-import StatusFilter from "@/components/StatusFilter.vue"
+import StatusFilter from "@/components/StatusFilter"
 import { orderingOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 

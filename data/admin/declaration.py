@@ -39,12 +39,45 @@ class AttachmentInline(admin.TabularInline):
         return False
 
 
+@admin.register(Attachment)
+class AttachmentAdmin(SimpleHistoryAdmin):
+    list_display = (
+        "name",
+        "type",
+        "declaration__name",
+        "declaration__id",
+        "has_file",
+    )
+
+    search_fields = (
+        "declaration__id",
+        "declaration__name",
+        "name",
+    )
+
+    list_filter = ["type"]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    # ça devrait pas arriver mais on avait un bug, et ça nous aide de le régler
+    # https://github.com/betagouv/complements-alimentaires/issues/1655
+    def has_file(self, obj):
+        return "✅ Oui" if obj.file else "❌ Non"
+
+
+# Declared Plants inline
+
 REQUEST_FIELDS = (
     "request_status",
     "request_private_notes",
 )
-
-# Declared Plants inline
 
 
 class DeclaredPlantInlineForm(forms.ModelForm):
