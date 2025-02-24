@@ -74,7 +74,7 @@ class DeclaredElementsView(ListAPIView):
             return sorted(
                 chain(*filtered_querysets),
                 key=lambda instance: instance.declaration.creation_date,
-                reverse=not ordering.startswith("-"),
+                reverse=ordering.startswith("-"),
             )
 
         return list(chain(*filtered_querysets))

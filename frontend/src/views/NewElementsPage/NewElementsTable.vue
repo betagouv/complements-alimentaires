@@ -23,7 +23,7 @@ const headers = [
   "Nom de l'ingrédient",
   "Type d'ingrédient",
   "Authorisation marché FR ou EU",
-  "Date de demande d'ajout",
+  "Date de création de la déclaration",
   "Statut de la déclaration",
   "Statut de la demande",
   "",

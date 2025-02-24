@@ -1945,7 +1945,7 @@ class TestDeclaredElementsApi(APITestCase):
         microorganism = DeclaredMicroorganismFactory(new=True, declaration=declaration_today)
         ingredient = DeclaredIngredientFactory(new=True, declaration=ancient_declaration)
 
-        order_url = f"{reverse('api:list_new_declared_elements')}?ordering=-declarationCreationDate"
+        order_url = f"{reverse('api:list_new_declared_elements')}?ordering=declarationCreationDate"
         response = self.client.get(order_url, format="json")
         results = response.json()
         self.assertEqual(results["count"], 3)
@@ -1954,7 +1954,7 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(results[1]["id"], plant.id)
         self.assertEqual(results[2]["id"], ingredient.id)
 
-        order_url = f"{reverse('api:list_new_declared_elements')}?ordering=declarationCreationDate"
+        order_url = f"{reverse('api:list_new_declared_elements')}?ordering=-declarationCreationDate"
         response = self.client.get(order_url, format="json")
         results = response.json()
         self.assertEqual(results["count"], 3)

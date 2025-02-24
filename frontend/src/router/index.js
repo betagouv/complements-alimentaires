@@ -330,6 +330,7 @@ const routes = [
         page: 1,
         statut: "REQUESTED,INFORMATION",
         statutDeclaration: "", // par défaut on filtre par les statuts ouverts
+        triage: "declarationCreationDate",
         limit: "10",
       },
     },
