@@ -25,6 +25,8 @@ class CompanyAdmin(admin.ModelAdmin):
         "commercial_name",
         "vat",
         "siret",
+        "old_vat",
+        "old_siret",
     )
 
     fieldsets = (
@@ -37,6 +39,15 @@ class CompanyAdmin(admin.ModelAdmin):
                     "siret",
                     "vat",
                     "activities",
+                )
+            },
+        ),
+        (
+            "Changement de n°TVA intracommunautaire ou siret",
+            {
+                "fields": (
+                    "old_siret",
+                    "old_vat",
                 )
             },
         ),
