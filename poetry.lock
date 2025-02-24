@@ -3729,13 +3729,12 @@ files = [
 
 [[package]]
 name = "xhtml2pdf"
-version = "0.2.16"
+version = "0.2.17"
 description = "PDF generator using HTML and CSS"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "xhtml2pdf-0.2.16-py3-none-any.whl", hash = "sha256:b37040127627aee42f76f25ebbd5798308ffc93edaf4850a4d3dd894160ebb53"},
-    {file = "xhtml2pdf-0.2.16.tar.gz", hash = "sha256:7391adac12afb086561667cdc8d6ef0ac4afe5097bd97383622d42b6343dee71"},
+    {file = "xhtml2pdf-0.2.17.tar.gz", hash = "sha256:09ddbc31aa0e38a16f2f3cb73be89af5f7c968c17a564afdd685d280e39c526d"},
 ]
 
 [package.dependencies]
@@ -3745,12 +3744,12 @@ Pillow = ">=8.1.1"
 pyHanko = ">=0.12.1"
 pyhanko-certvalidator = ">=0.19.5"
 pypdf = ">=3.1.0"
-python-bidi = ">=0.4.2"
+python-bidi = ">=0.5.0"
 reportlab = ">=4.0.4,<5"
 svglib = ">=1.2.1"
 
 [package.extras]
-docs = ["sphinx (>=6)", "sphinx-rtd-theme (>=0.5.0)"]
+docs = ["sphinx (>=6)", "sphinx-rtd-theme (>=0.5.0)", "sphinx_reredirects (>=0.1.3)"]
 pycairo = ["reportlab[pycairo] (>=4.0.4,<5)"]
 release = ["build", "twine"]
 renderpm = ["reportlab[renderpm] (>=4.0.4,<5)"]
@@ -3759,4 +3758,4 @@ test = ["coverage (>=5.3)", "tomli (>=2.0.1)", "tox"]
 [metadata]
 lock-version = "2.0"
 python-versions = "<4,>= 3.11.*"
-content-hash = "dfb80745978d1701d345390c2568087f3bb4be1f8659612f3977fab228bbbd70"
+content-hash = "eeaa13c5f2f5c5b66a53e31fdec980782c6bddcac6609802cffd4211f15507f5"
