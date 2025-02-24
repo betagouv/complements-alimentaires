@@ -83,7 +83,7 @@ class CertificateView(PdfView):
                 .creation_date
             )
         except Snapshot.DoesNotExist:
-            logger.log(
+            logger.info(
                 f"Error obtaining certificate date for declaration {declaration.id}, falling back to creation date"
             )
             date = declaration.creation_date
@@ -98,7 +98,7 @@ class CertificateView(PdfView):
                 declaration.snapshots.filter(action__in=submission_actions).latest("creation_date").creation_date
             )
         except Snapshot.DoesNotExist:
-            logger.log(
+            logger.info(
                 f"Error obtaining last submission date for declaration {declaration.id}, falling back to creation date"
             )
             last_submission_date = declaration.creation_date
