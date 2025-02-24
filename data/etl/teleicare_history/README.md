@@ -7,8 +7,8 @@ for f in *.csv; do iconv -f UTF-16 -t UTF-8 "$f" | sed 's/""//g' > "${f%.*}_utf8
 ~~~
 3. Copy all data from csv with
 ~~~
-for f in *_UTF8.csv; do
-    table_name=${f%_UTF8.csv}
+for f in *_utf8.csv; do
+    table_name=${f%_utf8.csv}
     echo "-> Import des données de $f"
     psql postgresql://<user>:<passwd>@<ip>:<port>/<database>  -c "\copy $table_name from $f delimiter ',' csv header;";
 done
