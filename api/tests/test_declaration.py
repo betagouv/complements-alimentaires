@@ -1857,7 +1857,7 @@ class TestDeclaredElementsApi(APITestCase):
     @authenticate
     def test_filter_by_request_status(self):
         """
-        La liste de demandes peut être filtrer par un ou plusieurs statuts de la demande
+        La liste de demandes peut être filtrée par un ou plusieurs statuts de la demande
         """
         InstructionRoleFactory(user=authenticate.user)
 
@@ -1880,6 +1880,48 @@ class TestDeclaredElementsApi(APITestCase):
         returned_ids = [results["results"][0]["id"], results["results"][1]["id"]]
         self.assertIn(plant.id, returned_ids)
         self.assertIn(ingredient.id, returned_ids)
+
+    @authenticate
+    def test_filter_by_declaration_status(self):
+        """
+        La liste de demandes peut être filtrée par un ou plusieurs statuts de la déclaration
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        awaiting_instruction = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        observation = DeclarationFactory(status=Declaration.DeclarationStatus.OBSERVATION)
+        draft = DeclarationFactory(status=Declaration.DeclarationStatus.DRAFT)
+
+        plant_instruction = DeclaredPlantFactory(new=True, declaration=awaiting_instruction)
+        microorganism_observation = DeclaredMicroorganismFactory(new=True, declaration=observation)
+        ingredient_draft = DeclaredIngredientFactory(new=True, declaration=draft)
+
+        filter_url = f"{reverse('api:list_new_declared_elements')}?declarationStatus=AWAITING_INSTRUCTION,OBSERVATION"
+        response = self.client.get(filter_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 2)
+        returned_ids = [results["results"][0]["id"], results["results"][1]["id"]]
+        self.assertIn(plant_instruction.id, returned_ids)
+        self.assertIn(microorganism_observation.id, returned_ids)
+
+        filter_url = f"{reverse('api:list_new_declared_elements')}?declarationStatus=AWAITING_INSTRUCTION"
+        response = self.client.get(filter_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 1)
+        self.assertEqual(results["results"][0]["id"], plant_instruction.id)
+
+        filter_url = f"{reverse('api:list_new_declared_elements')}?declarationStatus=OBSERVATION"
+        response = self.client.get(filter_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 1)
+        self.assertEqual(results["results"][0]["id"], microorganism_observation.id)
+
+        # c'est possible de outrepasser l'exclusion de statuts fermés
+        filter_url = f"{reverse('api:list_new_declared_elements')}?declarationStatus=DRAFT"
+        response = self.client.get(filter_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 1)
+        self.assertEqual(results["results"][0]["id"], ingredient_draft.id)
 
 
 class TestSingleDeclaredElementApi(APITestCase):
