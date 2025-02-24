@@ -99,7 +99,7 @@
 import { ref, computed, watch } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { helpers, required } from "@vuelidate/validators"
-import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
+import { errorRequiredField, errorInteger, firstErrorMsg } from "@/utils/forms"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
@@ -116,7 +116,7 @@ const rules = computed(() => {
     comment: errorRequiredField,
     reasons: { required: helpers.withMessage("Au moins une raison doit être selectionnée", required) },
     proposal: errorRequiredField,
-    delayDays: proposal.value !== "rejection" ? errorRequiredField : {},
+    delayDays: proposal.value !== "rejection" ? Object.assign({}, errorRequiredField, errorInteger) : {},
   }
 })
 const declaration = defineModel()
