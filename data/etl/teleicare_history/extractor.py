@@ -409,10 +409,10 @@ def add_final_state_snapshot(
             declaration=declaration,
             status=status,
             json_declaration="",
-            # le commentaire est soit celui de l'administration `vrsdecl_observations_ac` soit celui du pro `vrsdecl_commentaire`
+            # le commentaire est soit celui de l'administration `vrsdecl_observations_ac` soit celui du pro `vrsdecl_commentaires`
             comment=latest_ica_version_declaration.vrsdecl_observations_ac
             if status in last_word_to_administration_status
-            else latest_ica_version_declaration.vrsdecl_commentaire or "",
+            else latest_ica_version_declaration.vrsdecl_commentaires or "",
             action=compute_action(status, nb_version_declaration),
             post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
         )
