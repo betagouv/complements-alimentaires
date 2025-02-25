@@ -1,9 +1,11 @@
 import csv
 import logging
-from data.etl import datagouv
 
 from django.core.files.storage import default_storage
-from .extractor import TRANSFORMER_LOADER, DECLARATIONS
+
+from data.etl import datagouv
+
+from .extractor import DECLARATIONS, TRANSFORMER_LOADER
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +31,10 @@ class OPEN_DATA(TRANSFORMER_LOADER):
 
     def load_dataset(self):
         filepath = f"{self.dataset_name}"
-        if not self.is_valid():
-            logger.error(f"The dataset {self.dataset_name} is invalid and therefore will not be exported to s3")
-            return
+        # TODO : split du fichier (par années) pour permettre la validation par Validata
+        # if not self.is_valid():
+        #     logger.error(f"The dataset {self.dataset_name} is invalid and therefore will not be exported to s3")
+        #     return
         try:
             self._load_data_csv(filepath)
             datagouv.update_resources()

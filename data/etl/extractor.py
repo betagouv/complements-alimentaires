@@ -1,11 +1,12 @@
+import csv
+import io
+import json
 import logging
 from abc import ABC, abstractmethod
-import json
-import io
-import csv
 
 import pandas as pd
 import requests
+
 from api.views.declaration.declaration import OpenDataDeclarationsListView
 
 logger = logging.getLogger(__name__)
@@ -67,6 +68,9 @@ class ETL(ABC):
         self.df = self.df[columns_to_keep]
         self.df = self.df.replace({"\n": " ", "\r": " "}, regex=True)
 
+    # Cette méthode n'est pas appelé actuellement
+    # La taille max de fichier acceptable par l'api validata est 10Mo
+    # Nos fichiers font ~ 50 Mo
     def is_valid(self) -> bool:
         files = prepare_file_validata_post_request(self.df)
         res = requests.post(
@@ -74,7 +78,11 @@ class ETL(ABC):
             files=files,
             data={"schema": self.schema_url, "header_case": True},
         )
-        report = json.loads(res.text)["report"]
+        try:
+            report = json.loads(res.text)["report"]
+        except json.decoder.JSONDecodeError as err:
+            logger.error(f"Erreur {err} en decodant : {res.text}")
+            return False
         if len(report["errors"]) > 0 or report["stats"]["errors"] > 0:
             logger.error(f"The dataset {self.dataset_name} extraction has errors : ")
             logger.error(report["errors"])
