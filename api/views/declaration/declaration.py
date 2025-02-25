@@ -363,7 +363,6 @@ class OngoingDeclarationsListView(GenericDeclarationsListView):
 
 
 class OpenDataDeclarationsListView(GenericDeclarationsListView):
-    pagination_class = InstructionDeclarationPagination
     serializer_class = OpenDataDeclarationSerializer
     filter_backends = [django_filters.DjangoFilterBackend, InstructionDateOrderingFilter]
     ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
