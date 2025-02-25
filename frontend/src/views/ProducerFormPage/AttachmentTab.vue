@@ -95,7 +95,7 @@ const addFiles = async (files, container, resetModel, defaultData) => {
         ...defaultData,
       })
     } else {
-      window.alert("Une erreur est survenu lors du téléversement du fichier. Merci de réessayer.")
+      window.alert("Une erreur est survenue lors du téléversement du fichier. Merci de réessayer.")
     }
   }
   resetModel.value = null
