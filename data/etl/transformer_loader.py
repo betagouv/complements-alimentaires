@@ -31,9 +31,10 @@ class OPEN_DATA(TRANSFORMER_LOADER):
 
     def load_dataset(self):
         filepath = f"{self.dataset_name}"
-        if not self.is_valid():
-            logger.error(f"The dataset {self.dataset_name} is invalid and therefore will not be exported to s3")
-            return
+        # TODO : traitement par batch pour permettre la validation par Validata
+        # if not self.is_valid():
+        #     logger.error(f"The dataset {self.dataset_name} is invalid and therefore will not be exported to s3")
+        #     return
         try:
             self._load_data_csv(filepath)
             datagouv.update_resources(self.dataset_name)
