@@ -1,9 +1,11 @@
 import csv
 import logging
-from data.etl import datagouv
 
 from django.core.files.storage import default_storage
-from .extractor import TRANSFORMER_LOADER, DECLARATIONS
+
+from data.etl import datagouv
+
+from .extractor import DECLARATIONS, TRANSFORMER_LOADER
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +36,7 @@ class OPEN_DATA(TRANSFORMER_LOADER):
             return
         try:
             self._load_data_csv(filepath)
-            datagouv.update_resources()
+            datagouv.update_resources(self.dataset_name)
 
         except Exception as e:
             logger.error(f"Error saving validated data: {e}")
