@@ -268,6 +268,7 @@ class DeclarationAdmin(SimpleHistoryAdmin):
     list_display = ("id", "name", "status", "company", "author")
     list_filter = ("status", "company", "author")
     list_select_related = ["author", "company"]
+    readonly_fields = ("declared_in_teleicare",)
 
     show_facets = admin.ShowFacets.NEVER
     inlines = (
@@ -293,6 +294,7 @@ class DeclarationAdmin(SimpleHistoryAdmin):
             {
                 "fields": (
                     "name",
+                    "declared_in_teleicare",
                     "brand",
                     "gamme",
                     "flavor",
