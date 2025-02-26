@@ -70,10 +70,10 @@ class DeclaredElementsView(ListAPIView):
         ]
 
         ordering = self.request.query_params.get("ordering")
-        if ordering and ordering.endswith("declarationCreationDate"):
+        if ordering and ordering.endswith("responseLimitDate"):
             return sorted(
                 chain(*filtered_querysets),
-                key=lambda instance: instance.declaration.creation_date,
+                key=lambda instance: instance.declaration.response_limit_date or instance.declaration.creation_date,
                 reverse=ordering.startswith("-"),
             )
 

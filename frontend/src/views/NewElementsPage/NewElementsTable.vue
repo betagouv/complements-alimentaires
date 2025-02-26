@@ -23,7 +23,7 @@ const headers = [
   "Nom de l'ingrédient",
   "Type d'ingrédient",
   "Authorisation marché FR ou EU",
-  "Date de création de la déclaration",
+  "Date limite de réponse",
   "Statut de la déclaration",
   "Statut de la demande",
   "",
@@ -35,7 +35,7 @@ const rows = computed(() =>
       x.name,
       getTypeInFrench(x.type),
       getAuthorizationModeInFrench(x.authorizationMode),
-      x.declaration.creationDate && isoToPrettyDate(x.declaration.creationDate),
+      x.declaration.responseLimitDate && isoToPrettyDate(x.declaration.responseLimitDate),
       getStatusTagForCell(x.declaration.status),
       getRequestStatusTagForCell(x),
       {

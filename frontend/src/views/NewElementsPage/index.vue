@@ -127,12 +127,12 @@ const declarationStatusOptions = declarationStatuses.map((key) => ({
 
 const orderingOptions = [
   {
-    value: "declarationCreationDate",
-    text: "Date de création de la déclaration",
+    value: "responseLimitDate",
+    text: "Date limite de réponse",
   },
   {
-    value: "-declarationCreationDate",
-    text: "Date de création de la déclaration (descendent)",
+    value: "-responseLimitDate",
+    text: "Date limite de réponse (descendent)",
   },
 ]
 </script>
