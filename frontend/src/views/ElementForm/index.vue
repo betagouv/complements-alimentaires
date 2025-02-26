@@ -18,7 +18,7 @@
         {{ typeName }}
       </p>
 
-      <FormFields :element="element" :type="apiType" />
+      <FormFields :element="element" :type="type" />
     </div>
   </div>
 </template>
