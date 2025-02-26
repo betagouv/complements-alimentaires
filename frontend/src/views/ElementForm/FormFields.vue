@@ -235,7 +235,8 @@ const saveElement = async () => {
       id: "element-creation-success",
       description: `L'ingrédient a été ${isNewIngredient.value ? "créé" : "modifié"}`,
     })
-    router.navigateBack({ name: "DashboardPage" })
+    if (isNewIngredient.value) router.push({ name: "DashboardPage" })
+    else router.navigateBack({ name: "DashboardPage" })
   }
 }
 const addNewSynonym = async () => {
