@@ -1,4 +1,4 @@
-import { helpers, required, email, numeric } from "@vuelidate/validators"
+import { helpers, required, email, numeric, integer } from "@vuelidate/validators"
 
 /* Using vuelidate validation, return the first error message, or "" if no error found. */
 export const firstErrorMsg = (v, fieldName) => (v[fieldName]?.$error ? v[fieldName].$errors[0].$message : null)
@@ -11,7 +11,10 @@ export const errorRequiredEmail = {
   email: helpers.withMessage("Ce champ doit contenir un e-mail valide", email),
 }
 export const errorNumeric = {
-  numeric: helpers.withMessage("La valeur doit être un numéro", numeric),
+  numeric: helpers.withMessage("Ce champ doit être un chiffre", numeric),
+}
+export const errorInteger = {
+  integer: helpers.withMessage("Ce champ doit être un chiffre entier", integer),
 }
 
 export const getAllIndexesOfRegex = (array, regex) => {

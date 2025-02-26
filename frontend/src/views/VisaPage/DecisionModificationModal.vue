@@ -64,8 +64,8 @@
 <script setup>
 import { ref, computed, watch } from "vue"
 import { blockingReasons } from "@/utils/mappings"
-import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
-import { helpers, required, integer } from "@vuelidate/validators"
+import { errorRequiredField, errorInteger, firstErrorMsg } from "@/utils/forms"
+import { helpers, required } from "@vuelidate/validators"
 import { useVuelidate } from "@vuelidate/core"
 
 const modelValue = defineModel()
@@ -84,12 +84,7 @@ const rules = computed(() => {
     reasons: { required: helpers.withMessage("Au moins une raison doit être selectionnée", required) },
     proposal: errorRequiredField,
     delayDays:
-      overriddenDecision.value?.proposal !== "REJECTED"
-        ? {
-            required: helpers.withMessage("Ce champ doit être rempli", required),
-            integer: helpers.withMessage("Ce champ doit être un chiffre entier", integer),
-          }
-        : {},
+      overriddenDecision.value?.proposal !== "REJECTED" ? Object.assign({}, errorRequiredField, errorInteger) : {},
   }
 })
 
