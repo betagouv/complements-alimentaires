@@ -51,6 +51,7 @@ class DeclaredElementsView(ListAPIView):
         declaration_statuses = self.request.query_params.get("declarationStatus")
         closed_statuses = [
             Declaration.DeclarationStatus.DRAFT,
+            Declaration.DeclarationStatus.AUTHORIZED,
             Declaration.DeclarationStatus.ABANDONED,
             Declaration.DeclarationStatus.REJECTED,
             Declaration.DeclarationStatus.WITHDRAWN,
