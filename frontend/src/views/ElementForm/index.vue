@@ -18,13 +18,23 @@
         {{ typeName }}
       </p>
 
-      <FormFields :element="element" :type="type" />
+      <DsfrTabs v-model="activeTab" :tab-list-name="tabListName" :tab-titles="tabTitles" :tab-contents="tabContents">
+        <DsfrTabContent panel-id="form-content" tab-id="form">
+          <FormFields :element="element" :type="type" />
+        </DsfrTabContent>
+
+        <DsfrTabContent panel-id="history-content" tab-id="history">
+          <div class="-my-8">
+            <DsfrTable :rows="historyDataDedup" />
+          </div>
+        </DsfrTabContent>
+      </DsfrTabs>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
 import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
@@ -72,10 +82,30 @@ const breadcrumbLinks = computed(() => {
   return links
 })
 
+const activeTab = ref(0)
+const tabListName = "Liste d’onglet"
+const title1 = "Fiche ingrédient"
+const tabTitles = computed(() => {
+  const tabs = [{ title: title1, tabId: "form", panelId: "form-content" }]
+  if (!isNewIngredient.value) tabs.push({ title: "Historique", tabId: "history", panelId: "history-content" })
+  return tabs
+})
+
 const forms = {
   plant: "Plante",
   substance: "Substance",
   microorganism: "Micro-organisme",
   ingredient: "Autre ingrédient",
 }
+
+const historyData = computed(() =>
+  element.value?.history
+    .filter((item) => item.historyChangeReason)
+    .map((item) => [
+      new Date(item.historyDate).toLocaleString("default", { month: "long", year: "numeric" }),
+      item.historyChangeReason,
+    ])
+)
+// Deduplication en passant par une string
+const historyDataDedup = computed(() => Array.from(new Set(historyData.value?.map(JSON.stringify)), JSON.parse))
 </script>
