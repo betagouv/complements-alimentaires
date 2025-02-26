@@ -713,7 +713,7 @@ class DeclarationAcceptVisaView(VisaDecisionView):
         d = declaration
         d.create_snapshot(
             user=request.user,
-            comment=data.get("comment") if overridden else d.post_validation_producer_message,
+            comment=data.get("comment", "") if overridden else d.post_validation_producer_message,
             expiration_days=data.get("delay_days") if overridden else d.post_validation_expiration_days,
             action=self.get_snapshot_action(request, d),
             post_validation_status=self.get_snapshot_post_validation_status(request, d),
