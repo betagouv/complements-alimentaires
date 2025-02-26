@@ -23,7 +23,13 @@
         "
       >
         <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
-        <DsfrButton class="mt-2" label="Instruire" tertiary @click="instructDeclaration" />
+        <DsfrButton
+          class="mt-2"
+          label="Instruire"
+          tertiary
+          @click="instructDeclaration"
+          :disabled="isFetchingInstruction || isFetchingDeclaration"
+        />
       </DsfrAlert>
       <DsfrAlert
         class="mb-4"
@@ -158,6 +164,7 @@ const {
   response: declarationResponse,
   data: declaration,
   execute: executeDeclarationFetch,
+  isFetching: isFetchingDeclaration,
 } = useFetch(`/api/v1/declarations/${props.declarationId}`, { immediate: false }).get().json()
 const privateNotesInstruction = ref(declaration.value?.privateNotesInstruction || "")
 const privateNotesVisa = ref(declaration.value?.privateNotesVisa || "")
@@ -239,12 +246,25 @@ const assignInstruction = async () => {
   }
 }
 
-const instructDeclaration = async () => {
-  const url = `/api/v1/declarations/${props.declarationId}/take-for-instruction/`
-  const { response } = await useFetch(url, { headers: headers() }).post({}).json()
-  $externalResults.value = await handleError(response)
+const {
+  response: takeResponse,
+  execute: executeTakeForInstruction,
+  isFetching: isFetchingInstruction,
+} = useFetch(
+  `/api/v1/declarations/${props.declarationId}/take-for-instruction/`,
+  {
+    headers: headers(),
+  },
+  { immediate: false }
+)
+  .post({})
+  .json()
 
-  if (response.value.ok) {
+const instructDeclaration = async () => {
+  await executeTakeForInstruction()
+  $externalResults.value = await handleError(takeResponse)
+
+  if (takeResponse.value.ok) {
     await executeDeclarationFetch()
   }
 }
