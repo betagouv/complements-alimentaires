@@ -59,12 +59,24 @@ class DeclaredElementsView(ListAPIView):
         declaration_statuses = declaration_statuses.split(",") if declaration_statuses else open_statuses
         declaration_status_filter = Q(declaration__status__in=declaration_statuses)
 
-        querysets = [
-            DeclaredPlant.objects,
-            DeclaredSubstance.objects,
-            DeclaredIngredient.objects,
-            DeclaredMicroorganism.objects,
-        ]
+        types = self.request.query_params.get("type")
+        if types:
+            querysets = []
+            if "plant" in types:
+                querysets.append(DeclaredPlant.objects)
+            if "microorganism" in types:
+                querysets.append(DeclaredMicroorganism.objects)
+            if "substance" in types:
+                querysets.append(DeclaredSubstance.objects)
+            if "other-ingredient" in types:
+                querysets.append(DeclaredIngredient.objects)
+        else:
+            querysets = [
+                DeclaredPlant.objects,
+                DeclaredMicroorganism.objects,
+                DeclaredSubstance.objects,
+                DeclaredIngredient.objects,
+            ]
         filtered_querysets = [
             queryset.filter(request_status_filter & declaration_status_filter) for queryset in querysets
         ]

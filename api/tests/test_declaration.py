@@ -1924,6 +1924,38 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(results["results"][0]["id"], ingredient_draft.id)
 
     @authenticate
+    def test_filter_by_type(self):
+        """
+        Par défaut, on ne filtre pas par type. C'est possible de passer un ou plusieurs types pour filtrer les résultats.
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+        DeclaredPlantFactory(new=True, declaration=declaration, new_name="My test plant")
+        DeclaredMicroorganismFactory(new=True, declaration=declaration)
+        DeclaredSubstanceFactory(new=True, declaration=declaration)
+        DeclaredIngredientFactory(new=True, declaration=declaration)
+
+        filter_url = f"{reverse('api:list_new_declared_elements')}?type=plant"
+        response = self.client.get(filter_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 1)
+        self.assertEqual(results["results"][0]["name"], "-NEW- My test plant")
+
+        filter_url = f"{reverse('api:list_new_declared_elements')}?type=substance,microorganism,other-ingredient"
+        response = self.client.get(filter_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 3)
+        names = [result["name"] for result in results["results"]]
+        self.assertNotIn("-NEW- My test plant", names)
+
+        filter_url = f"{reverse('api:list_new_declared_elements')}?type="
+        response = self.client.get(filter_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 4)
+
+    @authenticate
     def test_order_by_creation_date(self):
         """
         C'est possible de trier par date de création
