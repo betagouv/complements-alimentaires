@@ -238,7 +238,7 @@ class ComputedSubstanceSerializer(DeclaredElementNestedField, serializers.ModelS
 
 
 class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
-    file = Base64FileField(required=False, allow_null=True)
+    file = Base64FileField()
 
     class Meta:
         model = Attachment
@@ -253,9 +253,6 @@ class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
         read_only_fields = ("file",)
 
     def validate_file(self, file):
-        if not file:
-            return None
-
         size_limit = 1048576 * 2
         if file.size > size_limit:
             raise ProjectAPIException(

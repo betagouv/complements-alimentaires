@@ -86,13 +86,17 @@ const addFiles = async (files, container, resetModel, defaultData) => {
       continue
     }
     const base64 = await toBase64(files[i])
-    container.push({
-      ...{
-        file: base64,
-        name: files[i].name,
-      },
-      ...defaultData,
-    })
+    if (base64) {
+      container.push({
+        ...{
+          file: base64,
+          name: files[i].name,
+        },
+        ...defaultData,
+      })
+    } else {
+      window.alert("Une erreur est survenue lors du téléversement du fichier. Merci de réessayer.")
+    }
   }
   resetModel.value = null
 }
