@@ -117,6 +117,9 @@ def expire_declarations():
 
 
 def send_automatic_validation_email(declaration):
+    if not declaration.author:
+        logger.log(f"Email not sent on automatic validation of declaration {declaration.id}: no author")
+        return
     brevo_template_id = 6
     try:
         email.send_sib_template(
