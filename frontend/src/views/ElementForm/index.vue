@@ -25,7 +25,7 @@
 
         <DsfrTabContent panel-id="history-content" tab-id="history">
           <div class="-my-8">
-            <DsfrTable :rows="historyDataDedup" />
+            <DsfrTable :headers="headers" :rows="historyDataDedup" />
           </div>
         </DsfrTabContent>
       </DsfrTabs>
@@ -98,11 +98,14 @@ const forms = {
   ingredient: "Autre ingrédient",
 }
 
+const headers = ["Date", "Réalisée par", "Détail"]
+
 const historyData = computed(() =>
   element.value?.history
     .filter((item) => item.historyChangeReason)
     .map((item) => [
-      new Date(item.historyDate).toLocaleString("default", { month: "long", year: "numeric" }),
+      new Date(item.historyDate).toLocaleString("default", { day: "numeric", month: "long", year: "numeric" }),
+      item.user ? `${item.user.firstName} ${item.user.lastName}` : "",
       item.historyChangeReason,
     ])
 )

@@ -31,17 +31,27 @@ class TestElementsFetchApi(APITestCase):
         self.assertEqual(plant.name, body["name"])
         self.assertEqual(plant.id, body["id"])
 
-    def test_get_single_plant_history(self):
+    def test_get_single_plant_history_unauthenticated(self):
         plant = PlantFactory.create()
         response = self.client.get(f"{reverse('api:single_plant', kwargs={'pk': plant.id})}?history=true")
         body = response.json()
 
         self.assertIn("history", body)
+        self.assertNotIn("user", body["history"][0])
 
         response = self.client.get(reverse("api:single_plant", kwargs={"pk": plant.id}))
         body = response.json()
 
         self.assertNotIn("history", body)
+
+    @authenticate
+    def test_get_single_plant_history_instructor(self):
+        plant = PlantFactory.create()
+        InstructionRoleFactory(user=authenticate.user)
+        response = self.client.get(f"{reverse('api:single_plant', kwargs={'pk': plant.id})}?history=true")
+        body = response.json()
+
+        self.assertIn("user", body["history"][0])
 
     @authenticate
     def test_plant_private_comments(self):
