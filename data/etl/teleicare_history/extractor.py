@@ -400,20 +400,20 @@ last_word_to_administration_status = (Declaration.DeclarationStatus.REJECTED, Sn
 
 @transaction.atomic
 def add_final_state_snapshot(
-    declaration, latest_ica_version_declaration, declaration_acceptation_date, status, nb_version_declaration
+    declaration, latest_ica_version_declaration, declaration_acceptation_date, nb_version_declaration
 ):
     if not declaration.snapshots.exists():
         snapshot = Snapshot(
             creation_date=declaration_acceptation_date,
             modification_date=declaration_acceptation_date,
             declaration=declaration,
-            status=status,
+            status=declaration.status,
             json_declaration="",
             # le commentaire est soit celui de l'administration `vrsdecl_observations_ac` soit celui du pro `vrsdecl_commentaires`
             comment=latest_ica_version_declaration.vrsdecl_observations_ac
-            if status in last_word_to_administration_status
+            if declaration.status in last_word_to_administration_status
             else latest_ica_version_declaration.vrsdecl_commentaires or "",
-            action=compute_action(status, nb_version_declaration),
+            action=compute_action(declaration.status, nb_version_declaration),
             post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
         )
         with suppress_autotime(snapshot, ["creation_date", "modification_date"]):
@@ -542,7 +542,6 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                             declaration,
                             latest_ica_version_declaration,
                             declaration_acceptation_date,
-                            status,
                             nb_version_declaration,
                         )
                         nb_created_declarations += 1
@@ -559,7 +558,6 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                             declaration,
                             latest_ica_version_declaration,
                             declaration_acceptation_date,
-                            status,
                             nb_version_declaration,
                         )
                         # cette Déclaration a déjà été créée
