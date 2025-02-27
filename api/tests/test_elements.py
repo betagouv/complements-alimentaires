@@ -47,11 +47,15 @@ class TestElementsFetchApi(APITestCase):
     @authenticate
     def test_get_single_plant_history_instructor(self):
         plant = PlantFactory.create()
+        plant.ca_name = "Test change"
+        plant.save()
+        self.assertEqual(plant.ca_name, "Test change")
         InstructionRoleFactory(user=authenticate.user)
         response = self.client.get(f"{reverse('api:single_plant', kwargs={'pk': plant.id})}?history=true")
         body = response.json()
 
         self.assertIn("user", body["history"][0])
+        self.assertEqual(body["history"][0]["changedFields"], ["nom CA"])
 
     @authenticate
     def test_plant_private_comments(self):
