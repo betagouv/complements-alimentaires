@@ -102,7 +102,8 @@ const historyData = computed(() =>
   element.value?.history
     .filter((item) => item.historyChangeReason)
     .map((item) => [
-      new Date(item.historyDate).toLocaleString("default", { month: "long", year: "numeric" }),
+      new Date(item.historyDate).toLocaleString("default", { day: "numeric", month: "long", year: "numeric" }),
+      item.user ? `${item.user.firstName} ${item.user.lastName}` : "",
       item.historyChangeReason,
     ])
 )
