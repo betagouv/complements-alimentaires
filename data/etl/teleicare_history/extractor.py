@@ -382,7 +382,7 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
         model.objects.bulk_create(bulk_of_objects)
 
 
-def compute_action(status, nb_snapshot, snapshot_from_declarant, nb_version_declaration):
+def compute_action(status, nb_version_declaration):
     if status == Declaration.DeclarationStatus.WITHDRAWN:
         return Snapshot.SnapshotActions.WITHDRAW
     elif status == Declaration.DeclarationStatus.REJECTED:
