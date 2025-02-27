@@ -457,7 +457,7 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                 stadcl_ident=8,  # état 'clos'
             )
             nb_version_declaration = declaration_versions.count()
-            latest_ica_version_declaration = declaration_versions.first()
+            latest_ica_version_declaration = declaration_versions.order_by("vrsdecl_numero").first()
             # la déclaration a une version finalisée
             if latest_ica_version_declaration:
                 declaration_creation_date = (
