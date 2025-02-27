@@ -25,7 +25,7 @@
 
         <DsfrTabContent panel-id="history-content" tab-id="history">
           <div class="-my-8">
-            <DsfrTable :rows="historyDataDedup" />
+            <DsfrTable :headers="headers" :rows="historyDataDedup" />
           </div>
         </DsfrTabContent>
       </DsfrTabs>
@@ -97,6 +97,8 @@ const forms = {
   microorganism: "Micro-organisme",
   ingredient: "Autre ingrédient",
 }
+
+const headers = ["Date", "Réalisée par", "Détail"]
 
 const historyData = computed(() =>
   element.value?.history
