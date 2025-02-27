@@ -261,6 +261,14 @@ class DeclarationForm(forms.ModelForm):
             "minimum_duration": forms.Textarea(attrs={"cols": 35, "rows": 1}),
         }
 
+    # thanks to https://github.com/jazzband/django-simple-history/issues/853#issuecomment-1105754544
+    change_reason = forms.CharField(
+        label="Raison de modification",
+        help_text="100 caractères max",
+        max_length=100,
+        widget=forms.TextInput(attrs={"size": "70"}),
+    )
+
 
 @admin.register(Declaration)
 class DeclarationAdmin(SimpleHistoryAdmin):
@@ -367,5 +375,6 @@ class DeclarationAdmin(SimpleHistoryAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         if change:
+            obj._change_reason = form.cleaned_data["change_reason"]
             obj.assign_calculated_article()
         super().save_model(request, obj, form, change)

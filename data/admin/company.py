@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html, format_html_join, mark_safe
@@ -15,8 +16,23 @@ class DeclarantInline(admin.TabularInline):
     extra = 0
 
 
+class CompanyForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = "__all__"
+
+    # thanks to https://github.com/jazzband/django-simple-history/issues/853#issuecomment-1105754544
+    change_reason = forms.CharField(
+        label="Raison de modification",
+        help_text="100 caractères max",
+        max_length=100,
+        widget=forms.TextInput(attrs={"size": "70"}),
+    )
+
+
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
+    form = CompanyForm
     filter_horizontal = ("mandated_companies",)
     readonly_fields = ("display_represented_companies",)
 
@@ -112,6 +128,11 @@ class CompanyAdmin(admin.ModelAdmin):
         return "Cette entreprise peut seulement déclarer pour elle-même."
 
     display_represented_companies.short_description = "Entreprises representées"
+
+    def save_model(self, request, obj, form, change):
+        if change:
+            obj._change_reason = form.cleaned_data["change_reason"]
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(SupervisorRole)

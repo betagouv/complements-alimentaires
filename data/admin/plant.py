@@ -35,6 +35,14 @@ class PlantForm(forms.ModelForm):
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
         }
 
+    # saved in ElementAdminWithChangeReason.save()
+    change_reason = forms.CharField(
+        label="Raison de modification",
+        help_text="100 caractères max",
+        max_length=100,
+        widget=forms.TextInput(attrs={"size": "70"}),
+    )
+
 
 @admin.register(Plant)
 class PlantAdmin(ElementAdminWithChangeReason):
