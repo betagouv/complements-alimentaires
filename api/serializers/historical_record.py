@@ -7,7 +7,6 @@ from .user import SimpleUserSerializer
 User = get_user_model()
 
 
-# TODO: only change usage for view in question
 class HistoricalRecordSerializer(serializers.Serializer):
     user = serializers.SerializerMethodField()
     history_date = serializers.DateTimeField()
@@ -23,5 +22,14 @@ class HistoricalRecordField(serializers.ListField):
     child = serializers.DictField()
 
     def to_representation(self, data):
-        dvs = HistoricalRecordSerializer(data, many=True).data
-        return super().to_representation(dvs)
+        user = self.context and self.context["request"] and self.context["request"].user
+        try:
+            is_priviledged_user = user.instructionrole or user.visarole
+        except Exception as _:
+            is_priviledged_user = False
+
+        if is_priviledged_user:
+            records = HistoricalRecordSerializer(data, many=True).data
+            return super().to_representation(records)
+        else:
+            return super().to_representation(data.values("history_date", "history_change_reason"))
