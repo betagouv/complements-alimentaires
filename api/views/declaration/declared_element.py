@@ -68,6 +68,15 @@ class DeclaredElementsView(ListAPIView):
         filtered_querysets = [
             queryset.filter(request_status_filter & declaration_status_filter) for queryset in querysets
         ]
+
+        ordering = self.request.query_params.get("ordering")
+        if ordering and ordering.endswith("responseLimitDate"):
+            return sorted(
+                chain(*filtered_querysets),
+                key=lambda instance: instance.declaration.response_limit_date or instance.declaration.creation_date,
+                reverse=ordering.startswith("-"),
+            )
+
         return list(chain(*filtered_querysets))
 
     @staticmethod

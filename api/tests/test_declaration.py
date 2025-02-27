@@ -1923,6 +1923,53 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertEqual(results["count"], 1)
         self.assertEqual(results["results"][0]["id"], ingredient_draft.id)
 
+    @authenticate
+    def test_order_by_creation_date(self):
+        """
+        C'est possible de trier par date de création
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        today = timezone.now()
+
+        declaration_middle = AwaitingInstructionDeclarationFactory()
+        snapshot_middle = SnapshotFactory(declaration=declaration_middle, status=declaration_middle.status)
+        snapshot_middle.creation_date = today - timedelta(days=5)
+        snapshot_middle.save()
+
+        declaration_first = AwaitingInstructionDeclarationFactory()
+        snapshot_first = SnapshotFactory(declaration=declaration_first, status=declaration_first.status)
+        snapshot_first.creation_date = today - timedelta(days=1)
+        snapshot_first.save()
+
+        declaration_last = AwaitingInstructionDeclarationFactory()
+        snapshot_last = SnapshotFactory(declaration=declaration_last, status=declaration_last.status)
+        snapshot_last.creation_date = today - timedelta(days=10)
+        snapshot_last.save()
+
+        plant = DeclaredPlantFactory(new=True, declaration=declaration_middle)
+        microorganism = DeclaredMicroorganismFactory(new=True, declaration=declaration_first)
+        ingredient = DeclaredIngredientFactory(new=True, declaration=declaration_last)
+
+        order_url = f"{reverse('api:list_new_declared_elements')}?ordering=responseLimitDate"
+        response = self.client.get(order_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 3)
+        results = results["results"]
+        self.assertEqual(results[0]["id"], ingredient.id)
+        self.assertEqual(results[1]["id"], plant.id)
+        self.assertEqual(results[2]["id"], microorganism.id)
+        self.assertIn("responseLimitDate", results[0]["declaration"])
+
+        order_url = f"{reverse('api:list_new_declared_elements')}?ordering=-responseLimitDate"
+        response = self.client.get(order_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 3)
+        results = results["results"]
+        self.assertEqual(results[0]["id"], microorganism.id)
+        self.assertEqual(results[1]["id"], plant.id)
+        self.assertEqual(results[2]["id"], ingredient.id)
+
 
 class TestSingleDeclaredElementApi(APITestCase):
     @authenticate

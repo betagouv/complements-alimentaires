@@ -30,6 +30,7 @@ from .declaration import (
     DeclaredMicroorganismSerializer,
     DeclaredSubstanceSerializer,
     DeclaredIngredientSerializer,
+    DeclaredElementDeclarationSerializer,
 )
 from .company import CompanySerializer, MinimalCompanySerializer
 from .solicitation import CollaborationInvitationSerializer, CompanyAccessClaimSerializer, AddNewCollaboratorSerializer
