@@ -18,7 +18,7 @@
         {{ typeName }}
       </p>
 
-      <DsfrTabs v-model="activeTab" :tab-list-name="tabListName" :tab-titles="tabTitles" :tab-contents="tabContents">
+      <DsfrTabs v-model="activeTab" :tab-list-name="tabListName" :tab-titles="tabTitles">
         <DsfrTabContent panel-id="form-content" tab-id="form">
           <FormFields :element="element" :type="type" />
         </DsfrTabContent>
