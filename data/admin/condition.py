@@ -1,18 +1,25 @@
 from django import forms
 from django.contrib import admin
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Condition
+
+from .abstract_admin import ChangeReasonAdminMixin
 
 
 class ConditionForm(forms.ModelForm):
     class Meta:
         widgets = {
             "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "change_reason": forms.TextInput(attrs={"size": "70"}),
         }
+
+    change_reason = forms.CharField(label="Raison de modification", max_length=100)
 
 
 @admin.register(Condition)
-class ConditionAdmin(admin.ModelAdmin):
+class ConditionAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = ConditionForm
     fields = [
         "name",
@@ -25,6 +32,7 @@ class ConditionAdmin(admin.ModelAdmin):
         "max_age",
         "creation_date",
         "modification_date",
+        "change_reason",
     ]
     readonly_fields = [
         "name",

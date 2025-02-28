@@ -2,9 +2,11 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Plant, PlantSynonym
 
-from .abstract_admin import ElementAdminWithChangeReason
+from .abstract_admin import ChangeReasonAdminMixin
 
 
 class PlantSynonymInline(admin.TabularInline):
@@ -33,19 +35,19 @@ class PlantForm(forms.ModelForm):
             "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
+            "change_reason": forms.TextInput(attrs={"size": "70"}),
         }
 
-    # saved in ElementAdminWithChangeReason.save()
+    # saved in ChangeReasonAdminMixin.save()
     change_reason = forms.CharField(
         label="Raison de modification",
         help_text="100 caractères max",
         max_length=100,
-        widget=forms.TextInput(attrs={"size": "70"}),
     )
 
 
 @admin.register(Plant)
-class PlantAdmin(ElementAdminWithChangeReason):
+class PlantAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = PlantForm
     fieldsets = [
         (
@@ -80,6 +82,10 @@ class PlantAdmin(ElementAdminWithChangeReason):
             {
                 "fields": ["siccrf_family", "ca_family"],
             },
+        ),
+        (
+            None,
+            {"fields": ["change_reason"]},
         ),
     ]
 

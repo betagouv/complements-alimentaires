@@ -1,18 +1,30 @@
 from django import forms
 from django.contrib import admin
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Effect
+
+from .abstract_admin import ChangeReasonAdminMixin
 
 
 class EffectForm(forms.ModelForm):
     class Meta:
         widgets = {
             "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "change_reason": forms.TextInput(attrs={"size": "70"}),
         }
+
+    # saved in ChangeReasonAdminMixin.save()
+    change_reason = forms.CharField(
+        label="Raison de modification",
+        help_text="100 caractères max",
+        max_length=100,
+    )
 
 
 @admin.register(Effect)
-class EffectAdmin(admin.ModelAdmin):
+class EffectAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = EffectForm
     fields = [
         "name",
@@ -22,6 +34,7 @@ class EffectAdmin(admin.ModelAdmin):
         "ca_is_obsolete",
         "creation_date",
         "modification_date",
+        "change_reason",
     ]
     readonly_fields = [
         "name",

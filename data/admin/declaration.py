@@ -2,6 +2,7 @@ from django import forms
 from django.contrib import admin
 
 from simple_history.admin import SimpleHistoryAdmin
+from simple_history.utils import update_change_reason
 
 from data.models import (
     Attachment,
@@ -370,11 +371,15 @@ class DeclarationAdmin(SimpleHistoryAdmin):
                 ),
             },
         ),
+        (
+            None,
+            {"fields": ["change_reason"]},
+        ),
     )
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         if change:
-            obj._change_reason = form.cleaned_data["change_reason"]
+            update_change_reason(obj, form.cleaned_data["change_reason"])
             obj.assign_calculated_article()
         super().save_model(request, obj, form, change)
