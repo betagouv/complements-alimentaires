@@ -8,7 +8,7 @@ class ChangeReasonAdminMixin:
                 obj,
                 form.cleaned_data["change_reason"]
                 if "change_reason" in form.cleaned_data.keys()
-                else "Modification de l'ingrédient",
+                else "Modification via l'admin",
             )
 
         super().save_model(request, obj, form, change)

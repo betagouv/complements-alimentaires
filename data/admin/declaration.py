@@ -260,6 +260,7 @@ class DeclarationForm(forms.ModelForm):
             "other_conditions": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "daily_recommended_dose": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "minimum_duration": forms.Textarea(attrs={"cols": 35, "rows": 1}),
+            "change_reason": forms.TextInput(attrs={"size": "70"}),
         }
 
     # thanks to https://github.com/jazzband/django-simple-history/issues/853#issuecomment-1105754544
@@ -267,7 +268,6 @@ class DeclarationForm(forms.ModelForm):
         label="Raison de modification",
         help_text="100 caractères max",
         max_length=100,
-        widget=forms.TextInput(attrs={"size": "70"}),
     )
 
 

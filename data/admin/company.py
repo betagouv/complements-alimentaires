@@ -20,10 +20,6 @@ class DeclarantInline(admin.TabularInline):
 
 
 class CompanyForm(forms.ModelForm):
-    class Meta:
-        model = Company
-        fields = "__all__"
-
     # thanks to https://github.com/jazzband/django-simple-history/issues/853#issuecomment-1105754544
     change_reason = forms.CharField(
         label="Raison de modification",
@@ -131,11 +127,6 @@ class CompanyAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         return "Cette entreprise peut seulement déclarer pour elle-même."
 
     display_represented_companies.short_description = "Entreprises representées"
-
-    def save_model(self, request, obj, form, change):
-        if change:
-            obj._change_reason = form.cleaned_data["change_reason"]
-        super().save_model(request, obj, form, change)
 
 
 @admin.register(SupervisorRole)
