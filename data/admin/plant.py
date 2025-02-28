@@ -51,6 +51,10 @@ class PlantAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = PlantForm
     fieldsets = [
         (
+            None,
+            {"fields": ["change_reason"]},
+        ),
+        (
             None,  # Pas d'entête
             {
                 "fields": [
@@ -82,10 +86,6 @@ class PlantAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             {
                 "fields": ["siccrf_family", "ca_family"],
             },
-        ),
-        (
-            None,
-            {"fields": ["change_reason"]},
         ),
     ]
 

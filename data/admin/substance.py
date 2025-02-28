@@ -65,6 +65,10 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = SubstanceForm
     fieldsets = [
         (
+            None,
+            {"fields": ["change_reason"]},
+        ),
+        (
             None,  # Pas d'entête
             {
                 "fields": [
@@ -123,10 +127,6 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             {
                 "fields": ["get_plants", "get_microorganisms", "get_ingredients"],
             },
-        ),
-        (
-            None,
-            {"fields": ["change_reason"]},
         ),
     ]
     inlines = (SubstanceSynonymInline,)

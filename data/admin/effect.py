@@ -27,6 +27,7 @@ class EffectForm(forms.ModelForm):
 class EffectAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = EffectForm
     fields = [
+        "change_reason",
         "name",
         "ca_name",
         "siccrf_name_en",
@@ -34,7 +35,6 @@ class EffectAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         "ca_is_obsolete",
         "creation_date",
         "modification_date",
-        "change_reason",
     ]
     readonly_fields = [
         "name",

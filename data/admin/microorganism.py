@@ -17,7 +17,7 @@ class MicroorganismForm(forms.ModelForm):
             "change_reason": forms.TextInput(attrs={"size": "70"}),
         }
 
-    # saved in ElementAdminWithChangeReason.save()
+    # saved in ChangeReasonAdminMixin.save()
     change_reason = forms.CharField(
         label="Raison de modification",
         help_text="100 caractères max",
@@ -29,6 +29,10 @@ class MicroorganismForm(forms.ModelForm):
 class MicroorganismAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = MicroorganismForm
     fieldsets = [
+        (
+            None,
+            {"fields": ["change_reason"]},
+        ),
         (
             None,  # Pas d'entête
             {
@@ -64,10 +68,6 @@ class MicroorganismAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
                     "ca_private_comments",
                 ],
             },
-        ),
-        (
-            None,
-            {"fields": ["change_reason"]},
         ),
     ]
 

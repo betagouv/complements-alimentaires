@@ -27,6 +27,7 @@ class PreparationForm(forms.ModelForm):
 class PreparationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = PreparationForm
     fields = [
+        "change_reason",
         "name",
         "ca_name",
         "is_obsolete",
@@ -34,7 +35,6 @@ class PreparationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         "contains_alcohol",
         "creation_date",
         "modification_date",
-        "change_reason",
     ]
     readonly_fields = [
         "name",

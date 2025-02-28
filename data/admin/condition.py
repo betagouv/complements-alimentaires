@@ -22,6 +22,7 @@ class ConditionForm(forms.ModelForm):
 class ConditionAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = ConditionForm
     fields = [
+        "change_reason",
         "name",
         "ca_name",
         "category",
@@ -32,7 +33,6 @@ class ConditionAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         "max_age",
         "creation_date",
         "modification_date",
-        "change_reason",
     ]
     readonly_fields = [
         "name",

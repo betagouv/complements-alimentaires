@@ -298,6 +298,10 @@ class DeclarationAdmin(SimpleHistoryAdmin):
 
     fieldsets = (
         (
+            None,
+            {"fields": ["change_reason"]},
+        ),
+        (
             "",
             {
                 "fields": (
@@ -369,10 +373,6 @@ class DeclarationAdmin(SimpleHistoryAdmin):
                     "country",
                 ),
             },
-        ),
-        (
-            None,
-            {"fields": ["change_reason"]},
         ),
     )
 

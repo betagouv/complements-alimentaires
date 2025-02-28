@@ -46,6 +46,10 @@ class CompanyAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
 
     fieldsets = (
         (
+            None,
+            {"fields": ["change_reason"]},
+        ),
+        (
             "",
             {
                 "fields": (

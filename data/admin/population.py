@@ -27,6 +27,7 @@ class PopulationForm(forms.ModelForm):
 class PopulationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = PopulationForm
     fields = [
+        "change_reason",
         "name",
         "ca_name",
         "category",
@@ -37,7 +38,6 @@ class PopulationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         "max_age",
         "creation_date",
         "modification_date",
-        "change_reason",
     ]
     readonly_fields = [
         "name",

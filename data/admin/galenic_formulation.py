@@ -27,6 +27,7 @@ class GalenicFormulationForm(forms.ModelForm):
 class GalenicFormulationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = GalenicFormulationForm
     fields = [
+        "change_reason",
         "name",
         "ca_name",
         "siccrf_name_en",
@@ -36,7 +37,6 @@ class GalenicFormulationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         "ca_is_obsolete",
         "creation_date",
         "modification_date",
-        "change_reason",
     ]
     readonly_fields = [
         "name",
