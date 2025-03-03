@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         Snapshot = apps.get_model("data", "Snapshot")
         for declaration in Declaration.objects.exclude(siccrf_id=None).iterator():
             try:
-                snapshot = declaration.snapshots.earliest("creation_date") # filtre le premier snapshot créé pour éviter les snapshots de 'Retrait du marché'
+                snapshot = declaration.snapshots.filter(action=None) # filtre les snapshots créé via l'api pour éviter les snapshots de 'Retrait du marché' qui ont déjà une action
                 snapshot.action = compute_action(snapshot.status, 1) # en forçant le nb de version à 1 les actions RESPOND_ éventuelles seront remplacées par des actions SUBMIT
                 snapshot.save()
             except Snapshot.DoesNotExist:
