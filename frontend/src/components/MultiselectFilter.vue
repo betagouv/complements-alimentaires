@@ -38,7 +38,10 @@ const props = defineProps({
 const selectedOptions = ref([])
 const opened = ref(false)
 
-onMounted(() => (selectedOptions.value = props.selectedString ? props.selectedString.split(",") : []))
+const updateSelected = () => (selectedOptions.value = props.selectedString ? props.selectedString.split(",") : [])
+onMounted(updateSelected)
+watch(() => props.selectedString, updateSelected)
+
 watch(selectedOptions, () => emit("updateFilter", selectedOptions.value.join(",")))
 
 const findLabel = (value) => {
