@@ -532,3 +532,19 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                         pass
 
     logger.info(f"Sur {len(IcaComplementAlimentaire.objects.all())} : {nb_created_declarations} déclarations créées.")
+
+    def set_max_quantities(apps, schema_editor):
+        """Set quantities for general population"""
+        Substance = apps.get_model("data", "Substance")
+        Population = apps.get_model("data", "Population")
+        MaxQuantityPerPopulationRelation = apps.get_model("data", "MaxQuantityPerPopulationRelation")
+        general_population = Population.objects.get(name="Population générale")
+        for substance in Substance.objects.all().iterator():
+            if substance.max_quantity:
+                max_quantities_for_general_population = MaxQuantityPerPopulationRelation(
+                    population=general_population,
+                    substance=substance,
+                    siccrf_max_quantity=substance.siccrf_max_quantity,
+                    ca_max_quantity=substance.ca_max_quantity,
+                )
+                max_quantities_for_general_population.save()
