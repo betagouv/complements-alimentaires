@@ -329,6 +329,7 @@ const routes = [
       defaultQueryParams: {
         page: 1,
         statut: "REQUESTED,INFORMATION",
+        type: "", // par défaut on ne filtre pas sur le type
         statutDeclaration: "", // par défaut on filtre par les statuts ouverts
         triage: "responseLimitDate",
         limit: "10",
