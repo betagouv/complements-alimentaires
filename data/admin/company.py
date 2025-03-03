@@ -1,8 +1,12 @@
+from django import forms
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html, format_html_join, mark_safe
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from ..models.company import Company, DeclarantRole, SupervisorRole
+from .abstract_admin import ChangeReasonAdminMixin
 
 
 class SupervisionInline(admin.TabularInline):
@@ -15,8 +19,19 @@ class DeclarantInline(admin.TabularInline):
     extra = 0
 
 
+class CompanyForm(forms.ModelForm):
+    # thanks to https://github.com/jazzband/django-simple-history/issues/853#issuecomment-1105754544
+    change_reason = forms.CharField(
+        label="Raison de modification",
+        help_text="100 caractères max",
+        max_length=100,
+        widget=forms.TextInput(attrs={"size": "70"}),
+    )
+
+
 @admin.register(Company)
-class CompanyAdmin(admin.ModelAdmin):
+class CompanyAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
+    form = CompanyForm
     filter_horizontal = ("mandated_companies",)
     readonly_fields = ("display_represented_companies",)
 
@@ -30,6 +45,10 @@ class CompanyAdmin(admin.ModelAdmin):
     )
 
     fieldsets = (
+        (
+            None,
+            {"fields": ["change_reason"]},
+        ),
         (
             "",
             {

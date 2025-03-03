@@ -4,9 +4,11 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Substance, SubstanceSynonym
 
-from .abstract_admin import ElementAdminWithChangeReason
+from .abstract_admin import ChangeReasonAdminMixin
 
 
 class SubstanceForm(forms.ModelForm):
@@ -17,7 +19,15 @@ class SubstanceForm(forms.ModelForm):
             "source": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
+            "change_reason": forms.TextInput(attrs={"size": "70"}),
         }
+
+    # saved in ChangeReasonAdminMixin.save()
+    change_reason = forms.CharField(
+        label="Raison de modification",
+        help_text="100 caractères max",
+        max_length=100,
+    )
 
 
 class SubstanceSynonymInline(admin.TabularInline):
@@ -30,7 +40,7 @@ class SubstanceSynonymInline(admin.TabularInline):
 
 
 @admin.register(Substance)
-class SubstanceAdmin(ElementAdminWithChangeReason):
+class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     @classmethod
     def links_to_objects(cls, object_name, objects):
         rel_list = "<ul>"
@@ -54,6 +64,10 @@ class SubstanceAdmin(ElementAdminWithChangeReason):
 
     form = SubstanceForm
     fieldsets = [
+        (
+            None,
+            {"fields": ["change_reason"]},
+        ),
         (
             None,  # Pas d'entête
             {
