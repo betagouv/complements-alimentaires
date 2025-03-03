@@ -386,7 +386,7 @@ def compute_action(status, nb_version_declaration):
     if status == Declaration.DeclarationStatus.WITHDRAWN:
         return Snapshot.SnapshotActions.WITHDRAW
     elif status == Declaration.DeclarationStatus.REJECTED:
-        return (Snapshot.SnapshotActions.ACCEPT_VISA,)  # les rejets arrivent seulement sur visa
+        return Snapshot.SnapshotActions.ACCEPT_VISA  # les rejets arrivent seulement sur visa
     elif status == Declaration.DeclarationStatus.ABANDONED:
         return Snapshot.SnapshotActions.ABANDON
     elif status == Declaration.DeclarationStatus.AUTHORIZED and nb_version_declaration == 1:
