@@ -20,7 +20,12 @@ class Migration(migrations.Migration):
         Substance = apps.get_model("data", "Substance")
         Population = apps.get_model("data", "Population")
         MaxQuantityPerPopulationRelation = apps.get_model("data", "MaxQuantityPerPopulationRelation")
-        general_population = Population.objects.get(name="Population générale")
+        try:
+            general_population = Population.objects.get(name="Population générale")
+        except Population.DoesNotExist:
+            # creation de la Population en question lors de la constitution de la db de test
+            general_population = Population(name="Population générale")
+            general_population.save()
         for substance in Substance.objects.all().iterator():
             if substance.max_quantity:
                 max_quantities_for_general_population = MaxQuantityPerPopulationRelation(
