@@ -1,10 +1,9 @@
 from rest_framework import serializers
 
 from api.utils.choice_field import GoodReprChoiceField
-from data.models import IngredientStatus, Substance, SubstanceSynonym
+from data.models import IngredientStatus, Population
+from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym
 
-from .historical_record import HistoricalRecordField
-from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
 from .common_ingredient import (
     COMMON_FIELDS,
     COMMON_NAME_FIELDS,
@@ -12,6 +11,8 @@ from .common_ingredient import (
     CommonIngredientModificationSerializer,
     WithName,
 )
+from .historical_record import HistoricalRecordField
+from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
 
 
 class SubstanceSynonymSerializer(serializers.ModelSerializer):
