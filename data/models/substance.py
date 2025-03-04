@@ -129,7 +129,6 @@ class Substance(IngredientCommonModel):
             "einec_number",
             "source",
             "must_specify_quantity",
-            "max_quantity",
             "nutritional_reference",
             "status",
             "siccrf_status",
