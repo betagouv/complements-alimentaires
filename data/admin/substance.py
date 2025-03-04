@@ -6,7 +6,7 @@ from django.utils.html import format_html
 
 from simple_history.admin import SimpleHistoryAdmin
 
-from data.models import Substance, SubstanceSynonym
+from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym
 
 from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
@@ -24,6 +24,15 @@ class SubstanceForm(ChangeReasonFormMixin):
 
 class SubstanceSynonymInline(admin.TabularInline):
     model = SubstanceSynonym
+    extra = 1
+
+    formfield_overrides = {
+        models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
+    }
+
+
+class SubstanceMaxQuantitiesInline(admin.TabularInline):
+    model = MaxQuantityPerPopulationRelation
     extra = 1
 
     formfield_overrides = {
@@ -105,10 +114,8 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             {
                 "fields": [
                     "siccrf_must_specify_quantity",
-                    "siccrf_max_quantity",
                     "siccrf_nutritional_reference",
                     "ca_must_specify_quantity",
-                    "ca_max_quantity",
                     "ca_nutritional_reference",
                     "unit",
                 ],
@@ -121,7 +128,10 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             },
         ),
     ]
-    inlines = (SubstanceSynonymInline,)
+    inlines = (
+        SubstanceMaxQuantitiesInline,
+        SubstanceSynonymInline,
+    )
     readonly_fields = [
         "siccrf_name",
         "siccrf_name_en",
@@ -133,7 +143,6 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         "siccrf_cas_number",
         "siccrf_einec_number",
         "siccrf_must_specify_quantity",
-        "siccrf_max_quantity",
         "siccrf_nutritional_reference",
         "get_plants",
         "get_microorganisms",
