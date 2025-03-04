@@ -269,17 +269,3 @@ class CSVImporterTestCase(TestCase):
                 for obj in Ingredient.objects.filter(ingredient_type=IngredientType.ACTIVE_INGREDIENT)
             )
         )
-
-    def test_substance_quantity_import(self):
-        """
-        Les substances peuvent être associées à des max_quantity, dans ce cas, le champ "must_specify_quantity" destiné au front doit être true
-        """
-        test_path = f"{self.TEST_DIR_PATH}/substances_quantity/"
-        call_command("load_ingredients", "2024-05-06", directory=test_path)
-
-        with_max_qty = Substance.objects.exclude(max_quantity__isnull=True)
-        with_ca_must_specify_qty = Substance.objects.filter(ca_must_specify_quantity=True)
-        with_must_specify_qty = Substance.objects.filter(must_specify_quantity=True)
-
-        self.assertQuerySetEqual(with_max_qty, with_ca_must_specify_qty, ordered=False)
-        self.assertTrue(all(with_must_specify_qty.filter(id=subst.id).exists() for subst in with_max_qty))

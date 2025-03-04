@@ -10,6 +10,7 @@ from data.behaviours import Historisable, TimeStampable
 from .abstract_models import IngredientCommonModel
 from .ingredient_type import IngredientType
 from .mixins import WithMissingImportBoolean
+from .population import Population
 from .unit import SubstanceUnit
 
 
@@ -92,15 +93,7 @@ class Substance(IngredientCommonModel):
     )
 
     # max_quantity
-    siccrf_max_quantity = models.FloatField(
-        null=True, blank=True, verbose_name="quantité maximale autorisée (selon la base SICCRF)"
-    )
-    ca_max_quantity = models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée")
-    max_quantity = models.GeneratedField(
-        expression=Coalesce(F("ca_max_quantity"), F("siccrf_max_quantity")),
-        output_field=models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée"),
-        db_persist=True,
-    )
+    max_quantities = models.ManyToManyField(Population, through="MaxQuantityPerPopulationRelation")
 
     # nutritional_reference
     siccrf_nutritional_reference = models.FloatField(
@@ -136,7 +129,6 @@ class Substance(IngredientCommonModel):
             "einec_number",
             "source",
             "must_specify_quantity",
-            "max_quantity",
             "nutritional_reference",
             "status",
             "siccrf_status",
@@ -210,3 +202,23 @@ class SubstanceSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
 
     def __str__(self):
         return self.name
+
+
+class MaxQuantityPerPopulationRelation(Historisable):
+    substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
+    population = models.ForeignKey(Population, on_delete=models.CASCADE)
+    siccrf_max_quantity = models.FloatField(
+        null=True,
+        blank=True,
+        verbose_name="quantité maximale autorisée pour la population cible (selon la base SICCRF)",
+    )
+    ca_max_quantity = models.FloatField(
+        null=True,
+        blank=True,
+        verbose_name="quantité maximale autorisée pour la population cible",
+    )
+    max_quantity = models.GeneratedField(
+        expression=Coalesce(F("ca_max_quantity"), F("siccrf_max_quantity")),
+        output_field=models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée"),
+        db_persist=True,
+    )
