@@ -579,6 +579,7 @@ class Addable(models.Model):
     new = models.BooleanField(default=False)
     new_description = models.TextField(blank=True, verbose_name="description")
 
+    # TODO: remove
     first_ocurrence = models.BooleanField(
         default=False, verbose_name="Est-ce que cet ingrédient a été rajouté en base suite à cette déclaration ?"
     )

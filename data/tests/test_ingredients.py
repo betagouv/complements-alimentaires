@@ -1,6 +1,13 @@
 from django.test import TestCase
 
-from data.factories import IngredientFactory, MicroorganismFactory, PlantFactory, SubstanceFactory
+from data.factories import (
+    IngredientFactory,
+    MicroorganismFactory,
+    PlantFactory,
+    SubstanceFactory,
+    DeclaredPlantFactory,
+    DeclarationFactory,
+)
 from data.models.ingredient_type import IngredientType
 from data.models.substance import SubstanceType
 
@@ -66,3 +73,35 @@ class IngredientTestCase(TestCase):
         ingredient_supplying_mineral.substances.add(nothing)
 
         self.assertEqual(nothing.substance_types, [])
+
+    def test_create_declared_ingredient(self):
+        """
+        Une fois qu'un ingrédient est déclaré, MAJ first_declaration
+        """
+        declaration = DeclarationFactory()
+        other_declaration = DeclarationFactory()
+
+        legacy_plant = PlantFactory(siccrf_id="123")
+        new_plant = PlantFactory(siccrf_id=None)
+        self.assertIsNone(new_plant.first_declaration)
+        existing_plant = PlantFactory(siccrf_id=None)
+        existing_plant.first_declaration = other_declaration
+        existing_plant.save()
+        self.assertEqual(existing_plant.first_declaration, other_declaration)
+
+        DeclaredPlantFactory(declaration=declaration, plant=legacy_plant)
+        DeclaredPlantFactory(declaration=declaration, plant=new_plant)
+        DeclaredPlantFactory(declaration=declaration, plant=existing_plant)
+
+        self.assertIsNone(legacy_plant.first_declaration, "Les ingrédients importés ne devrait pas être MAJ")
+        self.assertEqual(
+            new_plant.first_declaration, declaration, "Les nouveaux ingrédients sont MAJ avec la première déclaration"
+        )
+        self.assertEqual(
+            existing_plant.first_declaration,
+            other_declaration,
+            "Les ingrédients déjà utilisés ne devrait pas être MAJ",
+        )
+
+    # def update_declared_ingredient_with_new_ingredient
+    # def replace_declared_ingredient
