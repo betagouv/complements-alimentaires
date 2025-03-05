@@ -25,7 +25,7 @@
         <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'family')">
             <DsfrSelect
-              v-model="state.family"
+              v-model.number="state.family"
               label="Famille de la plante"
               :options="plantFamiliesDisplay"
               labelKey="name"
