@@ -103,5 +103,30 @@ class IngredientTestCase(TestCase):
             "Les ingrédients déjà utilisés ne devrait pas être MAJ",
         )
 
-    # def update_declared_ingredient_with_new_ingredient
-    # def replace_declared_ingredient
+    def test_do_not_update_first_declaration_ingredient_change(self):
+        """
+        Si un ingrédient declaré change ingrédient, garde la déclaration originelle comme la première utilisation
+        """
+        declaration = DeclarationFactory()
+        other_declaration = DeclarationFactory()
+
+        new_plant = PlantFactory(siccrf_id=None)
+        new_plant.first_declaration = declaration
+        new_plant.save()
+        existing_plant = PlantFactory(siccrf_id=None)
+        existing_plant.first_declaration = other_declaration
+        existing_plant.save()
+
+        declared_plant = DeclaredPlantFactory(declaration=declaration, plant=new_plant)
+        declared_plant.plant = existing_plant
+
+        self.assertEqual(
+            new_plant.first_declaration,
+            declaration,
+            "Même si la plante n'est plus utilisé par la déclaration, garde-la comme la première utilisation",
+        )
+        self.assertEqual(
+            existing_plant.first_declaration,
+            other_declaration,
+            "Les ingrédients déjà utilisés ne devrait pas être MAJ",
+        )
