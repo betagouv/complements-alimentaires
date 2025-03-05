@@ -1,9 +1,11 @@
 from django import forms
 from django.contrib import admin
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Microorganism
 
-from .abstract_admin import ElementAdminWithChangeReason
+from .abstract_admin import ChangeReasonAdminMixin
 
 
 class MicroorganismForm(forms.ModelForm):
@@ -12,13 +14,25 @@ class MicroorganismForm(forms.ModelForm):
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
+            "change_reason": forms.TextInput(attrs={"size": "70"}),
         }
+
+    # saved in ChangeReasonAdminMixin.save()
+    change_reason = forms.CharField(
+        label="Raison de modification",
+        help_text="100 caractères max",
+        max_length=100,
+    )
 
 
 @admin.register(Microorganism)
-class MicroorganismAdmin(ElementAdminWithChangeReason):
+class MicroorganismAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = MicroorganismForm
     fieldsets = [
+        (
+            None,
+            {"fields": ["change_reason"]},
+        ),
         (
             None,  # Pas d'entête
             {
