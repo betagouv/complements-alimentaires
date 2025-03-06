@@ -152,7 +152,7 @@ const orderingOptions = [
   },
   {
     value: "-responseLimitDate",
-    text: "Date limite de réponse (descendent)",
+    text: "Date limite de réponse (descendant)",
   },
 ]
 </script>
