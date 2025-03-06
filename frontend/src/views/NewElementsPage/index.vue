@@ -21,6 +21,16 @@
         />
         <div class="md:border-l md:pl-4">
           <MultiselectFilter
+            filterTitle="Type :"
+            :options="typeOptions"
+            :selectedString="typeFilter"
+            noFilterText="Tous les types"
+            @updateFilter="(v) => updateQuery({ type: v })"
+            class="-mb-4 py-1"
+          />
+        </div>
+        <div class="md:border-l md:pl-4">
+          <MultiselectFilter
             filterTitle="Statut de la déclaration :"
             :options="declarationStatusOptions"
             :selectedString="declarationStatusFilter"
@@ -28,6 +38,17 @@
             @updateFilter="(v) => updateQuery({ statutDeclaration: v })"
             class="-mb-4 py-1"
           />
+        </div>
+        <div class="md:border-l md:pl-4">
+          <DsfrInputGroup class="max-w-sm">
+            <DsfrSelect
+              label="Trier par"
+              defaultUnselectedText=""
+              v-model="ordering"
+              @update:modelValue="(v) => updateQuery({ triage: v })"
+              :options="orderingOptions"
+            />
+          </DsfrInputGroup>
         </div>
       </div>
       <div v-if="isFetching" class="flex justify-center my-10">
@@ -50,7 +71,7 @@
 
 <script setup>
 import { useFetch } from "@vueuse/core"
-import { computed, watch } from "vue"
+import { computed, watch, ref } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import NewElementsTable from "./NewElementsTable"
@@ -72,31 +93,42 @@ const pages = computed(() => getPagesForPagination(data.value?.count, limit.valu
 // Valeurs obtenus du queryparams
 const page = computed(() => parseInt(route.query.page))
 const statusFilter = computed(() => route.query.statut)
+const typeFilter = computed(() => route.query.type)
 const declarationStatusFilter = computed(() => route.query.statutDeclaration)
 const limit = computed(() => parseInt(route.query.limit) || 10)
+const ordering = ref(route.query.triage)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 
 // Obtention de la donnée via API
-const url = computed(
-  () =>
-    `/api/v1/new-declared-elements/?limit=${limit.value}&offset=${offset.value}&requestStatus=${statusFilter.value}&declarationStatus=${declarationStatusFilter.value}`
-)
+const url = computed(() => {
+  return (
+    `/api/v1/new-declared-elements/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}` +
+    `&requestStatus=${statusFilter.value}&declarationStatus=${declarationStatusFilter.value}&type=${typeFilter.value}`
+  )
+})
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
 }
 
-watch([page, statusFilter, declarationStatusFilter, limit], fetchSearchResults)
+watch([page, statusFilter, typeFilter, declarationStatusFilter, limit, ordering], fetchSearchResults)
 
 const statusOptions = [
   { value: "REQUESTED", label: "Nouvelle" },
   { value: "INFORMATION", label: "Nécessite plus d'information", tagLabel: "Information" },
   { value: "REJECTED", label: "Refusé" },
   { value: "REPLACED", label: "Remplacé" },
+]
+
+const typeOptions = [
+  { value: "plant", label: "Plante" },
+  { value: "microorganism", label: "Micro-organisme" },
+  { value: "substance", label: "Substance" },
+  { value: "other-ingredient", label: "Ingrédient" },
 ]
 
 const declarationStatuses = [
@@ -115,4 +147,15 @@ const declarationStatusOptions = declarationStatuses.map((key) => ({
   value: key,
   label: statusProps[key].label,
 }))
+
+const orderingOptions = [
+  {
+    value: "responseLimitDate",
+    text: "Date limite de réponse",
+  },
+  {
+    value: "-responseLimitDate",
+    text: "Date limite de réponse (descendant)",
+  },
+]
 </script>
