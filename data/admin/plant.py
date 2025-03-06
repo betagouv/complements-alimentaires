@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 
-from data.models import Plant, PlantSynonym
+from data.models import Declaration, Plant, PlantSynonym
 
 from .abstract_admin import ElementAdminWithChangeReason
 
@@ -93,3 +93,20 @@ class PlantAdmin(ElementAdminWithChangeReason):
         "siccrf_family",
     )
     search_fields = ["id", "name"]
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        # recalcul de l'article pour les déclarations concernées
+        if change and form["is_risky"].has_changed():
+            for declaration in Declaration.objects.filter(
+                id__in=obj.declaredplant_set.values_list("declaration_id", flat=True),
+                status__in=(
+                    Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+                    Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
+                    Declaration.DeclarationStatus.AWAITING_VISA,
+                    Declaration.DeclarationStatus.OBSERVATION,
+                    Declaration.DeclarationStatus.OBJECTION,
+                ),
+            ):
+                declaration.assign_calculated_article()
+                declaration.save()

@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 
 from data.models import Substance, SubstanceSynonym
+from data.models.declaration import Declaration
 
 from .abstract_admin import ElementAdminWithChangeReason
 
@@ -146,3 +147,22 @@ class SubstanceAdmin(ElementAdminWithChangeReason):
     list_filter = ("is_obsolete", "status", "is_risky", "novel_food")
     show_facets = admin.ShowFacets.NEVER
     search_fields = ["id", "name"]
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        # recalcul de l'article pour les déclarations concernées
+        if change and form["is_risky"].has_changed():
+            declared_substances_ids = obj.declaredsubstance_set.values_list("declaration_id", flat=True)
+            computed_substances_ids = obj.computedsubstance_set.values_list("declaration_id", flat=True)
+            for declaration in Declaration.objects.filter(
+                id__in=declared_substances_ids.union(computed_substances_ids),
+                status__in=(
+                    Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+                    Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
+                    Declaration.DeclarationStatus.AWAITING_VISA,
+                    Declaration.DeclarationStatus.OBSERVATION,
+                    Declaration.DeclarationStatus.OBJECTION,
+                ),
+            ):
+                declaration.assign_calculated_article()
+                declaration.save()
