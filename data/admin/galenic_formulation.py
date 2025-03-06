@@ -12,7 +12,7 @@ class GalenicFormulationForm(forms.ModelForm):
     class Meta:
         widgets = {
             "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "change_reason": forms.TextInput(attrs={"size": "70"}),
+            "change_reason": forms.TextInput(attrs={"size": "100"}),
         }
 
     # saved in ChangeReasonAdminMixin.save()

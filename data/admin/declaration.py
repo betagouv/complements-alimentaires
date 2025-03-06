@@ -14,6 +14,8 @@ from data.models import (
     Snapshot,
 )
 
+from .abstract_admin import ChangeReasonFormMixin
+
 
 class SnapshotInline(admin.TabularInline):
     model = Snapshot
@@ -234,7 +236,7 @@ class ComputedSubstanceInline(admin.TabularInline):
         return True
 
 
-class DeclarationForm(forms.ModelForm):
+class DeclarationForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "address": forms.Textarea(attrs={"cols": 35, "rows": 1}),
@@ -259,15 +261,7 @@ class DeclarationForm(forms.ModelForm):
             "other_conditions": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "daily_recommended_dose": forms.Textarea(attrs={"cols": 35, "rows": 1}),
             "minimum_duration": forms.Textarea(attrs={"cols": 35, "rows": 1}),
-            "change_reason": forms.TextInput(attrs={"size": "70"}),
         }
-
-    # thanks to https://github.com/jazzband/django-simple-history/issues/853#issuecomment-1105754544
-    change_reason = forms.CharField(
-        label="Raison de modification",
-        help_text="100 caractères max",
-        max_length=100,
-    )
 
 
 @admin.register(Declaration)

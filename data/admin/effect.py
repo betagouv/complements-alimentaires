@@ -5,22 +5,14 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from data.models import Effect
 
-from .abstract_admin import ChangeReasonAdminMixin
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
-class EffectForm(forms.ModelForm):
+class EffectForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "change_reason": forms.TextInput(attrs={"size": "70"}),
         }
-
-    # saved in ChangeReasonAdminMixin.save()
-    change_reason = forms.CharField(
-        label="Raison de modification",
-        help_text="100 caractères max",
-        max_length=100,
-    )
 
 
 @admin.register(Effect)

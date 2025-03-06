@@ -6,7 +6,7 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from data.models import Ingredient, IngredientSynonym
 
-from .abstract_admin import ChangeReasonAdminMixin
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
 class IngredientSynonymInline(admin.TabularInline):
@@ -23,22 +23,14 @@ class SubstanceInlineAdmin(admin.TabularInline):
     extra = 0
 
 
-class IngredientForm(forms.ModelForm):
+class IngredientForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
-            "change_reason": forms.Textarea(attrs={"size": "70"}),
         }
-
-    # saved in ChangeReasonAdminMixin.save()
-    change_reason = forms.CharField(
-        label="Raison de modification",
-        help_text="100 caractères max",
-        max_length=100,
-    )
 
 
 @admin.register(Ingredient)

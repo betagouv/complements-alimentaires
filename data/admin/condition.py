@@ -5,17 +5,14 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from data.models import Condition
 
-from .abstract_admin import ChangeReasonAdminMixin
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
-class ConditionForm(forms.ModelForm):
+class ConditionForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "change_reason": forms.TextInput(attrs={"size": "70"}),
         }
-
-    change_reason = forms.CharField(label="Raison de modification", max_length=100)
 
 
 @admin.register(Condition)

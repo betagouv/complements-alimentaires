@@ -5,24 +5,16 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from data.models import Microorganism
 
-from .abstract_admin import ChangeReasonAdminMixin
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
-class MicroorganismForm(forms.ModelForm):
+class MicroorganismForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
-            "change_reason": forms.TextInput(attrs={"size": "70"}),
         }
-
-    # saved in ChangeReasonAdminMixin.save()
-    change_reason = forms.CharField(
-        label="Raison de modification",
-        help_text="100 caractères max",
-        max_length=100,
-    )
 
 
 @admin.register(Microorganism)
