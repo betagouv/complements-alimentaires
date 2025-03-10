@@ -11,6 +11,7 @@ from data.factories import (
     DeclaredSubstanceFactory,
     GalenicFormulationFactory,
     InstructionReadyDeclarationFactory,
+    MaxQuantityPerPopulationRelationFactory,
     PlantFactory,
     PopulationFactory,
     PreparationFactory,
@@ -291,7 +292,10 @@ class DeclarationTestCase(TestCase):
             declaration_with_computed_nutriment_max_exceeded = InstructionReadyDeclarationFactory(
                 computed_substances=[],
             )
-            substance = SubstanceFactory(ca_max_quantity=SUBSTANCE_MAX_QUANTITY, substance_types=type)
+            max_qty_per_population = MaxQuantityPerPopulationRelationFactory(
+                population=PopulationFactory(name="Population générale"), ca_max_quantity=SUBSTANCE_MAX_QUANTITY
+            )
+            substance = SubstanceFactory(max_qty_per_population, substance_types=type)
             ComputedSubstanceFactory(
                 substance=substance,
                 unit=substance.unit,
