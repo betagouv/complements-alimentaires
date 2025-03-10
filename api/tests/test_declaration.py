@@ -1891,10 +1891,12 @@ class TestDeclaredElementsApi(APITestCase):
         awaiting_instruction = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         observation = DeclarationFactory(status=Declaration.DeclarationStatus.OBSERVATION)
         draft = DeclarationFactory(status=Declaration.DeclarationStatus.DRAFT)
+        authorized = DeclarationFactory(status=Declaration.DeclarationStatus.AUTHORIZED)
 
         plant_instruction = DeclaredPlantFactory(new=True, declaration=awaiting_instruction)
         microorganism_observation = DeclaredMicroorganismFactory(new=True, declaration=observation)
         ingredient_draft = DeclaredIngredientFactory(new=True, declaration=draft)
+        DeclaredSubstanceFactory(new=True, declaration=authorized)
 
         filter_url = f"{reverse('api:list_new_declared_elements')}?declarationStatus=AWAITING_INSTRUCTION,OBSERVATION"
         response = self.client.get(filter_url, format="json")
@@ -1922,6 +1924,15 @@ class TestDeclaredElementsApi(APITestCase):
         results = response.json()
         self.assertEqual(results["count"], 1)
         self.assertEqual(results["results"][0]["id"], ingredient_draft.id)
+
+        # par défaut filtrer par statuts ouverts
+        filter_url = f"{reverse('api:list_new_declared_elements')}?declarationStatus="
+        response = self.client.get(filter_url, format="json")
+        results = response.json()
+        self.assertEqual(results["count"], 2)
+        returned_ids = [results["results"][0]["id"], results["results"][1]["id"]]
+        self.assertIn(plant_instruction.id, returned_ids)
+        self.assertIn(microorganism_observation.id, returned_ids)
 
     @authenticate
     def test_filter_by_type(self):
