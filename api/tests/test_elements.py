@@ -3,20 +3,22 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from data.choices import IngredientActivity
 from data.factories import (
     IngredientFactory,
     InstructionRoleFactory,
+    MaxQuantityPerPopulationRelationFactory,
     MicroorganismFactory,
     PlantFactory,
-    PlantPartFactory,
     PlantFamilyFactory,
-    SubstanceFactory,
-    SubstanceUnitFactory,
-    SubstanceSynonymFactory,
+    PlantPartFactory,
     PlantSynonymFactory,
+    PopulationFactory,
+    SubstanceFactory,
+    SubstanceSynonymFactory,
+    SubstanceUnitFactory,
 )
-from data.models import IngredientType, Plant, IngredientStatus, Microorganism, Substance, Ingredient
-from data.choices import IngredientActivity
+from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Plant, Substance
 
 from .utils import authenticate
 
@@ -481,10 +483,16 @@ class TestElementsModifyApi(APITestCase):
             ca_private_comments="",
             siccrf_cas_number="",
             ca_cas_number="CA number",
-            siccrf_max_quantity=1.2,
-            ca_max_quantity=3.4,
         )
+        MaxQuantityPerPopulationRelationFactory(
+            substance=substance,
+            population=PopulationFactory(ca_name="Population générale"),
+            ca_max_quantity=3.4,
+            siccrf_max_quantity=1.2,
+        )
+
         SubstanceSynonymFactory.create(name="To delete", standard_name=substance)
+
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
             {"public_comments": "", "private_comments": "", "cas_number": "", "max_quantity": None, "synonyms": []},
@@ -498,8 +506,11 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(substance.ca_private_comments, "")
         self.assertEqual(substance.siccrf_cas_number, "")
         self.assertEqual(substance.ca_cas_number, "")
-        self.assertIsNone(substance.ca_max_quantity)
-        self.assertIsNone(substance.siccrf_max_quantity)
+
+        self.assertFalse(
+            substance.maxquantityperpopulationrelation_set.filter(population__name="Population générale").exists()
+        )
+        self.assertIsNone(substance.max_quantity)
         self.assertEqual(substance.substancesynonym_set.count(), 0)
 
     @authenticate
