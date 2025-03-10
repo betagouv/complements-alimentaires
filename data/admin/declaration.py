@@ -14,7 +14,7 @@ from data.models import (
     Snapshot,
 )
 
-from .abstract_admin import ChangeReasonFormMixin
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
 class SnapshotInline(admin.TabularInline):
@@ -265,7 +265,7 @@ class DeclarationForm(ChangeReasonFormMixin):
 
 
 @admin.register(Declaration)
-class DeclarationAdmin(SimpleHistoryAdmin):
+class DeclarationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = DeclarationForm
     list_display = ("id", "name", "status", "company", "author")
     list_filter = ("status", "company", "author")
@@ -372,7 +372,6 @@ class DeclarationAdmin(SimpleHistoryAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
-        if change:
-            obj._change_reason = form.cleaned_data["change_reason"]
+        if change and "overridden_article" not in form.changed_data:
             obj.assign_calculated_article()
-        super().save_model(request, obj, form, change)
+            obj.save()
