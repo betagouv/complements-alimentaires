@@ -1,6 +1,6 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import F, Value
+from django.db.models import F, Q, Value
 from django.db.models.functions import Coalesce, NullIf
 
 from simple_history.models import HistoricalRecords
@@ -139,6 +139,12 @@ class Substance(IngredientCommonModel):
     @property
     def name_en(self):
         return self.siccrf_name_en
+
+    @property
+    def max_quantity(self):
+        return self.max_quantities.through.objects.get(
+            Q(population__name="Population générale"), Q(substance=self)
+        ).max_quantity
 
     def compute_substance_types(self):
         """
