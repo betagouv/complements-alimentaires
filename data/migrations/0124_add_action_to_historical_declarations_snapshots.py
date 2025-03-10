@@ -16,12 +16,13 @@ class Migration(migrations.Migration):
         """Set action to the first snapshot of declarations from TeleIcare"""
         Snapshot = apps.get_model("data", "Snapshot")
         for declaration in Declaration.objects.exclude(siccrf_id=None).iterator():
-            try:
-                snapshot = declaration.snapshots.filter(action=None) # filtre les snapshots créé via l'api pour éviter les snapshots de 'Retrait du marché' qui ont déjà une action
-                snapshot.action = compute_action(snapshot.status, 1) # en forçant le nb de version à 1 les actions RESPOND_ éventuelles seront remplacées par des actions SUBMIT
+
+            # filtre les snapshots créés via l'api pour éviter les snapshots de 'Retrait du marché' qui ont déjà une action,
+            # en forçant le nb de version à 1 les actions RESPOND_ éventuelles seront remplacées par des actions SUBMIT
+            snapshots_qs = declaration.snapshots.filter(action=None)
+            for snapshot in snapshots_qs:
+                snapshot.action = compute_action(snapshot.status, 1) 
                 snapshot.save()
-            except Snapshot.DoesNotExist:
-                pass
 
     def reverse_set_action(apps, schema_editor):
         pass
