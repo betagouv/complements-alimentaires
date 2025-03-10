@@ -2,9 +2,11 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Ingredient, IngredientSynonym
 
-from .abstract_admin import ElementAdminWithChangeReason
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
 class IngredientSynonymInline(admin.TabularInline):
@@ -21,7 +23,7 @@ class SubstanceInlineAdmin(admin.TabularInline):
     extra = 0
 
 
-class IngredientForm(forms.ModelForm):
+class IngredientForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
@@ -32,7 +34,7 @@ class IngredientForm(forms.ModelForm):
 
 
 @admin.register(Ingredient)
-class IngredientAdmin(ElementAdminWithChangeReason):
+class IngredientAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = IngredientForm
     inlines = (
         SubstanceInlineAdmin,

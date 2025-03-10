@@ -1,10 +1,14 @@
 from django import forms
 from django.contrib import admin
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Population
 
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
-class PopulationForm(forms.ModelForm):
+
+class PopulationForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
@@ -12,9 +16,10 @@ class PopulationForm(forms.ModelForm):
 
 
 @admin.register(Population)
-class PopulationAdmin(admin.ModelAdmin):
+class PopulationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = PopulationForm
     fields = [
+        "change_reason",
         "name",
         "ca_name",
         "category",

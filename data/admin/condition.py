@@ -1,10 +1,14 @@
 from django import forms
 from django.contrib import admin
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Condition
 
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
-class ConditionForm(forms.ModelForm):
+
+class ConditionForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
@@ -12,9 +16,10 @@ class ConditionForm(forms.ModelForm):
 
 
 @admin.register(Condition)
-class ConditionAdmin(admin.ModelAdmin):
+class ConditionAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = ConditionForm
     fields = [
+        "change_reason",
         "name",
         "ca_name",
         "category",
