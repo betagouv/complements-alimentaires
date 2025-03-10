@@ -1,10 +1,14 @@
 from django import forms
 from django.contrib import admin
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Effect
 
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
-class EffectForm(forms.ModelForm):
+
+class EffectForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
@@ -12,9 +16,10 @@ class EffectForm(forms.ModelForm):
 
 
 @admin.register(Effect)
-class EffectAdmin(admin.ModelAdmin):
+class EffectAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = EffectForm
     fields = [
+        "change_reason",
         "name",
         "ca_name",
         "siccrf_name_en",
