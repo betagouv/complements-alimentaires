@@ -3,7 +3,7 @@ import logging
 import re
 from datetime import date, datetime, timezone
 
-from django.core.exceptions import MultipleObjectsReturned, ValidationError
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 
@@ -197,8 +197,10 @@ def get_oldest_and_latest(list_of_declarations):
         if current_date < oldest_date:
             oldest_date = current_date
             oldest_dcl_date = ica_declaration.dcl_date
+    oldest = list_of_declarations.filter(dcl_date=oldest_dcl_date).order_by("dcl_numero").first()
+    latest = list_of_declarations.filter(dcl_date=latest_dcl_date).order_by("dcl_numero").last()
 
-    return list_of_declarations.get(dcl_date=oldest_dcl_date), list_of_declarations.get(dcl_date=latest_dcl_date)
+    return oldest, latest
 
 
 def convert_str_date(value, aware=False):
@@ -438,13 +440,8 @@ def create_declarations_from_teleicare_history(company_ids=[]):
         all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=ica_complement_alimentaire.cplalim_ident)
         # le champ date est stocké en text, il faut donc faire la conversion en python
         if all_ica_declarations.exists():
-            try:
-                oldest_ica_declaration, latest_ica_declaration = get_oldest_and_latest(all_ica_declarations)
-            except MultipleObjectsReturned:
-                logger.error(
-                    f"Ce IcaComplementAlimentaire cplalim_ident={ica_complement_alimentaire.cplalim_ident} n'a pas une unique déclaration la plus récente"
-                )
-                continue
+            oldest_ica_declaration, latest_ica_declaration = get_oldest_and_latest(all_ica_declarations)
+
             # retrouve la version de déclaration la plus à jour correspondant à cette déclaration
             declaration_versions = IcaVersionDeclaration.objects.filter(
                 dcl_id=latest_ica_declaration.dcl_ident,
