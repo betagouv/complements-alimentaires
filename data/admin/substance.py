@@ -36,6 +36,7 @@ class SubstanceMaxQuantitiesInline(admin.TabularInline):
     formfield_overrides = {
         models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
     }
+    readonly_fields = ("siccrf_max_quantity",)
 
 
 @admin.register(Substance)
@@ -104,21 +105,21 @@ class SubstanceAdmin(ElementAdminWithChangeReason):
             },
         ),
         (
+            "Présence dans les ingrédients",
+            {
+                "fields": ["get_plants", "get_microorganisms", "get_ingredients"],
+            },
+        ),
+        (
             "Quantités",
             {
                 "fields": [
                     "siccrf_must_specify_quantity",
-                    "siccrf_nutritional_reference",
                     "ca_must_specify_quantity",
+                    "siccrf_nutritional_reference",
                     "ca_nutritional_reference",
                     "unit",
                 ],
-            },
-        ),
-        (
-            "Présence dans les ingrédients",
-            {
-                "fields": ["get_plants", "get_microorganisms", "get_ingredients"],
             },
         ),
     ]
