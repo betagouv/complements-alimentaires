@@ -59,6 +59,14 @@
           label-left
           class="self-center mt-4 col-span-2 sm:col-span-1"
         />
+        <DsfrToggleSwitch
+          v-model="state.isRisky"
+          label="Nécessite une instruction manuelle et vigilante ?"
+          activeText="Oui"
+          inactiveText="Non"
+          label-left
+          class="self-center mt-4 col-span-2 sm:col-span-2"
+        />
       </div>
       <div class="grid md:grid-cols-2 mt-4">
         <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4">

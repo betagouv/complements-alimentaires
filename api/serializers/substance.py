@@ -51,6 +51,7 @@ class SubstanceSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
             "activity",
             "status",
             "novel_food",
+            "is_risky",
             "history",
             "object_type",
         )

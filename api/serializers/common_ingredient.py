@@ -19,6 +19,8 @@ COMMON_FIELDS = (
     "private_comments",
     "status",
     "novel_food",
+    "is_risky",
+    # TODO: change reason
 )
 
 COMMON_READ_ONLY_FIELDS = ("id",)
