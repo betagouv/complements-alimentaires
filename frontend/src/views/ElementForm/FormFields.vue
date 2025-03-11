@@ -162,6 +162,9 @@
           <DsfrInput label="Commentaire privé" v-model="state.privateComments" :isTextarea="true" label-visible />
         </div>
       </div>
+      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'changeReason')">
+        <DsfrInput v-model="state.changeReason" label="Raison de changement (public)" required labelVisible />
+      </DsfrInputGroup>
     </DsfrFieldset>
     <div class="flex gap-x-2 mt-4">
       <DsfrButton label="Enregistrer ingrédient" @click="saveElement" />
@@ -304,6 +307,7 @@ const rules = computed(() => {
     family: form?.family ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     maxQuantity: form?.maxQuantity ? errorNumeric : {},
+    changeReason: !isNewIngredient.value ? errorRequiredField : {}, // TODO: when is it required?
   }
 })
 watch(formForType, () => v$.value.$reset())
