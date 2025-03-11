@@ -307,7 +307,7 @@ const rules = computed(() => {
     family: form?.family ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     maxQuantity: form?.maxQuantity ? errorNumeric : {},
-    changeReason: !isNewIngredient.value ? errorRequiredField : {}, // TODO: when is it required?
+    changeReason: errorRequiredField,
   }
 })
 watch(formForType, () => v$.value.$reset())
