@@ -20,7 +20,7 @@ COMMON_FIELDS = (
     "status",
     "novel_food",
     "is_risky",
-    # TODO: change reason
+    "change_reason",
 )
 
 COMMON_READ_ONLY_FIELDS = ("id",)
@@ -38,14 +38,16 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     public_comments = serializers.CharField(source="ca_public_comments", required=False, allow_blank=True)
     private_comments = serializers.CharField(source="ca_private_comments", required=False, allow_blank=True)
     status = serializers.IntegerField(source="ca_status", required=False)
+    change_reason = serializers.CharField(required=False, allow_blank=True)  # TODO: make required?
 
     # DRF ne gère pas automatiquement la création des nested-fields :
     # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
     @transaction.atomic
     def create(self, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
+        change_reason = validated_data.pop("change_reason", "Création via Compl'Alim")
         ingredient = super().create(validated_data)
-        update_change_reason(ingredient, "Création via Compl'Alim")
+        update_change_reason(ingredient, change_reason)
 
         for synonym in synonyms:
             self.add_synonym(ingredient, synonym)
@@ -55,6 +57,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def update(self, instance, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
+        change_reason = validated_data.pop("change_reason", "Modification via Compl'Alim")
         data_items = copy.deepcopy(validated_data).items()
         for key, value in data_items:
             if key.startswith("ca_"):
@@ -71,8 +74,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
                     validated_data.pop(key, None)
 
         super().update(instance, validated_data)
-        # TODO: la raison devrait pouvoir être renseingée dans le form? Voir le TODO dans abstract_admin
-        update_change_reason(instance, "Modification via Compl'Alim")
+        update_change_reason(instance, change_reason)
 
         try:
             new_synonym_list = [s["name"] for s in synonyms]
