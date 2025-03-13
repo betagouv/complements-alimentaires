@@ -37,6 +37,7 @@ import DeclaredElementPage from "@/views/DeclaredElementPage"
 import ElementForm from "@/views/ElementForm"
 import MandatedCompaniesPage from "@/views/MandatedCompaniesPage"
 import FaqPage from "@/views/FaqPage"
+import AdvancedSearchPage from "@/views/AdvancedSearchPage"
 import { ref } from "vue"
 
 const routes = [
@@ -412,6 +413,26 @@ const routes = [
     component: FaqPage,
     meta: {
       title: "Foire aux questions",
+    },
+  },
+  {
+    path: "/recherche-avancee",
+    name: "AdvancedSearchPage",
+    component: AdvancedSearchPage,
+    meta: {
+      title: "Recherche avancée",
+      requiredRole: "InstructionRole", // Make array
+      defaultQueryParams: {
+        page: 1,
+        status:
+          "AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA,OBJECTION,OBSERVATION,ABANDONED,AUTHORIZED,REJECTED,WITHDRAWN",
+        entrepriseDe: "",
+        entrepriseA: "",
+        triage: "name",
+        article: "",
+        limit: "10",
+        recherche: "",
+      },
     },
   },
   {
