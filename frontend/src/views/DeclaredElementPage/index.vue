@@ -38,6 +38,7 @@ import { useRootStore } from "@/stores/root"
 import { useRouter } from "vue-router"
 import { getApiType } from "@/utils/mappings"
 import { headers } from "@/utils/data-fetching"
+import { getActivityReadonlyByType } from "@/utils/mappings"
 import useToaster from "@/composables/use-toaster"
 import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
@@ -118,7 +119,11 @@ watch(replacement, (newReplacement) => {
   synonyms.value = JSON.parse(JSON.stringify(newReplacement.synonyms || []))
   additionalFields.value.element = JSON.parse(JSON.stringify(newReplacement))
   // le suivant devrait copier la logique pertinate de addElement, définit dans CompositionTab
-  additionalFields.value.active = !!newReplacement.activity
+  if (getActivityReadonlyByType(newReplacement.objectType)) {
+    // si l'activité n'est pas modifiable pour le nouveau type, s'assurer qu'on suit la même logique que CompositionTab, addElement
+    // sinon, utilise l'activité définit par le pro avec la demande
+    additionalFields.value.active = !!newReplacement.activity
+  }
   if (newReplacement.objectType === "microorganism" && newReplacement.objectType !== element.value.objectType) {
     additionalFields.value.activated = true
   }
