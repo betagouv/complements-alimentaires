@@ -77,6 +77,14 @@ class WithComments(models.Model):
         blank=True, editable=False, verbose_name="commentaires privés en anglais SICCRF"
     )
 
+    origin_declaration = models.ForeignKey(
+        "data.Declaration",
+        verbose_name="La déclaration qui a demandé la création de cet ingrédient",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
 
 class WithIsRiskyBoolean(models.Model):
     """

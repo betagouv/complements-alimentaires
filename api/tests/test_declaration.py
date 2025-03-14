@@ -2439,6 +2439,34 @@ class TestSingleDeclaredElementApi(APITestCase):
         self.assertEqual(declared_plant.unit, unit)
 
     @authenticate
+    def test_save_origin_declaration_on_replace(self):
+        """
+        Quand on remplace une demande par un ingrédient, si l'ingrédient a été créé dans la plateforme,
+        on sauvegarde la declaration sur le fiche ingrédient pour suivre la raison de la création de l'ingrédient
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration, new=True)
+        self.assertNotEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        plant = PlantFactory(
+            siccrf_id=None, origin_declaration=None
+        )  # que les ingrédients créé via Compl'Alim ne vont pas avoir un siccrf_id
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {"element": {"id": plant.id, "type": "plant"}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        plant.refresh_from_db()
+        self.assertEqual(plant.origin_declaration, declaration)
+        self.assertIsNone(plant.history.first().history_change_reason)
+
+        # TODO: test replace request on different declaration (no change in origin)
+        # TODO: replace same request with different plant, with siccrf_id (wait what happens now)
+
+    @authenticate
     def test_can_add_synonym_on_replace(self):
         """
         C'est possible d'envoyer une liste avec un element pour ajouter un synonyme
