@@ -4,9 +4,13 @@ from django.db import models
 
 from simple_history.admin import SimpleHistoryAdmin
 
-from data.models import Ingredient, IngredientSynonym
+from data.models import Declaration, Ingredient, IngredientSynonym
 
-from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
+from .abstract_admin import (
+    ChangeReasonAdminMixin,
+    ChangeReasonFormMixin,
+    RecomputeDeclarationArticleAtIngredientSaveMixin,
+)
 
 
 class IngredientSynonymInline(admin.TabularInline):
@@ -34,7 +38,8 @@ class IngredientForm(ChangeReasonFormMixin):
 
 
 @admin.register(Ingredient)
-class IngredientAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
+class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonAdminMixin, SimpleHistoryAdmin):
+    declaredingredient_set = "declaredingredient_set"
     form = IngredientForm
     inlines = (
         SubstanceInlineAdmin,
@@ -54,3 +59,20 @@ class IngredientAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
 
     def has_linked_substances(self, obj):
         return "Oui" if obj.substances.exists() else "Non"
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        # recalcul de l'article pour les déclarations concernées
+        if change and form["is_risky"].has_changed():
+            for declaration in Declaration.objects.filter(
+                id__in=obj.declaredingredient_set.values_list("declaration_id", flat=True),
+                status__in=(
+                    Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+                    Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
+                    Declaration.DeclarationStatus.AWAITING_VISA,
+                    Declaration.DeclarationStatus.OBSERVATION,
+                    Declaration.DeclarationStatus.OBJECTION,
+                ),
+            ):
+                declaration.assign_calculated_article()
+                declaration.save()
