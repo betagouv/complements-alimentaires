@@ -39,7 +39,7 @@ const rows = computed(() => {
         withHistoryBadge: !!d.siccrfId,
         text: d.name,
         class: "font-medium",
-        to: { name: "DeclarationPage", params: { id: d.id } },
+        to: { name: "AdvancedSearchResult", params: { declarationId: d.id } },
       },
       getUnitString(d),
       {
