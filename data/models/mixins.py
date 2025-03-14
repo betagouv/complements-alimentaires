@@ -43,6 +43,14 @@ class WithDefaultFields(models.Model):
         db_persist=True,
     )
 
+    first_declaration = models.ForeignKey(
+        "data.Declaration",
+        verbose_name="La première déclaration autorisée avec cet ingrédient",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
 
 class WithComments(models.Model):
     """
