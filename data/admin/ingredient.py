@@ -6,7 +6,11 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from data.models import Declaration, Ingredient, IngredientSynonym
 
-from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
+from .abstract_admin import (
+    ChangeReasonAdminMixin,
+    ChangeReasonFormMixin,
+    RecomputeDeclarationArticleAtIngredientSaveMixin,
+)
 
 
 class IngredientSynonymInline(admin.TabularInline):
@@ -34,7 +38,8 @@ class IngredientForm(ChangeReasonFormMixin):
 
 
 @admin.register(Ingredient)
-class IngredientAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
+class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonAdminMixin, SimpleHistoryAdmin):
+    declaredingredient_set = "declaredingredient_set"
     form = IngredientForm
     inlines = (
         SubstanceInlineAdmin,
