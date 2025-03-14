@@ -23,7 +23,7 @@ from data.models import (
     SubstanceUnit,
 )
 
-from .company import SimpleCompanySerializer, MinimalCompanySerializer
+from .company import MinimalCompanySerializer, SimpleCompanySerializer
 from .ingredient import IngredientSerializer
 from .microorganism import MicroorganismSerializer
 from .plant import PlantSerializer
@@ -267,6 +267,9 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
     author = SimpleUserSerializer(read_only=True)
     company = SimpleCompanySerializer(read_only=True)
     mandated_company = SimpleCompanySerializer(read_only=True)
+    unit_measurement = serializers.PrimaryKeyRelatedField(
+        queryset=SubstanceUnit.objects.all(), required=False, allow_null=True
+    )
 
     class Meta:
         model = Declaration
@@ -290,6 +293,8 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
             "visa_refused",
             "has_pending_pro_responses",
             "article",
+            "unit_quantity",
+            "unit_measurement",
         )
         read_only_fields = fields
 

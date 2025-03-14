@@ -19,7 +19,7 @@
         <DsfrTag class="ml-2 mt-1" :label="noFilterText" small />
       </span>
     </p>
-    <p>
+    <p class="mb-0">
       <DsfrButton @click="opened = true" tertiary size="small" label="Changer" />
     </p>
   </div>

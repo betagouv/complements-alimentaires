@@ -172,9 +172,6 @@ stats/bilan/france-geojson
 
 notes/
 
-# Poetry
-poetry.toml
-
 # Shell nix
 shell.nix
 
