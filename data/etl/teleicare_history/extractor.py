@@ -3,7 +3,7 @@ import logging
 import re
 from datetime import date, datetime, timezone
 
-from django.core.exceptions import MultipleObjectsReturned, ValidationError
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 
@@ -197,8 +197,10 @@ def get_oldest_and_latest(list_of_declarations):
         if current_date < oldest_date:
             oldest_date = current_date
             oldest_dcl_date = ica_declaration.dcl_date
+    oldest = list_of_declarations.filter(dcl_date=oldest_dcl_date).order_by("dcl_numero").first()
+    latest = list_of_declarations.filter(dcl_date=latest_dcl_date).order_by("dcl_numero").last()
 
-    return list_of_declarations.get(dcl_date=oldest_dcl_date), list_of_declarations.get(dcl_date=latest_dcl_date)
+    return oldest, latest
 
 
 def convert_str_date(value, aware=False):
@@ -382,17 +384,38 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
         model.objects.bulk_create(bulk_of_objects)
 
 
+def compute_action(status, nb_version_declaration):
+    if status == Declaration.DeclarationStatus.WITHDRAWN:
+        return Snapshot.SnapshotActions.WITHDRAW
+    elif status == Declaration.DeclarationStatus.REJECTED:
+        return Snapshot.SnapshotActions.ACCEPT_VISA  # les rejets arrivent seulement sur visa
+    elif status == Declaration.DeclarationStatus.ABANDONED:
+        return Snapshot.SnapshotActions.ABANDON
+    elif status == Declaration.DeclarationStatus.AUTHORIZED and nb_version_declaration == 1:
+        return Snapshot.SnapshotActions.SUBMIT
+    else:
+        return Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION  # pourrait aussi être une RESPOND_TO_OBJECTION
+
+
+last_word_to_administration_status = (Declaration.DeclarationStatus.REJECTED, Snapshot.SnapshotActions.ABANDON)
+
+
 @transaction.atomic
-def add_final_state_snapshot(declaration, latest_ica_version_declaration, declaration_acceptation_date):
+def add_final_state_snapshot(
+    declaration, latest_ica_version_declaration, declaration_acceptation_date, nb_version_declaration
+):
     if not declaration.snapshots.exists():
         snapshot = Snapshot(
             creation_date=declaration_acceptation_date,
             modification_date=declaration_acceptation_date,
             declaration=declaration,
-            status=Declaration.DeclarationStatus.AUTHORIZED,
+            status=declaration.status,
             json_declaration="",
-            comment=latest_ica_version_declaration.vrsdecl_observations_ac or "",
-            action="",
+            # le commentaire est soit celui de l'administration `vrsdecl_observations_ac` soit celui du pro `vrsdecl_commentaires`
+            comment=latest_ica_version_declaration.vrsdecl_observations_ac
+            if declaration.status in last_word_to_administration_status
+            else latest_ica_version_declaration.vrsdecl_commentaires or "",
+            action=compute_action(declaration.status, nb_version_declaration),
             post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
         )
         with suppress_autotime(snapshot, ["creation_date", "modification_date"]):
@@ -417,15 +440,10 @@ def create_declarations_from_teleicare_history(company_ids=[]):
         all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=ica_complement_alimentaire.cplalim_ident)
         # le champ date est stocké en text, il faut donc faire la conversion en python
         if all_ica_declarations.exists():
-            try:
-                oldest_ica_declaration, latest_ica_declaration = get_oldest_and_latest(all_ica_declarations)
-            except MultipleObjectsReturned:
-                logger.error(
-                    f"Ce IcaComplementAlimentaire cplalim_ident={ica_complement_alimentaire.cplalim_ident} n'a pas une unique déclaration la plus récente"
-                )
-                continue
+            oldest_ica_declaration, latest_ica_declaration = get_oldest_and_latest(all_ica_declarations)
+
             # retrouve la version de déclaration la plus à jour correspondant à cette déclaration
-            latest_ica_version_declaration = IcaVersionDeclaration.objects.filter(
+            declaration_versions = IcaVersionDeclaration.objects.filter(
                 dcl_id=latest_ica_declaration.dcl_ident,
                 stattdcl_ident__in=[
                     2,
@@ -434,7 +452,9 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     8,
                 ],  # status 'autorisé', 'refusé', 'arrêt commercialisation', 'abandonné'
                 stadcl_ident=8,  # état 'clos'
-            ).first()
+            )
+            nb_version_declaration = declaration_versions.count()
+            latest_ica_version_declaration = declaration_versions.order_by("vrsdecl_numero").last()
             # la déclaration a une version finalisée
             if latest_ica_version_declaration:
                 declaration_creation_date = (
@@ -448,6 +468,11 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     else ""
                 )
                 unit_quantity = re.findall(r"\d+", latest_ica_version_declaration.vrsdecl_djr)
+                status = (
+                    Declaration.DeclarationStatus.WITHDRAWN
+                    if latest_ica_declaration.dcl_date_fin_commercialisation
+                    else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident]
+                )
                 declaration = Declaration(
                     creation_date=declaration_creation_date,
                     # la date de modification est la date de fin de commercialisation si elle existe ou la date d'acceptation
@@ -483,9 +508,7 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     # postal_code=
                     # city=
                     # country=
-                    status=Declaration.DeclarationStatus.WITHDRAWN
-                    if latest_ica_declaration.dcl_date_fin_commercialisation
-                    else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident],
+                    status=status,
                 )
                 # aucun de ces champs `other_` n'est rempli dans Teleicare
                 # IcaPopulationCibleDeclaree.vrspcb_popcible_autre n'est pas importé
@@ -513,7 +536,10 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                             declaration, latest_ica_version_declaration.vrsdecl_ident
                         )
                         add_final_state_snapshot(
-                            declaration, latest_ica_version_declaration, declaration_acceptation_date
+                            declaration,
+                            latest_ica_version_declaration,
+                            declaration_acceptation_date,
+                            nb_version_declaration,
                         )
                         nb_created_declarations += 1
                 except IntegrityError as err:
@@ -526,7 +552,10 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                         declaration.creation_date = declaration_creation_date
                         declaration.save()
                         add_final_state_snapshot(
-                            declaration, latest_ica_version_declaration, declaration_acceptation_date
+                            declaration,
+                            latest_ica_version_declaration,
+                            declaration_acceptation_date,
+                            nb_version_declaration,
                         )
                         # cette Déclaration a déjà été créée
                         pass

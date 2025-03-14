@@ -1,10 +1,14 @@
 from django import forms
 from django.contrib import admin
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Preparation
 
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
-class PreparationForm(forms.ModelForm):
+
+class PreparationForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
@@ -12,9 +16,10 @@ class PreparationForm(forms.ModelForm):
 
 
 @admin.register(Preparation)
-class PreparationAdmin(admin.ModelAdmin):
+class PreparationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = PreparationForm
     fields = [
+        "change_reason",
         "name",
         "ca_name",
         "is_obsolete",

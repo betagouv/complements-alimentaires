@@ -4,13 +4,15 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Substance, SubstanceSynonym
 from data.models.declaration import Declaration
 
-from .abstract_admin import ElementAdminWithChangeReason
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
-class SubstanceForm(forms.ModelForm):
+class SubstanceForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
@@ -31,7 +33,7 @@ class SubstanceSynonymInline(admin.TabularInline):
 
 
 @admin.register(Substance)
-class SubstanceAdmin(ElementAdminWithChangeReason):
+class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     @classmethod
     def links_to_objects(cls, object_name, objects):
         rel_list = "<ul>"
@@ -55,6 +57,10 @@ class SubstanceAdmin(ElementAdminWithChangeReason):
 
     form = SubstanceForm
     fieldsets = [
+        (
+            None,
+            {"fields": ["change_reason"]},
+        ),
         (
             None,  # Pas d'entête
             {

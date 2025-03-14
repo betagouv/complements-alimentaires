@@ -23,7 +23,7 @@ from data.models import (
     SubstanceUnit,
 )
 
-from .company import SimpleCompanySerializer
+from .company import SimpleCompanySerializer, MinimalCompanySerializer
 from .ingredient import IngredientSerializer
 from .microorganism import MicroorganismSerializer
 from .plant import PlantSerializer
@@ -738,12 +738,21 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class DeclaredElementDeclarationSerializer(serializers.ModelSerializer):
+    company = MinimalCompanySerializer(read_only=True)
+
+    class Meta:
+        model = Declaration
+        fields = ("id", "status", "author", "company", "name", "response_limit_date")
+        read_only_fields = fields
+
+
 class DeclaredElementSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.SerializerMethodField()
     type = serializers.CharField()
     authorization_mode = serializers.CharField()
-    declaration = DeclarationShortSerializer()
+    declaration = DeclaredElementDeclarationSerializer()
     request_status = serializers.CharField()
 
     def get_name(self, obj):

@@ -51,6 +51,7 @@ class DeclaredElementsView(ListAPIView):
         declaration_statuses = self.request.query_params.get("declarationStatus")
         closed_statuses = [
             Declaration.DeclarationStatus.DRAFT,
+            Declaration.DeclarationStatus.AUTHORIZED,
             Declaration.DeclarationStatus.ABANDONED,
             Declaration.DeclarationStatus.REJECTED,
             Declaration.DeclarationStatus.WITHDRAWN,
@@ -59,15 +60,36 @@ class DeclaredElementsView(ListAPIView):
         declaration_statuses = declaration_statuses.split(",") if declaration_statuses else open_statuses
         declaration_status_filter = Q(declaration__status__in=declaration_statuses)
 
-        querysets = [
-            DeclaredPlant.objects,
-            DeclaredSubstance.objects,
-            DeclaredIngredient.objects,
-            DeclaredMicroorganism.objects,
-        ]
+        types = self.request.query_params.get("type")
+        if types:
+            querysets = []
+            if "plant" in types:
+                querysets.append(DeclaredPlant.objects)
+            if "microorganism" in types:
+                querysets.append(DeclaredMicroorganism.objects)
+            if "substance" in types:
+                querysets.append(DeclaredSubstance.objects)
+            if "other-ingredient" in types:
+                querysets.append(DeclaredIngredient.objects)
+        else:
+            querysets = [
+                DeclaredPlant.objects,
+                DeclaredMicroorganism.objects,
+                DeclaredSubstance.objects,
+                DeclaredIngredient.objects,
+            ]
         filtered_querysets = [
             queryset.filter(request_status_filter & declaration_status_filter) for queryset in querysets
         ]
+
+        ordering = self.request.query_params.get("ordering")
+        if ordering and ordering.endswith("responseLimitDate"):
+            return sorted(
+                chain(*filtered_querysets),
+                key=lambda instance: instance.declaration.response_limit_date or instance.declaration.creation_date,
+                reverse=ordering.startswith("-"),
+            )
+
         return list(chain(*filtered_querysets))
 
     @staticmethod
