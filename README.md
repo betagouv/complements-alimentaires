@@ -16,16 +16,15 @@ Il existe 2 méthodes distinctes d'installation pour ce projet :
 
 - [Python3](https://www.python.org/downloads/) (version 3.11)
 - [pip](https://pip.pypa.io/en/stable/installing/) (souvent installé avec Python)
-- [vitrualenv](https://virtualenv.pypa.io/en/stable/installation.html)
 - [Node et npm](https://nodejs.org/en/download/) (version 20 LTS)
 - [Postgres](https://www.postgresql.org/download/) (version 15)
 
-#### Création d'un environnement Python3 virtualenv
+#### Création d'un environnement Python3
 
 Pour commencer, c'est recommandé de créer un environnement virtuel avec Python3.
 
 ```
-virtualenv -p python3 venv
+python -m venv venv
 source ./venv/bin/activate
 ```
 
