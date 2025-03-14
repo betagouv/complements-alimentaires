@@ -413,14 +413,12 @@ class TestElementsCreateApi(APITestCase):
         """
         InstructionRoleFactory(user=authenticate.user)
 
-        payload = {
-            "name": "My new ingredient",
-        }
+        payload = {"name": "My new ingredient", "changeReason": "Création test"}
         response = self.client.post(reverse("api:ingredient_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         ingredient = Ingredient.objects.get(name="My new ingredient")
-        self.assertEqual(ingredient.history.first().history_change_reason, "Création via Compl'Alim")
+        self.assertEqual(ingredient.history.first().history_change_reason, "Création test")
 
 
 class TestElementsModifyApi(APITestCase):
@@ -457,7 +455,7 @@ class TestElementsModifyApi(APITestCase):
         new_unit = SubstanceUnitFactory.create()
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
-            {"name": "test", "unit": new_unit.id, "status": IngredientStatus.NO_STATUS},
+            {"name": "test", "unit": new_unit.id, "status": IngredientStatus.NO_STATUS, "changeReason": "Test change"},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -468,7 +466,7 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(
             substance.status, IngredientStatus.NO_STATUS, "C'est possible de remettre la valeur originelle"
         )
-        self.assertEqual(substance.history.first().history_change_reason, "Modification via Compl'Alim")
+        self.assertEqual(substance.history.first().history_change_reason, "Test change")
 
     @authenticate
     def test_delete_data(self):

@@ -1,4 +1,4 @@
-import { helpers, required, email, numeric, integer } from "@vuelidate/validators"
+import { helpers, required, email, numeric, integer, maxLength } from "@vuelidate/validators"
 
 /* Using vuelidate validation, return the first error message, or "" if no error found. */
 export const firstErrorMsg = (v, fieldName) => (v[fieldName]?.$error ? v[fieldName].$errors[0].$message : null)
@@ -15,6 +15,15 @@ export const errorNumeric = {
 }
 export const errorInteger = {
   integer: helpers.withMessage("Ce champ doit être un chiffre entier", integer),
+}
+export const errorMaxStringLength = (max) => {
+  return {
+    maxLength: helpers.withMessage(
+      ({ $pending, $invalid, $params, $model }) =>
+        `Ce champ ne doit pas dépasser ${$params.max} caractères, ${$model.length} actuel`,
+      maxLength(max)
+    ),
+  }
 }
 
 export const getAllIndexesOfRegex = (array, regex) => {

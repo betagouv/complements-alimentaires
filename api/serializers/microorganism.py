@@ -44,6 +44,7 @@ class MicroorganismSerializer(HistoricalModelSerializer, PrivateFieldsSerializer
             "activity",
             "status",
             "novel_food",
+            "is_risky",
             "history",
         )
         read_only_fields = fields

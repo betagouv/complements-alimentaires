@@ -59,6 +59,14 @@
           label-left
           class="self-center mt-4 col-span-2 sm:col-span-1"
         />
+        <DsfrToggleSwitch
+          v-model="state.isRisky"
+          label="Nécessite une instruction manuelle et vigilante ?"
+          activeText="Oui"
+          inactiveText="Non"
+          label-left
+          class="self-center mt-4 col-span-2 sm:col-span-2"
+        />
       </div>
       <div class="grid md:grid-cols-2 mt-4">
         <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4">
@@ -154,6 +162,15 @@
           <DsfrInput label="Commentaire privé" v-model="state.privateComments" :isTextarea="true" label-visible />
         </div>
       </div>
+      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'changeReason')">
+        <DsfrInput
+          v-model="state.changeReason"
+          label="Raison de changement (public)"
+          hint="100 caractères max"
+          required
+          labelVisible
+        />
+      </DsfrInputGroup>
     </DsfrFieldset>
     <div class="flex gap-x-2 mt-4">
       <DsfrButton label="Enregistrer ingrédient" @click="saveElement" />
@@ -170,7 +187,7 @@ import { useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
-import { firstErrorMsg, errorRequiredField, errorNumeric } from "@/utils/forms"
+import { firstErrorMsg, errorRequiredField, errorNumeric, errorMaxStringLength } from "@/utils/forms"
 import { useVuelidate } from "@vuelidate/core"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
@@ -296,6 +313,7 @@ const rules = computed(() => {
     family: form?.family ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     maxQuantity: form?.maxQuantity ? errorNumeric : {},
+    changeReason: Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
   }
 })
 watch(formForType, () => v$.value.$reset())
