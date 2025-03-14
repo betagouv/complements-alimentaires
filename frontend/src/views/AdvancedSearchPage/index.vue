@@ -3,14 +3,27 @@
     <DsfrBreadcrumb
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Recherche avancée' }]"
     />
-    <div class="border p-4 mb-2 filters">
-      <div class="max-w-xl">
+    <div class="mb-2 md:flex gap-16 search-area">
+      <div class="md:w-2/4 pt-1">
         <DsfrFieldset legend="Recherche" class="!mb-0">
-          <DsfrSearchBar v-model="searchTerm" placeholder="Nom, ID ou entreprise" @search="search" />
+          <DsfrSearchBar v-model="searchTerm" placeholder="Nom du produit, ID ou entreprise" @search="search" />
         </DsfrFieldset>
       </div>
+      <div class="md:w-2/4 md:flex gap-4">
+        <DsfrInputGroup>
+          <DsfrSelect
+            label="Trier par"
+            defaultUnselectedText=""
+            :modelValue="ordering"
+            @update:modelValue="updateOrdering"
+            :options="orderingOptions"
+            class="!text-sm"
+          />
+        </DsfrInputGroup>
+        <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
+      </div>
     </div>
-    <DsfrAccordionsGroup v-model="activeAccordion" class="border">
+    <DsfrAccordionsGroup v-model="activeAccordion" class="border mb-8">
       <DsfrAccordion>
         <template v-slot:title>
           <p>
@@ -20,7 +33,7 @@
         </template>
         <div>
           <div class="md:flex gap-16">
-            <div class="w-2/4">
+            <div class="md:w-2/4">
               <DsfrFieldset legend="Cible" class="!mb-0 min-w-60">
                 <DsfrInputGroup>
                   <DsfrSelect
@@ -56,7 +69,7 @@
                 </DsfrInputGroup>
               </DsfrFieldset>
             </div>
-            <div class="w-2/4">
+            <div class="md:w-2/4">
               <DsfrFieldset legend="Statut de la déclaration" class="!mb-0">
                 <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" :statusString="filteredStatus" />
               </DsfrFieldset>
@@ -72,58 +85,23 @@
               </DsfrInputGroup>
             </div>
           </div>
-          <div>
-            <div class="sm:flex gap-4 items-baseline md:border-r">
-              <DsfrFieldset legend="Par entreprise" class="!mb-0 min-w-60">
-                <div class="flex gap-4">
-                  <DsfrInputGroup>
-                    <DsfrInput
-                      class="max-w-16 !text-sm"
-                      label="De :"
-                      :modelValue="companyNameStart"
-                      label-visible
-                      @update:modelValue="updateCompanyNameStartFilter"
-                    />
-                  </DsfrInputGroup>
-                  <DsfrInputGroup>
-                    <DsfrInput
-                      class="max-w-16 !text-sm"
-                      label="À :"
-                      :modelValue="companyNameEnd"
-                      label-visible
-                      @update:modelValue="updateCompanyNameEndFilter"
-                    />
-                  </DsfrInputGroup>
-                </div>
-              </DsfrFieldset>
-            </div>
-          </div>
         </div>
       </DsfrAccordion>
     </DsfrAccordionsGroup>
-    <div>
-      <div class="flex gap-4 flex-row-reverse">
-        <div>
-          <DsfrInputGroup>
-            <DsfrSelect
-              label="Trier par"
-              defaultUnselectedText=""
-              :modelValue="ordering"
-              @update:modelValue="updateOrdering"
-              :options="orderingOptions"
-              class="!text-sm"
-            />
-          </DsfrInputGroup>
-        </div>
-        <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
-      </div>
-    </div>
+
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
     <div v-else-if="hasDeclarations">
       <SearchResultsTable :data="data" />
     </div>
+    <DsfrPagination
+      v-if="showPagination"
+      @update:currentPage="updatePage"
+      :pages="pages"
+      :current-page="page - 1"
+      :truncLimit="5"
+    />
   </div>
 </template>
 <script setup>
@@ -133,12 +111,19 @@ import { useFetch } from "@vueuse/core"
 import { orderingOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
 import StatusFilter from "@/components/StatusFilter"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
+import { getPagesForPagination } from "@/utils/components"
 import SearchResultsTable from "./SearchResultsTable"
+import { useRootStore } from "@/stores/root"
+
+const store = useRootStore()
+store.fetchUnits()
 
 const router = useRouter()
 const route = useRoute()
 const searchTerm = ref(route.query.recherche)
 const activeAccordion = ref()
+
+const pages = computed(() => getPagesForPagination(data.value?.count, limit.value, route.path))
 
 // Valeurs obtenus du queryparams
 const page = computed(() => parseInt(route.query.page))
@@ -173,3 +158,9 @@ const { response, data, isFetching, execute } = useFetch(url).get().json()
 // Infos dans les champ
 const articleSelectOptions = [...articleOptionsWith15Subtypes, ...[{ value: "", text: "Tous" }]]
 </script>
+
+<style scoped>
+.search-area :deep(.fr-select-group) {
+  @apply !my-0;
+}
+</style>
