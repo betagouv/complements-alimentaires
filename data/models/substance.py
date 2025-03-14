@@ -142,9 +142,12 @@ class Substance(IngredientCommonModel):
 
     @property
     def max_quantity(self):
-        return self.max_quantities.through.objects.get(
-            Q(population__name="Population générale"), Q(substance=self)
-        ).max_quantity
+        try:
+            return self.max_quantities.through.objects.get(
+                Q(population__name="Population générale"), Q(substance=self)
+            ).max_quantity
+        except MaxQuantityPerPopulationRelation.DoesNotExist:
+            return
 
     def compute_substance_types(self):
         """
