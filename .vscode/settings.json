@@ -73,7 +73,7 @@
   // sql
   "sqlfluff.dialect": "mysql",
   "sqlfluff.excludeRules": ["L009"],
-  "sqlfluff.executablePath": "/home/perrine/.cache/pypoetry/virtualenvs/complalim-CF5WuROI-py3.11/bin/sqlfluff",
+  "sqlfluff.executablePath": "${workspaceFolder}/venv/bin/sqlfluff",
   "sqlfluff.ignoreLocalConfig": false,
   "sqlfluff.ignoreParsing": false,
   "sqlfluff.rules": [],
