@@ -18,7 +18,7 @@ class ChangeReasonAdminMixin:
         if change:
             obj._change_reason = (
                 form.cleaned_data["change_reason"]
-                if "change_reason" in form.cleaned_data.keys()
+                if "change_reason" in form.changed_data
                 else "Modification via l'admin"
             )
 
