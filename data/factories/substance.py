@@ -1,8 +1,11 @@
+import random
+
 import factory
 
+from data.factories.population import PopulationFactory
 from data.factories.unit import SubstanceUnitFactory
-from data.models import Substance, SubstanceSynonym
 from data.models.ingredient_status import IngredientStatus
+from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym
 
 
 class SubstanceFactory(factory.django.DjangoModelFactory):
@@ -15,16 +18,29 @@ class SubstanceFactory(factory.django.DjangoModelFactory):
     siccrf_name_en = factory.Faker("text", max_nb_chars=20)
     siccrf_id = factory.Sequence(lambda n: n + 1)
     siccrf_must_specify_quantity = factory.Faker("boolean")
-    siccrf_max_quantity = factory.Faker("random_int", min=0, max=20)
     siccrf_nutritional_reference = factory.Faker("random_int", min=0, max=20)
     ca_must_specify_quantity = factory.Faker("boolean")
-    ca_max_quantity = factory.Faker("random_int", min=0, max=20)
     ca_nutritional_reference = factory.Faker("random_int", min=0, max=20)
     unit = factory.SubFactory(SubstanceUnitFactory)
     siccrf_status = IngredientStatus.AUTHORIZED
     to_be_entered_in_next_decree = False
     siccrf_is_obsolete = False
     ca_is_obsolete = False
+    max_quantities = factory.RelatedFactoryList(
+        "data.factories.substance.MaxQuantityPerPopulationRelationFactory",
+        "substance",
+        size=lambda: random.randint(1, 5),
+    )
+
+
+class MaxQuantityPerPopulationRelationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = MaxQuantityPerPopulationRelation
+
+    population = factory.SubFactory(PopulationFactory)
+    substance = factory.SubFactory(SubstanceFactory)
+    siccrf_max_quantity = factory.Faker("random_int", min=0, max=20)
+    ca_max_quantity = factory.Faker("random_int", min=0, max=20)
 
 
 class SubstanceSynonymFactory(factory.django.DjangoModelFactory):
