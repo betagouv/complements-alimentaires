@@ -6,8 +6,7 @@ _Projet en construction_
 
 Il existe 2 méthodes distinctes d'installation pour ce projet :
 1) l'installation manuelle classique
-2) l'installation automatique via un [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers) (nécessite Docker et VS Code)
-3) l'installation avec Docker
+2) l'installation avec Docker
 
 
 ### Installation manuelle classique (_méthode 1_)
@@ -73,15 +72,7 @@ le commit est annulé. Il faut donc que toutes les vérifications passent pour q
 compte. Si exceptionnellement vous voulez commiter malgré qu'une vérification ne passe pas, c'est possible
 avec `git commit -m 'my message' --no-verify`.
 
-
-### Installation automatique via un devcontainer (_méthode 2_)
-
-- Installer [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- Installer l'extension [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) dans VS Code
-- Dans VS Code, lancer la commande `Clone Repository in Container Volume` et suivre les instructions. Le container va alors être créé.
-- Une fois le container créé, si une icône de chargement reste présente sur l'icône des extensions dans le menu gauche (bug VS Code), lancer la commande `Reload Window` pour régler le soucis.
-
-### Installation avec docker (_méthode 3_)
+### Installation avec docker (_méthode 2_)
 
 ```
 make build
