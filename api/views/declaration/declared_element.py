@@ -253,7 +253,7 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             except KeyError:
                 raise ParseError(detail="Must provide 'name' to create new synonym")
 
-        if not replacement_element.siccrf_id:
+        if not replacement_element.siccrf_id and not replacement_element.origin_declaration:
             replacement_element.origin_declaration = declared_element.declaration
             replacement_element.save()
 

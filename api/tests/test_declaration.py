@@ -2447,8 +2447,7 @@ class TestSingleDeclaredElementApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        declared_plant = DeclaredPlantFactory(declaration=declaration, new=True)
-        self.assertNotEqual(declared_plant.request_status, DeclaredPlant.AddableStatus.REPLACED)
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
         plant = PlantFactory(
             siccrf_id=None, origin_declaration=None
         )  # que les ingrédients créé via Compl'Alim ne vont pas avoir un siccrf_id
@@ -2463,7 +2462,24 @@ class TestSingleDeclaredElementApi(APITestCase):
         self.assertEqual(plant.origin_declaration, declaration)
         self.assertIsNone(plant.history.first().history_change_reason)
 
-        # TODO: test replace request on different declaration (no change in origin)
+        # vérifier que la première déclaration est gardée quand l'ingrédient est réutilisé
+        other_declaration = DeclarationFactory()
+        other_declared_ingredient = DeclaredIngredientFactory(declaration=other_declaration)
+
+        response = self.client.post(
+            reverse(
+                "api:declared_element_replace", kwargs={"pk": other_declared_ingredient.id, "type": "other-ingredient"}
+            ),
+            {"element": {"id": plant.id, "type": "plant"}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        plant.refresh_from_db()
+        self.assertEqual(
+            plant.origin_declaration,
+            declaration,
+            "Quand l'ingrédient a déjà été utilisé, ne mets pas à jour la déclaration de origine",
+        )
         # TODO: replace same request with different plant, with siccrf_id (wait what happens now)
 
     @authenticate
