@@ -163,7 +163,13 @@
         </div>
       </div>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'changeReason')">
-        <DsfrInput v-model="state.changeReason" label="Raison de changement (public)" required labelVisible />
+        <DsfrInput
+          v-model="state.changeReason"
+          label="Raison de changement (public)"
+          hint="100 caractères max"
+          required
+          labelVisible
+        />
       </DsfrInputGroup>
     </DsfrFieldset>
     <div class="flex gap-x-2 mt-4">
@@ -181,7 +187,7 @@ import { useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
-import { firstErrorMsg, errorRequiredField, errorNumeric } from "@/utils/forms"
+import { firstErrorMsg, errorRequiredField, errorNumeric, errorMaxStringLength } from "@/utils/forms"
 import { useVuelidate } from "@vuelidate/core"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
@@ -307,7 +313,7 @@ const rules = computed(() => {
     family: form?.family ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     maxQuantity: form?.maxQuantity ? errorNumeric : {},
-    changeReason: errorRequiredField,
+    changeReason: Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
   }
 })
 watch(formForType, () => v$.value.$reset())
