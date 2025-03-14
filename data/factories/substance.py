@@ -32,19 +32,6 @@ class SubstanceFactory(factory.django.DjangoModelFactory):
         size=lambda: random.randint(1, 5),
     )
 
-    # @factory.post_generation
-    # def max_quantities(self, create, extracted, **kwargs):
-    #     if not create:
-    #         return
-    #     if extracted or isinstance(extracted, list):
-    #         for population in extracted:
-    #             self.max_quantities.add(
-    #                 MaxQuantityPerPopulationRelationFactory.create(substance=self, population=population)
-    #             )
-    #     else:
-    #         for _ in range(random.randint(1, 4)):
-    #             self.max_quantities.add(MaxQuantityPerPopulationRelationFactory.create(substance=self))
-
 
 class MaxQuantityPerPopulationRelationFactory(factory.django.DjangoModelFactory):
     class Meta:
