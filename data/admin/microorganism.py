@@ -1,12 +1,14 @@
 from django import forms
 from django.contrib import admin
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Microorganism
 
-from .abstract_admin import ElementAdminWithChangeReason
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
-class MicroorganismForm(forms.ModelForm):
+class MicroorganismForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
@@ -16,9 +18,13 @@ class MicroorganismForm(forms.ModelForm):
 
 
 @admin.register(Microorganism)
-class MicroorganismAdmin(ElementAdminWithChangeReason):
+class MicroorganismAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = MicroorganismForm
     fieldsets = [
+        (
+            None,
+            {"fields": ["change_reason"]},
+        ),
         (
             None,  # Pas d'entête
             {

@@ -2,9 +2,11 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from data.models import Plant, PlantSynonym
 
-from .abstract_admin import ElementAdminWithChangeReason
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
 class PlantSynonymInline(admin.TabularInline):
@@ -26,7 +28,7 @@ class SubstanceInlineAdmin(admin.TabularInline):
     extra = 1
 
 
-class PlantForm(forms.ModelForm):
+class PlantForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
@@ -37,9 +39,13 @@ class PlantForm(forms.ModelForm):
 
 
 @admin.register(Plant)
-class PlantAdmin(ElementAdminWithChangeReason):
+class PlantAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = PlantForm
     fieldsets = [
+        (
+            None,
+            {"fields": ["change_reason"]},
+        ),
         (
             None,  # Pas d'entête
             {

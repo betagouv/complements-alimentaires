@@ -29,7 +29,6 @@ class BlogPostAdmin(admin.ModelAdmin):
                 )
             },
         ),
-        ("Contenu legacy (ne plus utiliser)", {"fields": ("body",)}),
     )
     list_display = (
         "title",
