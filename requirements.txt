@@ -86,7 +86,7 @@ pycodestyle==2.12.1
 pycparser==2.22
 Pygments==2.19.1
 pyHanko==0.25.3
-pyhanko-certvalidator==0.26.5
+pyhanko-certvalidator==0.26.8
 pypdf==5.1.0
 pytest==8.3.5
 python-bidi==0.6.3
