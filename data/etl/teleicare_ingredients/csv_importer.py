@@ -72,6 +72,11 @@ RELATION_CSV = ["REF_ICA_AUTREING_SUBSTACTIVE.csv", "REF_ICA_PLANTE_SUBSTANCE.cs
 
 
 class CSVImporter:
+    """
+    Le csv_importer est déprécié et sera bientôt supprimé
+
+    """
+
     PREFIX_TO_MODEL_MAPPING = {
         # Pour les tables de relation on garde le prefix correspondant au modèle dans lequel les données vont être importées
         "INGA": Ingredient,
@@ -144,6 +149,9 @@ class CSVImporter:
         "missing_import_data",
         "to_be_entered_in_next_decree",
         "substance_types",
+        # Les dernières modification de modèle de données s'éloignent du modèle de données TeleIcare
+        # cela rend difficile l'automatisation (via csv_importer) pour remplir les nouveaux champs
+        "max_quantities",
     ]
     NEW_FIELDS = ["long_name", "is_risky", "novel_food", "category"]
 
