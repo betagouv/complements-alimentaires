@@ -296,7 +296,7 @@ class DeclarationTestCase(TestCase):
             substance = SubstanceFactory(substance_types=type)
             MaxQuantityPerPopulationRelationFactory(
                 substance=substance,
-                population=PopulationFactory(name="Population générale"),
+                population=PopulationFactory(ca_name="Population générale"),
                 ca_max_quantity=SUBSTANCE_MAX_QUANTITY,
             )
             ComputedSubstanceFactory(

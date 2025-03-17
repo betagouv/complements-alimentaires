@@ -142,6 +142,9 @@ class Substance(IngredientCommonModel):
 
     @property
     def max_quantity(self):
+        """
+        Cette property renvoie la max_quantity pour la Population Générale
+        """
         try:
             return self.max_quantities.through.objects.get(
                 Q(population__name="Population générale"), Q(substance=self)
