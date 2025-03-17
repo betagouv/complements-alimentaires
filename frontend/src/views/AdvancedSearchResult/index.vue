@@ -7,19 +7,19 @@
         { text: 'Déclaration' },
       ]"
     />
+    <div v-if="isFetching" class="flex justify-center my-10">
+      <ProgressSpinner />
+    </div>
     <DeclarationSummary :readonly="true" v-if="declaration" v-model="declaration" />
   </div>
 </template>
 
 <script setup>
 import { useFetch } from "@vueuse/core"
-import { onMounted, computed, ref } from "vue"
-import { useRouter } from "vue-router"
+import { onMounted, ref } from "vue"
 import { useRootStore } from "@/stores/root"
 import { handleError } from "@/utils/error-handling"
 import DeclarationSummary from "@/components/DeclarationSummary"
-
-const router = useRouter()
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()

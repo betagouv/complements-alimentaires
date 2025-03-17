@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { computed } from "vue"
 import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import CompanyTableCell from "@/components/CompanyTableCell"
@@ -20,10 +20,9 @@ import { articleOptionsWith15Subtypes } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 
-const { units, populations, conditions, effects, galenicFormulations } = storeToRefs(useRootStore())
+const { units } = storeToRefs(useRootStore())
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
-const emit = defineEmits("open")
 
 const headers = ["ID", "Nom du produit", "Poids/Unité", "Entreprise", "Article", "Statut", "Date de création"]
 
