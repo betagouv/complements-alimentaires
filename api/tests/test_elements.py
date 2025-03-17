@@ -18,7 +18,7 @@ from data.factories import (
     SubstanceSynonymFactory,
     SubstanceUnitFactory,
 )
-from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Plant, Substance
+from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Plant, Population, Substance
 
 from .utils import authenticate
 
@@ -342,6 +342,7 @@ class TestElementsCreateApi(APITestCase):
         """
         Une instructrice peut créer une nouvelle substance avec des synonymes
         """
+        PopulationFactory(ca_name="Population générale")
         InstructionRoleFactory(user=authenticate.user)
 
         unit = SubstanceUnitFactory.create()
@@ -365,7 +366,13 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(substance.ca_status, IngredientStatus.AUTHORIZED)
         self.assertEqual(substance.ca_cas_number, "1234")
         self.assertEqual(substance.ca_einec_number, "5678")
-        self.assertEqual(substance.ca_max_quantity, 3.4)
+        self.assertEqual(substance.max_quantity, 3.4)
+        self.assertEqual(
+            substance.maxquantityperpopulationrelation_set.filter(
+                population=Population.objects.get(name="Population générale")
+            )[0].max_quantity,
+            3.4,
+        )
         self.assertEqual(substance.ca_nutritional_reference, 1.2)
         self.assertEqual(substance.unit, unit)
 
@@ -446,6 +453,7 @@ class TestElementsModifyApi(APITestCase):
         """
         Les instructrices peuvent modifier un ingrédient, et un mapping est fait entre le nom du champ sans prefix -> ca_
         """
+        PopulationFactory(ca_name="Population générale")
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
             siccrf_name="original name",
