@@ -2478,9 +2478,28 @@ class TestSingleDeclaredElementApi(APITestCase):
         self.assertEqual(
             plant.origin_declaration,
             declaration,
-            "Quand l'ingrédient a déjà été utilisé, ne mets pas à jour la déclaration de origine",
+            "Quand l'ingrédient a déjà été utilisé, ne mets pas à jour la déclaration d'origine",
         )
-        # TODO: replace same request with different plant, with siccrf_id (wait what happens now)
+
+    @authenticate
+    def test_imported_ingredients_dont_get_origin_declaration(self):
+        """
+        Les ingrédients historiques doivent pas recevoir une déclaration d'origine
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
+        plant = PlantFactory(siccrf_id=1234, origin_declaration=None)
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {"element": {"id": plant.id, "type": "plant"}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        plant.refresh_from_db()
+        self.assertIsNone(plant.origin_declaration)
 
     @authenticate
     def test_can_add_synonym_on_replace(self):
