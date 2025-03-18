@@ -112,6 +112,7 @@
 </template>
 <script setup>
 import { computed, ref, watch } from "vue"
+import { storeToRefs } from "pinia"
 import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import ProgressSpinner from "@/components/ProgressSpinner"
@@ -124,7 +125,7 @@ import SearchResultsTable from "./SearchResultsTable"
 import { useRootStore } from "@/stores/root"
 
 const store = useRootStore()
-store.fetchUnits()
+store.fetchDeclarationFieldsData()
 
 const router = useRouter()
 const route = useRoute()
@@ -137,9 +138,11 @@ const page = computed(() => parseInt(route.query.page))
 const filteredStatus = computed(() => route.query.status)
 const ordering = computed(() => route.query.triage)
 const article = computed(() => route.query.article)
-const population = computed(() => route.query.population)
-const condition = computed(() => route.query.condition)
-const galenicFormulation = computed(() => route.query.galenicFormulation)
+const population = computed(() => (route.query.population ? parseInt(route.query.population) : ""))
+const condition = computed(() => (route.query.condition ? parseInt(route.query.condition) : ""))
+const galenicFormulation = computed(() =>
+  route.query.galenicFormulation ? parseInt(route.query.galenicFormulation) : ""
+)
 const limit = computed(() => route.query.limit)
 
 // Mises à jour de la requête lors des changements des filtres et recherche
@@ -170,10 +173,20 @@ const pages = computed(() => getPagesForPagination(data.value?.count, limit.valu
 
 // Requêtes
 
-const url = computed(
-  () =>
-    `/api/v1/declarations/?limit=${limit.value}&offset=${offset.value}&status=${filteredStatus.value || ""}&ordering=${ordering.value}&article=${article.value}&population=${population.value}&condition=${condition.value}&galenicFormulation=${galenicFormulation.value}&search=${searchTerm.value}`
-)
+const url = computed(() => {
+  const baseUrl = "/api/v1/declarations"
+  const limitQuery = limit.value ? `limit=${limit.value}` : ""
+  const offsetQuery = offset.value ? `offset=${offset.value}` : ""
+  const statusQuery = filteredStatus.value ? `status=${filteredStatus.value}` : ""
+  const orderingQuery = ordering.value ? `ordering=${ordering.value}` : ""
+  const articleQuery = article.value ? `article=${article.value}` : ""
+  const populationQuery = population.value ? `population=${population.value}` : ""
+  const conditionQuery = condition.value ? `condition=${condition.value}` : ""
+  const galenicFormulationQuery = galenicFormulation.value ? `galenic_formulation=${galenicFormulation.value}` : ""
+  const searchQuery = searchTerm.value ? `search=${searchTerm.value}` : ""
+
+  return `${baseUrl}/?${limitQuery}&${offsetQuery}&${statusQuery}&${orderingQuery}&${articleQuery}&${populationQuery}&${conditionQuery}${galenicFormulationQuery}&${searchQuery}`
+})
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 
 const fetchSearchResults = async () => {
@@ -183,7 +196,19 @@ const fetchSearchResults = async () => {
 
 watch([page, filteredStatus, ordering, article, limit, population, condition, galenicFormulation], fetchSearchResults)
 
-// Infos dans les champs
+// Remplissage d'options dans les champs select
+
+const { populations, conditions, galenicFormulations } = storeToRefs(store)
+const toOptions = (list) => {
+  const options =
+    (list || [])
+      .map((x) => ({ value: x.id, text: x.name })) // Transforme la réponse API en options pour les champs select
+      .sort((a, b) => a.text.localeCompare(b.text)) // Triage alphabétique
+      .filter((x) => x.text.indexOf("à préciser") === -1) || [] // On enlève les options destinés aux pros ("à préciser")
+  options.unshift({ disabled: true, text: "---------" })
+  options.unshift({ value: "", text: "Tout afficher" })
+  return options
+}
 
 const articleSelectOptions = [...articleOptionsWith15Subtypes, ...[{ value: "", text: "Tous" }]]
 const orderingOptions = [
@@ -194,9 +219,9 @@ const orderingOptions = [
   { value: "modificationDate", text: "Date de modification" },
   { value: "-modificationDate", text: "Date de modification (descendant)" },
 ]
-const populationOptions = []
-const conditionOptions = []
-const galenicFormulationOptions = []
+const populationOptions = computed(() => toOptions(populations.value))
+const conditionOptions = computed(() => toOptions(conditions.value))
+const galenicFormulationOptions = computed(() => toOptions(galenicFormulations.value))
 </script>
 
 <style scoped>

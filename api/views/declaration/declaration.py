@@ -41,7 +41,7 @@ from api.utils.filters import BaseNumberInFilter, CamelCaseOrderingFilter
 from api.utils.search import UnaccentSearchFilter
 from api.views.declaration.declaration_flow import DeclarationFlow
 from config import email
-from data.models import Company, Declaration, InstructionRole, Snapshot, User, VisaRole
+from data.models import Company, Condition, Declaration, InstructionRole, Population, Snapshot, User, VisaRole
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +55,13 @@ class DeclarationFilterSet(django_filters.FilterSet):
     author = BaseNumberInFilter(field_name="author__id")
     instructor = django_filters.CharFilter(method="nullable_instructor")
     visor = django_filters.CharFilter(method="nullable_visor")
+    galenic_formulation = BaseNumberInFilter(field_name="galenic_formulation__id")
+    population = django_filters.ModelMultipleChoiceFilter(
+        field_name="populations__id", to_field_name="id", queryset=Population.objects.all()
+    )
+    condition = django_filters.ModelMultipleChoiceFilter(
+        field_name="conditions__id", to_field_name="id", queryset=Condition.objects.all()
+    )
     company = BaseNumberInFilter(field_name="company__id")
     company_name_start = django_filters.CharFilter(method="company_name_start__gte")
     company_name_end = django_filters.CharFilter(method="company_name_end__lte")
@@ -72,6 +79,9 @@ class DeclarationFilterSet(django_filters.FilterSet):
             "author",
             "instructor",
             "visor",
+            "galenic_formulation",
+            "population",
+            "condition",
             "company_name_start",
             "company_name_end",
             "article",
