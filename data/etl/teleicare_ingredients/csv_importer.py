@@ -209,6 +209,7 @@ class CSVImporter:
             and field.name not in self.NEW_FIELDS
             and not field.__class__ == GeneratedField
             and not field.name.startswith("ca_")
+            and not field.name == "origin_declaration"
         ]
 
     @cached_property
