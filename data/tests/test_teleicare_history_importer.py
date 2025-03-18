@@ -176,8 +176,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             created_declaration.conditioning, version_declaration_to_create_as_declaration.vrsdecl_conditionnement
         )
         self.assertEqual(
-            created_declaration.unit_quantity,
-            str(version_declaration_to_create_as_declaration.vrsdecl_poids_uc),
+            created_declaration.unit_quantity, version_declaration_to_create_as_declaration.vrsdecl_poids_uc
         )
         self.assertEqual(
             created_declaration.minimum_duration,
