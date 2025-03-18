@@ -37,6 +37,7 @@ import DeclaredElementPage from "@/views/DeclaredElementPage"
 import ElementForm from "@/views/ElementForm"
 import MandatedCompaniesPage from "@/views/MandatedCompaniesPage"
 import FaqPage from "@/views/FaqPage"
+import StatsPage from "@/views/StatsPage"
 import { ref } from "vue"
 
 const routes = [
@@ -412,6 +413,14 @@ const routes = [
     component: FaqPage,
     meta: {
       title: "Foire aux questions",
+    },
+  },
+  {
+    path: "/stats",
+    name: "StatsPage",
+    component: StatsPage,
+    meta: {
+      title: "Mesures d'impact",
     },
   },
   {

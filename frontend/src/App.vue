@@ -7,7 +7,10 @@
       :cookiesLink="{ name: 'CookiesInfoPage' }"
       :legalLink="{ name: 'LegalNoticesPage' }"
       :personalDataLink="{ name: 'PrivacyPolicyPage' }"
-      :afterMandatoryLinks="[{ label: 'Conditions générales d’utilisation', to: { name: 'CGUPage' } }]"
+      :afterMandatoryLinks="[
+        { label: 'Conditions générales d’utilisation', to: { name: 'CGUPage' } },
+        { label: 'Mesures d\'impact', to: { name: 'StatsPage' } },
+      ]"
     >
       <template v-slot:description>
         <p>Compl'Alim</p>
