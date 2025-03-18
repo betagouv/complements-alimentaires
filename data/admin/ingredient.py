@@ -63,7 +63,7 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         # recalcul de l'article pour les déclarations concernées
-        if change and form["is_risky"].has_changed():
+        if change and form["is_risky"]._has_changed():
             for declaration in Declaration.objects.filter(
                 id__in=obj.declaredingredient_set.values_list("declaration_id", flat=True),
                 status__in=(
