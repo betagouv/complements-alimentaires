@@ -113,6 +113,11 @@ const instructionActions = [
     description: "Consultez les nouveaux ingrédients ajoutés manuellement dans les déclarations en cours",
     link: { name: "NewElementsPage" },
   },
+  {
+    title: "Recherche avancée",
+    description: "Utilisez des fonctionnalités de filtrage, triage et recherche pour trouver des déclarations",
+    link: { name: "AdvancedSearchPage" },
+  },
 ]
 
 const visorActions = [
