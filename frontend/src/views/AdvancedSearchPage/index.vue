@@ -95,6 +95,13 @@
     <div v-else-if="hasDeclarations">
       <SearchResultsTable :data="data" />
     </div>
+    <div v-else class="h-40 sm:h-60 rounded bg-slate-100 mb-8 flex flex-col items-center content-center justify-center">
+      <v-icon scale="1.5" name="ri-search-line"></v-icon>
+      <p class="max-w-sm text-center mt-2">
+        Effectuez votre recherche ou activez un des filtres pour voir les résultats
+      </p>
+      <DsfrButton size="sm" tertiary label="Afficher toutes les déclarations" @click="fetchSearchResults" />
+    </div>
     <DsfrPagination
       v-if="showPagination"
       @update:currentPage="updatePage"
@@ -168,7 +175,7 @@ const url = computed(
   () =>
     `/api/v1/declarations/?limit=${limit.value}&offset=${offset.value}&status=${filteredStatus.value || ""}&ordering=${ordering.value}&article=${article.value}&population=${population.value}&condition=${condition.value}&galenicFormulation=${galenicFormulation.value}&search=${searchTerm.value}`
 )
-const { response, data, isFetching, execute } = useFetch(url).get().json()
+const { response, data, isFetching, execute } = useFetch(url, { immediate: false }).get().json()
 
 const fetchSearchResults = async () => {
   await execute()
