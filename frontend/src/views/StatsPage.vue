@@ -9,7 +9,7 @@
     <div class="fr-container">
       <div class="my-4">
         <iframe
-          src="https://compl-alim-metabase.cleverapps.io/public/question/49906293-261a-443e-a4af-3f1e5b2c4b23"
+          src="https://compl-alim-metabase.cleverapps.io/public/question/804a05fa-eddd-410a-ad56-ad2b46f9f10d"
           frameborder="0"
           width="800"
           height="600"
