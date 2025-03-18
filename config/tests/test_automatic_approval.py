@@ -24,7 +24,7 @@ from data.models import Declaration, Snapshot
 class TestAutomaticApproval(TestCase):
     @staticmethod
     def _create_submission_snapshot(declaration):
-        submission_date = timezone.now() - relativedelta(days=31)
+        submission_date = timezone.now() - relativedelta(days=15)
         snapshot = SnapshotFactory(
             action=Snapshot.SnapshotActions.SUBMIT,
             status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
@@ -47,7 +47,7 @@ class TestAutomaticApproval(TestCase):
         Une déclaration en attente d'instruction doit se valider si :
          * elle a l'article 15 ou 15 population à risque
          * aucune action d'instruction n'a été effectuée dessus
-         * son snapshot de soumission date de plus de trente jours.
+         * son snapshot de soumission date de plus de 14 jours.
         """
         declaration_15 = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
         TestAutomaticApproval._create_submission_snapshot(declaration_15)
