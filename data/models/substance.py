@@ -1,6 +1,6 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import F, Q, Value
+from django.db.models import F, Value
 from django.db.models.functions import Coalesce, NullIf
 
 from simple_history.models import HistoricalRecords
@@ -147,7 +147,7 @@ class Substance(IngredientCommonModel):
         """
         try:
             return self.max_quantities.through.objects.get(
-                Q(population__name="Population générale"), Q(substance=self)
+                population__name="Population générale", substance=self
             ).max_quantity
         except MaxQuantityPerPopulationRelation.DoesNotExist:
             return
