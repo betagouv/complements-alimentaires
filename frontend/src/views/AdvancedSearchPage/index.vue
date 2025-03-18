@@ -97,9 +97,7 @@
     </div>
     <div v-else class="h-40 sm:h-60 rounded bg-slate-100 mb-8 flex flex-col items-center content-center justify-center">
       <v-icon scale="1.5" name="ri-archive-2-line"></v-icon>
-      <p class="max-w-sm text-center mt-2">
-        Nous n'avons pas trouvé des déclarations correspondant avec ces paramètres
-      </p>
+      <p class="max-w-sm text-center mt-2">Nous n'avons pas trouvé des déclarations avec ces paramètres</p>
     </div>
     <DsfrPagination
       v-if="showPagination"
