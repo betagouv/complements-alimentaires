@@ -1,6 +1,5 @@
 import contextlib
 import logging
-import re
 from datetime import date, datetime, timezone
 
 from django.core.exceptions import ValidationError
@@ -467,7 +466,6 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     if latest_ica_declaration.dcl_date
                     else ""
                 )
-                daily_recommended_dose = re.findall(r"\d+", latest_ica_version_declaration.vrsdecl_djr)
                 status = (
                     Declaration.DeclarationStatus.WITHDRAWN
                     if latest_ica_declaration.dcl_date_fin_commercialisation
@@ -498,7 +496,7 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     unit_quantity=latest_ica_version_declaration.vrsdecl_poids_uc,
                     unit_measurement=SubstanceUnit.objects.get(siccrf_id=latest_ica_version_declaration.unt_ident),
                     conditioning=latest_ica_version_declaration.vrsdecl_conditionnement or "",
-                    daily_recommended_dose=daily_recommended_dose[0] if daily_recommended_dose else None,
+                    daily_recommended_dose=latest_ica_version_declaration.vrsdecl_djr,
                     minimum_duration=latest_ica_version_declaration.vrsdecl_durabilite,
                     instructions=latest_ica_version_declaration.vrsdecl_mode_emploi or "",
                     warning=latest_ica_version_declaration.vrsdecl_mise_en_garde or "",
