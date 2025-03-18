@@ -38,7 +38,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     public_comments = serializers.CharField(source="ca_public_comments", required=False, allow_blank=True)
     private_comments = serializers.CharField(source="ca_private_comments", required=False, allow_blank=True)
     status = serializers.IntegerField(source="ca_status", required=False)
-    change_reason = serializers.CharField(required=False, allow_blank=True)  # TODO: make required?
+    change_reason = serializers.CharField(required=False, allow_blank=True)
 
     # DRF ne gère pas automatiquement la création des nested-fields :
     # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
