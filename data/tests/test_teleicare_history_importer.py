@@ -169,15 +169,14 @@ class TeleicareHistoryImporterTestCase(TestCase):
         self.assertEqual(created_declaration.gamme, CA_to_create_as_declaration.cplalim_gamme)
         self.assertEqual(created_declaration.flavor, CA_to_create_as_declaration.dclencours_gout_arome_parfum)
         self.assertEqual(created_declaration.galenic_formulation, galenic_formulation)
-        self.assertEqual(created_declaration.unit_quantity, 32)
+        self.assertEqual(created_declaration.daily_recommended_dose, "32 kg of ppo")
         self.assertEqual(created_declaration.unit_measurement, unit)
         self.assertEqual(created_declaration.article, Declaration.Article.ARTICLE_15)
         self.assertEqual(
             created_declaration.conditioning, version_declaration_to_create_as_declaration.vrsdecl_conditionnement
         )
         self.assertEqual(
-            created_declaration.daily_recommended_dose,
-            str(version_declaration_to_create_as_declaration.vrsdecl_poids_uc),
+            created_declaration.unit_quantity, version_declaration_to_create_as_declaration.vrsdecl_poids_uc
         )
         self.assertEqual(
             created_declaration.minimum_duration,
