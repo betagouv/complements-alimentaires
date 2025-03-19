@@ -157,22 +157,23 @@
       </div>
       <div class="grid md:grid-cols-2 mt-4">
         <DsfrFieldset legend="Population cible" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4 !mb-10" class="pb-10">
-          <div
-            v-for="(_, idx) in state.maxQuantities"
+          <ValidateEach
+            v-for="(item, idx) in state.maxQuantities"
             :key="`population-${idx}`"
-            class="grid grid-cols-2 gap-x-8 -my-10"
+            :state="item"
+            :rules="rules"
           >
-            <DsfrInputGroup>
-              <DsfrSelect
-                v-model="state.maxQuantities[idx].population"
-                label="Population cible"
-                :options="populationOptions"
-              />
-            </DsfrInputGroup>
-            <DsfrInputGroup>
-              <DsfrInput v-model="state.maxQuantities[idx].maxQuantity" label="Dosage maximum" label-visible />
-            </DsfrInputGroup>
-          </div>
+            <template #default="{ v }">
+              <div class="grid grid-cols-2 gap-x-8 -my-10">
+                <DsfrInputGroup>
+                  <DsfrSelect v-model="v.population.$model" label="Population cible" :options="populationOptions" />
+                </DsfrInputGroup>
+                <DsfrInputGroup :error-message="firstErrorMsg(v, 'maxQuantity')">
+                  <DsfrInput v-model="v.maxQuantity.$model" label="Dosage maximum" label-visible />
+                </DsfrInputGroup>
+              </div>
+            </template>
+          </ValidateEach>
           <DsfrButton
             label="Ajouter un dosage maximum"
             @click="addNewPopulationMaxDose"
@@ -221,6 +222,7 @@ import { handleError } from "@/utils/error-handling"
 import { firstErrorMsg, errorRequiredField, errorNumeric, errorMaxStringLength } from "@/utils/forms"
 import { getUnitString } from "@/utils/elements"
 import { useVuelidate } from "@vuelidate/core"
+import { ValidateEach } from "@vuelidate/components"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
@@ -350,7 +352,8 @@ const rules = computed(() => {
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
-    maxQuantity: form?.maxQuantity ? errorNumeric : {},
+    maxQuantity: errorNumeric,
+    population: {},
     changeReason: Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
   }
 })
