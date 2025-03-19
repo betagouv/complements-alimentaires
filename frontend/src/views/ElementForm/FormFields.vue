@@ -155,7 +155,34 @@
           </div>
         </div>
       </div>
-      <p class="my-4"><i>Population cible et à risque en construction</i></p>
+      <div class="grid md:grid-cols-2 mt-4">
+        <DsfrFieldset legend="Population cible" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4 !mb-10" class="pb-10">
+          <div
+            v-for="(_, idx) in state.maxQuantities"
+            :key="`population-${idx}`"
+            class="grid grid-cols-2 gap-x-8 -my-10"
+          >
+            <DsfrInputGroup>
+              <DsfrSelect
+                v-model="state.maxQuantities[idx].population"
+                label="Population cible"
+                :options="populationOptions"
+              />
+            </DsfrInputGroup>
+            <DsfrInputGroup>
+              <DsfrInput v-model="state.maxQuantities[idx].maxQuantity" label="Dosage maximum" label-visible />
+            </DsfrInputGroup>
+          </div>
+          <DsfrButton
+            label="Ajouter un dosage maximum"
+            @click="addNewPopulationMaxDose"
+            icon="ri-add-line"
+            size="sm"
+            class="mt-4"
+            secondary
+          />
+        </DsfrFieldset>
+      </div>
     </DsfrFieldset>
     <DsfrFieldset legend="Commentaires" legendClass="fr-h4 !mb-0">
       <div class="grid md:grid-cols-2 md:gap-4">
@@ -208,11 +235,19 @@ const apiType = computed(() => props.type && getApiType(props.type))
 const router = useRouter()
 
 const createEmptySynonym = () => ({ name: "" })
+const addNewSynonym = () => {
+  state.value.synonyms.push(createEmptySynonym())
+}
+const createEmptyPopulationMaxDose = () => ({ population: undefined, maxQuantity: undefined })
+const addNewPopulationMaxDose = () => {
+  state.value.maxQuantities.push(createEmptyPopulationMaxDose())
+}
 
 const state = ref({
   plantParts: [],
   substances: [],
   synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
+  maxQuantities: [createEmptyPopulationMaxDose()],
 })
 
 watch(
@@ -225,6 +260,7 @@ watch(
     if (state.value.objectType && apiType.value === "other-ingredient")
       state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
     if (state.value.unitId) state.value.unit = state.value.unitId
+    if (!state.value.maxQuantities) state.value.maxQuantities = [createEmptyPopulationMaxDose()]
   }
 )
 
@@ -260,9 +296,6 @@ const saveElement = async () => {
     if (isNewIngredient.value) router.push({ name: "DashboardPage" })
     else router.navigateBack({ name: "DashboardPage" })
   }
-}
-const addNewSynonym = async () => {
-  state.value.synonyms.push(createEmptySynonym())
 }
 
 const formQuestions = {
@@ -327,7 +360,7 @@ const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
 const store = useRootStore()
-const { plantParts, plantFamilies, units } = storeToRefs(store)
+const { plantParts, plantFamilies, units, populations } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
 
@@ -363,5 +396,9 @@ const aromaId = 3
 
 const unitString = computed(() => {
   return getUnitString(state.value.unit, units)
+})
+
+const populationOptions = computed(() => {
+  return populations.value?.map((pop) => ({ text: pop.name, value: pop.id }))
 })
 </script>
