@@ -19,7 +19,7 @@
             être ajouté, remplacé par un ingrédient qui existe déjà, ou rejeté.
           </p>
           <p>
-            Dans l'idéale, le nombre de demandes d'ajout est quasi nul : ça indique que notre base est exhaustive et
+            Dans l'idéal, le nombre de demandes d'ajout est quasi nul : cela indique que notre base est exhaustive et
             facilement recherchable.
           </p>
           <iframe
