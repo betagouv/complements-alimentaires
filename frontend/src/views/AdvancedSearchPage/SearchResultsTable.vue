@@ -48,7 +48,7 @@ const rows = computed(() => {
         mandatedCompany: d.mandatedCompany?.socialName,
       },
       d.article ? articleOptionsWith15Subtypes.find((x) => x.value === d.article)?.shortText : "",
-      getStatusTagForCell(d.status, true),
+      getStatusTagForCell(d.status),
       timeAgo(d.creationDate),
     ],
   }))
