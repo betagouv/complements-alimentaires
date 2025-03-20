@@ -128,7 +128,8 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
 
     @transaction.atomic
     def create(self, validated_data):
-        # max_quantity doesn't exist in validated_data
+        # le champ `max_quantity` n'existe pas dans validated_data
+        # car ce n'est pas un champ du Model mais une property
         max_quantity = self.initial_data.get("max_quantity")
         substance = super().create(validated_data)
         if max_quantity:
@@ -141,6 +142,8 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
 
     @transaction.atomic
     def update(self, instance, validated_data):
+        # le champ `max_quantity` n'existe pas dans validated_data
+        # car ce n'est pas un champ du Model mais une property
         max_quantity = self.initial_data.get("max_quantity")
         substance = super().update(instance, validated_data)
 
@@ -149,15 +152,15 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
             substance=substance, population=general_population
         )
 
-        # delete existing MaxQuantityPerPopulationRelation
+        # delete
         if max_qty_general_pop.exists() and max_quantity is None:
             max_qty_general_pop.first().delete()
-        # update existing MaxQuantityPerPopulationRelation
+        # update
         elif max_qty_general_pop.exists() and max_quantity is not None:
             max_quantity_to_change = max_qty_general_pop.first()
             max_quantity_to_change.ca_max_quantity = max_quantity
             max_quantity_to_change.save()
-        # create MaxQuantityPerPopulationRelation
+        # create
         elif not max_qty_general_pop.exists() and max_quantity is not None:
             MaxQuantityPerPopulationRelation.objects.create(
                 substance=substance, population=general_population, ca_max_quantity=max_quantity
