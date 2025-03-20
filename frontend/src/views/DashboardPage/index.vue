@@ -126,6 +126,11 @@ const visorActions = [
     description: "Consultez la liste des déclarations attendant une validation",
     link: { name: "VisaDeclarations" },
   },
+  {
+    title: "Recherche avancée",
+    description: "Utilisez des fonctionnalités de filtrage, triage et recherche pour trouver des déclarations",
+    link: { name: "AdvancedSearchPage" },
+  },
 ]
 
 const onboardingActions = [
