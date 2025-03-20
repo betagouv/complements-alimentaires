@@ -93,18 +93,18 @@
     </div>
     <div v-else-if="hasDeclarations">
       <SearchResultsTable :data="data" />
+      <DsfrPagination
+        v-if="showPagination"
+        @update:currentPage="updatePage"
+        :pages="pages"
+        :current-page="page - 1"
+        :truncLimit="5"
+      />
     </div>
     <div v-else class="h-40 sm:h-60 rounded bg-slate-100 mb-8 flex flex-col items-center content-center justify-center">
       <v-icon scale="1.5" name="ri-archive-2-line"></v-icon>
       <p class="max-w-sm text-center mt-2">Nous n'avons pas trouvé des déclarations avec ces paramètres</p>
     </div>
-    <DsfrPagination
-      v-if="showPagination"
-      @update:currentPage="updatePage"
-      :pages="pages"
-      :current-page="page - 1"
-      :truncLimit="5"
-    />
   </div>
 </template>
 <script setup>
@@ -144,7 +144,7 @@ const limit = computed(() => route.query.limit)
 
 // Mises à jour de la requête lors des changements des filtres et recherche
 
-const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
+const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } })
 
 const updateStatusFilter = (status) => updateQuery({ status })
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
