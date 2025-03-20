@@ -413,7 +413,7 @@ class Declaration(Historisable, TimeStampable):
     def computed_substances_with_max_quantity_exceeded(self):
         substances_with_general_population_max_quantity_exceeded = (
             self.computed_substances.exclude(quantity__isnull=True)
-            .filter(substance__max_quantities__name__icontains="Population générale")
+            .filter(substance__max_quantities__name="Population générale")
             .filter(substance__maxquantityperpopulationrelation__max_quantity__lt=F("quantity"))
             .filter(unit=F("substance__unit"))
         )
@@ -424,7 +424,7 @@ class Declaration(Historisable, TimeStampable):
         substances_with_general_population_max_quantity_exceeded = (
             self.declared_substances.exclude(substance__isnull=True)
             .exclude(quantity__isnull=True)
-            .filter(substance__max_quantities__name__icontains="Population générale")
+            .filter(substance__max_quantities__name="Population générale")
             .filter(substance__maxquantityperpopulationrelation__max_quantity__lt=F("quantity"))
             .filter(unit=F("substance__unit"))
         )
