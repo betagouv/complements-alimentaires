@@ -3,7 +3,7 @@
     <DsfrBreadcrumb
       :links="[
         { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { to: { name: 'AdvancedSearchPage' }, text: 'Recherche avancée' },
+        { to: previousRoute, text: 'Recherche avancée' },
         { text: declaration?.name || 'Résultat' },
       ]"
     />
@@ -21,7 +21,8 @@
 
 <script setup>
 import { useFetch } from "@vueuse/core"
-import { onMounted, ref } from "vue"
+import { onMounted, computed } from "vue"
+import { useRouter } from "vue-router"
 import { useRootStore } from "@/stores/root"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
@@ -29,6 +30,12 @@ import DeclarationSummary from "@/components/DeclarationSummary"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
+
+const router = useRouter()
+const previousRoute = computed(() => {
+  const previousRoute = router.getPreviousRoute().value
+  return previousRoute?.name === "AdvancedSearchPage" ? previousRoute : { name: "AdvancedSearchPage" }
+})
 
 const props = defineProps({
   declarationId: String,
