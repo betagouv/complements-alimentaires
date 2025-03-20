@@ -142,28 +142,30 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        # le champ `max_quantity` n'existe pas dans validated_data
-        # car ce n'est pas un champ du Model mais une property
-        max_quantity = self.initial_data.get("max_quantity")
         substance = super().update(instance, validated_data)
 
-        general_population = Population.objects.get(name="Population générale")
-        max_qty_general_pop = MaxQuantityPerPopulationRelation.objects.filter(
-            substance=substance, population=general_population
-        )
+        # le champ `max_quantity` n'existe pas dans validated_data
+        # car ce n'est pas un champ du Model mais une property
+        if "max_quantity" in self.initial_data.keys():
+            max_quantity = self.initial_data.get("max_quantity")
 
-        # delete
-        if max_qty_general_pop.exists() and max_quantity is None:
-            max_qty_general_pop.first().delete()
-        # update
-        elif max_qty_general_pop.exists() and max_quantity is not None:
-            max_quantity_to_change = max_qty_general_pop.first()
-            max_quantity_to_change.ca_max_quantity = max_quantity
-            max_quantity_to_change.save()
-        # create
-        elif not max_qty_general_pop.exists() and max_quantity is not None:
-            MaxQuantityPerPopulationRelation.objects.create(
-                substance=substance, population=general_population, ca_max_quantity=max_quantity
+            general_population = Population.objects.get(name="Population générale")
+            max_qty_general_pop = MaxQuantityPerPopulationRelation.objects.filter(
+                substance=substance, population=general_population
             )
+
+            # delete
+            if max_qty_general_pop.exists() and max_quantity is None:
+                max_qty_general_pop.first().delete()
+            # update
+            elif max_qty_general_pop.exists() and max_quantity is not None:
+                max_quantity_to_change = max_qty_general_pop.first()
+                max_quantity_to_change.ca_max_quantity = max_quantity
+                max_quantity_to_change.save()
+            # create
+            elif not max_qty_general_pop.exists() and max_quantity is not None:
+                MaxQuantityPerPopulationRelation.objects.create(
+                    substance=substance, population=general_population, ca_max_quantity=max_quantity
+                )
 
         return substance

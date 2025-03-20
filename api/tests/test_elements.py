@@ -536,6 +536,42 @@ class TestElementsModifyApi(APITestCase):
         )
 
     @authenticate
+    def test_can_modify_substance_without_modifying_max_quantity(self):
+        """
+        Les instructrices peuvent modifier un champ sans que la dose max se trouve supprimée
+        """
+        general_population = PopulationFactory(ca_name="Population générale")
+        InstructionRoleFactory(user=authenticate.user)
+        substance = SubstanceFactory.create(
+            siccrf_name="original name",
+            ca_name="",
+            unit=SubstanceUnitFactory.create(),
+            siccrf_status=IngredientStatus.NO_STATUS,
+            ca_status=IngredientStatus.AUTHORIZED,
+        )
+        MaxQuantityPerPopulationRelationFactory(substance=substance, population=general_population, ca_max_quantity=24)
+        new_unit = SubstanceUnitFactory.create()
+        self.assertEqual(substance.max_quantity, 24, "La quantité max pour la population générale est définie")
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {
+                "name": "test",
+                "unit": new_unit.id,
+                "status": IngredientStatus.NO_STATUS,
+                "changeReason": "Test change",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        substance.refresh_from_db()
+        self.assertEqual(substance.max_quantity, 24, "La quantité max pour la population générale n'est pas modifiée")
+        self.assertTrue(
+            MaxQuantityPerPopulationRelation.objects.filter(
+                substance=substance, population=general_population
+            ).exists()
+        )
+
+    @authenticate
     def test_delete_data(self):
         """
         C'est possible de supprimer des données optionnelles en passant un string vide
