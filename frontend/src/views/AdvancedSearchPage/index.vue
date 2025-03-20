@@ -202,9 +202,8 @@ const { populations, conditions, galenicFormulations } = storeToRefs(store)
 const toOptions = (list) => {
   const options =
     (list || [])
-      .map((x) => ({ value: x.id, text: x.name })) // Transforme la réponse API en options pour les champs select
-      .sort((a, b) => a.text.localeCompare(b.text)) // Triage alphabétique
-      .filter((x) => x.text.indexOf("à préciser") === -1) || [] // On enlève les options destinés aux pros ("à préciser")
+      .map((x) => ({ value: x.id, text: x.name.split(" (à préciser)")[0] })) // Transforme la réponse API en options pour les champs select
+      .sort((a, b) => a.text.localeCompare(b.text)) || [] // Triage alphabétique
   options.unshift({ disabled: true, text: "---------" })
   options.unshift({ value: "", text: "Tout afficher" })
   return options
