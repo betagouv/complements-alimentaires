@@ -19,6 +19,7 @@ import { useFetch } from "@vueuse/core"
 import { onMounted, ref } from "vue"
 import { useRootStore } from "@/stores/root"
 import { handleError } from "@/utils/error-handling"
+import ProgressSpinner from "@/components/ProgressSpinner"
 import DeclarationSummary from "@/components/DeclarationSummary"
 
 const store = useRootStore()
@@ -29,10 +30,10 @@ const props = defineProps({
 })
 
 // Requêtes
-const isFetching = ref(true)
 const {
   response: declarationResponse,
   data: declaration,
+  isFetching,
   execute: executeDeclarationFetch,
 } = useFetch(`/api/v1/declarations/${props.declarationId}`, { immediate: false }).get().json()
 
