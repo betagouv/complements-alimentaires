@@ -34,7 +34,7 @@
         <div>
           <div class="md:flex gap-16">
             <div class="md:w-2/4">
-              <DsfrFieldset legend="Cible" class="!mb-0 min-w-60">
+              <DsfrFieldset legend="Cible" class="min-w-60">
                 <DsfrInputGroup>
                   <DsfrSelect
                     label="Population cible"
@@ -56,7 +56,7 @@
                   />
                 </DsfrInputGroup>
               </DsfrFieldset>
-              <DsfrFieldset legend="Format" class="!mb-0 min-w-60">
+              <DsfrFieldset legend="Format" class="min-w-60">
                 <DsfrInputGroup>
                   <DsfrSelect
                     label="Forme galénique"
@@ -70,9 +70,8 @@
               </DsfrFieldset>
             </div>
             <div class="md:w-2/4">
-              <DsfrFieldset legend="Statut de la déclaration" class="!mb-0">
-                <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" :statusString="filteredStatus" />
-              </DsfrFieldset>
+              <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" :statusString="filteredStatus" />
+
               <DsfrInputGroup>
                 <DsfrSelect
                   label="Article"
