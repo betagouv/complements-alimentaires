@@ -24,10 +24,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='substance',
-            name='max_quantity',
-        ),
-        migrations.RemoveField(
-            model_name='substance',
             name='siccrf_max_quantity',
         ),
     ]
