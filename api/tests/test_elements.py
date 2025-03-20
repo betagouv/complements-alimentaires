@@ -453,7 +453,7 @@ class TestElementsModifyApi(APITestCase):
         """
         Les instructrices peuvent modifier un ingrédient, et un mapping est fait entre le nom du champ sans prefix -> ca_
         """
-        PopulationFactory(ca_name="Population générale")
+        general_population = PopulationFactory(ca_name="Population générale")
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
             siccrf_name="original name",
@@ -462,10 +462,25 @@ class TestElementsModifyApi(APITestCase):
             siccrf_status=IngredientStatus.NO_STATUS,
             ca_status=IngredientStatus.AUTHORIZED,
         )
+        MaxQuantityPerPopulationRelationFactory(
+            substance=substance,
+            population=general_population,
+            ca_max_quantity=3.4,
+        )
+
         new_unit = SubstanceUnitFactory.create()
+        self.assertEqual(
+            substance.max_quantity, 3.4, "La quantité max pour la population générale est la bonne avant modification"
+        )
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
-            {"name": "test", "unit": new_unit.id, "status": IngredientStatus.NO_STATUS, "changeReason": "Test change"},
+            {
+                "name": "test",
+                "unit": new_unit.id,
+                "max_quantity": 35,
+                "status": IngredientStatus.NO_STATUS,
+                "changeReason": "Test change",
+            },
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -473,6 +488,9 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(substance.siccrf_name, "original name")
         self.assertEqual(substance.ca_name, "test")
         self.assertEqual(substance.unit, new_unit, "Les champs sans ca_ équivelant sont aussi sauvegardés")
+        self.assertEqual(
+            substance.max_quantity, 35, "La quantité max pour la population générale est aussi sauvegardée"
+        )
         self.assertEqual(
             substance.status, IngredientStatus.NO_STATUS, "C'est possible de remettre la valeur originelle"
         )

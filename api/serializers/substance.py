@@ -149,8 +149,9 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
         )
 
         if max_qty_general_pop.exists() and max_quantity:
-            max_qty_general_pop.first().ca_max_quantity = max_quantity
-            max_qty_general_pop.first().save()
+            max_quantity_to_change = max_qty_general_pop.first()
+            max_quantity_to_change.ca_max_quantity = max_quantity
+            max_quantity_to_change.save()
         elif max_qty_general_pop.exists():
             max_qty_general_pop.first().delete()
 
