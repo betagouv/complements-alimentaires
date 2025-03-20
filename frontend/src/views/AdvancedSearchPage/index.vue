@@ -23,7 +23,7 @@
         <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
       </div>
     </div>
-    <DsfrAccordionsGroup v-model="activeAccordion" class="border mb-8">
+    <DsfrAccordionsGroup v-model="activeAccordion" class="border mb-8 filter-area">
       <DsfrAccordion>
         <template v-slot:title>
           <p>
@@ -233,6 +233,12 @@ const galenicFormulationOptions = computed(() => toOptions(galenicFormulations.v
 
 <style scoped>
 .search-area :deep(.fr-select-group) {
+  @apply !my-0;
+}
+.filter-area :deep(.fr-fieldset__legend) {
+  @apply !py-0;
+}
+.filter-area :deep(.fr-fieldset__element) {
   @apply !my-0;
 }
 </style>
