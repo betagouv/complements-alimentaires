@@ -131,10 +131,11 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
         # max_quantity doesn't exist in validated_data
         max_quantity = self.initial_data.get("max_quantity")
         substance = super().create(validated_data)
-        general_population = Population.objects.get(name="Population générale")
-        MaxQuantityPerPopulationRelation.objects.create(
-            substance=substance, population=general_population, ca_max_quantity=max_quantity
-        )
+        if max_quantity:
+            general_population = Population.objects.get(name="Population générale")
+            MaxQuantityPerPopulationRelation.objects.create(
+                substance=substance, population=general_population, ca_max_quantity=max_quantity
+            )
 
         return substance
 
@@ -148,11 +149,18 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
             substance=substance, population=general_population
         )
 
-        if max_qty_general_pop.exists() and max_quantity:
+        # delete existing MaxQuantityPerPopulationRelation
+        if max_qty_general_pop.exists() and max_quantity is None:
+            max_qty_general_pop.first().delete()
+        # update existing MaxQuantityPerPopulationRelation
+        elif max_qty_general_pop.exists() and max_quantity is not None:
             max_quantity_to_change = max_qty_general_pop.first()
             max_quantity_to_change.ca_max_quantity = max_quantity
             max_quantity_to_change.save()
-        elif max_qty_general_pop.exists():
-            max_qty_general_pop.first().delete()
+        # create MaxQuantityPerPopulationRelation
+        elif not max_qty_general_pop.exists() and max_quantity is not None:
+            MaxQuantityPerPopulationRelation.objects.create(
+                substance=substance, population=general_population, ca_max_quantity=max_quantity
+            )
 
         return substance

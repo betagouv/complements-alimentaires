@@ -18,7 +18,8 @@ from data.factories import (
     SubstanceSynonymFactory,
     SubstanceUnitFactory,
 )
-from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Plant, Population, Substance
+from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Plant, Population
+from data.models.substance import MaxQuantityPerPopulationRelation, Substance
 
 from .utils import authenticate
 
@@ -495,6 +496,44 @@ class TestElementsModifyApi(APITestCase):
             substance.status, IngredientStatus.NO_STATUS, "C'est possible de remettre la valeur originelle"
         )
         self.assertEqual(substance.history.first().history_change_reason, "Test change")
+
+    @authenticate
+    def test_can_modify_substance_by_adding_max_quantity(self):
+        """
+        Les instructrices peuvent rajouter une doses max pour la population générale en ajoutant
+        """
+        general_population = PopulationFactory(ca_name="Population générale")
+        InstructionRoleFactory(user=authenticate.user)
+        substance = SubstanceFactory.create(
+            siccrf_name="original name",
+            ca_name="",
+            unit=SubstanceUnitFactory.create(),
+            siccrf_status=IngredientStatus.NO_STATUS,
+            ca_status=IngredientStatus.AUTHORIZED,
+        )
+        new_unit = SubstanceUnitFactory.create()
+        self.assertEqual(
+            substance.max_quantity, None, "La quantité max pour la population générale n'est pas encore définie"
+        )
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {
+                "name": "test",
+                "unit": new_unit.id,
+                "max_quantity": 666,
+                "status": IngredientStatus.NO_STATUS,
+                "changeReason": "Test change",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        substance.refresh_from_db()
+        self.assertEqual(substance.max_quantity, 666, "La quantité max pour la population générale est créée")
+        self.assertTrue(
+            MaxQuantityPerPopulationRelation.objects.filter(
+                substance=substance, population=general_population
+            ).exists()
+        )
 
     @authenticate
     def test_delete_data(self):
