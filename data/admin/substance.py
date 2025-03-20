@@ -6,7 +6,7 @@ from django.utils.html import format_html
 
 from simple_history.admin import SimpleHistoryAdmin
 
-from data.models import Substance, SubstanceSynonym
+from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym
 
 from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
@@ -29,6 +29,16 @@ class SubstanceSynonymInline(admin.TabularInline):
     formfield_overrides = {
         models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
     }
+
+
+class SubstanceMaxQuantitiesInline(admin.TabularInline):
+    model = MaxQuantityPerPopulationRelation
+    extra = 1
+
+    formfield_overrides = {
+        models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
+    }
+    readonly_fields = ("siccrf_max_quantity",)
 
 
 @admin.register(Substance)
@@ -101,27 +111,28 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             },
         ),
         (
-            "Quantités",
-            {
-                "fields": [
-                    "siccrf_must_specify_quantity",
-                    "siccrf_max_quantity",
-                    "siccrf_nutritional_reference",
-                    "ca_must_specify_quantity",
-                    "ca_max_quantity",
-                    "ca_nutritional_reference",
-                    "unit",
-                ],
-            },
-        ),
-        (
             "Présence dans les ingrédients",
             {
                 "fields": ["get_plants", "get_microorganisms", "get_ingredients"],
             },
         ),
+        (
+            "Quantités",
+            {
+                "fields": [
+                    "siccrf_must_specify_quantity",
+                    "ca_must_specify_quantity",
+                    "siccrf_nutritional_reference",
+                    "ca_nutritional_reference",
+                    "unit",
+                ],
+            },
+        ),
     ]
-    inlines = (SubstanceSynonymInline,)
+    inlines = (
+        SubstanceMaxQuantitiesInline,
+        SubstanceSynonymInline,
+    )
     readonly_fields = [
         "siccrf_name",
         "siccrf_name_en",
@@ -133,7 +144,6 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         "siccrf_cas_number",
         "siccrf_einec_number",
         "siccrf_must_specify_quantity",
-        "siccrf_max_quantity",
         "siccrf_nutritional_reference",
         "get_plants",
         "get_microorganisms",

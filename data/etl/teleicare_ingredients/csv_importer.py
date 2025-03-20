@@ -119,7 +119,6 @@ class CSVImporter:
         "siccrf_einec_number": ["NUM_EINECS"],
         "siccrf_source": ["SOURCE"],
         "siccrf_must_specify_quantity": ["QUANTITE_ARENSEIGNER"],
-        "siccrf_max_quantity": ["QTE_MAX"],
         "siccrf_nutritional_reference": ["APPORT_REF"],
         "unit": ["UNT_IDENT"],
         "siccrf_genus": ["GENRE"],

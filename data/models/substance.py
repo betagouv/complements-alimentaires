@@ -95,16 +95,6 @@ class Substance(IngredientCommonModel):
     # max_quantity
     max_quantities = models.ManyToManyField(Population, through="MaxQuantityPerPopulationRelation")
 
-    siccrf_max_quantity = models.FloatField(
-        null=True, blank=True, verbose_name="quantité maximale autorisée (selon la base SICCRF)"
-    )
-    ca_max_quantity = models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée")
-    max_quantity = models.GeneratedField(
-        expression=Coalesce(F("ca_max_quantity"), F("siccrf_max_quantity")),
-        output_field=models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée"),
-        db_persist=True,
-    )
-
     # nutritional_reference
     siccrf_nutritional_reference = models.FloatField(
         null=True, blank=True, verbose_name="apport nutritionnel conseillé"
@@ -139,7 +129,6 @@ class Substance(IngredientCommonModel):
             "einec_number",
             "source",
             "must_specify_quantity",
-            "max_quantity",
             "nutritional_reference",
             "status",
             "siccrf_status",
@@ -150,6 +139,18 @@ class Substance(IngredientCommonModel):
     @property
     def name_en(self):
         return self.siccrf_name_en
+
+    @property
+    def max_quantity(self):
+        """
+        Cette property renvoie la max_quantity pour la Population Générale
+        """
+        try:
+            return self.max_quantities.through.objects.get(
+                population__name="Population générale", substance=self
+            ).max_quantity
+        except MaxQuantityPerPopulationRelation.DoesNotExist:
+            return
 
     def compute_substance_types(self):
         """

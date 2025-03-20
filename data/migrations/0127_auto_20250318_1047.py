@@ -29,8 +29,8 @@ class Migration(migrations.Migration):
                 )
                 latest_ica_version_declaration = declaration_versions.order_by("vrsdecl_numero").last()
 
-                declaration.unit_quantity = declaration.daily_recommended_dose
-                declaration.daily_recommended_dose = latest_ica_version_declaration.vrsdecl_djr
+                declaration.unit_quantity = declaration.daily_recommended_dose # FloatField to FloatField
+                declaration.daily_recommended_dose = latest_ica_version_declaration.vrsdecl_djr #TextField to TextField
                 declaration.save()
 
     def reverse_set_unit_quantity_and_daily_recommended_dose(apps, schema_editor):
