@@ -60,7 +60,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
         field_name="populations__id", to_field_name="id", queryset=Population.objects.all()
     )
     condition = django_filters.ModelMultipleChoiceFilter(
-        field_name="conditions__id", to_field_name="id", queryset=Condition.objects.all()
+        field_name="conditions_not_recommended__id", to_field_name="id", queryset=Condition.objects.all()
     )
     company = BaseNumberInFilter(field_name="company__id")
     company_name_start = django_filters.CharFilter(method="company_name_start__gte")

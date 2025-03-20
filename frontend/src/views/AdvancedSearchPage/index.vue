@@ -183,7 +183,10 @@ const url = computed(() => {
   const galenicFormulationQuery = galenicFormulation.value ? `galenic_formulation=${galenicFormulation.value}` : ""
   const searchQuery = searchTerm.value ? `search=${searchTerm.value}` : ""
 
-  return `${baseUrl}/?${limitQuery}&${offsetQuery}&${statusQuery}&${orderingQuery}&${articleQuery}&${populationQuery}&${conditionQuery}${galenicFormulationQuery}&${searchQuery}`
+  const fullPath = `${baseUrl}/?${limitQuery}&${offsetQuery}&${statusQuery}&${orderingQuery}&${articleQuery}&${populationQuery}&${conditionQuery}&${galenicFormulationQuery}&${searchQuery}`
+
+  // Enlève les `&` consecutifs
+  return fullPath.replace(/&+/g, "&").replace(/&$/, "")
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 
