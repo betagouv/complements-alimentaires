@@ -211,7 +211,13 @@ const toOptions = (list) => {
   return options
 }
 
-const articleSelectOptions = [...articleOptionsWith15Subtypes, ...[{ value: "", text: "Tous" }]]
+const articleSelectOptions = [
+  ...[
+    { value: "", text: "Tout afficher" },
+    { disabled: true, text: "---------" },
+  ],
+  ...articleOptionsWith15Subtypes,
+]
 const orderingOptions = [
   { value: "name", text: "Nom du produit" },
   { value: "-name", text: "Nom du produit (descendant)" },
