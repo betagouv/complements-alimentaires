@@ -5,7 +5,11 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from data.models import Microorganism
 
-from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
+from .abstract_admin import (
+    ChangeReasonAdminMixin,
+    ChangeReasonFormMixin,
+    RecomputeDeclarationArticleAtIngredientSaveMixin,
+)
 
 
 class MicroorganismForm(ChangeReasonFormMixin):
@@ -18,7 +22,8 @@ class MicroorganismForm(ChangeReasonFormMixin):
 
 
 @admin.register(Microorganism)
-class MicroorganismAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
+class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonAdminMixin, SimpleHistoryAdmin):
+    declaredingredient_set = "declaredmicroorganism_set"
     form = MicroorganismForm
     fieldsets = [
         (

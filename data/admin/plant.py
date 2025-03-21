@@ -6,7 +6,11 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from data.models import Plant, PlantSynonym
 
-from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
+from .abstract_admin import (
+    ChangeReasonAdminMixin,
+    ChangeReasonFormMixin,
+    RecomputeDeclarationArticleAtIngredientSaveMixin,
+)
 
 
 class PlantSynonymInline(admin.TabularInline):
@@ -39,7 +43,8 @@ class PlantForm(ChangeReasonFormMixin):
 
 
 @admin.register(Plant)
-class PlantAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
+class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonAdminMixin, SimpleHistoryAdmin):
+    declaredingredient_set = "declaredplant_set"
     form = PlantForm
     fieldsets = [
         (
