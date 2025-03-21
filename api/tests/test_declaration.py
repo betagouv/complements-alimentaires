@@ -2439,6 +2439,69 @@ class TestSingleDeclaredElementApi(APITestCase):
         self.assertEqual(declared_plant.unit, unit)
 
     @authenticate
+    def test_save_origin_declaration_on_replace(self):
+        """
+        Quand on remplace une demande par un ingrédient, si l'ingrédient a été créé dans la plateforme,
+        on sauvegarde la declaration sur le fiche ingrédient pour suivre la raison de la création de l'ingrédient
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
+        plant = PlantFactory(
+            siccrf_id=None, origin_declaration=None
+        )  # que les ingrédients créé via Compl'Alim ne vont pas avoir un siccrf_id
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {"element": {"id": plant.id, "type": "plant"}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        plant.refresh_from_db()
+        self.assertEqual(plant.origin_declaration, declaration)
+        self.assertIsNone(plant.history.first().history_change_reason)
+
+        # vérifier que la première déclaration est gardée quand l'ingrédient est réutilisé
+        other_declaration = DeclarationFactory()
+        other_declared_ingredient = DeclaredIngredientFactory(declaration=other_declaration)
+
+        response = self.client.post(
+            reverse(
+                "api:declared_element_replace", kwargs={"pk": other_declared_ingredient.id, "type": "other-ingredient"}
+            ),
+            {"element": {"id": plant.id, "type": "plant"}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        plant.refresh_from_db()
+        self.assertEqual(
+            plant.origin_declaration,
+            declaration,
+            "Quand l'ingrédient a déjà été utilisé, ne mets pas à jour la déclaration d'origine",
+        )
+
+    @authenticate
+    def test_imported_ingredients_dont_get_origin_declaration(self):
+        """
+        Les ingrédients historiques doivent pas recevoir une déclaration d'origine
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration)
+        plant = PlantFactory(siccrf_id=1234, origin_declaration=None)
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            {"element": {"id": plant.id, "type": "plant"}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        plant.refresh_from_db()
+        self.assertIsNone(plant.origin_declaration)
+
+    @authenticate
     def test_can_add_synonym_on_replace(self):
         """
         C'est possible d'envoyer une liste avec un element pour ajouter un synonyme

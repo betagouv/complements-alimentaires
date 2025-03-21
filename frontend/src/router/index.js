@@ -37,6 +37,8 @@ import DeclaredElementPage from "@/views/DeclaredElementPage"
 import ElementForm from "@/views/ElementForm"
 import MandatedCompaniesPage from "@/views/MandatedCompaniesPage"
 import FaqPage from "@/views/FaqPage"
+import AdvancedSearchPage from "@/views/AdvancedSearchPage"
+import AdvancedSearchResult from "@/views/AdvancedSearchResult"
 import StatsPage from "@/views/StatsPage"
 import { ref } from "vue"
 
@@ -421,6 +423,39 @@ const routes = [
     component: StatsPage,
     meta: {
       title: "Mesures d'impact",
+    },
+  },
+  {
+    path: "/recherche-avancee",
+    name: "AdvancedSearchPage",
+    component: AdvancedSearchPage,
+    meta: {
+      title: "Recherche avancée",
+      requiredRole: "InstructionRole", // Make array
+      authenticationRequired: true,
+      defaultQueryParams: {
+        page: 1,
+        status:
+          "AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA,OBJECTION,OBSERVATION,ABANDONED,AUTHORIZED,REJECTED,WITHDRAWN",
+        triage: "-creationDate",
+        article: "",
+        population: "",
+        condition: "",
+        galenicFormulation: "",
+        limit: "10",
+        recherche: "",
+      },
+    },
+  },
+  {
+    path: "/recherche-avancee/:declarationId",
+    props: true,
+    name: "AdvancedSearchResult",
+    component: AdvancedSearchResult,
+    meta: {
+      title: "Résultat de recherche",
+      authenticationRequired: true,
+      requiredRole: "InstructionRole", // Make array
     },
   },
   {

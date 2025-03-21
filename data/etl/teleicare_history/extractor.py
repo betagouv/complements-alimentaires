@@ -1,6 +1,5 @@
 import contextlib
 import logging
-import re
 from datetime import date, datetime, timezone
 
 from django.core.exceptions import ValidationError
@@ -467,7 +466,6 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     if latest_ica_declaration.dcl_date
                     else ""
                 )
-                unit_quantity = re.findall(r"\d+", latest_ica_version_declaration.vrsdecl_djr)
                 status = (
                     Declaration.DeclarationStatus.WITHDRAWN
                     if latest_ica_declaration.dcl_date_fin_commercialisation
@@ -495,10 +493,10 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     flavor=ica_complement_alimentaire.dclencours_gout_arome_parfum or "",
                     other_galenic_formulation=ica_complement_alimentaire.cplalim_forme_galenique_autre or "",
                     # extraction d'un nombre depuis une chaîne de caractères
-                    unit_quantity=unit_quantity[0] if unit_quantity else None,
+                    unit_quantity=latest_ica_version_declaration.vrsdecl_poids_uc,
                     unit_measurement=SubstanceUnit.objects.get(siccrf_id=latest_ica_version_declaration.unt_ident),
                     conditioning=latest_ica_version_declaration.vrsdecl_conditionnement or "",
-                    daily_recommended_dose=latest_ica_version_declaration.vrsdecl_poids_uc,
+                    daily_recommended_dose=latest_ica_version_declaration.vrsdecl_djr,
                     minimum_duration=latest_ica_version_declaration.vrsdecl_durabilite,
                     instructions=latest_ica_version_declaration.vrsdecl_mode_emploi or "",
                     warning=latest_ica_version_declaration.vrsdecl_mise_en_garde or "",

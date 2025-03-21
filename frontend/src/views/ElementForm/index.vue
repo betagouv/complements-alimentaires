@@ -70,7 +70,7 @@ const pageTitle = computed(() => (isNewIngredient.value ? "Nouvel ingrédient" :
 const breadcrumbLinks = computed(() => {
   const lastRoute = router.getPreviousRoute().value
   const links = []
-  if (lastRoute?.name == "ElementPage") {
+  if (props.urlComponent) {
     links.push({ to: { name: "ProducerHomePage" }, text: "Recherche ingrédients" })
     // ce n'est pas possible d'accèder l'URL -2 pour "Résultats de recherche" en utilisant history ou router
     links.push({ to: { name: "ElementPage", params: { urlComponent: props.urlComponent } }, text: element.value?.name })

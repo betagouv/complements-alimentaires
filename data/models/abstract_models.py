@@ -42,6 +42,14 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
     class Meta:
         abstract = True
 
+    origin_declaration = models.ForeignKey(
+        "data.Declaration",
+        verbose_name="La déclaration qui a demandé la création de cet ingrédient",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
     @property
     def object_type(self):
         """
