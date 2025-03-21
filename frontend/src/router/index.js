@@ -39,6 +39,7 @@ import MandatedCompaniesPage from "@/views/MandatedCompaniesPage"
 import FaqPage from "@/views/FaqPage"
 import AdvancedSearchPage from "@/views/AdvancedSearchPage"
 import AdvancedSearchResult from "@/views/AdvancedSearchResult"
+import StatsPage from "@/views/StatsPage"
 import { ref } from "vue"
 
 const routes = [
@@ -414,6 +415,14 @@ const routes = [
     component: FaqPage,
     meta: {
       title: "Foire aux questions",
+    },
+  },
+  {
+    path: "/stats",
+    name: "StatsPage",
+    component: StatsPage,
+    meta: {
+      title: "Mesures d'impact",
     },
   },
   {
