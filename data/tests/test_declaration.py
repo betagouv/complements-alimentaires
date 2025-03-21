@@ -282,6 +282,7 @@ class DeclarationTestCase(TestCase):
 
     def test_article_18(self):
         SUBSTANCE_MAX_QUANTITY = 1.0
+        general_population = PopulationFactory(ca_name="Population générale")
 
         substance_types = [
             [SubstanceType.VITAMIN],
@@ -290,13 +291,13 @@ class DeclarationTestCase(TestCase):
         ]
         for type in substance_types:
             declaration_with_computed_nutriment_max_exceeded = InstructionReadyDeclarationFactory(
-                computed_substances=[],
+                computed_substances=[], populations=[general_population]
             )
 
             substance = SubstanceFactory(substance_types=type)
             MaxQuantityPerPopulationRelationFactory(
                 substance=substance,
-                population=PopulationFactory(ca_name="Population générale"),
+                population=general_population,
                 ca_max_quantity=SUBSTANCE_MAX_QUANTITY,
             )
             ComputedSubstanceFactory(
@@ -352,8 +353,15 @@ class DeclarationTestCase(TestCase):
             self.assertEqual(declaration_with_declared_nutriment_max_exceeded.overridden_article, "")
 
     def test_article_anses_referal(self):
+        """
+        Une déclaration doit passer en article `ANSES_REFERAL` si :
+        * la dose max d'une substance déclarée est dépassée pour la population générale
+        * la dose max d'une substance calculée est dépassée pour la population générale
+        * la dose max d'une substance déclarée est dépassée pour l'une des populations cibles
+        * la dose max d'une substance calculée est dépassée pour l'une des populations cibles
+        """
         SUBSTANCE_MAX_QUANTITY = 1.0
-
+        general_population = PopulationFactory(ca_name="Population générale")
         substance_types = [
             [SubstanceType.SECONDARY_METABOLITE],
             [SubstanceType.ENZYME],
@@ -361,12 +369,12 @@ class DeclarationTestCase(TestCase):
         ]
         for type in substance_types:
             declaration_with_computed_substance_max_exceeded = InstructionReadyDeclarationFactory(
-                computed_substances=[],
+                computed_substances=[], populations=[general_population]
             )
             substance = SubstanceFactory(substance_types=type)
             MaxQuantityPerPopulationRelationFactory(
                 substance=substance,
-                population=PopulationFactory(ca_name="Population générale"),
+                population=general_population,
                 ca_max_quantity=SUBSTANCE_MAX_QUANTITY,
             )
             ComputedSubstanceFactory(
