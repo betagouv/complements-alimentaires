@@ -14,11 +14,14 @@
       <div class="sm:flex">
         <div class="flex-1">
           <h1 class="fr-text--sm font-normal !mb-0">Résultat de la recherche</h1>
-          <h2 class="!mb-2">{{ declaration?.name }}</h2>
-          <p class="fr-text--xs" v-if="declaration?.status">
-            <v-icon scale="0.8" :name="statusProps[declaration.status].icon"></v-icon>
-            {{ statusProps[declaration.status].label }}
-          </p>
+          <h2 class="!mb-1">{{ declaration?.name }}</h2>
+          <DsfrTag
+            small
+            v-if="declaration?.status"
+            :label="statusProps[declaration.status].label"
+            :icon="statusProps[declaration.status].icon"
+            :class="declaration.status"
+          />
         </div>
         <div v-if="showOpenButton" class="self-center flex gap-4">
           <DsfrButton
@@ -39,7 +42,7 @@
           />
         </div>
       </div>
-      <DeclarationSummary :readonly="true" v-if="declaration" v-model="declaration" />
+      <DeclarationSummary class="mt-4" :readonly="true" v-if="declaration" v-model="declaration" />
     </div>
   </div>
 </template>
