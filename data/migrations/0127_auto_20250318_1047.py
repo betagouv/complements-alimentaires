@@ -12,26 +12,27 @@ class Migration(migrations.Migration):
     
     def set_unit_quantity_and_daily_recommended_dose(apps, schema_editor):
         """Set action to the first snapshot of declarations from TeleIcare"""
-        Declaration = apps.get_model("data", "Declaration")
-        for declaration in Declaration.objects.exclude(siccrf_id=None).iterator():
-            all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=declaration.siccrf_id)
-            if all_ica_declarations.exists():
-                _, latest_ica_declaration = get_oldest_and_latest(all_ica_declarations)
-                declaration_versions = IcaVersionDeclaration.objects.filter(
-                    dcl_id=latest_ica_declaration.dcl_ident,
-                    stattdcl_ident__in=[
-                        2,
-                        5,
-                        6,
-                        8,
-                    ],  # status 'autorisé', 'refusé', 'arrêt commercialisation', 'abandonné'
-                    stadcl_ident=8,  # état 'clos'
-                )
-                latest_ica_version_declaration = declaration_versions.order_by("vrsdecl_numero").last()
-
-                declaration.unit_quantity = declaration.daily_recommended_dose # FloatField to FloatField
-                declaration.daily_recommended_dose = latest_ica_version_declaration.vrsdecl_djr #TextField to TextField
-                declaration.save()
+        # Ce code a été exécuté dans le django shell pour éviter un freeze du deployement
+        # Declaration = apps.get_model("data", "Declaration")
+        # for declaration in Declaration.objects.exclude(siccrf_id=None).iterator():
+        #     all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=declaration.siccrf_id)
+        #     if all_ica_declarations.exists():
+        #         _, latest_ica_declaration = get_oldest_and_latest(all_ica_declarations)
+        #         declaration_versions = IcaVersionDeclaration.objects.filter(
+        #             dcl_id=latest_ica_declaration.dcl_ident,
+        #             stattdcl_ident__in=[
+        #                 2,
+        #                 5,
+        #                 6,
+        #                 8,
+        #             ],  # status 'autorisé', 'refusé', 'arrêt commercialisation', 'abandonné'
+        #             stadcl_ident=8,  # état 'clos'
+        #         )
+        #         latest_ica_version_declaration = declaration_versions.order_by("vrsdecl_numero").last()
+        #         declaration.unit_quantity = declaration.daily_recommended_dose # FloatField to FloatField
+        #         declaration.daily_recommended_dose = latest_ica_version_declaration.vrsdecl_djr #TextField to TextField
+        #         declaration.save()
+        pass
 
     def reverse_set_unit_quantity_and_daily_recommended_dose(apps, schema_editor):
         pass
