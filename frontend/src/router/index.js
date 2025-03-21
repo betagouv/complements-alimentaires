@@ -107,7 +107,7 @@ const routes = [
     props: true,
     meta: {
       title: "Demande d'ajout d'ingrédient",
-      requiredRole: "InstructionRole",
+      requiredRoles: ["InstructionRole"],
       authenticationRequired: true,
     },
   },
@@ -118,7 +118,7 @@ const routes = [
     meta: {
       title: "Nouvel ingrédient",
       authenticationRequired: true,
-      requiredRole: "InstructionRole",
+      requiredRoles: ["InstructionRole"],
     },
   },
   {
@@ -129,7 +129,7 @@ const routes = [
     meta: {
       title: "Modification ingrédient",
       authenticationRequired: true,
-      requiredRole: "InstructionRole",
+      requiredRoles: ["InstructionRole"],
     },
   },
   {
@@ -218,7 +218,7 @@ const routes = [
     component: ProducerFormPage,
     meta: {
       title: "Nouvelle démarche",
-      requiredRole: "DeclarantRole",
+      requiredRoles: ["DeclarantRole"],
       authenticationRequired: true,
       defaultQueryParams: {
         tab: 0,
@@ -287,7 +287,7 @@ const routes = [
     component: CollaboratorsPage,
     meta: {
       title: "Gestion des collaborateurs",
-      requiredRole: "SupervisorRole",
+      requiredRoles: ["SupervisorRole"],
       authenticationRequired: true,
     },
   },
@@ -297,7 +297,7 @@ const routes = [
     component: MandatedCompaniesPage,
     meta: {
       title: "Gestion des entreprises mandatées",
-      requiredRole: "SupervisorRole",
+      requiredRoles: ["SupervisorRole"],
       authenticationRequired: true,
     },
   },
@@ -307,7 +307,7 @@ const routes = [
     component: CompanyDeclarationsPage,
     meta: {
       title: "Les déclarations de mon entreprise",
-      requiredRole: "SupervisorRole",
+      requiredRoles: ["SupervisorRole"],
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
@@ -323,7 +323,7 @@ const routes = [
     component: InstructionDeclarationsPage,
     meta: {
       title: "Instruction",
-      requiredRole: "InstructionRole",
+      requiredRoles: ["InstructionRole"],
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
@@ -344,7 +344,7 @@ const routes = [
     component: NewElementsPage,
     meta: {
       title: "Nouveaux ingrédients",
-      requiredRole: "InstructionRole",
+      requiredRoles: ["InstructionRole"],
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
@@ -363,7 +363,7 @@ const routes = [
     component: InstructionPage,
     meta: {
       title: "Instruction",
-      requiredRole: "InstructionRole",
+      requiredRoles: ["InstructionRole"],
       authenticationRequired: true,
       defaultQueryParams: {
         tab: 1,
@@ -376,7 +376,7 @@ const routes = [
     component: VisaDeclarationsPage,
     meta: {
       title: "Visa",
-      requiredRole: "VisaRole",
+      requiredRoles: ["VisaRole"],
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
@@ -396,7 +396,7 @@ const routes = [
     component: VisaPage,
     meta: {
       title: "Visa",
-      requiredRole: "VisaRole",
+      requiredRoles: ["VisaRole"],
       authenticationRequired: true,
     },
   },
@@ -431,7 +431,7 @@ const routes = [
     component: AdvancedSearchPage,
     meta: {
       title: "Recherche avancée",
-      requiredRole: "InstructionRole", // Make array
+      requiredRoles: ["InstructionRole", "VisaRole"],
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
@@ -455,7 +455,7 @@ const routes = [
     meta: {
       title: "Résultat de recherche",
       authenticationRequired: true,
-      requiredRole: "InstructionRole", // Make array
+      requiredRoles: ["InstructionRole", "VisaRole"],
     },
   },
   {
@@ -496,10 +496,10 @@ const chooseAuthorisedRoute = async (to, from, next, store) => {
       return
     }
     const authenticationCheck = !to.meta.authenticationRequired || store.loggedUser
-    const roleCheck =
-      !to.meta.requiredRole ||
-      store.companies?.some((c) => c.roles?.some((x) => x.name === to.meta.requiredRole)) ||
-      store.loggedUser?.globalRoles?.some((x) => x.name === to.meta.requiredRole)
+    const companyRoles = store.companies?.map((x) => x.roles.map((y) => y.name) || []).flat() || []
+    const globalRoles = store.loggedUser?.globalRoles?.map((x) => x.name) || []
+    const roles = [...companyRoles, ...globalRoles]
+    const roleCheck = !to.meta.requiredRoles || to.meta.requiredRoles.some((x) => roles.indexOf(x) > -1)
 
     if (!authenticationCheck) next({ name: "LoginPage", query: { next: to.path } })
     else if (!roleCheck) next({ name: "DashboardPage" })
