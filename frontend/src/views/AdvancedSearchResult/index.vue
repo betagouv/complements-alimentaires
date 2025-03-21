@@ -11,9 +11,34 @@
       <ProgressSpinner />
     </div>
     <div v-else>
-      <h1 class="fr-text--sm font-normal !mb-0">Résultat de la recherche</h1>
-      <h2>{{ declaration?.name }}</h2>
-
+      <div class="sm:flex">
+        <div class="flex-1">
+          <h1 class="fr-text--sm font-normal !mb-0">Résultat de la recherche</h1>
+          <h2 class="!mb-2">{{ declaration?.name }}</h2>
+          <p class="fr-text--xs" v-if="declaration?.status">
+            <v-icon scale="0.8" :name="statusProps[declaration.status].icon"></v-icon>
+            {{ statusProps[declaration.status].label }}
+          </p>
+        </div>
+        <div v-if="showOpenButton" class="self-center flex gap-4">
+          <DsfrButton
+            v-if="isInstructor"
+            secondary
+            icon="ri-edit-fill"
+            size="sm"
+            label="Ouvrir dans la page instruction"
+            @click="router.push({ name: 'InstructionPage', params: { declarationId: declaration?.id } })"
+          />
+          <DsfrButton
+            v-if="isVisor"
+            secondary
+            icon="ri-file-edit-fill"
+            size="sm"
+            label="Ouvrir dans la page visa"
+            @click="router.push({ name: 'VisaPage', params: { declarationId: declaration?.id } })"
+          />
+        </div>
+      </div>
       <DeclarationSummary :readonly="true" v-if="declaration" v-model="declaration" />
     </div>
   </div>
@@ -23,13 +48,22 @@
 import { useFetch } from "@vueuse/core"
 import { onMounted, computed } from "vue"
 import { useRouter } from "vue-router"
+import { storeToRefs } from "pinia"
 import { useRootStore } from "@/stores/root"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
+import { statusProps } from "@/utils/mappings"
+
 import DeclarationSummary from "@/components/DeclarationSummary"
 
 const store = useRootStore()
+const { loggedUser } = storeToRefs(store)
+
 store.fetchDeclarationFieldsData()
+
+const showOpenButton = computed(() => isInstructor.value || isVisor.value)
+const isInstructor = computed(() => loggedUser.value?.globalRoles?.some((x) => x.name === "InstructionRole"))
+const isVisor = computed(() => loggedUser.value?.globalRoles?.some((x) => x.name === "VisaRole"))
 
 const router = useRouter()
 const previousRoute = computed(() => {
