@@ -1,5 +1,3 @@
-import random
-
 import factory
 
 from data.factories.population import PopulationFactory
@@ -26,11 +24,6 @@ class SubstanceFactory(factory.django.DjangoModelFactory):
     to_be_entered_in_next_decree = False
     siccrf_is_obsolete = False
     ca_is_obsolete = False
-    max_quantities = factory.RelatedFactoryList(
-        "data.factories.substance.MaxQuantityPerPopulationRelationFactory",
-        "substance",
-        size=lambda: random.randint(1, 5),
-    )
 
 
 class MaxQuantityPerPopulationRelationFactory(factory.django.DjangoModelFactory):
