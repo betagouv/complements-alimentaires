@@ -10,17 +10,13 @@
       <DsfrAccordionsGroup v-model="activeAccordion" class="my-8">
         <DsfrAccordion id="accordion-1" title="Fiabilité de la base de données ingrédients">
           <p>
-            Nous ciblons d'avoir une liste exhaustive d'ingrédients que les déclarants peuvent utiliser dans leur
-            composition déclarée.
+            Notre objectif est de mettre à disposition une liste exhaustive d'ingrédients utilisables dans les
+            compléments alimentaires.
           </p>
           <p>
-            Au cas où les professionnels ne peuvent pas retrouver un ingrédient, ils peuvent demander l'ajout d'un
-            nouvel ingrédient. Les instructrices consultent ces demandes régulièrement pour decider si l'ingrédient doit
-            être ajouté, remplacé par un ingrédient qui existe déjà, ou rejeté.
-          </p>
-          <p>
-            Dans l'idéal, le nombre de demandes d'ajout est quasi nul : cela indique que notre base est exhaustive et
-            facilement recherchable.
+            Compl'Alim permet aux professionnels de demander l'ajout d'ingrédients manquants. Le nombre de ces demandes
+            constitue donc un indicateur de la complétude de notre base de données : un nombre faible indiquerait une
+            base plus exhaustive.
           </p>
           <iframe
             src="https://compl-alim-metabase.cleverapps.io/public/question/804a05fa-eddd-410a-ad56-ad2b46f9f10d"

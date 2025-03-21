@@ -36,7 +36,7 @@
 <script setup>
 import { computed, ref } from "vue"
 import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
-import { useRoute, useRouter } from "vue-router"
+import { useRoute } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import FormFields from "./FormFields"
@@ -53,7 +53,6 @@ const type = computed(() =>
 const apiType = computed(() => type.value && getApiType(type.value))
 const icon = computed(() => getTypeIcon(type.value))
 const typeName = computed(() => getTypeInFrench(type.value))
-const router = useRouter()
 
 const url = computed(() => `/api/v1/${apiType.value}s/${elementId.value}?history=true`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
@@ -68,7 +67,6 @@ getElementFromApi()
 const pageTitle = computed(() => (isNewIngredient.value ? "Nouvel ingrédient" : "Modification ingrédient"))
 
 const breadcrumbLinks = computed(() => {
-  const lastRoute = router.getPreviousRoute().value
   const links = []
   if (props.urlComponent) {
     links.push({ to: { name: "ProducerHomePage" }, text: "Recherche ingrédients" })
