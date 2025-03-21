@@ -415,16 +415,7 @@ class Declaration(Historisable, TimeStampable):
     def computed_substances_with_max_quantity_exceeded(self):
         substances_with_population_max_quantity_exceeded = []
         # TODO: ajouter la Population Générale
-        # for population in self.populations.all():
-        #     for computed_substance in self.computed_substances.exclude(quantity__isnull=True):
-        #         threshold = MaxQuantityPerPopulationRelation.objects.filter(
-        #             population=population, substance=computed_substance.substance
-        #         )  # TODO: vérifier qu'un seul threshold peut exister
-        #         # ici, les unités sont les mêmes car le front ne permet pas de modifier l'unité
-        #         if threshold.exists() and computed_substance.quantity > threshold.first().max_quantity:
-        #             substances_with_population_max_quantity_exceeded.append(computed_substance)
-
-        # vérification de la population générale et des autres
+        # TODO : annoter pour savoir quelle population est incriminée
 
         substances_with_population_max_quantity_exceeded = (
             self.computed_substances.exclude(quantity__isnull=True)
@@ -437,14 +428,14 @@ class Declaration(Historisable, TimeStampable):
 
     @property
     def declared_substances_with_max_quantity_exceeded(self):
-        substances_with_general_population_max_quantity_exceeded = (
+        substances_with_population_max_quantity_exceeded = (
             self.declared_substances.exclude(substance__isnull=True)
             .exclude(quantity__isnull=True)
-            .filter(substance__max_quantities__name="Population générale")
+            .filter(substance__max_quantities__in=self.populations.all())
             .filter(substance__maxquantityperpopulationrelation__max_quantity__lt=F("quantity"))
             .filter(unit=F("substance__unit"))
         )
-        return substances_with_general_population_max_quantity_exceeded
+        return substances_with_population_max_quantity_exceeded
 
     @property
     def has_max_quantity_exceeded(self):

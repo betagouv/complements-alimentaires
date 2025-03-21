@@ -352,13 +352,11 @@ class DeclarationTestCase(TestCase):
             )
             self.assertEqual(declaration_with_declared_nutriment_max_exceeded.overridden_article, "")
 
-    def test_article_anses_referal(self):
+    def test_article_anses_referal_for_general_population(self):
         """
         Une déclaration doit passer en article `ANSES_REFERAL` si :
         * la dose max d'une substance déclarée est dépassée pour la population générale
         * la dose max d'une substance calculée est dépassée pour la population générale
-        * la dose max d'une substance déclarée est dépassée pour l'une des populations cibles
-        * la dose max d'une substance calculée est dépassée pour l'une des populations cibles
         """
         SUBSTANCE_MAX_QUANTITY = 1.0
         general_population = PopulationFactory(ca_name="Population générale")
@@ -415,6 +413,71 @@ class DeclarationTestCase(TestCase):
 
             declaration_with_declared_substance_max_exceeded = InstructionReadyDeclarationFactory(
                 computed_substances=[],
+            )
+            DeclaredSubstanceFactory(
+                substance=substance,
+                unit=substance.unit,
+                quantity=1.2,
+                declaration=declaration_with_declared_substance_max_exceeded,
+            )
+            declaration_with_declared_substance_max_exceeded.assign_calculated_article()
+            declaration_with_declared_substance_max_exceeded.save()
+            declaration_with_declared_substance_max_exceeded.refresh_from_db()
+            self.assertEqual(
+                declaration_with_declared_substance_max_exceeded.article, Declaration.Article.ANSES_REFERAL
+            )
+            self.assertEqual(
+                declaration_with_declared_substance_max_exceeded.calculated_article, Declaration.Article.ANSES_REFERAL
+            )
+            self.assertEqual(declaration_with_declared_substance_max_exceeded.overridden_article, "")
+
+    def test_article_anses_referal_for_other_population(self):
+        """
+        Une déclaration doit passer en article `ANSES_REFERAL` si :
+        * la dose max d'une substance déclarée est dépassée pour l'une des populations cibles
+        * la dose max d'une substance calculée est dépassée pour l'une des populations cibles
+        """
+        other_population_with_max_exceeded = PopulationFactory(ca_name="Population pas générale")
+        other_population_not_exceeded = PopulationFactory()
+        substance_types = [
+            [SubstanceType.SECONDARY_METABOLITE],
+            [SubstanceType.ENZYME],
+            [SubstanceType.CARBOHYDRATE, SubstanceType.ENZYME],
+        ]
+        for type in substance_types:
+            declaration_with_computed_substance_max_exceeded = InstructionReadyDeclarationFactory(
+                computed_substances=[], populations=[other_population_with_max_exceeded, other_population_not_exceeded]
+            )
+            substance = SubstanceFactory(substance_types=type)
+            MaxQuantityPerPopulationRelationFactory(
+                substance=substance,
+                population=other_population_with_max_exceeded,
+                ca_max_quantity=1.0,
+            )
+            MaxQuantityPerPopulationRelationFactory(
+                substance=substance,
+                population=other_population_not_exceeded,
+                ca_max_quantity=0.5,
+            )
+            ComputedSubstanceFactory(
+                substance=substance,
+                unit=substance.unit,
+                quantity=1.2,
+                declaration=declaration_with_computed_substance_max_exceeded,
+            )
+            declaration_with_computed_substance_max_exceeded.assign_calculated_article()
+            declaration_with_computed_substance_max_exceeded.save()
+            declaration_with_computed_substance_max_exceeded.refresh_from_db()
+            self.assertEqual(
+                declaration_with_computed_substance_max_exceeded.article, Declaration.Article.ANSES_REFERAL
+            )
+            self.assertEqual(
+                declaration_with_computed_substance_max_exceeded.calculated_article, Declaration.Article.ANSES_REFERAL
+            )
+            self.assertEqual(declaration_with_computed_substance_max_exceeded.overridden_article, "")
+
+            declaration_with_declared_substance_max_exceeded = InstructionReadyDeclarationFactory(
+                computed_substances=[], populations=[other_population_with_max_exceeded, other_population_not_exceeded]
             )
             DeclaredSubstanceFactory(
                 substance=substance,
