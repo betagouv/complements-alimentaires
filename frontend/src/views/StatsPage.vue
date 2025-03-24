@@ -26,6 +26,23 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
+        <DsfrAccordion id="accordion-1" title="Gain de temps à l'instruction">
+          <p>
+            Notre outil permet l'automatisation de l'instruction de certaines déclarations ARTICLE 15 sans risque. Ces
+            déclarations n'étaient pas facilement identifiables auparavant et devaient nécessairement passer par le même
+            processus d'instruction que les déclarations plus complexes.
+          </p>
+          <p>
+            Le taux mensuel de ces déclarations "sans risque" constitue un indicateur du temps gagné à l'instruction.
+          </p>
+          <iframe
+            src="https://compl-alim-metabase.cleverapps.io/public/question/c99b0f9a-77e2-470f-b2a6-98a8ac3a4a46"
+            frameborder="0"
+            width="800"
+            height="600"
+            allowtransparency
+          ></iframe>
+        </DsfrAccordion>
         <DsfrAccordion id="accordion-1" title="Qualité des déclarations déposées">
           <p>
             Notre objectif est de faciliter la déclaration de compléments alimentaires et la compréhension des
@@ -63,7 +80,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref } from "vue"
 
