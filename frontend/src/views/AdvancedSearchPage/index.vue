@@ -212,22 +212,47 @@ const removeIngredient = (idx) => {
   ingredientsToFilter.value.splice(idx, 1)
   updateComposition()
 }
+const getApiUrlIdsForType = (types) => {
+  const ids =
+    ingredientsToFilter.value
+      ?.filter((x) => types.indexOf(x[2]) > -1)
+      .map((x) => x[0])
+      .join(",") || []
+  return ids.length ? ids : null
+}
 
 // Requêtes
 
 const url = computed(() => {
   const baseUrl = "/api/v1/declarations"
-  const limitQuery = limit.value ? `limit=${limit.value}` : ""
-  const offsetQuery = offset.value ? `offset=${offset.value}` : ""
-  const statusQuery = filteredStatus.value ? `status=${filteredStatus.value}` : ""
-  const orderingQuery = ordering.value ? `ordering=${ordering.value}` : ""
-  const articleQuery = article.value ? `article=${article.value}` : ""
-  const populationQuery = population.value ? `population=${population.value}` : ""
-  const conditionQuery = condition.value ? `condition=${condition.value}` : ""
-  const galenicFormulationQuery = galenicFormulation.value ? `galenic_formulation=${galenicFormulation.value}` : ""
-  const searchQuery = searchTerm.value ? `search=${searchTerm.value}` : ""
+  const limitQuery = limit.value ? `?limit=${limit.value}` : "?"
+  const offsetQuery = offset.value ? `&offset=${offset.value}` : ""
+  const statusQuery = filteredStatus.value ? `&status=${filteredStatus.value}` : ""
+  const orderingQuery = ordering.value ? `&ordering=${ordering.value}` : ""
+  const articleQuery = article.value ? `&article=${article.value}` : ""
+  const populationQuery = population.value ? `&population=${population.value}` : ""
+  const conditionQuery = condition.value ? `&condition=${condition.value}` : ""
+  const galenicFormulationQuery = galenicFormulation.value ? `&galenic_formulation=${galenicFormulation.value}` : ""
+  const searchQuery = searchTerm.value ? `&search=${searchTerm.value}` : ""
 
-  const fullPath = `${baseUrl}/?${limitQuery}&${offsetQuery}&${statusQuery}&${orderingQuery}&${articleQuery}&${populationQuery}&${conditionQuery}&${galenicFormulationQuery}&${searchQuery}`
+  const plantIds = getApiUrlIdsForType(["plant"])
+  const microorganismIds = getApiUrlIdsForType(["microorganism"])
+  const substanceIds = getApiUrlIdsForType(["substance"])
+  const ingredientsIds = getApiUrlIdsForType([
+    "ingredient",
+    "form_of_supply",
+    "aroma",
+    "additive",
+    "active_ingredient",
+    "non_active_ingredient",
+  ])
+
+  const plantsQuery = plantIds ? `&plants=${plantIds}` : ""
+  const microorganismsQuery = microorganismIds ? `&microorganisms=${microorganismIds}` : ""
+  const substancesQuery = substanceIds ? `&substances=${substanceIds}` : ""
+  const ingredientsQuery = ingredientsIds ? `&ingredients=${ingredientsIds}` : ""
+
+  const fullPath = `${baseUrl}/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}`
 
   // Enlève les `&` consecutifs
   return fullPath.replace(/&+/g, "&").replace(/&$/, "")
