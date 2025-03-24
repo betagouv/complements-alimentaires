@@ -26,6 +26,23 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
+        <DsfrAccordion id="accordion-1" title="Qualité des déclarations déposées">
+          <p>
+            Notre objectif est de faciliter la déclaration de compléments alimentaires et la compréhension des
+            différentes règlementations pour que les compléments alimentaires soient conformes.
+          </p>
+          <p>
+            Le nombre de déclarations recevant une objection ou une observation de la part de nos services constitue
+            donc un indicateur de la qualité des déclarations déposées.
+          </p>
+          <iframe
+            src="https://compl-alim-metabase.cleverapps.io/public/question/00227f7a-b2fa-4efb-8982-891c66864e13"
+            frameborder="0"
+            width="800"
+            height="600"
+            allowtransparency
+          ></iframe>
+        </DsfrAccordion>
       </DsfrAccordionsGroup>
     </div>
   </div>
