@@ -93,12 +93,12 @@
                 :required="false"
                 :chooseFirstAsDefault="false"
               />
-              <div class="mt-2 flex">
+              <div class="mt-2">
                 <DsfrTag
                   v-for="([id, name, type], idx) in ingredientsToFilter"
                   :key="`ingredient-${id}`"
-                  class="mx-1 fr-tag--dismiss"
-                  @click="ingredientsToFilter.splice(idx, 1)"
+                  class="m-1 fr-tag--dismiss"
+                  @click="removeIngredient(idx)"
                   :aria-label="`Retirer ${name}`"
                   tagName="button"
                 >
@@ -179,7 +179,9 @@ const updateArticle = (newValue) => updateQuery({ article: newValue })
 const updatePopulation = (newValue) => updateQuery({ population: newValue })
 const updateCondition = (newValue) => updateQuery({ condition: newValue })
 const updateGalenicFormulation = (newValue) => updateQuery({ galenicFormulation: newValue })
-const updateLimit = (newValue) => updateQuery({ limit: newValue, page: 1 })
+const updateLimit = (newValue) => updateQuery({ limit: newValue })
+const updateComposition = () =>
+  updateQuery({ composition: ingredientsToFilter.value.map((x) => x.join("||")).join("|||") })
 
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
@@ -195,9 +197,21 @@ const search = () => {
 const pages = computed(() => getPagesForPagination(data.value?.count, limit.value, route.path))
 
 // Filtre composition
+// À noter qu'on utilise "||" et "|||" comme séparateurs dans l'URL pour ne pas entrer en conflit avec
+// les noms d'ingrédients. Par exemple, une plante avec un ID: 12 et nom: Fraise serait codifiée
+// dans le URL : `composition=12||Fraise||plant`. Le triple pipe "|||" sépare chaque élément.
 const ingredientSearchTerm = ref()
-const ingredientsToFilter = ref([]) // TODO translate from URL
-const addIngredient = (x) => ingredientsToFilter.value.push([x.id, x.name, x.objectType])
+const ingredientsToFilter = computed(() =>
+  route.query.composition ? route.query.composition.split("|||").map((x) => x?.split("||")) : []
+)
+const addIngredient = (x) => {
+  ingredientsToFilter.value.push([x.id, x.name, x.objectType])
+  updateComposition()
+}
+const removeIngredient = (idx) => {
+  ingredientsToFilter.value.splice(idx, 1)
+  updateComposition()
+}
 
 // Requêtes
 
@@ -225,7 +239,10 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
-watch([page, filteredStatus, ordering, article, limit, population, condition, galenicFormulation], fetchSearchResults)
+watch(
+  [page, filteredStatus, ordering, article, limit, population, condition, galenicFormulation, ingredientsToFilter],
+  fetchSearchResults
+)
 
 // Remplissage d'options dans les champs select
 
