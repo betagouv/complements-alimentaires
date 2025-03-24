@@ -48,7 +48,8 @@
           <p>
             L'évolution du nombre de professionnels déclarant leur premier complément alimentaire sur Compl'Alim donne
             une idée de la capacité du secteur économique du complément alimentaire à identifier Compl'Alim comme
-            plateforme de référence.
+            plateforme de référence. Ce graphique reprend le nombre de nouvelle entreprises déclarantes dès la mise en
+            ligne de TeleIcare. Les données datant de TeleIcare (avant septembre 2024) sont encore à fiabiliser.
           </p>
           <iframe
             src="https://compl-alim-metabase.cleverapps.io/public/question/9c4cb4bc-c493-4539-9eb2-321663ad3d15"
