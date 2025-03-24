@@ -43,6 +43,21 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
+        <DsfrAccordion id="accordion-1" title="Utilisation de Compl'Alim par les professionnels">
+          <p>Notre objectif est de faciliter la déclaration de compléments alimentaires pour les professionnels.</p>
+          <p>
+            L'évolution du nombre de professionnels déclarant leur premier complément alimentaire sur Compl'Alim donne
+            une idée de la capacité du secteur économique du complément alimentaire à identifier Compl'Alim comme
+            plateforme de référence.
+          </p>
+          <iframe
+            src="https://compl-alim-metabase.cleverapps.io/public/question/9c4cb4bc-c493-4539-9eb2-321663ad3d15"
+            frameborder="0"
+            width="800"
+            height="600"
+            allowtransparency
+          ></iframe>
+        </DsfrAccordion>
       </DsfrAccordionsGroup>
     </div>
   </div>
