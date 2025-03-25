@@ -155,7 +155,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
     def _annotate_queryset(self, queryset):
         return queryset.annotate(name_unaccented_lower=Lower(Unaccent(F("company__social_name"))))
 
-    def status__in(self, queryset, name, value, *args, **kwargs):
+    def status__in(self, queryset, value, *args, **kwargs):
         return queryset.filter(status__in=args[0].split(","))
 
     def plants__and(self, queryset, name, value, *args, **kwargs):
