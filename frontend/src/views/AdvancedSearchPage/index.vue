@@ -102,7 +102,7 @@
                   :aria-label="`Retirer ${name}`"
                   tagName="button"
                 >
-                  <v-icon scale="0.85" class="mr-2" :name="getTypeIcon(type)" :aria-label="getTypeInFrench(type)" />
+                  <v-icon scale="0.85" class="mr-1" :name="getTypeIcon(type)" :aria-label="getTypeInFrench(type)" />
                   {{ name }}
                 </DsfrTag>
               </div>
