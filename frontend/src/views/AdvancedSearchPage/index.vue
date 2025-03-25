@@ -145,7 +145,7 @@ import { getPagesForPagination } from "@/utils/components"
 import SearchResultsTable from "./SearchResultsTable"
 import { useRootStore } from "@/stores/root"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
-import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, typesMapping } from "@/utils/mappings"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -201,9 +201,14 @@ const pages = computed(() => getPagesForPagination(data.value?.count, limit.valu
 // les noms d'ingrédients. Par exemple, une plante avec un ID: 12 et nom: Fraise serait codifiée
 // dans le URL : `composition=12||Fraise||plant`. Le triple pipe "|||" sépare chaque élément.
 const ingredientSearchTerm = ref()
-const ingredientsToFilter = computed(() =>
-  route.query.composition ? route.query.composition.split("|||").map((x) => x?.split("||")) : []
-)
+const ingredientsToFilter = computed(() => {
+  if (route.query.composition)
+    return route.query.composition
+      .split("|||")
+      .map((x) => x?.split("||"))
+      .filter((x) => x?.[2] && x[2] in typesMapping)
+  return []
+})
 const addIngredient = (x) => {
   ingredientsToFilter.value.push([x.id, x.name, x.objectType])
   updateComposition()
