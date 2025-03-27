@@ -27,6 +27,7 @@
           ></iframe>
         </DsfrAccordion>
         <DsfrAccordion id="accordion-1" title="Gain de temps à l'instruction">
+          <h4>Nombre de déclaration à instruction facilitée par mois</h4>
           <p>
             Notre outil permet l'automatisation de l'instruction de certaines déclarations ARTICLE 15 sans risque. Ces
             déclarations n'étaient pas facilement identifiables auparavant et devaient nécessairement passer par le même
@@ -42,6 +43,8 @@
             height="600"
             allowtransparency
           ></iframe>
+          <br />
+          <h4>Statistiques de temps passé entre la soumission d'une déclaration et sa validation</h4>
           <p>
             Le temps passé entre la soumission d'une déclaration et son autorisation reflète la complexité de
             l'instruction. Celui-ci devrait diminuer au fur et à mesure de nos efforts pour rendre la règlementation
