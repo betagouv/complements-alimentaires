@@ -149,8 +149,8 @@
               defaultUnselectedText="Unité"
             />
           </DsfrInputGroup>
-          <div v-else>
-            <p>Unité</p>
+          <div v-else class="pt-4">
+            <p class="mb-2">Unité</p>
             <p>{{ unitString }}</p>
           </div>
         </div>
