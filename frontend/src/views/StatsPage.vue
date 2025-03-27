@@ -43,12 +43,12 @@
             allowtransparency
           ></iframe>
           <p>
-            Le temps passé entre la première ouverture d'une déclaration lors de l'instruction et son autorisation ou
-            demande de visa reflète la complexité de l'instruction. Celui-ci devrait diminuer au fur et à mesure de nos
-            efforts pour rendre la règlementation plus lisible et notre outil plus convivial.
+            Le temps passé entre la soumission d'une déclaration et son autorisation reflète la complexité de
+            l'instruction. Celui-ci devrait diminuer au fur et à mesure de nos efforts pour rendre la règlementation
+            plus lisible et notre outil plus convivial.
           </p>
           <iframe
-            src="https://compl-alim-metabase.cleverapps.io/public/question/c99b0f9a-77e2-470f-b2a6-98a8ac3a4a46"
+            src="https://compl-alim-metabase.cleverapps.io/public/question/572252e2-0d2a-4465-8ec4-c9f594508f15"
             frameborder="0"
             width="800"
             height="600"
