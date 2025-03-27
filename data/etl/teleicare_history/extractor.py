@@ -125,7 +125,7 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
             if len(siret_matching) == 1:
                 if siret_matching[0].siccrf_id is not None and etab.etab_ident != siret_matching[0].siccrf_id:
                     logger.error(
-                        "Plusieurs Etablissement provenant de Teleicare ont le même SIRET, ce qui rend le matching avec une Company Compl'Alim incertain."
+                        f"Plusieurs Etablissement provenant de Teleicare ont le même SIRET {etab.etab_siret}, ce qui rend le matching avec une Company Compl'Alim incertain."
                     )
                 else:
                     nb_siret_match += 1
@@ -142,7 +142,7 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
             if len(vat_matching) == 1:
                 if vat_matching[0].siccrf_id is not None and etab.etab_ident != vat_matching[0].siccrf_id:
                     logger.error(
-                        "Plusieurs Etablissement provenant de Teleicare ont le même n° TVA, ce qui rend le matching avec une Company Compl'Alim incertain."
+                        f"Plusieurs Etablissement provenant de Teleicare ont le même n° TVA {etab.etab_numero_tva_intra}, ce qui rend le matching avec une Company Compl'Alim incertain."
                     )
                 else:
                     nb_vat_match += 1
