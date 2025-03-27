@@ -112,7 +112,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
         match_companies_on_siret_or_vat()
         mocked_logger.error.assert_called_with(
-            "Plusieurs Etablissement provenant de Teleicare ont le même n° TVA, ce qui rend le matching avec une Company Compl'Alim incertain."
+            f"Plusieurs Etablissement provenant de Teleicare ont le même n° TVA {vat_used_twice}, ce qui rend le matching avec une Company Compl'Alim incertain."
         )
 
     def test_create_new_companies(self):
