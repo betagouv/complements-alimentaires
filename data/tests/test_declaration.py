@@ -293,7 +293,7 @@ class DeclarationTestCase(TestCase):
         ]
         for type in substance_types:
             declaration_with_computed_nutriment_max_exceeded = InstructionReadyDeclarationFactory(
-                computed_substances=[],
+                computed_substances=[], populations=[self.pop_generale]
             )
 
             substance = SubstanceFactory(substance_types=type)
@@ -354,9 +354,13 @@ class DeclarationTestCase(TestCase):
             )
             self.assertEqual(declaration_with_declared_nutriment_max_exceeded.overridden_article, "")
 
-    def test_article_anses_referal(self):
+    def test_article_anses_referal_for_general_population(self):
+        """
+        Une déclaration doit passer en article `ANSES_REFERAL` si :
+        * la dose max d'une substance déclarée est dépassée pour la population générale
+        * la dose max d'une substance calculée est dépassée pour la population générale
+        """
         SUBSTANCE_MAX_QUANTITY = 1.0
-
         substance_types = [
             [SubstanceType.SECONDARY_METABOLITE],
             [SubstanceType.ENZYME],
@@ -364,7 +368,7 @@ class DeclarationTestCase(TestCase):
         ]
         for type in substance_types:
             declaration_with_computed_substance_max_exceeded = InstructionReadyDeclarationFactory(
-                computed_substances=[],
+                computed_substances=[], populations=[self.pop_generale]
             )
             substance = SubstanceFactory(substance_types=type)
             MaxQuantityPerPopulationRelationFactory(
@@ -427,6 +431,92 @@ class DeclarationTestCase(TestCase):
                 declaration_with_declared_substance_max_exceeded.calculated_article, Declaration.Article.ANSES_REFERAL
             )
             self.assertEqual(declaration_with_declared_substance_max_exceeded.overridden_article, "")
+
+    def test_article_anses_referal_for_other_target_population(self):
+        """
+        Une déclaration doit passer en article `ANSES_REFERAL` si :
+        * la dose max d'une substance déclarée est dépassée pour l'une des populations cibles
+        * la dose max d'une substance calculée est dépassée pour l'une des populations cibles
+        """
+        other_population_with_max_exceeded = PopulationFactory(ca_name="Population pas générale")
+        substance_types = [
+            [SubstanceType.SECONDARY_METABOLITE],
+            [SubstanceType.ENZYME],
+            [SubstanceType.CARBOHYDRATE, SubstanceType.ENZYME],
+        ]
+        for type in substance_types:
+            declaration_with_computed_substance_max_exceeded = InstructionReadyDeclarationFactory(
+                computed_substances=[], populations=[other_population_with_max_exceeded]
+            )
+            substance = SubstanceFactory(substance_types=type)
+            MaxQuantityPerPopulationRelationFactory(
+                substance=substance,
+                population=other_population_with_max_exceeded,
+                ca_max_quantity=1.0,
+            )
+            ComputedSubstanceFactory(
+                substance=substance,
+                unit=substance.unit,
+                quantity=1.2,
+                declaration=declaration_with_computed_substance_max_exceeded,
+            )
+            declaration_with_computed_substance_max_exceeded.assign_calculated_article()
+            declaration_with_computed_substance_max_exceeded.save()
+            declaration_with_computed_substance_max_exceeded.refresh_from_db()
+
+            self.assertEqual(
+                declaration_with_computed_substance_max_exceeded.article, Declaration.Article.ANSES_REFERAL
+            )
+            self.assertEqual(
+                declaration_with_computed_substance_max_exceeded.calculated_article, Declaration.Article.ANSES_REFERAL
+            )
+            self.assertEqual(declaration_with_computed_substance_max_exceeded.overridden_article, "")
+
+    def test_article_anses_referal_no_other_target_population(self):
+        """
+        Une déclaration doit passer en article `ANSES_REFERAL` si :
+        * la dose max de la population générale est dépassée même si aucune population cible n'est renseignée
+        """
+        other_population_not_exceeded = PopulationFactory()
+        substance_types = [
+            [SubstanceType.SECONDARY_METABOLITE],
+            [SubstanceType.ENZYME],
+            [SubstanceType.CARBOHYDRATE, SubstanceType.ENZYME],
+        ]
+        for type in substance_types:
+            max_for_target_pop_not_exceeded_but_general_pop_exceeded = InstructionReadyDeclarationFactory(
+                computed_substances=[], populations=[other_population_not_exceeded]
+            )
+            substance = SubstanceFactory(substance_types=type)
+            MaxQuantityPerPopulationRelationFactory(
+                substance=substance,
+                population=other_population_not_exceeded,
+                ca_max_quantity=1.0,
+            )
+            MaxQuantityPerPopulationRelationFactory(
+                substance=substance,
+                population=self.pop_generale,
+                ca_max_quantity=0.2,
+            )
+            DeclaredSubstanceFactory(
+                substance=substance,
+                unit=substance.unit,
+                quantity=0.5,
+                declaration=max_for_target_pop_not_exceeded_but_general_pop_exceeded,
+            )
+            max_for_target_pop_not_exceeded_but_general_pop_exceeded.assign_calculated_article()
+            max_for_target_pop_not_exceeded_but_general_pop_exceeded.save()
+            max_for_target_pop_not_exceeded_but_general_pop_exceeded.refresh_from_db()
+            self.assertEqual(
+                max_for_target_pop_not_exceeded_but_general_pop_exceeded.article, Declaration.Article.ARTICLE_15
+            )
+            max_for_target_pop_not_exceeded_but_general_pop_exceeded.populations.set([])
+            max_for_target_pop_not_exceeded_but_general_pop_exceeded.assign_calculated_article()
+            max_for_target_pop_not_exceeded_but_general_pop_exceeded.save()
+            max_for_target_pop_not_exceeded_but_general_pop_exceeded.refresh_from_db()
+            self.assertEqual(
+                max_for_target_pop_not_exceeded_but_general_pop_exceeded.article, Declaration.Article.ANSES_REFERAL
+            )
 
     def test_general_population_is_the_only_one_considered_for_article_assignation(self):
         """
