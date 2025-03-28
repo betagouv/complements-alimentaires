@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
@@ -12,7 +13,21 @@ from data.models.substance import MaxQuantityPerPopulationRelation, Substance, S
 from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
+class SubstanceTypesForm(forms.MultipleChoiceField):
+    def to_python(self, value):
+        if not value:
+            return []
+        elif not isinstance(value, (list, tuple)):
+            raise ValidationError(self.error_messages["invalid_list"], code="invalid_list")
+        # MultipleChoiceField fait la conversion vers str, alors on ne l'appel pas.
+        return [int(val) for val in value]
+
+
 class SubstanceForm(ChangeReasonFormMixin):
+    substance_types = SubstanceTypesForm(
+        required=False, widget=forms.CheckboxSelectMultiple, choices=SubstanceType.choices
+    )
+
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
@@ -99,6 +114,7 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
                     "ca_source",
                     "is_risky",
                     "novel_food",
+                    "substance_types",
                 ],
             },
         ),
