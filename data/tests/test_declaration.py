@@ -23,6 +23,9 @@ from data.models.ingredient_status import IngredientStatus
 
 
 class DeclarationTestCase(TestCase):
+    def setUp(self):
+        self.pop_generale = PopulationFactory.create(ca_name="Population générale")
+
     def test_json_representation(self):
         declaration = InstructionReadyDeclarationFactory()
         json_representation = declaration.json_representation
@@ -296,7 +299,7 @@ class DeclarationTestCase(TestCase):
             substance = SubstanceFactory(substance_types=type)
             MaxQuantityPerPopulationRelationFactory(
                 substance=substance,
-                population=PopulationFactory(ca_name="Population générale"),
+                population=self.pop_generale,
                 ca_max_quantity=SUBSTANCE_MAX_QUANTITY,
             )
             ComputedSubstanceFactory(
@@ -366,7 +369,7 @@ class DeclarationTestCase(TestCase):
             substance = SubstanceFactory(substance_types=type)
             MaxQuantityPerPopulationRelationFactory(
                 substance=substance,
-                population=PopulationFactory(ca_name="Population générale"),
+                population=self.pop_generale,
                 ca_max_quantity=SUBSTANCE_MAX_QUANTITY,
             )
             ComputedSubstanceFactory(

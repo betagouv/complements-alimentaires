@@ -33,6 +33,7 @@ from data.models import (
     VisaRole,
 )
 from data.models.ingredient_status import IngredientStatus
+from data.models.substance import MaxQuantityPerPopulationRelation
 
 logger = logging.getLogger(__name__)
 
@@ -411,13 +412,20 @@ class Declaration(Historisable, TimeStampable):
 
     @property
     def computed_substances_with_max_quantity_exceeded(self):
-        substances_with_general_population_max_quantity_exceeded = (
-            self.computed_substances.exclude(quantity__isnull=True)
-            .filter(substance__max_quantities__name="Population générale")
-            .filter(substance__maxquantityperpopulationrelation__max_quantity__lt=F("quantity"))
-            .filter(unit=F("substance__unit"))
-        )
-        return substances_with_general_population_max_quantity_exceeded
+        substances_with_max_quantity_exceeded_ids = []
+        pop_generale = Population.objects.get(name="Population générale")
+        for computed_substance in self.computed_substances.exclude(quantity__isnull=True):
+            try:
+                threshold = MaxQuantityPerPopulationRelation.objects.get(
+                    population=pop_generale, substance=computed_substance.substance
+                ).max_quantity
+                if computed_substance.quantity > threshold:
+                    substances_with_max_quantity_exceeded_ids.append(computed_substance.id)
+            except MaxQuantityPerPopulationRelation.DoesNotExist:
+                # no max quantity
+                pass
+
+        return self.computed_substances.filter(id__in=substances_with_max_quantity_exceeded_ids)
 
     @property
     def declared_substances_with_max_quantity_exceeded(self):

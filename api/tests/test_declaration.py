@@ -39,9 +39,9 @@ from data.factories import (
     VisaRoleFactory,
 )
 from data.models import (
+    Addable,
     Attachment,
     Declaration,
-    Addable,
     DeclaredMicroorganism,
     DeclaredPlant,
     DeclaredSubstance,
@@ -272,7 +272,7 @@ class TestDeclarationApi(APITestCase):
         """
         declarant_role = DeclarantRoleFactory(user=authenticate.user)
         company = declarant_role.company
-
+        PopulationFactory(ca_name="Population générale")
         plant = PlantFactory()
         plant_part = PlantPartFactory()
         plant.plant_parts.add(plant_part)
@@ -310,6 +310,7 @@ class TestDeclarationApi(APITestCase):
             payload,
             format="json",
         )
+
         declaration = Declaration.objects.get(pk=response.json()["id"])
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_16)
 
@@ -879,6 +880,7 @@ class TestDeclarationApi(APITestCase):
         Il est possible d'ajouter un query_param pour forcer le calcul de l'article
         dans la sauvegarde
         """
+        PopulationFactory(ca_name="Population générale")
         declarant_role = DeclarantRoleFactory(user=authenticate.user)
         company = declarant_role.company
         user_declaration = DeclarationFactory(author=authenticate.user, name="Old name", company=company)
@@ -1654,6 +1656,7 @@ class TestDeclarationApi(APITestCase):
         """
         Les viseuses ou instructrices peuvent changer l'article d'une déclaration
         """
+        PopulationFactory(ca_name="Population générale")
         InstructionRoleFactory(user=authenticate.user)
         art_15 = AwaitingInstructionDeclarationFactory(
             declared_plants=[],
@@ -2688,6 +2691,8 @@ class TestSingleDeclaredElementApi(APITestCase):
         """
         Vérifier que l'article est recalculé avec un remplacement d'une demande
         """
+        PopulationFactory(ca_name="Population générale")
+
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
