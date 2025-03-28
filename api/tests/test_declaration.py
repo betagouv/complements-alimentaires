@@ -312,6 +312,7 @@ class TestDeclarationApi(APITestCase):
         )
 
         declaration = Declaration.objects.get(pk=response.json()["id"])
+
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_16)
 
     @authenticate

@@ -6,7 +6,7 @@ from pathlib import Path
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Case, F, Q, Value, When
+from django.db.models import Case, Q, Value, When
 from django.db.models.functions import Coalesce
 from django.template.defaultfilters import filesizeformat
 
@@ -410,33 +410,34 @@ class Declaration(Historisable, TimeStampable):
     def declared_in_teleicare(self):
         return self.teleicare_id is not None
 
-    @property
-    def computed_substances_with_max_quantity_exceeded(self):
+    def _filter_substances_on_max_quantity_exceeded(self, declared=True):
+        substances = (
+            self.declared_substances.exclude(substance__isnull=True).exclude(quantity__isnull=True)
+            if declared
+            else self.computed_substances.exclude(quantity__isnull=True)
+        )
         substances_with_max_quantity_exceeded_ids = []
         pop_generale = Population.objects.get(name="Population générale")
-        for computed_substance in self.computed_substances.exclude(quantity__isnull=True):
+        for substance in substances:
             try:
                 threshold = MaxQuantityPerPopulationRelation.objects.get(
-                    population=pop_generale, substance=computed_substance.substance
+                    population=pop_generale, substance=substance.substance
                 ).max_quantity
-                if computed_substance.quantity > threshold:
-                    substances_with_max_quantity_exceeded_ids.append(computed_substance.id)
+                if substance.quantity > threshold:
+                    substances_with_max_quantity_exceeded_ids.append(substance.id)
             except MaxQuantityPerPopulationRelation.DoesNotExist:
                 # no max quantity
                 pass
 
-        return self.computed_substances.filter(id__in=substances_with_max_quantity_exceeded_ids)
+        return substances.filter(id__in=substances_with_max_quantity_exceeded_ids)
+
+    @property
+    def computed_substances_with_max_quantity_exceeded(self):
+        return self._filter_substances_on_max_quantity_exceeded(declared=False)
 
     @property
     def declared_substances_with_max_quantity_exceeded(self):
-        substances_with_general_population_max_quantity_exceeded = (
-            self.declared_substances.exclude(substance__isnull=True)
-            .exclude(quantity__isnull=True)
-            .filter(substance__max_quantities__name="Population générale")
-            .filter(substance__maxquantityperpopulationrelation__max_quantity__lt=F("quantity"))
-            .filter(unit=F("substance__unit"))
-        )
-        return substances_with_general_population_max_quantity_exceeded
+        return self._filter_substances_on_max_quantity_exceeded(declared=True)
 
     @property
     def has_max_quantity_exceeded(self):
