@@ -444,6 +444,7 @@ const routes = [
         galenicFormulation: "",
         limit: "10",
         recherche: "",
+        composition: "",
       },
     },
   },
