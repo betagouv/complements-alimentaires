@@ -16,6 +16,7 @@ from .galenic_formulation import GalenicFormulation
 from .declaration import DeclarationAdmin
 from .solicitation import SupervisionClaimAdmin, CompanyAccessClaim, CollaborationInvitation
 from .global_roles import InstructionRoleAdmin
+from .error_report import ErrorReportAdmin
 
 from data.models import PlantPart, PlantFamily
 from simple_history.admin import SimpleHistoryAdmin

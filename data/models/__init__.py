@@ -34,6 +34,7 @@ from .solicitation import SupervisionClaim, CompanyAccessClaim, CollaborationInv
 from .snapshot import Snapshot
 from .teleicare_history.ica_declaration import IcaComplementAlimentaire, IcaDeclaration, IcaVersionDeclaration
 from .teleicare_history.ica_etablissement import IcaEtablissement
+from .error_report import ErrorReport
 
 ELEMENT_MODELS = [
     Ingredient,
