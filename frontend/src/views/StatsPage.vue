@@ -27,7 +27,25 @@
           ></iframe>
         </DsfrAccordion>
         <DsfrAccordion id="accordion-1" title="Gain de temps à l'instruction">
-          <h4>Nombre de déclaration à instruction facilitée par mois</h4>
+          <h4>Statistiques de temps passé entre la soumission d'une déclaration et sa validation</h4>
+          <p>
+            En réduisant le temps de validation, les déclarants sont plus satisfaits car ils peuvent mettre leur produit
+            sur le marché plus rapidement, et le BEPIAS peut concentrer ses efforts sur les cas les plus complexes.
+          </p>
+          <p>
+            Avec Compl'Alim, nous avons mis en place une aide à l'instruction pour le BEPIAS en octobre 2024. Nous
+            améliorons en continu les outils et les méthodes d'évaluation pour réduire le temps d'instruction, selon la
+            législation française et les retours d'utilisateurs.
+          </p>
+          <iframe
+            src="https://compl-alim-metabase.cleverapps.io/public/question/572252e2-0d2a-4465-8ec4-c9f594508f15"
+            frameborder="0"
+            width="800"
+            height="600"
+            allowtransparency
+          ></iframe>
+          <br />
+          <h4>Impact de l'instruction facilitée</h4>
           <p>
             Notre outil permet l'automatisation de l'instruction de certaines déclarations ARTICLE 15 sans risque. Ces
             déclarations n'étaient pas facilement identifiables auparavant et devaient nécessairement passer par le même
@@ -38,20 +56,6 @@
           </p>
           <iframe
             src="https://compl-alim-metabase.cleverapps.io/public/question/c99b0f9a-77e2-470f-b2a6-98a8ac3a4a46"
-            frameborder="0"
-            width="800"
-            height="600"
-            allowtransparency
-          ></iframe>
-          <br />
-          <h4>Statistiques de temps passé entre la soumission d'une déclaration et sa validation</h4>
-          <p>
-            Le temps passé entre la soumission d'une déclaration et son autorisation reflète la complexité de
-            l'instruction. Celui-ci devrait diminuer au fur et à mesure de nos efforts pour rendre la règlementation
-            plus lisible et notre outil plus convivial.
-          </p>
-          <iframe
-            src="https://compl-alim-metabase.cleverapps.io/public/question/572252e2-0d2a-4465-8ec4-c9f594508f15"
             frameborder="0"
             width="800"
             height="600"
