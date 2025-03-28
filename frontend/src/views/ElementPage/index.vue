@@ -152,9 +152,7 @@ const icon = computed(() => getTypeIcon(type.value))
 // Information affichée
 const family = computed(() => element.value?.family?.name)
 const genre = computed(() => element.value?.genre)
-const plantParts = computed(() =>
-  element.value?.plantParts?.filter((x) => x.isUseful === true && !!x.name).map((x) => x.name)
-)
+const plantParts = computed(() => element.value?.plantParts?.map((x) => x.name))
 const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))
 const casNumber = computed(() => element.value?.casNumber)
