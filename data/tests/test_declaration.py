@@ -285,7 +285,6 @@ class DeclarationTestCase(TestCase):
 
     def test_article_18(self):
         SUBSTANCE_MAX_QUANTITY = 1.0
-        general_population = PopulationFactory(ca_name="Population générale")
 
         substance_types = [
             [SubstanceType.VITAMIN],
@@ -294,7 +293,7 @@ class DeclarationTestCase(TestCase):
         ]
         for type in substance_types:
             declaration_with_computed_nutriment_max_exceeded = InstructionReadyDeclarationFactory(
-                computed_substances=[], populations=[general_population]
+                computed_substances=[], populations=[self.pop_generale]
             )
 
             substance = SubstanceFactory(substance_types=type)
@@ -362,7 +361,6 @@ class DeclarationTestCase(TestCase):
         * la dose max d'une substance calculée est dépassée pour la population générale
         """
         SUBSTANCE_MAX_QUANTITY = 1.0
-        general_population = PopulationFactory(ca_name="Population générale")
         substance_types = [
             [SubstanceType.SECONDARY_METABOLITE],
             [SubstanceType.ENZYME],
@@ -370,7 +368,7 @@ class DeclarationTestCase(TestCase):
         ]
         for type in substance_types:
             declaration_with_computed_substance_max_exceeded = InstructionReadyDeclarationFactory(
-                computed_substances=[], populations=[general_population]
+                computed_substances=[], populations=[self.pop_generale]
             )
             substance = SubstanceFactory(substance_types=type)
             MaxQuantityPerPopulationRelationFactory(
