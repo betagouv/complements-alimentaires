@@ -36,7 +36,7 @@ class ErrorReportCreateView(CreateAPIView):
 
             send_mail(
                 subject="Nouvelle incohérence remontée dans la base ingrédients",
-                message=f"{author_str} a envoyé un message le {date(now)} à {time(now)} pour signaler l'erreur suivante concernant l'ingrédient {error_report.element_string} : {error_report.message}",
+                message=f"{author_str} a envoyé un message le {date(now)} à {time(now)} pour signaler l'erreur suivante concernant l'ingrédient {error_report.element_string} : « {error_report.message} »",
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[settings.CONTACT_EMAIL],
             )

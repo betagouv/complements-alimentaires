@@ -43,6 +43,24 @@ class TestErrorReport(APITestCase):
         self.assertEqual(mail.outbox[0].subject, "Nouvelle incohérence remontée dans la base ingrédients")
         self.assertIn("example@foo.com", mail.outbox[0].body)
 
+    def test_error_report_without_email(self):
+        payload = {
+            "message": "hello world",
+            "plant": self.plant.id,
+        }
+
+        response = self.client.post(reverse("api:report_issue"), payload, format="json")
+        body = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        error_report = ErrorReport.objects.get(pk=body["id"])
+        self.assertEqual(error_report.email, "")
+
+        # Email sending
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, "Nouvelle incohérence remontée dans la base ingrédients")
+        self.assertIn("Un utilisateur anonyme", mail.outbox[0].body)
+
     @authenticate
     def test_error_report_logged_in(self):
         payload = {

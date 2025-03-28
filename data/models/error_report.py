@@ -67,5 +67,5 @@ class ErrorReport(TimeStampable):
     def element_string(self):
         element = self.plant or self.ingredient or self.microorganism or self.substance
         if element:
-            return str(element)  # TODO maybe add the verbose_name of its model?
+            return f"{str(element)} (Type: {element._meta.verbose_name}, ID: {element.id})"
         return "ingrédient inconnu"
