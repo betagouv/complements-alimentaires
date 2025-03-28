@@ -62,19 +62,21 @@
               pour {{ payload.computedSubstances[rowIndex].substance.maxQuantity }} maximum autorisés
             </span>
           </div>
-          <DsfrInputGroup v-else>
-            <NumberField
-              v-model="payload.computedSubstances[rowIndex].quantity"
-              label="Quantité par DJR"
-              :required="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
-            />
-            <div
-              class="!text-neutral-500 mt-1"
-              v-if="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
-            >
-              * champ obligatoire
-            </div>
-          </DsfrInputGroup>
+          <div v-else class="-mt-1 pb-2">
+            <DsfrInputGroup>
+              <NumberField
+                v-model="payload.computedSubstances[rowIndex].quantity"
+                label="Quantité par DJR"
+                :required="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
+              />
+              <div
+                class="!text-neutral-500 mt-1"
+                v-if="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
+              >
+                * champ obligatoire
+              </div>
+            </DsfrInputGroup>
+          </div>
         </div>
         <div class="hidden sm:table-cell fr-text-alt ca-cell font-italic">
           <span>
