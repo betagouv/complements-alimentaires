@@ -29,13 +29,14 @@
         <DsfrAccordion id="accordion-1" title="Gain de temps à l'instruction">
           <h4>Statistiques de temps passé entre la soumission d'une déclaration et sa validation</h4>
           <p>
-            En réduisant le temps de validation, les déclarants sont plus satisfaits car ils peuvent mettre leur produit
-            sur le marché plus rapidement, et le BEPIAS peut concentrer ses efforts sur les cas les plus complexes.
+            L’instruction automatique de certaines déclarations permet au BEPIAS de concentrer ses efforts sur les cas
+            les plus complexes. Le temps de validation est ainsi réduit et les déclarants sont plus satisfaits car ils
+            peuvent mettre leurs produits sur le marché plus rapidement.
           </p>
           <p>
             Avec Compl'Alim, nous avons mis en place une aide à l'instruction pour le BEPIAS en octobre 2024. Nous
-            améliorons en continu les outils et les méthodes d'évaluation pour réduire le temps d'instruction, selon la
-            législation française et les retours d'utilisateurs.
+            améliorons en continu les outils et les méthodes d'évaluation pour réduire le temps d'instruction, en tenant
+            compte des évolutions réglementaires et des retours d'utilisateurs.
           </p>
           <iframe
             src="https://compl-alim-metabase.cleverapps.io/public/question/572252e2-0d2a-4465-8ec4-c9f594508f15"
