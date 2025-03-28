@@ -7,15 +7,15 @@ from data.models import Ingredient, Microorganism, Plant, Substance
 
 
 class ErrorReport(TimeStampable):
-    class Status(models.TextChoices):
-        NEW = "NEW", "Nouveau"
-        ONGOING = "ONGOING", "En cours d'analyse"
-        DONE = "DONE", "Traité"
-
     class Meta:
         verbose_name = "signalement d'erreur"
         verbose_name_plural = "signalements d'erreur"
         ordering = ["-creation_date"]
+
+    class Status(models.TextChoices):
+        NEW = "NEW", "Nouveau"
+        ONGOING = "ONGOING", "En cours d'analyse"
+        DONE = "DONE", "Traité"
 
     email = models.EmailField(_("email address"), blank=True)
     message = models.TextField("problème constaté", blank=True)
