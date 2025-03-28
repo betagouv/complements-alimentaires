@@ -6,8 +6,9 @@ from pathlib import Path
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Case, F, Q, Value, When
+from django.db.models import Case, F, Min, Q, Value, When
 from django.db.models.functions import Coalesce
+from django.db.models.query import QuerySet
 from django.template.defaultfilters import filesizeformat
 
 from dateutil.relativedelta import relativedelta
@@ -33,8 +34,7 @@ from data.models import (
     VisaRole,
 )
 from data.models.ingredient_status import IngredientStatus
-
-# from data.models.substance import MaxQuantityPerPopulationRelation
+from data.models.substance import MaxQuantityPerPopulationRelation
 
 logger = logging.getLogger(__name__)
 
@@ -413,16 +413,39 @@ class Declaration(Historisable, TimeStampable):
 
     @property
     def computed_substances_with_max_quantity_exceeded(self):
-        substances_with_population_max_quantity_exceeded = []
-        # TODO: ajouter la Population Générale
-        # TODO : annoter pour savoir quelle population est incriminée
+        """
+        Vérifier pour chaque substance si :
+        * la quantité indiquée est supérieure à la quantité pour l'une des population cibles de la déclaration
+        * ou la quantité indiquée est supérieure à la quantité max toute population confondue (ce n'est pas toujours la population générale)
+        """
+        if not self.populations.exists():
+            # Par défaut, vérifier si les quantité ne dépassent pas les limites pour la population générale
+            substances_with_population_max_quantity_exceeded = (
+                self.computed_substances.exclude(quantity__isnull=True)
+                .filter(substance__max_quantities__name="Population générale")
+                .filter(substance__maxquantityperpopulationrelation__max_quantity__lt=F("quantity"))
+                .filter(unit=F("substance__unit"))
+            )
+        else:
+            # TODO : annoter pour savoir quelle population est incriminée
 
-        substances_with_population_max_quantity_exceeded = (
-            self.computed_substances.exclude(quantity__isnull=True)
-            .filter(substance__max_quantities__in=self.populations.all())
-            .filter(substance__maxquantityperpopulationrelation__max_quantity__lt=F("quantity"))
-            .filter(unit=F("substance__unit"))
-        )
+            substances_with_population_max_quantity_exceeded = QuerySet()
+            for computed_substance in self.computed_substances.exclude(quantity__isnull=True):
+                max_for_target_populations = MaxQuantityPerPopulationRelation.objects.filter(
+                    population__in=self.populations.all(), substance=computed_substance.substance
+                )
+                max_general_pop = MaxQuantityPerPopulationRelation.objects.filter(
+                    population__name="Population générale", substance=computed_substance.substance
+                )
+                if max_for_target_populations.exists():
+                    if (
+                        computed_substance.quantity
+                        > max_for_target_populations.aggregate(Min("max_quantity"))["quantity__min"]
+                    ):
+                        substances_with_population_max_quantity_exceeded.chain(computed_substance)
+                elif max_general_pop.exists():
+                    if computed_substance.quantity > max_general_pop.max_quantity:
+                        substances_with_population_max_quantity_exceeded.chain(computed_substance)
 
         return substances_with_population_max_quantity_exceeded
 
