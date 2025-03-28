@@ -428,6 +428,54 @@ class DeclarationTestCase(TestCase):
             )
             self.assertEqual(declaration_with_declared_substance_max_exceeded.overridden_article, "")
 
+    def test_general_population_is_the_only_one_considered_for_article_assignation(self):
+        """
+        Les substances qui ont une doses maximum pour une population autre
+        que la population générale ne doivent pas être considérées comme dépassées
+        """
+        declaration_without_problem = InstructionReadyDeclarationFactory(
+            computed_substances=[],
+        )
+        substance_1 = SubstanceFactory(substance_types=[SubstanceType.VITAMIN])
+        substance_2 = SubstanceFactory(substance_types=[SubstanceType.MINERAL])
+
+        MaxQuantityPerPopulationRelationFactory(
+            substance=substance_1,
+            population=PopulationFactory(ca_name="Population non générale"),
+            ca_max_quantity=10,
+        )
+        MaxQuantityPerPopulationRelationFactory(
+            substance=substance_1,
+            population=PopulationFactory(ca_name="Population générale"),
+            ca_max_quantity=15,
+        )
+        MaxQuantityPerPopulationRelationFactory(
+            substance=substance_2,
+            population=PopulationFactory(ca_name="Population extraordinaire"),
+            ca_max_quantity=1,
+        )
+        MaxQuantityPerPopulationRelationFactory(
+            substance=substance_2,
+            population=PopulationFactory(ca_name="Population générale"),
+            ca_max_quantity=2,
+        )
+        ComputedSubstanceFactory(
+            substance=substance_1,
+            unit=substance_1.unit,
+            quantity=12,
+            declaration=declaration_without_problem,
+        )
+        DeclaredSubstanceFactory(
+            substance=substance_2,
+            unit=substance_2.unit,
+            quantity=1.2,
+            declaration=declaration_without_problem,
+        )
+        declaration_without_problem.assign_calculated_article()
+        declaration_without_problem.save()
+        declaration_without_problem.refresh_from_db()
+        self.assertEqual(declaration_without_problem.article, Declaration.Article.ARTICLE_15)
+
     def test_visa_refused(self):
         """
         La propriété `visa_refused` est présente si le visa a été refusé et qu'aucune action
