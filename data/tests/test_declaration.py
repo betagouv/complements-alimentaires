@@ -471,6 +471,7 @@ class DeclarationTestCase(TestCase):
             declaration_with_computed_substance_max_exceeded.assign_calculated_article()
             declaration_with_computed_substance_max_exceeded.save()
             declaration_with_computed_substance_max_exceeded.refresh_from_db()
+
             self.assertEqual(
                 declaration_with_computed_substance_max_exceeded.article, Declaration.Article.ANSES_REFERAL
             )
