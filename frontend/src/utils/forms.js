@@ -19,8 +19,7 @@ export const errorInteger = {
 export const errorMaxStringLength = (max) => {
   return {
     maxLength: helpers.withMessage(
-      ({ $pending, $invalid, $params, $model }) =>
-        `Ce champ ne doit pas dépasser ${$params.max} caractères, ${$model.length} actuel`,
+      ({ $params, $model }) => `Ce champ ne doit pas dépasser ${$params.max} caractères, ${$model.length} actuel`,
       maxLength(max)
     ),
   }

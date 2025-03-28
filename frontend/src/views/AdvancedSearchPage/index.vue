@@ -1,5 +1,5 @@
 <template>
-  <div class="fr-container">
+  <div :class="{ 'fr-container': true, seeOverflow }">
     <DsfrBreadcrumb
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Recherche avancée' }]"
     />
@@ -24,7 +24,7 @@
       </div>
     </div>
     <DsfrAccordionsGroup v-model="activeAccordion" class="border mb-8 filter-area">
-      <DsfrAccordion>
+      <DsfrAccordion id="filter-accordeon">
         <template v-slot:title>
           <p>
             <v-icon name="ri-equalizer-fill"></v-icon>
@@ -82,6 +82,30 @@
                   class="!text-sm"
                 />
               </DsfrInputGroup>
+
+              <ElementAutocomplete
+                v-model="ingredientSearchTerm"
+                label="Composition"
+                label-visible
+                hint="Tapez au moins trois caractères pour démarrer la recherche. Les résultats contiendront tous les ingrédients ajoutés dans ce filtre."
+                @selected="addIngredient"
+                :hideSearchButton="true"
+                :required="false"
+                :chooseFirstAsDefault="false"
+              />
+              <div class="mt-2">
+                <DsfrTag
+                  v-for="([id, name, type], idx) in ingredientsToFilter"
+                  :key="`ingredient-${id}`"
+                  class="m-1 fr-tag--dismiss"
+                  @click="removeIngredient(idx)"
+                  :aria-label="`Retirer ${name}`"
+                  tagName="button"
+                >
+                  <v-icon scale="0.85" class="mr-1" :name="getTypeIcon(type)" :aria-label="getTypeInFrench(type)" />
+                  {{ name }}
+                </DsfrTag>
+              </div>
             </div>
           </div>
         </div>
@@ -120,6 +144,8 @@ import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import { getPagesForPagination } from "@/utils/components"
 import SearchResultsTable from "./SearchResultsTable"
 import { useRootStore } from "@/stores/root"
+import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
+import { getTypeIcon, getTypeInFrench, typesMapping } from "@/utils/mappings"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -153,7 +179,9 @@ const updateArticle = (newValue) => updateQuery({ article: newValue })
 const updatePopulation = (newValue) => updateQuery({ population: newValue })
 const updateCondition = (newValue) => updateQuery({ condition: newValue })
 const updateGalenicFormulation = (newValue) => updateQuery({ galenicFormulation: newValue })
-const updateLimit = (newValue) => updateQuery({ limit: newValue, page: 1 })
+const updateLimit = (newValue) => updateQuery({ limit: newValue })
+const updateComposition = () =>
+  updateQuery({ composition: ingredientsToFilter.value.map((x) => x.join("||")).join("|||") })
 
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
@@ -168,21 +196,68 @@ const search = () => {
 
 const pages = computed(() => getPagesForPagination(data.value?.count, limit.value, route.path))
 
+// Filtre composition
+// À noter qu'on utilise "||" et "|||" comme séparateurs dans l'URL pour ne pas entrer en conflit avec
+// les noms d'ingrédients. Par exemple, une plante avec un ID: 12 et nom: Fraise serait codifiée
+// dans le URL : `composition=12||Fraise||plant`. Le triple pipe "|||" sépare chaque élément.
+const ingredientSearchTerm = ref()
+const ingredientsToFilter = computed(() => {
+  if (route.query.composition)
+    return route.query.composition
+      .split("|||")
+      .map((x) => x?.split("||"))
+      .filter((x) => x?.[2] && x[2] in typesMapping)
+  return []
+})
+const addIngredient = (x) => {
+  ingredientsToFilter.value.push([x.id, x.name, x.objectType])
+  updateComposition()
+}
+const removeIngredient = (idx) => {
+  ingredientsToFilter.value.splice(idx, 1)
+  updateComposition()
+}
+const getApiUrlIdsForType = (types) => {
+  const ids =
+    ingredientsToFilter.value
+      ?.filter((x) => types.indexOf(x[2]) > -1)
+      .map((x) => x[0])
+      .join(",") || []
+  return ids.length ? ids : null
+}
+
 // Requêtes
 
 const url = computed(() => {
   const baseUrl = "/api/v1/declarations"
-  const limitQuery = limit.value ? `limit=${limit.value}` : ""
-  const offsetQuery = offset.value ? `offset=${offset.value}` : ""
-  const statusQuery = filteredStatus.value ? `status=${filteredStatus.value}` : ""
-  const orderingQuery = ordering.value ? `ordering=${ordering.value}` : ""
-  const articleQuery = article.value ? `article=${article.value}` : ""
-  const populationQuery = population.value ? `population=${population.value}` : ""
-  const conditionQuery = condition.value ? `condition=${condition.value}` : ""
-  const galenicFormulationQuery = galenicFormulation.value ? `galenic_formulation=${galenicFormulation.value}` : ""
-  const searchQuery = searchTerm.value ? `search=${searchTerm.value}` : ""
+  const limitQuery = limit.value ? `?limit=${limit.value}` : "?"
+  const offsetQuery = offset.value ? `&offset=${offset.value}` : ""
+  const statusQuery = filteredStatus.value ? `&status=${filteredStatus.value}` : ""
+  const orderingQuery = ordering.value ? `&ordering=${ordering.value}` : ""
+  const articleQuery = article.value ? `&article=${article.value}` : ""
+  const populationQuery = population.value ? `&population=${population.value}` : ""
+  const conditionQuery = condition.value ? `&condition=${condition.value}` : ""
+  const galenicFormulationQuery = galenicFormulation.value ? `&galenic_formulation=${galenicFormulation.value}` : ""
+  const searchQuery = searchTerm.value ? `&search=${searchTerm.value}` : ""
 
-  const fullPath = `${baseUrl}/?${limitQuery}&${offsetQuery}&${statusQuery}&${orderingQuery}&${articleQuery}&${populationQuery}&${conditionQuery}&${galenicFormulationQuery}&${searchQuery}`
+  const plantIds = getApiUrlIdsForType(["plant"])
+  const microorganismIds = getApiUrlIdsForType(["microorganism"])
+  const substanceIds = getApiUrlIdsForType(["substance"])
+  const ingredientsIds = getApiUrlIdsForType([
+    "ingredient",
+    "form_of_supply",
+    "aroma",
+    "additive",
+    "active_ingredient",
+    "non_active_ingredient",
+  ])
+
+  const plantsQuery = plantIds ? `&plants=${plantIds}` : ""
+  const microorganismsQuery = microorganismIds ? `&microorganisms=${microorganismIds}` : ""
+  const substancesQuery = substanceIds ? `&substances=${substanceIds}` : ""
+  const ingredientsQuery = ingredientsIds ? `&ingredients=${ingredientsIds}` : ""
+
+  const fullPath = `${baseUrl}/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}`
 
   // Enlève les `&` consecutifs
   return fullPath.replace(/&+/g, "&").replace(/&$/, "")
@@ -194,7 +269,10 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
-watch([page, filteredStatus, ordering, article, limit, population, condition, galenicFormulation], fetchSearchResults)
+watch(
+  [page, filteredStatus, ordering, article, limit, population, condition, galenicFormulation, ingredientsToFilter],
+  fetchSearchResults
+)
 
 // Remplissage d'options dans les champs select
 
@@ -227,6 +305,15 @@ const orderingOptions = [
 const populationOptions = computed(() => toOptions(populations.value))
 const conditionOptions = computed(() => toOptions(conditions.value))
 const galenicFormulationOptions = computed(() => toOptions(galenicFormulations.value))
+
+// Petit hack pour l'animation de l'accordéon : Pour faire en sorte que le dropdown de
+// ElementSearch soit visible en dehors de l'accordéon, on doit mettre `overflow:visible`
+// (fait dans le CSS ci-dessous). Par contre, il faut appliquer un petit delai de 500ms
+// pour permettre l'animation de se dérouler sans glitch visuel (la valeur de 500ms vient de
+// https://github.com/GouvernementFR/dsfr/blob/0509e5697239ce12715cc0fcf0f5a69b0033ac6c/src/dsfr/core/script/collapse/collapse.js#L58
+const seeOverflow = ref(false)
+watch(activeAccordion, (x) => setTimeout(() => (seeOverflow.value = x === 0), 500))
+///////////
 </script>
 
 <style scoped>
@@ -238,5 +325,8 @@ const galenicFormulationOptions = computed(() => toOptions(galenicFormulations.v
 }
 .filter-area :deep(.fr-fieldset__element) {
   @apply !my-0;
+}
+div.seeOverflow :deep(#filter-accordeon.fr-collapse--expanded) {
+  overflow: visible;
 }
 </style>
