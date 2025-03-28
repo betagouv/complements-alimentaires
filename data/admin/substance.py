@@ -7,7 +7,7 @@ from django.utils.html import format_html
 from simple_history.admin import SimpleHistoryAdmin
 
 from data.models.declaration import Declaration
-from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym
+from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym, SubstanceType
 
 from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
@@ -40,6 +40,19 @@ class SubstanceMaxQuantitiesInline(admin.TabularInline):
         models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
     }
     readonly_fields = ("siccrf_max_quantity",)
+
+
+class SubstanceTypeListFilter(admin.SimpleListFilter):
+    title = "type de substance"
+    parameter_name = "type"
+
+    def lookups(self, request, model_admin):
+        return SubstanceType.choices
+
+    def queryset(self, request, queryset):
+        substance_type_id = self.value()
+        if substance_type_id:
+            return queryset.filter(substance_types__contains=[substance_type_id])
 
 
 @admin.register(Substance)
@@ -160,7 +173,7 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         "is_risky",
         "novel_food",
     )
-    list_filter = ("is_obsolete", "status", "is_risky", "novel_food")
+    list_filter = ("is_obsolete", "status", "is_risky", "novel_food", SubstanceTypeListFilter)
     show_facets = admin.ShowFacets.NEVER
     search_fields = ["id", "name"]
 
