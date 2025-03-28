@@ -65,7 +65,7 @@ class TestErrorReport(APITestCase):
     def test_error_report_logged_in(self):
         payload = {
             "message": "hello world",
-            "plant": self.ingredient.id,
+            "ingredient": self.ingredient.id,
         }
 
         response = self.client.post(reverse("api:report_issue"), payload, format="json")
