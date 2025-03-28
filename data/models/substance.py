@@ -217,8 +217,18 @@ class SubstanceSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
 
 
 class MaxQuantityPerPopulationRelation(Historisable):
+    class Meta:
+        verbose_name = "quantité maximum de substance autorisée pour une population cible"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["substance", "population"],
+                name="unique_max_quantity_per_population",
+            )
+        ]
+
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
     population = models.ForeignKey(Population, on_delete=models.CASCADE)
+
     siccrf_max_quantity = models.FloatField(
         null=True,
         blank=True,
