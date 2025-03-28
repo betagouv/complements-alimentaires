@@ -81,7 +81,10 @@
   </div>
 </template>
 <script setup>
-import { ref } from "vue"
+import { ref, watch } from "vue"
+import { useFetch } from "@vueuse/core"
 
 const activeAccordion = ref(0)
+const { response } = useFetch("/api/v1/stats/").json()
+watch(response, () => console.log(response.value))
 </script>

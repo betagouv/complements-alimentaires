@@ -152,6 +152,13 @@ DATABASES = {
 REDIS_URL = os.getenv("REDIS_URL")
 REDIS_PREPEND_KEY = os.getenv("REDIS_PREPEND_KEY", "")
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache" if DEBUG else "django_redis.cache.RedisCache",
+        "LOCATION": None if DEBUG else REDIS_URL,
+    }
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
