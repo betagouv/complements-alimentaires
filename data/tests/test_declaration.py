@@ -446,7 +446,7 @@ class DeclarationTestCase(TestCase):
         )
         MaxQuantityPerPopulationRelationFactory(
             substance=substance_1,
-            population=PopulationFactory(ca_name="Population générale"),
+            population=self.pop_generale,
             ca_max_quantity=15,
         )
         MaxQuantityPerPopulationRelationFactory(
@@ -456,7 +456,7 @@ class DeclarationTestCase(TestCase):
         )
         MaxQuantityPerPopulationRelationFactory(
             substance=substance_2,
-            population=PopulationFactory(ca_name="Population générale"),
+            population=self.pop_generale,
             ca_max_quantity=2,
         )
         ComputedSubstanceFactory(
