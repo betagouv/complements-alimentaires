@@ -14,8 +14,12 @@ export const getObjectSubTypeList = (objectList, subType = null) => {
 
 export const getElementUrlComponent = (e, type) => `${e.id}--${slugifyType(type || e.objectType)}--${e.name}`
 
-export const getUnitString = (declaration, units) => {
+export const getUnitQuantityString = (declaration, units) => {
   if (!declaration?.unitQuantity) return null
-  const unitMeasurement = units.value?.find?.((x) => x.id === declaration.unitMeasurement)?.name || "-"
+  const unitMeasurement = getUnitString(declaration.unitMeasurement, units)
   return `${declaration.unitQuantity} ${unitMeasurement}`
+}
+
+export const getUnitString = (unitId, units) => {
+  return units.value?.find?.((x) => x.id === unitId)?.name || "-"
 }

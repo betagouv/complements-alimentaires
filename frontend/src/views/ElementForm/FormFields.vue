@@ -140,7 +140,7 @@
           <NumberField label="Quantité maximale autorisée" label-visible v-model="state.maxQuantity" />
         </DsfrInputGroup>
         <div class="max-w-32">
-          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'unit')">
+          <DsfrInputGroup v-if="isNewIngredient" :error-message="firstErrorMsg(v$, 'unit')">
             <DsfrSelect
               label="Unité"
               label-visible
@@ -149,6 +149,10 @@
               defaultUnselectedText="Unité"
             />
           </DsfrInputGroup>
+          <div v-else class="pt-4">
+            <p class="mb-2">Unité</p>
+            <p>{{ unitString }}</p>
+          </div>
         </div>
       </div>
       <p class="my-4"><i>Population cible et à risque en construction</i></p>
@@ -188,6 +192,7 @@ import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { firstErrorMsg, errorRequiredField, errorNumeric, errorMaxStringLength } from "@/utils/forms"
+import { getUnitString } from "@/utils/elements"
 import { useVuelidate } from "@vuelidate/core"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
@@ -322,7 +327,7 @@ const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
 const store = useRootStore()
-const { plantParts, plantFamilies } = storeToRefs(store)
+const { plantParts, plantFamilies, units } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
 
@@ -355,4 +360,8 @@ const plantFamiliesDisplay = computed(() => {
 })
 
 const aromaId = 3
+
+const unitString = computed(() => {
+  return getUnitString(state.value.unit, units)
+})
 </script>
