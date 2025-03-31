@@ -17,7 +17,7 @@ import { getStatusTagForCell } from "@/utils/components"
 import CompanyTableCell from "@/components/CompanyTableCell"
 import DeclarationName from "@/components/DeclarationName"
 import { articleOptionsWith15Subtypes } from "@/utils/mappings"
-import { getUnitString } from "@/utils/elements"
+import { getUnitQuantityString } from "@/utils/elements"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 
@@ -41,7 +41,7 @@ const rows = computed(() => {
         class: "font-medium",
         to: { name: "AdvancedSearchResult", params: { declarationId: d.id } },
       },
-      getUnitString(d, units),
+      getUnitQuantityString(d, units),
       {
         component: CompanyTableCell,
         company: d.company?.socialName,
