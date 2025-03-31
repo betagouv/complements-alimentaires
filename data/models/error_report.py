@@ -51,7 +51,7 @@ class ErrorReport(TimeStampable):
         null=True,
         blank=True,
         related_name="error_reports",
-        verbose_name="microorganisms concerné",
+        verbose_name="micro-organisme concerné",
         on_delete=models.CASCADE,
     )
     substance = models.ForeignKey(
