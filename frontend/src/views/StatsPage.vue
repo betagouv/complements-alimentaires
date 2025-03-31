@@ -26,7 +26,7 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-1" title="Gain de temps à l'instruction">
+        <DsfrAccordion id="accordion-2" title="Gain de temps à l'instruction">
           <p>
             Notre outil permet l'automatisation de l'instruction de certaines déclarations ARTICLE 15 sans risque. Ces
             déclarations n'étaient pas facilement identifiables auparavant et devaient nécessairement passer par le même
@@ -43,7 +43,7 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-1" title="Qualité des déclarations déposées">
+        <DsfrAccordion id="accordion-3" title="Qualité des déclarations déposées">
           <p>
             Notre objectif est de faciliter la déclaration de compléments alimentaires et la compréhension des
             différentes règlementations pour que les compléments alimentaires soient conformes.
@@ -60,7 +60,7 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-1" title="Utilisation de Compl'Alim par les professionnels">
+        <DsfrAccordion id="accordion-4" title="Utilisation de Compl'Alim par les professionnels">
           <p>Notre objectif est de faciliter la déclaration de compléments alimentaires pour les professionnels.</p>
           <p>
             L'évolution du nombre de professionnels déclarant leur premier complément alimentaire sur Compl'Alim donne
@@ -76,15 +76,41 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
+        <DsfrAccordion id="accordion-5" title="Nombre de consultations à la base ingrédients">
+          <p>
+            Nous mettons à disposition un moteur de recherche avec les données de notre base ingrédients. Une
+            utilisation élevée de cette fonctionnalité se traduit en moins d'erreurs dans les déclarations par manque
+            d'informations.
+          </p>
+          <bar-chart
+            v-if="elementVisitChartInfo"
+            :x="elementVisitChartInfo.x"
+            :y="elementVisitChartInfo.y"
+            name='["Consultations à la base ingrédients"]'
+            unit-tooltip="visites"
+            selected-palette="default"
+          ></bar-chart>
+        </DsfrAccordion>
       </DsfrAccordionsGroup>
     </div>
   </div>
 </template>
 <script setup>
-import { ref, watch } from "vue"
+import { ref, watch, computed } from "vue"
 import { useFetch } from "@vueuse/core"
+import { handleError } from "@/utils/error-handling"
 
 const activeAccordion = ref(0)
-const { response } = useFetch("/api/v1/stats/").json()
-watch(response, () => console.log(response.value))
+const { response, data } = useFetch("/api/v1/stats/").json()
+
+watch(response, async () => response && handleError(response))
+
+const elementVisitChartInfo = computed(() => {
+  if (!data?.value?.elementVisitStats?.reportData) return null
+  const keys = Object.keys(data.value.elementVisitStats.reportData) || []
+  const values = Object.values(data.value.elementVisitStats.reportData).map((x) => x[0].nbHits)
+  const x = JSON.stringify([keys])
+  const y = JSON.stringify([values])
+  return { x, y }
+})
 </script>
