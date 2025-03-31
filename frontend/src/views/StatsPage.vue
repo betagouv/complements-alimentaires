@@ -103,5 +103,5 @@
 <script setup>
 import { ref } from "vue"
 
-const activeAccordion = ref(0)
+const activeAccordion = ref()
 </script>
