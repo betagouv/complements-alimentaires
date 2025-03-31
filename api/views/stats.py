@@ -29,17 +29,8 @@ class StatsView(APIView):
             logger.info(f"Serving cached data for {cache_key}")
             return Response(cached_data)
 
-        try:
-            element_visit_stats = MatomoAPI().get_page_evolution()
-            if not element_visit_stats:
-                raise Exception()
+        data = {"element_visit_stats": MatomoAPI().get_page_evolution()}
 
-            data = {"element_visit_stats": element_visit_stats}
-
-            # Cache pour une heure
-            cache.set(cache_key, data, timeout=3600)
-            return Response(data)
-
-        except Exception as e:
-            logger.error(f"Matomo API error: {str(e)}")
-            raise StatsRequestError()
+        # Cache pour une heure
+        cache.set(cache_key, data, timeout=3600)
+        return Response(data)

@@ -27,7 +27,7 @@ class MatomoAPI:
             logger.exception(e)
             return None
 
-    def get_page_evolution(self, period="day", date="previous30", metric="nb_visits", label="element"):
+    def get_page_evolution(self, period="month", date="previous6", metric="nb_visits", label="element"):
         """Obtient l'évolution des visites d'une page en particulier"""
         return self._make_request(
             {

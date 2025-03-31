@@ -98,15 +98,15 @@
         </DsfrAccordion>
         <DsfrAccordion id="accordion-5" title="Nombre de consultations à la base ingrédients">
           <p>
-            Nous mettons à disposition un moteur de recherche avec les données de notre base ingrédients. Une
-            utilisation élevée de cette fonctionnalité se traduit en moins d'erreurs dans les déclarations par manque
-            d'informations.
+            Nous mettons à disposition une base de données ingrédients avec leur réglementation d'usage mis à jour
+            régulièrement. Une consultation élevée grâce à son moteur de recherche a pour conséquence une réduction des
+            erreurs dans les déclarations.
           </p>
+          <h4 v-if="elementVisitChartInfo">Consultations à la base ingrédients</h4>
           <bar-chart
             v-if="elementVisitChartInfo"
             :x="elementVisitChartInfo.x"
             :y="elementVisitChartInfo.y"
-            name='["Consultations à la base ingrédients"]'
             unit-tooltip="visites"
             selected-palette="default"
           ></bar-chart>
@@ -127,10 +127,16 @@ watch(response, async () => response && handleError(response))
 
 const elementVisitChartInfo = computed(() => {
   if (!data?.value?.elementVisitStats?.reportData) return null
-  const keys = Object.keys(data.value.elementVisitStats.reportData) || []
-  const values = Object.values(data.value.elementVisitStats.reportData).map((x) => x[0].nbHits)
+  const keys = (Object.keys(data.value.elementVisitStats.reportData) || []).map(formatMonthLabel)
+  const values = Object.values(data.value.elementVisitStats.reportData).map((x) => x[0].nbVisits)
   const x = JSON.stringify([keys])
   const y = JSON.stringify([values])
   return { x, y }
 })
+
+const formatMonthLabel = (apiLabel) => {
+  const [year, month] = apiLabel.split("-").map(Number)
+  const date = new Date(year, month - 1)
+  return new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(date)
+}
 </script>
