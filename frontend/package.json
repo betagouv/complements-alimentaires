@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
-    "@babel/eslint-parser": "^7.26.10",
+    "@babel/eslint-parser": "^7.27.0",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
@@ -30,7 +30,7 @@
     "autoprefixer": "^10.4.21",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.1",
-    "eslint-plugin-prettier": "^5.2.4",
+    "eslint-plugin-prettier": "^5.2.5",
     "eslint-plugin-vue": "^10.0.0",
     "postcss": "^8.5.3",
     "prettier": "3.5.3",

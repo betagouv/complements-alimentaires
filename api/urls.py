@@ -9,7 +9,7 @@ urlpatterns = {
     path("blog-post/", views.BlogPostsView.as_view(), name="blog_posts_list"),
     path("blog-post/<int:pk>", views.BlogPostView.as_view(), name="single_blog_post"),
     path("subscribe-newsletter/", views.SubscribeNewsletter.as_view(), name="subscribe_newsletter"),
-    path("report-issue/", views.ReportIssue.as_view(), name="report_issue"),
+    path("report-issue/", views.ErrorReportCreateView.as_view(), name="report_issue"),
     path("webinars/", views.WebinarView.as_view(), name="webinar_list"),
     # Ingredients
     path("search/", views.SearchView.as_view(), name="search"),

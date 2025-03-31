@@ -40,7 +40,6 @@ from .microorganism import MicroorganismRetrieveUpdateView, MicroorganismCreateV
 from .newsletter import SubscribeNewsletter
 from .plant import PlantPartListView, PlantRetrieveUpdateView, PlantCreateView, PlantFamilyListView
 from .population import PopulationListView
-from .report_issue import ReportIssue
 from .search import SearchView
 from .substance import SubstanceRetrieveUpdateView, SubstanceCreateView
 from .unit import UnitListView
@@ -77,4 +76,5 @@ from .solicitation import (
 from .snapshot import DeclarationSnapshotListView
 from .grouped_views import DeclarationFieldsGroupedView
 from .contact import ContactView
+from .error_report import ErrorReportCreateView
 from .stats import StatsView

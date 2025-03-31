@@ -166,7 +166,7 @@
           <DsfrInput label="Commentaire privé" v-model="state.privateComments" :isTextarea="true" label-visible />
         </div>
       </div>
-      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'changeReason')">
+      <DsfrInputGroup v-if="!isNewIngredient" :error-message="firstErrorMsg(v$, 'changeReason')">
         <DsfrInput
           v-model="state.changeReason"
           label="Raison de changement (public)"
@@ -318,7 +318,7 @@ const rules = computed(() => {
     family: form?.family ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     maxQuantity: form?.maxQuantity ? errorNumeric : {},
-    changeReason: Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
+    changeReason: isNewIngredient.value ? {} : Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
   }
 })
 watch(formForType, () => v$.value.$reset())
