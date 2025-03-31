@@ -107,6 +107,7 @@
             v-if="elementVisitChartInfo"
             :x="elementVisitChartInfo.x"
             :y="elementVisitChartInfo.y"
+            name='[" "]'
             unit-tooltip="visites"
             selected-palette="default"
           ></bar-chart>
