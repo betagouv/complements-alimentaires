@@ -9,15 +9,10 @@
     </div>
     <div class="col-span-12 md:col-span-5 my-6 md:my-0">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
-        <DsfrInput label="Votre e-mail (optionnel)" labelVisible v-model="state.email" />
+        <DsfrInput label="Votre e-mail (optionnel)" labelVisible v-model="userEmail" />
       </DsfrInputGroup>
-      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reportMessage')">
-        <DsfrInput
-          label="Quel(s) problème(s) constatez-vous ?"
-          labelVisible
-          v-model="state.reportMessage"
-          :isTextarea="true"
-        />
+      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'message')">
+        <DsfrInput label="Quel(s) problème(s) constatez-vous ?" labelVisible v-model="message" :isTextarea="true" />
       </DsfrInputGroup>
       <div class="text-right">
         <DsfrButton :disabled="isFetching" label="Valider" @click="submit" />
@@ -27,7 +22,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { required, email, helpers } from "@vuelidate/validators"
 import { useFetch } from "@vueuse/core"
@@ -38,25 +33,23 @@ import { useRootStore } from "@/stores/root"
 import { handleError } from "@/utils/error-handling"
 import { storeToRefs } from "pinia"
 
-// Props
-const props = defineProps({ elementName: String })
-
-// Get potential existing user from root store to pre-fill email address
-const store = useRootStore()
-const { loggedUser } = storeToRefs(store)
+const props = defineProps({ element: Object, elementType: String })
+const { loggedUser } = storeToRefs(useRootStore())
+const message = ref("")
+const userEmail = ref(loggedUser.value?.email || "")
 
 // Form state & rules
-const getInitialState = () => ({
-  name: "",
-  email: loggedUser.value ? loggedUser.value.email : "",
-  elementName: props.elementName, // not used by the form validation itself, but make the payload building easier
+const state = computed(() => {
+  const nonIngredientTypes = ["substance", "microorganism", "plant"]
+  const payloadType = nonIngredientTypes.indexOf(props.elementType) > -1 ? props.elementType : "ingredient"
+  const initialState = { email: userEmail.value, message: message.value }
+  initialState[payloadType] = props.element.id
+  return initialState
 })
-
-const state = ref(getInitialState())
 
 const rules = {
   email: { email: helpers.withMessage("Ce champ doit contenir un e-mail valide s'il est spécifié", email) },
-  reportMessage: { required: helpers.withMessage("Ce champ doit contenir vos constatations", required) },
+  message: { required: helpers.withMessage("Ce champ doit contenir vos constatations", required) },
 }
 
 const v$ = useVuelidate(rules, state)
@@ -86,7 +79,7 @@ const submit = async () => {
     })
   }
   // Reset both form state & Vuelidate validation state
-  state.value = getInitialState()
+  message.value = ""
   v$.value.$reset()
 }
 </script>
