@@ -13,7 +13,6 @@ class MatomoAPI:
         self.site_id = settings.MATOMO_ID
 
     def _make_request(self, params):
-        """Generic request handler"""
         query_params = {
             "idSite": self.site_id,
             "format": "json",
