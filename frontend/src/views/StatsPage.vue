@@ -120,7 +120,7 @@ import { ref, watch, computed } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 
-const activeAccordion = ref(0)
+const activeAccordion = ref()
 const { response, data } = useFetch("/api/v1/stats/").json()
 
 watch(response, async () => response && handleError(response))
