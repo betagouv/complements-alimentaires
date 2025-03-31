@@ -158,7 +158,7 @@ export default { name: "DeclarationSummary" }
 </script>
 
 <script setup>
-import { getObjectSubTypeList, getUnitString } from "@/utils/elements"
+import { getObjectSubTypeList, getUnitQuantityString } from "@/utils/elements"
 import { computed } from "vue"
 import AddressLine from "@/components/AddressLine"
 import SummaryInfoSegment from "./SummaryInfoSegment"
@@ -184,7 +184,7 @@ defineProps({
   showElementAuthorization: Boolean,
   useCompactAttachmentView: Boolean,
 })
-const unitInfo = computed(() => getUnitString(payload.value, units))
+const unitInfo = computed(() => getUnitQuantityString(payload.value, units))
 
 const galenicFormulationsNames = computed(() => {
   if (!payload.value.galenicFormulation) return null
