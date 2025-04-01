@@ -29,7 +29,7 @@ class MatomoAPI:
 
     def get_page_evolution(self, period="month", date="previous6", metric="nb_visits", label="element"):
         """Obtient l'évolution des visites d'une page en particulier"""
-        return self._make_request(
+        data = self._make_request(
             {
                 "module": "API",
                 "method": "API.getRowEvolution",
@@ -41,6 +41,13 @@ class MatomoAPI:
                 "apiAction": "getPageUrls",
             },
         )
+        if data and data["reportData"]:
+            reformatted_report_data = {}
+            for month, value in data["reportData"].items():
+                reformatted_report_data[month] = value[0]
+            data["reportData"] = reformatted_report_data
+
+        return data
 
     def get_version(self):
         """Obtient la version Matomo"""

@@ -108,6 +108,26 @@
             selected-palette="default"
           ></bar-chart>
         </DsfrAccordion>
+        <DsfrAccordion id="accordion-6" title="Nombre de consultations à la base déclarations">
+          <p>
+            <a
+              href="https://www.data.gouv.fr/fr/datasets/declarations-de-complements-alimentaires"
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              JDD ouvert
+            </a>
+          </p>
+          <h4 v-if="declarationVisitChartInfo">Consultations à la base déclarations</h4>
+          <bar-chart
+            v-if="declarationVisitChartInfo"
+            :x="declarationVisitChartInfo.x"
+            :y="declarationVisitChartInfo.y"
+            name='[" "]'
+            unit-tooltip="téléchargements"
+            selected-palette="default"
+          ></bar-chart>
+        </DsfrAccordion>
       </DsfrAccordionsGroup>
     </div>
   </div>
@@ -122,13 +142,22 @@ const { response, data } = useFetch("/api/v1/stats/").json()
 
 watch(response, async () => response && handleError(response))
 
-const elementVisitChartInfo = computed(() => {
-  if (!data?.value?.elementVisitStats?.reportData) return null
-  const keys = (Object.keys(data.value.elementVisitStats.reportData) || []).map(formatMonthLabel)
-  const values = Object.values(data.value.elementVisitStats.reportData).map((x) => x[0].nbVisits)
+const formatReportData = (reportData, xKey) => {
+  const keys = (Object.keys(reportData) || []).map(formatMonthLabel)
+  const values = Object.values(reportData).map((x) => x[xKey])
   const x = JSON.stringify([keys])
   const y = JSON.stringify([values])
   return { x, y }
+}
+
+const elementVisitChartInfo = computed(() => {
+  if (!data?.value?.elementVisitStats?.reportData) return null
+  return formatReportData(data.value.elementVisitStats.reportData, "nbVisits")
+})
+
+const declarationVisitChartInfo = computed(() => {
+  if (!data?.value?.declarationVisitStats?.reportData) return null
+  return formatReportData(data.value.declarationVisitStats.reportData, "downloads")
 })
 
 const formatMonthLabel = (apiLabel) => {
