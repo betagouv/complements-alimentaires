@@ -18,9 +18,8 @@
             constitue donc un indicateur de la complétude de notre base de données : un nombre faible indiquerait une
             base plus exhaustive.
           </p>
-          <!-- TODO: change chart to show number of demands that resulted in the creation of an ingredient -->
           <iframe
-            src="https://compl-alim-metabase.cleverapps.io/public/question/804a05fa-eddd-410a-ad56-ad2b46f9f10d"
+            src="https://compl-alim-metabase.cleverapps.io/public/question/eecd21f9-e9e4-4fa0-a39a-4f30ab3b6f13"
             frameborder="0"
             width="800"
             height="600"
