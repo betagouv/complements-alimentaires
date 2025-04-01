@@ -115,9 +115,9 @@
         >
           <p>
             Nous mettons à disposition une base de données des compléments alimentaires déclarés auprès de la Direction
-            générale de l’alimentation. Notre hypothèse est qu'une consultation élevée de cette base de données aura
-            pour conséquence une identification et un signalement des compléments alimentaires non déclarés et
-            disponibles à la vente.
+            générale de l’alimentation. Notre hypothèse est qu'une consultation élevée de cette base de données
+            permettra de sensibiliser les distributeurs (avant de référencer un produit) et les consommateurs (avant
+            d’acheter un produit).
           </p>
           <h4 v-if="declarationVisitChartInfo">Consultations au jeu de données de Compl'Alim</h4>
           <bar-chart
