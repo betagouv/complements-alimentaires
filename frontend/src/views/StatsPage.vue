@@ -108,21 +108,41 @@
             selected-palette="default"
           ></bar-chart>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-6" title="Nombre de consultations à la base déclarations">
+        <DsfrAccordion id="accordion-6" title="Nombre de consultations au jeu de données de déclarations">
+          <h4 v-if="declarationVisitChartInfo">Consultations au jeu de données de Compl'Alim</h4>
           <p>
+            Les déclarations autorisées sont accessible au grand public via
             <a
               href="https://www.data.gouv.fr/fr/datasets/declarations-de-complements-alimentaires"
               rel="noreferrer noopener"
               target="_blank"
             >
-              JDD ouvert
+              le jeu de données data.gouv.fr publié par Compl'Alim
             </a>
           </p>
-          <h4 v-if="declarationVisitChartInfo">Consultations à la base déclarations</h4>
           <bar-chart
             v-if="declarationVisitChartInfo"
             :x="declarationVisitChartInfo.x"
             :y="declarationVisitChartInfo.y"
+            name='[" "]'
+            unit-tooltip="téléchargements"
+            selected-palette="default"
+          ></bar-chart>
+          <h4 v-if="declarationVisitChartInfo">Consultations au jeu de données de Teleicare</h4>
+          <p>
+            L'historique de déclarations autorisées sont accessible au grand public via
+            <a
+              href="https://www.data.gouv.fr/fr/datasets/liste-des-complements-alimentaires-declares"
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              le jeu de données data.gouv.fr publié par Teleicare
+            </a>
+          </p>
+          <bar-chart
+            v-if="siccrfDeclarationVisitChartInfo"
+            :x="siccrfDeclarationVisitChartInfo.x"
+            :y="siccrfDeclarationVisitChartInfo.y"
             name='[" "]'
             unit-tooltip="téléchargements"
             selected-palette="default"
@@ -158,6 +178,11 @@ const elementVisitChartInfo = computed(() => {
 const declarationVisitChartInfo = computed(() => {
   if (!data?.value?.declarationVisitStats?.reportData) return null
   return formatReportData(data.value.declarationVisitStats.reportData, "downloads")
+})
+
+const siccrfDeclarationVisitChartInfo = computed(() => {
+  if (!data?.value?.siccrfDeclarationVisitStats?.reportData) return null
+  return formatReportData(data.value.siccrfDeclarationVisitStats.reportData, "downloads")
 })
 
 const formatMonthLabel = (apiLabel) => {

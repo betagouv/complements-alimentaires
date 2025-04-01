@@ -33,6 +33,7 @@ class StatsView(APIView):
         data = {
             "element_visit_stats": MatomoAPI().get_page_evolution(),
             "declaration_visit_stats": DataGouvAPI().get_declaration_stats(),
+            "siccrf_declaration_visit_stats": DataGouvAPI().get_siccrf_declaration_stats(),
         }
 
         # Cache pour une heure
