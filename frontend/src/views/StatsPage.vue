@@ -26,16 +26,18 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-2" title="Gain de temps à l'instruction">
+        <DsfrAccordion id="accordion-2" title="Gain de temps à l'examen des déclarations">
           <p>
-            L’instruction automatique de certaines déclarations permet au BEPIAS de concentrer ses efforts sur les cas
-            les plus complexes. Le temps de validation est ainsi réduit et les déclarants sont plus satisfaits car ils
-            peuvent mettre leurs produits sur le marché plus rapidement.
+            L’examen des déclarations automatique de certaines déclarations permet aux services de la Direction Générale
+            de l’Alimentation de concentrer ses efforts sur les cas les plus complexes. Le temps de validation est ainsi
+            réduit et les déclarants sont plus satisfaits car ils peuvent mettre leurs produits sur le marché plus
+            rapidement.
           </p>
           <p>
-            Avec Compl'Alim, nous avons mis en place une aide à l'instruction pour le BEPIAS en octobre 2024. Nous
-            améliorons en continu les outils et les méthodes d'évaluation pour réduire le temps d'instruction, en tenant
-            compte des évolutions réglementaires et des retours d'utilisateurs.
+            Avec Compl'Alim, nous avons mis en place une aide à l'examen des déclarations pour les services de la
+            Direction Générale de l’Alimentation en octobre 2024. Nous améliorons en continu les outils et les méthodes
+            d'évaluation pour réduire le temps d'examen des déclarations, en tenant compte des évolutions réglementaires
+            et des retours d'utilisateurs.
           </p>
           <iframe
             src="https://compl-alim-metabase.cleverapps.io/public/question/572252e2-0d2a-4465-8ec4-c9f594508f15"
