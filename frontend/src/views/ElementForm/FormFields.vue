@@ -136,9 +136,6 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
           <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
         </DsfrInputGroup>
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'maxQuantity')">
-          <NumberField label="Quantité maximale autorisée" label-visible v-model="state.maxQuantity" />
-        </DsfrInputGroup>
         <div class="max-w-32">
           <DsfrInputGroup v-if="isNewIngredient" :error-message="firstErrorMsg(v$, 'unit')">
             <DsfrSelect
@@ -155,7 +152,7 @@
           </div>
         </div>
       </div>
-      <div class="grid md:grid-cols-2 mt-4">
+      <div class="mt-4">
         <DsfrFieldset legend="Population cible" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4 !mb-10" class="pb-10">
           <ValidateEach
             v-for="(item, idx) in state.maxQuantities"
@@ -164,13 +161,17 @@
             :rules="rules"
           >
             <template #default="{ v }">
-              <div class="grid grid-cols-2 gap-x-8 -my-10">
+              <div class="grid grid-cols-3 gap-x-8 -my-10">
                 <DsfrInputGroup>
                   <DsfrSelect v-model="v.population.$model" label="Population cible" :options="populationOptions" />
                 </DsfrInputGroup>
                 <DsfrInputGroup :error-message="firstErrorMsg(v, 'maxQuantity')">
                   <DsfrInput v-model="v.maxQuantity.$model" label="Dosage maximum" label-visible />
                 </DsfrInputGroup>
+                <div class="pt-4">
+                  <p class="mb-2">Unité</p>
+                  <p>{{ unitString }}</p>
+                </div>
               </div>
             </template>
           </ValidateEach>
@@ -240,6 +241,7 @@ const createEmptySynonym = () => ({ name: "" })
 const addNewSynonym = () => {
   state.value.synonyms.push(createEmptySynonym())
 }
+// TODO: if no max dose lines, consider pre-selecting population generale
 const createEmptyPopulationMaxDose = () => ({ population: undefined, maxQuantity: undefined })
 const addNewPopulationMaxDose = () => {
   state.value.maxQuantities.push(createEmptyPopulationMaxDose())
@@ -352,6 +354,8 @@ const rules = computed(() => {
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
+    // TODO: add field for must_specify_quantity and then add validation to ensure at least one max dose is specified
+    // if must_specify_quantity and the CA doesn't use any populations specified, should the risk of the CA be elevated?
     maxQuantity: form?.maxQuantity ? errorNumeric : {},
     population: {},
     changeReason: isNewIngredient.value ? {} : Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
@@ -398,7 +402,7 @@ const plantFamiliesDisplay = computed(() => {
 const aromaId = 3
 
 const unitString = computed(() => {
-  return getUnitString(state.value.unit, units)
+  return getUnitString(Number.parseInt(state.value.unit, 10), units)
 })
 
 const populationOptions = computed(() => {
