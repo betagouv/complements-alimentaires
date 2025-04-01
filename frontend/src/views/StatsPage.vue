@@ -38,7 +38,6 @@
             améliorons en continu les outils et les méthodes d'évaluation pour réduire le temps d'instruction, en tenant
             compte des évolutions réglementaires et des retours d'utilisateurs.
           </p>
-          <!-- TODO: remove line "median" -->
           <iframe
             src="https://compl-alim-metabase.cleverapps.io/public/question/572252e2-0d2a-4465-8ec4-c9f594508f15"
             frameborder="0"
