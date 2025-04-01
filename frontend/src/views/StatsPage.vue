@@ -79,10 +79,10 @@
           ></iframe>
         </DsfrAccordion>
         <DsfrAccordion id="accordion-4" title="Nombre de signalements d’erreur dans la base ingrédients">
-          <p>Notre objectif est de faciliter la déclaration de compléments alimentaires pour les professionnels.</p>
           <p>
-            Nous visons une base de données ingrédients fiable et précise. Les remontées d'imprécisions ou erreurs
-            indiquent le contraire. Nous visons donc un nombre de remontées faible.
+            Nous visons une base de données complète et fiable. Or, les retours signalant des imprécisions ou des
+            erreurs indiquent que ce n'est pas encore le cas. Notre objectif est donc de réduire significativement le
+            nombre de ces remontées.
           </p>
           <iframe
             src="https://compl-alim-metabase.cleverapps.io/public/question/1814a578-3978-45ce-a471-a29035f9615f"
