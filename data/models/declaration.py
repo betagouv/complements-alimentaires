@@ -6,7 +6,7 @@ from pathlib import Path
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Case, Q, Value, When
+from django.db.models import Case, Min, Q, Value, When
 from django.db.models.functions import Coalesce
 from django.template.defaultfilters import filesizeformat
 
@@ -410,24 +410,45 @@ class Declaration(Historisable, TimeStampable):
     def declared_in_teleicare(self):
         return self.teleicare_id is not None
 
+    def _has_max_quantity_exceeded(self, substance):
+        max_for_target_populations = MaxQuantityPerPopulationRelation.objects.filter(
+            population__in=self.populations.all(), substance=substance.substance
+        )
+        if max_for_target_populations.exists():
+            if substance.quantity > max_for_target_populations.aggregate(Min("max_quantity"))["max_quantity__min"]:
+                return True
+        else:
+            # si aucune population cible n'est déclarée
+            # OU si aucune max_quantity n'existe pour les populations cibles déclarée
+            # => vérifier que la quantité déclarée ne dépasse pas la limite pour la population générale
+            try:
+                max_for_general_population = MaxQuantityPerPopulationRelation.objects.get(
+                    population__name="Population générale", substance=substance.substance
+                ).max_quantity
+                if substance.quantity > max_for_general_population:
+                    return True
+            except MaxQuantityPerPopulationRelation.DoesNotExist:
+                return False
+
+        return False
+
     def _filter_substances_on_max_quantity_exceeded(self, declared=True):
+        """
+        Pour chaque substance :
+            Si populations cibles définies
+                -> vérifier que la plus petite max_quantity pour les populations cibles de la déclaration n'est pas dépassée
+            Si aucune population cible définie dans la déclaration ou aucune quantité à ne pas dépasser pour les populations cibles
+                -> vérifier que la max_quantity pour la Population générale n'est pas dépassée
+        """
         substances = (
             self.declared_substances.exclude(substance__isnull=True).exclude(quantity__isnull=True)
             if declared
             else self.computed_substances.exclude(quantity__isnull=True)
         )
         substances_with_max_quantity_exceeded_ids = []
-        pop_generale = Population.objects.get(name="Population générale")
         for substance in substances:
-            try:
-                threshold = MaxQuantityPerPopulationRelation.objects.get(
-                    population=pop_generale, substance=substance.substance
-                ).max_quantity
-                if substance.quantity > threshold:
-                    substances_with_max_quantity_exceeded_ids.append(substance.id)
-            except MaxQuantityPerPopulationRelation.DoesNotExist:
-                # no max quantity
-                pass
+            if self._has_max_quantity_exceeded(substance):
+                substances_with_max_quantity_exceeded_ids.append(substance.id)
 
         return substances.filter(id__in=substances_with_max_quantity_exceeded_ids)
 
