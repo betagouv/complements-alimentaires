@@ -24,9 +24,15 @@
         </DsfrTabContent>
 
         <DsfrTabContent panel-id="history-content" tab-id="history">
-          <div class="-my-8">
+          <div class="-my-8 mb-4">
             <DsfrTable :headers="headers" :rows="historyDataDedup" />
           </div>
+          <p v-if="element && element.originDeclaration">
+            <router-link :to="{ name: 'InstructionPage', params: { declarationId: element.originDeclaration } }">
+              La déclaration qui a demandé cet ingrédient
+            </router-link>
+          </p>
+          <p v-else>Cet ingrédient ne vient pas d'une demande d'ajout.</p>
         </DsfrTabContent>
       </DsfrTabs>
     </div>

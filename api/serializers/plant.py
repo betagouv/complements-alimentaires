@@ -5,12 +5,12 @@ from data.models import IngredientStatus, Part, Plant, PlantFamily, PlantPart, P
 
 from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
-from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
 from .common_ingredient import (
     COMMON_FIELDS,
     COMMON_NAME_FIELDS,
     COMMON_READ_ONLY_FIELDS,
     CommonIngredientModificationSerializer,
+    CommonIngredientReadSerializer,
     WithSubstances,
     WithName,
 )
@@ -59,7 +59,7 @@ class PlantSynonymSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class PlantSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
+class PlantSerializer(CommonIngredientReadSerializer):
     family = PlantFamilySerializer(read_only=True)
     plant_parts = PartRelationSerializer(source="part_set", many=True, read_only=True)
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
@@ -77,12 +77,13 @@ class PlantSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
             "synonyms",
             "substances",
             "public_comments",
-            "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
+            "private_comments",
             "activity",
             "status",
             "novel_food",
             "is_risky",
             "history",
+            "origin_declaration",
         )
         read_only_fields = fields
 

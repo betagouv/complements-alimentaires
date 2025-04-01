@@ -5,11 +5,11 @@ from data.models import IngredientStatus, Microorganism, MicroorganismSynonym
 
 from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
-from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
 from .common_ingredient import (
     COMMON_FIELDS,
     COMMON_READ_ONLY_FIELDS,
     CommonIngredientModificationSerializer,
+    CommonIngredientReadSerializer,
     WithSubstances,
 )
 
@@ -24,7 +24,7 @@ class MicroorganismSynonymSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class MicroorganismSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
+class MicroorganismSerializer(CommonIngredientReadSerializer):
     synonyms = MicroorganismSynonymSerializer(many=True, read_only=True, source="microorganismsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
@@ -46,6 +46,7 @@ class MicroorganismSerializer(HistoricalModelSerializer, PrivateFieldsSerializer
             "novel_food",
             "is_risky",
             "history",
+            "origin_declaration",
         )
         read_only_fields = fields
 

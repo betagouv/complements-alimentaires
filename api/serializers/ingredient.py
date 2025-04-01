@@ -5,12 +5,12 @@ from data.models import Ingredient, IngredientStatus, IngredientSynonym
 
 from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
-from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
 from .common_ingredient import (
     COMMON_FIELDS,
     COMMON_NAME_FIELDS,
     COMMON_READ_ONLY_FIELDS,
     CommonIngredientModificationSerializer,
+    CommonIngredientReadSerializer,
     WithSubstances,
     WithName,
 )
@@ -26,7 +26,7 @@ class IngredientSynonymSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class IngredientSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
+class IngredientSerializer(CommonIngredientReadSerializer):
     synonyms = IngredientSynonymSerializer(many=True, read_only=True, source="ingredientsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
@@ -49,6 +49,7 @@ class IngredientSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
             "is_risky",
             "history",
             "object_type",
+            "origin_declaration",
         )
         read_only_fields = fields
 

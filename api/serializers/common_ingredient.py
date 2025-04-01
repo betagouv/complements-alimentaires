@@ -8,6 +8,8 @@ from simple_history.utils import update_change_reason
 
 from data.models import Substance
 
+from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
+
 logger = logging.getLogger(__name__)
 
 COMMON_NAME_FIELDS = ("name",)
@@ -99,3 +101,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
                 self.synonym_model.objects.create(standard_name=instance, name=name)
         except KeyError:
             raise ParseError(detail="Must provide 'name' to create new synonym")
+
+
+class CommonIngredientReadSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
+    private_fields = ("private_comments", "origin_declaration")

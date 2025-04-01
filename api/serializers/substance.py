@@ -11,10 +11,11 @@ from .common_ingredient import (
     COMMON_NAME_FIELDS,
     COMMON_READ_ONLY_FIELDS,
     CommonIngredientModificationSerializer,
+    CommonIngredientReadSerializer,
     WithName,
 )
 from .historical_record import HistoricalRecordField
-from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
+from .utils import PrivateFieldsSerializer
 
 
 class SubstanceSynonymSerializer(serializers.ModelSerializer):
@@ -27,7 +28,7 @@ class SubstanceSynonymSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class SubstanceSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
+class SubstanceSerializer(CommonIngredientReadSerializer):
     synonyms = SubstanceSynonymSerializer(many=True, read_only=True, source="substancesynonym_set")
     unit = serializers.CharField(read_only=True, source="unit.name")
     unit_id = serializers.IntegerField(read_only=True, source="unit.id")
@@ -57,6 +58,7 @@ class SubstanceSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
             "is_risky",
             "history",
             "object_type",
+            "origin_declaration",
         )
         read_only_fields = fields
 
