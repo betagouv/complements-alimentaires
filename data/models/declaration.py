@@ -411,7 +411,6 @@ class Declaration(Historisable, TimeStampable):
         return self.teleicare_id is not None
 
     def _has_max_quantity_exceeded(self, substance):
-        # TODO : annoter pour savoir quelle population est incriminée
         max_for_target_populations = MaxQuantityPerPopulationRelation.objects.filter(
             population__in=self.populations.all(), substance=substance.substance
         )
