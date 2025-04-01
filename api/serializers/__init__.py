@@ -35,3 +35,4 @@ from .declaration import (
 from .company import CompanySerializer, MinimalCompanySerializer
 from .solicitation import CollaborationInvitationSerializer, CompanyAccessClaimSerializer, AddNewCollaboratorSerializer
 from .snapshot import SnapshotSerializer
+from .error_report import ErrorReportSerializer

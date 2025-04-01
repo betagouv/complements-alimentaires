@@ -107,7 +107,7 @@
     <!-- Rapporter un problème dans les données -->
     <div class="bg-blue-france-975 py-8">
       <div class="fr-container">
-        <ReportIssueBlock :elementName="element.name" />
+        <ReportIssueBlock :elementType="type" :element="element" />
       </div>
     </div>
   </template>

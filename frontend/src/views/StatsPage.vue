@@ -26,7 +26,7 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-1" title="Gain de temps à l'instruction">
+        <DsfrAccordion id="accordion-2" title="Gain de temps à l'instruction">
           <p>
             L’instruction automatique de certaines déclarations permet au BEPIAS de concentrer ses efforts sur les cas
             les plus complexes. Le temps de validation est ainsi réduit et les déclarants sont plus satisfaits car ils
@@ -45,7 +45,7 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-1" title="Qualité des déclarations déposées">
+        <DsfrAccordion id="accordion-3" title="Qualité des déclarations déposées">
           <p>
             Notre objectif est de faciliter la déclaration de compléments alimentaires et la compréhension des
             différentes règlementations pour que les compléments alimentaires soient conformes.
@@ -62,7 +62,7 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-1" title="Utilisation de Compl'Alim par les professionnels">
+        <DsfrAccordion id="accordion-4" title="Utilisation de Compl'Alim par les professionnels">
           <p>Notre objectif est de faciliter la déclaration de compléments alimentaires pour les professionnels.</p>
           <p>
             L'évolution du nombre de professionnels déclarant leur premier complément alimentaire sur Compl'Alim donne
@@ -78,12 +78,48 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
+        <DsfrAccordion id="accordion-5" title="Nombre de consultations à la base ingrédients">
+          <p>
+            Nous mettons à disposition une base de données ingrédients avec leur réglementation d'usage mis à jour
+            régulièrement. Une consultation élevée grâce à son moteur de recherche a pour conséquence une réduction des
+            erreurs dans les déclarations.
+          </p>
+          <h4 v-if="elementVisitChartInfo">Consultations à la base ingrédients</h4>
+          <bar-chart
+            v-if="elementVisitChartInfo"
+            :x="elementVisitChartInfo.x"
+            :y="elementVisitChartInfo.y"
+            name='[" "]'
+            unit-tooltip="visites"
+            selected-palette="default"
+          ></bar-chart>
+        </DsfrAccordion>
       </DsfrAccordionsGroup>
     </div>
   </div>
 </template>
 <script setup>
-import { ref } from "vue"
+import { ref, watch, computed } from "vue"
+import { useFetch } from "@vueuse/core"
+import { handleError } from "@/utils/error-handling"
 
-const activeAccordion = ref(0)
+const activeAccordion = ref()
+const { response, data } = useFetch("/api/v1/stats/").json()
+
+watch(response, async () => response && handleError(response))
+
+const elementVisitChartInfo = computed(() => {
+  if (!data?.value?.elementVisitStats?.reportData) return null
+  const keys = (Object.keys(data.value.elementVisitStats.reportData) || []).map(formatMonthLabel)
+  const values = Object.values(data.value.elementVisitStats.reportData).map((x) => x[0].nbVisits)
+  const x = JSON.stringify([keys])
+  const y = JSON.stringify([values])
+  return { x, y }
+})
+
+const formatMonthLabel = (apiLabel) => {
+  const [year, month] = apiLabel.split("-").map(Number)
+  const date = new Date(year, month - 1)
+  return new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(date)
+}
 </script>
