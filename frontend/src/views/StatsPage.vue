@@ -8,7 +8,7 @@
     </div>
     <div class="fr-container">
       <DsfrAccordionsGroup v-model="activeAccordion" class="my-8">
-        <DsfrAccordion id="accordion-1" title="Fiabilité de la base de données ingrédients">
+        <DsfrAccordion id="accordion-1" title="Complétude de la base de données ingrédients">
           <p>
             Notre objectif est de mettre à disposition une liste exhaustive d'ingrédients utilisables dans les
             compléments alimentaires.
@@ -19,7 +19,7 @@
             base plus exhaustive.
           </p>
           <iframe
-            src="https://compl-alim-metabase.cleverapps.io/public/question/804a05fa-eddd-410a-ad56-ad2b46f9f10d"
+            src="https://compl-alim-metabase.cleverapps.io/public/question/eecd21f9-e9e4-4fa0-a39a-4f30ab3b6f13"
             frameborder="0"
             width="800"
             height="600"
@@ -27,7 +27,6 @@
           ></iframe>
         </DsfrAccordion>
         <DsfrAccordion id="accordion-2" title="Gain de temps à l'instruction">
-          <h4>Statistiques de temps passé entre la soumission d'une déclaration et sa validation</h4>
           <p>
             L’instruction automatique de certaines déclarations permet au BEPIAS de concentrer ses efforts sur les cas
             les plus complexes. Le temps de validation est ainsi réduit et les déclarants sont plus satisfaits car ils
@@ -45,23 +44,6 @@
             height="600"
             allowtransparency
           ></iframe>
-          <br />
-          <h4>Impact de l'instruction facilitée</h4>
-          <p>
-            Notre outil permet l'automatisation de l'instruction de certaines déclarations ARTICLE 15 sans risque. Ces
-            déclarations n'étaient pas facilement identifiables auparavant et devaient nécessairement passer par le même
-            processus d'instruction que les déclarations plus complexes.
-          </p>
-          <p>
-            Le taux mensuel de ces déclarations "sans risque" constitue un indicateur du temps gagné à l'instruction.
-          </p>
-          <iframe
-            src="https://compl-alim-metabase.cleverapps.io/public/question/c99b0f9a-77e2-470f-b2a6-98a8ac3a4a46"
-            frameborder="0"
-            width="800"
-            height="600"
-            allowtransparency
-          ></iframe>
         </DsfrAccordion>
         <DsfrAccordion id="accordion-3" title="Qualité des déclarations déposées">
           <p>
@@ -73,7 +55,7 @@
             donc un indicateur de la qualité des déclarations déposées.
           </p>
           <iframe
-            src="https://compl-alim-metabase.cleverapps.io/public/question/00227f7a-b2fa-4efb-8982-891c66864e13"
+            src="https://compl-alim-metabase.cleverapps.io/public/question/ac8ce038-f7d9-4e9e-a90b-3268f114c00f"
             frameborder="0"
             width="800"
             height="600"
@@ -86,10 +68,10 @@
             L'évolution du nombre de professionnels déclarant leur premier complément alimentaire sur Compl'Alim donne
             une idée de la capacité du secteur économique du complément alimentaire à identifier Compl'Alim comme
             plateforme de référence. Ce graphique reprend le nombre de nouvelles entreprises déclarantes dès la mise en
-            ligne de TeleIcare. Les données datant de TeleIcare (avant septembre 2024) sont encore à fiabiliser.
+            ligne de TeleIcare.
           </p>
           <iframe
-            src="https://compl-alim-metabase.cleverapps.io/public/question/9c4cb4bc-c493-4539-9eb2-321663ad3d15"
+            src="https://compl-alim-metabase.cleverapps.io/public/question/891d6238-9f0d-40db-a97f-747b829b1902"
             frameborder="0"
             width="800"
             height="600"
