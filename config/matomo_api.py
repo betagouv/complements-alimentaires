@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class MatomoAPI:
     def __init__(self):
         self.base_url = "https://stats.beta.gouv.fr"
-        self.site_id = settings.MATOMO_ID
+        self.site_id = settings.MATOMO_ID or "95"  # Les environnements prod et démo utiliseront l'ID 95
 
     def _make_request(self, params):
         query_params = {
