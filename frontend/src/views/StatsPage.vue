@@ -54,11 +54,8 @@
             Le nombre de déclarations recevant une objection ou une observation de la part de nos services constitue
             donc un indicateur de la qualité des déclarations déposées.
           </p>
-          <!-- TODO: change title: Pourcentage de déclarations ayant eu une observation ou objection -->
-          <!-- TODO: change graph to be the % where the total is the  number of declarations that were taken for instruction -->
-          <!-- only look at finished declarations still -->
           <iframe
-            src="https://compl-alim-metabase.cleverapps.io/public/question/00227f7a-b2fa-4efb-8982-891c66864e13"
+            src="https://compl-alim-metabase.cleverapps.io/public/question/ac8ce038-f7d9-4e9e-a90b-3268f114c00f"
             frameborder="0"
             width="800"
             height="600"
