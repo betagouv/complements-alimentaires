@@ -51,8 +51,8 @@
             différentes règlementations pour que les compléments alimentaires soient conformes.
           </p>
           <p>
-            Le nombre de déclarations recevant une objection ou une observation de la part de nos services constitue
-            donc un indicateur de la qualité des déclarations déposées.
+            Le pourcentage de déclarations recevant une objection ou une observation de la part de nos services
+            constitue donc un indicateur de la qualité des déclarations instruites.
           </p>
           <iframe
             src="https://compl-alim-metabase.cleverapps.io/public/question/ac8ce038-f7d9-4e9e-a90b-3268f114c00f"
