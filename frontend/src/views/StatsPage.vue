@@ -69,8 +69,7 @@
           <p>
             L'évolution du nombre de professionnels déclarant leur premier complément alimentaire sur Compl'Alim donne
             une idée de la capacité du secteur économique du complément alimentaire à identifier Compl'Alim comme
-            plateforme de référence. Ce graphique reprend le nombre de nouvelles entreprises déclarantes dès la mise en
-            ligne de TeleIcare.
+            plateforme de référence.
           </p>
           <iframe
             src="https://compl-alim-metabase.cleverapps.io/public/question/891d6238-9f0d-40db-a97f-747b829b1902"
@@ -80,7 +79,7 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-4" title="Nombre de signalements d’erreur dans la base ingrédients">
+        <DsfrAccordion id="accordion-4" title="Fiabilité de la base de données ingrédients">
           <p>
             Nous visons une base de données complète et fiable. Or, les retours signalant des imprécisions ou des
             erreurs indiquent que ce n'est pas encore le cas. Notre objectif est donc de réduire significativement le
@@ -94,11 +93,11 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-5" title="Nombre de consultations à la base ingrédients">
+        <DsfrAccordion id="accordion-5" title="Utilisation de la base de données ingrédient">
           <p>
             Nous mettons à disposition une base de données ingrédients avec leur réglementation d'usage mis à jour
-            régulièrement. Une consultation élevée grâce à son moteur de recherche a pour conséquence une réduction des
-            erreurs dans les déclarations.
+            régulièrement. Notre hypothèse est qu'une consultation élevée de cette base de donnée aura pour conséquence
+            une réduction des erreurs dans les déclarations.
           </p>
           <h4 v-if="elementVisitChartInfo">Consultations à la base ingrédients</h4>
           <bar-chart
