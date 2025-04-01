@@ -66,6 +66,10 @@ class DeclarationFilterSet(django_filters.FilterSet):
     company_name_start = django_filters.CharFilter(method="company_name_start__gte")
     company_name_end = django_filters.CharFilter(method="company_name_end__lte")
     status = django_filters.CharFilter(method="status__in")
+    plants = django_filters.CharFilter(method="plants__and")
+    microorganisms = django_filters.CharFilter(method="microorganisms__and")
+    substances = django_filters.CharFilter(method="substances__and")
+    ingredients = django_filters.CharFilter(method="ingredients__and")
 
     # Une fois https://github.com/carltongibson/django-filter/issues/1673 on peut
     # enlever cette ligne
@@ -153,6 +157,26 @@ class DeclarationFilterSet(django_filters.FilterSet):
 
     def status__in(self, queryset, value, *args, **kwargs):
         return queryset.filter(status__in=args[0].split(","))
+
+    def plants__and(self, queryset, name, value, *args, **kwargs):
+        for id in value.split(","):
+            queryset = queryset.filter(declared_plants__plant__id=id)
+        return queryset
+
+    def microorganisms__and(self, queryset, name, value, *args, **kwargs):
+        for id in value.split(","):
+            queryset = queryset.filter(declared_microorganisms__microorganism__id=id)
+        return queryset
+
+    def substances__and(self, queryset, name, value, *args, **kwargs):
+        for id in value.split(","):
+            queryset = queryset.filter(computed_substances__substance__id=id)
+        return queryset
+
+    def ingredients__and(self, queryset, name, value, *args, **kwargs):
+        for id in value.split(","):
+            queryset = queryset.filter(declared_ingredients__ingredient__id=id)
+        return queryset
 
 
 class UserDeclarationPagination(DeclarationPagination):
@@ -369,7 +393,7 @@ class OngoingDeclarationsListView(GenericDeclarationsListView):
         UnaccentSearchFilter,
     ]
     ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
-    queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT)
+    queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT).distinct()
 
 
 class OpenDataDeclarationsListView(GenericDeclarationsListView):

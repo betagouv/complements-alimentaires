@@ -13,6 +13,7 @@ from data.factories import (
     AwaitingInstructionDeclarationFactory,
     AwaitingVisaDeclarationFactory,
     CompanyFactory,
+    ComputedSubstanceFactory,
     ConditionFactory,
     DeclarantRoleFactory,
     DeclarationFactory,
@@ -39,9 +40,9 @@ from data.factories import (
     VisaRoleFactory,
 )
 from data.models import (
+    Addable,
     Attachment,
     Declaration,
-    Addable,
     DeclaredMicroorganism,
     DeclaredPlant,
     DeclaredSubstance,
@@ -272,7 +273,7 @@ class TestDeclarationApi(APITestCase):
         """
         declarant_role = DeclarantRoleFactory(user=authenticate.user)
         company = declarant_role.company
-
+        PopulationFactory(ca_name="Population générale")
         plant = PlantFactory()
         plant_part = PlantPartFactory()
         plant.plant_parts.add(plant_part)
@@ -310,7 +311,9 @@ class TestDeclarationApi(APITestCase):
             payload,
             format="json",
         )
+
         declaration = Declaration.objects.get(pk=response.json()["id"])
+
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_16)
 
     @authenticate
@@ -879,6 +882,7 @@ class TestDeclarationApi(APITestCase):
         Il est possible d'ajouter un query_param pour forcer le calcul de l'article
         dans la sauvegarde
         """
+        PopulationFactory(ca_name="Population générale")
         declarant_role = DeclarantRoleFactory(user=authenticate.user)
         company = declarant_role.company
         user_declaration = DeclarationFactory(author=authenticate.user, name="Old name", company=company)
@@ -1654,6 +1658,7 @@ class TestDeclarationApi(APITestCase):
         """
         Les viseuses ou instructrices peuvent changer l'article d'une déclaration
         """
+        PopulationFactory(ca_name="Population générale")
         InstructionRoleFactory(user=authenticate.user)
         art_15 = AwaitingInstructionDeclarationFactory(
             declared_plants=[],
@@ -1965,6 +1970,89 @@ class TestDeclaredElementsApi(APITestCase):
         response = self.client.get(filter_url, format="json")
         results = response.json()
         self.assertEqual(results["count"], 4)
+
+    @authenticate
+    def test_filter_by_composition(self):
+        """
+        On peut filtrer par composition (utilisé dans la recherche avancée)
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        camomille = PlantFactory(name="Camomille")
+        declaration_camomille = AwaitingInstructionDeclarationFactory()
+        DeclaredPlantFactory(plant=camomille, declaration=declaration_camomille)
+
+        eucalyptus = PlantFactory(name="Eucalyptus")
+        declaration_eucalyptus = AwaitingInstructionDeclarationFactory()
+        DeclaredPlantFactory(plant=eucalyptus, declaration=declaration_eucalyptus)
+
+        lactobacilus = MicroorganismFactory(name="Lactobacilus")
+        declaration_lactobacilus = AwaitingInstructionDeclarationFactory()
+        DeclaredMicroorganismFactory(microorganism=lactobacilus, declaration=declaration_lactobacilus)
+
+        streptococcus = MicroorganismFactory(name="Streptococcus")
+        declaration_streptococcus = AwaitingInstructionDeclarationFactory()
+        DeclaredMicroorganismFactory(microorganism=streptococcus, declaration=declaration_streptococcus)
+
+        flavanones = SubstanceFactory(name="Flavanones")
+        declaration_flavanones = AwaitingInstructionDeclarationFactory()
+        ComputedSubstanceFactory(substance=flavanones, declaration=declaration_flavanones)
+
+        levain = IngredientFactory(name="Levain")
+        declaration_levain = AwaitingInstructionDeclarationFactory()
+        DeclaredIngredientFactory(ingredient=levain, declaration=declaration_levain)
+
+        declaration_both_plants = AwaitingInstructionDeclarationFactory()
+        DeclaredPlantFactory(plant=camomille, declaration=declaration_both_plants)
+        DeclaredPlantFactory(plant=eucalyptus, declaration=declaration_both_plants)
+
+        declaration_both_microorganisms = AwaitingInstructionDeclarationFactory()
+        DeclaredMicroorganismFactory(microorganism=lactobacilus, declaration=declaration_both_microorganisms)
+        DeclaredMicroorganismFactory(microorganism=streptococcus, declaration=declaration_both_microorganisms)
+
+        declaration_plant_mo = AwaitingInstructionDeclarationFactory()
+        DeclaredPlantFactory(plant=camomille, declaration=declaration_plant_mo)
+        DeclaredMicroorganismFactory(microorganism=lactobacilus, declaration=declaration_plant_mo)
+
+        filter_url = f"{reverse('api:list_all_declarations')}?plants={camomille.id}"
+        response = self.client.get(filter_url, format="json")
+        body = response.json()
+        self.assertEqual(body["count"], 3)
+        self.assertIn(declaration_camomille.id, map(lambda x: x["id"], body["results"]))
+        self.assertIn(declaration_both_plants.id, map(lambda x: x["id"], body["results"]))
+        self.assertIn(declaration_plant_mo.id, map(lambda x: x["id"], body["results"]))
+
+        filter_url = f"{reverse('api:list_all_declarations')}?plants={camomille.id},{eucalyptus.id}"
+        response = self.client.get(filter_url, format="json")
+        body = response.json()
+        self.assertEqual(body["count"], 1)
+        self.assertIn(declaration_both_plants.id, map(lambda x: x["id"], body["results"]))
+
+        filter_url = f"{reverse('api:list_all_declarations')}?microorganisms={lactobacilus.id}"
+        response = self.client.get(filter_url, format="json")
+        body = response.json()
+        self.assertEqual(body["count"], 3)
+        self.assertIn(declaration_lactobacilus.id, map(lambda x: x["id"], body["results"]))
+        self.assertIn(declaration_both_microorganisms.id, map(lambda x: x["id"], body["results"]))
+        self.assertIn(declaration_plant_mo.id, map(lambda x: x["id"], body["results"]))
+
+        filter_url = f"{reverse('api:list_all_declarations')}?microorganisms={lactobacilus.id}&plants={camomille.id}"
+        response = self.client.get(filter_url, format="json")
+        body = response.json()
+        self.assertEqual(body["count"], 1)
+        self.assertIn(declaration_plant_mo.id, map(lambda x: x["id"], body["results"]))
+
+        filter_url = f"{reverse('api:list_all_declarations')}?substances={flavanones.id}"
+        response = self.client.get(filter_url, format="json")
+        body = response.json()
+        self.assertEqual(body["count"], 1)
+        self.assertIn(declaration_flavanones.id, map(lambda x: x["id"], body["results"]))
+
+        filter_url = f"{reverse('api:list_all_declarations')}?ingredients={levain.id}"
+        response = self.client.get(filter_url, format="json")
+        body = response.json()
+        self.assertEqual(body["count"], 1)
+        self.assertIn(declaration_levain.id, map(lambda x: x["id"], body["results"]))
 
     @authenticate
     def test_order_by_creation_date(self):
@@ -2688,6 +2776,8 @@ class TestSingleDeclaredElementApi(APITestCase):
         """
         Vérifier que l'article est recalculé avec un remplacement d'une demande
         """
+        PopulationFactory(ca_name="Population générale")
+
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()

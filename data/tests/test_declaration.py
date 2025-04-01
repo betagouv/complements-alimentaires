@@ -1,4 +1,5 @@
 from datetime import datetime
+from random import choice
 
 from django.test import TestCase
 from django.utils import timezone
@@ -23,6 +24,9 @@ from data.models.ingredient_status import IngredientStatus
 
 
 class DeclarationTestCase(TestCase):
+    def setUp(self):
+        self.pop_generale = PopulationFactory.create(ca_name="Population générale")
+
     def test_json_representation(self):
         declaration = InstructionReadyDeclarationFactory()
         json_representation = declaration.json_representation
@@ -290,13 +294,13 @@ class DeclarationTestCase(TestCase):
         ]
         for type in substance_types:
             declaration_with_computed_nutriment_max_exceeded = InstructionReadyDeclarationFactory(
-                computed_substances=[],
+                computed_substances=[]
             )
 
             substance = SubstanceFactory(substance_types=type)
             MaxQuantityPerPopulationRelationFactory(
                 substance=substance,
-                population=PopulationFactory(ca_name="Population générale"),
+                population=self.pop_generale,
                 ca_max_quantity=SUBSTANCE_MAX_QUANTITY,
             )
             ComputedSubstanceFactory(
@@ -351,9 +355,13 @@ class DeclarationTestCase(TestCase):
             )
             self.assertEqual(declaration_with_declared_nutriment_max_exceeded.overridden_article, "")
 
-    def test_article_anses_referal(self):
+    def test_article_anses_referal_for_general_population(self):
+        """
+        Une déclaration doit passer en article `ANSES_REFERAL` si :
+        * la dose max d'une substance déclarée est dépassée pour la population générale
+        * la dose max d'une substance calculée est dépassée pour la population générale
+        """
         SUBSTANCE_MAX_QUANTITY = 1.0
-
         substance_types = [
             [SubstanceType.SECONDARY_METABOLITE],
             [SubstanceType.ENZYME],
@@ -361,12 +369,12 @@ class DeclarationTestCase(TestCase):
         ]
         for type in substance_types:
             declaration_with_computed_substance_max_exceeded = InstructionReadyDeclarationFactory(
-                computed_substances=[],
+                computed_substances=[], populations=[self.pop_generale]
             )
             substance = SubstanceFactory(substance_types=type)
             MaxQuantityPerPopulationRelationFactory(
                 substance=substance,
-                population=PopulationFactory(ca_name="Population générale"),
+                population=self.pop_generale,
                 ca_max_quantity=SUBSTANCE_MAX_QUANTITY,
             )
             ComputedSubstanceFactory(
@@ -424,6 +432,125 @@ class DeclarationTestCase(TestCase):
                 declaration_with_declared_substance_max_exceeded.calculated_article, Declaration.Article.ANSES_REFERAL
             )
             self.assertEqual(declaration_with_declared_substance_max_exceeded.overridden_article, "")
+
+    def test_all_populations_are_considered_for_article_assignation(self):
+        """
+        Les substances qui ont une doses maximum pour une population autre
+        que la population générale doivent être considérées comme dépassées
+        si elles font partie des populations cibles
+        """
+        pop_biggest_quantity = PopulationFactory(ca_name="Population extradosée")
+        pop_smallest_quantity = PopulationFactory(ca_name="Population microdosée")
+        nutriment_type = choice([[SubstanceType.VITAMIN], [SubstanceType.MINERAL]])
+        other_substance_type = choice(
+            [
+                [SubstanceType.SECONDARY_METABOLITE],
+                [SubstanceType.ENZYME],
+                [SubstanceType.CARBOHYDRATE, SubstanceType.ENZYME],
+            ]
+        )
+        for substance_type in [
+            nutriment_type,
+            other_substance_type,
+        ]:
+            substance = SubstanceFactory(substance_types=substance_type)
+            MaxQuantityPerPopulationRelationFactory(
+                substance=substance,
+                population=self.pop_generale,
+                ca_max_quantity=2,
+            )
+            MaxQuantityPerPopulationRelationFactory(
+                substance=substance,
+                population=pop_smallest_quantity,
+                ca_max_quantity=1,
+            )
+            MaxQuantityPerPopulationRelationFactory(
+                substance=substance,
+                population=pop_biggest_quantity,
+                ca_max_quantity=10,
+            )
+            declaration_max_quantity_for_general_pop_not_exceeded = InstructionReadyDeclarationFactory(
+                computed_substances=[],
+            )
+            DeclaredSubstanceFactory(
+                substance=substance,
+                unit=substance.unit,
+                quantity=1.2,
+                declaration=declaration_max_quantity_for_general_pop_not_exceeded,
+            )
+            declaration_max_quantity_for_general_pop_not_exceeded.assign_calculated_article()
+            declaration_max_quantity_for_general_pop_not_exceeded.save()
+            declaration_max_quantity_for_general_pop_not_exceeded.refresh_from_db()
+            self.assertEqual(
+                declaration_max_quantity_for_general_pop_not_exceeded.article,
+                Declaration.Article.ARTICLE_15,
+                "Une déclaration sans population cible et dont la quantité de substance ne dépasse pas la dose max pour la population générale passe en article 15",
+            )
+            declaration_with_max_quantity_specific_pop_not_exceeded = InstructionReadyDeclarationFactory(
+                computed_substances=[], populations=[pop_biggest_quantity]
+            )
+            DeclaredSubstanceFactory(
+                substance=substance,
+                unit=substance.unit,
+                quantity=10,
+                declaration=declaration_with_max_quantity_specific_pop_not_exceeded,
+            )
+            declaration_with_max_quantity_specific_pop_not_exceeded.assign_calculated_article()
+            declaration_with_max_quantity_specific_pop_not_exceeded.save()
+            declaration_with_max_quantity_specific_pop_not_exceeded.refresh_from_db()
+            self.assertEqual(
+                declaration_with_max_quantity_specific_pop_not_exceeded.article,
+                Declaration.Article.ARTICLE_15,
+                "Une déclaration avec population cible et dont la quantité de substance ne dépasse pas la dose max pour cette population cible passe en article 15",
+            )
+            declaration_with_max_quantity_specific_pop_exceeded = InstructionReadyDeclarationFactory(
+                computed_substances=[], populations=[pop_biggest_quantity, pop_smallest_quantity]
+            )
+            DeclaredSubstanceFactory(
+                substance=substance,
+                unit=substance.unit,
+                quantity=10,
+                declaration=declaration_with_max_quantity_specific_pop_exceeded,
+            )
+            declaration_with_max_quantity_specific_pop_exceeded.assign_calculated_article()
+            declaration_with_max_quantity_specific_pop_exceeded.save()
+            declaration_with_max_quantity_specific_pop_exceeded.refresh_from_db()
+            if substance.substance_types == other_substance_type:
+                self.assertEqual(
+                    declaration_with_max_quantity_specific_pop_exceeded.article,
+                    Declaration.Article.ANSES_REFERAL,
+                    "Une déclaration avec plusieurs population cible, passe en article ANSES_REFERAL si la plus petite des max_quantity des population cibles est dépassée pour une substance non vitamine et minéraux",
+                )
+            else:
+                self.assertEqual(
+                    declaration_with_max_quantity_specific_pop_exceeded.article,
+                    Declaration.Article.ARTICLE_18,
+                    "Une déclaration avec plusieurs population cible, passe en ARTICLE_18 si la plus petite des max_quantity des population cibles est dépassée pour un nutriment",
+                )
+            declaration_with_max_quantity_general_pop_exceeded = InstructionReadyDeclarationFactory(
+                computed_substances=[],
+            )
+            DeclaredSubstanceFactory(
+                substance=substance,
+                unit=substance.unit,
+                quantity=10,
+                declaration=declaration_with_max_quantity_general_pop_exceeded,
+            )
+            declaration_with_max_quantity_general_pop_exceeded.assign_calculated_article()
+            declaration_with_max_quantity_general_pop_exceeded.save()
+            declaration_with_max_quantity_general_pop_exceeded.refresh_from_db()
+            if substance.substance_types == other_substance_type:
+                self.assertEqual(
+                    declaration_with_max_quantity_general_pop_exceeded.article,
+                    Declaration.Article.ANSES_REFERAL,
+                    "Une déclaration sans population cible, passe en article ANSES_REFERAL si la max_quantity pour la population générale est dépassée pour un nutriment",
+                )
+            else:
+                self.assertEqual(
+                    declaration_with_max_quantity_general_pop_exceeded.article,
+                    Declaration.Article.ARTICLE_18,
+                    "Une déclaration sans population cible, passe en ARTICLE_18 si la max_quantity pour la population générale est dépassée pour un nutriment",
+                )
 
     def test_visa_refused(self):
         """
