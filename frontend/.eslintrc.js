@@ -24,6 +24,7 @@ module.exports = {
     "no-unused-vars": 1,
     "prettier/prettier": ["error", { semi: false }],
   },
+  ignorePatterns: ["**/web/static/js/**.*"],
   plugins: ["prettier"],
 
   overrides: [

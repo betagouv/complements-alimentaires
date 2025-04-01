@@ -224,6 +224,8 @@ urlpatterns = {
     ),
     # Contact
     path("contact/", views.ContactView.as_view(), name="contact"),
+    # Stats
+    path("stats/", views.StatsView.as_view(), name="stats"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
