@@ -108,18 +108,17 @@
             selected-palette="default"
           ></bar-chart>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-6" title="Nombre de consultations au jeu de données de déclarations">
-          <h4 v-if="declarationVisitChartInfo">Consultations au jeu de données de Compl'Alim</h4>
+        <DsfrAccordion
+          id="accordion-6"
+          title="Utilisation de la base de données des déclarations de compléments alimentaires"
+        >
           <p>
-            Les déclarations autorisées sont accessible au grand public via
-            <a
-              href="https://www.data.gouv.fr/fr/datasets/declarations-de-complements-alimentaires"
-              rel="noreferrer noopener"
-              target="_blank"
-            >
-              le jeu de données data.gouv.fr publié par Compl'Alim
-            </a>
+            Nous mettons à disposition une base de données des compléments alimentaires déclarés auprès de la Direction
+            générale de l’alimentation. Notre hypothèse est qu'une consultation élevée de cette base de données aura
+            pour conséquence une identification et un signalement des compléments alimentaires non déclarés et
+            disponibles à la vente.
           </p>
+          <h4 v-if="declarationVisitChartInfo">Consultations au jeu de données de Compl'Alim</h4>
           <bar-chart
             v-if="declarationVisitChartInfo"
             :x="declarationVisitChartInfo.x"
@@ -128,17 +127,16 @@
             unit-tooltip="téléchargements"
             selected-palette="default"
           ></bar-chart>
-          <h4 v-if="declarationVisitChartInfo">Consultations au jeu de données de Teleicare</h4>
           <p>
-            L'historique de déclarations autorisées sont accessible au grand public via
             <a
-              href="https://www.data.gouv.fr/fr/datasets/liste-des-complements-alimentaires-declares"
+              href="https://www.data.gouv.fr/fr/datasets/declarations-de-complements-alimentaires"
               rel="noreferrer noopener"
               target="_blank"
             >
-              le jeu de données data.gouv.fr publié par Teleicare
+              Le jeu de données data.gouv.fr publié par Compl'Alim
             </a>
           </p>
+          <h4 v-if="declarationVisitChartInfo">Consultations au jeu de données de Teleicare</h4>
           <bar-chart
             v-if="siccrfDeclarationVisitChartInfo"
             :x="siccrfDeclarationVisitChartInfo.x"
@@ -147,6 +145,15 @@
             unit-tooltip="téléchargements"
             selected-palette="default"
           ></bar-chart>
+          <p>
+            <a
+              href="https://www.data.gouv.fr/fr/datasets/liste-des-complements-alimentaires-declares"
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              Le jeu de données data.gouv.fr publié par Teleicare
+            </a>
+          </p>
         </DsfrAccordion>
       </DsfrAccordionsGroup>
     </div>
