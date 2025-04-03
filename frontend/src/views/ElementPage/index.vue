@@ -55,10 +55,6 @@
           <ElementText :text="nutritionalReference" :lowercase="true" />
         </ElementColumn>
 
-        <ElementColumn title="Quantité maximale autorisée" v-if="maxQuantity">
-          <ElementText :text="maxQuantity" :lowercase="true" />
-        </ElementColumn>
-
         <ElementColumn title="Parties autorisées" v-if="plantParts?.length">
           <ElementTag :label="part" v-for="part in plantParts" :key="part" />
         </ElementColumn>
@@ -83,7 +79,15 @@
           <ElementStatusBadge :text="status" />
         </ElementColumn>
       </div>
-
+      <div class="fr-container w-50">
+        <DsfrHighlight>
+          <DsfrTable
+            title="Quantité maximales autorisées par population"
+            :headers="maxQuantityHeaders"
+            :rows="maxQuantityRows"
+          />
+        </DsfrHighlight>
+      </div>
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <!-- Date de dernière mise à jour de la donnée -->
@@ -169,11 +173,17 @@ const nutritionalReference = computed(() => {
     return element.value?.nutritionalReference + " " + element.value?.unit
   else return null
 })
-const maxQuantity = computed(() => {
-  if (element.value?.unit && (element.value?.maxQuantity || element.value.maxQuantity == 0))
-    return element.value?.maxQuantity + " " + element.value?.unit
-  else return null
+
+const maxQuantityHeaders = ["Population", "Quantité maximale"]
+
+const maxQuantityRows = computed(() => {
+  if (!element.value?.maxQuantities) return []
+
+  return element.value?.maxQuantities.map((d) => ({
+    rowData: [d.population, d.maxQuantity + " " + element.value?.unit],
+  }))
 })
+
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
 

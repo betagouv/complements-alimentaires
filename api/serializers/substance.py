@@ -27,10 +27,22 @@ class SubstanceSynonymSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class SubstanceMaxQuantitySerializer(serializers.ModelSerializer):
+    population = serializers.CharField(source="population.name")
+
+    class Meta:
+        model = MaxQuantityPerPopulationRelation
+        fields = ("max_quantity", "population")
+        read_only_fields = fields
+
+
 class SubstanceSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
     synonyms = SubstanceSynonymSerializer(many=True, read_only=True, source="substancesynonym_set")
     unit = serializers.CharField(read_only=True, source="unit.name")
     unit_id = serializers.IntegerField(read_only=True, source="unit.id")
+    max_quantities = SubstanceMaxQuantitySerializer(
+        many=True, source="maxquantityperpopulationrelation_set", required=False
+    )
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
     history = HistoricalRecordField(read_only=True)
 
@@ -45,6 +57,7 @@ class SubstanceSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
             "source",
             "must_specify_quantity",
             "max_quantity",
+            "max_quantities",
             "nutritional_reference",
             "unit",
             "unit_id",
