@@ -366,10 +366,9 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     def get_id(self, obj):
         """
-        This function is useless as the field has the correct name already and no transformation.
-        It is left for lisibilty
+        This function returns TeleIcare id if it exists otherwise Compl'Alim id
         """
-        return obj.id
+        return obj.teleicare_id if obj.teleicare_id else obj.id
 
     def get_decision(self, obj):
         return obj.get_status_display()
