@@ -124,6 +124,9 @@ import ElementTextSection from "./ElementTextSection.vue"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
 import ElementDoses from "./ElementDoses.vue"
+import { storeToRefs } from "pinia"
+const store = useRootStore()
+const { populations } = storeToRefs(store)
 
 const route = useRoute()
 const router = useRouter()
@@ -168,10 +171,11 @@ const nutritionalReference = computed(() => {
 })
 
 const maxQuantityRows = computed(() => {
+  const findName = (id) => populations.value?.find((y) => y.id === id)?.name
   if (!element.value?.maxQuantities) return []
 
   return element.value?.maxQuantities.map((d) => ({
-    rowData: [d.population, d.maxQuantity + " " + element.value?.unit],
+    rowData: [findName(d.population), d.maxQuantity + " " + element.value?.unit],
   }))
 })
 
@@ -223,7 +227,6 @@ watch(element, (newElement) => {
 
 watch(route, getElementFromApi)
 
-const store = useRootStore()
 const isInstructor = computed(() => store.loggedUser?.globalRoles?.some((x) => x.name === "InstructionRole"))
 </script>
 
