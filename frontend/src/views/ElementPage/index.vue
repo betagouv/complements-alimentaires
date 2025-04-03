@@ -79,15 +79,7 @@
           <ElementStatusBadge :text="status" />
         </ElementColumn>
       </div>
-      <div class="fr-container w-50">
-        <DsfrHighlight>
-          <DsfrTable
-            title="Quantité maximales autorisées par population"
-            :headers="maxQuantityHeaders"
-            :rows="maxQuantityRows"
-          />
-        </DsfrHighlight>
-      </div>
+      <ElementDoses :maxQuantityRows="maxQuantityRows"></ElementDoses>
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <!-- Date de dernière mise à jour de la donnée -->
@@ -131,6 +123,7 @@ import ElementText from "./ElementText.vue"
 import ElementTextSection from "./ElementTextSection.vue"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
+import ElementDoses from "./ElementDoses.vue"
 
 const route = useRoute()
 const router = useRouter()
@@ -173,8 +166,6 @@ const nutritionalReference = computed(() => {
     return element.value?.nutritionalReference + " " + element.value?.unit
   else return null
 })
-
-const maxQuantityHeaders = ["Population", "Quantité maximale"]
 
 const maxQuantityRows = computed(() => {
   if (!element.value?.maxQuantities) return []
