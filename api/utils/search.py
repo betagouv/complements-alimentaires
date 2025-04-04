@@ -8,7 +8,7 @@ from data.models import Ingredient, IngredientStatus, Microorganism, Plant
 from data.models.substance import Substance, SubstanceType
 
 
-def search_elements(query, deduplicate=False, exclude_not_authorized=False, exclude_vitamines_minerals=False):
+def search_elements(query, deduplicate=False, exclude_not_authorized=False, exclude_indirect_substances=False):
     term = query["term"]
     query_type = query.get("type")
     # Les plantes non autorisées peuvent être ajoutées en infimes quantités dans les elixirs
@@ -27,7 +27,7 @@ def search_elements(query, deduplicate=False, exclude_not_authorized=False, excl
         else []
     )
     substances = (
-        _get_substances(term, deduplicate, exclude_not_authorized, exclude_vitamines_minerals)
+        _get_substances(term, deduplicate, exclude_not_authorized, exclude_indirect_substances)
         if not query_type or query_type == "substance"
         else []
     )
@@ -80,7 +80,7 @@ def _get_ingredients(query, deduplicate, exclude_not_authorized):
     return _get_element_list(ingredient_qs, ingredient_synonym_qs, deduplicate, exclude_not_authorized)
 
 
-def _get_substances(query, deduplicate, exclude_not_authorized, exclude_vitamines_minerals=False):
+def _get_substances(query, deduplicate, exclude_not_authorized, exclude_indirect_substances=False):
     substance_qs = (
         Substance.up_to_date_objects.filter(name__unaccent__icontains=query)
         .distinct()
@@ -91,10 +91,12 @@ def _get_substances(query, deduplicate, exclude_not_authorized, exclude_vitamine
         .distinct()
         .annotate(autocomplete_match=F("substancesynonym__name"))
     )
-    if exclude_vitamines_minerals:
-        substance_qs = substance_qs.exclude(substance_types__overlap=[SubstanceType.VITAMIN, SubstanceType.MINERAL])
+    if exclude_indirect_substances:
+        substance_qs = substance_qs.exclude(
+            substance_types__overlap=[SubstanceType.VITAMIN, SubstanceType.MINERAL, SubstanceType.SECONDARY_METABOLITE]
+        )
         substance_synonym_qs = substance_synonym_qs.exclude(
-            substance_types__overlap=[SubstanceType.VITAMIN, SubstanceType.MINERAL]
+            substance_types__overlap=[SubstanceType.VITAMIN, SubstanceType.MINERAL, SubstanceType.SECONDARY_METABOLITE]
         )
 
     return _get_element_list(substance_qs, substance_synonym_qs, deduplicate, exclude_not_authorized)
