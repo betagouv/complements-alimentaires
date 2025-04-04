@@ -124,10 +124,7 @@ import ElementTextSection from "./ElementTextSection.vue"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
 import ElementDoses from "./ElementDoses.vue"
-import { storeToRefs } from "pinia"
 const store = useRootStore()
-const { populations } = storeToRefs(store)
-
 const route = useRoute()
 const router = useRouter()
 const notFound = ref(false)
@@ -171,11 +168,10 @@ const nutritionalReference = computed(() => {
 })
 
 const maxQuantityRows = computed(() => {
-  const findName = (id) => populations.value?.find((y) => y.id === id)?.name
   if (!element.value?.maxQuantities) return []
 
   return element.value?.maxQuantities.map((d) => ({
-    rowData: [findName(d.population), d.maxQuantity + " " + element.value?.unit],
+    rowData: [d.populationName, d.maxQuantity + " " + element.value?.unit],
   }))
 })
 

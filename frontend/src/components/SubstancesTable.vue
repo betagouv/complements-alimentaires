@@ -116,7 +116,6 @@ const sourceElements = (substance) => {
 }
 
 const getMaxQuantityExceeded = (declaredOrComputedSubstance) => {
-  const findName = (id) => populations.value?.find((y) => y.id === id)?.name
   const exceeded_population_quantity = declaredOrComputedSubstance.substance.maxQuantities.filter(
     (maxQuantityPerPopulation) =>
       payload.value.populations.indexOf(parseInt(maxQuantityPerPopulation.population)) != -1 &&
@@ -124,9 +123,7 @@ const getMaxQuantityExceeded = (declaredOrComputedSubstance) => {
   )
 
   const exceeded_populations = exceeded_population_quantity.length
-    ? exceeded_population_quantity.map((maxQuantityPerPopulation) =>
-        findName(parseInt(maxQuantityPerPopulation.population))
-      )
+    ? exceeded_population_quantity.map((maxQuantityPerPopulation) => maxQuantityPerPopulation.population_name)
     : ["Population générale"]
   let max_quantity = 0
   if (exceeded_population_quantity.length) {

@@ -29,10 +29,11 @@ class SubstanceSynonymSerializer(serializers.ModelSerializer):
 
 class SubstanceMaxQuantitySerializer(serializers.ModelSerializer):
     population = serializers.CharField(source="population.id")
+    population_name = serializers.CharField(source="population.name")
 
     class Meta:
         model = MaxQuantityPerPopulationRelation
-        fields = ("max_quantity", "population")
+        fields = ("max_quantity", "population", "population_name")
         read_only_fields = fields
 
 
