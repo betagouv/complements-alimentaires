@@ -47,9 +47,9 @@
             :class="{
               '!text-red-marianne-425 font-bold': getMaxQuantityExceeded(payload.computedSubstances[rowIndex]),
             }"
-            v-if="getMaxQuantityExceeded(payload.computedSubstances[rowIndex])"
+            v-if="props.readonly"
           >
-            ({{ getMaxQuantityExceeded(payload.computedSubstances[rowIndex]) }})
+            {{ getMaxQuantityExceeded(payload.computedSubstances[rowIndex]) }}
           </div>
           <DsfrInputGroup v-else>
             <NumberField
@@ -123,7 +123,7 @@ const getMaxQuantityExceeded = (declaredOrComputedSubstance) => {
   )
 
   const exceeded_populations = exceeded_population_quantity.length
-    ? exceeded_population_quantity.map((maxQuantityPerPopulation) => maxQuantityPerPopulation.population_name)
+    ? exceeded_population_quantity.map((maxQuantityPerPopulation) => maxQuantityPerPopulation.populationName)
     : ["Population générale"]
   let max_quantity = 0
   if (exceeded_population_quantity.length) {
@@ -132,8 +132,13 @@ const getMaxQuantityExceeded = (declaredOrComputedSubstance) => {
         max_quantity = maxQuantityPerPopulation.maxQuantity
       }
     })
-  } else max_quantity = declaredOrComputedSubstance.substance.maxQuantity
-  if (exceeded_populations.length) return max_quantity + " maximum autorisé pour " + exceeded_populations.join(", ")
+  } else
+    max_quantity =
+      declaredOrComputedSubstance.quantity > declaredOrComputedSubstance.substance.maxQuantity
+        ? declaredOrComputedSubstance.substance.maxQuantity
+        : null
+  if (exceeded_populations.length && (max_quantity || max_quantity === 0))
+    return max_quantity + " maximum autorisé pour " + exceeded_populations.join(", ")
   else return
 }
 watch(
