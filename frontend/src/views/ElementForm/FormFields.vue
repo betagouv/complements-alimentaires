@@ -169,7 +169,7 @@
       <DsfrInputGroup v-if="!isNewIngredient" :error-message="firstErrorMsg(v$, 'changeReason')">
         <DsfrInput
           v-model="state.changeReason"
-          label="Raison de changement (public)"
+          label="Raison de changement"
           hint="100 caractères max"
           required
           labelVisible

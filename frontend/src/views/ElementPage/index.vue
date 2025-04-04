@@ -88,7 +88,7 @@
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <!-- Date de dernière mise à jour de la donnée -->
       <DsfrAccordion title="Historique de l'ingrédient" id="accordion-history">
-        <DsfrTable :rows="historyDataDedup"></DsfrTable>
+        <DsfrTable :headers="historyHeaders" :rows="historyDataDedup"></DsfrTable>
       </DsfrAccordion>
 
       <!-- bouton temporaire à enlever quand on a une page dédiée à la recherche d'ingrédients interne -->
@@ -179,17 +179,19 @@ const publicComments = computed(() => element.value?.publicComments)
 
 const historyData = computed(() =>
   element.value?.history
-    .filter((item) => item.historyChangeReason)
+    .filter((item) => item.changedFields?.length || item.historyType === "+")
     .map((item) => [
-      new Date(item.historyDate).toLocaleString("default", { month: "long", year: "numeric" }),
-      item.historyChangeReason,
+      new Date(item.historyDate).toLocaleString("default", { day: "numeric", month: "short", year: "numeric" }),
+      item.historyType === "+" ? "Création de l'ingrédient" : item.changedFields.map((f) => `« ${f} »`).join(", "),
     ])
 )
+
 // Deduplication en passant par une string
 const historyDataDedup = computed(() => Array.from(new Set(historyData.value.map(JSON.stringify)), JSON.parse))
 
+const historyHeaders = ["Date de changement", "Champs modifiés"]
+
 // TODO: remove background
-// TODO: affichage du change reason dans l'admin
 const url = computed(() => `/api/v1/${getApiType(type.value)}s/${elementId.value}?history=true`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
