@@ -55,10 +55,6 @@
           <ElementText :text="nutritionalReference" :lowercase="true" />
         </ElementColumn>
 
-        <ElementColumn title="Quantité maximale autorisée" v-if="maxQuantity">
-          <ElementText :text="maxQuantity" :lowercase="true" />
-        </ElementColumn>
-
         <ElementColumn title="Parties autorisées" v-if="plantParts?.length">
           <ElementTag :label="part" v-for="part in plantParts" :key="part" />
         </ElementColumn>
@@ -83,7 +79,7 @@
           <ElementStatusBadge :text="status" />
         </ElementColumn>
       </div>
-
+      <ElementDoses v-if="maxQuantityRows.length" :maxQuantityRows="maxQuantityRows"></ElementDoses>
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <!-- Date de dernière mise à jour de la donnée -->
@@ -127,7 +123,8 @@ import ElementText from "./ElementText.vue"
 import ElementTextSection from "./ElementTextSection.vue"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
-
+import ElementDoses from "./ElementDoses.vue"
+const store = useRootStore()
 const route = useRoute()
 const router = useRouter()
 const notFound = ref(false)
@@ -169,11 +166,15 @@ const nutritionalReference = computed(() => {
     return element.value?.nutritionalReference + " " + element.value?.unit
   else return null
 })
-const maxQuantity = computed(() => {
-  if (element.value?.unit && (element.value?.maxQuantity || element.value.maxQuantity == 0))
-    return element.value?.maxQuantity + " " + element.value?.unit
-  else return null
+
+const maxQuantityRows = computed(() => {
+  if (!element.value?.maxQuantities) return []
+
+  return element.value?.maxQuantities.map((d) => ({
+    rowData: [d.populationName, d.maxQuantity + " " + element.value?.unit],
+  }))
 })
+
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
 
@@ -222,7 +223,6 @@ watch(element, (newElement) => {
 
 watch(route, getElementFromApi)
 
-const store = useRootStore()
 const isInstructor = computed(() => store.loggedUser?.globalRoles?.some((x) => x.name === "InstructionRole"))
 </script>
 

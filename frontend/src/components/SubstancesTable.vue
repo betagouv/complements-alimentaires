@@ -40,27 +40,16 @@
           <div class="sm:hidden ca-xs-title">
             Quantité par DJR (en {{ payload.computedSubstances[rowIndex].substance.unit }})
           </div>
+          <div v-if="props.readonly">
+            {{ payload.computedSubstances[rowIndex].quantity }}
+          </div>
           <div
             :class="{
-              '!text-red-marianne-425 font-bold':
-                (payload.computedSubstances[rowIndex].substance.maxQuantity ||
-                  payload.computedSubstances[rowIndex].substance.maxQuantity === 0) &&
-                payload.computedSubstances[rowIndex].quantity >
-                  payload.computedSubstances[rowIndex].substance.maxQuantity,
+              '!text-red-marianne-425 font-bold': getMaxQuantityExceeded(payload.computedSubstances[rowIndex]),
             }"
             v-if="props.readonly"
           >
-            {{ payload.computedSubstances[rowIndex].quantity }}
-            <span
-              v-if="
-                (payload.computedSubstances[rowIndex].substance.maxQuantity ||
-                  payload.computedSubstances[rowIndex].substance.maxQuantity === 0) &&
-                payload.computedSubstances[rowIndex].quantity >
-                  payload.computedSubstances[rowIndex].substance.maxQuantity
-              "
-            >
-              pour {{ payload.computedSubstances[rowIndex].substance.maxQuantity }} maximum autorisés
-            </span>
+            {{ getMaxQuantityExceeded(payload.computedSubstances[rowIndex]) }}
           </div>
           <DsfrInputGroup v-else>
             <NumberField
@@ -121,6 +110,32 @@ const sourceElements = (substance) => {
   return sources.map((x) => x.element.name).join(", ")
 }
 
+const getMaxQuantityExceeded = (declaredOrComputedSubstance) => {
+  const exceeded_population_quantity = declaredOrComputedSubstance.substance.maxQuantities.filter(
+    (maxQuantityPerPopulation) =>
+      payload.value.populations.indexOf(parseInt(maxQuantityPerPopulation.population)) != -1 &&
+      declaredOrComputedSubstance.quantity > maxQuantityPerPopulation.maxQuantity
+  )
+
+  const exceeded_populations = exceeded_population_quantity.length
+    ? exceeded_population_quantity.map((maxQuantityPerPopulation) => maxQuantityPerPopulation.populationName)
+    : ["Population générale"]
+  let max_quantity = 0
+  if (exceeded_population_quantity.length) {
+    exceeded_population_quantity.forEach((maxQuantityPerPopulation) => {
+      if (maxQuantityPerPopulation.maxQuantity > max_quantity) {
+        max_quantity = maxQuantityPerPopulation.maxQuantity
+      }
+    })
+  } else
+    max_quantity =
+      declaredOrComputedSubstance.quantity > declaredOrComputedSubstance.substance.maxQuantity
+        ? declaredOrComputedSubstance.substance.maxQuantity
+        : null
+  if (exceeded_populations.length && (max_quantity || max_quantity === 0))
+    return max_quantity + " maximum autorisé pour " + exceeded_populations.join(", ")
+  else return
+}
 watch(
   elements,
   () => {
