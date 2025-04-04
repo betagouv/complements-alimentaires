@@ -366,10 +366,9 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     def get_id(self, obj):
         """
-        This function is useless as the field has the correct name already and no transformation.
-        It is left for lisibilty
+        Cette fonction retourne le TeleIcare id s'il existe sinon le Compl'Alim id
         """
-        return obj.id
+        return obj.teleicare_id or obj.id
 
     def get_decision(self, obj):
         return obj.get_status_display()
@@ -388,15 +387,14 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     def get_gamme(self, obj):
         """
-        This function is useless as the field has the correct name already and no transformation.
-        It is left for lisibilty
+        Cette fonction est là pour la lisibilité, pas utile d'un point de vue fonctionnel
         """
         return obj.gamme
 
     def get_article_procedure(self, obj):
         """
-        Unify all types of Articles 15 categories.
-        If not part of Article 15, then return display name
+        Unifie tous les types d'Articles 15.
+        Si ce n'est pas un Article 15, alors le display name est retourné
         """
         if obj.article in [
             Declaration.Article.ARTICLE_15,
