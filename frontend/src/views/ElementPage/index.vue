@@ -79,7 +79,7 @@
           <ElementStatusBadge :text="status" />
         </ElementColumn>
       </div>
-      <ElementDoses :maxQuantityRows="maxQuantityRows"></ElementDoses>
+      <ElementDoses v-if="maxQuantityRows.length" :maxQuantityRows="maxQuantityRows"></ElementDoses>
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <!-- Date de dernière mise à jour de la donnée -->

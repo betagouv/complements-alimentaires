@@ -81,11 +81,6 @@
 import { computed, watch } from "vue"
 import ElementCommentModal from "@/components/ElementCommentModal"
 import NumberField from "@/components/NumberField"
-import { storeToRefs } from "pinia"
-import { useRootStore } from "@/stores/root"
-
-const store = useRootStore()
-const { populations } = storeToRefs(store)
 
 const payload = defineModel()
 const props = defineProps({ readonly: Boolean, hidePrivateComments: Boolean })
