@@ -6,7 +6,11 @@ from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 from simple_history.utils import update_change_reason
 
-from data.models import Substance
+from api.utils.choice_field import GoodReprChoiceField
+from data.models import Substance, IngredientStatus
+
+from .historical_record import HistoricalRecordField
+from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +28,21 @@ COMMON_FIELDS = (
 )
 
 COMMON_READ_ONLY_FIELDS = ("id",)
+
+COMMON_FETCH_FIELDS = (
+    "id",
+    "name",
+    "synonyms",
+    "public_comments",
+    "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
+    "activity",
+    "status",
+    "novel_food",
+    "is_risky",
+    "history",
+    "object_type",
+    "origin_declaration",
+)
 
 
 class WithSubstances(serializers.ModelSerializer):
@@ -99,3 +118,10 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
                 self.synonym_model.objects.create(standard_name=instance, name=name)
         except KeyError:
             raise ParseError(detail="Must provide 'name' to create new synonym")
+
+
+class CommonIngredientReadSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
+    status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
+    history = HistoricalRecordField(read_only=True)
+
+    private_fields = ("private_comments", "origin_declaration")

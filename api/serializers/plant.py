@@ -1,16 +1,15 @@
 from rest_framework import serializers
 
-from api.utils.choice_field import GoodReprChoiceField
-from data.models import IngredientStatus, Part, Plant, PlantFamily, PlantPart, PlantSynonym
+from data.models import Part, Plant, PlantFamily, PlantPart, PlantSynonym
 
-from .historical_record import HistoricalRecordField
 from .substance import SubstanceShortSerializer
-from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
 from .common_ingredient import (
     COMMON_FIELDS,
     COMMON_NAME_FIELDS,
     COMMON_READ_ONLY_FIELDS,
+    COMMON_FETCH_FIELDS,
     CommonIngredientModificationSerializer,
+    CommonIngredientReadSerializer,
     WithSubstances,
     WithName,
 )
@@ -59,30 +58,18 @@ class PlantSynonymSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class PlantSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
+class PlantSerializer(CommonIngredientReadSerializer):
     family = PlantFamilySerializer(read_only=True)
     plant_parts = PartRelationSerializer(source="part_set", many=True, read_only=True)
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
-    status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
-    history = HistoricalRecordField(read_only=True)
 
     class Meta:
         model = Plant
-        fields = (
-            "id",
-            "name",
+        fields = COMMON_FETCH_FIELDS + (
             "family",
             "plant_parts",
-            "synonyms",
             "substances",
-            "public_comments",
-            "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
-            "activity",
-            "status",
-            "novel_food",
-            "is_risky",
-            "history",
         )
         read_only_fields = fields
 
