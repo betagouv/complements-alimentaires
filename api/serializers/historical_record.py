@@ -8,19 +8,24 @@ User = get_user_model()
 
 
 class HistoricalRecordSerializer(serializers.Serializer):
-    user = serializers.SerializerMethodField()
     history_date = serializers.DateTimeField()
-    history_change_reason = serializers.CharField()
     changed_fields = serializers.ListField(child=serializers.CharField())
-    history_type = serializers.CharField()
+    history_type = serializers.CharField(allow_blank=True, allow_null=True)
 
     def get_user(self, obj):
-        users = User.objects.filter(id=obj["history_user_id"])
-        if obj["history_user_id"] and users.exists():
-            return SimpleUserSerializer(users.first()).data
+        user_id = obj.get("history_user_id")
+        if user_id:
+            users = User.objects.filter(id=user_id)
+            if users.exists():
+                return SimpleUserSerializer(users.first()).data
 
     def to_representation(self, data):
         return super().to_representation(data)
+
+
+class PriviledgedHistoricalRecordSerializer(HistoricalRecordSerializer):
+    user = serializers.SerializerMethodField()
+    history_change_reason = serializers.CharField(allow_blank=True, allow_null=True)
 
 
 class HistoricalRecordField(serializers.ListField):
@@ -52,5 +57,6 @@ class HistoricalRecordField(serializers.ListField):
                 history_data["history_change_reason"] = later_version.history_change_reason
                 history_data["history_user_id"] = later_version.history_user_id
             data_with_changes.append(history_data)
-        records = HistoricalRecordSerializer(data_with_changes, many=True).data
+        serializer = PriviledgedHistoricalRecordSerializer if is_priviledged_user else HistoricalRecordSerializer
+        records = serializer(data_with_changes, many=True).data
         return super().to_representation(records)
