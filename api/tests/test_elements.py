@@ -40,7 +40,11 @@ class TestElementsFetchApi(APITestCase):
         body = response.json()
 
         self.assertIn("history", body)
+        self.assertIn("changedFields", body["history"][0])
+        self.assertIn("historyType", body["history"][0])
+        self.assertIn("historyDate", body["history"][0])
         self.assertNotIn("user", body["history"][0])
+        self.assertNotIn("historyChangeReason", body["history"][0])
 
         response = self.client.get(reverse("api:single_plant", kwargs={"pk": plant.id}))
         body = response.json()
@@ -59,6 +63,10 @@ class TestElementsFetchApi(APITestCase):
 
         self.assertIn("user", body["history"][0])
         self.assertEqual(body["history"][0]["changedFields"], ["nom CA"])
+        self.assertIn("historyType", body["history"][0])
+        self.assertIn("historyDate", body["history"][0])
+        self.assertIn("user", body["history"][0])
+        self.assertIn("historyChangeReason", body["history"][0])
 
     @authenticate
     def test_plant_private_comments(self):
