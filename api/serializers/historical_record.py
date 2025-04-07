@@ -23,7 +23,7 @@ class HistoricalRecordSerializer(serializers.Serializer):
         return super().to_representation(data)
 
 
-class PriviledgedHistoricalRecordSerializer(HistoricalRecordSerializer):
+class PrivilegedHistoricalRecordSerializer(HistoricalRecordSerializer):
     user = serializers.SerializerMethodField()
     history_change_reason = serializers.CharField(allow_blank=True, allow_null=True)
 
@@ -34,9 +34,9 @@ class HistoricalRecordField(serializers.ListField):
     def to_representation(self, data):
         user = self.context and self.context["request"] and self.context["request"].user
         try:
-            is_priviledged_user = user.instructionrole or user.visarole
+            is_privileged_user = user.instructionrole or user.visarole
         except Exception as _:
-            is_priviledged_user = False
+            is_privileged_user = False
 
         data_with_changes = []
         history_list = list(data.all())
@@ -53,10 +53,10 @@ class HistoricalRecordField(serializers.ListField):
                 "changed_fields": translated_changed_fields,
                 "history_type": later_version.history_type,
             }
-            if is_priviledged_user:
+            if is_privileged_user:
                 history_data["history_change_reason"] = later_version.history_change_reason
                 history_data["history_user_id"] = later_version.history_user_id
             data_with_changes.append(history_data)
-        serializer = PriviledgedHistoricalRecordSerializer if is_priviledged_user else HistoricalRecordSerializer
+        serializer = PrivilegedHistoricalRecordSerializer if is_privileged_user else HistoricalRecordSerializer
         records = serializer(data_with_changes, many=True).data
         return super().to_representation(records)
