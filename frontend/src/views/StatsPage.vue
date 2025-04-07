@@ -26,16 +26,18 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-2" title="Gain de temps à l'instruction">
+        <DsfrAccordion id="accordion-2" title="Gain de temps à l'examen des déclarations">
           <p>
-            L’instruction automatique de certaines déclarations permet au BEPIAS de concentrer ses efforts sur les cas
-            les plus complexes. Le temps de validation est ainsi réduit et les déclarants sont plus satisfaits car ils
-            peuvent mettre leurs produits sur le marché plus rapidement.
+            L’examen des déclarations automatique de certaines déclarations permet aux services de la Direction Générale
+            de l’Alimentation de concentrer ses efforts sur les cas les plus complexes. Le temps de validation est ainsi
+            réduit et les déclarants sont plus satisfaits car ils peuvent mettre leurs produits sur le marché plus
+            rapidement.
           </p>
           <p>
-            Avec Compl'Alim, nous avons mis en place une aide à l'instruction pour le BEPIAS en octobre 2024. Nous
-            améliorons en continu les outils et les méthodes d'évaluation pour réduire le temps d'instruction, en tenant
-            compte des évolutions réglementaires et des retours d'utilisateurs.
+            Avec Compl'Alim, nous avons mis en place une aide à l'examen des déclarations pour les services de la
+            Direction Générale de l’Alimentation en octobre 2024. Nous améliorons en continu les outils et les méthodes
+            d'évaluation pour réduire le temps d'examen des déclarations, en tenant compte des évolutions réglementaires
+            et des retours d'utilisateurs.
           </p>
           <iframe
             src="https://compl-alim-metabase.cleverapps.io/public/question/572252e2-0d2a-4465-8ec4-c9f594508f15"
@@ -67,8 +69,7 @@
           <p>
             L'évolution du nombre de professionnels déclarant leur premier complément alimentaire sur Compl'Alim donne
             une idée de la capacité du secteur économique du complément alimentaire à identifier Compl'Alim comme
-            plateforme de référence. Ce graphique reprend le nombre de nouvelles entreprises déclarantes dès la mise en
-            ligne de TeleIcare.
+            plateforme de référence.
           </p>
           <iframe
             src="https://compl-alim-metabase.cleverapps.io/public/question/891d6238-9f0d-40db-a97f-747b829b1902"
@@ -78,7 +79,7 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-4" title="Nombre de signalements d’erreur dans la base ingrédients">
+        <DsfrAccordion id="accordion-4" title="Fiabilité de la base de données ingrédients">
           <p>
             Nous visons une base de données complète et fiable. Or, les retours signalant des imprécisions ou des
             erreurs indiquent que ce n'est pas encore le cas. Notre objectif est donc de réduire significativement le
@@ -92,11 +93,11 @@
             allowtransparency
           ></iframe>
         </DsfrAccordion>
-        <DsfrAccordion id="accordion-5" title="Nombre de consultations à la base ingrédients">
+        <DsfrAccordion id="accordion-5" title="Utilisation de la base de données ingrédient">
           <p>
             Nous mettons à disposition une base de données ingrédients avec leur réglementation d'usage mis à jour
-            régulièrement. Une consultation élevée grâce à son moteur de recherche a pour conséquence une réduction des
-            erreurs dans les déclarations.
+            régulièrement. Notre hypothèse est qu'une consultation élevée de cette base de donnée aura pour conséquence
+            une réduction des erreurs dans les déclarations.
           </p>
           <h4 v-if="elementVisitChartInfo">Consultations à la base ingrédients</h4>
           <bar-chart
@@ -107,6 +108,53 @@
             unit-tooltip="visites"
             selected-palette="default"
           ></bar-chart>
+        </DsfrAccordion>
+        <DsfrAccordion
+          id="accordion-6"
+          title="Utilisation de la base de données des déclarations de compléments alimentaires"
+        >
+          <p>
+            Nous mettons à disposition une base de données des compléments alimentaires déclarés auprès de la Direction
+            générale de l’alimentation. Notre hypothèse est qu'une consultation élevée de cette base de données
+            permettra de sensibiliser les distributeurs (avant de référencer un produit) et les consommateurs (avant
+            d’acheter un produit).
+          </p>
+          <h4 v-if="declarationVisitChartInfo">Consultations au jeu de données de Compl'Alim</h4>
+          <bar-chart
+            v-if="declarationVisitChartInfo"
+            :x="declarationVisitChartInfo.x"
+            :y="declarationVisitChartInfo.y"
+            name='[" "]'
+            unit-tooltip="téléchargements"
+            selected-palette="default"
+          ></bar-chart>
+          <p>
+            <a
+              href="https://www.data.gouv.fr/fr/datasets/declarations-de-complements-alimentaires"
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              Le jeu de données data.gouv.fr publié par Compl'Alim
+            </a>
+          </p>
+          <h4 v-if="declarationVisitChartInfo">Consultations au jeu de données de Teleicare</h4>
+          <bar-chart
+            v-if="siccrfDeclarationVisitChartInfo"
+            :x="siccrfDeclarationVisitChartInfo.x"
+            :y="siccrfDeclarationVisitChartInfo.y"
+            name='[" "]'
+            unit-tooltip="téléchargements"
+            selected-palette="default"
+          ></bar-chart>
+          <p>
+            <a
+              href="https://www.data.gouv.fr/fr/datasets/liste-des-complements-alimentaires-declares"
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              Le jeu de données data.gouv.fr publié par Teleicare
+            </a>
+          </p>
         </DsfrAccordion>
       </DsfrAccordionsGroup>
     </div>
@@ -122,13 +170,27 @@ const { response, data } = useFetch("/api/v1/stats/").json()
 
 watch(response, async () => response && handleError(response))
 
-const elementVisitChartInfo = computed(() => {
-  if (!data?.value?.elementVisitStats?.reportData) return null
-  const keys = (Object.keys(data.value.elementVisitStats.reportData) || []).map(formatMonthLabel)
-  const values = Object.values(data.value.elementVisitStats.reportData).map((x) => x[0].nbVisits)
+const formatReportData = (reportData, xKey) => {
+  const keys = (Object.keys(reportData) || []).map(formatMonthLabel)
+  const values = Object.values(reportData).map((x) => x[xKey])
   const x = JSON.stringify([keys])
   const y = JSON.stringify([values])
   return { x, y }
+}
+
+const elementVisitChartInfo = computed(() => {
+  if (!data?.value?.elementVisitStats?.reportData) return null
+  return formatReportData(data.value.elementVisitStats.reportData, "nbVisits")
+})
+
+const declarationVisitChartInfo = computed(() => {
+  if (!data?.value?.declarationVisitStats?.reportData) return null
+  return formatReportData(data.value.declarationVisitStats.reportData, "downloads")
+})
+
+const siccrfDeclarationVisitChartInfo = computed(() => {
+  if (!data?.value?.siccrfDeclarationVisitStats?.reportData) return null
+  return formatReportData(data.value.siccrfDeclarationVisitStats.reportData, "downloads")
 })
 
 const formatMonthLabel = (apiLabel) => {
