@@ -78,6 +78,7 @@ class SubstanceSynonymModificationSerializer(serializers.ModelSerializer):
 
 class SubstanceMaxQuantityModificationSerializer(serializers.ModelSerializer):
     population = serializers.CharField(source="population.name")
+    max_quantity = serializers.FloatField(source="ca_max_quantity")
 
     class Meta:
         model = MaxQuantityPerPopulationRelation
@@ -105,7 +106,6 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
             + (
                 "cas_number",
                 "einec_number",
-                "max_quantity",  # une property du Model, set grâce à create() et update()
                 "max_quantities",
                 "nutritional_reference",
                 "unit",
@@ -115,44 +115,69 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
 
     @transaction.atomic
     def create(self, validated_data):
-        # le champ `max_quantity` n'existe pas dans validated_data
-        # car ce n'est pas un champ du Model mais une property
-        max_quantity = self.initial_data.get("max_quantity")
+        max_quantities = validated_data.pop("maxquantityperpopulationrelation_set", None)
         substance = super().create(validated_data)
-        if max_quantity:
-            general_population = Population.objects.get(name="Population générale")
-            MaxQuantityPerPopulationRelation.objects.create(
-                substance=substance, population=general_population, ca_max_quantity=max_quantity
-            )
+        if max_quantities is not None:
+            for max_quantity in max_quantities:
+                # TODO: what if bad name is passed?
+                population = Population.objects.get(name=max_quantity["population"]["name"])
+                MaxQuantityPerPopulationRelation.objects.create(
+                    substance=substance, population=population, ca_max_quantity=max_quantity["ca_max_quantity"]
+                )
 
         return substance
 
     @transaction.atomic
     def update(self, instance, validated_data):
+        max_quantities = validated_data.pop("maxquantityperpopulationrelation_set", None)
         substance = super().update(instance, validated_data)
 
-        # le champ `max_quantity` n'existe pas dans validated_data
-        # car ce n'est pas un champ du Model mais une property
-        if "max_quantity" in self.initial_data.keys():
-            max_quantity = self.initial_data.get("max_quantity")
+        if max_quantities is not None:
+            # TODO: delete missing lines
+            # synonyms_to_delete = existing_synonyms.exclude(name__in=new_synonym_list)
+            # synonyms_to_delete.delete()
 
-            general_population = Population.objects.get(name="Population générale")
-            max_qty_general_pop = MaxQuantityPerPopulationRelation.objects.filter(
-                substance=substance, population=general_population
-            )
+            for max_quantity in max_quantities:
+                print(max_quantity)
+                population_name = max_quantity["population"]["name"]
+                population = Population.objects.get(name=population_name)
+                max_quantity_value = max_quantity["ca_max_quantity"]
 
-            # delete
-            if max_qty_general_pop.exists() and max_quantity is None:
-                max_qty_general_pop.first().delete()
-            # update
-            elif max_qty_general_pop.exists() and max_quantity is not None:
-                max_quantity_to_change = max_qty_general_pop.first()
-                max_quantity_to_change.ca_max_quantity = max_quantity
-                max_quantity_to_change.save()
-            # create
-            elif not max_qty_general_pop.exists() and max_quantity is not None:
-                MaxQuantityPerPopulationRelation.objects.create(
-                    substance=substance, population=general_population, ca_max_quantity=max_quantity
+                # TODO: what happens if bad population name is given
+                # TODO: what happens if population or max quantity is missing
+                # TODO: block add/update if substance doesn't have a unit set
+
+                existing_relation = MaxQuantityPerPopulationRelation.objects.filter(
+                    substance=substance, population=population
                 )
+                print(existing_relation.exists())
+                if existing_relation.exists():
+                    existing_relation = existing_relation.first()
+                    if existing_relation.max_quantity != max_quantity_value:
+                        existing_relation.ca_max_quantity = max_quantity_value
+                        existing_relation.save()
+                else:
+                    MaxQuantityPerPopulationRelation.objects.create(
+                        substance=substance, population=population, ca_max_quantity=max_quantity_value
+                    )
+
+            # general_population = Population.objects.get(name="Population générale")
+            # max_qty_general_pop = MaxQuantityPerPopulationRelation.objects.filter(
+            #     substance=substance, population=general_population
+            # )
+
+            # # delete
+            # if max_qty_general_pop.exists() and max_quantity is None:
+            #     max_qty_general_pop.first().delete()
+            # # update
+            # elif max_qty_general_pop.exists() and max_quantity is not None:
+            #     max_quantity_to_change = max_qty_general_pop.first()
+            #     max_quantity_to_change.ca_max_quantity = max_quantity
+            #     max_quantity_to_change.save()
+            # # create
+            # elif not max_qty_general_pop.exists() and max_quantity is not None:
+            #     MaxQuantityPerPopulationRelation.objects.create(
+            #         substance=substance, population=general_population, ca_max_quantity=max_quantity
+            #     )
 
         return substance
