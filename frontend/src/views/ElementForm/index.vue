@@ -29,7 +29,7 @@
           </div>
           <p v-if="element && element.originDeclaration">
             <router-link :to="{ name: 'InstructionPage', params: { declarationId: element.originDeclaration } }">
-              La déclaration qui a demandé cet ingrédient
+              Déclaration ayant demandé l'ajout de cet ingrédient
             </router-link>
           </p>
           <p v-else>Cet ingrédient ne vient pas d'une demande d'ajout.</p>
