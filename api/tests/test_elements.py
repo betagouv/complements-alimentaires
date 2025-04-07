@@ -343,7 +343,7 @@ class TestElementsCreateApi(APITestCase):
         """
         Une instructrice peut créer une nouvelle substance avec des synonymes
         """
-        PopulationFactory(ca_name="Population générale")
+        pop = PopulationFactory(ca_name="Test pop")
         InstructionRoleFactory(user=authenticate.user)
 
         unit = SubstanceUnitFactory.create()
@@ -353,7 +353,7 @@ class TestElementsCreateApi(APITestCase):
             "status": IngredientStatus.AUTHORIZED,
             "casNumber": "1234",
             "einecNumber": "5678",
-            "maxQuantity": 3.4,
+            "maxQuantities": [{"population": pop.id, "maxQuantity": 3.4}],
             "nutritionalReference": 1.2,
             "unit": unit.id,
         }
@@ -369,9 +369,9 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(substance.ca_einec_number, "5678")
         self.assertEqual(substance.max_quantity, 3.4)
         self.assertEqual(
-            substance.maxquantityperpopulationrelation_set.filter(
-                population=Population.objects.get(name="Population générale")
-            )[0].max_quantity,
+            substance.maxquantityperpopulationrelation_set.filter(population=Population.objects.get(name="Test pop"))[
+                0
+            ].max_quantity,
             3.4,
         )
         self.assertEqual(substance.ca_nutritional_reference, 1.2)
@@ -500,9 +500,10 @@ class TestElementsModifyApi(APITestCase):
     @authenticate
     def test_can_modify_substance_by_adding_max_quantity(self):
         """
-        Les instructrices peuvent rajouter une doses max pour la population générale en ajoutant
+        Les instructrices peuvent rajouter des doses max par population
         """
         general_population = PopulationFactory(ca_name="Population générale")
+        other_population = PopulationFactory(ca_name="Other population")
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
             siccrf_name="original name",
@@ -520,7 +521,10 @@ class TestElementsModifyApi(APITestCase):
             {
                 "name": "test",
                 "unit": new_unit.id,
-                "max_quantity": 666,
+                "maxQuantities": [
+                    {"population": general_population.id, "maxQuantity": 666},
+                    {"population": other_population.id, "maxQuantity": 123},
+                ],
                 "status": IngredientStatus.NO_STATUS,
                 "changeReason": "Test change",
             },
@@ -534,6 +538,59 @@ class TestElementsModifyApi(APITestCase):
                 substance=substance, population=general_population
             ).exists()
         )
+        self.assertEqual(
+            MaxQuantityPerPopulationRelation.objects.filter(substance=substance, population=other_population)
+            .first()
+            .max_quantity,
+            123,
+        )
+
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {
+                "maxQuantities": [
+                    {"population": other_population.id, "maxQuantity": 567},
+                ],
+                "changeReason": "tester la suppression et modification des doses existantes",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        substance.refresh_from_db()
+        self.assertIsNone(substance.max_quantity, "La quantité max pour la population générale est supprimée")
+        self.assertFalse(
+            MaxQuantityPerPopulationRelation.objects.filter(
+                substance=substance, population=general_population
+            ).exists()
+        )
+        other_population_max_doses = MaxQuantityPerPopulationRelation.objects.filter(
+            substance=substance, population=other_population
+        )
+        self.assertEqual(other_population_max_doses.count(), 1)
+        self.assertEqual(other_population_max_doses.first().max_quantity, 567)
+
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {
+                "maxQuantities": [
+                    {"population": other_population.id, "maxQuantity": 567},
+                    {"population": other_population.id, "maxQuantity": 789},
+                ],
+                "changeReason": "test: ne pas permettre l'ajout de plusieurs max quantities pour la même population",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        substance.refresh_from_db()
+        other_population_max_doses = MaxQuantityPerPopulationRelation.objects.filter(
+            substance=substance, population=other_population
+        )
+        self.assertEqual(other_population_max_doses.count(), 1)
+        self.assertEqual(
+            other_population_max_doses.first().max_quantity, 567, "La quantité devrait ne pas changer avec un 400"
+        )
+
+        # TOOD: test validation for must_specify_quantity and blocking an empty unit
 
     @authenticate
     def test_can_modify_substance_without_modifying_max_quantity(self):
