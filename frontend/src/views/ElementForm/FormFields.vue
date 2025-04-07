@@ -154,7 +154,7 @@
       </div>
       <div class="mt-4">
         <DsfrFieldset legend="Population cible" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4 !mb-10" class="pb-10">
-          <ValidateEach
+          <!-- <ValidateEach
             v-for="(item, idx) in state.maxQuantities"
             :key="`population-${idx}`"
             :state="item"
@@ -174,7 +174,21 @@
                 </div>
               </div>
             </template>
-          </ValidateEach>
+          </ValidateEach> -->
+          <div v-for="(item, idx) in state.maxQuantities" :key="`population-${idx}`">
+            <div class="grid grid-cols-3 gap-x-8 -my-10">
+              <DsfrInputGroup>
+                <DsfrSelect v-model="item.population" label="Population cible" :options="populationOptions" />
+              </DsfrInputGroup>
+              <DsfrInputGroup>
+                <DsfrInput v-model="item.maxQuantity" label="Dosage maximum" label-visible />
+              </DsfrInputGroup>
+              <div class="pt-4">
+                <p class="mb-2">Unité</p>
+                <p>{{ unitString }}</p>
+              </div>
+            </div>
+          </div>
           <DsfrButton
             label="Ajouter un dosage maximum"
             @click="addNewPopulationMaxDose"
@@ -223,7 +237,8 @@ import { handleError } from "@/utils/error-handling"
 import { firstErrorMsg, errorRequiredField, errorNumeric, errorMaxStringLength } from "@/utils/forms"
 import { getUnitString } from "@/utils/elements"
 import { useVuelidate } from "@vuelidate/core"
-import { ValidateEach } from "@vuelidate/components"
+import { helpers } from "@vuelidate/validators"
+// import { ValidateEach } from "@vuelidate/components"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
@@ -272,6 +287,9 @@ const saveElement = async () => {
   v$.value.$reset()
   v$.value.$validate()
   if (v$.value.$error) {
+    useToaster().addErrorMessage(
+      "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis"
+    )
     window.scrollTo(0, 0)
     return
   }
@@ -356,8 +374,16 @@ const rules = computed(() => {
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     // TODO: add field for must_specify_quantity and then add validation to ensure at least one max dose is specified
     // if must_specify_quantity and the CA doesn't use any populations specified, should the risk of the CA be elevated?
-    maxQuantity: form?.maxQuantity ? errorNumeric : {},
-    population: {},
+    // maxQuantity: form?.maxQuantity ? errorNumeric : {},
+    // population: {},
+    maxQuantities: form?.maxQuantity
+      ? {
+          $each: helpers.forEach({
+            population: errorRequiredField,
+            maxQuantity: errorNumeric,
+          }),
+        }
+      : {},
     changeReason: isNewIngredient.value ? {} : Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
   }
 })
