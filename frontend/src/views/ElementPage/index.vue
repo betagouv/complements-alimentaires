@@ -79,7 +79,11 @@
           <ElementText :text="nutritionalReference" :lowercase="true" />
         </ElementColumn>
       </div>
-      <ElementDoses v-if="maxQuantityRows.length" :maxQuantityRows="maxQuantityRows"></ElementDoses>
+      <ElementDoses
+        v-if="element.maxQuantities && element.maxQuantities.length"
+        :maxQuantities="element.maxQuantities"
+        :unit="element.unit"
+      ></ElementDoses>
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <!-- Date de dernière mise à jour de la donnée -->
@@ -165,14 +169,6 @@ const nutritionalReference = computed(() => {
   if (element.value?.unit && (element.value?.nutritionalReference || element.value.nutritionalReference == 0))
     return element.value?.nutritionalReference + " " + element.value?.unit
   else return null
-})
-
-const maxQuantityRows = computed(() => {
-  if (!element.value?.maxQuantities) return []
-
-  return element.value?.maxQuantities.map((d) => ({
-    rowData: [d.populationName, d.maxQuantity + " " + element.value?.unit],
-  }))
 })
 
 const description = computed(() => element.value?.description)

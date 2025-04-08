@@ -6,8 +6,26 @@
 </template>
 
 <script setup>
-defineProps({
-  maxQuantityRows: Object,
+import { computed } from "vue"
+
+const props = defineProps({
+  maxQuantities: Array,
+  unit: String,
 })
 const maxQuantityHeaders = ["Population", "Quantité maximale"]
+
+const maxQuantityRows = computed(() => {
+  return props.maxQuantities.map((maxQuantity) => [maxQuantity.populationName, quantityCell(maxQuantity)])
+})
+
+const quantityCell = (row) => {
+  return row.maxQuantity === 0
+    ? {
+        component: "DsfrBadge",
+        label: "Non autorisé",
+        type: "error",
+        small: true,
+      }
+    : row.maxQuantity + " " + props.unit
+}
 </script>
