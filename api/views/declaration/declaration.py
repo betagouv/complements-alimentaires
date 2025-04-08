@@ -594,6 +594,8 @@ class DeclarationTakeForInstructionView(DeclarationFlowView):
 
     permission_classes = [IsInstructor]
     transition = "take_for_instruction"
+    create_snapshot = True
+    snapshot_action = Snapshot.SnapshotActions.TAKE_FOR_INSTRUCTION
 
     def on_transition_success(self, request, declaration):
         declaration.instructor = InstructionRole.objects.get(user=request.user)
@@ -607,6 +609,8 @@ class DeclarationTakeForVisaView(DeclarationFlowView):
 
     permission_classes = [IsVisor]
     transition = "take_for_visa"
+    create_snapshot = True
+    snapshot_action = Snapshot.SnapshotActions.TAKE_FOR_VISA
 
     def on_transition_success(self, request, declaration):
         declaration.visor = VisaRole.objects.get(user=request.user)
