@@ -23,7 +23,7 @@
         <DsfrBadge v-if="novelFood" label="Novel Food" small type="new" />
       </h1>
 
-      <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-1 sm:gap-20 mb-8">
+      <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-1 sm:gap-x-20 mb-8">
         <ElementColumn title="Type">
           <div class="flex gap-x-1">
             <div><v-icon scale="0.75" :name="icon" /></div>
@@ -51,10 +51,6 @@
           <ElementText :text="einecNumber" />
         </ElementColumn>
 
-        <ElementColumn title="Apport nutritionnel de référence" v-if="nutritionalReference">
-          <ElementText :text="nutritionalReference" :lowercase="true" />
-        </ElementColumn>
-
         <ElementColumn title="Parties autorisées" v-if="plantParts?.length">
           <ElementTag :label="part" v-for="part in plantParts" :key="part" />
         </ElementColumn>
@@ -77,6 +73,10 @@
 
         <ElementColumn title="Statut" v-if="status">
           <ElementStatusBadge :text="status" />
+        </ElementColumn>
+
+        <ElementColumn title="Apport nutritionnel de référence" v-if="nutritionalReference">
+          <ElementText :text="nutritionalReference" :lowercase="true" />
         </ElementColumn>
       </div>
       <ElementDoses v-if="maxQuantityRows.length" :maxQuantityRows="maxQuantityRows"></ElementDoses>
