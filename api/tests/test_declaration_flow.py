@@ -133,6 +133,9 @@ class TestDeclarationFlow(APITestCase):
         response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.SUBMIT)
+
     @authenticate
     def test_submit_declaration_wrong_company(self):
         """
@@ -169,6 +172,9 @@ class TestDeclarationFlow(APITestCase):
         declaration.refresh_from_db()
         self.assertEqual(instructor, declaration.instructor)
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.TAKE_FOR_INSTRUCTION)
 
     @authenticate
     def test_take_declaration_unauthorized(self):
@@ -207,6 +213,9 @@ class TestDeclarationFlow(APITestCase):
         declaration.refresh_from_db()
         self.assertEqual(visor, declaration.visor)
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_VISA)
+
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.TAKE_FOR_VISA)
 
     @authenticate
     def test_take_declaration_for_visa_unauthorized(self):
@@ -251,6 +260,7 @@ class TestDeclarationFlow(APITestCase):
 
         latest_snapshot = declaration.snapshots.latest("creation_date")
         self.assertIn("Forme assimilable à un aliment courant", latest_snapshot.blocking_reasons)
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.OBSERVE_NO_VISA)
 
     @authenticate
     def test_observe_someone_elses_declaration(self):
@@ -314,6 +324,9 @@ class TestDeclarationFlow(APITestCase):
         declaration.refresh_from_db()
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
 
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.AUTHORIZE_NO_VISA)
+
     @authenticate
     def test_authorize_declaration_unauthorized(self):
         """
@@ -352,6 +365,9 @@ class TestDeclarationFlow(APITestCase):
         declaration.refresh_from_db()
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
 
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION)
+
     @authenticate
     def test_resubmit_objection_declaration(self):
         """
@@ -366,6 +382,9 @@ class TestDeclarationFlow(APITestCase):
 
         declaration.refresh_from_db()
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.RESPOND_TO_OBJECTION)
 
     @authenticate
     def test_resubmit_declaration_unauthorized(self):
@@ -412,6 +431,7 @@ class TestDeclarationFlow(APITestCase):
 
         latest_snapshot = declaration.snapshots.latest("creation_date")
         self.assertIn("Forme assimilable à un aliment courant", latest_snapshot.blocking_reasons)
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.REQUEST_VISA)
 
     @authenticate
     def test_observe_with_visa_unauthorized(self):
@@ -451,6 +471,9 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(declaration.post_validation_status, Declaration.DeclarationStatus.OBJECTION)
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_VISA)
 
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.REQUEST_VISA)
+
     @authenticate
     def test_object_with_visa_unauthorized(self):
         """
@@ -489,6 +512,9 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(declaration.post_validation_status, Declaration.DeclarationStatus.REJECTED)
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_VISA)
 
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.REQUEST_VISA)
+
     @authenticate
     def test_reject_with_visa_unauthorized(self):
         """
@@ -526,6 +552,9 @@ class TestDeclarationFlow(APITestCase):
         declaration.refresh_from_db()
         self.assertEqual(declaration.post_validation_status, Declaration.DeclarationStatus.AUTHORIZED)
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_VISA)
+
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.REQUEST_VISA)
 
     @authenticate
     def test_authorize_with_visa_unauthorized(self):
@@ -567,6 +596,9 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(declaration.post_validation_expiration_days, None)
 
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.REFUSE_VISA)
 
     @authenticate
     def refuse_visa_unauthorized(self):
@@ -614,6 +646,9 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(latest_snapshot.comment, "À authoriser")
         self.assertEqual(latest_snapshot.expiration_days, 12)
 
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.ACCEPT_VISA)
+
         # REJECTED
         declaration = OngoingVisaDeclarationFactory(
             post_validation_status=Declaration.DeclarationStatus.REJECTED,
@@ -628,6 +663,9 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.REJECTED)
         self.assertEqual(latest_snapshot.comment, "À refuser")
         self.assertEqual(latest_snapshot.expiration_days, 20)
+
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.ACCEPT_VISA)
 
         # OBJECTION
         declaration = OngoingVisaDeclarationFactory(
@@ -644,6 +682,9 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(latest_snapshot.comment, "Objection")
         self.assertEqual(latest_snapshot.expiration_days, 22)
 
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.ACCEPT_VISA)
+
         # OBSERVATION
         declaration = OngoingVisaDeclarationFactory(
             post_validation_status=Declaration.DeclarationStatus.OBSERVATION,
@@ -658,6 +699,9 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.OBSERVATION)
         self.assertEqual(latest_snapshot.comment, "Observation")
         self.assertEqual(latest_snapshot.expiration_days, 23)
+
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.ACCEPT_VISA)
 
     @authenticate
     def test_visor_can_modify_decision(self):
@@ -692,6 +736,9 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(latest_snapshot.status, Declaration.DeclarationStatus.OBSERVATION)
         self.assertEqual(latest_snapshot.expiration_days, 6)
         self.assertEqual(latest_snapshot.blocking_reasons, ["a", "b"])
+
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.ACCEPT_VISA)
 
     @authenticate
     def test_visor_cant_modify_on_refuse(self):
