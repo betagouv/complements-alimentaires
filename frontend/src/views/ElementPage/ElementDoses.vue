@@ -15,7 +15,9 @@ const props = defineProps({
 const maxQuantityHeaders = ["Population", "Quantité maximale"]
 
 const maxQuantityRows = computed(() => {
-  return props.maxQuantities.map((maxQuantity) => [maxQuantity.populationName, quantityCell(maxQuantity)])
+  return JSON.parse(JSON.stringify(props.maxQuantities))
+    .sort((a, b) => b.maxQuantity - a.maxQuantity)
+    .map((q) => [q.populationName, quantityCell(q)])
 })
 
 const quantityCell = (row) => {
