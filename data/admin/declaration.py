@@ -20,9 +20,10 @@ from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 class SnapshotInline(admin.TabularInline):
     model = Snapshot
     can_delete = False
-    fields = ("user", "creation_date", "status", "comment")
+    fields = ("user", "creation_date", "action", "status", "comment")
     readonly_fields = fields
     extra = 0
+    ordering = ("creation_date",)
 
     def has_add_permission(self, request, object):
         return False
