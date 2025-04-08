@@ -9,6 +9,7 @@
         <p class="font-bold mb-2">Commentaires privés</p>
         <p>{{ element?.privateComments }}</p>
       </div>
+      <!-- TODO -->
       <div v-if="maxQuantity">
         <p class="font-bold mb-2">Quantité maximale autorisée</p>
         <p>{{ maxQuantity }} {{ element?.unit }}</p>

@@ -79,7 +79,6 @@ class SubstanceShortSerializer(PrivateFieldsSerializer):
             "einec_number",
             "unit",
             "unit_id",
-            # "max_quantity",
             "max_quantities",
             "public_comments",
             "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
