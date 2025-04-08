@@ -167,7 +167,7 @@ const status = computed(() =>
 const novelFood = computed(() => element.value?.novelFood)
 const nutritionalReference = computed(() => {
   if (element.value?.unit && (element.value?.nutritionalReference || element.value.nutritionalReference == 0))
-    return element.value?.nutritionalReference + " " + element.value?.unit
+    return element.value?.nutritionalReference.toLocaleString("fr-FR") + " " + element.value?.unit
   else return null
 })
 

@@ -26,6 +26,6 @@ const quantityCell = (row) => {
         type: "error",
         small: true,
       }
-    : row.maxQuantity + " " + props.unit
+    : row.maxQuantity?.toLocaleString("fr-FR") + " " + props.unit
 }
 </script>
