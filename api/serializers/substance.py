@@ -2,19 +2,19 @@ from django.db import transaction
 
 from rest_framework import serializers
 
-from api.utils.choice_field import GoodReprChoiceField
-from data.models import IngredientStatus, Population
+from data.models import Population
 from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym
 
 from .common_ingredient import (
     COMMON_FIELDS,
     COMMON_NAME_FIELDS,
     COMMON_READ_ONLY_FIELDS,
+    COMMON_FETCH_FIELDS,
     CommonIngredientModificationSerializer,
+    CommonIngredientReadSerializer,
     WithName,
 )
-from .historical_record import HistoricalRecordField
-from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
+from .utils import PrivateFieldsSerializer
 
 
 class SubstanceSynonymSerializer(serializers.ModelSerializer):
@@ -37,21 +37,17 @@ class SubstanceMaxQuantitySerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class SubstanceSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
+class SubstanceSerializer(CommonIngredientReadSerializer):
     synonyms = SubstanceSynonymSerializer(many=True, read_only=True, source="substancesynonym_set")
     unit = serializers.CharField(read_only=True, source="unit.name")
     unit_id = serializers.IntegerField(read_only=True, source="unit.id")
     max_quantities = SubstanceMaxQuantitySerializer(
         many=True, source="maxquantityperpopulationrelation_set", required=False
     )
-    status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
-    history = HistoricalRecordField(read_only=True)
 
     class Meta:
         model = Substance
-        fields = (
-            "id",
-            "name",
+        fields = COMMON_FETCH_FIELDS + (
             "name_en",
             "cas_number",
             "einec_number",
@@ -62,15 +58,6 @@ class SubstanceSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
             "nutritional_reference",
             "unit",
             "unit_id",
-            "synonyms",
-            "public_comments",
-            "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
-            "activity",
-            "status",
-            "novel_food",
-            "is_risky",
-            "history",
-            "object_type",
         )
         read_only_fields = fields
 

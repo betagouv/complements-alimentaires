@@ -46,3 +46,9 @@ Tous les changements notables apportés aux jeux de données exposés sur data.g
   -plantes
   -micro_organismes
   -substances
+
+## 2025-04-07
+
+## Amélioration qualité données
+- le champ id contient l'identifiant TeleIcare ou Compl'Alim
+- les champs complexes ['objectif_effet', 'facteurs_risques', 'populations_cibles', 'additifs', 'nutriments', 'autres_ingredients_actifs', 'ingredients_inactifs'] sont écrit comme des JSON string conformes
