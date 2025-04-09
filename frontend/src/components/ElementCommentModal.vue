@@ -2,25 +2,23 @@
   <div class="flex border w-8 aspect-square rounded-full content-center justify-center">
     <DsfrModal :title="elementName" size="lg" :opened="infoModalOpened" @close="infoModalOpened = false">
       <div v-if="element?.publicComments">
-        <p class="font-bold mb-2">Commentaires</p>
+        <h2 class="fr-h6 !mb-2">Commentaires</h2>
         <p>{{ element?.publicComments }}</p>
       </div>
       <div v-if="element?.privateComments && !hidePrivateComments">
-        <p class="font-bold mb-2">Commentaires privés</p>
+        <h2 class="fr-h6 !mb-2">Commentaires privés</h2>
         <p>{{ element?.privateComments }}</p>
       </div>
-      <!-- TODO -->
-      <div v-if="maxQuantity">
-        <p class="font-bold mb-2">Quantité maximale autorisée</p>
-        <p>{{ maxQuantity }} {{ element?.unit }}</p>
+      <div v-if="hasMaxQuantities">
+        <ElementDoses :maxQuantities="maxQuantities" :unit="element?.unit" />
       </div>
       <div v-if="constitutingSubstances && constitutingSubstances.length">
-        <p class="font-bold mb-2">Substances</p>
+        <h2 class="fr-h6 !mb-2">Substances</h2>
         <ul>
           <li v-for="substance in constitutingSubstances" :key="`Substance-${substance.id}`">
             <p class="capitalize font-bold mb-1">{{ getElementName({ element: substance }) }}</p>
-            <p class="mb-2" v-if="substance.maxQuantity">
-              Quantité maximale autorisée : {{ substance.maxQuantity }} {{ substance?.unit }}
+            <p class="mb-2" v-if="substance.maxQuantities && substance.maxQuantities.length">
+              Quantités maximales autorisées : {{ stringifyMaxQuantities(substance.maxQuantities, substance.unit) }}
             </p>
           </li>
         </ul>
@@ -40,6 +38,7 @@
 <script setup>
 import { computed, ref, useTemplateRef, onMounted } from "vue"
 import { getElementName } from "@/utils/elements"
+import ElementDoses from "@/components/ElementDoses.vue"
 
 const model = defineModel()
 const tooltip = useTemplateRef("tooltip")
@@ -59,14 +58,20 @@ const elementName = computed(() => {
   return name ? name.charAt(0).toUpperCase() + name.slice(1) : ""
 })
 
-const maxQuantity = computed(() => element.value?.maxQuantity)
+const maxQuantities = computed(() => element.value?.maxQuantities)
+const hasMaxQuantities = computed(() => maxQuantities.value?.length > 0)
+const stringifyMaxQuantities = (maxQuantities, unit) =>
+  maxQuantities.map((q) => `${q.populationName} : ${q.maxQuantity?.toLocaleString("fr-FR")} ${unit}`).join(", ")
+const maxQuantitiesString = computed(() => stringifyMaxQuantities(maxQuantities.value, element.value?.unit))
+
 const constitutingSubstances = computed(() => element.value?.substances)
 
 const tooltipContent = computed(() => {
   let content = ""
-  if (element.value?.publicComments) content += `Commentaires :\n\n${element.value?.publicComments}`
+  if (hasMaxQuantities.value) content += `Quantités maximales :\n\n${maxQuantitiesString.value}. `
+  if (element.value?.publicComments) content += `Commentaires :\n\n${element.value?.publicComments}. `
   if (element.value?.privateComments && !props.hidePrivateComments)
-    content += `\n\nCommentaires privés :\n\n${element.value?.privateComments}`
+    content += `\n\nCommentaires privés :\n\n${element.value?.privateComments}.`
   return content || "Pas de commentaires"
 })
 
@@ -75,7 +80,7 @@ const hasInformationToShow = computed(
   () =>
     element.value?.publicComments ||
     (element.value?.privateComments && !props.hidePrivateComments) ||
-    maxQuantity.value ||
+    hasMaxQuantities.value ||
     constitutingSubstances.value?.length
 )
 </script>
