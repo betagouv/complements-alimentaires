@@ -549,6 +549,8 @@ class DeclarationSerializer(serializers.ModelSerializer):
     declared_ingredients = DeclaredListSerializer(child=DeclaredIngredientSerializer(), required=False)
     declared_substances = DeclaredListSerializer(child=DeclaredSubstanceSerializer(), required=False)
     computed_substances = DeclaredListSerializer(child=ComputedSubstanceSerializer(), required=False)
+    declared_substances_with_max_quantity_exceeded = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    computed_substances_with_max_quantity_exceeded = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     attachments = DeclaredListSerializer(child=AttachmentSerializer(), required=False)
     name = serializers.CharField(allow_blank=False, required=True)
     private_notes_instruction = serializers.CharField(allow_blank=True, required=False)
@@ -593,6 +595,9 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "declared_ingredients",
             "declared_substances",
             "computed_substances",
+            "has_max_quantity_exceeded",
+            "declared_substances_with_max_quantity_exceeded",
+            "computed_substances_with_max_quantity_exceeded",
             "attachments",
             "other_effects",
             "other_galenic_formulation",

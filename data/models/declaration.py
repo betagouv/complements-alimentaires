@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models import Case, Min, Q, Value, When
 from django.db.models.functions import Coalesce
 from django.template.defaultfilters import filesizeformat
+from django.utils.functional import cached_property
 
 from dateutil.relativedelta import relativedelta
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
@@ -450,15 +451,15 @@ class Declaration(Historisable, TimeStampable):
 
         return substances.filter(id__in=substances_with_max_quantity_exceeded_ids)
 
-    @property
+    @cached_property
     def computed_substances_with_max_quantity_exceeded(self):
         return self._filter_substances_on_max_quantity_exceeded(declared=False)
 
-    @property
+    @cached_property
     def declared_substances_with_max_quantity_exceeded(self):
         return self._filter_substances_on_max_quantity_exceeded(declared=True)
 
-    @property
+    @cached_property
     def has_max_quantity_exceeded(self):
         """
         Les doses max sont aujourd'hui définies pour les substances seulement.

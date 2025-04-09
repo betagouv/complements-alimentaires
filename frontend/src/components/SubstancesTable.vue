@@ -45,11 +45,11 @@
           </div>
           <div
             :class="{
-              '!text-red-marianne-425 font-bold': getMaxQuantityExceeded(payload.computedSubstances[rowIndex]),
+              '!text-red-marianne-425 font-bold': getMaxQuantityExceeded(payload, payload.computedSubstances[rowIndex]),
             }"
             v-if="props.readonly"
           >
-            {{ getMaxQuantityExceeded(payload.computedSubstances[rowIndex]) }}
+            {{ getMaxQuantityExceeded(payload, payload.computedSubstances[rowIndex]) }}
           </div>
           <div v-else class="-mt-1 pb-2">
             <DsfrInputGroup>
@@ -112,31 +112,28 @@ const sourceElements = (substance) => {
   return sources.map((x) => x.element.name).join(", ")
 }
 
-const getMaxQuantityExceeded = (declaredOrComputedSubstance) => {
-  const exceededPopulationQuantity = declaredOrComputedSubstance.substance.maxQuantities.filter(
-    (maxQuantityPerPopulation) =>
-      payload.value.populations.indexOf(parseInt(maxQuantityPerPopulation.population)) != -1 &&
-      declaredOrComputedSubstance.quantity > maxQuantityPerPopulation.maxQuantity
+// cette logique devrait reflechir la logique de `_has_max_quantity_exceeded`
+// substance ici est une substance déclarée ou calculée
+const getMaxQuantityExceeded = (declaration, substance) => {
+  if (!declaration.hasMaxQuantityExceeded) return
+  const exceededSubstances = declaration.declaredSubstancesWithMaxQuantityExceeded.concat(
+    declaration.computedSubstancesWithMaxQuantityExceeded
   )
+  // si la substance n'est pas identifiée par le back, arrête
+  if (exceededSubstances.indexOf(substance.id) === -1) return
 
-  const exceededPopulations = exceededPopulationQuantity.length
-    ? exceededPopulationQuantity.map((maxQuantityPerPopulation) => maxQuantityPerPopulation.populationName)
-    : ["Population générale"]
-  let maxQuantity = 0
-  if (exceededPopulationQuantity.length) {
-    exceededPopulationQuantity.forEach((maxQuantityPerPopulation) => {
-      if (maxQuantityPerPopulation.maxQuantity > maxQuantity) {
-        maxQuantity = maxQuantityPerPopulation.maxQuantity
-      }
-    })
-  } else
-    maxQuantity =
-      declaredOrComputedSubstance.quantity > declaredOrComputedSubstance.substance.maxQuantity
-        ? declaredOrComputedSubstance.substance.maxQuantity
-        : null
-  if (exceededPopulations.length && (maxQuantity || maxQuantity === 0))
-    return maxQuantity + " maximum autorisé pour " + exceededPopulations.join(", ")
-  else return
+  if (!payload.value.populations?.length) {
+    // si il y a aucune population cible, on sait que le max excédé c'est pour pop generale
+    return "Maximum excédé : " + substance.substance.maxQuantity + " pour Population générale"
+  }
+
+  let maxQuantitiesExceeded = substance.substance.maxQuantities
+    .filter((q) => substance.quantity > q.maxQuantity)
+    .filter((q) => payload.value.populations.indexOf(parseInt(q.population)) != -1)
+  if (!maxQuantitiesExceeded.length)
+    maxQuantitiesExceeded = substance.substance.maxQuantities.filter((q) => q.populationName === "Population générale")
+  const intro = maxQuantitiesExceeded.length > 1 ? "Maximums excédés : " : "Maximum excédé : "
+  return intro + maxQuantitiesExceeded.map((p) => `${p.maxQuantity} pour ${p.populationName}`).join(", ")
 }
 watch(
   elements,
