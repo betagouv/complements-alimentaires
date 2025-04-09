@@ -122,20 +122,20 @@ const getMaxQuantityExceeded = (declaredOrComputedSubstance) => {
   const exceeded_populations = exceededPopulationQuantity.length
     ? exceededPopulationQuantity.map((maxQuantityPerPopulation) => maxQuantityPerPopulation.populationName)
     : ["Population générale"]
-  let max_quantity = 0
+  let maxQuantity = 0
   if (exceededPopulationQuantity.length) {
     exceededPopulationQuantity.forEach((maxQuantityPerPopulation) => {
-      if (maxQuantityPerPopulation.maxQuantity > max_quantity) {
-        max_quantity = maxQuantityPerPopulation.maxQuantity
+      if (maxQuantityPerPopulation.maxQuantity > maxQuantity) {
+        maxQuantity = maxQuantityPerPopulation.maxQuantity
       }
     })
   } else
-    max_quantity =
+    maxQuantity =
       declaredOrComputedSubstance.quantity > declaredOrComputedSubstance.substance.maxQuantity
         ? declaredOrComputedSubstance.substance.maxQuantity
         : null
-  if (exceeded_populations.length && (max_quantity || max_quantity === 0))
-    return max_quantity + " maximum autorisé pour " + exceeded_populations.join(", ")
+  if (exceeded_populations.length && (maxQuantity || maxQuantity === 0))
+    return maxQuantity + " maximum autorisé pour " + exceeded_populations.join(", ")
   else return
 }
 watch(
