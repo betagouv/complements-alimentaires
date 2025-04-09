@@ -106,11 +106,11 @@ const headers = ["Date", "Réalisée par", "Champs modifiés", "Détail"]
 
 const historyData = computed(() =>
   element.value?.history
-    .filter((item) => item.historyChangeReason)
+    .filter((item) => item.changedFields?.length || item.historyType === "+")
     .map((item) => [
       new Date(item.historyDate).toLocaleString("default", { day: "numeric", month: "numeric", year: "numeric" }),
       item.user ? `${item.user.firstName} ${item.user.lastName}` : "",
-      item.changedFields.map((f) => `« ${f} »`).join(", "),
+      item.historyType === "+" ? "Création de l'ingrédient" : item.changedFields.map((f) => `« ${f} »`).join(", "),
       item.historyChangeReason,
     ])
 )
