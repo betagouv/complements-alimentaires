@@ -136,10 +136,8 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
           <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
         </DsfrInputGroup>
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'maxQuantity')">
-          <NumberField label="Quantité maximale autorisée" label-visible v-model="state.maxQuantity" />
-        </DsfrInputGroup>
         <div class="max-w-32">
+          <!-- TODO: how to make it clear that this needs to be specified first? -->
           <DsfrInputGroup v-if="isNewIngredient" :error-message="firstErrorMsg(v$, 'unit')">
             <DsfrSelect
               label="Unité"
@@ -353,7 +351,6 @@ const rules = computed(() => {
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
-    // maxQuantity: form?.maxQuantity ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
   }
 })
@@ -413,6 +410,7 @@ const deleteMaxQuantity = (idx) => {
 }
 const maxQuantitiesError = ref()
 const validateMaxQuantities = () => {
+  // TODO: do we use must_specify_max_quantity ?
   const hasMissingData = populationQuantities.value.some(
     (q) => !q.population || (!q.maxQuantity && q.maxQuantity !== 0)
   )
