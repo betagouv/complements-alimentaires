@@ -155,7 +155,42 @@
           </div>
         </div>
       </div>
-      <p class="my-4"><i>Population cible et à risque en construction</i></p>
+      <div v-if="formForType.maxQuantity">
+        <!-- TODO: reduce the size of the table title -->
+        <DsfrTable
+          v-if="populationQuantities.length"
+          title="Quantités maximales par population"
+          :headers="['Population', 'Quantité max', 'Unité', '']"
+          class="!mb-2"
+        >
+          <tr v-for="(q, idx) in populationQuantities" :key="`max-quantity-row-${idx}`">
+            <td><DsfrSelect v-model="q.population" :options="populationOptions" /></td>
+            <td><DsfrInput v-model.number="q.maxQuantity" /></td>
+            <td>{{ unitString }}</td>
+            <td>
+              <DsfrButton
+                label="Supprimer"
+                @click="deleteMaxQuantity(idx)"
+                :icon="{ name: 'ri-delete-bin-line' }"
+                icon-only
+                tertiary
+              />
+            </td>
+          </tr>
+        </DsfrTable>
+        <p v-else>Aucune quantité maximale n'est spécifiée.</p>
+        <!-- TODO: I'm sure this can be improved visually and accessibility -->
+        <!-- maybe add red to the table colours, or have a little alert icon next to the offending lines -->
+        <p v-if="maxQuantitiesError" class="text-red-marianne-425">{{ maxQuantitiesError }}</p>
+        <DsfrButton
+          label="Ajouter une dose max pour une population"
+          @click="addNewMaxQuantity"
+          icon="ri-add-line"
+          size="sm"
+          class="mt-2"
+          secondary
+        />
+      </div>
     </DsfrFieldset>
     <DsfrFieldset legend="Commentaires" legendClass="fr-h4 !mb-0">
       <div class="grid md:grid-cols-2 md:gap-4">
@@ -231,7 +266,8 @@ watch(
 const saveElement = async () => {
   v$.value.$reset()
   v$.value.$validate()
-  if (v$.value.$error) {
+  validateMaxQuantities()
+  if (v$.value.$error || maxQuantitiesError.value) {
     window.scrollTo(0, 0)
     return
   }
@@ -317,7 +353,7 @@ const rules = computed(() => {
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
-    maxQuantity: form?.maxQuantity ? errorNumeric : {},
+    // maxQuantity: form?.maxQuantity ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
   }
 })
@@ -327,7 +363,7 @@ const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
 const store = useRootStore()
-const { plantParts, plantFamilies, units } = storeToRefs(store)
+const { plantParts, plantFamilies, units, populations } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
 
@@ -364,4 +400,22 @@ const aromaId = 3
 const unitString = computed(() => {
   return getUnitString(state.value.unit, units)
 })
+
+const populationOptions = computed(() => {
+  return populations.value?.map((pop) => ({ text: pop.name, value: pop.id }))
+})
+const populationQuantities = ref([])
+const addNewMaxQuantity = () => {
+  populationQuantities.value.push({})
+}
+const deleteMaxQuantity = (idx) => {
+  populationQuantities.value.splice(idx, 1)
+}
+const maxQuantitiesError = ref()
+const validateMaxQuantities = () => {
+  const hasMissingData = populationQuantities.value.some(
+    (q) => !q.population || (!q.maxQuantity && q.maxQuantity !== 0)
+  )
+  maxQuantitiesError.value = hasMissingData && "Veuillez compléter tous les champs ou supprimer les lignes vides"
+}
 </script>
