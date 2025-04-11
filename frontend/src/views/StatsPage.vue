@@ -161,7 +161,7 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, computed } from "vue"
+import { ref, watch, computed, onMounted } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 
@@ -198,4 +198,15 @@ const formatMonthLabel = (apiLabel) => {
   const date = new Date(year, month - 1)
   return new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(date)
 }
+
+onMounted(async () => {
+  const script = document.createElement("script")
+  script.type = "module"
+  script.src = "/static/js/BarChart.js"
+  document.body.appendChild(script)
+  const style = document.createElement("link")
+  style.rel = "stylesheet"
+  style.src = "/static/css/BarChart.js"
+  document.body.appendChild(style)
+})
 </script>

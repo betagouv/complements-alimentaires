@@ -42,5 +42,14 @@ module.exports = defineConfig({
       .https(false)
       // eslint-disable-next-line no-useless-escape
       .headers({ "Access-Control-Allow-Origin": ["*"] })
+
+    config.module
+      .rule("vue")
+      .use("vue-loader")
+      .tap((options) => {
+        options.compilerOptions = options.compilerOptions || {}
+        options.compilerOptions.isCustomElement = (tag) => ["bar-chart"].includes(tag)
+        return options
+      })
   },
 })
