@@ -70,7 +70,7 @@
               </DsfrFieldset>
               <DsfrFieldset legend="Localisation" class="min-w-60">
                 <DsfrInputGroup>
-                  <CountryField v-model="country" @update:modelValue="updateCountry" :includeAllOption="true" />
+                  <CountryField :modelValue="country" @update:modelValue="updateCountry" :includeAllOption="true" />
                 </DsfrInputGroup>
               </DsfrFieldset>
             </div>
@@ -171,7 +171,6 @@ const population = computed(() => (route.query.population ? parseInt(route.query
 const condition = computed(() => (route.query.condition ? parseInt(route.query.condition) : ""))
 const galenicFormulation = computed(() => (route.query.formeGalenique ? parseInt(route.query.formeGalenique) : ""))
 const country = computed(() => route.query.pays)
-const department = computed(() => route.query.departement)
 const limit = computed(() => route.query.limit)
 
 // Mises à jour de la requête lors des changements des filtres et recherche
