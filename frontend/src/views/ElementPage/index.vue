@@ -23,7 +23,7 @@
         <DsfrBadge v-if="novelFood" label="Novel Food" small type="new" />
       </h1>
 
-      <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-1 sm:gap-20 mb-8">
+      <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-1 sm:gap-x-20 mb-8">
         <ElementColumn title="Type">
           <div class="flex gap-x-1">
             <div><v-icon scale="0.75" :name="icon" /></div>
@@ -51,14 +51,6 @@
           <ElementText :text="einecNumber" />
         </ElementColumn>
 
-        <ElementColumn title="Apport nutritionnel de référence" v-if="nutritionalReference">
-          <ElementText :text="nutritionalReference" :lowercase="true" />
-        </ElementColumn>
-
-        <ElementColumn title="Quantité maximale autorisée" v-if="maxQuantity">
-          <ElementText :text="maxQuantity" :lowercase="true" />
-        </ElementColumn>
-
         <ElementColumn title="Parties autorisées" v-if="plantParts?.length">
           <ElementTag :label="part" v-for="part in plantParts" :key="part" />
         </ElementColumn>
@@ -82,8 +74,16 @@
         <ElementColumn title="Statut" v-if="status">
           <ElementStatusBadge :text="status" />
         </ElementColumn>
-      </div>
 
+        <ElementColumn title="Apport nutritionnel de référence" v-if="nutritionalReference">
+          <ElementText :text="nutritionalReference" :lowercase="true" />
+        </ElementColumn>
+      </div>
+      <ElementDoses
+        v-if="element.maxQuantities && element.maxQuantities.length"
+        :maxQuantities="element.maxQuantities"
+        :unit="element.unit"
+      ></ElementDoses>
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <!-- Date de dernière mise à jour de la donnée -->
@@ -127,7 +127,9 @@ import ElementText from "./ElementText.vue"
 import ElementTextSection from "./ElementTextSection.vue"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
+import ElementDoses from "@/components/ElementDoses.vue"
 
+const store = useRootStore()
 const route = useRoute()
 const router = useRouter()
 const notFound = ref(false)
@@ -166,14 +168,10 @@ const status = computed(() =>
 const novelFood = computed(() => element.value?.novelFood)
 const nutritionalReference = computed(() => {
   if (element.value?.unit && (element.value?.nutritionalReference || element.value.nutritionalReference == 0))
-    return element.value?.nutritionalReference + " " + element.value?.unit
+    return element.value?.nutritionalReference.toLocaleString("fr-FR") + " " + element.value?.unit
   else return null
 })
-const maxQuantity = computed(() => {
-  if (element.value?.unit && (element.value?.maxQuantity || element.value.maxQuantity == 0))
-    return element.value?.maxQuantity + " " + element.value?.unit
-  else return null
-})
+
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
 
@@ -224,7 +222,6 @@ watch(element, (newElement) => {
 
 watch(route, getElementFromApi)
 
-const store = useRootStore()
 const isInstructor = computed(() => store.loggedUser?.globalRoles?.some((x) => x.name === "InstructionRole"))
 </script>
 

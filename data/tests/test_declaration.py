@@ -441,6 +441,7 @@ class DeclarationTestCase(TestCase):
         """
         pop_biggest_quantity = PopulationFactory(ca_name="Population extradosée")
         pop_smallest_quantity = PopulationFactory(ca_name="Population microdosée")
+        pop_no_quantity = PopulationFactory(ca_name="Population sans indication")
         nutriment_type = choice([[SubstanceType.VITAMIN], [SubstanceType.MINERAL]])
         other_substance_type = choice(
             [
@@ -550,6 +551,30 @@ class DeclarationTestCase(TestCase):
                     declaration_with_max_quantity_general_pop_exceeded.article,
                     Declaration.Article.ARTICLE_18,
                     "Une déclaration sans population cible, passe en ARTICLE_18 si la max_quantity pour la population générale est dépassée pour un nutriment",
+                )
+            declaration_with_specific_pop_max_quantity_general_pop_exceeded = InstructionReadyDeclarationFactory(
+                computed_substances=[], populations=[pop_no_quantity, pop_biggest_quantity]
+            )
+            DeclaredSubstanceFactory(
+                substance=substance,
+                unit=substance.unit,
+                quantity=3,
+                declaration=declaration_with_specific_pop_max_quantity_general_pop_exceeded,
+            )
+            declaration_with_specific_pop_max_quantity_general_pop_exceeded.assign_calculated_article()
+            declaration_with_specific_pop_max_quantity_general_pop_exceeded.save()
+            declaration_with_specific_pop_max_quantity_general_pop_exceeded.refresh_from_db()
+            if substance.substance_types == other_substance_type:
+                self.assertEqual(
+                    declaration_with_specific_pop_max_quantity_general_pop_exceeded.article,
+                    Declaration.Article.ANSES_REFERAL,
+                    "Une déclaration avec une population cible sans dose max, passe en article ANSES_REFERAL si la quantité por la population générale est dépassée pour une substance non vitamine et minéraux",
+                )
+            else:
+                self.assertEqual(
+                    declaration_with_specific_pop_max_quantity_general_pop_exceeded.article,
+                    Declaration.Article.ARTICLE_18,
+                    "Une déclaration avec une population cible sans dose max, passe en ARTICLE_18 si la quantité por la population générale est dépassée pour un nutriment",
                 )
 
     def test_visa_refused(self):
