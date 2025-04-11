@@ -129,11 +129,13 @@ const getMaxQuantityExceeded = (declaration, substance) => {
 
   let maxQuantitiesExceeded = substance.substance.maxQuantities
     .filter((q) => substance.quantity > q.maxQuantity)
-    .filter((q) => payload.value.populations.indexOf(parseInt(q.population)) != -1)
+    .filter((q) => payload.value.populations.indexOf(parseInt(q.population?.id)) != -1)
   if (!maxQuantitiesExceeded.length)
-    maxQuantitiesExceeded = substance.substance.maxQuantities.filter((q) => q.populationName === "Population générale")
+    maxQuantitiesExceeded = substance.substance.maxQuantities.filter(
+      (q) => q.population?.name === "Population générale"
+    )
   const intro = maxQuantitiesExceeded.length > 1 ? "Maximums excédés : " : "Maximum excédé : "
-  return intro + maxQuantitiesExceeded.map((p) => `${p.maxQuantity} pour ${p.populationName}`).join(", ")
+  return intro + maxQuantitiesExceeded.map((p) => `${p.maxQuantity} pour ${p.population?.name}`).join(", ")
 }
 watch(
   elements,

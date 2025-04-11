@@ -61,7 +61,7 @@ const elementName = computed(() => {
 const maxQuantities = computed(() => element.value?.maxQuantities)
 const hasMaxQuantities = computed(() => maxQuantities.value?.length > 0)
 const stringifyMaxQuantities = (maxQuantities, unit) =>
-  maxQuantities.map((q) => `${q.populationName} : ${q.maxQuantity?.toLocaleString("fr-FR")} ${unit}`).join(", ")
+  maxQuantities.map((q) => `${q.population?.name} : ${q.maxQuantity?.toLocaleString("fr-FR")} ${unit}`).join(", ")
 const maxQuantitiesString = computed(() => stringifyMaxQuantities(maxQuantities.value, element.value?.unit))
 
 const constitutingSubstances = computed(() => element.value?.substances)

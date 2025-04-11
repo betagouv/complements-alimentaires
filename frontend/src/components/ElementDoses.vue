@@ -17,7 +17,7 @@ const maxQuantityHeaders = ["Population", "Quantité maximale"]
 const maxQuantityRows = computed(() => {
   return JSON.parse(JSON.stringify(props.maxQuantities))
     .sort((a, b) => b.maxQuantity - a.maxQuantity)
-    .map((q) => [q.populationName, quantityCell(q)])
+    .map((q) => [q.population?.name, quantityCell(q)])
 })
 
 const quantityCell = (row) => {
