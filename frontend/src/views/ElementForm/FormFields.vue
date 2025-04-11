@@ -157,12 +157,12 @@
         <!-- TODO: reduce the size of the table title -->
         <!-- TODO: maybe move unit to quantity header since it is the same for all rows -->
         <DsfrTable
-          v-if="populationQuantities.length"
+          v-if="state.maxQuantities.length"
           title="Quantités maximales par population"
           :headers="['Population', 'Quantité max', 'Unité', '']"
           class="!mb-2"
         >
-          <tr v-for="(q, idx) in populationQuantities" :key="`max-quantity-row-${idx}`">
+          <tr v-for="(q, idx) in state.maxQuantities" :key="`max-quantity-row-${idx}`">
             <td><DsfrSelect v-model="q.population" :options="populationOptions" /></td>
             <td><DsfrInput v-model.number="q.maxQuantity" /></td>
             <td>{{ unitString }}</td>
@@ -247,6 +247,7 @@ const state = ref({
   plantParts: [],
   substances: [],
   synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
+  maxQuantities: [],
 })
 
 watch(
@@ -259,6 +260,7 @@ watch(
     if (state.value.objectType && apiType.value === "other-ingredient")
       state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
     if (state.value.unitId) state.value.unit = state.value.unitId
+    // TODO: read in max doses
   }
 )
 
@@ -402,19 +404,17 @@ const unitString = computed(() => {
 const populationOptions = computed(() => {
   return populations.value?.map((pop) => ({ text: pop.name, value: pop.id }))
 })
-const populationQuantities = ref([])
+// const populationQuantities = ref([])
 const addNewMaxQuantity = () => {
-  populationQuantities.value.push({})
+  state.value.maxQuantities.push({})
 }
 const deleteMaxQuantity = (idx) => {
-  populationQuantities.value.splice(idx, 1)
+  state.value.maxQuantities.splice(idx, 1)
 }
 const maxQuantitiesError = ref()
 const validateMaxQuantities = () => {
   // TODO: do we use must_specify_max_quantity ?
-  const hasMissingData = populationQuantities.value.some(
-    (q) => !q.population || (!q.maxQuantity && q.maxQuantity !== 0)
-  )
+  const hasMissingData = state.value.maxQuantities.some((q) => !q.population || (!q.maxQuantity && q.maxQuantity !== 0))
   maxQuantitiesError.value = hasMissingData && "Veuillez compléter tous les champs ou supprimer les lignes vides"
 }
 </script>
