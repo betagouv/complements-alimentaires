@@ -155,6 +155,7 @@
       </div>
       <div v-if="formForType.maxQuantity">
         <!-- TODO: reduce the size of the table title -->
+        <!-- TODO: maybe move unit to quantity header since it is the same for all rows -->
         <DsfrTable
           v-if="populationQuantities.length"
           title="Quantités maximales par population"
