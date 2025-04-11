@@ -632,7 +632,7 @@ class TestElementsModifyApi(APITestCase):
         )
 
     # TODO: other errors to test: key errors, bad population id, duplicate population id
-    # TODO: test against siccrf data
+    # TODO: test can't create with maxQuantities if no unit
     @authenticate
     def test_update_siccrf_max_quantity(self):
         """
