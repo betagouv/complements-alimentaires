@@ -137,51 +137,6 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
         )
         read_only = COMMON_READ_ONLY_FIELDS
 
-    # @transaction.atomic
-    # def create(self, validated_data):
-    #     # le champ `max_quantity` n'existe pas dans validated_data
-    #     # car ce n'est pas un champ du Model mais une property
-    #     max_quantity = self.initial_data.get("max_quantity")
-    #     substance = super().create(validated_data)
-    #     if max_quantity:
-    #         general_population = Population.objects.get(name="Population générale")
-    #         MaxQuantityPerPopulationRelation.objects.create(
-    #             substance=substance, population=general_population, ca_max_quantity=max_quantity
-    #         )
-
-    #     return substance
-
-    # @transaction.atomic
-    # def update(self, instance, validated_data):
-    #     substance = super().update(instance, validated_data)
-
-    #     # le champ `max_quantity` n'existe pas dans validated_data
-    #     # car ce n'est pas un champ du Model mais une property
-    #     if "max_quantity" in self.initial_data.keys():
-    #         max_quantity = self.initial_data.get("max_quantity")
-
-    #         general_population = Population.objects.get(name="Population générale")
-    #         max_qty_general_pop = MaxQuantityPerPopulationRelation.objects.filter(
-    #             substance=substance, population=general_population
-    #         )
-
-    #         # delete
-    #         if max_qty_general_pop.exists() and max_quantity is None:
-    #             max_qty_general_pop.first().delete()
-    #         # update
-    #         elif max_qty_general_pop.exists() and max_quantity is not None:
-    #             max_quantity_to_change = max_qty_general_pop.first()
-    #             max_quantity_to_change.ca_max_quantity = max_quantity
-    #             max_quantity_to_change.save()
-    #         # create
-    #         elif not max_qty_general_pop.exists() and max_quantity is not None:
-    #             MaxQuantityPerPopulationRelation.objects.create(
-    #                 substance=substance, population=general_population, ca_max_quantity=max_quantity
-    #             )
-
-    #     return substance
-    # DRF ne gère pas automatiquement la création des nested-fields :
-    # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
     @transaction.atomic
     def create(self, validated_data):
         max_quantities = validated_data.pop("maxquantityperpopulationrelation_set", None)
@@ -201,47 +156,21 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
         if max_quantities is None:
             return substance
 
-        # TODO: make this more sophisticated
-        substance.maxquantityperpopulationrelation_set.all().delete()
+        populations_to_keep = [q["population"] for q in max_quantities]
+        substance.maxquantityperpopulationrelation_set.exclude(population__in=populations_to_keep).delete()
 
         for max_quantity in max_quantities:
-            self.add_max_quantity(substance, max_quantity)
+            existing_q = substance.maxquantityperpopulationrelation_set.filter(
+                population=max_quantity["population"].id
+            )
+            if existing_q.exists():
+                existing_q = existing_q.first()
+                existing_q.ca_max_quantity = max_quantity["ca_max_quantity"]
+                existing_q.save()
+                # TODO: add change reason?
+            else:
+                self.add_max_quantity(substance, max_quantity)
 
-        # synonyms = validated_data.pop(self.synonym_set_field_name, [])
-        # change_reason = validated_data.pop("change_reason", "Modification via Compl'Alim")
-        # data_items = copy.deepcopy(validated_data).items()
-        # for key, value in data_items:
-        #     if key.startswith("ca_"):
-        #         siccrf_key = key.replace("ca_", "siccrf_")
-        #         siccrf_value = getattr(instance, siccrf_key, None)
-        #         ca_value = getattr(instance, key, None)
-        #         if not value and (siccrf_value or ca_value):
-        #             validated_data[siccrf_key] = value  # mettre comme None ou "" selon la requête
-        #             logger.info(
-        #                 f"SICCRF champ supprimé : le champ '{siccrf_key}' a été supprimé sur l'ingrédient type '{instance.object_type}', id '{instance.id}'"
-        #             )
-        #         elif value == siccrf_value and not ca_value:
-        #             # si la valeur siccrf n'a pas été surpassée par une valeur CA, et la valeur donnée est la même que l'existante, pas besoin de la sauvegarder
-        #             validated_data.pop(key, None)
-
-        # super().update(instance, validated_data)
-        # update_change_reason(instance, change_reason)
-
-        # try:
-        #     new_synonym_list = [s["name"] for s in synonyms]
-        # except KeyError:
-        #     raise ParseError(detail="Must provide 'name' to create new synonym")
-        # existing_synonyms = getattr(instance, self.synonym_set_field_name)
-
-        # # TODO: is it important to update, rather delete and recreate, 'new' synonyms ?
-        # synonyms_to_delete = existing_synonyms.exclude(name__in=new_synonym_list)
-        # synonyms_to_delete.delete()
-
-        # for synonym in synonyms:
-        #     if not existing_synonyms.filter(name=synonym["name"]).exists():
-        #         self.add_synonym(instance, synonym)
-
-        # return instance
         return substance
 
     def add_max_quantity(self, substance, max_quantity):

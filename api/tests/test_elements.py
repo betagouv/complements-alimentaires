@@ -633,6 +633,50 @@ class TestElementsModifyApi(APITestCase):
 
     # TODO: other errors to test: key errors, bad population id, duplicate population id
     # TODO: test against siccrf data
+    @authenticate
+    def test_update_siccrf_max_quantity(self):
+        """
+        Si une dose max est specifiée avec les données siccrf, quand on fait la modif ça ajoute dans le champ equivalent ca_
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        substance = SubstanceFactory.create(
+            siccrf_name="original name",
+            unit=SubstanceUnitFactory.create(),
+        )
+        MaxQuantityPerPopulationRelationFactory(
+            substance=substance, population=self.general_pop, siccrf_max_quantity=24, ca_max_quantity=None
+        )
+        self.assertEqual(substance.max_quantity, 24, "La quantité max pour la population générale est définie")
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {
+                "maxQuantities": [
+                    {"population": self.general_pop.id, "maxQuantity": 666},
+                ],
+                "changeReason": "Add second pop",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        substance.refresh_from_db()
+        general_pop_max = MaxQuantityPerPopulationRelation.objects.get(
+            substance=substance, population=self.general_pop
+        )
+        self.assertEqual(
+            general_pop_max.max_quantity,
+            666,
+            "La dose max pour la pop générale est MAJ",
+        )
+        self.assertEqual(
+            general_pop_max.ca_max_quantity,
+            666,
+            "La nouvelle dose est dans le champ ca_",
+        )
+        self.assertEqual(
+            general_pop_max.siccrf_max_quantity,
+            24,
+            "L'ancienne dose est tjs dans le champ siccrf",
+        )
 
     @authenticate
     def test_delete_data(self):
