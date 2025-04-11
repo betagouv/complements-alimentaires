@@ -66,6 +66,7 @@
             :exclude="['FR']"
             defaultUnselectedText=""
             v-model="model.euReferenceCountry"
+            :required="true"
           />
         </DsfrInputGroup>
         <div class="col-span-12 md:col-span-9">
