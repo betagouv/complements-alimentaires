@@ -365,7 +365,7 @@ class TestElementsCreateApi(APITestCase):
             "casNumber": "1234",
             "einecNumber": "5678",
             "maxQuantities": [
-                {"population": self.general_pop.id, "maxQuantity": 3.5},
+                {"population": self.general_pop.id, "maxQuantity": 3.4},
                 {"population": other_pop.id, "maxQuantity": 4.5},
             ],
             "nutritionalReference": 1.2,
@@ -549,12 +549,13 @@ class TestElementsModifyApi(APITestCase):
         self.assertTrue(
             MaxQuantityPerPopulationRelation.objects.filter(substance=substance, population=self.general_pop).exists()
         )
+        other_pop = PopulationFactory.create(ca_name="pop non-autorisée")
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
             {
                 "maxQuantities": [
                     {"population": self.general_pop.id, "maxQuantity": 666},
-                    {"population": PopulationFactory.create(ca_name="pop non-autorisée").id, "maxQuantity": 0},
+                    {"population": other_pop.id, "maxQuantity": 0},
                 ],
                 "changeReason": "Add second pop",
             },
@@ -580,9 +581,7 @@ class TestElementsModifyApi(APITestCase):
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
             {
-                "maxQuantities": [
-                    {"population": PopulationFactory.create(ca_name="pop non-autorisée").id, "maxQuantity": 45}
-                ],
+                "maxQuantities": [{"population": other_pop.id, "maxQuantity": 45}],
                 "changeReason": "Add second pop",
             },
             format="json",
@@ -594,9 +593,7 @@ class TestElementsModifyApi(APITestCase):
             "La dose max pour la pop générale a été supprimée",
         )
         self.assertEqual(
-            MaxQuantityPerPopulationRelation.objects.get(
-                substance=substance, population=Population.objects.get(ca_name="pop non-autorisée")
-            ).max_quantity,
+            MaxQuantityPerPopulationRelation.objects.get(substance=substance, population=other_pop).max_quantity,
             45,
             "La dose max pour l'autre population a été modifiée",
         )
@@ -633,6 +630,9 @@ class TestElementsModifyApi(APITestCase):
         self.assertTrue(
             MaxQuantityPerPopulationRelation.objects.filter(substance=substance, population=self.general_pop).exists()
         )
+
+    # TODO: other errors to test: key errors, bad population id, duplicate population id
+    # TODO: test against siccrf data
 
     @authenticate
     def test_delete_data(self):
