@@ -68,10 +68,10 @@ const constitutingSubstances = computed(() => element.value?.substances)
 
 const tooltipContent = computed(() => {
   let content = ""
-  if (hasMaxQuantities.value) content += `Quantités maximales :\n\n${maxQuantitiesString.value}. `
-  if (element.value?.publicComments) content += `Commentaires :\n\n${element.value?.publicComments}. `
+  if (hasMaxQuantities.value) content += `Quantités maximales : ${maxQuantitiesString.value}. `
+  if (element.value?.publicComments) content += `Commentaires : ${element.value?.publicComments}. `
   if (element.value?.privateComments && !props.hidePrivateComments)
-    content += `\n\nCommentaires privés :\n\n${element.value?.privateComments}.`
+    content += `Commentaires privés : ${element.value?.privateComments}.`
   return content || "Pas de commentaires"
 })
 
