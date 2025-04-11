@@ -6,6 +6,7 @@
           v-model="country"
           description="Dans quel pays l'entreprise est-elle immatriculée ?"
           @update:modelValue="onCountrySelected"
+          :required="true"
         />
       </DsfrInputGroup>
     </FormWrapper>
