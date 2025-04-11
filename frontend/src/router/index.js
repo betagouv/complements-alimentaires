@@ -441,7 +441,7 @@ const routes = [
         article: "",
         population: "",
         condition: "",
-        formeGalenque: "",
+        formeGalenique: "",
         limit: "10",
         recherche: "",
         composition: "",
