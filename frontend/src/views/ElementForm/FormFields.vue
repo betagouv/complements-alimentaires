@@ -136,10 +136,8 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
           <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
         </DsfrInputGroup>
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'maxQuantity')">
-          <NumberField label="Quantité maximale autorisée" label-visible v-model="state.maxQuantity" />
-        </DsfrInputGroup>
         <div class="max-w-32">
+          <!-- TODO: how to make it clear that this needs to be specified first? -->
           <DsfrInputGroup v-if="isNewIngredient" :error-message="firstErrorMsg(v$, 'unit')">
             <DsfrSelect
               label="Unité"
@@ -155,7 +153,43 @@
           </div>
         </div>
       </div>
-      <p class="my-4"><i>Population cible et à risque en construction</i></p>
+      <div v-if="formForType.maxQuantity">
+        <!-- TODO: reduce the size of the table title -->
+        <!-- TODO: maybe move unit to quantity header since it is the same for all rows -->
+        <DsfrTable
+          v-if="state.maxQuantities.length"
+          title="Quantités maximales par population"
+          :headers="['Population', 'Quantité max', 'Unité', '']"
+          class="!mb-2"
+        >
+          <tr v-for="(q, idx) in state.maxQuantities" :key="`max-quantity-row-${idx}`">
+            <td><DsfrSelect v-model="q.population" :options="populationOptions" /></td>
+            <td><DsfrInput v-model.number="q.maxQuantity" /></td>
+            <td>{{ unitString }}</td>
+            <td>
+              <DsfrButton
+                label="Supprimer"
+                @click="deleteMaxQuantity(idx)"
+                :icon="{ name: 'ri-delete-bin-line' }"
+                icon-only
+                tertiary
+              />
+            </td>
+          </tr>
+        </DsfrTable>
+        <p v-else>Aucune quantité maximale n'est spécifiée.</p>
+        <!-- TODO: I'm sure this can be improved visually and accessibility -->
+        <!-- maybe add red to the table colours, or have a little alert icon next to the offending lines -->
+        <p v-if="maxQuantitiesError" class="text-red-marianne-425">{{ maxQuantitiesError }}</p>
+        <DsfrButton
+          label="Ajouter une dose max pour une population"
+          @click="addNewMaxQuantity"
+          icon="ri-add-line"
+          size="sm"
+          class="mt-2"
+          secondary
+        />
+      </div>
     </DsfrFieldset>
     <DsfrFieldset legend="Commentaires" legendClass="fr-h4 !mb-0">
       <div class="grid md:grid-cols-2 md:gap-4">
@@ -213,6 +247,7 @@ const state = ref({
   plantParts: [],
   substances: [],
   synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
+  maxQuantities: [],
 })
 
 watch(
@@ -225,13 +260,15 @@ watch(
     if (state.value.objectType && apiType.value === "other-ingredient")
       state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
     if (state.value.unitId) state.value.unit = state.value.unitId
+    // TODO: read in max doses
   }
 )
 
 const saveElement = async () => {
   v$.value.$reset()
   v$.value.$validate()
-  if (v$.value.$error) {
+  validateMaxQuantities()
+  if (v$.value.$error || maxQuantitiesError.value) {
     window.scrollTo(0, 0)
     return
   }
@@ -317,7 +354,6 @@ const rules = computed(() => {
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
-    maxQuantity: form?.maxQuantity ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
   }
 })
@@ -327,7 +363,7 @@ const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
 const store = useRootStore()
-const { plantParts, plantFamilies, units } = storeToRefs(store)
+const { plantParts, plantFamilies, units, populations } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
 
@@ -364,4 +400,21 @@ const aromaId = 3
 const unitString = computed(() => {
   return getUnitString(state.value.unit, units)
 })
+
+const populationOptions = computed(() => {
+  return populations.value?.map((pop) => ({ text: pop.name, value: pop.id }))
+})
+// const populationQuantities = ref([])
+const addNewMaxQuantity = () => {
+  state.value.maxQuantities.push({})
+}
+const deleteMaxQuantity = (idx) => {
+  state.value.maxQuantities.splice(idx, 1)
+}
+const maxQuantitiesError = ref()
+const validateMaxQuantities = () => {
+  // TODO: do we use must_specify_max_quantity ?
+  const hasMissingData = state.value.maxQuantities.some((q) => !q.population || (!q.maxQuantity && q.maxQuantity !== 0))
+  maxQuantitiesError.value = hasMissingData && "Veuillez compléter tous les champs ou supprimer les lignes vides"
+}
 </script>
