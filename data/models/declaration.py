@@ -414,21 +414,19 @@ class Declaration(Historisable, TimeStampable):
         max_for_target_populations = MaxQuantityPerPopulationRelation.objects.filter(
             population__in=self.populations.all(), substance=substance.substance
         )
+        max_for_general_pop = substance.substance.max_quantity
         if max_for_target_populations.exists():
             if substance.quantity > max_for_target_populations.aggregate(Min("max_quantity"))["max_quantity__min"]:
                 return True
-        else:
+            # si la déclaration contient des populations qui n'ont pas de dose max renseigné
+            if max_for_target_populations.count() < self.populations.count() and max_for_general_pop is not None:
+                return substance.quantity > max_for_general_pop
+        elif max_for_general_pop is not None:
             # si aucune population cible n'est déclarée
             # OU si aucune max_quantity n'existe pour les populations cibles déclarée
             # => vérifier que la quantité déclarée ne dépasse pas la limite pour la population générale
-            try:
-                max_for_general_population = MaxQuantityPerPopulationRelation.objects.get(
-                    population__name="Population générale", substance=substance.substance
-                ).max_quantity
-                if substance.quantity > max_for_general_population:
-                    return True
-            except MaxQuantityPerPopulationRelation.DoesNotExist:
-                return False
+            if substance.quantity > max_for_general_pop:
+                return True
 
         return False
 

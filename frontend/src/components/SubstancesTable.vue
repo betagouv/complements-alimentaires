@@ -40,27 +40,16 @@
           <div class="sm:hidden ca-xs-title">
             Quantité par DJR (en {{ payload.computedSubstances[rowIndex].substance.unit }})
           </div>
+          <div v-if="props.readonly">
+            {{ payload.computedSubstances[rowIndex].quantity }}
+          </div>
           <div
             :class="{
-              '!text-red-marianne-425 font-bold':
-                (payload.computedSubstances[rowIndex].substance.maxQuantity ||
-                  payload.computedSubstances[rowIndex].substance.maxQuantity === 0) &&
-                payload.computedSubstances[rowIndex].quantity >
-                  payload.computedSubstances[rowIndex].substance.maxQuantity,
+              '!text-red-marianne-425 font-bold': getMaxQuantityExceeded(payload, payload.computedSubstances[rowIndex]),
             }"
             v-if="props.readonly"
           >
-            {{ payload.computedSubstances[rowIndex].quantity }}
-            <span
-              v-if="
-                (payload.computedSubstances[rowIndex].substance.maxQuantity ||
-                  payload.computedSubstances[rowIndex].substance.maxQuantity === 0) &&
-                payload.computedSubstances[rowIndex].quantity >
-                  payload.computedSubstances[rowIndex].substance.maxQuantity
-              "
-            >
-              pour {{ payload.computedSubstances[rowIndex].substance.maxQuantity }} maximum autorisés
-            </span>
+            {{ getMaxQuantityExceeded(payload, payload.computedSubstances[rowIndex]) }}
           </div>
           <div v-else class="-mt-1 pb-2">
             <DsfrInputGroup>
@@ -123,6 +112,31 @@ const sourceElements = (substance) => {
   return sources.map((x) => x.element.name).join(", ")
 }
 
+// cette logique devrait reflechir la logique de `_has_max_quantity_exceeded`
+// substance ici est une substance déclarée ou calculée
+const getMaxQuantityExceeded = (declaration, substance) => {
+  if (!declaration.hasMaxQuantityExceeded) return
+  const exceededSubstances = declaration.declaredSubstancesWithMaxQuantityExceeded.concat(
+    declaration.computedSubstancesWithMaxQuantityExceeded
+  )
+  // si la substance n'est pas identifiée par le back, arrête
+  if (exceededSubstances.indexOf(substance.id) === -1) return
+
+  if (!payload.value.populations?.length) {
+    // si il y a aucune population cible, on sait que le max excédé c'est pour pop generale
+    return "Maximum excédé : " + substance.substance.maxQuantity + " pour Population générale"
+  }
+
+  let maxQuantitiesExceeded = substance.substance.maxQuantities
+    .filter((q) => substance.quantity > q.maxQuantity)
+    .filter((q) => payload.value.populations.indexOf(parseInt(q.population?.id)) != -1)
+  if (!maxQuantitiesExceeded.length)
+    maxQuantitiesExceeded = substance.substance.maxQuantities.filter(
+      (q) => q.population?.name === "Population générale"
+    )
+  const intro = maxQuantitiesExceeded.length > 1 ? "Maximums excédés : " : "Maximum excédé : "
+  return intro + maxQuantitiesExceeded.map((p) => `${p.maxQuantity} pour ${p.population?.name}`).join(", ")
+}
 watch(
   elements,
   () => {
