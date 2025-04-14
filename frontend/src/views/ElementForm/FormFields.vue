@@ -355,6 +355,7 @@ const rules = computed(() => {
     family: form?.family ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
+    unit: state.value.maxQuantities?.length || state.value.nutritionalReference ? errorRequiredField : {},
   }
 })
 watch(formForType, () => v$.value.$reset())
@@ -398,7 +399,7 @@ const plantFamiliesDisplay = computed(() => {
 const aromaId = 3
 
 const unitString = computed(() => {
-  return getUnitString(state.value.unit, units)
+  return getUnitString(parseInt(state.value.unit, 10), units)
 })
 
 const populationOptions = computed(() => {
