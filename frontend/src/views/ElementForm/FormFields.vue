@@ -292,6 +292,10 @@ const saveElement = async () => {
     })
     if (isNewIngredient.value) router.push({ name: "DashboardPage" })
     else router.navigateBack({ name: "DashboardPage" })
+  } else {
+    if ($externalResults.value.fieldErrors?.maxQuantities) {
+      maxQuantitiesError.value = $externalResults.value.fieldErrors.maxQuantities[0]
+    }
   }
 }
 const addNewSynonym = async () => {

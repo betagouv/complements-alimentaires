@@ -631,8 +631,6 @@ class TestElementsModifyApi(APITestCase):
             MaxQuantityPerPopulationRelation.objects.filter(substance=substance, population=self.general_pop).exists()
         )
 
-    # TODO: other errors to test: key errors, bad population id, duplicate population id
-    # TODO: test can't create with maxQuantities if no unit
     @authenticate
     def test_update_siccrf_max_quantity(self):
         """
@@ -677,6 +675,44 @@ class TestElementsModifyApi(APITestCase):
             24,
             "L'ancienne dose est tjs dans le champ siccrf",
         )
+
+    @authenticate
+    def test_max_quantities_errors(self):
+        """
+        Voir si on envoie des bonnes erreurs quand les données de quantités max sont mauvaises
+        Ça test que la MAJ, mais on devrait avoir les mêmes règles sur la création
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        substance = SubstanceFactory.create(siccrf_name="original name")
+
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {
+                "maxQuantities": [
+                    {"population": self.general_pop.id, "maxQuantity": 1},
+                    {"population": self.general_pop.id, "maxQuantity": 12},
+                ],
+                "changeReason": "duplicate population",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.json()["fieldErrors"]["maxQuantities"][0],
+            "Veuillez donner qu'une quantité maximale par population",
+        )
+
+        response = self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {
+                "maxQuantities": [
+                    {"population": 999, "maxQuantity": 1},
+                ],
+                "changeReason": "bad pop id test",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     @authenticate
     def test_delete_data(self):

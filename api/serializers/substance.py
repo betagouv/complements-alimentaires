@@ -137,6 +137,13 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
         )
         read_only = COMMON_READ_ONLY_FIELDS
 
+    def validate_max_quantities(self, value):
+        population_ids = [v["population"].id for v in value]
+        unique_pop_ids = list(set(population_ids))
+        if len(population_ids) != len(unique_pop_ids):
+            raise serializers.ValidationError("Veuillez donner qu'une quantité maximale par population")
+        return value
+
     @transaction.atomic
     def create(self, validated_data):
         max_quantities = validated_data.pop("maxquantityperpopulationrelation_set", None)
@@ -167,7 +174,6 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
                 existing_q = existing_q.first()
                 existing_q.ca_max_quantity = max_quantity["ca_max_quantity"]
                 existing_q.save()
-                # TODO: add change reason?
             else:
                 self.add_max_quantity(substance, max_quantity)
 
