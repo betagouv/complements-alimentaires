@@ -257,7 +257,8 @@ watch(
     if (state.value.objectType && apiType.value === "other-ingredient")
       state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
     if (state.value.unitId) state.value.unit = state.value.unitId
-    // TODO: read in max doses
+    if (state.value.maxQuantities?.length)
+      state.value.maxQuantities.map((q) => (q.population = q.population.id.toString()))
   }
 )
 
@@ -400,7 +401,7 @@ const unitString = computed(() => {
 })
 
 const populationOptions = computed(() => {
-  return populations.value?.map((pop) => ({ text: pop.name, value: pop.id }))
+  return populations.value?.map((pop) => ({ text: pop.name, value: pop.id.toString() }))
 })
 // const populationQuantities = ref([])
 const addNewMaxQuantity = () => {
