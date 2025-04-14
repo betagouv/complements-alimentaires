@@ -5,6 +5,8 @@ from django.db.models.functions import Coalesce, Lower
 from django.shortcuts import get_object_or_404
 
 from django_filters import rest_framework as django_filters
+from drf_excel.mixins import XLSXFileMixin
+from drf_excel.renderers import XLSXRenderer
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.generics import (
     GenericAPIView,
@@ -14,6 +16,7 @@ from rest_framework.generics import (
 )
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 from unidecode import unidecode
 from viewflow.fsm.base import TransitionNotAllowed
 
@@ -31,6 +34,7 @@ from api.permissions import (
 from api.serializers import (
     DeclarationSerializer,
     DeclarationShortSerializer,
+    ExcelExportDeclarationSerializer,
     OpenDataDeclarationSerializer,
     SimpleDeclarationSerializer,
     SimpleInstructorSerializer,
@@ -382,9 +386,8 @@ class GenericDeclarationsListView(ListAPIView):
     filterset_class = DeclarationFilterSet
 
 
-class OngoingDeclarationsListView(GenericDeclarationsListView):
+class OngoingDeclarationsListView(XLSXFileMixin, GenericDeclarationsListView):
     pagination_class = InstructionDeclarationPagination
-    serializer_class = SimpleDeclarationSerializer
     permission_classes = [(IsInstructor | IsVisor)]
     search_fields = ["name", "id", "company__social_name"]
     filter_backends = [
@@ -394,6 +397,13 @@ class OngoingDeclarationsListView(GenericDeclarationsListView):
     ]
     ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT).distinct()
+
+    renderer_classes = [XLSXRenderer] + api_settings.DEFAULT_RENDERER_CLASSES
+    filename = "declarations-resultats.xlsx"
+
+    def get_serializer_class(self):
+        is_excel = getattr(self.request.accepted_renderer, "format") == "xlsx"
+        return ExcelExportDeclarationSerializer if is_excel else SimpleDeclarationSerializer
 
 
 class OpenDataDeclarationsListView(GenericDeclarationsListView):

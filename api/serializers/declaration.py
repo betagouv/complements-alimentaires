@@ -299,6 +299,25 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
+    company_name = serializers.CharField(read_only=True, source="company.social_name")
+    siret = serializers.CharField(read_only=True, source="company.siret")
+    tva = serializers.CharField(read_only=True, source="company.tva")
+
+    class Meta:
+        model = Declaration
+        fields = (
+            "name",
+            "brand",
+            "article",
+            "status",
+            "company_name",
+            "siret",
+            "tva",
+        )
+        read_only_fields = fields
+
+
 def add_enum_or_personnalized_value(item, custom_value):
     if item:
         if "(à préciser)" not in str(item).lower():
