@@ -398,7 +398,7 @@ class OngoingDeclarationsListView(XLSXFileMixin, GenericDeclarationsListView):
     ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT).distinct()
 
-    renderer_classes = [XLSXRenderer] + api_settings.DEFAULT_RENDERER_CLASSES
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES + [XLSXRenderer]
     filename = "declarations-resultats.xlsx"
 
     def get_serializer_class(self):
