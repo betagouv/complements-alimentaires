@@ -8,8 +8,8 @@ autopep8==2.3.2
 beautifulsoup4==4.13.3
 billiard==4.2.1
 bleach==6.2.0
-boto3==1.37.18
-botocore==1.37.28
+boto3==1.37.33
+botocore==1.37.33
 bs4==0.0.2
 celery==5.4.0
 certifi==2025.1.31
@@ -57,7 +57,7 @@ gprof2dot==2024.6.6
 html5lib==1.1
 identify==2.6.9
 idna==3.10
-iniconfig==2.0.0
+iniconfig==2.1.0
 ipdb==0.13.13
 ipython==8.32.0
 jedi==0.19.2
@@ -79,7 +79,7 @@ pexpect==4.9.0
 phonenumbers==9.0.1
 pillow==11.1.0
 pipdeptree==2.25.1
-platformdirs==4.3.6
+platformdirs==4.3.7
 pluggy==1.5.0
 pre_commit==4.2.0
 prompt_toolkit==3.0.50
@@ -103,7 +103,7 @@ regex==2024.11.6
 reportlab==4.3.1
 requests==2.32.3
 requests-mock==1.12.1
-ruff==0.11.0
+ruff==0.11.5
 s3transfer==0.11.4
 sentry-sdk==2.20.0
 sib-api-v3-sdk==7.6.0
@@ -113,7 +113,7 @@ sqlfluff==3.3.1
 sqlparse==0.5.3
 stack-data==0.6.3
 svglib==1.5.1
-tblib==3.0.0
+tblib==3.1.0
 tinycss2==1.4.0
 tqdm==4.67.1
 traitlets==5.14.3

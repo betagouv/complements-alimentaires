@@ -73,6 +73,11 @@
                   />
                 </DsfrInputGroup>
               </DsfrFieldset>
+              <DsfrFieldset legend="Localisation" class="min-w-60">
+                <DsfrInputGroup>
+                  <CountryField :modelValue="country" @update:modelValue="updateCountry" :includeAllOption="true" />
+                </DsfrInputGroup>
+              </DsfrFieldset>
             </div>
             <div class="md:w-2/4">
               <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" :statusString="filteredStatus" />
@@ -152,6 +157,7 @@ import SearchResultsTable from "./SearchResultsTable"
 import { useRootStore } from "@/stores/root"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import { getTypeIcon, getTypeInFrench, typesMapping } from "@/utils/mappings"
+import CountryField from "@/components/fields/CountryField"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -169,14 +175,15 @@ const ordering = computed(() => route.query.triage)
 const article = computed(() => route.query.article)
 const population = computed(() => (route.query.population ? parseInt(route.query.population) : ""))
 const condition = computed(() => (route.query.condition ? parseInt(route.query.condition) : ""))
-const galenicFormulation = computed(() =>
-  route.query.galenicFormulation ? parseInt(route.query.galenicFormulation) : ""
-)
+const galenicFormulation = computed(() => (route.query.formeGalenique ? parseInt(route.query.formeGalenique) : ""))
+const country = computed(() => route.query.pays)
 const limit = computed(() => route.query.limit)
 
 // Mises à jour de la requête lors des changements des filtres et recherche
 
-const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } })
+const updateQuery = (newQuery) => {
+  router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } }).then(fetchSearchResults)
+}
 
 const updateStatusFilter = (status) => updateQuery({ status })
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
@@ -184,7 +191,8 @@ const updateOrdering = (newValue) => updateQuery({ triage: newValue })
 const updateArticle = (newValue) => updateQuery({ article: newValue })
 const updatePopulation = (newValue) => updateQuery({ population: newValue })
 const updateCondition = (newValue) => updateQuery({ condition: newValue })
-const updateGalenicFormulation = (newValue) => updateQuery({ galenicFormulation: newValue })
+const updateGalenicFormulation = (newValue) => updateQuery({ formeGalenique: newValue })
+const updateCountry = (newValue) => updateQuery({ pays: newValue })
 const updateLimit = (newValue) => updateQuery({ limit: newValue })
 const updateComposition = () =>
   updateQuery({ composition: ingredientsToFilter.value.map((x) => x.join("||")).join("|||") })
@@ -193,10 +201,7 @@ const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 const offset = computed(() => (page.value - 1) * limit.value)
 
-const search = () => {
-  updateQuery({ recherche: searchTerm.value })
-  fetchSearchResults()
-}
+const search = () => updateQuery({ recherche: searchTerm.value })
 
 // Pagination
 
@@ -243,6 +248,7 @@ const apiQueryParams = computed(() => {
   const populationQuery = population.value ? `&population=${population.value}` : ""
   const conditionQuery = condition.value ? `&condition=${condition.value}` : ""
   const galenicFormulationQuery = galenicFormulation.value ? `&galenic_formulation=${galenicFormulation.value}` : ""
+  const countryQuery = country.value ? `&country=${country.value}` : ""
   const searchQuery = searchTerm.value ? `&search=${searchTerm.value}` : ""
 
   const plantIds = getApiUrlIdsForType(["plant"])
@@ -262,7 +268,7 @@ const apiQueryParams = computed(() => {
   const substancesQuery = substanceIds ? `&substances=${substanceIds}` : ""
   const ingredientsQuery = ingredientsIds ? `&ingredients=${ingredientsIds}` : ""
 
-  const queryParams = `/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}`
+  const queryParams = `/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}${countryQuery}`
 
   // Enlève les `&` consecutifs
   return queryParams.replace(/&+/g, "&").replace(/&$/, "")
@@ -276,13 +282,8 @@ const { response, data, isFetching, execute } = useFetch(apiUrl, { headers: { Ac
 
 const fetchSearchResults = async () => {
   await execute()
-  await handleError(response)
+  if (response?.value) await handleError(response) // Utile pour éviter des traiter les NS_BINDING_ABORTED de Firefox
 }
-
-watch(
-  [page, filteredStatus, ordering, article, limit, population, condition, galenicFormulation, ingredientsToFilter],
-  fetchSearchResults
-)
 
 // Remplissage d'options dans les champs select
 

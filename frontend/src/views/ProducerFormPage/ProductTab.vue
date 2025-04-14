@@ -206,7 +206,7 @@
         <DsfrInput v-model="payload.cedex" label-visible label="Cedex" />
       </DsfrInputGroup>
       <DsfrInputGroup>
-        <CountryField v-model="payload.country" />
+        <CountryField v-model="payload.country" :required="true" />
       </DsfrInputGroup>
     </div>
   </div>
