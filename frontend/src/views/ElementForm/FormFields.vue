@@ -137,7 +137,6 @@
           <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
         </DsfrInputGroup>
         <div class="max-w-32">
-          <!-- TODO: how to make it clear that this needs to be specified first? -->
           <DsfrInputGroup v-if="isNewIngredient" :error-message="firstErrorMsg(v$, 'unit')">
             <DsfrSelect
               label="Unité"
@@ -155,17 +154,15 @@
       </div>
       <div v-if="formForType.maxQuantity">
         <!-- TODO: reduce the size of the table title -->
-        <!-- TODO: maybe move unit to quantity header since it is the same for all rows -->
         <DsfrTable
           v-if="state.maxQuantities.length"
           title="Quantités maximales par population"
-          :headers="['Population', 'Quantité max', 'Unité', '']"
+          :headers="maxQuantitiesHeaders"
           class="!mb-2"
         >
           <tr v-for="(q, idx) in state.maxQuantities" :key="`max-quantity-row-${idx}`">
             <td><DsfrSelect v-model="q.population" :options="populationOptions" /></td>
             <td><DsfrInput v-model.number="q.maxQuantity" /></td>
-            <td>{{ unitString }}</td>
             <td>
               <DsfrButton
                 label="Supprimer"
@@ -418,4 +415,7 @@ const validateMaxQuantities = () => {
   const hasMissingData = state.value.maxQuantities.some((q) => !q.population || (!q.maxQuantity && q.maxQuantity !== 0))
   maxQuantitiesError.value = hasMissingData && "Veuillez compléter tous les champs ou supprimer les lignes vides"
 }
+const maxQuantitiesHeaders = computed(() => {
+  return ["Population", `Quantité max (en ${unitString.value})`, ""]
+})
 </script>
