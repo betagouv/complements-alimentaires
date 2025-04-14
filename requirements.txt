@@ -55,7 +55,7 @@ gprof2dot==2024.6.6
 html5lib==1.1
 identify==2.6.9
 idna==3.10
-iniconfig==2.0.0
+iniconfig==2.1.0
 ipdb==0.13.13
 ipython==8.32.0
 jedi==0.19.2
