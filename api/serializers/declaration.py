@@ -304,6 +304,9 @@ class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
     siret = serializers.CharField(read_only=True, source="company.siret")
     tva = serializers.CharField(read_only=True, source="company.tva")
 
+    # Champ spécial utilisé par drf-excel documenté ici : https://github.com/django-commons/drf-excel
+    row_color = serializers.SerializerMethodField()
+
     class Meta:
         model = Declaration
         fields = (
@@ -314,8 +317,15 @@ class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
             "company_name",
             "siret",
             "tva",
+            "row_color",  # Champ utilisé en interne par drf-excel
         )
         read_only_fields = fields
+
+    def get_row_color(self, instance):
+        """
+        Permet d'alterner les couleurs des files dans le ficher Excel
+        """
+        return ["FFFFFFFF", "FFECECFE"][(*self.instance,).index(instance) % 2]
 
 
 def add_enum_or_personnalized_value(item, custom_value):

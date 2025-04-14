@@ -134,6 +134,7 @@ urlpatterns = {
         name="list_create_declaration",
     ),
     path("declarations/", views.OngoingDeclarationsListView.as_view(), name="list_all_declarations"),
+    path("declarations-export/", views.OngoingDeclarationsExcelView.as_view(), name="export_excel_declarations"),
     path(
         "declarations/<int:pk>",
         views.DeclarationRetrieveUpdateDestroyView.as_view(),

@@ -268,7 +268,7 @@ const apiQueryParams = computed(() => {
   return queryParams.replace(/&+/g, "&").replace(/&$/, "")
 })
 const apiUrl = computed(() => `/api/v1/declarations${apiQueryParams.value}`)
-const excelUrl = computed(() => `/api/v1/declarations.xlsx${apiQueryParams.value}`)
+const excelUrl = computed(() => `/api/v1/declarations-export.xlsx${apiQueryParams.value}`)
 
 const { response, data, isFetching, execute } = useFetch(apiUrl, { headers: { Accept: "application/json" } })
   .get()

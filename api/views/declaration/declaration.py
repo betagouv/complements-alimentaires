@@ -16,7 +16,6 @@ from rest_framework.generics import (
 )
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
-from rest_framework.settings import api_settings
 from unidecode import unidecode
 from viewflow.fsm.base import TransitionNotAllowed
 
@@ -386,8 +385,7 @@ class GenericDeclarationsListView(ListAPIView):
     filterset_class = DeclarationFilterSet
 
 
-class OngoingDeclarationsListView(XLSXFileMixin, GenericDeclarationsListView):
-    pagination_class = InstructionDeclarationPagination
+class CommonOngoingDeclarationView(GenericDeclarationsListView):
     permission_classes = [(IsInstructor | IsVisor)]
     search_fields = ["name", "id", "company__social_name"]
     filter_backends = [
@@ -398,12 +396,54 @@ class OngoingDeclarationsListView(XLSXFileMixin, GenericDeclarationsListView):
     ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT).distinct()
 
-    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES + [XLSXRenderer]
+
+class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
+    pagination_class = None
+    renderer_classes = [XLSXRenderer]
+    serializer_class = ExcelExportDeclarationSerializer
     filename = "declarations-resultats.xlsx"
 
-    def get_serializer_class(self):
-        is_excel = getattr(self.request.accepted_renderer, "format") == "xlsx"
-        return ExcelExportDeclarationSerializer if is_excel else SimpleDeclarationSerializer
+    # Format de l'entête du fichier Excel
+    column_header = {
+        "titles": [
+            "Nom du produit",
+            "Marque",
+            "Article",
+            "Statut",
+            "Nom de la compagnie",
+            "No. SIRET",
+            "No. TVA",
+        ],
+        "column_width": [30, 20, 15, 15, 30, 15, 15],
+        "height": 30,
+        "style": {
+            "fill": {
+                "fill_type": "solid",
+                "start_color": "FF000091",
+            },
+            "alignment": {
+                "horizontal": "center",
+                "vertical": "center",
+                "wrapText": True,
+                "shrink_to_fit": True,
+            },
+            "border_side": {
+                "border_style": "thin",
+                "color": "FF6A6AF4",
+            },
+            "font": {
+                "name": "Arial",
+                "size": 12,
+                "bold": True,
+                "color": "FFFFFFFF",
+            },
+        },
+    }
+
+
+class OngoingDeclarationsListView(CommonOngoingDeclarationView):
+    pagination_class = InstructionDeclarationPagination
+    serializer_class = SimpleDeclarationSerializer
 
 
 class OpenDataDeclarationsListView(GenericDeclarationsListView):
