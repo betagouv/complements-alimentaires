@@ -446,7 +446,6 @@ const routes = [
         recherche: "",
         composition: "",
         pays: "",
-        departement: "",
       },
     },
   },
