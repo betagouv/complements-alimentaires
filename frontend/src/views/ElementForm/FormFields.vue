@@ -153,12 +153,11 @@
         </div>
       </div>
       <div v-if="formForType.maxQuantity">
-        <!-- TODO: reduce the size of the table title -->
         <DsfrTable
           v-if="state.maxQuantities.length"
           title="Quantités maximales par population"
           :headers="maxQuantitiesHeaders"
-          class="!mb-2"
+          class="!mb-2 quantities-table"
         >
           <tr v-for="(q, idx) in state.maxQuantities" :key="`max-quantity-row-${idx}`">
             <td><DsfrSelect v-model="q.population" :options="populationOptions" /></td>
@@ -403,7 +402,6 @@ const unitString = computed(() => {
 const populationOptions = computed(() => {
   return populations.value?.map((pop) => ({ text: pop.name, value: pop.id.toString() }))
 })
-// const populationQuantities = ref([])
 const addNewMaxQuantity = () => {
   state.value.maxQuantities.push({})
 }
@@ -420,3 +418,10 @@ const maxQuantitiesHeaders = computed(() => {
   return ["Population", `Quantité max (en ${unitString.value})`, ""]
 })
 </script>
+
+<style scoped>
+.quantities-table :deep(caption.caption) {
+  /* la taille du fr-h5 */
+  font-size: 1.375rem;
+}
+</style>
