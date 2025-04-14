@@ -174,8 +174,6 @@
           </tr>
         </DsfrTable>
         <p v-else>Aucune quantité maximale n'est spécifiée.</p>
-        <!-- TODO: I'm sure this can be improved visually and accessibility -->
-        <!-- maybe add red to the table colours, or have a little alert icon next to the offending lines -->
         <p v-if="maxQuantitiesError" class="text-red-marianne-425">{{ maxQuantitiesError }}</p>
         <DsfrButton
           label="Ajouter une dose max pour une population"
