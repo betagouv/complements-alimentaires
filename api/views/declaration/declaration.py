@@ -1,4 +1,5 @@
 import logging
+from io import BytesIO
 
 from django.db.models import Case, DateTimeField, F, Func, OuterRef, Q, Subquery, Value, When
 from django.db.models.functions import Coalesce, Lower
@@ -7,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as django_filters
 from drf_excel.mixins import XLSXFileMixin
 from drf_excel.renderers import XLSXRenderer
+from openpyxl import load_workbook
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.generics import (
     GenericAPIView,
@@ -397,9 +399,33 @@ class CommonOngoingDeclarationView(GenericDeclarationsListView):
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT).distinct()
 
 
+class DeclarationHyperlinkXLSXRenderer(XLSXRenderer):
+    """
+    Ceci est un hack pour ajouter des liens au noms de la déclaration. Cet issue
+    a été levé dans drf-excel : https://github.com/django-commons/drf-excel/issues/112
+    """
+
+    def render(self, data, media_type=None, renderer_context=None):
+        excel_data = super().render(data, media_type, renderer_context)
+        workbook = load_workbook(filename=BytesIO(excel_data))
+
+        # Ajouter le lien vers le résultat de la recherche dans le nom du produit
+        for sheet in workbook.worksheets:
+            for row in sheet.iter_rows(min_row=2):
+                name_cell = row[0]
+                hyperlink_data = data[name_cell.row - 2]["url_field"]
+                name_cell.value = hyperlink_data.display
+                name_cell.hyperlink = hyperlink_data.ref
+
+        # Sauvegarder en Bytes
+        output = BytesIO()
+        workbook.save(output)
+        return output.getvalue()
+
+
 class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
     pagination_class = None
-    renderer_classes = [XLSXRenderer]
+    renderer_classes = [DeclarationHyperlinkXLSXRenderer]
     serializer_class = ExcelExportDeclarationSerializer
     filename = "declarations-resultats.xlsx"
 
@@ -414,7 +440,7 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
             "No. SIRET",
             "No. TVA",
         ],
-        "column_width": [30, 20, 15, 15, 30, 15, 15],
+        "column_width": [30, 20, 30, 25, 30, 15, 15],
         "height": 30,
         "style": {
             "fill": {
@@ -439,6 +465,7 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
             },
         },
     }
+    body = {"height": 20}
 
 
 class OngoingDeclarationsListView(CommonOngoingDeclarationView):

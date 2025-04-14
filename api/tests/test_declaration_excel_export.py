@@ -3,6 +3,7 @@ from io import BytesIO
 from django.urls import reverse
 
 from openpyxl import load_workbook
+from rest_framework import status
 from rest_framework.test import APITestCase
 
 from data.factories import InstructionRoleFactory, OngoingInstructionDeclarationFactory
@@ -11,6 +12,10 @@ from .utils import authenticate
 
 
 class TestDeclarationExcelExport(APITestCase):
+    def test_excel_export_unauthenticated(self):
+        response = self.client.get(reverse("api:export_excel_declarations"))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     @authenticate
     def test_excel_export_response(self):
         InstructionRoleFactory(user=authenticate.user)
@@ -18,7 +23,7 @@ class TestDeclarationExcelExport(APITestCase):
         d2 = OngoingInstructionDeclarationFactory()
 
         response = self.client.get(reverse("api:export_excel_declarations"))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Est-ce que le contenu est un fichier Excel ?
         self.assertIn("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response["Content-Type"])
