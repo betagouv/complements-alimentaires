@@ -430,6 +430,15 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
     serializer_class = ExcelExportDeclarationSerializer
     filename = "declarations-resultats.xlsx"
 
+    max_rows = 2000
+
+    def filter_queryset(self, queryset):
+        """
+        Permet de retourner un maximum de max_rows déclarations
+        """
+        queryset = super().filter_queryset(queryset)
+        return queryset[: self.max_rows]
+
     # Format de l'entête du fichier Excel
     column_header = {
         "titles": [

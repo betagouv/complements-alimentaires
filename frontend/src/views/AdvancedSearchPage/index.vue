@@ -22,9 +22,25 @@
         </DsfrInputGroup>
         <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
         <div class="md:mt-6 justify-self-end shrink self-center">
-          <DsfrButton secondary size="sm" icon="ri-file-excel-2-fill">
-            <a :href="excelUrl" download>Télécharger</a>
+          <DsfrButton @click="canDownloadFile ? null : (opened = true)" secondary size="sm" icon="ri-file-excel-2-fill">
+            <a :href="canDownloadFile ? excelUrl : 'javascript:void(0)'" download>Télécharger</a>
           </DsfrButton>
+          <DsfrModal
+            v-model:opened="opened"
+            title="Nombre de déclarations trop élévé"
+            :icon="icon"
+            :is-alert="isAlert"
+            @close="opened = false"
+          >
+            <p>
+              La recherche actuelle présente {{ data?.count }} résultats. Un maximum de
+              {{ maxDownloadSize }} déclarations peuvent être exportées.
+            </p>
+            <p>
+              Merci d'affiner votre recherche ou de contacter notre équipe pour demander un export avec les filtres
+              choisis.
+            </p>
+          </DsfrModal>
         </div>
       </div>
     </div>
@@ -167,6 +183,8 @@ const route = useRoute()
 const searchTerm = ref(route.query.recherche)
 const activeAccordion = ref()
 
+const opened = ref(false)
+
 // Valeurs obtenus du queryparams
 
 const page = computed(() => parseInt(route.query.page))
@@ -236,6 +254,9 @@ const getApiUrlIdsForType = (types) => {
       .join(",") || []
   return ids.length ? ids : null
 }
+
+const maxDownloadSize = 2000
+const canDownloadFile = computed(() => (data.value?.count || 0) <= maxDownloadSize)
 
 // Requêtes
 
