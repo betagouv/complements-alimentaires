@@ -3,13 +3,13 @@
     <DsfrBreadcrumb
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Recherche avancée' }]"
     />
-    <div class="mb-2 md:flex gap-16 search-area">
-      <div class="md:w-2/4 pt-1">
+    <div class="mb-2 md:flex gap-8 search-area">
+      <div class="md:w-1/3 lg:w-2/5 pt-1">
         <DsfrFieldset legend="Recherche" class="!mb-0">
           <DsfrSearchBar v-model="searchTerm" placeholder="Nom du produit, ID ou entreprise" @search="search" />
         </DsfrFieldset>
       </div>
-      <div class="md:w-2/4 md:flex gap-4">
+      <div class="md:w-2/3 lg:w-3/5 md:flex gap-3">
         <DsfrInputGroup>
           <DsfrSelect
             label="Trier par"
@@ -21,6 +21,11 @@
           />
         </DsfrInputGroup>
         <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
+        <div class="md:mt-6 justify-self-end shrink self-center">
+          <DsfrButton secondary size="sm" icon="ri-file-excel-2-fill">
+            <a :href="excelUrl" download>Télécharger</a>
+          </DsfrButton>
+        </div>
       </div>
     </div>
     <DsfrAccordionsGroup v-model="activeAccordion" class="border mb-8 filter-area">
@@ -117,6 +122,7 @@
     </div>
     <div v-else-if="hasDeclarations">
       <SearchResultsTable :data="data" />
+
       <DsfrPagination
         v-if="showPagination"
         @update:currentPage="updatePage"
@@ -228,8 +234,7 @@ const getApiUrlIdsForType = (types) => {
 
 // Requêtes
 
-const url = computed(() => {
-  const baseUrl = "/api/v1/declarations"
+const apiQueryParams = computed(() => {
   const limitQuery = limit.value ? `?limit=${limit.value}` : "?"
   const offsetQuery = offset.value ? `&offset=${offset.value}` : ""
   const statusQuery = filteredStatus.value ? `&status=${filteredStatus.value}` : ""
@@ -257,12 +262,17 @@ const url = computed(() => {
   const substancesQuery = substanceIds ? `&substances=${substanceIds}` : ""
   const ingredientsQuery = ingredientsIds ? `&ingredients=${ingredientsIds}` : ""
 
-  const fullPath = `${baseUrl}/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}`
+  const queryParams = `/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}`
 
   // Enlève les `&` consecutifs
-  return fullPath.replace(/&+/g, "&").replace(/&$/, "")
+  return queryParams.replace(/&+/g, "&").replace(/&$/, "")
 })
-const { response, data, isFetching, execute } = useFetch(url).get().json()
+const apiUrl = computed(() => `/api/v1/declarations${apiQueryParams.value}`)
+const excelUrl = computed(() => `/api/v1/declarations.xlsx${apiQueryParams.value}`)
+
+const { response, data, isFetching, execute } = useFetch(apiUrl, { headers: { Accept: "application/json" } })
+  .get()
+  .json()
 
 const fetchSearchResults = async () => {
   await execute()
