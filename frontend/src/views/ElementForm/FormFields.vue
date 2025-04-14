@@ -144,6 +144,7 @@
               :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
               v-model="state.unit"
               defaultUnselectedText="Unité"
+              required
             />
           </DsfrInputGroup>
           <div v-else class="pt-4">
@@ -348,9 +349,9 @@ const rules = computed(() => {
     genus: form?.genus ? errorRequiredField : {},
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
+    unit: form?.nutritionalReference && !props.element ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
-    unit: state.value.maxQuantities?.length || state.value.nutritionalReference ? errorRequiredField : {},
   }
 })
 watch(formForType, () => v$.value.$reset())
