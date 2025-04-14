@@ -412,7 +412,7 @@ class DeclarationHyperlinkXLSXRenderer(XLSXRenderer):
 
         # Ajouter le lien vers le résultat de la recherche dans le nom du produit
         for sheet in workbook.worksheets:
-            for row in sheet.iter_rows(min_row=2):
+            for row in sheet.iter_rows(min_row=2):  # L'index commence à 1, et on veux éviter l'entête, donc 2
                 name_cell = row[0]
                 hyperlink_data = data[name_cell.row - 2]["url_field"]
                 name_cell.value = hyperlink_data.display
