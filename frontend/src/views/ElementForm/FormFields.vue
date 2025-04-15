@@ -92,7 +92,7 @@
         <DsfrMultiselect
           v-model="state.plantParts"
           :options="plantParts"
-          label="Partie(s) utilisée(s)"
+          label="Partie(s) autorisée(s)"
           search
           labelKey="name"
         />
