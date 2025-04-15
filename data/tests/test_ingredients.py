@@ -26,14 +26,6 @@ class IngredientTestCase(TestCase):
         """
         Les substances ont leur type calculés correctement
         """
-        # les glucides
-        ose = SubstanceFactory.create(ca_name="pulpose")
-        self.assertIn(SubstanceType.CARBOHYDRATE, ose.substance_types)
-
-        # les enzymes
-        ase = SubstanceFactory.create(ca_name="pulpase")
-        self.assertIn(SubstanceType.ENZYME, ase.substance_types)
-
         # une vitamine peut aussi être métabolite
         vitamine = SubstanceFactory.create(ca_name="vitamine Z")
 

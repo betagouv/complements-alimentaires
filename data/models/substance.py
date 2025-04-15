@@ -153,6 +153,7 @@ class Substance(IngredientCommonModel):
         except MaxQuantityPerPopulationRelation.DoesNotExist:
             return
 
+
     @property
     def standalone_usable(self):
         return SubstanceType.BIOACTIVE_SUBSTANCE in self.substance_types
