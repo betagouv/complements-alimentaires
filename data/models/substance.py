@@ -121,6 +121,7 @@ class Substance(IngredientCommonModel):
         models.IntegerField(null=True, choices=SubstanceType.choices),
         null=True,
         verbose_name="type(s) de la substance",
+        default=list,
     )
 
     history = HistoricalRecords(

@@ -27,7 +27,7 @@ class AutocompleteView(APIView):
 
         query = {"term": term, "type": request.data.get("type")}
         results = search_elements(
-            query, deduplicate=False, exclude_not_authorized=True, exclude_indirect_substances=True
+            query, deduplicate=False, exclude_not_authorized=True, keep_only_standalone_usable=True
         )[: self.max_autocomplete_items]
         return JsonResponse(self.serialize_results(results), safe=False)
 

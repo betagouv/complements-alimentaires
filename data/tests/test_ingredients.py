@@ -24,37 +24,26 @@ class IngredientTestCase(TestCase):
 
     def test_substance_types_are_well_assigned(self):
         """
-        Les substances ont leur type calculés correctement
+        Les substances ont le type métabolite secondaire calculé automatiquement correctement
         """
-        # une vitamine peut aussi être métabolite
-        vitamine = SubstanceFactory.create(ca_name="vitamine Z")
+        # une substance peut être métabolite et un autre type
+        substance = SubstanceFactory.create(ca_name="substance Z")
 
-        ingredient_supplying_vitamine = IngredientFactory.create(
-            ca_name="vitamine Z form of supply", ingredient_type=IngredientType.FORM_OF_SUPPLY, substances=[]
+        ingredient_supplying_substance = IngredientFactory.create(
+            ca_name="substance Z form of supply", ingredient_type=IngredientType.FORM_OF_SUPPLY, substances=[]
         )
-        ingredient_supplying_vitamine.substances.add(vitamine)
-        plant_supplying_vitamine = PlantFactory.create(ca_name="plant supplying vitamine Z", substances=[])
-        plant_supplying_vitamine.substances.add(vitamine)
-        vitamine.refresh_from_db()
+        ingredient_supplying_substance.substances.add(substance)
+        plant_supplying_substance = PlantFactory.create(ca_name="plant supplying substance Z", substances=[])
+        plant_supplying_substance.substances.add(substance)
+        substance.refresh_from_db()
 
-        self.assertIn(SubstanceType.VITAMIN, vitamine.substance_types)
-        self.assertIn(SubstanceType.SECONDARY_METABOLITE, vitamine.substance_types)
-
-        # les minéraux
-        mineral = SubstanceFactory.create(ca_name="sirum")
-        ingredient_supplying_mineral = IngredientFactory.create(
-            ca_name="sirum supply", ingredient_type=IngredientType.FORM_OF_SUPPLY, substances=[]
-        )
-        ingredient_supplying_mineral.substances.add(mineral)
-        mineral.refresh_from_db()
-
-        self.assertIn(SubstanceType.MINERAL, mineral.substance_types)
+        self.assertIn(SubstanceType.SECONDARY_METABOLITE, substance.substance_types)
 
         # les sans types
         nothing = SubstanceFactory.create(ca_name="nothing")
         _ = IngredientFactory.create(
             ca_name="sirum supply", ingredient_type=IngredientType.ACTIVE_INGREDIENT, substances=[]
         )
-        ingredient_supplying_mineral.substances.add(nothing)
+        ingredient_supplying_substance.substances.add(nothing)
 
         self.assertEqual(nothing.substance_types, [])

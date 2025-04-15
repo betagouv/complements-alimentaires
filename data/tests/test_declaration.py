@@ -290,7 +290,8 @@ class DeclarationTestCase(TestCase):
         substance_types = [
             [SubstanceType.VITAMIN],
             [SubstanceType.MINERAL],
-            [SubstanceType.CARBOHYDRATE, SubstanceType.MINERAL],
+            [SubstanceType.BIOACTIVE_SUBSTANCE, SubstanceType.MINERAL],
+            [SubstanceType.SECONDARY_METABOLITE, SubstanceType.VITAMIN],
         ]
         for type in substance_types:
             declaration_with_computed_nutriment_max_exceeded = InstructionReadyDeclarationFactory(
@@ -364,8 +365,9 @@ class DeclarationTestCase(TestCase):
         SUBSTANCE_MAX_QUANTITY = 1.0
         substance_types = [
             [SubstanceType.SECONDARY_METABOLITE],
-            [SubstanceType.ENZYME],
-            [SubstanceType.CARBOHYDRATE, SubstanceType.ENZYME],
+            [SubstanceType.BIOACTIVE_SUBSTANCE],
+            [SubstanceType.SECONDARY_METABOLITE, SubstanceType.BIOACTIVE_SUBSTANCE],
+            [],
         ]
         for type in substance_types:
             declaration_with_computed_substance_max_exceeded = InstructionReadyDeclarationFactory(
@@ -446,8 +448,9 @@ class DeclarationTestCase(TestCase):
         other_substance_type = choice(
             [
                 [SubstanceType.SECONDARY_METABOLITE],
-                [SubstanceType.ENZYME],
-                [SubstanceType.CARBOHYDRATE, SubstanceType.ENZYME],
+                [SubstanceType.BIOACTIVE_SUBSTANCE],
+                [SubstanceType.SECONDARY_METABOLITE, SubstanceType.BIOACTIVE_SUBSTANCE],
+                [],
             ]
         )
         for substance_type in [
