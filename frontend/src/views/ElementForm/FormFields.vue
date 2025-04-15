@@ -90,7 +90,7 @@
     <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
       <div v-if="formForType.plantParts" class="grid md:grid-cols-3 items-end my-4 md:my-2">
         <DsfrMultiselect
-          v-model="state.plantParts"
+          v-model="state.authorisedPlantParts"
           :options="plantParts"
           label="Partie(s) autorisée(s)"
           search
@@ -98,11 +98,29 @@
         />
         <div class="md:ml-4 md:my-8 md:col-span-2">
           <DsfrTag
-            v-for="(id, idx) in state.plantParts"
+            v-for="(id, idx) in state.authorisedPlantParts"
             :key="`plant-part-${id}`"
             :label="optionLabel(plantParts, id)"
             tagName="button"
-            @click="state.plantParts.splice(idx, 1)"
+            @click="state.authorisedPlantParts.splice(idx, 1)"
+            :aria-label="`Retirer ${optionLabel(plantParts, id)}`"
+            class="mx-1 fr-tag--dismiss"
+          ></DsfrTag>
+        </div>
+        <DsfrMultiselect
+          v-model="state.forbiddenPlantParts"
+          :options="plantParts"
+          label="Partie(s) non-autorisée(s)"
+          search
+          labelKey="name"
+        />
+        <div class="md:ml-4 md:my-8 md:col-span-2">
+          <DsfrTag
+            v-for="(id, idx) in state.forbiddenPlantParts"
+            :key="`plant-part-${id}`"
+            :label="optionLabel(plantParts, id)"
+            tagName="button"
+            @click="state.forbiddenPlantParts.splice(idx, 1)"
             :aria-label="`Retirer ${optionLabel(plantParts, id)}`"
             class="mx-1 fr-tag--dismiss"
           ></DsfrTag>
@@ -210,7 +228,8 @@ const router = useRouter()
 const createEmptySynonym = () => ({ name: "" })
 
 const state = ref({
-  plantParts: [],
+  authorisedPlantParts: [],
+  forbiddenPlantParts: [],
   substances: [],
   synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
 })
@@ -221,7 +240,10 @@ watch(
     state.value = JSON.parse(JSON.stringify(props.element))
     state.value.status = statuses.find((s) => s.apiValue === state.value.status)?.value
     if (state.value.family) state.value.family = state.value.family.id
-    if (state.value.plantParts) state.value.plantParts = state.value.plantParts.map((p) => p.id)
+    if (state.value.plantParts) {
+      state.value.authorisedPlantParts = state.value.plantParts.filter((p) => !!p.isUseful).map((p) => p.id)
+      state.value.forbiddenPlantParts = state.value.plantParts.filter((p) => !p.isUseful).map((p) => p.id)
+    }
     if (state.value.objectType && apiType.value === "other-ingredient")
       state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
     if (state.value.unitId) state.value.unit = state.value.unitId
@@ -243,6 +265,7 @@ const saveElement = async () => {
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
   if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
+  // TODO: maybe parse authorised and forbidden plant parts?
 
   const { response } = isNewIngredient.value
     ? await useFetch(url, { headers: headers() }).post(payload).json()
