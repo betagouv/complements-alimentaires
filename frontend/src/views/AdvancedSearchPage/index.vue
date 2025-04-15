@@ -3,13 +3,13 @@
     <DsfrBreadcrumb
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Recherche avancée' }]"
     />
-    <div class="mb-2 md:flex gap-16 search-area">
-      <div class="md:w-2/4 pt-1">
+    <div class="mb-2 md:flex gap-8 search-area">
+      <div class="md:w-1/3 lg:w-2/5 pt-1">
         <DsfrFieldset legend="Recherche" class="!mb-0">
           <DsfrSearchBar v-model="searchTerm" placeholder="Nom du produit, ID ou entreprise" @search="search" />
         </DsfrFieldset>
       </div>
-      <div class="md:w-2/4 md:flex gap-4">
+      <div class="md:w-2/3 lg:w-3/5 md:flex gap-3">
         <DsfrInputGroup>
           <DsfrSelect
             label="Trier par"
@@ -21,6 +21,27 @@
           />
         </DsfrInputGroup>
         <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
+        <div class="md:mt-6 justify-self-end shrink self-center">
+          <DsfrButton @click="canDownloadFile ? null : (opened = true)" secondary size="sm" icon="ri-file-excel-2-fill">
+            <a :href="canDownloadFile ? excelUrl : 'javascript:void(0)'" download>Télécharger</a>
+          </DsfrButton>
+          <DsfrModal
+            v-model:opened="opened"
+            title="Nombre de déclarations trop élévé"
+            :icon="icon"
+            :is-alert="isAlert"
+            @close="opened = false"
+          >
+            <p>
+              La recherche actuelle présente {{ data?.count }} résultats. Un maximum de
+              {{ maxDownloadSize }} déclarations peuvent être exportées.
+            </p>
+            <p>
+              Merci d'affiner votre recherche ou de contacter notre équipe pour demander un export avec les filtres
+              choisis.
+            </p>
+          </DsfrModal>
+        </div>
       </div>
     </div>
     <DsfrAccordionsGroup v-model="activeAccordion" class="border mb-8 filter-area">
@@ -122,6 +143,7 @@
     </div>
     <div v-else-if="hasDeclarations">
       <SearchResultsTable :data="data" />
+
       <DsfrPagination
         v-if="showPagination"
         @update:currentPage="updatePage"
@@ -160,6 +182,8 @@ const router = useRouter()
 const route = useRoute()
 const searchTerm = ref(route.query.recherche)
 const activeAccordion = ref()
+
+const opened = ref(false)
 
 // Valeurs obtenus du queryparams
 
@@ -231,10 +255,12 @@ const getApiUrlIdsForType = (types) => {
   return ids.length ? ids : null
 }
 
+const maxDownloadSize = 2000
+const canDownloadFile = computed(() => (data.value?.count || 0) <= maxDownloadSize)
+
 // Requêtes
 
-const url = computed(() => {
-  const baseUrl = "/api/v1/declarations"
+const apiQueryParams = computed(() => {
   const limitQuery = limit.value ? `?limit=${limit.value}` : "?"
   const offsetQuery = offset.value ? `&offset=${offset.value}` : ""
   const statusQuery = filteredStatus.value ? `&status=${filteredStatus.value}` : ""
@@ -263,12 +289,17 @@ const url = computed(() => {
   const substancesQuery = substanceIds ? `&substances=${substanceIds}` : ""
   const ingredientsQuery = ingredientsIds ? `&ingredients=${ingredientsIds}` : ""
 
-  const fullPath = `${baseUrl}/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}${countryQuery}`
+  const queryParams = `/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}${countryQuery}`
 
   // Enlève les `&` consecutifs
-  return fullPath.replace(/&+/g, "&").replace(/&$/, "")
+  return queryParams.replace(/&+/g, "&").replace(/&$/, "")
 })
-const { response, data, isFetching, execute } = useFetch(url).get().json()
+const apiUrl = computed(() => `/api/v1/declarations${apiQueryParams.value}`)
+const excelUrl = computed(() => `/api/v1/declarations-export.xlsx${apiQueryParams.value}`)
+
+const { response, data, isFetching, execute } = useFetch(apiUrl, { headers: { Accept: "application/json" } })
+  .get()
+  .json()
 
 const fetchSearchResults = async () => {
   await execute()

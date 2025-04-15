@@ -25,6 +25,7 @@ from .declaration import (
     DeclarationSerializer,
     DeclarationShortSerializer,
     SimpleDeclarationSerializer,
+    ExcelExportDeclarationSerializer,
     DeclaredElementSerializer,
     DeclaredPlantSerializer,
     DeclaredMicroorganismSerializer,
