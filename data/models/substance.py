@@ -167,7 +167,6 @@ class Substance(IngredientCommonModel):
         # ajoute le type métabolite secondaire s'il n'a pas été indiqué dans les types
         if len(self.plant_set.all()) != 0 and SubstanceType.SECONDARY_METABOLITE not in self.substance_types:
             self.substance_types.append(SubstanceType.SECONDARY_METABOLITE)
-            print(f"Ajout métabolite pour {self.name}")
             # Mise à jour sans appeler save() à nouveau
             # super().save(update_fields={"substance_types": self.substance_types})
             Substance.objects.filter(pk=self.pk).update(substance_types=self.substance_types)
