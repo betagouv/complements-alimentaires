@@ -304,7 +304,7 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
 class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(read_only=True, source="company.social_name")
     siret = serializers.CharField(read_only=True, source="company.siret")
-    tva = serializers.CharField(read_only=True, source="company.tva")
+    vat = serializers.CharField(read_only=True, source="company.vat")
     article = serializers.SerializerMethodField(read_only=True)
     status = serializers.SerializerMethodField(read_only=True)
 
@@ -320,7 +320,7 @@ class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
             "status",
             "company_name",
             "siret",
-            "tva",
+            "vat",
             "row_color",  # Champ utilisé en interne par drf-excel
         )
         read_only_fields = fields
