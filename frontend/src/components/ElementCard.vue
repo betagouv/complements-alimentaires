@@ -131,7 +131,7 @@ const props = defineProps({ objectType: { type: String }, canRemove: { type: Boo
 const synonyms = computed(() => model.value.element?.synonyms?.map((x) => x.name)?.join(", "))
 
 const plantParts = computed(() => {
-  const parts = model.value.element?.plantParts || store.plantParts
+  const parts = model.value.element?.plantParts?.filter((p) => !!p.isUseful) || store.plantParts
   return parts?.map((x) => ({ text: x.name, value: x.id })) || []
 })
 
