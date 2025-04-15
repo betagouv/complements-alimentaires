@@ -2,9 +2,9 @@ import logging
 import sys
 
 from django.db import migrations
+from django.db.models import TextField, Transform
 
 import pandas as pd
-from django.db.models import TextField, Transform
 
 from data.models.substance import SubstanceType
 
@@ -56,7 +56,9 @@ class Migration(migrations.Migration):
                 # si type = 6, alors c'est le default substance_types = []
                 pass
             else:
-                ca_substance.substance_types.append(TELEICARE_SUBSTANCE_TYPE_MAPPING[siccrf_substance["TYSUBST_IDENT"]])
+                ca_substance.substance_types.append(
+                    TELEICARE_SUBSTANCE_TYPE_MAPPING[siccrf_substance["TYSUBST_IDENT"]]
+                )
                 ca_substance.substance_types = list(set(ca_substance.substance_types))
 
             ca_substance.save()
@@ -64,6 +66,8 @@ class Migration(migrations.Migration):
     def reverse_set_substance_types_from_teleicare(apps, schema_editor):
         pass
 
-    operations = [
-        migrations.RunPython(set_substance_types_from_teleicare, reverse_set_substance_types_from_teleicare)
-    ] if 'test' not in sys.argv else []
+    operations = (
+        [migrations.RunPython(set_substance_types_from_teleicare, reverse_set_substance_types_from_teleicare)]
+        if "test" not in sys.argv
+        else []
+    )
