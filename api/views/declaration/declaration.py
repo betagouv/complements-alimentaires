@@ -446,7 +446,7 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
             "Marque",
             "Article",
             "Statut",
-            "Nom de la compagnie",
+            "Nom de l'entreprise",
             "No. SIRET",
             "No. TVA",
         ],
