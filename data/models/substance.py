@@ -23,8 +23,12 @@ class SubstanceType(models.IntegerChoices):
     SECONDARY_METABOLITE = (
         3,
         "Métabolite secondaire de plante",
-    )  # décrits comme BOTANICAL_AND_BOTANICAL_EXTRACT par https://food.ec.europa.eu
-    BIOACTIVE_SUBSTANCE = 4, "Substance active à but nutritionnel ou physiologique"
+    )
+    BIOACTIVE_SUBSTANCE = (
+        4,
+        "Substance active à but nutritionnel ou physiologique",
+    )  # elles respectent l'arrêté substances du 26 sept 2016 (substances acceptées par la DGCCRF)
+
     # ce sont des types qui pourraient être intéressant pour information
     # aux consommateurices mais n'ont pas d'intérêt pour la règlementation des CA
     # CARBOHYDRATE = 5, "Glucide" - finissent par ose
@@ -153,7 +157,6 @@ class Substance(IngredientCommonModel):
         except MaxQuantityPerPopulationRelation.DoesNotExist:
             return
 
-
     @property
     def standalone_usable(self):
         return SubstanceType.BIOACTIVE_SUBSTANCE in self.substance_types
@@ -164,7 +167,7 @@ class Substance(IngredientCommonModel):
         # ajoute le type métabolite secondaire s'il n'a pas été indiqué dans les types
         if len(self.plant_set.all()) != 0 and SubstanceType.SECONDARY_METABOLITE not in self.substance_types:
             self.substance_types.append(SubstanceType.SECONDARY_METABOLITE)
-
+            print(f"Ajout métabolite pour {self.name}")
             # Mise à jour sans appeler save() à nouveau
             # super().save(update_fields={"substance_types": self.substance_types})
             Substance.objects.filter(pk=self.pk).update(substance_types=self.substance_types)
