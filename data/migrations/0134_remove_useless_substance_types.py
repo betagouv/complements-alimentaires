@@ -14,14 +14,17 @@ class Migration(migrations.Migration):
 
     def remove_unused_types_from_substance_types(apps, schema_editor):
         Substance = apps.get_model("data", "Substance")
-        for substance in Substance.objects.filter(
-            substance_types__overlap=[SubstanceType.CARBOHYDRATE, SubstanceType.ENZYME]
-        ):
-            new_substance_types = list(
-                set(substance.substance_types) - set([SubstanceType.CARBOHYDRATE, SubstanceType.ENZYME])
-            )
-            substance.substance_types = new_substance_types
-            substance.save()
+        if 'CARBOHYDRATE' in SubstanceType._member_names_ and 'ENZYME' in SubstanceType._member_names_:
+            for substance in Substance.objects.filter(
+                substance_types__overlap=[SubstanceType.CARBOHYDRATE, SubstanceType.ENZYME]
+            ):
+                new_substance_types = list(
+                    set(substance.substance_types) - set([SubstanceType.CARBOHYDRATE, SubstanceType.ENZYME])
+                )
+                substance.substance_types = new_substance_types
+                substance.save()
+        else:
+            pass
 
     def reverse_remove_unused_types_from_substance_types(apps, schema_editor):
         pass

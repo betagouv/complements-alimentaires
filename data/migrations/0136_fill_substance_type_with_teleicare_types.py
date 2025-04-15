@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from django.db import migrations
 
@@ -64,5 +65,5 @@ class Migration(migrations.Migration):
         pass
 
     operations = [
-        migrations.RunPython(set_substance_types_from_teleicare, reverse_set_substance_types_from_teleicare),
-    ]
+        migrations.RunPython(set_substance_types_from_teleicare, reverse_set_substance_types_from_teleicare)
+    ] if 'test' not in sys.argv else []
