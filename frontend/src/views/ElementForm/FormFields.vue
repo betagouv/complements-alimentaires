@@ -253,19 +253,26 @@ watch(
 const saveElement = async () => {
   v$.value.$reset()
   v$.value.$validate()
+  // TODO: validate deduplication of plant parts
   if (v$.value.$error) {
     window.scrollTo(0, 0)
     return
   }
 
   const url = `/api/v1/${apiType.value}s/`
-  const payload = state.value
+  const payload = JSON.parse(JSON.stringify(state.value))
   if (payload.substances?.length) {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
   if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
-  // TODO: maybe parse authorised and forbidden plant parts?
+  if (payload.authorisedPlantParts?.length || payload.forbiddenPlantParts.length) {
+    const authorisedParts = payload.authorisedPlantParts
+    const forbiddenParts = payload.forbiddenPlantParts
+    payload.plantParts = authorisedParts
+      .map((p) => ({ plantpart: p, isUseful: true }))
+      .concat(forbiddenParts.map((p) => ({ plantpart: p, isUseful: false })))
+  }
 
   const { response } = isNewIngredient.value
     ? await useFetch(url, { headers: headers() }).post(payload).json()

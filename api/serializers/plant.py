@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import serializers
 
 from data.models import Part, Plant, PlantFamily, PlantPart, PlantSynonym
@@ -80,9 +81,21 @@ class PlantSynonymModificationSerializer(serializers.ModelSerializer):
         fields = ("name",)
 
 
+class PlantPartModificationSerializer(serializers.ModelSerializer):
+    plantpart = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all())
+    is_useful = serializers.BooleanField()
+
+    class Meta:
+        model = Part
+        fields = (
+            "plantpart",
+            "is_useful",
+        )
+
+
 class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSubstances, WithName):
     synonyms = PlantSynonymModificationSerializer(many=True, source="plantsynonym_set", required=False)
-    plant_parts = serializers.PrimaryKeyRelatedField(many=True, queryset=PlantPart.objects.all())
+    plant_parts = PlantPartModificationSerializer(source="part_set", many=True)
     family = serializers.PrimaryKeyRelatedField(queryset=PlantFamily.objects.all(), source="ca_family")
 
     synonym_model = PlantSynonym
@@ -100,3 +113,25 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
             )
         )
         read_only = COMMON_READ_ONLY_FIELDS
+
+    # DRF ne gère pas automatiquement la création des nested-fields :
+    # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
+    @transaction.atomic
+    def create(self, validated_data):
+        parts = validated_data.pop("part_set", [])
+        plant = super().create(validated_data)
+
+        for part in parts:
+            Part.objects.create(plant=plant, plantpart=part["plantpart"], ca_is_useful=part["is_useful"])
+
+        return plant
+
+    # TODO
+    # @transaction.atomic
+    # def update(self, instance, validated_data):
+    #     parts = validated_data.pop("part_set", [])
+    #     plant = super().create(validated_data)
+
+    #     # for part in parts:
+
+    #     return plant

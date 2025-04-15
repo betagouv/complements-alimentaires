@@ -273,7 +273,7 @@ class TestElementsCreateApi(APITestCase):
                 {"name": "A second one"},
                 {"name": "My new plant"},
             ],
-            "plantParts": [part_1.id, part_2.id],
+            "plantParts": [{"plantpart": part_1.id, "isUseful": True}, {"plantpart": part_2.id, "isUseful": False}],
             "substances": [substance.id],
             "publicComments": "Test",
             "privateComments": "Test private",
@@ -290,7 +290,9 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(plant.plantsynonym_set.count(), 2)  # deduplication of synonym
         self.assertTrue(plant.plantsynonym_set.filter(name="A latin name").exists())
         self.assertTrue(plant.plantsynonym_set.filter(name="A second one").exists())
-        self.assertEqual(plant.plant_parts.count(), 2)
+        self.assertEqual(plant.part_set.count(), 2)
+        self.assertTrue(plant.part_set.get(plantpart=part_1.id).is_useful)
+        self.assertFalse(plant.part_set.get(plantpart=part_2.id).is_useful)
         self.assertEqual(plant.substances.count(), 1)
         self.assertEqual(plant.ca_public_comments, "Test")
         self.assertEqual(plant.ca_private_comments, "Test private")
@@ -578,6 +580,9 @@ class TestElementsModifyApi(APITestCase):
                 substance=substance, population=general_population
             ).exists()
         )
+
+    # TODO: test update of plant parts
+    # TODO: test throwing error if one part is given more than once
 
     @authenticate
     def test_delete_data(self):
