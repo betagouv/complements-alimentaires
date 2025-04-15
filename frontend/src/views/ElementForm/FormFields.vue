@@ -413,7 +413,6 @@ const deleteMaxQuantity = (idx) => {
 }
 const maxQuantitiesError = ref()
 const validateMaxQuantities = () => {
-  // TODO: do we use must_specify_max_quantity ?
   const hasMissingData = state.value.maxQuantities.some((q) => !q.population || (!q.maxQuantity && q.maxQuantity !== 0))
   maxQuantitiesError.value = hasMissingData && "Veuillez compléter tous les champs ou supprimer les lignes vides"
 }
