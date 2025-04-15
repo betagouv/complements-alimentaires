@@ -54,10 +54,8 @@ DECLARATION_MODELS = [Condition, Effect, GalenicFormulation, Population, Prepara
 
 
 ## Signals ici pour éviter les imports récursifs
-@receiver((m2m_changed), sender=IngredientSubstanceRelation)
 @receiver((m2m_changed), sender=PlantSubstanceRelation)
 def update_substance_type(sender, instance, action, *args, **kwargs):
     if action in ("post_add", "post_remove", "post_delete"):
         for substance in instance.substances.all():
-            substance.substance_types = substance.compute_substance_types()
-            Substance.objects.filter(pk=substance.pk).update(substance_types=substance.substance_types)
+            substance.update_metabolite_type()

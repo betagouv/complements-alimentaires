@@ -161,15 +161,20 @@ class Substance(IngredientCommonModel):
     def standalone_usable(self):
         return SubstanceType.BIOACTIVE_SUBSTANCE in self.substance_types
 
+    def update_metabolite_type(self):
+        # ajoute le type métabolite secondaire s'il n'a pas été indiqué dans les types
+        new_substance_type = self.substance_types or []
+        if len(self.plant_set.all()) != 0 and SubstanceType.SECONDARY_METABOLITE not in new_substance_type:
+            new_substance_type.append(SubstanceType.SECONDARY_METABOLITE)
+            Substance.objects.filter(pk=self.pk).update(substance_types=new_substance_type)
+        # supprime le type métabolite secondaire s'il est dans les types mais n'est pas valide
+        elif SubstanceType.SECONDARY_METABOLITE in new_substance_type and len(self.plant_set.all()) == 0:
+            new_substance_type.remove(SubstanceType.SECONDARY_METABOLITE)
+            Substance.objects.filter(pk=self.pk).update(substance_types=new_substance_type)
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
-        # ajoute le type métabolite secondaire s'il n'a pas été indiqué dans les types
-        if len(self.plant_set.all()) != 0 and SubstanceType.SECONDARY_METABOLITE not in self.substance_types:
-            self.substance_types.append(SubstanceType.SECONDARY_METABOLITE)
-            # Mise à jour sans appeler save() à nouveau
-            # super().save(update_fields={"substance_types": self.substance_types})
-            Substance.objects.filter(pk=self.pk).update(substance_types=self.substance_types)
+        self.update_metabolite_type()
 
 
 class SubstanceSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
