@@ -38,6 +38,8 @@ class IngredientTestCase(TestCase):
         substance.refresh_from_db()
 
         self.assertIn(SubstanceType.SECONDARY_METABOLITE, substance.substance_types)
+        self.assertNotIn(SubstanceType.VITAMIN, substance.substance_types)
+        self.assertNotIn(SubstanceType.MINERAL, substance.substance_types)
 
         # les sans types
         nothing = SubstanceFactory.create(ca_name="nothing")

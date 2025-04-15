@@ -15,6 +15,7 @@ from data.factories import (
 )
 from data.models.ingredient_status import IngredientStatus
 from data.models.ingredient_type import IngredientType
+from data.models.substance import SubstanceType
 
 
 class TestAutocomplete(APITestCase):
@@ -42,7 +43,9 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "eucal"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        eucalyptus_1 = SubstanceFactory.create(ca_name="eucalyptus")
+        eucalyptus_1 = SubstanceFactory.create(
+            ca_name="eucalyptus", substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE]
+        )
 
         # Deuxième position car la chaîne de caractères est plus éloignée
         eucalyptus_2 = IngredientFactory.create(ca_name="eucalyptus tree")
@@ -75,7 +78,7 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "buplevre"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        buplevre_1 = SubstanceFactory.create(ca_name="Buplèvre")
+        buplevre_1 = SubstanceFactory.create(ca_name="Buplèvre", substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE])
 
         # Deuxième position car la chaîne de caractères est plus éloignée
         buplevre_2 = PlantFactory.create(ca_name="Buplèvre en faux")
@@ -108,7 +111,11 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "ephedra"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        authorized_substance = SubstanceFactory.create(ca_name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED)
+        authorized_substance = SubstanceFactory.create(
+            ca_name="Vitamine C",
+            siccrf_status=IngredientStatus.AUTHORIZED,
+            substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE],
+        )
         SubstanceSynonymFactory.create(name="Ephedra", standard_name=authorized_substance)
 
         forbidden_plant = PlantFactory.create(
@@ -118,7 +125,9 @@ class TestAutocomplete(APITestCase):
             ca_name="Ephedra ingredient", siccrf_status=IngredientStatus.NOT_AUTHORIZED
         )
         forbidden_substance = SubstanceFactory.create(
-            ca_name="Ephedra ine", siccrf_status=IngredientStatus.NOT_AUTHORIZED
+            ca_name="Ephedra ine",
+            siccrf_status=IngredientStatus.NOT_AUTHORIZED,
+            substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE],
         )
 
         to_be_authorized_plant = PlantFactory.create(
@@ -141,6 +150,7 @@ class TestAutocomplete(APITestCase):
         """
         Substance with types "Mineral" or "Vitamine" should not be returned by autocomplete
         """
+        # TODO
         autocomplete_term = "vitamine"
 
         substance_not_to_be_returned = SubstanceFactory.create(
@@ -171,7 +181,9 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "eucal"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        eucalyptus_1 = SubstanceFactory.create(ca_name="eucalyptus")
+        eucalyptus_1 = SubstanceFactory.create(
+            ca_name="eucalyptus", substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE]
+        )
 
         # ne pas faire apparaître
         IngredientFactory.create(ca_name="eucalyptus tree")
