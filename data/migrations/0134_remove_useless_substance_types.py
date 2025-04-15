@@ -4,7 +4,6 @@ from django.db import migrations
 
 from data.models.substance import SubstanceType
 
-# from django_postgres_extensions.models.functions import ArrayRemove
 
 
 class Migration(migrations.Migration):
