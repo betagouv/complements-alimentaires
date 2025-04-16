@@ -136,9 +136,6 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
           <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
         </DsfrInputGroup>
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'maxQuantity')">
-          <NumberField label="Quantité maximale autorisée" label-visible v-model="state.maxQuantity" />
-        </DsfrInputGroup>
         <div class="max-w-32">
           <DsfrInputGroup v-if="isNewIngredient" :error-message="firstErrorMsg(v$, 'unit')">
             <DsfrSelect
@@ -147,6 +144,7 @@
               :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
               v-model="state.unit"
               defaultUnselectedText="Unité"
+              required
             />
           </DsfrInputGroup>
           <div v-else class="pt-4">
@@ -155,7 +153,38 @@
           </div>
         </div>
       </div>
-      <p class="my-4"><i>Population cible et à risque en construction</i></p>
+      <div v-if="formForType.maxQuantity">
+        <DsfrTable
+          v-if="state.maxQuantities.length"
+          title="Quantités maximales par population"
+          :headers="maxQuantitiesHeaders"
+          class="!mb-2 quantities-table"
+        >
+          <tr v-for="(q, idx) in state.maxQuantities" :key="`max-quantity-row-${idx}`">
+            <td><DsfrSelect v-model="q.population" :options="populationOptions" /></td>
+            <td><DsfrInput v-model.number="q.maxQuantity" /></td>
+            <td>
+              <DsfrButton
+                label="Supprimer"
+                @click="deleteMaxQuantity(idx)"
+                :icon="{ name: 'ri-delete-bin-line' }"
+                icon-only
+                tertiary
+              />
+            </td>
+          </tr>
+        </DsfrTable>
+        <p v-else>Aucune quantité maximale n'est spécifiée.</p>
+        <p v-if="maxQuantitiesError" class="text-red-marianne-425">{{ maxQuantitiesError }}</p>
+        <DsfrButton
+          label="Ajouter une dose max pour une population"
+          @click="addNewMaxQuantity"
+          icon="ri-add-line"
+          size="sm"
+          class="mt-2"
+          secondary
+        />
+      </div>
     </DsfrFieldset>
     <DsfrFieldset legend="Commentaires" legendClass="fr-h4 !mb-0">
       <div class="grid md:grid-cols-2 md:gap-4">
@@ -213,6 +242,7 @@ const state = ref({
   plantParts: [],
   substances: [],
   synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
+  maxQuantities: [],
 })
 
 watch(
@@ -225,13 +255,16 @@ watch(
     if (state.value.objectType && apiType.value === "other-ingredient")
       state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
     if (state.value.unitId) state.value.unit = state.value.unitId
+    if (state.value.maxQuantities?.length)
+      state.value.maxQuantities.forEach((q) => (q.population = q.population.id.toString()))
   }
 )
 
 const saveElement = async () => {
   v$.value.$reset()
   v$.value.$validate()
-  if (v$.value.$error) {
+  validateMaxQuantities()
+  if (v$.value.$error || maxQuantitiesError.value) {
     window.scrollTo(0, 0)
     return
   }
@@ -259,6 +292,10 @@ const saveElement = async () => {
     })
     if (isNewIngredient.value) router.push({ name: "DashboardPage" })
     else router.navigateBack({ name: "DashboardPage" })
+  } else {
+    if ($externalResults.value.fieldErrors?.maxQuantities) {
+      maxQuantitiesError.value = $externalResults.value.fieldErrors.maxQuantities[0]
+    }
   }
 }
 const addNewSynonym = async () => {
@@ -316,8 +353,8 @@ const rules = computed(() => {
     genus: form?.genus ? errorRequiredField : {},
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
+    unit: form?.nutritionalReference && !props.element ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
-    maxQuantity: form?.maxQuantity ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
   }
 })
@@ -327,7 +364,7 @@ const $externalResults = ref({})
 const v$ = useVuelidate(rules, state, { $externalResults })
 
 const store = useRootStore()
-const { plantParts, plantFamilies, units } = storeToRefs(store)
+const { plantParts, plantFamilies, units, populations } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
 
@@ -362,6 +399,31 @@ const plantFamiliesDisplay = computed(() => {
 const aromaId = 3
 
 const unitString = computed(() => {
-  return getUnitString(state.value.unit, units)
+  return getUnitString(parseInt(state.value.unit, 10), units)
+})
+
+const populationOptions = computed(() => {
+  return populations.value?.map((pop) => ({ text: pop.name, value: pop.id.toString() }))
+})
+const addNewMaxQuantity = () => {
+  state.value.maxQuantities.push({})
+}
+const deleteMaxQuantity = (idx) => {
+  state.value.maxQuantities.splice(idx, 1)
+}
+const maxQuantitiesError = ref()
+const validateMaxQuantities = () => {
+  const hasMissingData = state.value.maxQuantities.some((q) => !q.population || (!q.maxQuantity && q.maxQuantity !== 0))
+  maxQuantitiesError.value = hasMissingData && "Veuillez compléter tous les champs ou supprimer les lignes vides"
+}
+const maxQuantitiesHeaders = computed(() => {
+  return ["Population", `Quantité max (en ${unitString.value})`, ""]
 })
 </script>
+
+<style scoped>
+.quantities-table :deep(caption.caption) {
+  /* la taille du fr-h5 */
+  font-size: 1.375rem;
+}
+</style>

@@ -100,7 +100,8 @@ class SubstanceSynonymModificationSerializer(serializers.ModelSerializer):
 
 
 class SubstanceMaxQuantityModificationSerializer(serializers.ModelSerializer):
-    population = serializers.CharField(source="population.name")
+    population = serializers.PrimaryKeyRelatedField(queryset=Population.objects.all())
+    max_quantity = serializers.FloatField(source="ca_max_quantity")
 
     class Meta:
         model = MaxQuantityPerPopulationRelation
@@ -136,46 +137,49 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
         )
         read_only = COMMON_READ_ONLY_FIELDS
 
+    def validate_max_quantities(self, value):
+        population_ids = [v["population"].id for v in value]
+        unique_pop_ids = list(set(population_ids))
+        if len(population_ids) != len(unique_pop_ids):
+            raise serializers.ValidationError("Veuillez donner qu'une quantité maximale par population")
+        return value
+
     @transaction.atomic
     def create(self, validated_data):
-        # le champ `max_quantity` n'existe pas dans validated_data
-        # car ce n'est pas un champ du Model mais une property
-        max_quantity = self.initial_data.get("max_quantity")
+        max_quantities = validated_data.pop("maxquantityperpopulationrelation_set", None)
         substance = super().create(validated_data)
-        if max_quantity:
-            general_population = Population.objects.get(name="Population générale")
-            MaxQuantityPerPopulationRelation.objects.create(
-                substance=substance, population=general_population, ca_max_quantity=max_quantity
-            )
+        if max_quantities is None:
+            return substance
+
+        for max_quantity in max_quantities:
+            self.add_max_quantity(substance, max_quantity)
 
         return substance
 
     @transaction.atomic
     def update(self, instance, validated_data):
+        max_quantities = validated_data.pop("maxquantityperpopulationrelation_set", None)
         substance = super().update(instance, validated_data)
+        if max_quantities is None:
+            return substance
 
-        # le champ `max_quantity` n'existe pas dans validated_data
-        # car ce n'est pas un champ du Model mais une property
-        if "max_quantity" in self.initial_data.keys():
-            max_quantity = self.initial_data.get("max_quantity")
+        populations_to_keep = [q["population"] for q in max_quantities]
+        substance.maxquantityperpopulationrelation_set.exclude(population__in=populations_to_keep).delete()
 
-            general_population = Population.objects.get(name="Population générale")
-            max_qty_general_pop = MaxQuantityPerPopulationRelation.objects.filter(
-                substance=substance, population=general_population
+        for max_quantity in max_quantities:
+            existing_q = substance.maxquantityperpopulationrelation_set.filter(
+                population=max_quantity["population"].id
             )
-
-            # delete
-            if max_qty_general_pop.exists() and max_quantity is None:
-                max_qty_general_pop.first().delete()
-            # update
-            elif max_qty_general_pop.exists() and max_quantity is not None:
-                max_quantity_to_change = max_qty_general_pop.first()
-                max_quantity_to_change.ca_max_quantity = max_quantity
-                max_quantity_to_change.save()
-            # create
-            elif not max_qty_general_pop.exists() and max_quantity is not None:
-                MaxQuantityPerPopulationRelation.objects.create(
-                    substance=substance, population=general_population, ca_max_quantity=max_quantity
-                )
+            if existing_q.exists():
+                existing_q = existing_q.first()
+                existing_q.ca_max_quantity = max_quantity["ca_max_quantity"]
+                existing_q.save()
+            else:
+                self.add_max_quantity(substance, max_quantity)
 
         return substance
+
+    def add_max_quantity(self, substance, max_quantity):
+        MaxQuantityPerPopulationRelation.objects.create(
+            substance=substance, population=max_quantity["population"], ca_max_quantity=max_quantity["ca_max_quantity"]
+        )
