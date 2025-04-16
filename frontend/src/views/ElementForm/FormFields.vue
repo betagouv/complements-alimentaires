@@ -413,7 +413,9 @@ const deleteMaxQuantity = (idx) => {
 }
 const maxQuantitiesError = ref()
 const validateMaxQuantities = () => {
-  const hasMissingData = state.value.maxQuantities.some((q) => !q.population || (!q.maxQuantity && q.maxQuantity !== 0))
+  const hasMissingData = state.value.maxQuantities?.some(
+    (q) => !q.population || (!q.maxQuantity && q.maxQuantity !== 0)
+  )
   maxQuantitiesError.value = hasMissingData && "Veuillez compléter tous les champs ou supprimer les lignes vides"
 }
 const maxQuantitiesHeaders = computed(() => {
