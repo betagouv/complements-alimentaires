@@ -1,8 +1,10 @@
 from drf_base64.fields import Base64FileField
+from openpyxl.cell.cell import Hyperlink
 from rest_framework import serializers
 
 from api.exceptions import ProjectAPIException
 from api.permissions import IsInstructor, IsVisor
+from api.utils.urls import get_base_url
 from data.models import (
     Attachment,
     Company,
@@ -297,6 +299,55 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
             "unit_measurement",
         )
         read_only_fields = fields
+
+
+class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
+    company_name = serializers.CharField(read_only=True, source="company.social_name")
+    siret = serializers.CharField(read_only=True, source="company.siret")
+    vat = serializers.CharField(read_only=True, source="company.vat")
+    article = serializers.SerializerMethodField(read_only=True)
+    status = serializers.SerializerMethodField(read_only=True)
+
+    # Champ spécial utilisé par drf-excel documenté ici : https://github.com/django-commons/drf-excel
+    row_color = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Declaration
+        fields = (
+            "name",
+            "brand",
+            "article",
+            "status",
+            "company_name",
+            "siret",
+            "vat",
+            "row_color",  # Champ utilisé en interne par drf-excel
+        )
+        read_only_fields = fields
+
+    def get_row_color(self, instance):
+        """
+        Permet d'alterner les couleurs des files dans le ficher Excel
+        """
+        return ["FFFFFFFF", "FFECECFE"][(*self.instance,).index(instance) % 2]
+
+    def get_status(self, instance):
+        return instance.get_status_display()
+
+    def get_article(self, instance):
+        return Declaration.Article(instance.article).label if instance.article else None
+
+    def to_representation(self, instance):
+        """
+        Hack pour ajouter un lien dans le `DeclarationHyperlinkXLSXRenderer`.
+        Ce bug a été levé côté dfr-excel : https://github.com/django-commons/drf-excel/issues/112
+        Le champ `url_field` ne sera pas présent dans le tableau Excel, mais servirà à
+        programmatiquement ajouter le lien dans le nom du produit.
+        """
+
+        data = super().to_representation(instance)
+        data["url_field"] = Hyperlink(ref=f"{get_base_url()}recherche-avancee/{instance.id}", display=instance.name)
+        return data
 
 
 def add_enum_or_personnalized_value(item, custom_value):
