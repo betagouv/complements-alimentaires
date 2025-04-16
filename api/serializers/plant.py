@@ -126,12 +126,21 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
 
         return plant
 
-    # TODO
-    # @transaction.atomic
-    # def update(self, instance, validated_data):
-    #     parts = validated_data.pop("part_set", [])
-    #     plant = super().create(validated_data)
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        parts = validated_data.pop("part_set", [])
+        super().update(instance, validated_data)
 
-    #     # for part in parts:
+        ids_to_keep_or_create = [part["plantpart"].id for part in parts]
+        instance.part_set.exclude(plantpart__id__in=ids_to_keep_or_create).delete()
 
-    #     return plant
+        for part in parts:
+            existing_part = instance.part_set.filter(plantpart=part["plantpart"])
+            if existing_part.exists():
+                existing_part = existing_part.first()
+                existing_part.ca_is_useful = part["is_useful"]
+                existing_part.save()
+            else:
+                Part.objects.create(plant=instance, plantpart=part["plantpart"], ca_is_useful=part["is_useful"])
+
+        return instance
