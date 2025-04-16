@@ -256,7 +256,7 @@ watch(
       state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
     if (state.value.unitId) state.value.unit = state.value.unitId
     if (state.value.maxQuantities?.length)
-      state.value.maxQuantities.map((q) => (q.population = q.population.id.toString()))
+      state.value.maxQuantities.forEach((q) => (q.population = q.population.id.toString()))
   }
 )
 
