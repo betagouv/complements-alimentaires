@@ -18,7 +18,7 @@ from data.factories import (
     SubstanceSynonymFactory,
     SubstanceUnitFactory,
 )
-from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Plant, Population
+from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Plant, Population, Part
 from data.models.substance import MaxQuantityPerPopulationRelation, Substance
 
 from .utils import authenticate
@@ -633,8 +633,37 @@ class TestElementsModifyApi(APITestCase):
             MaxQuantityPerPopulationRelation.objects.filter(substance=substance, population=self.general_pop).exists()
         )
 
-    # TODO: test update of plant parts
     # TODO: test throwing error if one part is given more than once
+    @authenticate
+    def test_can_modify_plant_parts(self):
+        """
+        Les instructrices peuvent modifier les parties de plantes autorisées et non-autorisées
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        old_part = PlantPartFactory.create()
+        questionable_part = PlantPartFactory.create()
+        new_dangerous_part = PlantPartFactory.create()
+        plant = PlantFactory.create()
+        Part.objects.create(plant=plant, plantpart=old_part, ca_is_useful=True)
+        Part.objects.create(plant=plant, plantpart=questionable_part, ca_is_useful=False)
+
+        self.assertTrue(plant.part_set.get(plantpart=old_part.id).is_useful)
+        self.assertFalse(plant.part_set.get(plantpart=questionable_part.id).is_useful)
+        self.assertFalse(plant.part_set.filter(plantpart=new_dangerous_part.id).exists())
+
+        payload = {
+            "plantParts": [
+                {"plantpart": questionable_part.id, "isUseful": True},
+                {"plantpart": new_dangerous_part.id, "isUseful": False},
+            ],
+        }
+        response = self.client.patch(reverse("api:single_plant", kwargs={"pk": plant.id}), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        plant.refresh_from_db()
+        self.assertFalse(plant.part_set.filter(plantpart=old_part.id).exists())
+        self.assertTrue(plant.part_set.get(plantpart=questionable_part.id).is_useful)
+        self.assertFalse(plant.part_set.get(plantpart=new_dangerous_part.id).is_useful)
 
     @authenticate
     def test_update_siccrf_max_quantity(self):
