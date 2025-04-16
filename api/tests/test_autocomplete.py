@@ -146,22 +146,22 @@ class TestAutocomplete(APITestCase):
         self.assertTrue(to_be_authorized_plant.name in returned_names)
         self.assertEqual(len(returned_names), 3)
 
-    def test_filter_substance_that_are_brought_by_form_of_supply(self):
+    def test_filter_substance_that_are_not_standalone_usable(self):
         """
-        Substance with types "Mineral" or "Vitamine" should not be returned by autocomplete
+        Les substances qui ont le type "MINERAL" ou "VITAMINE" ou "SECONDARY_METABOLITE" ou "OTHER_BIOACTIVE_SUBSTANCE"
+        sans être accompagné du type "BIOACTIVE_SUBSTANCE" ne devraient pas être retournées par l'autocomplete
         """
-        # TODO
         autocomplete_term = "vitamine"
 
-        substance_not_to_be_returned = SubstanceFactory.create(
-            ca_name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED
+        substance_not_to_be_returned_1 = SubstanceFactory.create(
+            ca_name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED, substance_types=[SubstanceType.VITAMIN]
         )
         ingredient_form_of_supply = IngredientFactory.create(
             ca_name="L-Ascorbate de zinc",
             siccrf_status=IngredientStatus.AUTHORIZED,
             ingredient_type=IngredientType.FORM_OF_SUPPLY,
         )
-        ingredient_form_of_supply.substances.add(substance_not_to_be_returned)
+        ingredient_form_of_supply.substances.add(substance_not_to_be_returned_1)
         IngredientSynonymFactory.create(name="Vitamine C", standard_name=ingredient_form_of_supply)
 
         response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term})
@@ -170,8 +170,42 @@ class TestAutocomplete(APITestCase):
         results = response.json()
         returned_names = [result.get("name") for result in results]
 
-        self.assertFalse(substance_not_to_be_returned.name in returned_names)
+        self.assertFalse(substance_not_to_be_returned_1.name in returned_names)
         self.assertTrue(ingredient_form_of_supply.name in returned_names)
+        self.assertEqual(len(returned_names), 1)
+
+        autocomplete_term = "magnesium"
+        substance_not_to_be_returned_2 = SubstanceFactory.create(
+            ca_name="Magnesium", siccrf_status=IngredientStatus.AUTHORIZED, substance_types=[SubstanceType.MINERAL]
+        )
+        plant_with_metabolite = PlantFactory.create(
+            ca_name="Amandier",
+            siccrf_status=IngredientStatus.AUTHORIZED,
+        )
+        plant_with_metabolite.substances.add(substance_not_to_be_returned_2)
+        substance_not_to_be_returned_2.refresh_from_db()
+        self.assertTrue(SubstanceType.SECONDARY_METABOLITE in substance_not_to_be_returned_2.substance_types)
+        response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()
+        returned_names = [result.get("name") for result in results]
+
+        self.assertFalse(substance_not_to_be_returned_1.name in returned_names)
+        self.assertEqual(len(returned_names), 0)
+
+        substance_to_be_returned = SubstanceFactory.create(
+            ca_name="Magnesium ++",
+            siccrf_status=IngredientStatus.AUTHORIZED,
+            substance_types=[SubstanceType.MINERAL, SubstanceType.BIOACTIVE_SUBSTANCE],
+        )
+        response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()
+        returned_names = [result.get("name") for result in results]
+
+        self.assertTrue(substance_to_be_returned.name in returned_names)
         self.assertEqual(len(returned_names), 1)
 
     def test_autocomplete_filtered_by_type(self):
