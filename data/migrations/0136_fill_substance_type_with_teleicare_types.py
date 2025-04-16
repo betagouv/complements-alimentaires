@@ -42,26 +42,29 @@ class Migration(migrations.Migration):
         siccrf_substances[["SBSACT_IDENT", "TYSUBST_IDENT", "SBSACT_LIBELLE"]]
 
         for index, siccrf_substance in siccrf_substances.iterrows():
-            ca_substance = Substance.objects.get(siccrf_id=siccrf_substance["SBSACT_IDENT"])
+            try:
+                ca_substance = Substance.objects.get(siccrf_id=siccrf_substance["SBSACT_IDENT"])
 
-            if siccrf_substance["TYSUBST_IDENT"] == 4:
-                # cette substance n'en est pas une mais un Ingrédient actif
-                ca_substance.ca_is_obsolete = True
-                same_ingredient = Ingredient.objects.filter(name__lower=siccrf_substance["SBSACT_LIBELLE"].lower())
-                if not same_ingredient.exists():
-                    logger.info(
-                        f"Création de l'ingrédient actif {siccrf_substance['SBSACT_LIBELLE']} correspondant à Substance.siccrf_id={siccrf_substance['SBSACT_IDENT']} nécessaire."
+                if siccrf_substance["TYSUBST_IDENT"] == 4:
+                    # cette substance n'en est pas une mais un Ingrédient actif
+                    ca_substance.ca_is_obsolete = True
+                    same_ingredient = Ingredient.objects.filter(name__lower=siccrf_substance["SBSACT_LIBELLE"].lower())
+                    if not same_ingredient.exists():
+                        logger.info(
+                            f"Création de l'ingrédient actif {siccrf_substance['SBSACT_LIBELLE']} correspondant à Substance.siccrf_id={siccrf_substance['SBSACT_IDENT']} nécessaire."
+                        )
+                elif siccrf_substance["TYSUBST_IDENT"] == 6:
+                    # si type = 6, alors c'est le default substance_types = []
+                    pass
+                else:
+                    ca_substance.substance_types.append(
+                        TELEICARE_SUBSTANCE_TYPE_MAPPING[siccrf_substance["TYSUBST_IDENT"]]
                     )
-            elif siccrf_substance["TYSUBST_IDENT"] == 6:
-                # si type = 6, alors c'est le default substance_types = []
-                pass
-            else:
-                ca_substance.substance_types.append(
-                    TELEICARE_SUBSTANCE_TYPE_MAPPING[siccrf_substance["TYSUBST_IDENT"]]
-                )
-                ca_substance.substance_types = list(set(ca_substance.substance_types))
+                    ca_substance.substance_types = list(set(ca_substance.substance_types))
 
-            ca_substance.save()
+                ca_substance.save()
+            except Substance.DoesNotExist:
+                pass
 
     def reverse_set_substance_types_from_teleicare(apps, schema_editor):
         pass

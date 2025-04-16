@@ -158,10 +158,6 @@ class Substance(IngredientCommonModel):
         except MaxQuantityPerPopulationRelation.DoesNotExist:
             return
 
-    @property
-    def standalone_usable(self):
-        return SubstanceType.BIOACTIVE_SUBSTANCE in self.substance_types
-
     def update_metabolite_type(self):
         # ajoute le type métabolite secondaire s'il n'a pas été indiqué dans les types
         new_substance_type = self.substance_types or []
