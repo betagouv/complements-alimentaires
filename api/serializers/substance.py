@@ -3,13 +3,13 @@ from django.db import transaction
 from rest_framework import serializers
 
 from data.models import Population
-from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym
+from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym, SubstanceType
 
 from .common_ingredient import (
+    COMMON_FETCH_FIELDS,
     COMMON_FIELDS,
     COMMON_NAME_FIELDS,
     COMMON_READ_ONLY_FIELDS,
-    COMMON_FETCH_FIELDS,
     CommonIngredientModificationSerializer,
     CommonIngredientReadSerializer,
     WithName,
@@ -50,6 +50,7 @@ class SubstanceSerializer(CommonIngredientReadSerializer):
     max_quantities = SubstanceMaxQuantitySerializer(
         many=True, source="maxquantityperpopulationrelation_set", required=False
     )
+    substance_types = serializers.SerializerMethodField()
 
     class Meta:
         model = Substance
@@ -64,8 +65,12 @@ class SubstanceSerializer(CommonIngredientReadSerializer):
             "nutritional_reference",
             "unit",
             "unit_id",
+            "substance_types",
         )
         read_only_fields = fields
+
+    def get_substance_types(self, obj):
+        return [SubstanceType(substance_type).name for substance_type in obj.substance_types]
 
 
 class SubstanceShortSerializer(PrivateFieldsSerializer):
