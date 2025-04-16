@@ -28,6 +28,9 @@
           <div class="flex gap-x-1">
             <div><v-icon scale="0.75" :name="icon" /></div>
             <ElementText :text="getTypeInFrench(type)" />
+            <div v-if="substanceTypes?.length">
+              <ElementTag :label="substanceType" v-for="substanceType in substanceTypes" :key="substanceType" />
+            </div>
           </div>
         </ElementColumn>
 
@@ -159,6 +162,7 @@ const plantParts = computed(() =>
 )
 const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))
+const substanceTypes = computed(() => element.value?.substanceTypes)
 const casNumber = computed(() => element.value?.casNumber)
 const einecNumber = computed(() => element.value?.einecNumber)
 const activity = computed(() => (element.value?.activity ? "Actif" : "Non actif"))
