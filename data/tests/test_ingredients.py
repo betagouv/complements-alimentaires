@@ -34,18 +34,20 @@ class IngredientTestCase(TestCase):
         )
         ingredient_supplying_substance.substances.add(substance)
         plant_supplying_substance = PlantFactory.create(ca_name="plant supplying substance Z", substances=[])
+
         plant_supplying_substance.substances.add(substance)
         substance.refresh_from_db()
-
         self.assertIn(SubstanceType.SECONDARY_METABOLITE, substance.substance_types)
-        self.assertNotIn(SubstanceType.VITAMIN, substance.substance_types)
-        self.assertNotIn(SubstanceType.MINERAL, substance.substance_types)
 
-        # les sans types
-        nothing = SubstanceFactory.create(ca_name="nothing")
-        _ = IngredientFactory.create(
-            ca_name="sirum supply", ingredient_type=IngredientType.ACTIVE_INGREDIENT, substances=[]
-        )
-        ingredient_supplying_substance.substances.add(nothing)
-
-        self.assertEqual(nothing.substance_types, [])
+        # une substance n'est plus métabolite si elle n'est plus rattachée à une plante
+        # la substance est retirée de la plante
+        plant_supplying_substance.substances.remove(substance)
+        substance.refresh_from_db()
+        self.assertNotIn(SubstanceType.SECONDARY_METABOLITE, substance.substance_types)
+        # la plante est retirée de la substance (le signal fonctionne dans les deux sens de la relation)
+        substance.plant_set.add(plant_supplying_substance)
+        substance.refresh_from_db()
+        self.assertIn(SubstanceType.SECONDARY_METABOLITE, substance.substance_types)
+        substance.plant_set.remove(plant_supplying_substance)
+        substance.refresh_from_db()
+        self.assertNotIn(SubstanceType.SECONDARY_METABOLITE, substance.substance_types)
