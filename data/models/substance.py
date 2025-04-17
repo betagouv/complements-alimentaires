@@ -171,12 +171,6 @@ class Substance(IngredientCommonModel):
         if len(self.plant_set.all()) != 0:
             list_of_type.append(SubstanceType.SECONDARY_METABOLITE)
 
-        # ces conditions sont indicatives de ce qu'une substance est un ose, ase, etc mais pas extensives
-        if self.siccrf_name.endswith("ose") or self.ca_name.endswith("ose"):
-            list_of_type.append(SubstanceType.CARBOHYDRATE)
-        elif self.siccrf_name.endswith("ase") or self.ca_name.endswith("ase"):
-            list_of_type.append(SubstanceType.ENZYME)
-
         return list_of_type
 
     def save(self, *args, **kwargs):
