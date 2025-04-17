@@ -25,12 +25,7 @@
           <DsfrButton @click="canDownloadFile ? null : (opened = true)" secondary size="sm" icon="ri-file-excel-2-fill">
             <a :href="canDownloadFile ? excelUrl : 'javascript:void(0)'" download>Télécharger</a>
           </DsfrButton>
-          <DsfrModal
-            v-model:opened="opened"
-            title="Nombre de déclarations trop élévé"
-            :icon="icon"
-            @close="opened = false"
-          >
+          <DsfrModal v-model:opened="opened" title="Nombre de déclarations trop élévé" @close="opened = false">
             <p>
               La recherche actuelle présente {{ data?.count }} résultats. Un maximum de
               {{ maxDownloadSize }} déclarations peuvent être exportées.
@@ -132,8 +127,8 @@
                 </DsfrTag>
               </div>
               <div class="mt-4">
-                <label for="dose-filter mt-4">Dose</label>
-                <DoseFilterModal id="dose-filter" />
+                <label for="dose-filter" class="fr-label">Dose</label>
+                <DoseFilterModal :modelValue="dose" @update:modelValue="updateDose" id="dose-filter" />
               </div>
             </div>
           </div>
@@ -199,6 +194,7 @@ const population = computed(() => (route.query.population ? parseInt(route.query
 const condition = computed(() => (route.query.condition ? parseInt(route.query.condition) : ""))
 const galenicFormulation = computed(() => (route.query.formeGalenique ? parseInt(route.query.formeGalenique) : ""))
 const country = computed(() => route.query.pays)
+const dose = computed(() => route.query.dose)
 const limit = computed(() => route.query.limit)
 
 // Mises à jour de la requête lors des changements des filtres et recherche
@@ -215,6 +211,7 @@ const updatePopulation = (newValue) => updateQuery({ population: newValue })
 const updateCondition = (newValue) => updateQuery({ condition: newValue })
 const updateGalenicFormulation = (newValue) => updateQuery({ formeGalenique: newValue })
 const updateCountry = (newValue) => updateQuery({ pays: newValue })
+const updateDose = (newValue) => updateQuery({ dose: newValue })
 const updateLimit = (newValue) => updateQuery({ limit: newValue })
 const updateComposition = () =>
   updateQuery({ composition: ingredientsToFilter.value.map((x) => x.join("||")).join("|||") })
@@ -274,6 +271,7 @@ const apiQueryParams = computed(() => {
   const conditionQuery = condition.value ? `&condition=${condition.value}` : ""
   const galenicFormulationQuery = galenicFormulation.value ? `&galenic_formulation=${galenicFormulation.value}` : ""
   const countryQuery = country.value ? `&country=${country.value}` : ""
+  const doseQuery = dose.value ? `&dose=${dose.value}` : ""
   const searchQuery = searchTerm.value ? `&search=${searchTerm.value}` : ""
 
   const plantIds = getApiUrlIdsForType(["plant"])
@@ -293,7 +291,7 @@ const apiQueryParams = computed(() => {
   const substancesQuery = substanceIds ? `&substances=${substanceIds}` : ""
   const ingredientsQuery = ingredientsIds ? `&ingredients=${ingredientsIds}` : ""
 
-  const queryParams = `/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}${countryQuery}`
+  const queryParams = `/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}${countryQuery}${doseQuery}`
 
   // Enlève les `&` consecutifs
   return queryParams.replace(/&+/g, "&").replace(/&$/, "")

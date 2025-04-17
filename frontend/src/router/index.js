@@ -446,6 +446,7 @@ const routes = [
         recherche: "",
         composition: "",
         pays: "",
+        dose: "",
       },
     },
   },
@@ -472,6 +473,10 @@ const router = createRouter({
   routes,
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) return { el: to.hash }
+
+    // Ne pas scroller en haut si c'est simplement un changement de queryparam
+    if (from.name === to.name && from.fullPath !== to.fullPath) return
+
     if (savedPosition) return savedPosition
     return { top: 0 }
   },
