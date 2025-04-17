@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="modelStringIsValid">
     <DsfrModal size="lg" title="Filtrer par dose" :opened="opened" @close="removeFilter" :actions="modalActions">
       <div class="min-h-96">
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'selectedIngredient')">
@@ -126,14 +126,14 @@ Dans le cas de l'opération "entre a et b" (≬), les deux quantités sont sépa
 "<type d'élément>||<nom de l'élément>||<ID de l'élément>||≬||<quantité A>|<quantité B>||<ID de l'unité>"
 */
 import NumberField from "@/components/NumberField"
-import { ref, computed } from "vue"
+import { ref, computed, onMounted, nextTick } from "vue"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, typesMapping } from "@/utils/mappings"
 import { useVuelidate } from "@vuelidate/core"
 import { required, helpers } from "@vuelidate/validators"
-import { firstErrorMsg } from "@/utils/forms"
+import { firstErrorMsg, errorNumeric } from "@/utils/forms"
 
 const OPERATION = { GT: ">", GTE: "≥", LT: "<", LTE: "≤", EQ: "=", BT: "≬" }
 const { units, plantParts } = storeToRefs(useRootStore())
@@ -179,6 +179,7 @@ const operationOptions = [
 
 // Cette fonction rend le texte en français qui décrit en une ligne la dose appliquée
 const filterTextLines = computed(() => {
+  if (!modelStringIsValid.value) return []
   const [elementType, elementName, elementInfo, operation, quantities, unitId] = filterString.value?.split("||") || []
   const [quantityA, quantityB] = quantities.split("|")
 
@@ -253,17 +254,15 @@ const modalActions = [
   },
 ]
 
-// Validation di formulaire
-const requiredErrorLabel = "Merci de remplir ce champ"
+// Validation du formulaire
 const rules = computed(() => ({
   selectedIngredient: {
     required: helpers.withMessage("Merci de séléctionner un ingrédient pour filtrer la dose", required),
   },
-  selectedOperation: { required: helpers.withMessage(requiredErrorLabel, required) },
-  selectedQuantity: { required: helpers.withMessage(requiredErrorLabel, required) },
-  selectedUpperLimitQuantity:
-    selectedOperation.value === OPERATION.BT ? { required: helpers.withMessage(requiredErrorLabel, required) } : {},
-  selectedUnit: { required: helpers.withMessage(requiredErrorLabel, required) },
+  selectedOperation: { required },
+  selectedQuantity: { required, errorNumeric },
+  selectedUpperLimitQuantity: selectedOperation.value === OPERATION.BT ? { required, errorNumeric } : {},
+  selectedUnit: { required },
 }))
 const state = {
   selectedIngredient,
@@ -273,4 +272,26 @@ const state = {
   selectedUnit,
 }
 const v$ = useVuelidate(rules, state)
+
+// Vérification basique du filterString : Smoke test pour éviter les coquilles le plus flagrantes dans les query params
+const modelStringIsValid = computed(() => {
+  if (!filterString.value) return true
+  const [elementType, elementName, elementInfo, operation, quantities, unitId] = filterString.value.split("||") || []
+  if (!elementType || !elementName || !elementInfo || !operation || !quantities || !unitId) return false
+  else if (!(elementType in typesMapping)) return false
+  else if (Object.values(OPERATION).indexOf(operation) === -1) return false
+  else if (elementType === "plant") {
+    const [, , partName] = elementInfo.split("|")
+    if (!partName) return false
+  }
+  if (operation === OPERATION.BT) {
+    const [, quantityB] = quantities.split("|")
+    if (!quantityB) return false
+  }
+  return true
+})
+
+onMounted(() => {
+  if (!modelStringIsValid.value) return nextTick(removeFilter)
+})
 </script>
