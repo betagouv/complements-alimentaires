@@ -29,7 +29,6 @@
             v-model:opened="opened"
             title="Nombre de déclarations trop élévé"
             :icon="icon"
-            :is-alert="isAlert"
             @close="opened = false"
           >
             <p>
@@ -132,6 +131,10 @@
                   {{ name }}
                 </DsfrTag>
               </div>
+              <div class="mt-4">
+                <label for="dose-filter mt-4">Dose</label>
+                <DoseFilterModal id="dose-filter" />
+              </div>
             </div>
           </div>
         </div>
@@ -174,6 +177,7 @@ import { useRootStore } from "@/stores/root"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import { getTypeIcon, getTypeInFrench, typesMapping } from "@/utils/mappings"
 import CountryField from "@/components/fields/CountryField"
+import DoseFilterModal from "./DoseFilterModal"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
