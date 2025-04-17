@@ -2,7 +2,7 @@
   <div>
     <DsfrModal size="lg" title="Filtrer par dose" :opened="opened" @close="removeFilter" :actions="modalActions">
       <div class="min-h-96">
-        <div>
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'selectedIngredient')">
           <ElementAutocomplete
             v-model="ingredientSearchTerm"
             label="Ingrédient"
@@ -13,9 +13,9 @@
             :hideSearchButton="true"
             :chooseFirstAsDefault="false"
           />
-        </div>
+        </DsfrInputGroup>
         <div v-if="selectedIngredient">
-          <hr class="mt-6 pb-2" />
+          <hr class="mt-2 pb-2" />
           <div class="md:flex gap-4 mt-4 mb-8 items-end">
             <div class="md:w-2/4 flex border items-center rounded p-2">
               <div
@@ -46,33 +46,41 @@
           </div>
           <div class="md:flex gap-4">
             <div class="md:w-5/12">
-              <DsfrSelect
-                label="Opération"
-                :options="operationOptions"
-                v-model="selectedOperation"
-                defaultUnselectedText=""
-                :required="true"
-              />
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'selectedOperation')">
+                <DsfrSelect
+                  label="Opération"
+                  :options="operationOptions"
+                  v-model="selectedOperation"
+                  defaultUnselectedText=""
+                  :required="true"
+                />
+              </DsfrInputGroup>
             </div>
             <div class="mb-4 md:w-2/12">
-              <NumberField
-                :label="showDoubleQuantity ? 'Quantité A' : 'Quantité'"
-                v-model="selectedQuantity"
-                label-visible
-                :required="true"
-              />
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'selectedQuantity')">
+                <NumberField
+                  :label="showDoubleQuantity ? 'Quantité A' : 'Quantité'"
+                  v-model="selectedQuantity"
+                  label-visible
+                  :required="true"
+                />
+              </DsfrInputGroup>
             </div>
             <div class="mb-4 md:w-2/12" v-if="showDoubleQuantity">
-              <NumberField label="Quantité B" v-model="selectedUpperLimitQuantity" label-visible :required="true" />
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'selectedUpperLimitQuantity')">
+                <NumberField label="Quantité B" v-model="selectedUpperLimitQuantity" label-visible :required="true" />
+              </DsfrInputGroup>
             </div>
             <div class="md:w-3/12">
-              <DsfrSelect
-                label="Unité"
-                :options="unitOptions"
-                v-model="selectedUnit"
-                defaultUnselectedText=""
-                :required="true"
-              />
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'selectedUnit')">
+                <DsfrSelect
+                  label="Unité"
+                  :options="unitOptions"
+                  v-model="selectedUnit"
+                  defaultUnselectedText=""
+                  :required="true"
+                />
+              </DsfrInputGroup>
             </div>
           </div>
         </div>
@@ -123,6 +131,9 @@ import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
+import { useVuelidate } from "@vuelidate/core"
+import { required, helpers } from "@vuelidate/validators"
+import { firstErrorMsg } from "@/utils/forms"
 
 const OPERATION = { GT: ">", GTE: "≥", LT: "<", LTE: "≤", EQ: "=", BT: "≬" }
 const { units, plantParts } = storeToRefs(useRootStore())
@@ -149,12 +160,12 @@ const showDoubleQuantity = computed(() => selectedOperation.value === OPERATION.
 
 // Options pour les DsfrSelect
 const plantPartOptions = computed(() => {
-  const options = plantParts.value?.map((x) => ({ text: x.name, value: x.id }))
+  const options = plantParts.value?.map((x) => ({ text: x.name, value: x.id.toString() }))
   options.unshift({ disabled: true, text: "---------" })
   options.unshift({ value: "", text: "Toutes les parties" })
   return options
 })
-const unitOptions = computed(() => units.value?.map((x) => ({ text: x.name, value: x.id })))
+const unitOptions = computed(() => units.value?.map((x) => ({ text: x.name, value: x.id.toString() })))
 const operationOptions = [
   { text: "Dose supérieure à (>)", value: OPERATION.GT },
   { text: "Dose supérieure ou égale à (≥)", value: OPERATION.GTE },
@@ -179,16 +190,18 @@ const filterTextLines = computed(() => {
 
   let typeName = getTypeInFrench(elementType).toLowerCase()
   if (elementType === "plant") {
-    const [, , partName] = elementInfo.split("|")
-    if (partName) typeName += ` - partie ${partName.toLowerCase()}`
+    const [, partId, partName] = elementInfo.split("|")
+    if (partId === "-") typeName += ` - ${partName.toLowerCase()}`
+    else if (partId) typeName += ` - partie « ${partName.toLowerCase()} »`
   }
 
+  // Exemple de résultat : ["Carex arenaria L. (plante - toutes les parties)", "Dose supérieure à (>) 12 mv"]
   return [`${elementName} (${typeName})`, `${operationName} ${unitName}`]
 })
 
 const setFilter = () => {
-  const formIsValid = true // TODO: Validate form
-  if (!formIsValid) return
+  v$.value.$validate()
+  if (v$.value.$error) return
 
   // "<type d'élément>||<nom de l'élément>||<ID de l'élément (partie de plante optionnelle)>||<opération>||<quantité>||<ID de l'unité>"
   // "plant||Camomille||<ID de la plante>|<ID de la partie>|<nom de la partie>||<opération>||<quantité>||<ID de l'unité>"
@@ -197,7 +210,7 @@ const setFilter = () => {
   // Ajout de l'info sur la partie de plante en cas de ingrédient plante
   if (ingredientIsPlant.value) {
     const part = selectedPart.value
-    newFilterString += `|${part ? part : ""}|${part ? plantParts.value?.find((x) => x.id === parseInt(part))?.name : "Toutes les parties"}`
+    newFilterString += `|${part ? part : "-"}|${part ? plantParts.value?.find((x) => x.id === parseInt(part))?.name : "Toutes les parties"}`
   }
   newFilterString += `||${selectedOperation.value}||${selectedQuantity.value}`
 
@@ -222,6 +235,7 @@ const removeFilter = () => {
   ]
   fieldsToReset.forEach((x) => (x.value = ""))
   filterString.value = ""
+  v$.value.$reset()
   opened.value = false
 }
 
@@ -235,7 +249,28 @@ const modalActions = [
   {
     label: "Annuler",
     secondary: true,
-    onClick: () => (opened.value = false),
+    onClick: removeFilter,
   },
 ]
+
+// Validation di formulaire
+const requiredErrorLabel = "Merci de remplir ce champ"
+const rules = computed(() => ({
+  selectedIngredient: {
+    required: helpers.withMessage("Merci de séléctionner un ingrédient pour filtrer la dose", required),
+  },
+  selectedOperation: { required: helpers.withMessage(requiredErrorLabel, required) },
+  selectedQuantity: { required: helpers.withMessage(requiredErrorLabel, required) },
+  selectedUpperLimitQuantity:
+    selectedOperation.value === OPERATION.BT ? { required: helpers.withMessage(requiredErrorLabel, required) } : {},
+  selectedUnit: { required: helpers.withMessage(requiredErrorLabel, required) },
+}))
+const state = {
+  selectedIngredient,
+  selectedOperation,
+  selectedQuantity,
+  selectedUpperLimitQuantity,
+  selectedUnit,
+}
+const v$ = useVuelidate(rules, state)
 </script>
