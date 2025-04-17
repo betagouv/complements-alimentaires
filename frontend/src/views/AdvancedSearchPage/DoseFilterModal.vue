@@ -2,12 +2,12 @@
   <div>
     <DsfrModal size="lg" title="Filtrer par dose" :opened="opened" @close="removeFilter" :actions="modalActions">
       <div class="min-h-96">
-        <div class="flex gap-4 items-end">
+        <div>
           <ElementAutocomplete
             v-model="ingredientSearchTerm"
             label="Ingrédient"
             label-visible
-            class="w-3/4"
+            class="md:w-3/4"
             hint="Cherchez l'ingrédient pour lequel vous souhaitez filtrer par dose."
             @selected="addIngredient"
             :hideSearchButton="true"
@@ -16,8 +16,8 @@
         </div>
         <div v-if="selectedIngredient">
           <hr class="mt-6 pb-2" />
-          <div class="flex gap-4 mt-4 mb-8 items-end">
-            <div class="w-2/4 flex border items-center rounded p-2">
+          <div class="md:flex gap-4 mt-4 mb-8 items-end">
+            <div class="md:w-2/4 flex border items-center rounded p-2">
               <div
                 :class="`flex mr-2 self-center justify-center rounded-full icon icon-${selectedIngredient.objectType} size-6`"
               >
@@ -39,14 +39,13 @@
               <DsfrSelect
                 v-if="ingredientIsPlant"
                 label="Partie de plante"
-                defaultUnselectedText="Toutes"
                 v-model="selectedPart"
                 :options="plantPartOptions"
               />
             </div>
           </div>
-          <div class="flex gap-4">
-            <div class="w-5/12">
+          <div class="md:flex gap-4">
+            <div class="md:w-5/12">
               <DsfrSelect
                 label="Opération"
                 :options="operationOptions"
@@ -55,7 +54,7 @@
                 :required="true"
               />
             </div>
-            <div class="mb-4 w-2/12">
+            <div class="mb-4 md:w-2/12">
               <NumberField
                 :label="showDoubleQuantity ? 'Quantité A' : 'Quantité'"
                 v-model="selectedQuantity"
@@ -63,10 +62,10 @@
                 :required="true"
               />
             </div>
-            <div class="mb-4 w-2/12" v-if="showDoubleQuantity">
+            <div class="mb-4 md:w-2/12" v-if="showDoubleQuantity">
               <NumberField label="Quantité B" v-model="selectedUpperLimitQuantity" label-visible :required="true" />
             </div>
-            <div class="w-3/12">
+            <div class="md:w-3/12">
               <DsfrSelect
                 label="Unité"
                 :options="unitOptions"
@@ -223,6 +222,7 @@ const removeFilter = () => {
   ]
   fieldsToReset.forEach((x) => (x.value = ""))
   filterString.value = ""
+  opened.value = false
 }
 
 // Gestion de la modale
