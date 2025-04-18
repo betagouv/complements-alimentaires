@@ -1,4 +1,5 @@
 import logging
+import re
 
 from django.db.models import F, Func, Q
 from django.db.models.functions import Lower
@@ -8,7 +9,7 @@ from unidecode import unidecode
 
 from api.exceptions import ProjectAPIException
 from api.utils.filters import BaseNumberInFilter
-from data.models import Condition, Declaration, Population
+from data.models import Condition, Declaration, Population, SubstanceUnit
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
     microorganisms = django_filters.CharFilter(method="microorganisms__and")
     substances = django_filters.CharFilter(method="substances__and")
     ingredients = django_filters.CharFilter(method="ingredients__and")
+    dose = django_filters.CharFilter(method="filter_by_dose")
 
     # Une fois https://github.com/carltongibson/django-filter/issues/1673 on peut
     # enlever cette ligne
@@ -56,6 +58,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
             "company_name_start",
             "company_name_end",
             "article",
+            "dose",
         ]
 
     def nullable_instructor(self, queryset, value, *args, **kwargs):
@@ -144,3 +147,115 @@ class DeclarationFilterSet(django_filters.FilterSet):
         for id in value.split(","):
             queryset = queryset.filter(declared_ingredients__ingredient__id=id)
         return queryset
+
+    # Filtre par dose
+
+    GREATER_THAN = ">"
+    GREATER_THAN_OR_EQUAL = "≥"
+    LESS_THAN = "<"
+    LESS_THAN_OR_EQUAL = "≤"
+    EQUAL = "="
+    BETWEEN = "≬"
+
+    def filter_by_dose(self, queryset, name, value):
+        if not value:
+            return queryset.none()  # TODO : Log malformed filter
+        try:
+            parts = re.split(r"\|\|", value)
+            if len(parts) < 5:
+                return queryset.none()  # TODO : Log malformed filter
+
+            element_type = parts[0]  # plant, substance, microorganism, ingredient
+            if element_type != "microorganism" and len(parts) < 6:
+                return queryset.none()
+
+            element_id = parts[2].split("|")[0] if "|" in parts[2] else parts[2]
+            operation = parts[3]
+            quantity_parts = parts[4].split("|")
+            unit_id = parts[5] if len(parts) > 5 else None
+            quantity = float(quantity_parts[0])
+
+            if operation == self.BETWEEN:  # TODO : Make variables const
+                if len(quantity_parts) < 2:
+                    return queryset.none()  # TODO : Raise and Log malformed filter
+
+            quantity2 = float(quantity_parts[1]) if operation == self.BETWEEN else None
+
+            # Prendre l'unité si elle est spécifiée (pour les microorganismes ce n'est pas le cas)
+            unit = SubstanceUnit.objects.get(pk=unit_id) if unit_id else None
+
+            # Faire le filtre basé sur le type d'ingrédient
+            if element_type == "plant":
+                plant_part_id = parts[2].split("|")[1] if "|" in parts[2] and len(parts[2].split("|")) > 1 else None
+                return self.filter_plant_dose(
+                    queryset, element_id, plant_part_id, operation, quantity, quantity2, unit
+                )
+            elif element_type == "substance":
+                return self.filter_substance_dose(queryset, element_id, operation, quantity, quantity2, unit)
+            elif element_type == "microorganism":
+                return self.filter_microorganism_dose(queryset, element_id, operation, quantity, quantity2)
+            elif element_type in [
+                "ingredient",
+                "form_of_supply",
+                "aroma",
+                "additive",
+                "active_ingredient",
+                "non_active_ingredient",
+            ]:
+                return self.filter_ingredient_dose(queryset, element_id, operation, quantity, quantity2, unit)
+            return queryset.none()  # TODO : LOG
+        except (ValueError, IndexError, SubstanceUnit.DoesNotExist):
+            return queryset.none()  # TODO : LOG
+
+    def filter_plant_dose(self, queryset, plant_id, plant_part_id, operation, quantity1, quantity2=None, unit=None):
+        filters = Q(declared_plants__plant_id=plant_id)
+        if plant_part_id:
+            filters &= Q(declared_plants__used_part_id=plant_part_id)
+        if unit:
+            filters &= Q(declared_plants__unit=unit)
+        return self._apply_filter(queryset, filters, operation, quantity1, quantity2, "declared_plants__")
+
+    def filter_substance_dose(self, queryset, substance_id, operation, quantity1, quantity2=None, unit=None):
+        filters = Q(computed_substances__substance_id=substance_id)
+        if unit:
+            filters &= Q(computed_substances__unit=unit)
+        return self._apply_filter(queryset, filters, operation, quantity1, quantity2, "computed_substances__")
+
+    def filter_microorganism_dose(self, queryset, microorganism_id, operation, quantity1, quantity2=None):
+        filters = Q(declared_microorganisms__microorganism_id=microorganism_id)
+        return self._apply_filter(queryset, filters, operation, quantity1, quantity2, "declared_microorganisms__")
+
+    def filter_ingredient_dose(self, queryset, ingredient_id, operation, quantity1, quantity2=None, unit=None):
+        filters = Q(declared_ingredients__ingredient_id=ingredient_id)
+        if unit:
+            filters &= Q(declared_ingredients__unit=unit)
+        return self._apply_filter(queryset, filters, operation, quantity1, quantity2, "declared_ingredients__")
+
+    def _apply_filter(self, queryset, other_filters, operation, quantity1, quantity2=None, relation_field=""):
+        quantity_filter = self._get_quantity_filter(
+            operation=operation, quantity1=quantity1, quantity2=quantity2, relation_field=relation_field
+        )
+        return queryset.filter(other_filters & quantity_filter).distinct()
+
+    def _get_quantity_filter(self, operation, quantity1, quantity2=None, relation_field=""):
+        """
+        Aide pour obtenir la requête necessaire pour la quantité
+        """
+        filter_kwargs = {}
+
+        if operation == self.GREATER_THAN:
+            filter_kwargs[f"{relation_field}quantity__gt"] = quantity1
+        elif operation == self.GREATER_THAN_OR_EQUAL:
+            filter_kwargs[f"{relation_field}quantity__gte"] = quantity1
+        elif operation == self.LESS_THAN:
+            filter_kwargs[f"{relation_field}quantity__lt"] = quantity1
+        elif operation == self.LESS_THAN_OR_EQUAL:
+            filter_kwargs[f"{relation_field}quantity__lte"] = quantity1
+        elif operation == self.EQUAL:
+            filter_kwargs[f"{relation_field}quantity"] = quantity1
+        elif operation == self.BETWEEN:
+            return Q(**{f"{relation_field}quantity__gte": quantity1}) & Q(
+                **{f"{relation_field}quantity__lte": quantity2}
+            )
+
+        return Q(**filter_kwargs)
