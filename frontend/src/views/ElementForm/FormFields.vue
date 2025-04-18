@@ -91,7 +91,7 @@
       <div v-if="formForType.plantParts" class="grid md:grid-cols-3 items-end my-4 md:my-2">
         <DsfrMultiselect
           v-model="state.authorisedPlantParts"
-          :options="plantParts"
+          :options="orderedPlantParts"
           label="Partie(s) autorisée(s)"
           search
           labelKey="name"
@@ -109,7 +109,7 @@
         </div>
         <DsfrMultiselect
           v-model="state.forbiddenPlantParts"
-          :options="plantParts"
+          :options="orderedPlantParts"
           label="Partie(s) non-autorisée(s)"
           search
           labelKey="name"
@@ -398,6 +398,12 @@ const { plantParts, plantFamilies, units, populations } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
 
+const orderedPlantParts = computed(() => {
+  const ordered = JSON.parse(JSON.stringify(plantParts.value))
+  ordered?.sort((a, b) => a.name.localeCompare(b.name))
+  return ordered
+})
+
 const ingredientTypes = [
   { value: 1, text: "Nutriment (Forme d'apport)", apiValue: "form_of_supply" },
   { value: 2, text: "Additif", apiValue: "additif" },
@@ -443,7 +449,9 @@ const deleteMaxQuantity = (idx) => {
 }
 const maxQuantitiesError = ref()
 const validateMaxQuantities = () => {
-  const hasMissingData = state.value.maxQuantities.some((q) => !q.population || (!q.maxQuantity && q.maxQuantity !== 0))
+  const hasMissingData = state.value.maxQuantities?.some(
+    (q) => !q.population || (!q.maxQuantity && q.maxQuantity !== 0)
+  )
   maxQuantitiesError.value = hasMissingData && "Veuillez compléter tous les champs ou supprimer les lignes vides"
 }
 const maxQuantitiesHeaders = computed(() => {
