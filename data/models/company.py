@@ -6,9 +6,11 @@ from django.db import models
 
 from phonenumber_field.modelfields import PhoneNumberField
 
-from data.behaviours import AutoValidable, Deactivable
+from data.behaviours import AutoValidable, Deactivable, Historisable
 from data.choices import CountryChoices
 from data.fields import MultipleChoiceField
+
+# from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 from data.validators import validate_siret, validate_vat
 
 
@@ -211,3 +213,44 @@ class DeclarantRole(CompanyRole, models.Model):
 
     company = models.ForeignKey(Company, related_name="declarant_roles", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="declarant_roles", on_delete=models.CASCADE)
+
+
+class EtablissementToCompanyRelation(Historisable):
+    class Meta:
+        verbose_name = "Relations entre les entreprises TeleIcare et les entreprises Compl'Alim"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "siccrf_id"],
+                name="unique_link",
+            )
+        ]
+
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    # ce champ devrait être une ForeignKey vers la table unmanaged IcaEtablissement
+    # mais une ForeignKey vers une table unmanaged implique de cla complexité au niveau du code :
+    # création des tables au setup des tests notamment
+    # https://docs.djangoproject.com/fr/5.1/ref/models/options/#managed
+
+    siccrf_id = models.IntegerField(
+        blank=True,
+        null=True,
+        editable=False,
+        db_index=True,
+        unique=True,
+        verbose_name="etab_ident dans le modèle IcaEtablissement SICCRF",
+    )
+    old_siret = models.CharField(
+        verbose_name="n° SIRET dans TeleIcare, si différent",
+        unique=True,
+        null=True,
+        blank=True,  # nécessaire pour valider les données issues de l'admin form, avec la méthode custom save()
+        validators=[validate_siret],
+        help_text="14 chiffres",
+    )
+    old_vat = models.CharField(
+        verbose_name="n° SIRET dans TeleIcare, si différent",
+        unique=True,
+        null=True,
+        blank=True,  # nécessaire pour valider les données issues de l'admin form, avec la méthode custom save()
+        validators=[validate_vat],
+    )
