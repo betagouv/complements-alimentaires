@@ -20,6 +20,7 @@ class DeclarantInline(admin.TabularInline):
 
 class EtablissementToCompanyRelationInline(admin.TabularInline):
     model = EtablissementToCompanyRelation
+    readonly_fields = ("siccrf_id", "siccrf_registration_date")
     extra = 0
 
 
