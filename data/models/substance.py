@@ -118,8 +118,7 @@ class Substance(IngredientCommonModel):
         verbose_name="unité des quantités spécifiées (quantité max, apport de référence)",
     )
     substance_types = ArrayField(
-        models.IntegerField(null=True, choices=SubstanceType.choices),
-        null=True,
+        models.IntegerField(choices=SubstanceType.choices),
         verbose_name="type(s) de la substance",
         default=list,
     )
@@ -160,14 +159,13 @@ class Substance(IngredientCommonModel):
 
     def update_metabolite_type(self):
         # ajoute le type métabolite secondaire s'il n'a pas été indiqué dans les types
-        new_substance_type = self.substance_types or []
-        if self.plant_set.count() and SubstanceType.SECONDARY_METABOLITE not in new_substance_type:
-            new_substance_type.append(SubstanceType.SECONDARY_METABOLITE)
-            Substance.objects.filter(pk=self.pk).update(substance_types=new_substance_type)
+        if self.plant_set.count() and SubstanceType.SECONDARY_METABOLITE not in self.substance_types:
+            self.substance_types.append(SubstanceType.SECONDARY_METABOLITE)
+            Substance.objects.filter(pk=self.pk).update(substance_types=self.substance_types)
         # supprime le type métabolite secondaire s'il est dans les types mais n'est pas valide
-        elif SubstanceType.SECONDARY_METABOLITE in new_substance_type and self.plant_set.count() == 0:
-            new_substance_type.remove(SubstanceType.SECONDARY_METABOLITE)
-            Substance.objects.filter(pk=self.pk).update(substance_types=new_substance_type)
+        elif SubstanceType.SECONDARY_METABOLITE in self.substance_types and self.plant_set.count() == 0:
+            self.substance_types.remove(SubstanceType.SECONDARY_METABOLITE)
+            Substance.objects.filter(pk=self.pk).update(substance_types=self.substance_types)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
