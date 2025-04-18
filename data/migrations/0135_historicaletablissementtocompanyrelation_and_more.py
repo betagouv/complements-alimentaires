@@ -13,6 +13,18 @@ class Migration(migrations.Migration):
         ('data', '0134_remove_useless_substance_types'),
     ]
 
+    def fill_etablissement_to_company_relation(apps, schema_editor):
+        Company = apps.get_model("data", "Company")
+        EtablissementToCompanyRelation = apps.get_model("data", "EtablissementToCompanyRelation")
+        for company in Company.objects.exclude(siccrf_id=None):
+            relation = EtablissementToCompanyRelation(
+                company=company, siccrf_id=company.siccrf_id, old_vat=company.old_vat, old_siret=company.old_siret
+            )
+            relation.save()
+
+    def reverse_fill_etablissement_to_company_relation(apps, schema_editor):
+        pass
+
     operations = [
         migrations.CreateModel(
             name='HistoricalEtablissementToCompanyRelation',
@@ -50,4 +62,6 @@ class Migration(migrations.Migration):
                 'constraints': [models.UniqueConstraint(fields=('company', 'siccrf_id'), name='unique_link')],
             },
         ),
+        migrations.RunPython(fill_etablissement_to_company_relation, reverse_fill_etablissement_to_company_relation),
+
     ]
