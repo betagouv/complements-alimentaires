@@ -51,7 +51,7 @@ drf_base64==2.0
 et_xmlfile==2.0.0
 executing==2.2.0
 factory_boy==3.3.3
-Faker==35.0.0
+Faker==37.1.0
 filelock==3.16.1
 gprof2dot==2024.6.6
 html5lib==1.1
