@@ -74,7 +74,7 @@ class DeclarationDoseFilterTests(APITestCase):
 
     @authenticate
     def test_filter_plant_dose_greater_than(self):
-        """Test filtering declarations with plant dose greater than specified value"""
+        """Filtrage par dose d'une plante supérieure à une certaine valeur"""
         InstructionRoleFactory(user=authenticate.user)
         dose = f"dose=plant||Camomille||{self.camomille.id}|{self.branch.id}|Branch||>||4||{self.unit_mg.id}"
         results = self.make_request(dose)
@@ -83,7 +83,7 @@ class DeclarationDoseFilterTests(APITestCase):
 
     @authenticate
     def test_filter_substance_dose_between(self):
-        """Test filtering declarations with substance dose between two values"""
+        """Filtrage d'une dose d'une substance entre deux valeurs"""
         InstructionRoleFactory(user=authenticate.user)
         results = self.make_request(f"dose=substance||Caffeine||{self.caffeine.id}||≬||10|15||{self.unit_mg.id}")
         self.assertEqual(len(results), 1)
@@ -91,7 +91,7 @@ class DeclarationDoseFilterTests(APITestCase):
 
     @authenticate
     def test_filter_microorganism_dose_less_than_or_equal(self):
-        """Test filtering declarations with microorganism dose less than or equal to specified value"""
+        """Filtrage d'un micro-organisme inférieur ou égal à une valeur"""
         InstructionRoleFactory(user=authenticate.user)
         results = self.make_request(f"dose=microorganism||Lactobacillus||{self.lactobacillus.id}||≤||1000000")
         self.assertEqual(len(results), 1)
@@ -99,7 +99,7 @@ class DeclarationDoseFilterTests(APITestCase):
 
     @authenticate
     def test_filter_plant_dose_without_part(self):
-        """Test filtering declarations with plant dose without specifying plant part"""
+        """Filtrage de dose pour une plante sans spécifier une partie de plante"""
         InstructionRoleFactory(user=authenticate.user)
         results = self.make_request(f"dose=plant||Mint||{self.mint.id}||≥||10||{self.unit_mg.id}")
         self.assertEqual(len(results), 1)
@@ -107,7 +107,7 @@ class DeclarationDoseFilterTests(APITestCase):
 
     @authenticate
     def test_filter_with_multiple_criteria(self):
-        """Test that declarations must match all filter criteria"""
+        """Filtrage pour plus d'un critère"""
         InstructionRoleFactory(user=authenticate.user)
         # Rien ne devrait être trouvé car declaration5 a mint >= 10mg mais vitamin_c is 80mg (pas entre 90-100)
         dose = f"dose=plant||Mint||{self.mint.id}||≥||10||{self.unit_mg.id}&dose=substance||Vitamin C||{self.vitamin_c.id}||≬||90|100||{self.unit_mg.id}"
@@ -116,14 +116,14 @@ class DeclarationDoseFilterTests(APITestCase):
 
     @authenticate
     def test_invalid_dose_format(self):
-        """Test that invalid dose format returns no results"""
+        """Un filtre invalide ne retourne pas de résultats"""
         InstructionRoleFactory(user=authenticate.user)
         results = self.make_request("dose=invalid_format")
         self.assertEqual(len(results), 0)
 
     @authenticate
     def test_nonexistent_element(self):
-        """Test filtering with non-existent element ID returns no results"""
+        """Utiliser des IDs pour des objets non existants ne retourne pas de résultats"""
         InstructionRoleFactory(user=authenticate.user)
         results = self.make_request(f"dose=plant||Nonexistent||999||≥||10||{self.unit_mg.id}")
         self.assertEqual(len(results), 0)

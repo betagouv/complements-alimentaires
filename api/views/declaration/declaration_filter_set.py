@@ -159,14 +159,18 @@ class DeclarationFilterSet(django_filters.FilterSet):
 
     def filter_by_dose(self, queryset, name, value):
         if not value:
-            return queryset.none()  # TODO : Log malformed filter
+            return queryset.none()
         try:
             parts = re.split(r"\|\|", value)
             if len(parts) < 5:
-                return queryset.none()  # TODO : Log malformed filter
+                logger.error(f"Declaration filter by dose error : {value} not splittable by > 5 parts")
+                return queryset.none()
 
             element_type = parts[0]  # plant, substance, microorganism, ingredient
             if element_type != "microorganism" and len(parts) < 6:
+                logger.error(
+                    f"Declaration filter by dose error : {value} for type {element_type} not splittable by 6 parts"
+                )
                 return queryset.none()
 
             element_id = parts[2].split("|")[0] if "|" in parts[2] else parts[2]
@@ -175,9 +179,12 @@ class DeclarationFilterSet(django_filters.FilterSet):
             unit_id = parts[5] if len(parts) > 5 else None
             quantity = float(quantity_parts[0])
 
-            if operation == self.BETWEEN:  # TODO : Make variables const
+            if operation == self.BETWEEN:
                 if len(quantity_parts) < 2:
-                    return queryset.none()  # TODO : Raise and Log malformed filter
+                    logger.error(
+                        f"Declaration filter by dose error : {value} for BETWEEN operation doesn't have two quantities : {parts[4]}"
+                    )
+                    return queryset.none()
 
             quantity2 = float(quantity_parts[1]) if operation == self.BETWEEN else None
 
@@ -203,9 +210,13 @@ class DeclarationFilterSet(django_filters.FilterSet):
                 "non_active_ingredient",
             ]:
                 return self.filter_ingredient_dose(queryset, element_id, operation, quantity, quantity2, unit)
-            return queryset.none()  # TODO : LOG
-        except (ValueError, IndexError, SubstanceUnit.DoesNotExist):
-            return queryset.none()  # TODO : LOG
+            logger.error(
+                f"Declaration filter by dose error : {element_type} not supported (needs plant, substance, microorganism or ingredient)"
+            )
+            return queryset.none()
+        except (ValueError, IndexError, SubstanceUnit.DoesNotExist) as e:
+            logger.exception(e)
+            return queryset.none()
 
     def filter_plant_dose(self, queryset, plant_id, plant_part_id, operation, quantity1, quantity2=None, unit=None):
         filters = Q(declared_plants__plant_id=plant_id)
@@ -213,25 +224,29 @@ class DeclarationFilterSet(django_filters.FilterSet):
             filters &= Q(declared_plants__used_part_id=plant_part_id)
         if unit:
             filters &= Q(declared_plants__unit=unit)
-        return self._apply_filter(queryset, filters, operation, quantity1, quantity2, "declared_plants__")
+        return self._apply_quantity_filter(queryset, filters, operation, quantity1, quantity2, "declared_plants__")
 
     def filter_substance_dose(self, queryset, substance_id, operation, quantity1, quantity2=None, unit=None):
         filters = Q(computed_substances__substance_id=substance_id)
         if unit:
             filters &= Q(computed_substances__unit=unit)
-        return self._apply_filter(queryset, filters, operation, quantity1, quantity2, "computed_substances__")
+        return self._apply_quantity_filter(queryset, filters, operation, quantity1, quantity2, "computed_substances__")
 
     def filter_microorganism_dose(self, queryset, microorganism_id, operation, quantity1, quantity2=None):
         filters = Q(declared_microorganisms__microorganism_id=microorganism_id)
-        return self._apply_filter(queryset, filters, operation, quantity1, quantity2, "declared_microorganisms__")
+        return self._apply_quantity_filter(
+            queryset, filters, operation, quantity1, quantity2, "declared_microorganisms__"
+        )
 
     def filter_ingredient_dose(self, queryset, ingredient_id, operation, quantity1, quantity2=None, unit=None):
         filters = Q(declared_ingredients__ingredient_id=ingredient_id)
         if unit:
             filters &= Q(declared_ingredients__unit=unit)
-        return self._apply_filter(queryset, filters, operation, quantity1, quantity2, "declared_ingredients__")
+        return self._apply_quantity_filter(
+            queryset, filters, operation, quantity1, quantity2, "declared_ingredients__"
+        )
 
-    def _apply_filter(self, queryset, other_filters, operation, quantity1, quantity2=None, relation_field=""):
+    def _apply_quantity_filter(self, queryset, other_filters, operation, quantity1, quantity2=None, relation_field=""):
         quantity_filter = self._get_quantity_filter(
             operation=operation, quantity1=quantity1, quantity2=quantity2, relation_field=relation_field
         )
