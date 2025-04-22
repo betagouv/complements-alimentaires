@@ -285,7 +285,6 @@ watch(
 const saveElement = async () => {
   v$.value.$reset()
   v$.value.$validate()
-  // TODO: validate deduplication of plant parts
   validateMaxQuantities()
   if (v$.value.$error || maxQuantitiesError.value) {
     window.scrollTo(0, 0)
