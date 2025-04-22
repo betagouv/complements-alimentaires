@@ -152,6 +152,6 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
         ids_to_keep_or_create = [part["plantpart"].id for part in parts]
 
         if len(list(set(ids_to_keep_or_create))) < len(ids_to_keep_or_create):
-            raise ParseError(detail="Cannot provide the same plant part twice")
+            raise ParseError(detail="Chaque partie de plante devrait utilisée au maximum une fois")
 
         return ids_to_keep_or_create
