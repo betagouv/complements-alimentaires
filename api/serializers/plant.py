@@ -1,5 +1,6 @@
 from django.db import transaction
 from rest_framework import serializers
+from rest_framework.exceptions import ParseError
 
 from data.models import Part, Plant, PlantFamily, PlantPart, PlantSynonym
 
@@ -121,6 +122,8 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
         parts = validated_data.pop("part_set", [])
         plant = super().create(validated_data)
 
+        PlantModificationSerializer._check_part_unicity(parts)
+
         for part in parts:
             Part.objects.create(plant=plant, plantpart=part["plantpart"], ca_is_useful=part["is_useful"])
 
@@ -131,7 +134,7 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
         parts = validated_data.pop("part_set", [])
         super().update(instance, validated_data)
 
-        ids_to_keep_or_create = [part["plantpart"].id for part in parts]
+        ids_to_keep_or_create = PlantModificationSerializer._check_part_unicity(parts)
         instance.part_set.exclude(plantpart__id__in=ids_to_keep_or_create).delete()
 
         for part in parts:
@@ -144,3 +147,11 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
                 Part.objects.create(plant=instance, plantpart=part["plantpart"], ca_is_useful=part["is_useful"])
 
         return instance
+
+    def _check_part_unicity(parts):
+        ids_to_keep_or_create = [part["plantpart"].id for part in parts]
+
+        if len(list(set(ids_to_keep_or_create))) < len(ids_to_keep_or_create):
+            raise ParseError(detail="Cannot provide the same plant part twice")
+
+        return ids_to_keep_or_create
