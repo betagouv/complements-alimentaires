@@ -45,7 +45,7 @@
             </div>
           </div>
           <div class="md:flex gap-4">
-            <div class="md:w-5/12">
+            <div class="md:w-4/12">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'selectedOperation')">
                 <DsfrSelect
                   label="Opération"
@@ -56,22 +56,22 @@
                 />
               </DsfrInputGroup>
             </div>
-            <div class="mb-4 md:w-2/12">
+            <div class="mb-4 md:w-3/12">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'selectedQuantity')">
+                <NumberField :label="quantityALabel" v-model="selectedQuantity" label-visible :required="true" />
+              </DsfrInputGroup>
+            </div>
+            <div class="mb-4 md:w-3/12" v-if="showDoubleQuantity">
+              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'selectedUpperLimitQuantity')">
                 <NumberField
-                  :label="showDoubleQuantity ? 'Quantité A' : 'Quantité'"
-                  v-model="selectedQuantity"
+                  :label="quantityBLabel"
+                  v-model="selectedUpperLimitQuantity"
                   label-visible
                   :required="true"
                 />
               </DsfrInputGroup>
             </div>
-            <div class="mb-4 md:w-2/12" v-if="showDoubleQuantity">
-              <DsfrInputGroup :error-message="firstErrorMsg(v$, 'selectedUpperLimitQuantity')">
-                <NumberField label="Quantité B" v-model="selectedUpperLimitQuantity" label-visible :required="true" />
-              </DsfrInputGroup>
-            </div>
-            <div class="md:w-3/12">
+            <div class="md:w-2/12" v-if="!ingredientIsMicroorganism">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'selectedUnit')">
                 <DsfrSelect
                   label="Unité"
@@ -150,6 +150,7 @@ const selectedUpperLimitQuantity = ref("") // Utilisé seulement dans l'opérati
 const selectedUnit = ref("")
 
 const ingredientIsPlant = computed(() => selectedIngredient.value?.objectType === "plant")
+const ingredientIsMicroorganism = computed(() => selectedIngredient.value?.objectType === "microorganism")
 
 const addIngredient = (ingredient) => {
   selectedIngredient.value = ingredient
@@ -157,6 +158,15 @@ const addIngredient = (ingredient) => {
 }
 
 const showDoubleQuantity = computed(() => selectedOperation.value === OPERATION.BT)
+const quantityALabel = computed(() => makeQuantityLabel("A"))
+const quantityBLabel = computed(() => makeQuantityLabel("B"))
+
+const makeQuantityLabel = (suffix) => {
+  let label = "Quantité"
+  if (selectedOperation.value === OPERATION.BT) label += ` ${suffix}`
+  if (ingredientIsMicroorganism.value) label += " (en UFC)"
+  return label
+}
 
 // Options pour les DsfrSelect
 const plantPartOptions = computed(() => {
@@ -183,7 +193,9 @@ const filterTextLines = computed(() => {
   const [elementType, elementName, elementInfo, operation, quantities, unitId] = filterString.value?.split("||") || []
   const [quantityA, quantityB] = quantities.split("|")
 
-  const unitName = units.value?.find((x) => x.id === parseInt(unitId))?.name
+  let unitName = ""
+  if (unitId) unitName = units.value?.find((x) => x.id === parseInt(unitId))?.name
+  else if (elementType === "microorganism") unitName = "UFC"
   const operationName =
     operation === OPERATION.BT
       ? `Dose entre ${quantityA} et ${quantityB}`
@@ -218,7 +230,7 @@ const setFilter = () => {
   // Ajout de la quantité maximale si l'opération est "entre a et b"
   if (selectedOperation.value === OPERATION.BT) newFilterString += `|${selectedUpperLimitQuantity.value}`
 
-  newFilterString += `||${selectedUnit.value}`
+  if (selectedUnit.value) newFilterString += `||${selectedUnit.value}`
 
   filterString.value = newFilterString
   opened.value = false
@@ -261,8 +273,18 @@ const rules = computed(() => ({
   },
   selectedOperation: { required },
   selectedQuantity: { required, errorNumeric },
-  selectedUpperLimitQuantity: selectedOperation.value === OPERATION.BT ? { required, errorNumeric } : {},
-  selectedUnit: { required },
+  selectedUpperLimitQuantity:
+    selectedOperation.value === OPERATION.BT
+      ? {
+          required,
+          errorNumeric,
+          minValue: helpers.withMessage(
+            "La valeur doit être supérieur à la quantité A",
+            (value) => value > selectedQuantity.value
+          ),
+        }
+      : {},
+  selectedUnit: ingredientIsMicroorganism.value ? {} : { required },
 }))
 const state = {
   selectedIngredient,
@@ -277,7 +299,15 @@ const v$ = useVuelidate(rules, state)
 const modelStringIsValid = computed(() => {
   if (!filterString.value) return true
   const [elementType, elementName, elementInfo, operation, quantities, unitId] = filterString.value.split("||") || []
-  if (!elementType || !elementName || !elementInfo || !operation || !quantities || !unitId) return false
+  if (
+    !elementType ||
+    !elementName ||
+    !elementInfo ||
+    !operation ||
+    !quantities ||
+    (elementType !== "microorganism" && !unitId)
+  )
+    return false
   else if (!(elementType in typesMapping)) return false
   else if (Object.values(OPERATION).indexOf(operation) === -1) return false
   else if (elementType === "plant") {
