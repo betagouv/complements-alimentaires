@@ -633,7 +633,6 @@ class TestElementsModifyApi(APITestCase):
             MaxQuantityPerPopulationRelation.objects.filter(substance=substance, population=self.general_pop).exists()
         )
 
-    # TODO: test throwing error if one part is given more than once
     @authenticate
     def test_can_modify_plant_parts(self):
         """
@@ -664,6 +663,41 @@ class TestElementsModifyApi(APITestCase):
         self.assertFalse(plant.part_set.filter(plantpart=old_part.id).exists())
         self.assertTrue(plant.part_set.get(plantpart=questionable_part.id).is_useful)
         self.assertFalse(plant.part_set.get(plantpart=new_dangerous_part.id).is_useful)
+
+    @authenticate
+    def test_cannot_give_same_part_twice(self):
+        """
+        Si la même partie est donnée en autorisée et non-autorisée, donne un 400
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        duplicate_part = PlantPartFactory.create()
+        other_part = PlantPartFactory.create()
+        plant = PlantFactory.create()
+
+        self.assertFalse(plant.part_set.filter(plantpart=duplicate_part.id).exists())
+        self.assertFalse(plant.part_set.filter(plantpart=other_part.id).exists())
+
+        payload = {
+            "name": "new name",
+            "plantParts": [
+                {"plantpart": other_part.id, "isUseful": True},
+                {"plantpart": duplicate_part.id, "isUseful": True},
+                {"plantpart": duplicate_part.id, "isUseful": False},
+            ],
+        }
+        response = self.client.patch(reverse("api:single_plant", kwargs={"pk": plant.id}), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        plant.refresh_from_db()
+        self.assertFalse(
+            plant.part_set.filter(plantpart=duplicate_part.id).exists(),
+            "la partie en doublon ne devrait pas été ajoutée à la plante",
+        )
+        self.assertFalse(
+            plant.part_set.filter(plantpart=other_part.id).exists(),
+            "l'autre partie ne devrait pas été ajoutée à la plante",
+        )
+        self.assertNotEqual(plant.name, "new name", "autres modifications devraient être ignorées aussi")
 
     @authenticate
     def test_update_siccrf_max_quantity(self):
