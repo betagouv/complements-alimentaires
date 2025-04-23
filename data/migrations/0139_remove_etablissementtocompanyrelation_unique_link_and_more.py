@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data', '0135_historicaletablissementtocompanyrelation_and_more'),
+        ('data', '0138_historicaletablissementtocompanyrelation_and_more'),
     ]
 
     def fill_ca_registration_date(apps, schema_editor):

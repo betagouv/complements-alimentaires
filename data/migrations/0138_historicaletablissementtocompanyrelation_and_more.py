@@ -10,7 +10,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data', '0134_remove_useless_substance_types'),
+        ('data', '0137_alter_substance_substance_types'),
     ]
 
     def fill_etablissement_to_company_relation(apps, schema_editor):
