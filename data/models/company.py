@@ -6,7 +6,7 @@ from django.db import models
 
 from phonenumber_field.modelfields import PhoneNumberField
 
-from data.behaviours import AutoValidable, Deactivable
+from data.behaviours import AutoValidable, Deactivable, TimeStampable
 from data.choices import CountryChoices
 from data.fields import MultipleChoiceField
 from data.validators import validate_siret, validate_vat
@@ -59,7 +59,7 @@ class ActivityChoices(models.TextChoices):
     DISTRIBUTEUR = auto()
 
 
-class Company(AutoValidable, Address, CompanyContact, models.Model):
+class Company(AutoValidable, Address, CompanyContact, TimeStampable, models.Model):
     class Meta:
         verbose_name = "entreprise"
 
@@ -106,7 +106,6 @@ class Company(AutoValidable, Address, CompanyContact, models.Model):
         related_name="represented_companies",
         symmetrical=False,
     )
-    ca_registration_date = models.DateField(null=True)
 
     def clean(self):
         # SIRET ou VAT ou les deux
@@ -126,9 +125,7 @@ class Company(AutoValidable, Address, CompanyContact, models.Model):
         """Retourne la plus ancienne date d'adhésion à la déclaration en ligne
         * soit date de première adhésion à TeleIcare,
         soit date d'adhésion à Compl'Alim"""
-        return (
-            self.etablissementtocompanyrelation_set.earliest("siccrf_registration_date") or self.ca_registration_date
-        )
+        return self.etablissementtocompanyrelation_set.earliest("siccrf_registration_date") or self.creation_date
 
     @property
     def collaborators(self):
