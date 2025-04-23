@@ -27,28 +27,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='HistoricalEtablissementToCompanyRelation',
-            fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('siccrf_id', models.IntegerField(blank=True, db_index=True, editable=False, null=True, verbose_name='etab_ident dans le modèle IcaEtablissement SICCRF')),
-                ('old_siret', models.CharField(blank=True, db_index=True, help_text='14 chiffres', null=True, validators=[data.validators.validate_siret], verbose_name='n° SIRET dans TeleIcare, si différent')),
-                ('old_vat', models.CharField(blank=True, db_index=True, null=True, validators=[data.validators.validate_vat], verbose_name='n° TVA intracommunautaire dans TeleIcare, si différent')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('company', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='data.company')),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'verbose_name': "historical Anciens n° SIRET et n° TVA intracommunautaire, relation avec table d'entreprises TeleIcare et les entreprises Compl'Alim",
-                'verbose_name_plural': "historical Anciens n° SIRET et n° TVA intracommunautaire, relation avec table d'entreprises TeleIcare et les entreprises Compl'Alims",
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
-            },
-            bases=(simple_history.models.HistoricalChanges, models.Model),
-        ),
-        migrations.CreateModel(
             name='EtablissementToCompanyRelation',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),

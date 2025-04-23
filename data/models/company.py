@@ -6,7 +6,7 @@ from django.db import models
 
 from phonenumber_field.modelfields import PhoneNumberField
 
-from data.behaviours import AutoValidable, Deactivable, Historisable
+from data.behaviours import AutoValidable, Deactivable
 from data.choices import CountryChoices
 from data.fields import MultipleChoiceField
 from data.validators import validate_siret, validate_vat
@@ -186,7 +186,7 @@ class DeclarantRole(CompanyRole, models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="declarant_roles", on_delete=models.CASCADE)
 
 
-class EtablissementToCompanyRelation(Historisable):
+class EtablissementToCompanyRelation(models.Model):
     class Meta:
         verbose_name = "Anciens n° SIRET et n° TVA intracommunautaire, relation avec table d'entreprises TeleIcare et les entreprises Compl'Alim"
 
