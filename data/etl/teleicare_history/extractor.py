@@ -1,4 +1,3 @@
-import contextlib
 import logging
 from datetime import date, datetime, timezone
 
@@ -9,6 +8,7 @@ from django.db.models import Q
 from phonenumber_field.phonenumber import PhoneNumber
 from phonenumbers import NumberParseException
 
+from data.behaviours.time_stampable import suppress_autotime
 from data.models import (
     Condition,
     Effect,
@@ -49,30 +49,6 @@ from data.models.teleicare_history.ica_declaration_composition import (
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 
 logger = logging.getLogger(__name__)
-
-
-@contextlib.contextmanager
-def suppress_autotime(model, fields):
-    """
-    Décorateur pour annuler temporairement le auto_now et auto_now_add de certains champs
-    Copié depuis https://stackoverflow.com/questions/7499767/temporarily-disable-auto-now-auto-now-add
-    """
-    _original_values = {}
-    for field in model._meta.local_fields:
-        if field.name in fields:
-            _original_values[field.name] = {
-                "auto_now": field.auto_now,
-                "auto_now_add": field.auto_now_add,
-            }
-            field.auto_now = False
-            field.auto_now_add = False
-    try:
-        yield
-    finally:
-        for field in model._meta.local_fields:
-            if field.name in fields:
-                field.auto_now = _original_values[field.name]["auto_now"]
-                field.auto_now_add = _original_values[field.name]["auto_now_add"]
 
 
 def convert_phone_number(phone_number_to_parse):
