@@ -144,10 +144,6 @@ class Company(AutoValidable, Address, CompanyContact, models.Model):
             self.vat = None
         if not self.siret:
             self.siret = None
-        if not self.old_vat:
-            self.old_vat = None
-        if not self.old_siret:
-            self.old_siret = None
         super().save(*args, **kwargs)
 
 
@@ -222,3 +218,11 @@ class EtablissementToCompanyRelation(models.Model):
     siccrf_registration_date = models.DateField(
         verbose_name="date d'adhésion à la plateforme TeleIcare", editable=False, null=True
     )
+
+    def save(self, *args, **kwargs):
+        # Les valeurs "" ne sont pas unique, mais None oui
+        if not self.old_vat:
+            self.old_vat = None
+        if not self.old_siret:
+            self.old_siret = None
+        super().save(*args, **kwargs)
