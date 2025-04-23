@@ -23,7 +23,7 @@ from data.models import (
     Substance,
     SubstanceUnit,
 )
-from data.models.company import ActivityChoices, Company
+from data.models.company import ActivityChoices, Company, EtablissementToCompanyRelation
 from data.models.declaration import (
     ComputedSubstance,
     Declaration,
@@ -96,43 +96,41 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
         matched = False
         # recherche de l'etablissement dans les Company déjà enregistrées
         if etab.etab_siret is not None:
-            siret_matching = Company.objects.filter(
+            company_with_siret_matching = Company.objects.filter(
                 Q(siret=etab.etab_siret) | Q(etablissementtocompanyrelation__old_siret=etab.etab_siret)
             )
-            # seulement 2 options possible pour len(siret_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.siret
-            if len(siret_matching) == 1:
-                if siret_matching[0].siccrf_id is not None and etab.etab_ident != siret_matching[0].siccrf_id:
-                    logger.error(
-                        f"Plusieurs Etablissement provenant de Teleicare ont le même SIRET {etab.etab_siret}, ce qui rend le matching avec une Company Compl'Alim incertain."
-                    )
-                else:
-                    nb_siret_match += 1
-                    matched = True
-                    siret_matching[0].siccrf_id = etab.etab_ident
-                    siret_matching[0].matched = True
-                    siret_matching[0].save()
+            # seulement 2 options possible pour len(company_with_siret_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.siret
+            if len(company_with_siret_matching) == 1:
+                nb_siret_match += 1
+                matched = True
+                # TODO : vérifier si cette relation n'existe pas déjà
+                relation = EtablissementToCompanyRelation(
+                    company=company_with_siret_matching[0],
+                    siccrf_id=etab.etab_ident,
+                    old_siret=etab.etab_siret,
+                    siccrf_registration_date=etab.etab_date_adhesion,
+                )
+                relation.save()
 
         elif etab.etab_numero_tva_intra is not None:
-            vat_matching = Company.objects.filter(
+            company_with_vat_matching = Company.objects.filter(
                 Q(vat=etab.etab_numero_tva_intra)
                 | Q(etablissementtocompanyrelation__old_vat=etab.etab_numero_tva_intra)
             )
-            # seulement 2 options possible pour len(vat_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.vat
-            if len(vat_matching) == 1:
-                if vat_matching[0].siccrf_id is not None and etab.etab_ident != vat_matching[0].siccrf_id:
-                    logger.error(
-                        f"Plusieurs Etablissement provenant de Teleicare ont le même n° TVA {etab.etab_numero_tva_intra}, ce qui rend le matching avec une Company Compl'Alim incertain."
-                    )
-                else:
-                    nb_vat_match += 1
-                    matched = True
-                    vat_matching[0].siccrf_id = etab.etab_ident
-                    vat_matching[0].matched = True
-                    vat_matching[0].save()
+            # seulement 2 options possible pour len(company_with_vat_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.vat
+            if len(company_with_vat_matching) == 1:
+                nb_vat_match += 1
+                matched = True
+                relation = EtablissementToCompanyRelation(
+                    company=company_with_siret_matching[0],
+                    siccrf_id=etab.etab_ident,
+                    old_vat=etab.etab_numero_tva_intra,
+                    siccrf_registration_date=etab.etab_date_adhesion,
+                )
+                relation.save()
         # creation de la company
         if not matched and create_if_not_exist:
             new_company = Company(
-                siccrf_id=etab.etab_ident,
                 address=etab.etab_adre_voie,
                 postal_code=etab.etab_adre_cp,
                 city=etab.etab_adre_ville,
@@ -143,10 +141,18 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                 siret=etab.etab_siret,
                 vat=etab.etab_numero_tva_intra,
                 activities=convert_activities(etab),
-                # la etab_date_adhesion n'est pas conservée
             )
+
             try:
                 new_company.save(fields_with_no_validation=("phone_number"))
+                relation = EtablissementToCompanyRelation(
+                    company=new_company,
+                    siccrf_id=etab.etab_ident,
+                    old_siret=etab.etab_siret,
+                    old_vat=etab.etab_numero_tva_intra,
+                    siccrf_registration_date=etab.etab_date_adhesion,
+                )
+                relation.save()
                 nb_created_companies += 1
             except ValidationError as e:
                 logger.error(f"Impossible de créer la Company à partir du siccrf_id = {etab.etab_ident}: {e}")
@@ -409,9 +415,11 @@ def create_declarations_from_teleicare_history(company_ids=[]):
     """
     nb_created_declarations = 0
 
-    etab_ids = (Company.objects.all() if not company_ids else Company.objects.filter(id__in=company_ids)).values_list(
-        "siccrf_id", flat=True
-    )
+    etab_ids = (
+        EtablissementToCompanyRelation.objects.exclude(siccrf_id=None)
+        if not company_ids
+        else EtablissementToCompanyRelation.objects.filter(company_id__in=company_ids)
+    ).values_list("siccrf_id", flat=True)
     # Parcourir tous les compléments alimentaires dont l'entreprise déclarante a été matchée
     for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(etab_id__in=etab_ids):
         # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
@@ -463,9 +471,9 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     galenic_formulation=GalenicFormulation.objects.get(
                         siccrf_id=ica_complement_alimentaire.frmgal_ident
                     ),
-                    company=Company.objects.get(
+                    company=EtablissementToCompanyRelation.objects.get(
                         siccrf_id=ica_complement_alimentaire.etab_id
-                    ),  # resp étiquetage, resp commercialisation
+                    ).company,  # resp étiquetage, resp commercialisation
                     brand=ica_complement_alimentaire.cplalim_marque or "",
                     gamme=ica_complement_alimentaire.cplalim_gamme or "",
                     name=ica_complement_alimentaire.cplalim_nom,
