@@ -1,0 +1,861 @@
+SBSACT_IDENT,STINGSBS_IDENT,TYSUBST_IDENT,UNT_IDENT,SBSACT_LIBELLE
+1,1,1,1,vitamine A
+2,1,1,1,vitamine B12
+3,1,1,1,vitamine B8
+4,1,1,1,vitamine B9
+5,1,1,1,vitamine D
+6,1,1,1,vitamine K
+7,1,1,3,vitamine B1
+8,1,1,3,vitamine B2
+9,1,1,3,vitamine B3
+10,1,1,3,vitamine B5
+11,1,1,3,vitamine B6
+12,1,1,3,vitamine C
+13,1,1,3,vitamine E
+14,1,2,3,bore
+15,1,2,1,chrome
+16,1,2,1,iode
+17,1,2,1,molybdène
+18,1,2,1,sélénium
+19,1,2,3,calcium
+20,1,2,3,chlore
+21,1,2,1,cuivre
+22,1,2,3,fer
+23,1,2,3,fluor
+24,1,2,3,magnésium
+25,1,2,3,manganèse
+26,1,2,3,phosphore
+27,1,2,3,potassium
+28,1,2,3,silicium
+29,1,2,3,sodium
+30,1,2,3,zinc
+31,1,3,3,acétylcystéine
+32,1,3,3,acétylméthionine
+33,1,3,3,acide adénosine-5'-phosphorique
+34,1,3,3,acide alpha-aminobutyrique
+35,1,3,3,acide aspartique
+36,1,3,3,acide cytidine-5'-monophosphorique
+37,1,3,3,acide gamma-aminobutyrique
+38,1,3,3,acide glutamique
+39,1,3,3,acide guanosine-5'-phosphorique
+40,1,3,3,acide hyaluronique
+41,1,3,3,acide inosine-5'-phosphorique
+42,1,3,3,acide linoléique conjugué
+43,1,3,3,acide lipoïque
+44,1,3,3,acide orotique
+45,1,3,3,acide para-aminobenzoïque
+46,1,3,3,acide pyruvique
+47,1,3,3,acide uridine-5'-phosphorique
+48,1,3,3,alanine
+49,1,3,3,alpha-cétoglutarate
+50,1,3,3,alpha-galactosidase
+51,1,3,3,alpha-lactalbumine
+52,1,3,3,amylase
+53,1,3,3,arabinogalactanes
+54,1,3,3,arabinoxylanes
+55,1,3,3,arginine
+56,1,3,3,asparagine
+57,1,3,3,aspartate
+58,1,3,3,astaxanthine
+59,1,3,3,bêta-alanine
+60,1,3,3,bêta-cyclodextrine
+61,1,3,3,bêtaglucanes
+62,1,3,3,bétaïne
+63,1,3,3,bromélaïne
+64,1,3,3,caféine
+65,1,3,3,carnitine
+66,1,3,3,carnosine
+67,1,3,3,caséine
+68,1,3,3,chitine
+69,1,3,3,chitine-glucane
+70,1,3,3,chitosan
+71,1,3,3,choline
+72,1,3,3,chondroïtine
+73,1,3,3,chymotrypsine
+74,1,3,3,citrine
+75,1,3,3,citrulline
+76,1,3,3,créatine
+77,1,3,3,curcumine
+78,1,3,3,cystéine
+79,1,3,3,cystine
+80,1,3,3,diastase
+81,1,3,3,dimethylaminoéthanol
+82,1,3,3,fructo-oligosaccharides
+83,1,3,3,galacto-oligosaccharides
+84,1,3,3,glucomannane
+85,1,3,3,glucosamine
+86,1,3,3,glucuronolactone
+87,1,3,3,glutamine
+88,1,3,3,glutathion
+89,1,3,3,glycine
+90,1,3,3,hémicellulose
+91,1,3,3,hespéridine
+92,1,3,3,histidine
+93,1,3,3,hydroxyméthylbutyrate
+94,1,3,3,hydroxytyrosol
+95,1,3,3,inosine
+96,1,3,3,inositol
+97,1,3,3,inulines
+98,1,3,3,invertase
+99,1,3,3,isoleucine
+100,1,3,3,isomaltulose
+101,1,3,3,lactase
+102,1,3,2,lactitol
+103,1,3,3,lactoferrine
+104,1,3,3,lactulose
+105,1,3,3,lécithine
+106,1,3,3,leptine
+107,1,3,3,leucine
+108,1,3,3,lipase
+109,1,3,3,lutéine
+110,1,3,3,lycopène
+111,1,3,3,lysine
+112,1,3,3,malate
+113,1,3,3,maltase
+114,1,3,3,mannitol
+115,1,3,3,mannose
+116,1,3,3,mélatonine
+117,1,3,3,méthionine
+118,1,3,3,méthylsulfonate de méthane
+119,1,3,3,N-acétylglucosamine
+120,1,3,3,nicotinamide adénine déshydrogénase
+121,1,3,3,nicotinamide adénine dinucléotide réduite
+122,1,3,3,oligofructose
+123,1,3,3,ornithine
+124,1,3,3,pancréatine
+125,1,3,3,papaïne
+126,1,3,3,pectinase
+127,1,3,3,pectines
+128,1,3,3,pepsine
+129,1,3,3,phénylalanine
+130,1,3,3,phosphatidylcholine
+131,1,3,3,phosphatidyléthanolamine
+132,1,3,3,phosphatidylinositol
+133,1,3,3,phosphatidylsérine
+134,1,3,3,phosphosérine
+135,1,3,3,phycocyanine
+136,1,3,3,phytostanols
+137,1,3,3,phytostérols
+138,1,3,3,pinitol
+139,1,3,3,policosanols
+140,1,3,3,polydextrose
+141,1,3,3,proline
+142,1,3,3,protéase
+143,1,3,3,protéines
+144,1,3,3,pyruvate
+145,1,3,3,quercétine
+146,1,3,3,resvératrol
+147,1,3,3,ribose
+148,1,3,3,rutoside
+149,1,3,3,saccaharase
+150,1,3,3,sérine
+151,1,3,3,sucrase
+152,1,3,3,superoxyde dismutase
+153,1,3,3,taurine
+154,1,3,3,théanine
+155,1,3,3,thréonine
+156,1,3,3,trypsine
+157,1,3,3,tryptophane
+158,1,3,3,tyrosine
+159,1,3,3,ubiquinone
+160,1,3,3,valine
+161,1,3,3,violaxanthine
+162,1,3,3,xylanase
+163,1,3,3,zéaxanthine
+164,2,3,3,agmatine
+165,2,3,3,clinoptilolite
+166,2,3,3,glycocyamine
+167,2,3,3,indole-3-carbinol
+168,2,3,3,ipriflavone
+169,2,3,3,méthylamine
+170,2,3,3,méthylcellulose
+171,2,3,3,noréphédrine
+172,2,3,3,norvaline
+173,2,3,3,prégnénolone
+174,2,3,3,sérotonine
+175,2,3,3,splénoplentine
+176,2,3,3,stachyose
+177,2,3,3,thymopentine
+178,2,3,3,vinpocétine
+179,2,3,3,zéolite
+180,2,5,3,yohimbine
+181,4,3,3,arsenic
+182,4,4,3,coquille Saint-Jacques
+183,4,4,3,gelée royale
+184,4,4,3,huitre
+185,4,4,3,hydrolysat de petit lait
+186,4,4,3,hydrolysat de protéines
+187,4,4,3,hydrolysat de protéines de lactosérum
+188,4,4,3,pollen
+189,4,5,1,8-prenylnaringénine
+190,4,5,1,alcaloïdes pyrrolizidiniques
+191,4,5,1,asarone (alpha & bêta)
+192,4,5,1,asarone (alpha-)
+193,4,5,1,asarone (bêta-)
+194,4,5,1,indirubine
+195,4,5,1,narcissine
+196,4,5,1,tétrahydrocannabinol
+197,4,5,3,1-déoxynojirimycine
+198,4,5,3,27-déoxyactéine
+199,4,5,3,2-o-caffeoylarbutin
+200,4,5,3,5-geranoxypsoralène
+201,2,5,3,5-hydroxytryptophane
+202,4,5,3,8-geranoxypsoralène
+203,4,5,3,acalyphine
+204,4,5,3,acéronine
+205,4,5,3,acérotine
+206,4,5,3,acétogénines
+207,4,5,3,acétylandromédol
+208,4,5,3,acide aristolochique
+209,4,5,3,acide benzoïque
+210,4,5,3,acide cascarillique
+211,4,5,3,acide chlorogénique
+212,4,5,3,acide cichorique
+213,4,5,3,acide cinnamique
+214,4,5,3,acide cyanhydrique
+215,4,5,3,acide érucique
+216,4,5,3,acide gallique
+217,4,5,3,acide ginkgolique
+218,4,5,3,acide glycyrrhizinique
+219,4,5,3,acide gymnémique
+220,4,5,3,acide hydroxycitrique
+221,4,5,3,acide mélilotique
+222,4,5,3,acide oxalique
+223,4,5,3,acide tartrique
+224,4,5,3,acide usnique
+225,4,5,3,acide valérénique
+226,4,5,3,acides boswelliques
+227,4,5,3,acides phénols
+228,4,5,3,acides sesquiterpéniques
+229,4,5,3,aescine
+230,4,5,3,akuamine
+231,4,5,3,alcaloïdes
+232,4,5,3,alcaloïdes aliphatiques
+233,4,5,3,alcaloïdes aporphiniques
+234,4,5,3,alcaloïdes benzylisoquinolines
+235,4,5,3,alcaloïdes béta-carbolines
+236,4,5,3,alcaloïdes imidazoliques
+237,4,5,3,alcaloïdes indoliques
+238,4,5,3,alcaloïdes indolizidiniques
+239,4,5,3,alcaloïdes isoquinoliniques
+240,4,5,3,alcaloïdes monoterpéniques
+241,4,5,3,alcaloïdes oxindoles pentacycliques
+242,4,5,3,alcaloïdes oxindoles tétracycliques
+243,4,5,3,alcaloïdes peptidiques
+244,4,5,3,alcaloïdes pipéridiniques
+245,4,5,3,alcaloïdes pyridiniques
+246,4,5,3,alcaloïdes pyrrolidiniques
+247,4,5,3,alcaloïdes pyrroloindoliques
+248,4,5,3,alcaloïdes quinazoliniques
+249,4,5,3,alcaloïdes quinoléiniques
+250,4,5,3,alcaloïdes quinolizidiniques
+251,4,5,3,alcaloïdes stéroïdiens
+252,4,5,3,alcaloïdes tropaniques
+253,4,5,3,alizarine
+254,4,5,3,alliarinoside
+255,4,5,3,aloé émodine
+256,4,5,3,aloïnes
+257,4,5,3,alpha-bisabolol
+258,4,5,3,alphaglucanes
+259,4,5,3,alpha-terthiényl
+260,4,5,3,amygdaline
+261,4,5,3,anagyrine
+262,4,5,3,anéthol
+263,4,5,3,angélicine
+264,4,5,3,anthocyanes
+265,4,5,3,anthracénosides
+266,4,5,3,anthraquinones
+267,4,5,3,apigénine-7-glucoside
+268,4,5,3,apiol
+269,4,5,3,aptérine
+270,4,5,3,arbutine
+271,4,5,3,aristolactames
+272,4,5,3,artocarpine
+273,4,5,3,ascaridole
+274,4,5,3,asimilobine
+275,4,5,3,asiminacine
+276,4,5,3,asimine
+277,4,5,3,asiminecine
+278,4,5,3,atropine
+279,4,5,3,barbaloïne
+280,4,5,3,berbérine
+281,4,5,3,bergaptène
+282,4,5,3,boldine
+283,4,5,3,bufadiénolides
+284,4,5,3,californidine
+285,4,5,3,calycosine
+286,4,5,3,campestérol
+287,4,5,3,camphre
+288,4,5,3,canavanine
+289,4,5,3,capsaïcine
+290,4,5,3,caroténoïdes
+291,4,5,3,carpaïne
+292,4,5,3,carvacrol
+293,4,5,3,carvone
+294,4,5,3,cascarillines
+295,4,5,3,cascaroside A
+296,4,5,3,cascarosides
+297,4,5,3,casticine
+298,4,5,3,catéchines
+299,4,5,3,céanothines
+300,4,5,3,chalcones
+301,4,5,3,chromones
+302,4,5,3,chrysophanole
+303,4,5,3,cinchonidine
+304,4,5,3,cinchonine
+305,4,5,3,"cinéole 1,8"
+306,4,5,3,clavatine
+307,4,5,3,clavatoxine
+308,4,5,3,clérodane
+309,4,5,3,combrétine
+310,4,5,3,composés anti-androgènes
+311,4,5,3,composés sulfurés
+312,4,5,3,constituants lipoïdes
+313,4,5,3,convicine
+314,4,5,3,coumarine
+315,4,5,3,coumarines
+316,4,5,3,coumarines sesquiterpéniques
+317,4,5,3,coumestrol
+318,4,5,3,crotoniténone
+319,4,5,3,cucurbitacines
+320,1,3,3,curcuminoïdes
+321,4,5,3,curzérénone
+322,4,5,3,cyanure d'hydrogène
+323,4,5,3,cyclopeptides apolaires
+324,4,5,3,cynarine
+325,4,5,3,cytisine
+326,4,5,3,daidzéine
+327,4,5,3,daidzine
+328,4,5,3,déoxypodophyllotoxine
+329,4,5,3,dérivés de la méthyltetra hydrocarboline
+330,4,5,3,dérivés hydroxyanthracéniques
+331,4,5,3,dérivés labdaniques furaniques
+332,4,5,3,dérivés naphtaléniques
+333,4,5,3,dérivés salicylés
+334,4,5,3,dérivés sesquiterpéniques
+335,4,5,3,dérivés terpéniques
+336,4,5,3,dillapiole
+337,4,5,3,dioscine
+338,4,5,3,dioscorine
+339,4,5,3,diosgénine
+340,1,3,3,diosmine
+341,4,5,3,diterpènes
+342,4,5,3,diterpènes de type clérodane
+343,4,5,3,éburnaménine
+344,4,5,3,ecdystérones
+345,4,5,3,échinacosides
+346,4,5,3,élémicine
+347,4,5,3,émodine
+348,4,5,3,émodine A
+349,4,5,3,épicatéchines
+350,4,5,3,épigallocatéchine-gallate (EGCG)
+351,4,5,3,ergolide
+352,4,5,3,esculine (hétéroside de l'esculétine)
+353,4,5,3,estragol
+354,4,5,3,eugénol
+355,4,5,3,fenchone
+356,1,3,3,flavonoïdes
+357,4,5,3,formononétine
+358,4,5,3,forskoline
+359,4,5,3,fragiline
+360,4,5,3,fucoïdanes
+361,4,5,3,furanoélémènes
+362,4,5,3,furanogermacranes
+363,4,5,3,furochromones
+364,4,5,3,furocoumarines
+365,4,5,3,ganodériol F
+366,4,5,3,ganodermanontriol
+367,4,5,3,géniposide
+368,4,5,3,génistéine
+369,4,5,3,ginsénosides
+370,4,5,3,glucobrassicanapine
+371,4,5,3,glucobrassicine
+372,4,5,3,glucofranguline A
+373,4,5,3,gluconasturtiine
+374,4,5,3,glucosinolates
+375,4,5,3,glycosides cardiotoniques
+376,4,5,3,glycosides cyanogènes
+377,4,5,3,glycosides de flavonols
+378,4,5,3,glycosides de triterpènes
+379,4,5,3,glycosides d'iridoïdes
+380,4,5,3,glycosides stéroïdiens
+381,4,5,3,goitrine
+382,4,5,3,guggulstérones
+383,4,5,3,harmane
+384,4,5,3,harpagoside
+385,4,5,3,hématoxyline
+386,4,5,3,hespérétine
+387,4,5,3,hétérosides cardiotoniques
+388,4,5,3,hétérosides cyanogènes
+389,4,5,3,homostachydrine
+390,4,5,3,honokiol
+391,4,5,3,hordénine
+392,4,5,3,huperzine
+393,4,5,3,hydroquinone
+394,4,5,3,hydroxycoumarines
+395,4,5,3,hyoscyamine
+396,4,5,3,hyperforine
+397,4,5,1,hypericine
+398,4,5,3,hyperoside
+399,4,5,3,hypoglycine
+400,4,5,3,impatiénol
+401,4,5,3,impératorine
+402,4,5,3,indospicine
+403,4,5,3,inhibiteurs de protéase
+404,4,5,3,iridoïdes
+405,4,5,3,ishwarane
+406,4,5,3,isoboldine
+407,4,5,3,isocucurbitacines
+408,4,5,3,isoflavones
+409,4,5,3,isoimpératorine
+410,4,5,3,isomenthone
+411,4,5,3,isométhyleugénol
+412,4,5,3,isorhynchophylline
+413,4,5,3,isosafrole
+414,4,5,3,isothiocyanate d'allyle
+415,4,5,3,isothiocyanates
+416,4,5,3,jacaline
+417,4,5,3,juziphine
+418,4,5,3,juzirine
+419,4,5,3,khelline
+420,4,5,3,"kinkéloïdes (A, B, C, D)"
+421,4,5,3,labdane
+422,4,5,3,lactones sesquiterpéniques
+423,4,5,3,lactones stéroïdiques
+424,4,5,3,lactones terpéniques
+425,4,5,3,laurotétanine
+426,4,5,3,lawsone
+427,4,5,3,lectine
+428,4,5,3,lectines
+429,4,5,3,lédol
+430,4,5,3,léonurine
+431,4,5,3,"lepidilines (A, B et C)"
+432,4,5,3,licopérosides F-H
+433,4,5,3,lignanes
+434,4,5,3,lignine
+435,4,5,3,limonène
+436,4,5,3,linamarine
+437,4,5,3,lithospermoside
+438,4,5,3,lucidine
+439,4,5,3,lycopodine
+440,4,5,3,macaridine
+441,4,5,3,magnolol
+442,4,5,3,marrubiine
+443,4,5,3,menthofurane
+444,4,5,3,menthone
+445,4,5,3,méthoxyfuranodiène
+446,4,5,3,méthoxypsoralène
+447,4,5,3,méthylarbutine
+448,4,5,3,méthylcytisine
+449,4,5,3,méthyleugénol
+450,4,5,3,momodine
+451,4,5,3,momordicines
+452,4,5,3,momordicosides
+453,4,5,3,monacoline K
+454,4,5,3,monacolines
+455,4,5,3,montamine
+456,4,5,3,myristicine
+457,4,5,3,naringine
+458,4,5,3,néoclérodanes
+459,4,5,3,néotigogénine
+460,4,5,3,nicotine
+461,4,5,3,niranthine
+462,4,5,3,norharmane
+463,4,5,3,norisoboldine
+464,4,5,3,octopamine
+465,4,5,3,oligo-proanthocyanidines
+466,4,5,3,orcinols
+467,4,5,3,oxyde de carline
+468,4,5,3,oxyimpératorine
+469,4,5,3,oxypeucedanine
+470,4,5,3,palmitine
+471,4,5,3,palustrine
+472,4,5,3,palustrol
+473,4,5,3,paralline
+474,4,5,3,parthénolide
+475,4,5,3,péganine
+476,4,5,3,"pelletiérines (pelletiérine, iso, pseudo, méthyl)"
+477,4,5,3,périllaldéhyde
+478,4,5,3,perlolyrine
+479,4,5,3,phasine
+480,4,5,3,phelloptérine
+481,4,5,3,phénéthylamines
+482,4,5,3,phénylcoumarines
+483,4,5,3,phényléthylamine
+484,4,5,3,phénylpropanoïdes
+485,4,5,3,phloroglucinols
+486,4,5,3,phyllathine
+487,4,5,3,physcione
+488,4,5,3,physopéruvine
+489,4,5,3,pipérine
+490,4,5,3,pipéritone
+491,4,5,3,polyines
+492,4,5,3,populine
+493,4,5,3,proanthocyanidols
+494,4,5,3,progoitrine
+495,4,5,3,protoalcaloïdes
+496,4,5,3,protodioscine
+497,4,5,3,prunasine
+498,4,5,3,psoralène
+499,4,5,3,ptaquiloside
+500,4,5,3,ptéropodine
+501,4,5,3,puérarine
+502,4,5,3,pulégone
+503,4,5,3,pyréthrinoïdes
+504,4,5,3,pyroside
+505,4,5,3,quinidine
+506,4,5,3,quinine
+507,4,5,3,raphides d'oxalate de calcium
+508,4,5,3,rhéine
+509,4,5,3,rhéine A
+510,4,5,3,rhyncophylline
+511,4,5,3,robine
+512,4,5,3,sabinène
+513,1,3,3,s-adénosylméthionine
+514,4,5,3,safranal
+515,4,5,3,safrole
+516,4,5,3,saikosaponine-A
+517,4,5,3,saikosaponine-D
+518,4,5,3,salicine
+519,4,5,3,salicortine
+520,4,5,3,salicylate de méthyle
+521,4,5,3,salicylates
+522,4,5,3,sambunigrine
+523,4,5,3,saniculosides
+524,4,5,3,saponines stéroïdes
+525,4,5,3,saponosides
+526,4,5,3,saponosides triterpéniques
+527,4,5,3,sarsaporine
+528,4,5,3,sarsasapogénine
+529,4,5,3,scopolamine
+530,4,5,3,sédacrine
+531,4,5,3,sennoside B
+532,4,5,3,sennosides
+533,4,5,3,sesquiterpènes
+534,4,5,3,sesquiterpénoïdes
+535,4,5,3,simmondsine
+536,4,5,3,sinigrine
+537,4,5,3,sinigroside
+538,4,5,3,sitostérol (bêta-)
+539,4,5,3,solanine
+540,4,5,3,spaciophylline
+541,4,5,3,stachydrine
+542,4,5,3,stigmastérol
+543,4,5,3,stilbénoïdes
+544,4,5,3,strictosidine
+545,4,5,3,synéphrine
+546,4,5,3,tanins
+547,4,5,3,taxanes
+548,4,5,3,taxiphylline
+549,4,5,3,terpènes
+550,4,5,3,terpénoïdes
+551,4,5,3,terpinène-4-ol
+552,4,5,3,thalfoétidine
+553,4,5,3,théobromine
+554,4,5,3,théophylline
+555,4,5,3,thiaminase
+556,4,5,3,thuyone
+557,4,5,3,thuyones (alpha et béta)
+558,4,5,3,thymol
+559,4,5,3,tigloidine
+560,4,5,3,trémulacine
+561,4,5,3,trichosanthine
+562,1,3,3,troxérutine
+563,4,5,3,uncarine
+564,4,5,3,ursine
+565,4,5,3,valépotriates
+566,4,5,3,vasicine
+567,4,5,3,vicioside
+568,4,5,3,vincamine
+569,4,5,3,vincoside
+570,4,5,3,"viscotoxines (I, II, III)"
+571,4,5,3,visnagine
+572,4,5,3,vitexine
+573,4,5,3,wogonine
+574,4,5,3,xanthones
+575,4,5,3,yamogénine
+576,4,6,3,acide alpha-linolénique
+577,4,6,3,acide arachidonique
+578,4,6,3,acide docosahéxaénoïque
+579,4,6,3,acide eicosapentaénoïque
+580,4,6,3,acide linoléique
+581,4,6,3,bêta-sitostérol
+582,4,6,3,bioflavonoïdes
+583,4,6,3,esters éthyliques
+584,4,6,3,gamma-oryzanol
+585,4,6,3,oméga 3
+586,4,6,3,oméga 6
+587,4,6,3,oméga 9
+588,4,6,3,phospholipides
+589,4,6,3,sphingolipides
+590,4,6,3,squalène
+591,4,4,3,propolis
+592,4,4,3,collagène hydrolysé
+593,1,3,3,kératine
+594,1,3,3,mélanine
+595,4,4,3,colostrum
+596,4,6,3,acides gras essentiels
+600,1,1,3,bêta-carotène
+601,1,3,3,Fibres
+602,1,3,3,diméthylglycine
+604,1,3,3,charbon végétal
+605,1,3,3,rutine
+606,4,5,3,salidroside
+607,4,5,3,tyrosol
+608,4,5,3,rosarine
+609,4,5,3,rosavine
+610,4,5,3,rosine
+611,4,5,3,rosiridine
+612,4,6,3,acide clupanodonique
+613,1,3,3,céramides
+614,1,3,3,élastine
+615,4,5,3,acide salicylique
+616,4,4,3,hydrolysat de poisson
+617,4,4,3,miel
+618,4,4,3,Hydrolysat de kératine
+619,4,5,3,gingérol
+620,1,3,3,glucoamylase
+621,4,5,3,Andrographolides
+622,4,4,3,Levure
+623,4,5,3,punicalagines
+624,1,3,3,fibres solubles
+625,1,3,3,fibres insolubles
+626,1,4,3,Gelée royale lyophilisée
+627,4,6,3,aragonite
+628,4,6,3,chlorophylle
+629,4,5,3,monoammonium glycyrrhizate
+630,4,5,3,glycosides de triterpènes (comme monoammonium glycyrrhizate)
+631,4,5,3,cétones
+632,4,5,3,silymarine
+633,3,3,3,N-acétyl L-tyrosine
+634,1,3,3,citicoline
+635,1,3,3,Alkylglycérol
+637,4,3,3,Huile de foie de morue
+638,4,6,3,acide oléique
+639,1,3,3,Ovalbumine
+640,4,4,3,Laitance de poisson
+641,4,5,3,pyrogallol
+642,4,5,3,acide citrique
+644,4,5,3,pachymanne
+646,4,5,3,ergostérol
+647,4,5,3,hypérine
+648,4,5,3,acide éburicoïque
+649,1,5,3,eleutherosides
+650,4,5,3,paeoniflorine
+651,1,3,3,polysaccharides
+652,1,5,3,Acide rosmarinique
+654,1,3,3,collagène
+656,4,4,3,Protéines d'escargot 
+657,4,3,3,Perna canaliculus
+658,4,4,3,huile de poisson
+659,4,4,3,Coquille d'huître
+660,1,6,3,Levure de bière
+661,4,5,3,polyphénols
+662,4,5,3,glucoraphanine
+664,4,5,3,Acide cafféique
+665,4,5,3,rhoadine
+666,4,4,3,vinaigre de cidre
+667,4,5,3,baicaline
+668,4,5,3,crocine
+669,4,6,3,carbonate
+670,4,5,3,rhœadine
+671,4,5,3,linalol
+672,1,3,3,cellulase
+673,4,6,3,argile
+676,4,6,3,5-HTP
+677,4,5,3,S-allyl-cystéine 
+679,4,5,3,Linguistilide
+680,1,4,3,Cartilage de raie
+681,4,3,3,oleuropéine 
+682,2,3,3,serrapeptase
+683,1,3,3,diosmétine
+685,1,3,3,carcinine
+686,1,3,3,glucides
+687,4,5,3,ruscogénine
+688,4,6,3,galangine
+689,1,3,3,glycérol
+690,1,3,3,peptide d'elastine
+693,4,3,3,oligopeptide d'elastine
+695,1,3,3,acide malique
+696,4,6,3,acide gamma-linolénique
+697,4,5,3,sanguinarine
+698,4,5,3,coptisine
+699,4,5,3,digalactosyl diglycérides
+700,4,5,1,alcaloïdes harmaniques
+701,4,5,3,bacoside
+702,1,6,3,Huile de Krill
+703,1,3,3,fructose
+704,1,3,3,acides aminés
+705,1,3,3,peptides
+706,4,6,3,oméga 7
+707,2,3,3,Méthoxyisoflavone
+708,4,5,1,bétalaïne
+709,2,3,3,nattokinase
+710,1,6,3,acide phosphatidique
+711,1,6,3,glycosaminoglycane
+714,4,6,3,lysozyme
+715,4,6,3,dermatane sulfate
+716,4,5,3,Acide ursolique
+717,4,2,3,Dolomite
+718,4,5,3,acide fulvique
+719,4,5,3,acide humique
+720,4,3,3,Fucoxanthine
+721,4,5,3,alliine
+722,4,6,3,Huile de schizochytrium sp
+723,1,3,3,isomalto-oligosaccharide
+724,1,3,3,hydroxyproline
+725,1,3,3,lait de jument
+726,4,5,3,acide élénolique
+727,1,3,3,maltodextrine
+728,1,3,3,acide caprylique
+729,4,5,3,lapachol
+730,4,5,3,menthol
+731,4,5,3,néomenthol
+732,4,5,3,flavanols
+733,4,5,3,verbénone
+734,4,5,3,acétate de bornyle
+735,4,5,3,alpha-phellandrène
+736,4,5,3,alpha-pinène
+737,4,5,3,bêta-phellandrène
+738,4,5,3,camphène
+739,4,5,3,bêta-pinène
+740,4,5,3,gamma-terpinène
+741,4,5,3,galénine
+742,4,5,3,acide ellagique
+743,4,6,3,Huile de foie de requin
+744,4,3,3,Cartilage
+745,4,5,3,virdiflorol
+746,4,5,3,viridiflorol
+747,4,5,3,sclaréol
+748,4,5,3,paracymène
+749,4,6,3,Cartilage de requin
+750,4,5,3,cétostéroides
+751,4,5,3,asiaticoside
+752,4,5,3,schisandrine
+753,4,4,3,Dextrose
+754,2,2,3,soufre
+755,1,3,3,hydroxylysine
+756,4,4,3,Amidon de maïs
+757,4,6,3,Huile de foie de chimère
+758,4,5,3,géraniol
+759,4,4,3,Farine de maïs
+760,4,5,3,(E)-alpha-bisabolène
+761,4,5,3,(E)-ß-ocimène
+762,4,5,3,(Z)-ß-ocimène
+763,4,5,3,bêta-caryophyllène
+764,4,5,3,delta-3-carène
+765,4,5,3,ß-turmérone
+766,1,3,3,bêta-glucanase
+767,1,3,3,peptidase
+768,1,5,3,acémannane
+769,1,3,3,hémicellulase
+770,4,5,3,diindolylméthane
+771,1,3,3,adénosine
+772,1,3,3,guanosine
+773,1,3,3,cytidine
+774,1,3,3,uridine
+775,4,5,3,mangiférine
+776,1,6,3,lait d'anesse
+777,2,5,3,chrysine
+778,1,5,3,acide 10 hydroxydécanoïque
+779,1,3,3,glucose
+780,4,5,3,bétanine
+781,1,4,3,autolysat de poisson
+782,4,3,3,Nacre
+783,4,5,3,violanthine
+784,3,3,3,N-acétyl L-glutamine (NAG)
+785,4,5,3,cinnamaldéhyde
+786,4,5,3,linalyl acétate
+787,4,6,3,chlorophylline
+788,4,5,3,sulforaphane
+789,4,6,3,Triglycérides à chaîne moyenne
+790,1,3,3,Alpha-casozépine
+791,4,5,3,méso-zéaxanthine
+792,1,5,3,RR-zéaxanthine
+793,4,5,3,cannabidiol
+794,4,5,3,withanolides
+795,4,5,3,taxifoline
+796,4,3,3,L-ergothionéine
+797,4,5,3,héricénones
+798,1,3,3,Galactomannanes
+799,1,3,3,phlorotannins
+800,1,3,3,Extrait des racines de trois plantes
+801,1,3,3,Palmitoyléthanolamide
+802,4,5,3,lévo-dopa
+803,1,3,3,acide férulique
+804,1,3,3,pyrroloquinoléine-quinone
+805,1,3,3,alginate
+806,1,6,3,phytase
+807,1,3,2,2'-Fucosyllactose
+809,4,5,3,axillarine
+810,4,5,3,turménone 
+811,4,5,1,myrcène
+812,4,6,3,Acides fulviques
+813,2,3,3,Théacrine
+814,1,3,3,dextrine
+815,1,3,3,catalase
+816,1,3,3,Oxydase
+817,1,3,3,Phosphatase
+818,4,5,3,quassine
+819,1,3,3,homotaurine
+820,1,3,3,tributyrine
+821,4,5,3,quinones
+822,1,6,3,Huile de calanus
+823,4,6,3,immunoglobulines
+824,1,6,3,sel disodique de pyrroloquinoléine-quinone
+825,1,6,3,ubiquinol
+826,4,5,3,delphinidine
+827,1,3,3,monolaurate de glycérol
+828,1,3,3,phénylcapsaïcine
+829,4,5,3,diamine oxydase
+830,1,3,3,gamma-cyclodextrine
+831,1,4,3,pain d'abeille
+832,1,4,3,extrait de pain d'abeille
+833,4,5,3,ranunculine
+834,4,5,3,Ptérostilbène
+835,4,5,3,acide stéaridonique
+836,1,6,3,extrait protéique de rein de porc
+837,1,6,3,lactobacillus acidophilus inactivé
+838,1,6,3,lactobacillus casei inactivé
+839,1,6,3,lactobacillus rhamnosus inactivé
+840,4,5,3,lutéoline
+841,4,5,3,alcaloïdes isoquinoléiques
+842,4,3,3,xylose
+843,4,5,3,phaséolamine
+844,1,3,3,bicarbonate de sodium
+845,1,4,3,Huile de calamar
+846,1,3,3,alpha-cylclodextrine
+848,4,5,3,spermidine
+849,1,6,3,"extrait des racines de trois plantes (Cynanchum wilfordii Hemsley, Phlomis umbrosa Turcz. et Angelica gigas Nakai)"
+850,4,5,3,cordycépine
+851,4,3,3,L-alpha-Glycérophosphorylcholine
+852,4,6,3,shilajit
+853,4,5,3,allicine
+854,1,6,3,lactobacillus plantarum inactivé
+855,4,5,3,miraculine
+856,1,3,2,3-fucosyllactose
+857,1,6,2,acides gras cétylés
+858,1,3,3,Acide alpha-hydroxy-isocaproïque
+859,1,6,2,Xylo-oligosaccharides
+860,1,3,3,tétrahydrocurcuminoïdes
+861,1,3,3,butyrate
+862,1,6,3,bifidobacterium lactis inactivé
+863,1,6,3,bifidobacterium bifidum inactivé
+864,1,5,3,oenothéine A
+867,1,5,3,oenothéine B
+868,1,5,3,dibenzo-a-Pyrones
+870,1,6,3,Acide palmitique
+871,1,6,3,Acide palmitoléique
+872,1,6,3,Acide stéarique
+873,1,6,3,Acide cétoléique
+874,1,5,3,Kaempferol
+875,4,5,3,acétate de néryle
+876,4,5,3,gamma-curcumène
+877,4,5,3,Italidione III
+878,1,5,3,Flavonones
+879,1,5,3,Flavanones
+880,1,3,3,acide caprique
+881,3,3,3,Acide nervonique
+882,1,5,3,Fisétine
+883,1,5,3,Thymoquinone
+884,1,6,3,Chlorure de 1- méthylnicotinamide
