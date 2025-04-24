@@ -71,7 +71,7 @@
                 />
               </DsfrInputGroup>
             </div>
-            <div class="md:w-2/12" v-if="!ingredientIsMicroorganism">
+            <div class="md:w-2/12" v-if="!ingredientIsMicroorganism && !ingredientIsSubstance">
               <DsfrInputGroup :error-message="firstErrorMsg(v$, 'selectedUnit')">
                 <DsfrSelect
                   label="Unité"
@@ -156,10 +156,12 @@ const selectedUnit = ref("")
 
 const ingredientIsPlant = computed(() => selectedIngredient.value?.objectType === "plant")
 const ingredientIsMicroorganism = computed(() => selectedIngredient.value?.objectType === "microorganism")
+const ingredientIsSubstance = computed(() => selectedIngredient.value?.objectType === "substance")
 
 const addIngredient = (ingredient) => {
   selectedIngredient.value = ingredient
   if (!ingredientIsPlant.value) selectedPart.value = null
+  if (ingredientIsSubstance.value) selectedUnit.value = selectedIngredient.value.unit
 }
 
 const showDoubleQuantity = computed(() => selectedOperation.value === OPERATION.BT)
@@ -170,6 +172,9 @@ const makeQuantityLabel = (suffix) => {
   let label = "Quantité"
   if (selectedOperation.value === OPERATION.BT) label += ` ${suffix}`
   if (ingredientIsMicroorganism.value) label += " (en UFC)"
+  if (ingredientIsSubstance.value)
+    label += ` (en ${units.value?.find((x) => x.id === parseInt(selectedUnit.value))?.name})`
+
   return label
 }
 
