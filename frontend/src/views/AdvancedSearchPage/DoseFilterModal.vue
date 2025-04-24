@@ -83,12 +83,6 @@
               </DsfrInputGroup>
             </div>
           </div>
-          <DsfrAlert
-            v-if="!ingredientIsMicroorganism && !ingredientIsSubstance"
-            description="La conversion d'unités est en cours de développement. Pour l'instant les résultats
-            contiendront seulement les déclarations avec l'unité rentrée ci-dessus."
-            small
-          />
         </div>
       </div>
     </DsfrModal>
