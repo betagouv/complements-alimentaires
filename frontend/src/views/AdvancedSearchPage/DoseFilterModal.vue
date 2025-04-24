@@ -165,11 +165,11 @@ const addIngredient = (ingredient) => {
 }
 
 const showDoubleQuantity = computed(() => selectedOperation.value === OPERATION.BT)
-const quantityALabel = computed(() => makeQuantityLabel("A"))
-const quantityBLabel = computed(() => makeQuantityLabel("B"))
+const quantityALabel = computed(() => makeQuantityLabel("min"))
+const quantityBLabel = computed(() => makeQuantityLabel("max"))
 
 const makeQuantityLabel = (suffix) => {
-  let label = "Quantité"
+  let label = selectedOperation.value === OPERATION.BT ? "Qté" : "Quantité"
   if (selectedOperation.value === OPERATION.BT) label += ` ${suffix}`
   if (ingredientIsMicroorganism.value) label += " (en UFC)"
   if (ingredientIsSubstance.value)
