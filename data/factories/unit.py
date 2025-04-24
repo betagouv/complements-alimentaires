@@ -9,5 +9,13 @@ class SubstanceUnitFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ("siccrf_id",)
 
     siccrf_id = factory.Sequence(lambda n: n + 1)
-    name = factory.Sequence(lambda n: "%02d" % n)
+
+    # Génere des séquences uniques (aaa, aab, aac) pour éviter des problèmes avec le unique=True
+    name = factory.Sequence(
+        lambda n: "{}{}{}".format(
+            chr(97 + (n // (26 * 26)) % 26),
+            chr(97 + (n // 26) % 26),
+            chr(97 + n % 26),
+        ).lower()
+    )
     long_name = factory.Faker("text", max_nb_chars=20)
