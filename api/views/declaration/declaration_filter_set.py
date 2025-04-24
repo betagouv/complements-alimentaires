@@ -314,11 +314,13 @@ class DeclarationFilterSet(django_filters.FilterSet):
         "g": 1.0,  # Unité de base (gram)
     }
 
+    # NOTE: Pour l'instant on a seulement ml comme unité de volume en prod. Si on en ajoute d'autres,
+    # il faudra les décommenter dans le dictionnaire ci-dessous.
     BASE_VOLUME_UNIT = "l"
     VOLUME_UNITS = {
-        "ml": 0.001,  # 1 milliliter = 0.001 l
-        "cl": 0.01,  # 1 centiliter = 0.01 l
-        "l": 1.0,  # Unité de base (liter)
+        # "ml": 0.001,  # 1 milliliter = 0.001 l
+        # "cl": 0.01,  # 1 centiliter = 0.01 l
+        # "l": 1.0,  # Unité de base (liter)
     }
 
     def _get_equivalent_measures(self, unit, quantity, quantity_max=None):
