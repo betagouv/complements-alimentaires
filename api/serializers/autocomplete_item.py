@@ -14,6 +14,7 @@ class AutocompleteItemSerializer(serializers.Serializer):
     # Substance
     cas_number = serializers.CharField(read_only=True)
     einec_number = serializers.CharField(read_only=True)
+    unit = serializers.PrimaryKeyRelatedField(read_only=True)
 
     # Microorganism
     genre = serializers.CharField(read_only=True)
