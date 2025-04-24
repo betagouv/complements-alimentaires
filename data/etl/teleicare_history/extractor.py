@@ -104,12 +104,12 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                 nb_siret_match += 1
                 matched = True
                 # TODO : vérifier si cette relation n'existe pas déjà
-                relation = EtablissementToCompanyRelation(
+                relation, _ = EtablissementToCompanyRelation.objects.get_or_create(
                     company=company_with_siret_matching[0],
-                    siccrf_id=etab.etab_ident,
                     old_siret=etab.etab_siret,
-                    siccrf_registration_date=etab.etab_date_adhesion,
-                )
+                )  # si le siret est celui actuel (Company.siret) la relation n'existe pas encore
+                relation.siccrf_id = etab.etab_ident
+                relation.siccrf_registration_date = etab.etab_date_adhesion
                 relation.save()
 
         elif etab.etab_numero_tva_intra is not None:
@@ -121,12 +121,12 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
             if len(company_with_vat_matching) == 1:
                 nb_vat_match += 1
                 matched = True
-                relation = EtablissementToCompanyRelation(
-                    company=company_with_siret_matching[0],
-                    siccrf_id=etab.etab_ident,
+                relation, _ = EtablissementToCompanyRelation.objects.get_or_create(
+                    company=company_with_vat_matching[0],
                     old_vat=etab.etab_numero_tva_intra,
-                    siccrf_registration_date=etab.etab_date_adhesion,
-                )
+                )  # si le vat est celui actuel (Company.vat) la relation n'existe pas encore
+                relation.siccrf_id = etab.etab_ident
+                relation.siccrf_registration_date = etab.etab_date_adhesion
                 relation.save()
         # creation de la company
         if not matched and create_if_not_exist:
