@@ -186,7 +186,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
                     )
                     return queryset.none()
 
-            quantity2 = float(quantity_parts[1]) if operation == self.BETWEEN else None
+            quantity_max = float(quantity_parts[1]) if operation == self.BETWEEN else None
 
             # Prendre l'unité si elle est spécifiée (pour les microorganismes ce n'est pas le cas)
             unit = SubstanceUnit.objects.get(pk=unit_id) if unit_id else None
@@ -195,12 +195,12 @@ class DeclarationFilterSet(django_filters.FilterSet):
             if element_type == "plant":
                 plant_part_id = parts[2].split("|")[1] if "|" in parts[2] and len(parts[2].split("|")) > 1 else None
                 return self.filter_plant_dose(
-                    queryset, element_id, plant_part_id, operation, quantity, quantity2, unit
+                    queryset, element_id, plant_part_id, operation, quantity, quantity_max, unit
                 )
             elif element_type == "substance":
-                return self.filter_substance_dose(queryset, element_id, operation, quantity, quantity2, unit)
+                return self.filter_substance_dose(queryset, element_id, operation, quantity, quantity_max, unit)
             elif element_type == "microorganism":
-                return self.filter_microorganism_dose(queryset, element_id, operation, quantity, quantity2)
+                return self.filter_microorganism_dose(queryset, element_id, operation, quantity, quantity_max)
             elif element_type in [
                 "ingredient",
                 "form_of_supply",
@@ -209,7 +209,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
                 "active_ingredient",
                 "non_active_ingredient",
             ]:
-                return self.filter_ingredient_dose(queryset, element_id, operation, quantity, quantity2, unit)
+                return self.filter_ingredient_dose(queryset, element_id, operation, quantity, quantity_max, unit)
             logger.error(
                 f"Declaration filter by dose error : {element_type} not supported (needs plant, substance, microorganism or ingredient)"
             )
@@ -218,41 +218,45 @@ class DeclarationFilterSet(django_filters.FilterSet):
             logger.exception(e)
             return queryset.none()
 
-    def filter_plant_dose(self, queryset, plant_id, plant_part_id, operation, quantity1, quantity2=None, unit=None):
+    def filter_plant_dose(self, queryset, plant_id, plant_part_id, operation, quantity1, quantity_max=None, unit=None):
         filters = Q(declared_plants__plant_id=plant_id)
         if plant_part_id:
             filters &= Q(declared_plants__used_part_id=plant_part_id)
         if unit:
             filters &= Q(declared_plants__unit=unit)
-        return self._apply_quantity_filter(queryset, filters, operation, quantity1, quantity2, "declared_plants__")
+        return self._apply_quantity_filter(queryset, filters, operation, quantity1, quantity_max, "declared_plants__")
 
-    def filter_substance_dose(self, queryset, substance_id, operation, quantity1, quantity2=None, unit=None):
+    def filter_substance_dose(self, queryset, substance_id, operation, quantity1, quantity_max=None, unit=None):
         filters = Q(computed_substances__substance_id=substance_id)
         if unit:
             filters &= Q(computed_substances__unit=unit)
-        return self._apply_quantity_filter(queryset, filters, operation, quantity1, quantity2, "computed_substances__")
-
-    def filter_microorganism_dose(self, queryset, microorganism_id, operation, quantity1, quantity2=None):
-        filters = Q(declared_microorganisms__microorganism_id=microorganism_id)
         return self._apply_quantity_filter(
-            queryset, filters, operation, quantity1, quantity2, "declared_microorganisms__"
+            queryset, filters, operation, quantity1, quantity_max, "computed_substances__"
         )
 
-    def filter_ingredient_dose(self, queryset, ingredient_id, operation, quantity1, quantity2=None, unit=None):
+    def filter_microorganism_dose(self, queryset, microorganism_id, operation, quantity1, quantity_max=None):
+        filters = Q(declared_microorganisms__microorganism_id=microorganism_id)
+        return self._apply_quantity_filter(
+            queryset, filters, operation, quantity1, quantity_max, "declared_microorganisms__"
+        )
+
+    def filter_ingredient_dose(self, queryset, ingredient_id, operation, quantity1, quantity_max=None, unit=None):
         filters = Q(declared_ingredients__ingredient_id=ingredient_id)
         if unit:
             filters &= Q(declared_ingredients__unit=unit)
         return self._apply_quantity_filter(
-            queryset, filters, operation, quantity1, quantity2, "declared_ingredients__"
+            queryset, filters, operation, quantity1, quantity_max, "declared_ingredients__"
         )
 
-    def _apply_quantity_filter(self, queryset, other_filters, operation, quantity1, quantity2=None, relation_field=""):
+    def _apply_quantity_filter(
+        self, queryset, other_filters, operation, quantity1, quantity_max=None, relation_field=""
+    ):
         quantity_filter = self._get_quantity_filter(
-            operation=operation, quantity1=quantity1, quantity2=quantity2, relation_field=relation_field
+            operation=operation, quantity1=quantity1, quantity_max=quantity_max, relation_field=relation_field
         )
         return queryset.filter(other_filters & quantity_filter).distinct()
 
-    def _get_quantity_filter(self, operation, quantity1, quantity2=None, relation_field=""):
+    def _get_quantity_filter(self, operation, quantity1, quantity_max=None, relation_field=""):
         """
         Aide pour obtenir la requête necessaire pour la quantité
         """
@@ -270,7 +274,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
             filter_kwargs[f"{relation_field}quantity"] = quantity1
         elif operation == self.BETWEEN:
             return Q(**{f"{relation_field}quantity__gte": quantity1}) & Q(
-                **{f"{relation_field}quantity__lte": quantity2}
+                **{f"{relation_field}quantity__lte": quantity_max}
             )
 
         return Q(**filter_kwargs)
