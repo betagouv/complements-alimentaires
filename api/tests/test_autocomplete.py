@@ -5,7 +5,6 @@ from rest_framework.test import APITestCase
 
 from data.factories import (
     IngredientFactory,
-    IngredientSynonymFactory,
     MicroorganismFactory,
     MicroorganismSynonymFactory,
     PlantFactory,
@@ -14,7 +13,7 @@ from data.factories import (
     SubstanceSynonymFactory,
 )
 from data.models.ingredient_status import IngredientStatus
-from data.models.ingredient_type import IngredientType
+from data.models.substance import SubstanceType
 
 
 class TestAutocomplete(APITestCase):
@@ -42,7 +41,9 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "eucal"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        eucalyptus_1 = SubstanceFactory.create(ca_name="eucalyptus")
+        eucalyptus_1 = SubstanceFactory.create(
+            ca_name="eucalyptus", substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE]
+        )
 
         # Deuxième position car la chaîne de caractères est plus éloignée
         eucalyptus_2 = IngredientFactory.create(ca_name="eucalyptus tree")
@@ -75,7 +76,7 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "buplevre"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        buplevre_1 = SubstanceFactory.create(ca_name="Buplèvre")
+        buplevre_1 = SubstanceFactory.create(ca_name="Buplèvre", substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE])
 
         # Deuxième position car la chaîne de caractères est plus éloignée
         buplevre_2 = PlantFactory.create(ca_name="Buplèvre en faux")
@@ -108,7 +109,11 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "ephedra"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        authorized_substance = SubstanceFactory.create(ca_name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED)
+        authorized_substance = SubstanceFactory.create(
+            ca_name="Vitamine C",
+            siccrf_status=IngredientStatus.AUTHORIZED,
+            substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE],
+        )
         SubstanceSynonymFactory.create(name="Ephedra", standard_name=authorized_substance)
 
         forbidden_plant = PlantFactory.create(
@@ -118,7 +123,9 @@ class TestAutocomplete(APITestCase):
             ca_name="Ephedra ingredient", siccrf_status=IngredientStatus.NOT_AUTHORIZED
         )
         forbidden_substance = SubstanceFactory.create(
-            ca_name="Ephedra ine", siccrf_status=IngredientStatus.NOT_AUTHORIZED
+            ca_name="Ephedra ine",
+            siccrf_status=IngredientStatus.NOT_AUTHORIZED,
+            substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE],
         )
 
         to_be_authorized_plant = PlantFactory.create(
@@ -137,22 +144,31 @@ class TestAutocomplete(APITestCase):
         self.assertTrue(to_be_authorized_plant.name in returned_names)
         self.assertEqual(len(returned_names), 3)
 
-    def test_filter_substance_that_are_brought_by_form_of_supply(self):
+    def test_only_return_bioactive_substances(self):
         """
-        Substance with types "Mineral" or "Vitamine" should not be returned by autocomplete
+        Les substances qui ont le type "MINERAL" ou "VITAMINE" ou "SECONDARY_METABOLITE" ou "OTHER_BIOACTIVE_SUBSTANCE"
+        sans être accompagné du type "BIOACTIVE_SUBSTANCE" ne devraient pas être retournées par l'autocomplete
         """
-        autocomplete_term = "vitamine"
-
-        substance_not_to_be_returned = SubstanceFactory.create(
-            ca_name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED
-        )
-        ingredient_form_of_supply = IngredientFactory.create(
-            ca_name="L-Ascorbate de zinc",
+        # Création des ingrédients
+        substance_to_be_returned_1 = SubstanceFactory.create(
+            ca_name="Vitamine A",
             siccrf_status=IngredientStatus.AUTHORIZED,
-            ingredient_type=IngredientType.FORM_OF_SUPPLY,
+            substance_types=[SubstanceType.VITAMIN, SubstanceType.BIOACTIVE_SUBSTANCE],
         )
-        ingredient_form_of_supply.substances.add(substance_not_to_be_returned)
-        IngredientSynonymFactory.create(name="Vitamine C", standard_name=ingredient_form_of_supply)
+        substance_to_be_returned_2 = SubstanceFactory.create(
+            ca_name="Vitamine B",
+            siccrf_status=IngredientStatus.AUTHORIZED,
+            substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE],
+        )
+        _ = SubstanceFactory.create(
+            ca_name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED, substance_types=[SubstanceType.VITAMIN]
+        )
+
+        _ = SubstanceFactory.create(
+            ca_name="Vitamine RAS", siccrf_status=IngredientStatus.AUTHORIZED, substance_types=[]
+        )
+
+        autocomplete_term = "vitamine"
 
         response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term})
 
@@ -160,9 +176,9 @@ class TestAutocomplete(APITestCase):
         results = response.json()
         returned_names = [result.get("name") for result in results]
 
-        self.assertFalse(substance_not_to_be_returned.name in returned_names)
-        self.assertTrue(ingredient_form_of_supply.name in returned_names)
-        self.assertEqual(len(returned_names), 1)
+        self.assertTrue(substance_to_be_returned_2.name in returned_names)
+        self.assertTrue(substance_to_be_returned_1.name in returned_names)
+        self.assertEqual(len(returned_names), 2)
 
     def test_autocomplete_filtered_by_type(self):
         """
@@ -171,7 +187,9 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "eucal"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        eucalyptus_1 = SubstanceFactory.create(ca_name="eucalyptus")
+        eucalyptus_1 = SubstanceFactory.create(
+            ca_name="eucalyptus", substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE]
+        )
 
         # ne pas faire apparaître
         IngredientFactory.create(ca_name="eucalyptus tree")
