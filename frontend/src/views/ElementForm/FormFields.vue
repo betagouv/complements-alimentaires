@@ -117,7 +117,7 @@
         <div class="md:ml-4 md:my-8 md:col-span-2">
           <DsfrTag
             v-for="(id, idx) in state.forbiddenPlantParts"
-            :key="`plant-part-${id}`"
+            :key="`forbidden-plant-part-${id}`"
             :label="optionLabel(plantParts, id)"
             tagName="button"
             @click="state.forbiddenPlantParts.splice(idx, 1)"
