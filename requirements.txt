@@ -36,7 +36,7 @@ django-extensions==3.2.3
 django-filter==25.1
 django-hijack==3.7.1
 django-js-asset==3.0.1
-django-phonenumber-field==8.0.0
+django-phonenumber-field==8.1.0
 django-prose==2.1.0
 django-redis==5.4.0
 django-silk==5.3.2
