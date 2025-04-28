@@ -53,7 +53,7 @@ executing==2.2.0
 factory_boy==3.3.3
 Faker==37.1.0
 filelock==3.16.1
-gprof2dot==2024.6.6
+gprof2dot==2025.4.14
 html5lib==1.1
 identify==2.6.9
 idna==3.10
