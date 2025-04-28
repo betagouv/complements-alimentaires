@@ -220,7 +220,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
 
     def filter_plant_dose(self, queryset, plant_id, plant_part_id, operation, quantity, quantity_max=None, unit=None):
         filters = Q(declared_plants__plant_id=plant_id)
-        if plant_part_id:
+        if plant_part_id and plant_part_id != "-":
             filters &= Q(declared_plants__used_part_id=plant_part_id)
         return self._apply_quantity_filter(
             queryset, filters, operation, quantity, quantity_max, "declared_plants__", unit
@@ -261,43 +261,28 @@ class DeclarationFilterSet(django_filters.FilterSet):
         # d'autres unités (par exemple 0.2 kg, 200000 mg, etc).
         equivalent_measures = self._get_equivalent_measures(unit, quantity, quantity_max)
 
+        sql_modifiers = {
+            self.GREATER_THAN: "__gt",
+            self.GREATER_THAN_OR_EQUAL: "__gte",
+            self.LESS_THAN: "__lt",
+            self.LESS_THAN_OR_EQUAL: "__lte",
+            self.EQUAL: "",
+        }
+
         filters = []
-        if operation == self.GREATER_THAN:
-            filters = [
-                Q(**{f"{relation_field}quantity__gt": eq_quantity})
-                & Q(**{f"{relation_field}unit": eq_unit} if eq_unit else {})
-                for (eq_unit, eq_quantity, _) in equivalent_measures
-            ]
-        elif operation == self.GREATER_THAN_OR_EQUAL:
-            filters = [
-                Q(**{f"{relation_field}quantity__gte": eq_quantity})
-                & Q(**{f"{relation_field}unit": eq_unit} if eq_unit else {})
-                for (eq_unit, eq_quantity, _) in equivalent_measures
-            ]
-        elif operation == self.LESS_THAN:
-            filters = [
-                Q(**{f"{relation_field}quantity__lt": eq_quantity})
-                & Q(**{f"{relation_field}unit": eq_unit} if eq_unit else {})
-                for (eq_unit, eq_quantity, _) in equivalent_measures
-            ]
-        elif operation == self.LESS_THAN_OR_EQUAL:
-            filters = [
-                Q(**{f"{relation_field}quantity__lte": eq_quantity})
-                & Q(**{f"{relation_field}unit": eq_unit} if eq_unit else {})
-                for (eq_unit, eq_quantity, _) in equivalent_measures
-            ]
-        elif operation == self.EQUAL:
-            filters = [
-                Q(**{f"{relation_field}quantity": eq_quantity})
-                & Q(**{f"{relation_field}unit": eq_unit} if eq_unit else {})
-                for (eq_unit, eq_quantity, _) in equivalent_measures
-            ]
-        elif operation == self.BETWEEN:
+
+        if operation == self.BETWEEN:
             filters = [
                 Q(**{f"{relation_field}quantity__gte": eq_quantity})
                 & Q(**{f"{relation_field}quantity__lte": eq_max_quantity})
                 & Q(**{f"{relation_field}unit": eq_unit} if eq_unit else {})
                 for (eq_unit, eq_quantity, eq_max_quantity) in equivalent_measures
+            ]
+        else:
+            filters = [
+                Q(**{f"{relation_field}quantity{sql_modifiers[operation]}": eq_quantity})
+                & Q(**{f"{relation_field}unit": eq_unit} if eq_unit else {})
+                for (eq_unit, eq_quantity, _) in equivalent_measures
             ]
 
         query = Q()
