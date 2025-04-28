@@ -90,19 +90,37 @@
     <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
       <div v-if="formForType.plantParts" class="grid md:grid-cols-3 items-end my-4 md:my-2">
         <DsfrMultiselect
-          v-model="state.plantParts"
-          :options="plantParts"
-          label="Partie(s) utilisée(s)"
+          v-model="state.authorisedPlantParts"
+          :options="orderedPlantParts"
+          label="Partie(s) autorisée(s)"
           search
           labelKey="name"
         />
         <div class="md:ml-4 md:my-8 md:col-span-2">
           <DsfrTag
-            v-for="(id, idx) in state.plantParts"
+            v-for="(id, idx) in state.authorisedPlantParts"
             :key="`plant-part-${id}`"
             :label="optionLabel(plantParts, id)"
             tagName="button"
-            @click="state.plantParts.splice(idx, 1)"
+            @click="state.authorisedPlantParts.splice(idx, 1)"
+            :aria-label="`Retirer ${optionLabel(plantParts, id)}`"
+            class="mx-1 fr-tag--dismiss"
+          ></DsfrTag>
+        </div>
+        <DsfrMultiselect
+          v-model="state.forbiddenPlantParts"
+          :options="orderedPlantParts"
+          label="Partie(s) non-autorisée(s)"
+          search
+          labelKey="name"
+        />
+        <div class="md:ml-4 md:my-8 md:col-span-2">
+          <DsfrTag
+            v-for="(id, idx) in state.forbiddenPlantParts"
+            :key="`forbidden-plant-part-${id}`"
+            :label="optionLabel(plantParts, id)"
+            tagName="button"
+            @click="state.forbiddenPlantParts.splice(idx, 1)"
             :aria-label="`Retirer ${optionLabel(plantParts, id)}`"
             class="mx-1 fr-tag--dismiss"
           ></DsfrTag>
@@ -239,7 +257,8 @@ const router = useRouter()
 const createEmptySynonym = () => ({ name: "" })
 
 const state = ref({
-  plantParts: [],
+  authorisedPlantParts: [],
+  forbiddenPlantParts: [],
   substances: [],
   synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
   maxQuantities: [],
@@ -251,7 +270,10 @@ watch(
     state.value = JSON.parse(JSON.stringify(props.element))
     state.value.status = statuses.find((s) => s.apiValue === state.value.status)?.value
     if (state.value.family) state.value.family = state.value.family.id
-    if (state.value.plantParts) state.value.plantParts = state.value.plantParts.map((p) => p.id)
+    if (state.value.plantParts) {
+      state.value.authorisedPlantParts = state.value.plantParts.filter((p) => !!p.isUseful).map((p) => p.id)
+      state.value.forbiddenPlantParts = state.value.plantParts.filter((p) => !p.isUseful).map((p) => p.id)
+    }
     if (state.value.objectType && apiType.value === "other-ingredient")
       state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
     if (state.value.unitId) state.value.unit = state.value.unitId
@@ -270,12 +292,19 @@ const saveElement = async () => {
   }
 
   const url = `/api/v1/${apiType.value}s/`
-  const payload = state.value
+  const payload = JSON.parse(JSON.stringify(state.value))
   if (payload.substances?.length) {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
   if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
+  if (payload.authorisedPlantParts?.length || payload.forbiddenPlantParts.length) {
+    const authorisedParts = payload.authorisedPlantParts
+    const forbiddenParts = payload.forbiddenPlantParts
+    payload.plantParts = authorisedParts
+      .map((p) => ({ plantpart: p, isUseful: true }))
+      .concat(forbiddenParts.map((p) => ({ plantpart: p, isUseful: false })))
+  }
 
   const { response } = isNewIngredient.value
     ? await useFetch(url, { headers: headers() }).post(payload).json()
@@ -367,6 +396,12 @@ const store = useRootStore()
 const { plantParts, plantFamilies, units, populations } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
+
+const orderedPlantParts = computed(() => {
+  const ordered = JSON.parse(JSON.stringify(plantParts.value))
+  ordered?.sort((a, b) => a.name.localeCompare(b.name))
+  return ordered
+})
 
 const ingredientTypes = [
   { value: 1, text: "Nutriment (Forme d'apport)", apiValue: "form_of_supply" },
