@@ -68,7 +68,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
         change_reason = validated_data.pop("change_reason", "Création via Compl'Alim")
         ingredient = super().create(validated_data)
-        self.update_change_reason(ingredient, change_reason, change_reason)
+        self.update_change_reason(ingredient, change_reason, "")
 
         for synonym in synonyms:
             self.add_synonym(ingredient, synonym)
