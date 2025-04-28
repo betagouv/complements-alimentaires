@@ -25,6 +25,7 @@ COMMON_FIELDS = (
     "novel_food",
     "is_risky",
     "change_reason",
+    "public_change_reason",
 )
 
 COMMON_READ_ONLY_FIELDS = ("id",)
@@ -58,6 +59,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     private_comments = serializers.CharField(source="ca_private_comments", required=False, allow_blank=True)
     status = serializers.IntegerField(source="ca_status", required=False)
     change_reason = serializers.CharField(required=False, allow_blank=True)
+    public_change_reason = serializers.CharField(required=False, allow_blank=True)
 
     # DRF ne gère pas automatiquement la création des nested-fields :
     # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
@@ -66,7 +68,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
         change_reason = validated_data.pop("change_reason", "Création via Compl'Alim")
         ingredient = super().create(validated_data)
-        update_change_reason(ingredient, change_reason)
+        self.update_change_reason(ingredient, change_reason, change_reason)
 
         for synonym in synonyms:
             self.add_synonym(ingredient, synonym)
@@ -77,6 +79,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
         change_reason = validated_data.pop("change_reason", "Modification via Compl'Alim")
+        public_change_reason = validated_data.pop("public_change_reason", "")
         data_items = copy.deepcopy(validated_data).items()
         for key, value in data_items:
             if key.startswith("ca_"):
@@ -93,7 +96,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
                     validated_data.pop(key, None)
 
         super().update(instance, validated_data)
-        update_change_reason(instance, change_reason)
+        self.update_change_reason(instance, change_reason, public_change_reason)
 
         try:
             new_synonym_list = [s["name"] for s in synonyms]
@@ -118,6 +121,13 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
                 self.synonym_model.objects.create(standard_name=instance, name=name)
         except KeyError:
             raise ParseError(detail="Must provide 'name' to create new synonym")
+
+    # inspiré par https://github.com/jazzband/django-simple-history/blob/626ece4082c4a7f87d14566e7a3c568043233ac5/simple_history/utils.py#L8
+    def update_change_reason(self, instance, private_change_reason, public_change_reason):
+        update_change_reason(instance, private_change_reason)
+        record = instance.history.order_by("-history_date").first()
+        record.history_public_change_reason = public_change_reason
+        record.save()
 
 
 class CommonIngredientReadSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):

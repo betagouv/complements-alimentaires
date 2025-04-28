@@ -522,6 +522,24 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(substance.history.first().history_change_reason, "Test change")
 
     @authenticate
+    def test_can_give_public_change_reason(self):
+        """
+        Ainsi qu'une raison de changement privé, c'est possible de donner une raison de visibilité publique
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        ingredient = IngredientFactory.create()
+
+        payload = {"name": "Nouvel nom", "changeReason": "Raison privée", "publicChangeReason": "Raison publique"}
+        response = self.client.patch(
+            reverse("api:single_ingredient", kwargs={"pk": ingredient.id}), payload, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        ingredient.refresh_from_db()
+        self.assertEqual(ingredient.history.first().history_change_reason, "Raison privée")
+        self.assertEqual(ingredient.history.first().history_public_change_reason, "Raison publique")
+
+    @authenticate
     def test_can_modify_substance_max_quantities(self):
         """
         Les instructrices peuvent rajouter une doses max pour la population générale en ajoutant

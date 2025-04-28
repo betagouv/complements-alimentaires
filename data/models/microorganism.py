@@ -7,7 +7,7 @@ from simple_history.models import HistoricalRecords
 from data.behaviours import Historisable, TimeStampable
 
 from .abstract_models import IngredientCommonModel
-from .mixins import WithMissingImportBoolean
+from .mixins import WithMissingImportBoolean, PublicReasonHistoricalModel
 from .substance import Substance
 
 
@@ -56,6 +56,9 @@ class Microorganism(IngredientCommonModel):
 
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
     history = HistoricalRecords(
+        bases=[
+            PublicReasonHistoricalModel,
+        ],
         inherit=True,
         excluded_fields=[
             "name",
