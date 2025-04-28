@@ -213,14 +213,24 @@
           <DsfrInput label="Commentaire privé" v-model="state.privateComments" :isTextarea="true" label-visible />
         </div>
       </div>
-      <DsfrInputGroup v-if="!isNewIngredient" :error-message="firstErrorMsg(v$, 'changeReason')">
-        <DsfrInput
-          v-model="state.changeReason"
-          label="Raison de changement (usage interne)"
-          hint="100 caractères max"
-          labelVisible
-        />
-      </DsfrInputGroup>
+      <div v-if="!isNewIngredient" class="grid md:grid-cols-2 md:gap-4">
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'publicChangeReason')">
+          <DsfrInput
+            v-model="state.publicChangeReason"
+            label="Raison de changement (visibilité publique)"
+            hint="100 caractères max"
+            labelVisible
+          />
+        </DsfrInputGroup>
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'changeReason')">
+          <DsfrInput
+            v-model="state.changeReason"
+            label="Raison de changement (usage interne)"
+            hint="100 caractères max"
+            labelVisible
+          />
+        </DsfrInputGroup>
+      </div>
     </DsfrFieldset>
     <div class="flex gap-x-2 mt-4">
       <DsfrButton label="Enregistrer ingrédient" @click="saveElement" />
@@ -384,6 +394,7 @@ const rules = computed(() => {
     unit: form?.nutritionalReference && !props.element ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
+    publicChangeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
   }
 })
 watch(formForType, () => v$.value.$reset())
