@@ -15,7 +15,11 @@ from data.factories import (
     DeclaredMicroorganismFactory,
     DeclaredPlantFactory,
     DeclaredSubstanceFactory,
+    InstructionReadyDeclarationFactory,
     MicroorganismFactory,
+    ObjectionDeclarationFactory,
+    ObservationDeclarationFactory,
+    OngoingInstructionDeclarationFactory,
     PlantFactory,
     PlantPartFactory,
     SubstanceFactory,
@@ -25,6 +29,32 @@ from data.models import Declaration
 
 
 class IngredientTestCase(TestCase):
+    def setUp(self):
+        # default_storage est FileSystemStorage dans l'environnement de test
+
+        self.etl_test = ETL_OPEN_DATA_DECLARATIONS()
+        self.etl_test.dataset_name = "test_declarations"
+
+    def test_declaration_jdd_contains_only_authorized_declarations(self):
+        # Création de declarations dont déclarations provenant de TeleIcare
+        AuthorizedDeclarationFactory()
+        AwaitingInstructionDeclarationFactory()
+        InstructionReadyDeclarationFactory()
+        OngoingInstructionDeclarationFactory()
+        ObservationDeclarationFactory()
+        ObjectionDeclarationFactory()
+
+        self.assertEqual(Declaration.objects.all().count(), 6)
+
+        self.etl_test.extract_dataset()
+        self.etl_test.transform_dataset()
+        self.etl_test.load_dataset()
+
+        open_data_jdd = pd.read_csv(
+            os.path.join(settings.MEDIA_ROOT, self.etl_test.dataset_name + ".csv"), delimiter=";"
+        )
+        self.assertEqual(len(open_data_jdd), 1)
+
     @mock.patch("data.etl.datagouv.update_resources")
     def test_created_csv_is_json_compliant(self, mocked_update_resources):
         """
@@ -54,21 +84,18 @@ class IngredientTestCase(TestCase):
             microorganism=MicroorganismFactory(ca_genus="Lactobasine", ca_species="en bois"),
             quantity=5.0,
         )
-        AwaitingInstructionDeclarationFactory()
-        self.assertEqual(Declaration.objects.all().count(), 4)
 
-        # default_storage est FileSystemStorage dans l'environnement de test
-        etl_test = ETL_OPEN_DATA_DECLARATIONS()
-        etl_test.dataset_name = "test_declarations"
-        etl_test.extract_dataset()
-        etl_test.transform_dataset()
-        etl_test.load_dataset()
+        self.etl_test.extract_dataset()
+        self.etl_test.transform_dataset()
+        self.etl_test.load_dataset()
 
-        open_data_jdd = pd.read_csv(os.path.join(settings.MEDIA_ROOT, etl_test.dataset_name + ".csv"), delimiter=";")
+        open_data_jdd = pd.read_csv(
+            os.path.join(settings.MEDIA_ROOT, self.etl_test.dataset_name + ".csv"), delimiter=";"
+        )
         self.assertEqual(len(open_data_jdd), 3)
         substance_loaded = json.loads(open_data_jdd["substances"][1])
         self.assertEqual(substance_loaded[3]["nom"], "Vitamine C")
         self.assertEqual(substance_loaded[3]["unite"], "mg")
 
         # supprime le fichier qui vient d'être créé
-        default_storage.delete(etl_test.dataset_name + ".csv")
+        default_storage.delete(self.etl_test.dataset_name + ".csv")
