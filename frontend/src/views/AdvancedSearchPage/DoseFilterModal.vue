@@ -12,6 +12,7 @@
             @selected="addIngredient"
             :hideSearchButton="true"
             :chooseFirstAsDefault="false"
+            :searchAll="true"
           />
         </DsfrInputGroup>
         <div v-if="selectedIngredient">
