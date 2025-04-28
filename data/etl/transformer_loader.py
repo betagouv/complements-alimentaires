@@ -21,8 +21,8 @@ class OPEN_DATA(TRANSFORMER_LOADER):
 
         # transforme les objects en json strings pour éviter de créer un csv avec des json string
         # qui ne respectent pas https://www.rfc-editor.org/rfc/rfc7159#section-7
-        json_columns = df_csv.columns[df_csv.applymap(type).eq(list).any()]
-        df_csv[json_columns] = df_csv[json_columns].map(json.dumps).astype("string")
+        json_columns = df_csv.columns[df_csv.map(type).eq(list).any()]
+        df_csv[json_columns] = df_csv[json_columns].map(lambda x: json.dumps(x, ensure_ascii=False)).astype("string")
 
         with default_storage.open(filename + ".csv", "w") as csv_file:
             df_csv.to_csv(

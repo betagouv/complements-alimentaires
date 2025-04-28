@@ -36,7 +36,6 @@ class IngredientTestCase(TestCase):
         self.etl_test.dataset_name = "test_declarations"
 
     def test_declaration_jdd_contains_only_authorized_declarations(self):
-        # Création de declarations dont déclarations provenant de TeleIcare
         AuthorizedDeclarationFactory()
         AwaitingInstructionDeclarationFactory()
         InstructionReadyDeclarationFactory()
@@ -69,8 +68,7 @@ class IngredientTestCase(TestCase):
             quantity=5.0,
             unit=SubstanceUnitFactory(name="mg"),
         )
-        declaration_2 = AuthorizedDeclarationFactory()
-        declaration_2.declared_substances.set([])
+        declaration_2 = AuthorizedDeclarationFactory(declared_substances=[])
         substance = SubstanceFactory(ca_name="Vitamine C")
         DeclaredSubstanceFactory(
             declaration=declaration_2,
@@ -94,8 +92,9 @@ class IngredientTestCase(TestCase):
         )
         self.assertEqual(len(open_data_jdd), 3)
         substance_loaded = json.loads(open_data_jdd["substances"][1])
-        self.assertEqual(substance_loaded[3]["nom"], "Vitamine C")
-        self.assertEqual(substance_loaded[3]["unite"], "mg")
+        self.assertEqual(substance_loaded[0]["nom"], "Vitamine C")
+        self.assertEqual(substance_loaded[0]["quantité_par_djr"], 10)
+        self.assertEqual(substance_loaded[0]["unite"], "mg")
 
         # supprime le fichier qui vient d'être créé
         default_storage.delete(self.etl_test.dataset_name + ".csv")
