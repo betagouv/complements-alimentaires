@@ -127,3 +127,45 @@ class DeclarationDoseFilterTests(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
         results = self.make_request(f"dose=plant||Nonexistent||999||≥||10||{self.unit_mg.id}")
         self.assertEqual(len(results), 0)
+
+    @authenticate
+    def test_filter_plant_dose_with_gram_conversion(self):
+        """Filtre utilisant l'unité "g" mais retournant une déclaration en "mg" """
+        InstructionRoleFactory(user=authenticate.user)
+        # La Declaration1 a 5mg camomille - on filtre > 0.004g (çad 4mg)
+        dose = f"dose=plant||Camomille||{self.camomille.id}|{self.branch.id}|Branch||>||0.004||{self.unit_g.id}"
+        results = self.make_request(dose)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], self.declaration1.id)
+
+    @authenticate
+    def test_filter_substance_dose_with_milligram_conversion(self):
+        """Filter utilisant des "mg" qui retourne une déclaration en "g" """
+        InstructionRoleFactory(user=authenticate.user)
+        # La Declaration4 a 0.5g de green tea - on filtre >= 400mg (çad 0.4g)
+        dose = f"dose=ingredient||Green Tea Extract||{self.green_tea.id}||≥||400||{self.unit_mg.id}"
+        results = self.make_request(dose)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], self.declaration4.id)
+
+    @authenticate
+    def test_filter_between_units(self):
+        """La conversion de dose doit aussi marcher pour le filtre BETWEEN"""
+        InstructionRoleFactory(user=authenticate.user)
+        # Declaration2 a 12.5mg de caféine - on filtre entre 0.01g (10mg) et 0.02g (20mg)
+        dose = f"dose=substance||Caffeine||{self.caffeine.id}||≬||0.01|0.02||{self.unit_g.id}"
+        results = self.make_request(dose)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], self.declaration2.id)
+
+    @authenticate
+    def test_filter_with_non_convertible_units(self):
+        """Si les unités ne peuvent pas être converties, le filtre marche quand même"""
+        InstructionRoleFactory(user=authenticate.user)
+        # Cette unité n'est pas supportée pour la conversion
+        unit_iu = SubstanceUnitFactory(name="IU", long_name="International Units")
+
+        # Il y a un fallback a un filtrage sans conversion
+        dose = f"dose=ingredient||Ginger Root||{self.ginger.id}||≥||5||{unit_iu.id}"
+        results = self.make_request(dose)
+        self.assertEqual(len(results), 0)

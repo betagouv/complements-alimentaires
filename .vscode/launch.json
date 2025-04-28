@@ -36,7 +36,8 @@
             "program": "${workspaceFolder}/manage.py",
             "args": [
                 "test",
-                "--noinput"
+                "--noinput",
+                "--keepdb"
             ],
             "justMyCode": false,
             "django": true

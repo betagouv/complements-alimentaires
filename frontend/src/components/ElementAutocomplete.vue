@@ -95,6 +95,13 @@ const props = defineProps({
     type: String,
     default: null,
   },
+
+  // Si true, les éléments non autorisés et les substances non bioactives
+  // feront partie des résultats
+  searchAll: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(["selected", "search"])
@@ -186,7 +193,7 @@ const fetchAutocompleteResults = useDebounceFn(async () => {
     return
   }
 
-  const body = { term: searchTerm.value, type: props.type }
+  const body = { term: searchTerm.value, type: props.type, all: props.searchAll || "" }
   const { error, data } = await useFetch("/api/v1/elements/autocomplete/", { headers: headers() }).post(body).json()
 
   if (error.value) {
