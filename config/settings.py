@@ -67,7 +67,6 @@ THIRD_PARTY_APPS = [
     "prose",
     "anymail",
     "simple_history",
-    "django_extensions",
     "phonenumber_field",
     "hijack",
     "hijack.contrib.admin",
