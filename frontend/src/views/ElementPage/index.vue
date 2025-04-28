@@ -181,13 +181,14 @@ const historyData = computed(() =>
     .map((item) => [
       new Date(item.historyDate).toLocaleString("default", { day: "numeric", month: "short", year: "numeric" }),
       item.historyType === "+" ? "Création de l'ingrédient" : item.changedFields.map((f) => `« ${f} »`).join(", "),
+      item.historyPublicChangeReason,
     ])
 )
 
 // Deduplication en passant par une string
 const historyDataDedup = computed(() => Array.from(new Set(historyData.value.map(JSON.stringify)), JSON.parse))
 
-const historyHeaders = ["Date de changement", "Champs modifiés"]
+const historyHeaders = ["Date de changement", "Champs modifiés", "Détail"]
 
 // TODO: remove background
 const url = computed(() => `/api/v1/${getApiType(type.value)}s/${elementId.value}?history=true`)
