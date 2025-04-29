@@ -15,6 +15,13 @@
       "example": "3211",
       "name": "id",
       "title": "Identifiant",
+      "type": "integer"
+    },
+    {
+      "description": "Numéro de déclaration (identifiant unique qui n'existait que dans la plateforme historique TeleIcare)",
+      "example": "2024-12-890",
+      "name": "numero_declaration_teleicare",
+      "title": "Numero de déclaration de TeleIcare",
       "type": "string"
     },
     {

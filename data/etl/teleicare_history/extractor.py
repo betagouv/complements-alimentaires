@@ -1,4 +1,3 @@
-import contextlib
 import logging
 from datetime import date, datetime, timezone
 
@@ -9,6 +8,7 @@ from django.db.models import Q
 from phonenumber_field.phonenumber import PhoneNumber
 from phonenumbers import NumberParseException
 
+from data.behaviours.time_stampable import suppress_autotime
 from data.models import (
     Condition,
     Effect,
@@ -23,7 +23,7 @@ from data.models import (
     Substance,
     SubstanceUnit,
 )
-from data.models.company import ActivityChoices, Company
+from data.models.company import ActivityChoices, Company, EtablissementToCompanyRelation
 from data.models.declaration import (
     ComputedSubstance,
     Declaration,
@@ -49,30 +49,6 @@ from data.models.teleicare_history.ica_declaration_composition import (
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 
 logger = logging.getLogger(__name__)
-
-
-@contextlib.contextmanager
-def suppress_autotime(model, fields):
-    """
-    Décorateur pour annuler temporairement le auto_now et auto_now_add de certains champs
-    Copié depuis https://stackoverflow.com/questions/7499767/temporarily-disable-auto-now-auto-now-add
-    """
-    _original_values = {}
-    for field in model._meta.local_fields:
-        if field.name in fields:
-            _original_values[field.name] = {
-                "auto_now": field.auto_now,
-                "auto_now_add": field.auto_now_add,
-            }
-            field.auto_now = False
-            field.auto_now_add = False
-    try:
-        yield
-    finally:
-        for field in model._meta.local_fields:
-            if field.name in fields:
-                field.auto_now = _original_values[field.name]["auto_now"]
-                field.auto_now_add = _original_values[field.name]["auto_now_add"]
 
 
 def convert_phone_number(phone_number_to_parse):
@@ -120,40 +96,40 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
         matched = False
         # recherche de l'etablissement dans les Company déjà enregistrées
         if etab.etab_siret is not None:
-            siret_matching = Company.objects.filter(Q(siret=etab.etab_siret) | Q(old_siret=etab.etab_siret))
-            # seulement 2 options possible pour len(siret_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.siret
-            if len(siret_matching) == 1:
-                if siret_matching[0].siccrf_id is not None and etab.etab_ident != siret_matching[0].siccrf_id:
-                    logger.error(
-                        f"Plusieurs Etablissement provenant de Teleicare ont le même SIRET {etab.etab_siret}, ce qui rend le matching avec une Company Compl'Alim incertain."
-                    )
-                else:
-                    nb_siret_match += 1
-                    matched = True
-                    siret_matching[0].siccrf_id = etab.etab_ident
-                    siret_matching[0].matched = True
-                    siret_matching[0].save()
+            company_with_siret_matching = Company.objects.filter(
+                Q(siret=etab.etab_siret) | Q(etablissementtocompanyrelation__old_siret=etab.etab_siret)
+            )
+            # seulement 2 options possible pour len(company_with_siret_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.siret
+            if len(company_with_siret_matching) == 1:
+                nb_siret_match += 1
+                matched = True
+                relation, _ = EtablissementToCompanyRelation.objects.get_or_create(
+                    company=company_with_siret_matching[0],
+                    old_siret=etab.etab_siret,
+                )  # si le siret est celui actuel (Company.siret) la relation n'existe pas encore
+                relation.siccrf_id = etab.etab_ident
+                relation.siccrf_registration_date = etab.etab_date_adhesion
+                relation.save()
 
         elif etab.etab_numero_tva_intra is not None:
-            vat_matching = Company.objects.filter(
-                Q(vat=etab.etab_numero_tva_intra) | Q(old_vat=etab.etab_numero_tva_intra)
+            company_with_vat_matching = Company.objects.filter(
+                Q(vat=etab.etab_numero_tva_intra)
+                | Q(etablissementtocompanyrelation__old_vat=etab.etab_numero_tva_intra)
             )
-            # seulement 2 options possible pour len(vat_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.vat
-            if len(vat_matching) == 1:
-                if vat_matching[0].siccrf_id is not None and etab.etab_ident != vat_matching[0].siccrf_id:
-                    logger.error(
-                        f"Plusieurs Etablissement provenant de Teleicare ont le même n° TVA {etab.etab_numero_tva_intra}, ce qui rend le matching avec une Company Compl'Alim incertain."
-                    )
-                else:
-                    nb_vat_match += 1
-                    matched = True
-                    vat_matching[0].siccrf_id = etab.etab_ident
-                    vat_matching[0].matched = True
-                    vat_matching[0].save()
+            # seulement 2 options possible pour len(company_with_vat_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.vat
+            if len(company_with_vat_matching) == 1:
+                nb_vat_match += 1
+                matched = True
+                relation, _ = EtablissementToCompanyRelation.objects.get_or_create(
+                    company=company_with_vat_matching[0],
+                    old_vat=etab.etab_numero_tva_intra,
+                )  # si le vat est celui actuel (Company.vat) la relation n'existe pas encore
+                relation.siccrf_id = etab.etab_ident
+                relation.siccrf_registration_date = etab.etab_date_adhesion
+                relation.save()
         # creation de la company
         if not matched and create_if_not_exist:
             new_company = Company(
-                siccrf_id=etab.etab_ident,
                 address=etab.etab_adre_voie,
                 postal_code=etab.etab_adre_cp,
                 city=etab.etab_adre_ville,
@@ -164,10 +140,18 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                 siret=etab.etab_siret,
                 vat=etab.etab_numero_tva_intra,
                 activities=convert_activities(etab),
-                # la etab_date_adhesion n'est pas conservée
             )
+
             try:
                 new_company.save(fields_with_no_validation=("phone_number"))
+                relation = EtablissementToCompanyRelation(
+                    company=new_company,
+                    siccrf_id=etab.etab_ident,
+                    old_siret=etab.etab_siret,
+                    old_vat=etab.etab_numero_tva_intra,
+                    siccrf_registration_date=etab.etab_date_adhesion,
+                )
+                relation.save()
                 nb_created_companies += 1
             except ValidationError as e:
                 logger.error(f"Impossible de créer la Company à partir du siccrf_id = {etab.etab_ident}: {e}")
@@ -430,9 +414,11 @@ def create_declarations_from_teleicare_history(company_ids=[]):
     """
     nb_created_declarations = 0
 
-    etab_ids = (Company.objects.all() if not company_ids else Company.objects.filter(id__in=company_ids)).values_list(
-        "siccrf_id", flat=True
-    )
+    etab_ids = (
+        EtablissementToCompanyRelation.objects.exclude(siccrf_id=None)
+        if not company_ids
+        else EtablissementToCompanyRelation.objects.filter(company_id__in=company_ids)
+    ).values_list("siccrf_id", flat=True)
     # Parcourir tous les compléments alimentaires dont l'entreprise déclarante a été matchée
     for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(etab_id__in=etab_ids):
         # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
@@ -484,9 +470,9 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     galenic_formulation=GalenicFormulation.objects.get(
                         siccrf_id=ica_complement_alimentaire.frmgal_ident
                     ),
-                    company=Company.objects.get(
+                    company=EtablissementToCompanyRelation.objects.get(
                         siccrf_id=ica_complement_alimentaire.etab_id
-                    ),  # resp étiquetage, resp commercialisation
+                    ).company,  # resp étiquetage, resp commercialisation
                     brand=ica_complement_alimentaire.cplalim_marque or "",
                     gamme=ica_complement_alimentaire.cplalim_gamme or "",
                     name=ica_complement_alimentaire.cplalim_nom,

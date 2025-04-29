@@ -192,10 +192,10 @@ class TestCreateCompany(ProjectAPITestCase):
         companies_count = Company.objects.count()
         for key in [
             "_state",
+            "creation_date",
+            "modification_date",
             "id",
             "vat",
-            "old_vat",
-            "old_siret",
             "siccrf_id",
         ]:  # retire les champs à ne pas fournir dans le payload
             company.__dict__.pop(key, None)
@@ -210,10 +210,10 @@ class TestCreateCompany(ProjectAPITestCase):
         companies_count = Company.objects.count()
         for key in [
             "_state",
+            "creation_date",
+            "modification_date",
             "id",
             "siret",
-            "old_vat",
-            "old_siret",
             "siccrf_id",
         ]:  # retire les champs à ne pas fournir dans le payload
             company.__dict__.pop(key, None)
