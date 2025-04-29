@@ -49,6 +49,12 @@
         <div>
           <div class="md:flex gap-16">
             <div class="md:w-2/4">
+              <StatusFilter
+                :exclude="['DRAFT']"
+                @updateFilter="updateStatusFilter"
+                :statusString="filteredStatus"
+                class="my-6"
+              />
               <DsfrFieldset legend="Cible" class="min-w-60">
                 <DsfrInputGroup>
                   <DsfrSelect
@@ -90,8 +96,6 @@
               </DsfrFieldset>
             </div>
             <div class="md:w-2/4">
-              <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" :statusString="filteredStatus" />
-
               <DsfrInputGroup>
                 <DsfrSelect
                   label="Article"
@@ -129,6 +133,55 @@
               <div class="mt-4">
                 <label for="dose-filter" class="fr-label">Dose</label>
                 <DoseFilterModal :modelValue="dose" @update:modelValue="updateDose" id="dose-filter" />
+              </div>
+
+              <div class="mt-8">
+                <DsfrFieldset legend="Date de soumission" legendClass="fr-label !font-medium">
+                  <div class="flex gap-4 mt-2">
+                    <div>
+                      <DsfrInput
+                        :modelValue="submissionDateAfter"
+                        @update:modelValue="updateSubmissionDateAfter"
+                        label-visible
+                        type="date"
+                        label="Après le"
+                      />
+                    </div>
+                    <div>
+                      <DsfrInput
+                        :modelValue="submissionDateBefore"
+                        @update:modelValue="updateSubmissionDateBefore"
+                        label-visible
+                        type="date"
+                        label="Avant le"
+                      />
+                    </div>
+                  </div>
+                </DsfrFieldset>
+              </div>
+              <div class="mt-8">
+                <DsfrFieldset legend="Date de la prise de décision" legendClass="fr-label !font-medium">
+                  <div class="flex gap-4 mt-2">
+                    <div>
+                      <DsfrInput
+                        :modelValue="decisionDateAfter"
+                        @update:modelValue="updateDecisionDateAfter"
+                        label-visible
+                        type="date"
+                        label="Après le"
+                      />
+                    </div>
+                    <div>
+                      <DsfrInput
+                        :modelValue="decisionDateBefore"
+                        @update:modelValue="updateDecisionDateBefore"
+                        label-visible
+                        type="date"
+                        label="Avant le"
+                      />
+                    </div>
+                  </div>
+                </DsfrFieldset>
               </div>
             </div>
           </div>
@@ -196,6 +249,10 @@ const galenicFormulation = computed(() => (route.query.formeGalenique ? parseInt
 const country = computed(() => route.query.pays)
 const dose = computed(() => route.query.dose)
 const limit = computed(() => route.query.limit)
+const submissionDateAfter = computed(() => route.query.soumissionAvant)
+const submissionDateBefore = computed(() => route.query.soumissionApres)
+const decisionDateAfter = computed(() => route.query.decisionAvant)
+const decisionDateBefore = computed(() => route.query.decisionApres)
 
 // Mises à jour de la requête lors des changements des filtres et recherche
 
@@ -215,6 +272,10 @@ const updateDose = (newValue) => updateQuery({ dose: newValue })
 const updateLimit = (newValue) => updateQuery({ limit: newValue })
 const updateComposition = () =>
   updateQuery({ composition: ingredientsToFilter.value.map((x) => x.join("||")).join("|||") })
+const updateSubmissionDateAfter = (newValue) => updateQuery({ soumissionAvant: newValue })
+const updateSubmissionDateBefore = (newValue) => updateQuery({ soumissionApres: newValue })
+const updateDecisionDateAfter = (newValue) => updateQuery({ decisionAvant: newValue })
+const updateDecisionDateBefore = (newValue) => updateQuery({ decisionApres: newValue })
 
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
