@@ -99,3 +99,12 @@ class WithNovelFoodBoolean(models.Model):
         abstract = True
 
     novel_food = models.BooleanField(default=False, verbose_name="considéré Novel Food ?")
+
+
+class PublicReasonHistoricalModel(models.Model):
+    history_public_change_reason = models.CharField(
+        blank=True, max_length=100, verbose_name="Raison de changement (public)"
+    )
+
+    class Meta:
+        abstract = True

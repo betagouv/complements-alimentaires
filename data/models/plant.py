@@ -7,7 +7,7 @@ from simple_history.models import HistoricalRecords
 from data.behaviours import Historisable, TimeStampable
 
 from .abstract_models import CommonModel, IngredientCommonModel
-from .mixins import WithMissingImportBoolean
+from .mixins import WithMissingImportBoolean, PublicReasonHistoricalModel
 from .substance import Substance
 
 
@@ -78,6 +78,9 @@ class Plant(IngredientCommonModel):
     plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")
     substances = models.ManyToManyField(Substance, through="PlantSubstanceRelation")
     history = HistoricalRecords(
+        bases=[
+            PublicReasonHistoricalModel,
+        ],
         inherit=True,
         excluded_fields=[
             "name",

@@ -8,7 +8,7 @@ from simple_history.models import HistoricalRecords
 from data.behaviours import Historisable, TimeStampable
 
 from .abstract_models import IngredientCommonModel
-from .mixins import WithMissingImportBoolean
+from .mixins import WithMissingImportBoolean, PublicReasonHistoricalModel
 from .population import Population
 from .unit import SubstanceUnit
 
@@ -124,6 +124,9 @@ class Substance(IngredientCommonModel):
     )
 
     history = HistoricalRecords(
+        bases=[
+            PublicReasonHistoricalModel,
+        ],
         inherit=True,
         excluded_fields=[
             "name",
