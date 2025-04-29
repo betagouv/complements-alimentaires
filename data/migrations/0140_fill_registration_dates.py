@@ -12,14 +12,15 @@ class Migration(migrations.Migration):
 
     def fill_company_creation_date(apps, schema_editor):
         Company = apps.get_model("data", "Company")
-        Declaration = apps.get_model("data", "Declaration")
+        User = apps.get_model("data", "User")
         for company in Company.objects.all():
-            # la company_creation_date correspond à la date de création de la première déclaration
-            company.creation_date = (
-                Declaration.objects.filter(company_id=company.id).earliest("creation_date").creation_date
-            )
-            with suppress_autotime(company, ["creation_date"]):
-                company.save()
+            # la company_creation_date correspond à la date d'adhésion du gestionnaire
+            try:
+                company.creation_date = (company.supervisors.earliest("date_joined").date_joined)
+                with suppress_autotime(company, ["creation_date"]):
+                    company.save()
+            except User.DoesNotExist:
+                pass
 
     def reverse_fill_company_creation_date(apps, schema_editor):
         pass
@@ -28,6 +29,7 @@ class Migration(migrations.Migration):
         IcaEtablissement = apps.get_model("data", "IcaEtablissement")
         EtablissementToCompanyRelation = apps.get_model("data", "EtablissementToCompanyRelation")
         for relation in EtablissementToCompanyRelation.objects.all():
+            # IcaEtablissement.etab_date_adhesion est parfois None
             relation.siccrf_registration_date = IcaEtablissement.objects.get(
                 etab_ident=relation.siccrf_id
             ).etab_date_adhesion
