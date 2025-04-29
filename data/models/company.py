@@ -40,6 +40,12 @@ class Address(models.Model):
         ]
         return "\n".join(filter(None, lines))
 
+    @property
+    def department(self):
+        if self.country != CountryChoices.FRANCE:
+            return None
+        return self.postal_code[:2]
+
 
 class CompanyContact(models.Model):
     class Meta:
