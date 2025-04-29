@@ -103,7 +103,6 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
             if len(company_with_siret_matching) == 1:
                 nb_siret_match += 1
                 matched = True
-                # TODO : vérifier si cette relation n'existe pas déjà
                 relation, _ = EtablissementToCompanyRelation.objects.get_or_create(
                     company=company_with_siret_matching[0],
                     old_siret=etab.etab_siret,

@@ -28,7 +28,6 @@ class Migration(migrations.Migration):
         IcaEtablissement = apps.get_model("data", "IcaEtablissement")
         EtablissementToCompanyRelation = apps.get_model("data", "EtablissementToCompanyRelation")
         for relation in EtablissementToCompanyRelation.objects.all():
-            IcaEtablissement.objects.get(etab_ident=relation.siccrf_id)
             relation.siccrf_registration_date = IcaEtablissement.objects.get(
                 etab_ident=relation.siccrf_id
             ).etab_date_adhesion
