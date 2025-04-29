@@ -216,9 +216,8 @@
       <DsfrInputGroup v-if="!isNewIngredient" :error-message="firstErrorMsg(v$, 'changeReason')">
         <DsfrInput
           v-model="state.changeReason"
-          label="Raison de changement"
+          label="Raison de changement (usage interne)"
           hint="100 caractères max"
-          required
           labelVisible
         />
       </DsfrInputGroup>
@@ -384,7 +383,7 @@ const rules = computed(() => {
     family: form?.family ? errorRequiredField : {},
     unit: form?.nutritionalReference && !props.element ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
-    changeReason: isNewIngredient.value ? {} : Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
+    changeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
   }
 })
 watch(formForType, () => v$.value.$reset())
