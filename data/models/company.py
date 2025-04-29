@@ -44,6 +44,15 @@ class Address(models.Model):
     def department(self):
         if self.country != CountryChoices.FRANCE:
             return None
+
+        if self.postal_code[:2] == "97" or self.postal_code[:2] == "98":
+            return self.postal_code[:3]
+
+        # Cas pour la corse : Corse du Sud : 2A, Corse du Nord : 2B
+        if self.postal_code[:2] == "20":
+            corsica_identifier = self.postal_code[2:3]
+            return "2A" if corsica_identifier == "0" or corsica_identifier == "1" else "2B"
+
         return self.postal_code[:2]
 
 
