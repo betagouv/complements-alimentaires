@@ -189,7 +189,7 @@ const publicComments = computed(() => element.value?.publicComments)
 
 const historyData = computed(() =>
   element.value?.history
-    .filter((item) => item.changedFields?.length || item.historyType === "+")
+    .filter((item) => item.changedFields?.length || item.historyType === "+" || item.historyPublicChangeReason)
     .map((item) => [
       new Date(item.historyDate).toLocaleString("default", { day: "numeric", month: "short", year: "numeric" }),
       item.historyType === "+" ? "Création de l'ingrédient" : item.changedFields.map((f) => `« ${f} »`).join(", "),
