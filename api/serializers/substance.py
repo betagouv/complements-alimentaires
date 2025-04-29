@@ -115,6 +115,7 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
     max_quantities = SubstanceMaxQuantityModificationSerializer(
         many=True, source="maxquantityperpopulationrelation_set", required=False
     )
+    must_specify_quantity = serializers.BooleanField(source="ca_must_specify_quantity", required=False)
 
     nutritional_reference = serializers.FloatField(source="ca_nutritional_reference", required=False, allow_null=True)
 
@@ -133,6 +134,7 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
                 "max_quantities",
                 "nutritional_reference",
                 "unit",
+                "must_specify_quantity",
             )
         )
         read_only = COMMON_READ_ONLY_FIELDS

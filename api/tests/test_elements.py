@@ -486,6 +486,8 @@ class TestElementsModifyApi(APITestCase):
             unit=SubstanceUnitFactory.create(),
             siccrf_status=IngredientStatus.NO_STATUS,
             ca_status=IngredientStatus.AUTHORIZED,
+            siccrf_must_specify_quantity=True,
+            ca_must_specify_quantity=None,
         )
         MaxQuantityPerPopulationRelationFactory(
             substance=substance,
@@ -497,6 +499,9 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(
             substance.max_quantity, 3.4, "La quantité max pour la population générale est la bonne avant modification"
         )
+        self.assertTrue(
+            substance.siccrf_must_specify_quantity, "Le champ siccrf est vrai, comme donné dans le factory"
+        )
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
             {
@@ -504,6 +509,7 @@ class TestElementsModifyApi(APITestCase):
                 "unit": new_unit.id,
                 "maxQuantities": [{"population": self.general_pop.id, "maxQuantity": 35}],
                 "status": IngredientStatus.NO_STATUS,
+                "mustSpecifyQuantity": False,
                 "changeReason": "Test change",
             },
             format="json",
@@ -519,7 +525,14 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(
             substance.status, IngredientStatus.NO_STATUS, "C'est possible de remettre la valeur originelle"
         )
-        self.assertEqual(substance.history.first().history_change_reason, "Test change")
+        self.assertFalse(substance.must_specify_quantity, "Le champ calculé prend la nouvelle valeur de ca_")
+        self.assertFalse(substance.ca_must_specify_quantity, "Le champ ca_ est donné une valeur")
+        self.assertTrue(substance.siccrf_must_specify_quantity, "Le champ siccrf n'est pas changé")
+        self.assertEqual(
+            substance.history.first().history_change_reason,
+            "Test change",
+            "Le message en texte libre est sauvegardée comme raison de changement",
+        )
 
     @authenticate
     def test_can_give_public_change_reason(self):
