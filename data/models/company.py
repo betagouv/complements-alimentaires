@@ -191,11 +191,11 @@ class EtablissementToCompanyRelation(models.Model):
 
     siccrf_id = models.IntegerField(
         verbose_name="etab_ident dans le modèle IcaEtablissement SICCRF",
-        blank=True,
         null=True,
         editable=False,
         db_index=True,
         unique=True,
+        default=None,
     )
     old_siret = models.CharField(
         verbose_name="n° SIRET dans TeleIcare, si différent",

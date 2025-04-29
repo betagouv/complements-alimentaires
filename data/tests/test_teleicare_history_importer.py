@@ -165,7 +165,11 @@ class TeleicareHistoryImporterTestCase(TestCase):
                 siccrf_id=etablissement_to_create_as_company.etab_ident
             ).exists()
         )
-        self.assertEqual(EtablissementToCompanyRelation.objects.exclude(siccrf_id=None).count(), 2)
+        self.assertEqual(
+            EtablissementToCompanyRelation.objects.exclude(siccrf_id=None).count(),
+            2,
+            "Le champ siccrf_id n'a pas été rempli lors du matching",
+        )
 
         created_relation = EtablissementToCompanyRelation.objects.get(
             siccrf_id=etablissement_to_create_as_company.etab_ident

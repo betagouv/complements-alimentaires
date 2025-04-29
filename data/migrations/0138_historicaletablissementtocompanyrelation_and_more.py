@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
             name='EtablissementToCompanyRelation',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('siccrf_id', models.IntegerField(blank=True, db_index=True, editable=False, null=True, unique=True, verbose_name='etab_ident dans le modèle IcaEtablissement SICCRF')),
+                ('siccrf_id', models.IntegerField(db_index=True, default=None, editable=False, null=True, unique=True, verbose_name='etab_ident dans le modèle IcaEtablissement SICCRF')),
                 ('old_siret', models.CharField(blank=True, help_text='14 chiffres', null=True, unique=True, validators=[data.validators.validate_siret], verbose_name='n° SIRET dans TeleIcare, si différent')),
                 ('old_vat', models.CharField(blank=True, null=True, unique=True, validators=[data.validators.validate_vat], verbose_name='n° TVA intracommunautaire dans TeleIcare, si différent')),
                 ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='data.company')),
