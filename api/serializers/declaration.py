@@ -307,6 +307,7 @@ class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
     vat = serializers.CharField(read_only=True, source="company.vat")
     article = serializers.SerializerMethodField(read_only=True)
     status = serializers.SerializerMethodField(read_only=True)
+    department = serializers.CharField(read_only=True, source="company.department")
 
     # Champ spécial utilisé par drf-excel documenté ici : https://github.com/django-commons/drf-excel
     row_color = serializers.SerializerMethodField()
@@ -321,6 +322,7 @@ class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
             "company_name",
             "siret",
             "vat",
+            "department",
             "row_color",  # Champ utilisé en interne par drf-excel
         )
         read_only_fields = fields
