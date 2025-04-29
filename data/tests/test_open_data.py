@@ -60,13 +60,14 @@ class IngredientTestCase(TestCase):
         Le fichier csv créé à la sortie du process d'extraction du JDD Open Data contient des colonnes de données complexes qui sont en json bien formé
         """
         # Création de declarations dont déclarations provenant de TeleIcare
+        unit_mg = SubstanceUnitFactory(name="mg")
         declaration_1 = AuthorizedDeclarationFactory()
         DeclaredPlantFactory(
             declaration=declaration_1,
             plant=PlantFactory(name="Ortie"),
             used_part=PlantPartFactory(ca_name="Parties aériennes"),
             quantity=5.0,
-            unit=SubstanceUnitFactory(name="mg"),
+            unit=unit_mg,
         )
         declaration_2 = AuthorizedDeclarationFactory(declared_substances=[])
         substance = SubstanceFactory(ca_name="Vitamine C")
@@ -74,7 +75,7 @@ class IngredientTestCase(TestCase):
             declaration=declaration_2,
             substance=substance,
             quantity=10.0,
-            unit=SubstanceUnitFactory(name="mg"),
+            unit=unit_mg,
         )
         declaration_teleicare = AuthorizedDeclarationFactory(siccrf_id=567365, teleicare_id="2025-06-07")
         DeclaredMicroorganismFactory(
