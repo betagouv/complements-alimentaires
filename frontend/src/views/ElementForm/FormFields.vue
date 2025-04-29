@@ -217,7 +217,7 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'publicChangeReason')">
           <DsfrInput
             v-model="state.publicChangeReason"
-            label="Raison de changement (visibilité publique)"
+            label="Raison de changement (public)"
             hint="100 caractères max"
             labelVisible
           />
@@ -225,7 +225,7 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'changeReason')">
           <DsfrInput
             v-model="state.changeReason"
-            label="Raison de changement (usage interne)"
+            label="Raison de changement (privé)"
             hint="100 caractères max"
             labelVisible
           />
