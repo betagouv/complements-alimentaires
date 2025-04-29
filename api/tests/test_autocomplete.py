@@ -144,6 +144,19 @@ class TestAutocomplete(APITestCase):
         self.assertTrue(to_be_authorized_plant.name in returned_names)
         self.assertEqual(len(returned_names), 3)
 
+        # Si la requête demande explicitement l'inclusion de touts les élémenets on aura bien cinq
+        # résultats
+        response = self.client.post(
+            f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term, "all": "true"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()
+        self.assertEqual(len(results), 5)
+        returned_names = [result.get("name") for result in results]
+
+        self.assertTrue(forbidden_ingredient.name in returned_names)
+        self.assertTrue(forbidden_substance.name in returned_names)
+
     def test_only_return_bioactive_substances(self):
         """
         Les substances qui ont le type "MINERAL" ou "VITAMINE" ou "SECONDARY_METABOLITE" ou "OTHER_BIOACTIVE_SUBSTANCE"
@@ -179,6 +192,15 @@ class TestAutocomplete(APITestCase):
         self.assertTrue(substance_to_be_returned_2.name in returned_names)
         self.assertTrue(substance_to_be_returned_1.name in returned_names)
         self.assertEqual(len(returned_names), 2)
+
+        # Si la requête demande explicitement l'inclusion de touts les élémenets on aura bien quatre
+        # résultats
+        response = self.client.post(
+            f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term, "all": "true"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()
+        self.assertEqual(len(results), 4)
 
     def test_autocomplete_filtered_by_type(self):
         """
