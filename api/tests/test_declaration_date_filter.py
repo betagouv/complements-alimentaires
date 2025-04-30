@@ -39,13 +39,13 @@ class DeclarationFilterTests(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
         url = reverse("api:list_all_declarations")
 
-        response = self.client.get(f"{url}?submission_date_after=10-06-2024")
+        response = self.client.get(f"{url}?submission_date_after=2024-06-10")
         self.assertEqual(len(response.json()["results"]), 1)
 
-        response = self.client.get(f"{url}?submission_date_before=20-06-2024")
+        response = self.client.get(f"{url}?submission_date_before=2024-06-20")
         self.assertEqual(len(response.json()["results"]), 1)
 
-        response = self.client.get(f"{url}?submission_date_after=01-07-2024")
+        response = self.client.get(f"{url}?submission_date_after=2024-07-01")
         self.assertEqual(len(response.json()["results"]), 0)
 
     @authenticate
@@ -53,20 +53,20 @@ class DeclarationFilterTests(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
         url = reverse("api:list_all_declarations")
 
-        response = self.client.get(f"{url}?decision_date_after=15-06-2024")
+        response = self.client.get(f"{url}?decision_date_after=2024-06-15")
         self.assertEqual(len(response.json()["results"]), 1)
 
-        response = self.client.get(f"{url}?decision_date_before=15-07-2024")
+        response = self.client.get(f"{url}?decision_date_before=2024-07-15")
         self.assertEqual(len(response.json()["results"]), 1)
 
-        response = self.client.get(f"{url}?decision_date_after=01-08-2024")
+        response = self.client.get(f"{url}?decision_date_after=2024-08-01")
         self.assertEqual(len(response.json()["results"]), 0)
 
     @authenticate
     def test_invalid_date_format(self):
         InstructionRoleFactory(user=authenticate.user)
         url = reverse("api:list_all_declarations")
-        response = self.client.get(f"{url}?submission_date_after=2024-06-10")  # Mauvais format
+        response = self.client.get(f"{url}?submission_date_after=06-10-2024")  # Mauvais format
         self.assertEqual(len(response.json()["results"]), 0)
 
     @authenticate
@@ -76,5 +76,5 @@ class DeclarationFilterTests(APITestCase):
         SnapshotFactory(creation_date=timezone.make_aware(datetime(2024, 6, 15, 2, 0)))  # 2AM UTC+2
 
         # Avec le filtre date ça devrait matcher même si c'est juin 14 UTC
-        response = self.client.get(f"{reverse('api:list_all_declarations')}?submission_date_after=15-06-2024")
+        response = self.client.get(f"{reverse('api:list_all_declarations')}?submission_date_after=2024-06-15")
         self.assertEqual(len(response.json()["results"]), 1)

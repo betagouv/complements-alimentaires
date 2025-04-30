@@ -360,7 +360,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
     def _parse_date(self, date_str, end_of_day):
         """Helper to parse dd-mm-yyyy dates into timezone-aware datetimes"""
         try:
-            naive_date = datetime.strptime(date_str, "%d-%m-%Y")
+            naive_date = datetime.strptime(date_str, "%Y-%m-%d")
             time_to_use = time.max if end_of_day else time.min
             naive_datetime = datetime.combine(naive_date, time_to_use)
             return timezone.make_aware(naive_datetime)
