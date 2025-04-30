@@ -102,16 +102,23 @@ const forms = {
   ingredient: "Autre ingrédient",
 }
 
-const headers = ["Date", "Réalisée par", "Champs modifiés", "Détail"]
+const headers = ["Date", "Réalisée par", "Champs modifiés", "Détail (privé)", "Détail (public)"]
 
 const historyData = computed(() =>
   element.value?.history
-    .filter((item) => item.changedFields?.length || item.historyType === "+")
+    .filter(
+      (item) =>
+        item.changedFields?.length ||
+        item.historyType === "+" ||
+        item.historyChangeReason ||
+        item.historyPublicChangeReason
+    )
     .map((item) => [
       new Date(item.historyDate).toLocaleString("default", { day: "numeric", month: "numeric", year: "numeric" }),
       item.user ? `${item.user.firstName} ${item.user.lastName}` : "",
       item.historyType === "+" ? "Création de l'ingrédient" : item.changedFields.map((f) => `« ${f} »`).join(", "),
       item.historyChangeReason,
+      item.historyPublicChangeReason,
     ])
 )
 // Deduplication en passant par une string

@@ -316,8 +316,9 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
             "Nom de l'entreprise",
             "No. SIRET",
             "No. TVA",
+            "No. de département",
         ],
-        "column_width": [30, 20, 30, 25, 30, 15, 15],
+        "column_width": [30, 20, 30, 25, 30, 15, 15, 15],
         "height": 30,
         "style": {
             "fill": {

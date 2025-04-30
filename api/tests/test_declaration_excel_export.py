@@ -42,6 +42,7 @@ class TestDeclarationExcelExport(APITestCase):
             "Nom de l'entreprise",
             "No. SIRET",
             "No. TVA",
+            "No. de département",
         )
         for h in expected_headers:
             self.assertIn(h, headers)

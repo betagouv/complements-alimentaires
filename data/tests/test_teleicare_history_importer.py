@@ -8,7 +8,7 @@ from data.etl.teleicare_history.extractor import (
     create_declarations_from_teleicare_history,
     match_companies_on_siret_or_vat,
 )
-from data.factories.company import CompanyFactory, _make_siret, _make_vat
+from data.factories.company import CompanyFactory, EtablissementToCompanyRelationFactory, _make_siret, _make_vat
 from data.factories.galenic_formulation import GalenicFormulationFactory
 from data.factories.teleicare_history import (
     ComplementAlimentaireFactory,
@@ -17,7 +17,7 @@ from data.factories.teleicare_history import (
     VersionDeclarationFactory,
 )
 from data.factories.unit import SubstanceUnitFactory
-from data.models.company import Company
+from data.models.company import EtablissementToCompanyRelation
 from data.models.declaration import Declaration
 from data.models.teleicare_history.ica_declaration import (
     IcaComplementAlimentaire,
@@ -93,26 +93,55 @@ class TeleicareHistoryImporterTestCase(TestCase):
         random_company.refresh_from_db()
         random_etablissement.refresh_from_db()
 
-        self.assertEqual(company_with_siret.siccrf_id, etablissement_with_siret.etab_ident)
-        self.assertEqual(company_with_vat.siccrf_id, etablissement_with_vat.etab_ident)
-        self.assertNotEqual(random_company.siccrf_id, random_etablissement.etab_ident)
-        self.assertEqual(random_company.siccrf_id, None)
+        self.assertTrue(
+            EtablissementToCompanyRelation.objects.filter(
+                siccrf_id=etablissement_with_siret.etab_ident, company=company_with_siret
+            ).exists()
+        )
+        self.assertTrue(
+            EtablissementToCompanyRelation.objects.filter(
+                siccrf_id=etablissement_with_vat.etab_ident, company=company_with_vat
+            ).exists()
+        )
+        self.assertFalse(
+            EtablissementToCompanyRelation.objects.filter(
+                siccrf_id=random_etablissement.etab_ident, company=random_company
+            ).exists()
+        )
+        self.assertFalse(EtablissementToCompanyRelation.objects.filter(company=random_company).exists())
 
-    @patch("data.etl.teleicare_history.extractor.logger")
-    def test_match_companies_on_vat_used_twice(self, mocked_logger):
+    def test_match_companies_on_vat_used_twice(self):
         """
-        Si deux entreprises enregistrées dans Teleicare ont le même SIRET ou n° TVA intracom
-        alors le matching avec une Company Compl'Alim avec la contrainte d'unicité sur ces deux champs
-        n'est pas évident
+        Une entreprise Compl'Alim peut être en lien avec plus d'un Etablissement Teleicare
+        Soit via son vat/siret actuel, soit via un old_siret/vat ajouté à la table EtablissementToCompanyRelation
+        Si c'est via son vat/siret actuel, une entrée à EtablissementToCompanyRelation est créée
         """
-        vat_used_twice = _make_vat()
-        EtablissementFactory(etab_siret=None, etab_numero_tva_intra=vat_used_twice)
-        EtablissementFactory(etab_siret=None, etab_numero_tva_intra=vat_used_twice)
-        CompanyFactory(vat=vat_used_twice)
+        vat_1 = _make_vat()
+        etab_1 = EtablissementFactory(etab_siret=None, etab_numero_tva_intra=vat_1)
+        vat_2 = _make_vat()
+        etab_2 = EtablissementFactory(etab_siret=None, etab_numero_tva_intra=vat_2)
+        company = CompanyFactory(vat=vat_2)
+        EtablissementToCompanyRelationFactory(company=company, old_vat=vat_1)
+
+        self.assertEqual(
+            EtablissementToCompanyRelation.objects.filter(company=company).count(),
+            1,
+        )
+        self.assertFalse(
+            EtablissementToCompanyRelation.objects.filter(company=company, old_vat=vat_2).exists(),
+        )
 
         match_companies_on_siret_or_vat()
-        mocked_logger.error.assert_called_with(
-            f"Plusieurs Etablissement provenant de Teleicare ont le même n° TVA {vat_used_twice}, ce qui rend le matching avec une Company Compl'Alim incertain."
+        self.assertEqual(
+            EtablissementToCompanyRelation.objects.filter(company=company).count(),
+            2,
+        )
+        self.assertTrue(
+            EtablissementToCompanyRelation.objects.filter(company=company, old_vat=vat_2).exists(),
+        )  # cette relation a été créée lors du matching
+        self.assertListEqual(
+            list(EtablissementToCompanyRelation.objects.filter(company=company).values_list("siccrf_id", flat=True)),
+            [etab_1.etab_ident, etab_2.etab_ident],
         )
 
     def test_create_new_companies(self):
@@ -123,17 +152,32 @@ class TeleicareHistoryImporterTestCase(TestCase):
         etablissement_to_create_as_company = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
         # devrait être créée malgré le numéro de téléphone mal formaté
         EtablissementFactory(etab_siret=None, etab_ica_importateur=True, etab_telephone="0345")
-        self.assertEqual(Company.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident).count(), 0)
+        self.assertEqual(
+            EtablissementToCompanyRelation.objects.filter(
+                siccrf_id=etablissement_to_create_as_company.etab_ident
+            ).count(),
+            0,
+        )
 
         match_companies_on_siret_or_vat(create_if_not_exist=True)
-        self.assertTrue(Company.objects.filter(siccrf_id=etablissement_to_create_as_company.etab_ident).exists())
-        self.assertEqual(Company.objects.exclude(siccrf_id=None).count(), 2)
+        self.assertTrue(
+            EtablissementToCompanyRelation.objects.filter(
+                siccrf_id=etablissement_to_create_as_company.etab_ident
+            ).exists()
+        )
+        self.assertEqual(
+            EtablissementToCompanyRelation.objects.exclude(siccrf_id=None).count(),
+            2,
+            "Le champ siccrf_id n'a pas été rempli lors du matching",
+        )
 
-        created_company = Company.objects.get(siccrf_id=etablissement_to_create_as_company.etab_ident)
-        self.assertEqual(created_company.siccrf_id, etablissement_to_create_as_company.etab_ident)
-        self.assertEqual(created_company.address, etablissement_to_create_as_company.etab_adre_voie)
-        self.assertEqual(created_company.postal_code, etablissement_to_create_as_company.etab_adre_cp)
-        self.assertEqual(created_company.city, etablissement_to_create_as_company.etab_adre_ville)
+        created_relation = EtablissementToCompanyRelation.objects.get(
+            siccrf_id=etablissement_to_create_as_company.etab_ident
+        )
+        self.assertEqual(created_relation.siccrf_id, etablissement_to_create_as_company.etab_ident)
+        self.assertEqual(created_relation.company.address, etablissement_to_create_as_company.etab_adre_voie)
+        self.assertEqual(created_relation.company.postal_code, etablissement_to_create_as_company.etab_adre_cp)
+        self.assertEqual(created_relation.company.city, etablissement_to_create_as_company.etab_adre_ville)
 
     @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
     @patch("data.etl.teleicare_history.extractor.add_product_info_from_teleicare_history")
@@ -196,7 +240,10 @@ class TeleicareHistoryImporterTestCase(TestCase):
         unit_id = 1
         SubstanceUnitFactory(siccrf_id=unit_id)
         etablissement_to_create_as_company = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
-        matching_company = CompanyFactory(siccrf_id=etablissement_to_create_as_company.etab_ident)
+        matching_company = CompanyFactory()
+        EtablissementToCompanyRelationFactory(
+            company=matching_company, siccrf_id=etablissement_to_create_as_company.etab_ident
+        )
 
         CA_to_create_as_declaration = ComplementAlimentaireFactory(
             etab=etablissement_to_create_as_company, frmgal_ident=galenic_formulation_id
@@ -210,7 +257,8 @@ class TeleicareHistoryImporterTestCase(TestCase):
             vrsdecl_djr="32 kg of ppo",
         )
         other_etablissement = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
-        CompanyFactory(siccrf_id=other_etablissement.etab_ident)
+        other_company = CompanyFactory()
+        EtablissementToCompanyRelationFactory(company=other_company, siccrf_id=other_etablissement.etab_ident)
         other_CA = ComplementAlimentaireFactory(etab=other_etablissement)
         other_declaration = DeclarationFactory(cplalim=other_CA, tydcl_ident=1)
         VersionDeclarationFactory(

@@ -150,7 +150,7 @@
           ></DsfrTag>
         </div>
       </div>
-      <div class="grid grid-cols-3 gap-x-8" v-if="formForType.nutritionalReference">
+      <div class="grid sm:grid-cols-3 gap-x-8" v-if="formForType.nutritionalReference">
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
           <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
         </DsfrInputGroup>
@@ -167,11 +167,21 @@
           </DsfrInputGroup>
           <div v-else class="pt-4">
             <p class="mb-2">Unité</p>
-            <p>{{ unitString }}</p>
+            <p class="mb-0">{{ unitString }}</p>
           </div>
         </div>
+        <DsfrInputGroup>
+          <DsfrToggleSwitch
+            v-model="state.mustSpecifyQuantity"
+            label="Spécification de quantité obligatoire ?"
+            activeText="Oui"
+            inactiveText="Non"
+            label-left
+            class="self-center mt-4 col-span-2 sm:col-span-2"
+          />
+        </DsfrInputGroup>
       </div>
-      <div v-if="formForType.maxQuantity">
+      <div v-if="formForType.maxQuantity" class="mt-8 sm:mt-0">
         <DsfrTable
           v-if="state.maxQuantities.length"
           title="Quantités maximales par population"
@@ -213,14 +223,24 @@
           <DsfrInput label="Commentaire privé" v-model="state.privateComments" :isTextarea="true" label-visible />
         </div>
       </div>
-      <DsfrInputGroup v-if="!isNewIngredient" :error-message="firstErrorMsg(v$, 'changeReason')">
-        <DsfrInput
-          v-model="state.changeReason"
-          label="Raison de changement (usage interne)"
-          hint="100 caractères max"
-          labelVisible
-        />
-      </DsfrInputGroup>
+      <div v-if="!isNewIngredient" class="grid md:grid-cols-2 md:gap-4">
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'publicChangeReason')">
+          <DsfrInput
+            v-model="state.publicChangeReason"
+            label="Raison de changement (public)"
+            hint="100 caractères max"
+            labelVisible
+          />
+        </DsfrInputGroup>
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'changeReason')">
+          <DsfrInput
+            v-model="state.changeReason"
+            label="Raison de changement (privé)"
+            hint="100 caractères max"
+            labelVisible
+          />
+        </DsfrInputGroup>
+      </div>
     </DsfrFieldset>
     <div class="flex gap-x-2 mt-4">
       <DsfrButton label="Enregistrer ingrédient" @click="saveElement" />
@@ -384,6 +404,7 @@ const rules = computed(() => {
     unit: form?.nutritionalReference && !props.element ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
+    publicChangeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
   }
 })
 watch(formForType, () => v$.value.$reset())

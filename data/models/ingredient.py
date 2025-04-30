@@ -6,7 +6,7 @@ from data.behaviours import Historisable, TimeStampable
 
 from .abstract_models import IngredientCommonModel
 from .ingredient_type import IngredientType
-from .mixins import WithMissingImportBoolean
+from .mixins import WithMissingImportBoolean, PublicReasonHistoricalModel
 from .substance import Substance
 
 
@@ -24,6 +24,9 @@ class Ingredient(IngredientCommonModel):
     )
     substances = models.ManyToManyField(Substance, through="IngredientSubstanceRelation")
     history = HistoricalRecords(
+        bases=[
+            PublicReasonHistoricalModel,
+        ],
         inherit=True,
         excluded_fields=[
             "name",
