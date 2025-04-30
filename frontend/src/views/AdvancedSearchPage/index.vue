@@ -138,48 +138,32 @@
               <div class="mt-8">
                 <DsfrFieldset legend="Date de soumission" legendClass="fr-label !font-medium">
                   <div class="flex gap-4 mt-2">
-                    <div>
-                      <DsfrInput
-                        :modelValue="submissionDateAfter"
-                        @update:modelValue="updateSubmissionDateAfter"
-                        label-visible
-                        type="date"
-                        label="Après le"
-                      />
-                    </div>
-                    <div>
-                      <DsfrInput
-                        :modelValue="submissionDateBefore"
-                        @update:modelValue="updateSubmissionDateBefore"
-                        label-visible
-                        type="date"
-                        label="Avant le"
-                      />
-                    </div>
+                    <DateFilterField
+                      :dateField="submissionDateAfter"
+                      label="Après le"
+                      :updateFn="updateSubmissionDateAfter"
+                    />
+                    <DateFilterField
+                      :dateField="submissionDateBefore"
+                      label="Avant le"
+                      :updateFn="updateSubmissionDateBefore"
+                    />
                   </div>
                 </DsfrFieldset>
               </div>
               <div class="mt-8">
                 <DsfrFieldset legend="Date de la prise de décision" legendClass="fr-label !font-medium">
                   <div class="flex gap-4 mt-2">
-                    <div>
-                      <DsfrInput
-                        :modelValue="decisionDateAfter"
-                        @update:modelValue="updateDecisionDateAfter"
-                        label-visible
-                        type="date"
-                        label="Après le"
-                      />
-                    </div>
-                    <div>
-                      <DsfrInput
-                        :modelValue="decisionDateBefore"
-                        @update:modelValue="updateDecisionDateBefore"
-                        label-visible
-                        type="date"
-                        label="Avant le"
-                      />
-                    </div>
+                    <DateFilterField
+                      :dateField="decisionDateAfter"
+                      label="Après le"
+                      :updateFn="updateDecisionDateAfter"
+                    />
+                    <DateFilterField
+                      :dateField="decisionDateBefore"
+                      label="Avant le"
+                      :updateFn="updateDecisionDateBefore"
+                    />
                   </div>
                 </DsfrFieldset>
               </div>
@@ -226,6 +210,7 @@ import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import { getTypeIcon, getTypeInFrench, typesMapping } from "@/utils/mappings"
 import CountryField from "@/components/fields/CountryField"
 import DoseFilterModal from "./DoseFilterModal"
+import DateFilterField from "./DateFilterField"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -333,6 +318,14 @@ const apiQueryParams = computed(() => {
   const galenicFormulationQuery = galenicFormulation.value ? `&galenic_formulation=${galenicFormulation.value}` : ""
   const countryQuery = country.value ? `&country=${country.value}` : ""
   const doseQuery = dose.value ? `&dose=${dose.value}` : ""
+  const submissionDateAfterQuery = submissionDateAfter.value
+    ? `&submission_date_after=${submissionDateAfter.value}`
+    : ""
+  const submissionDateBeforeQuery = submissionDateBefore.value
+    ? `&submission_date_before=${submissionDateBefore.value}`
+    : ""
+  const decisionDateAfterQuery = decisionDateAfter.value ? `&decision_date_after=${decisionDateAfter.value}` : ""
+  const decisionDateBeforeQuery = decisionDateBefore.value ? `&decision_date_before=${decisionDateBefore.value}` : ""
   const searchQuery = searchTerm.value ? `&search=${searchTerm.value}` : ""
 
   const plantIds = getApiUrlIdsForType(["plant"])
@@ -352,7 +345,7 @@ const apiQueryParams = computed(() => {
   const substancesQuery = substanceIds ? `&substances=${substanceIds}` : ""
   const ingredientsQuery = ingredientsIds ? `&ingredients=${ingredientsIds}` : ""
 
-  const queryParams = `/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}${countryQuery}${doseQuery}`
+  const queryParams = `/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}${countryQuery}${doseQuery}${submissionDateAfterQuery}${submissionDateBeforeQuery}${decisionDateAfterQuery}${decisionDateBeforeQuery}`
 
   // Enlève les `&` consecutifs
   return queryParams.replace(/&+/g, "&").replace(/&$/, "")
