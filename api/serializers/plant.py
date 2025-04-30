@@ -45,7 +45,7 @@ class PartRelationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Part
-        fields = ("id", "name", "name_en", "is_obsolete", "siccrf_id", "must_be_monitored", "is_useful")
+        fields = ("id", "name", "name_en", "is_obsolete", "siccrf_id", "must_be_monitored", "authorized")
         read_only_fields = fields
 
 
@@ -84,13 +84,12 @@ class PlantSynonymModificationSerializer(serializers.ModelSerializer):
 
 class PlantPartModificationSerializer(serializers.ModelSerializer):
     plantpart = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all())
-    is_useful = serializers.BooleanField()
 
     class Meta:
         model = Part
         fields = (
             "plantpart",
-            "is_useful",
+            "authorized",
         )
 
 
@@ -125,7 +124,7 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
         PlantModificationSerializer._check_part_unicity(parts)
 
         for part in parts:
-            Part.objects.create(plant=plant, plantpart=part["plantpart"], ca_is_useful=part["is_useful"])
+            Part.objects.create(plant=plant, plantpart=part["plantpart"], authorized=part["authorized"])
 
         return plant
 
@@ -141,10 +140,10 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
             existing_part = instance.part_set.filter(plantpart=part["plantpart"])
             if existing_part.exists():
                 existing_part = existing_part.first()
-                existing_part.ca_is_useful = part["is_useful"]
+                existing_part.authorized = part["authorized"]
                 existing_part.save()
             else:
-                Part.objects.create(plant=instance, plantpart=part["plantpart"], ca_is_useful=part["is_useful"])
+                Part.objects.create(plant=instance, plantpart=part["plantpart"], authorized=part["authorized"])
 
         return instance
 

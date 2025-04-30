@@ -276,7 +276,10 @@ class TestElementsCreateApi(APITestCase):
                 {"name": "A second one"},
                 {"name": "My new plant"},
             ],
-            "plantParts": [{"plantpart": part_1.id, "isUseful": True}, {"plantpart": part_2.id, "isUseful": False}],
+            "plantParts": [
+                {"plantpart": part_1.id, "authorized": True},
+                {"plantpart": part_2.id, "authorized": False},
+            ],
             "substances": [substance.id],
             "publicComments": "Test",
             "privateComments": "Test private",
@@ -294,8 +297,8 @@ class TestElementsCreateApi(APITestCase):
         self.assertTrue(plant.plantsynonym_set.filter(name="A latin name").exists())
         self.assertTrue(plant.plantsynonym_set.filter(name="A second one").exists())
         self.assertEqual(plant.part_set.count(), 2)
-        self.assertTrue(plant.part_set.get(plantpart=part_1.id).is_useful)
-        self.assertFalse(plant.part_set.get(plantpart=part_2.id).is_useful)
+        self.assertTrue(plant.part_set.get(plantpart=part_1.id).authorized)
+        self.assertFalse(plant.part_set.get(plantpart=part_2.id).authorized)
         self.assertEqual(plant.substances.count(), 1)
         self.assertEqual(plant.ca_public_comments, "Test")
         self.assertEqual(plant.ca_private_comments, "Test private")
@@ -675,25 +678,23 @@ class TestElementsModifyApi(APITestCase):
         questionable_part = PlantPartFactory.create()
         new_dangerous_part = PlantPartFactory.create()
         plant = PlantFactory.create()
-        Part.objects.create(plant=plant, plantpart=old_part, ca_is_useful=True)
-        Part.objects.create(plant=plant, plantpart=questionable_part, ca_is_useful=False)
+        Part.objects.create(plant=plant, plantpart=old_part, authorized=True)
+        Part.objects.create(plant=plant, plantpart=questionable_part, authorized=False)
 
-        self.assertTrue(plant.part_set.get(plantpart=old_part.id).is_useful)
-        self.assertFalse(plant.part_set.get(plantpart=questionable_part.id).is_useful)
         self.assertFalse(plant.part_set.filter(plantpart=new_dangerous_part.id).exists())
 
         payload = {
             "plantParts": [
-                {"plantpart": questionable_part.id, "isUseful": True},
-                {"plantpart": new_dangerous_part.id, "isUseful": False},
+                {"plantpart": questionable_part.id, "authorized": True},
+                {"plantpart": new_dangerous_part.id, "authorized": False},
             ],
         }
         response = self.client.patch(reverse("api:single_plant", kwargs={"pk": plant.id}), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         plant.refresh_from_db()
         self.assertFalse(plant.part_set.filter(plantpart=old_part.id).exists())
-        self.assertTrue(plant.part_set.get(plantpart=questionable_part.id).is_useful)
-        self.assertFalse(plant.part_set.get(plantpart=new_dangerous_part.id).is_useful)
+        self.assertTrue(plant.part_set.get(plantpart=questionable_part.id).authorized)
+        self.assertFalse(plant.part_set.get(plantpart=new_dangerous_part.id).authorized)
 
     @authenticate
     def test_cannot_give_same_part_twice(self):
@@ -712,9 +713,9 @@ class TestElementsModifyApi(APITestCase):
         payload = {
             "name": "new name",
             "plantParts": [
-                {"plantpart": other_part.id, "isUseful": True},
-                {"plantpart": duplicate_part.id, "isUseful": True},
-                {"plantpart": duplicate_part.id, "isUseful": False},
+                {"plantpart": other_part.id, "authorized": True},
+                {"plantpart": duplicate_part.id, "authorized": True},
+                {"plantpart": duplicate_part.id, "authorized": False},
             ],
         }
         response = self.client.patch(reverse("api:single_plant", kwargs={"pk": plant.id}), payload, format="json")

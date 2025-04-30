@@ -164,10 +164,10 @@ const icon = computed(() => getTypeIcon(type.value))
 const family = computed(() => element.value?.family?.name)
 const genre = computed(() => element.value?.genre)
 const plantParts = computed(() =>
-  element.value?.plantParts?.filter((x) => x.isUseful === true && !!x.name).map((x) => x.name)
+  element.value?.plantParts?.filter((x) => x.authorized === true && !!x.name).map((x) => x.name)
 )
 const forbiddenParts = computed(() =>
-  element.value?.plantParts?.filter((x) => x.isUseful === false && !!x.name).map((x) => x.name)
+  element.value?.plantParts?.filter((x) => x.authorized === false && !!x.name).map((x) => x.name)
 )
 const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))

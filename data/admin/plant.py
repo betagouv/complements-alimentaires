@@ -25,6 +25,7 @@ class PlantSynonymInline(admin.TabularInline):
 class PartInlineAdmin(admin.TabularInline):
     model = Plant.plant_parts.through
     extra = 1
+    fields = ("plantpart", "authorized")
 
 
 class SubstanceInlineAdmin(admin.TabularInline):

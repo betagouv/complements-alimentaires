@@ -120,6 +120,7 @@ class Part(TimeStampable):
         output_field=models.BooleanField(verbose_name="🍵 utile ?"),
         db_persist=True,
     )
+    authorized = models.BooleanField(default=True, verbose_name="autorisée ?")
     history = HistoricalRecords(
         inherit=True, excluded_fields=["name", "is_obsolete", "must_be_monitored", "is_useful"]
     )
