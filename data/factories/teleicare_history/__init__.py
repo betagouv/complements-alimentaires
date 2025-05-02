@@ -46,6 +46,7 @@ class EtablissementFactory(factory.django.DjangoModelFactory):
     etab_adre_ville = factory.Faker("city", locale="FR")
     etab_adre_cp = factory.Faker("postcode", locale="FR")
     etab_adre_voie = factory.Faker("street_address", locale="FR")
+    etab_date_adhesion = datetime.strftime(random_date(start=datetime(2016, 1, 1)), "%m/%d/%Y %H:%M:%S %p")
 
 
 class ComplementAlimentaireFactory(factory.django.DjangoModelFactory):
