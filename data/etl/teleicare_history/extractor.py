@@ -108,7 +108,7 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                     old_siret=etab.etab_siret,
                 )  # si le siret est celui actuel (Company.siret) la relation n'existe pas encore
                 relation.siccrf_id = etab.etab_ident
-                relation.siccrf_registration_date = etab.etab_date_adhesion
+                relation.siccrf_registration_date = convert_str_date(etab.etab_date_adhesion)
                 relation.save()
 
         elif etab.etab_numero_tva_intra is not None:
