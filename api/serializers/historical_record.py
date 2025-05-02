@@ -11,6 +11,7 @@ class HistoricalRecordSerializer(serializers.Serializer):
     history_date = serializers.DateTimeField()
     changed_fields = serializers.ListField(child=serializers.CharField())
     history_type = serializers.CharField(allow_blank=True, allow_null=True)
+    history_public_change_reason = serializers.CharField(allow_blank=True, allow_null=True)
 
     def get_user(self, obj):
         user_id = obj.get("history_user_id")
@@ -52,6 +53,7 @@ class HistoricalRecordField(serializers.ListField):
                 "history_date": later_version.history_date,
                 "changed_fields": translated_changed_fields,
                 "history_type": later_version.history_type,
+                "history_public_change_reason": later_version.history_public_change_reason,
             }
             if is_privileged_user:
                 history_data["history_change_reason"] = later_version.history_change_reason

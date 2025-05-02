@@ -6,7 +6,7 @@ import faker
 from phonenumber_field.phonenumber import PhoneNumber
 
 from data.choices import CountryChoices
-from data.models.company import ActivityChoices, Company, DeclarantRole, SupervisorRole
+from data.models.company import ActivityChoices, Company, DeclarantRole, EtablissementToCompanyRelation, SupervisorRole
 from data.utils.string_utils import make_random_str
 
 from .user import UserFactory
@@ -49,6 +49,14 @@ class CompanyFactory(factory.django.DjangoModelFactory):
     # contact
     phone_number = factory.LazyFunction(_make_phone_number)
     email = factory.Faker("email", locale="FR")
+
+
+class EtablissementToCompanyRelationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = EtablissementToCompanyRelation
+
+    company = factory.SubFactory(CompanyFactory)
+    old_siret = factory.LazyFunction(_make_siret)
 
 
 class CompanyWithSiretFactory(CompanyFactory):

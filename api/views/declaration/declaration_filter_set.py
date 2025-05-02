@@ -218,63 +218,122 @@ class DeclarationFilterSet(django_filters.FilterSet):
             logger.exception(e)
             return queryset.none()
 
-    def filter_plant_dose(self, queryset, plant_id, plant_part_id, operation, quantity1, quantity_max=None, unit=None):
+    def filter_plant_dose(self, queryset, plant_id, plant_part_id, operation, quantity, quantity_max=None, unit=None):
         filters = Q(declared_plants__plant_id=plant_id)
-        if plant_part_id:
+        if plant_part_id and plant_part_id != "-":
             filters &= Q(declared_plants__used_part_id=plant_part_id)
-        if unit:
-            filters &= Q(declared_plants__unit=unit)
-        return self._apply_quantity_filter(queryset, filters, operation, quantity1, quantity_max, "declared_plants__")
-
-    def filter_substance_dose(self, queryset, substance_id, operation, quantity1, quantity_max=None, unit=None):
-        filters = Q(computed_substances__substance_id=substance_id)
-        if unit:
-            filters &= Q(computed_substances__unit=unit)
         return self._apply_quantity_filter(
-            queryset, filters, operation, quantity1, quantity_max, "computed_substances__"
+            queryset, filters, operation, quantity, quantity_max, "declared_plants__", unit
         )
 
-    def filter_microorganism_dose(self, queryset, microorganism_id, operation, quantity1, quantity_max=None):
+    def filter_substance_dose(self, queryset, substance_id, operation, quantity, quantity_max=None, unit=None):
+        filters = Q(computed_substances__substance_id=substance_id)
+        return self._apply_quantity_filter(
+            queryset, filters, operation, quantity, quantity_max, "computed_substances__", unit
+        )
+
+    def filter_microorganism_dose(self, queryset, microorganism_id, operation, quantity, quantity_max=None):
         filters = Q(declared_microorganisms__microorganism_id=microorganism_id)
         return self._apply_quantity_filter(
-            queryset, filters, operation, quantity1, quantity_max, "declared_microorganisms__"
+            queryset, filters, operation, quantity, quantity_max, "declared_microorganisms__"
         )
 
-    def filter_ingredient_dose(self, queryset, ingredient_id, operation, quantity1, quantity_max=None, unit=None):
+    def filter_ingredient_dose(self, queryset, ingredient_id, operation, quantity, quantity_max=None, unit=None):
         filters = Q(declared_ingredients__ingredient_id=ingredient_id)
-        if unit:
-            filters &= Q(declared_ingredients__unit=unit)
         return self._apply_quantity_filter(
-            queryset, filters, operation, quantity1, quantity_max, "declared_ingredients__"
+            queryset, filters, operation, quantity, quantity_max, "declared_ingredients__", unit
         )
 
     def _apply_quantity_filter(
-        self, queryset, other_filters, operation, quantity1, quantity_max=None, relation_field=""
+        self, queryset, other_filters, operation, quantity, quantity_max=None, relation_field="", unit=None
     ):
         quantity_filter = self._get_quantity_filter(
-            operation=operation, quantity1=quantity1, quantity_max=quantity_max, relation_field=relation_field
+            operation=operation, quantity=quantity, quantity_max=quantity_max, relation_field=relation_field, unit=unit
         )
         return queryset.filter(other_filters & quantity_filter).distinct()
 
-    def _get_quantity_filter(self, operation, quantity1, quantity_max=None, relation_field=""):
+    def _get_quantity_filter(self, operation, quantity, quantity_max=None, relation_field="", unit=None):
         """
-        Aide pour obtenir la requête necessaire pour la quantité
+        Aide pour obtenir la requête necessaire pour la quantité. Traite les conversions automatiquement.
         """
-        filter_kwargs = {}
 
-        if operation == self.GREATER_THAN:
-            filter_kwargs[f"{relation_field}quantity__gt"] = quantity1
-        elif operation == self.GREATER_THAN_OR_EQUAL:
-            filter_kwargs[f"{relation_field}quantity__gte"] = quantity1
-        elif operation == self.LESS_THAN:
-            filter_kwargs[f"{relation_field}quantity__lt"] = quantity1
-        elif operation == self.LESS_THAN_OR_EQUAL:
-            filter_kwargs[f"{relation_field}quantity__lte"] = quantity1
-        elif operation == self.EQUAL:
-            filter_kwargs[f"{relation_field}quantity"] = quantity1
-        elif operation == self.BETWEEN:
-            return Q(**{f"{relation_field}quantity__gte": quantity1}) & Q(
-                **{f"{relation_field}quantity__lte": quantity_max}
-            )
+        # Une même combinaison unité + quantité (par exemple, 200 g) peut avoir des équivalences dans
+        # d'autres unités (par exemple 0.2 kg, 200000 mg, etc).
+        equivalent_measures = self._get_equivalent_measures(unit, quantity, quantity_max)
 
-        return Q(**filter_kwargs)
+        sql_modifiers = {
+            self.GREATER_THAN: "__gt",
+            self.GREATER_THAN_OR_EQUAL: "__gte",
+            self.LESS_THAN: "__lt",
+            self.LESS_THAN_OR_EQUAL: "__lte",
+            self.EQUAL: "",
+        }
+
+        filters = []
+
+        if operation == self.BETWEEN:
+            filters = [
+                Q(**{f"{relation_field}quantity__gte": eq_quantity})
+                & Q(**{f"{relation_field}quantity__lte": eq_max_quantity})
+                & Q(**{f"{relation_field}unit": eq_unit} if eq_unit else {})
+                for (eq_unit, eq_quantity, eq_max_quantity) in equivalent_measures
+            ]
+        else:
+            filters = [
+                Q(**{f"{relation_field}quantity{sql_modifiers[operation]}": eq_quantity})
+                & Q(**{f"{relation_field}unit": eq_unit} if eq_unit else {})
+                for (eq_unit, eq_quantity, _) in equivalent_measures
+            ]
+
+        query = Q()
+        for filter in filters:
+            query |= filter
+        return query
+
+    # Les conversions d'unité se passent ici :
+
+    BASE_WEIGHT_UNIT = "g"
+    WEIGHT_UNITS = {
+        "µg": 0.000001,  # 1 microgram = 0.000001 g
+        "mg": 0.001,  # 1 milligram = 0.001 g
+        "g": 1.0,  # Unité de base (gram)
+    }
+
+    # NOTE: Pour l'instant on a seulement ml comme unité de volume en prod. Si on en ajoute d'autres,
+    # il faudra les décommenter dans le dictionnaire ci-dessous.
+    BASE_VOLUME_UNIT = "l"
+    VOLUME_UNITS = {
+        # "ml": 0.001,  # 1 milliliter = 0.001 l
+        # "cl": 0.01,  # 1 centiliter = 0.01 l
+        # "l": 1.0,  # Unité de base (liter)
+    }
+
+    def _get_equivalent_measures(self, unit, quantity, quantity_max=None):
+        """
+        Cette fonction permet d'obtenir des mesures avec le même valeur, par exemple, pour 200 g sont
+        la même chose que 200g, 200000mg et 0.2kg.
+        Cette opération nous permet après de créer des querysets pour la même dose même si les objets
+        utilisent des unités différentes.
+        """
+        if not unit or (unit.name not in self.WEIGHT_UNITS and unit not in self.VOLUME_UNITS):
+            return [(unit, quantity, quantity_max)]
+
+        unit_dict = self.WEIGHT_UNITS if unit.name in self.WEIGHT_UNITS else self.VOLUME_UNITS
+
+        base_quantity = unit_dict[unit.name] * quantity
+        base_quantity_max = unit_dict[unit.name] * quantity_max if quantity_max else None
+        equivalences = []
+
+        for unit_name, multiplier in unit_dict.items():
+            try:
+                equivalences.append(
+                    (
+                        SubstanceUnit.objects.get(name=unit_name),
+                        base_quantity / multiplier,
+                        (base_quantity_max / multiplier if base_quantity_max else None),
+                    )
+                )
+            except SubstanceUnit.DoesNotExist:
+                continue
+
+        return equivalences

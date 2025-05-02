@@ -90,19 +90,37 @@
     <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
       <div v-if="formForType.plantParts" class="grid md:grid-cols-3 items-end my-4 md:my-2">
         <DsfrMultiselect
-          v-model="state.plantParts"
-          :options="plantParts"
-          label="Partie(s) utilisée(s)"
+          v-model="state.authorisedPlantParts"
+          :options="orderedPlantParts"
+          label="Partie(s) autorisée(s)"
           search
           labelKey="name"
         />
         <div class="md:ml-4 md:my-8 md:col-span-2">
           <DsfrTag
-            v-for="(id, idx) in state.plantParts"
+            v-for="(id, idx) in state.authorisedPlantParts"
             :key="`plant-part-${id}`"
             :label="optionLabel(plantParts, id)"
             tagName="button"
-            @click="state.plantParts.splice(idx, 1)"
+            @click="state.authorisedPlantParts.splice(idx, 1)"
+            :aria-label="`Retirer ${optionLabel(plantParts, id)}`"
+            class="mx-1 fr-tag--dismiss"
+          ></DsfrTag>
+        </div>
+        <DsfrMultiselect
+          v-model="state.forbiddenPlantParts"
+          :options="orderedPlantParts"
+          label="Partie(s) non-autorisée(s)"
+          search
+          labelKey="name"
+        />
+        <div class="md:ml-4 md:my-8 md:col-span-2">
+          <DsfrTag
+            v-for="(id, idx) in state.forbiddenPlantParts"
+            :key="`forbidden-plant-part-${id}`"
+            :label="optionLabel(plantParts, id)"
+            tagName="button"
+            @click="state.forbiddenPlantParts.splice(idx, 1)"
             :aria-label="`Retirer ${optionLabel(plantParts, id)}`"
             class="mx-1 fr-tag--dismiss"
           ></DsfrTag>
@@ -132,7 +150,7 @@
           ></DsfrTag>
         </div>
       </div>
-      <div class="grid grid-cols-3 gap-x-8" v-if="formForType.nutritionalReference">
+      <div class="grid sm:grid-cols-3 gap-x-8" v-if="formForType.nutritionalReference">
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
           <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
         </DsfrInputGroup>
@@ -149,11 +167,21 @@
           </DsfrInputGroup>
           <div v-else class="pt-4">
             <p class="mb-2">Unité</p>
-            <p>{{ unitString }}</p>
+            <p class="mb-0">{{ unitString }}</p>
           </div>
         </div>
+        <DsfrInputGroup>
+          <DsfrToggleSwitch
+            v-model="state.mustSpecifyQuantity"
+            label="Spécification de quantité obligatoire ?"
+            activeText="Oui"
+            inactiveText="Non"
+            label-left
+            class="self-center mt-4 col-span-2 sm:col-span-2"
+          />
+        </DsfrInputGroup>
       </div>
-      <div v-if="formForType.maxQuantity">
+      <div v-if="formForType.maxQuantity" class="mt-8 sm:mt-0">
         <DsfrTable
           v-if="state.maxQuantities.length"
           title="Quantités maximales par population"
@@ -195,15 +223,24 @@
           <DsfrInput label="Commentaire privé" v-model="state.privateComments" :isTextarea="true" label-visible />
         </div>
       </div>
-      <DsfrInputGroup v-if="!isNewIngredient" :error-message="firstErrorMsg(v$, 'changeReason')">
-        <DsfrInput
-          v-model="state.changeReason"
-          label="Raison de changement"
-          hint="100 caractères max"
-          required
-          labelVisible
-        />
-      </DsfrInputGroup>
+      <div v-if="!isNewIngredient" class="grid md:grid-cols-2 md:gap-4">
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'publicChangeReason')">
+          <DsfrInput
+            v-model="state.publicChangeReason"
+            label="Raison de changement (public)"
+            hint="100 caractères max"
+            labelVisible
+          />
+        </DsfrInputGroup>
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'changeReason')">
+          <DsfrInput
+            v-model="state.changeReason"
+            label="Raison de changement (privé)"
+            hint="100 caractères max"
+            labelVisible
+          />
+        </DsfrInputGroup>
+      </div>
     </DsfrFieldset>
     <div class="flex gap-x-2 mt-4">
       <DsfrButton label="Enregistrer ingrédient" @click="saveElement" />
@@ -239,7 +276,8 @@ const router = useRouter()
 const createEmptySynonym = () => ({ name: "" })
 
 const state = ref({
-  plantParts: [],
+  authorisedPlantParts: [],
+  forbiddenPlantParts: [],
   substances: [],
   synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
   maxQuantities: [],
@@ -251,7 +289,10 @@ watch(
     state.value = JSON.parse(JSON.stringify(props.element))
     state.value.status = statuses.find((s) => s.apiValue === state.value.status)?.value
     if (state.value.family) state.value.family = state.value.family.id
-    if (state.value.plantParts) state.value.plantParts = state.value.plantParts.map((p) => p.id)
+    if (state.value.plantParts) {
+      state.value.authorisedPlantParts = state.value.plantParts.filter((p) => !!p.isUseful).map((p) => p.id)
+      state.value.forbiddenPlantParts = state.value.plantParts.filter((p) => !p.isUseful).map((p) => p.id)
+    }
     if (state.value.objectType && apiType.value === "other-ingredient")
       state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
     if (state.value.unitId) state.value.unit = state.value.unitId
@@ -270,12 +311,19 @@ const saveElement = async () => {
   }
 
   const url = `/api/v1/${apiType.value}s/`
-  const payload = state.value
+  const payload = JSON.parse(JSON.stringify(state.value))
   if (payload.substances?.length) {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
   if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
+  if (payload.authorisedPlantParts?.length || payload.forbiddenPlantParts?.length) {
+    const authorisedParts = payload.authorisedPlantParts
+    const forbiddenParts = payload.forbiddenPlantParts
+    payload.plantParts = authorisedParts
+      .map((p) => ({ plantpart: p, isUseful: true }))
+      .concat(forbiddenParts.map((p) => ({ plantpart: p, isUseful: false })))
+  }
 
   const { response } = isNewIngredient.value
     ? await useFetch(url, { headers: headers() }).post(payload).json()
@@ -355,7 +403,8 @@ const rules = computed(() => {
     family: form?.family ? errorRequiredField : {},
     unit: form?.nutritionalReference && !props.element ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
-    changeReason: isNewIngredient.value ? {} : Object.assign({}, errorRequiredField, errorMaxStringLength(100)),
+    changeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
+    publicChangeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
   }
 })
 watch(formForType, () => v$.value.$reset())
@@ -367,6 +416,12 @@ const store = useRootStore()
 const { plantParts, plantFamilies, units, populations } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
+
+const orderedPlantParts = computed(() => {
+  const ordered = JSON.parse(JSON.stringify(plantParts.value))
+  ordered?.sort((a, b) => a.name.localeCompare(b.name))
+  return ordered
+})
 
 const ingredientTypes = [
   { value: 1, text: "Nutriment (Forme d'apport)", apiValue: "form_of_supply" },

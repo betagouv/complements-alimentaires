@@ -307,6 +307,7 @@ class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
     vat = serializers.CharField(read_only=True, source="company.vat")
     article = serializers.SerializerMethodField(read_only=True)
     status = serializers.SerializerMethodField(read_only=True)
+    department = serializers.CharField(read_only=True, source="company.department")
 
     # Champ spécial utilisé par drf-excel documenté ici : https://github.com/django-commons/drf-excel
     row_color = serializers.SerializerMethodField()
@@ -321,6 +322,7 @@ class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
             "company_name",
             "siret",
             "vat",
+            "department",
             "row_color",  # Champ utilisé en interne par drf-excel
         )
         read_only_fields = fields
@@ -360,6 +362,7 @@ def add_enum_or_personnalized_value(item, custom_value):
 
 class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
+    numero_declaration_teleicare = serializers.SerializerMethodField()
     decision = serializers.SerializerMethodField()
     responsable_mise_sur_marche = serializers.SerializerMethodField()
     siret_responsable_mise_sur_marche = serializers.SerializerMethodField()
@@ -389,6 +392,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
         fields = (
             "id",
+            "numero_declaration_teleicare",
             "decision",
             "responsable_mise_sur_marche",
             "siret_responsable_mise_sur_marche",
@@ -419,7 +423,10 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         """
         Cette fonction retourne le TeleIcare id s'il existe sinon le Compl'Alim id
         """
-        return obj.teleicare_id or obj.id
+        return obj.siccrf_id or obj.id
+
+    def get_numero_declaration_teleicare(self, obj):
+        return obj.teleicare_id
 
     def get_decision(self, obj):
         return obj.get_status_display()

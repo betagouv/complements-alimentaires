@@ -6,7 +6,7 @@ from django.db import models
 
 from phonenumber_field.modelfields import PhoneNumberField
 
-from data.behaviours import AutoValidable, Deactivable
+from data.behaviours import AutoValidable, Deactivable, TimeStampable
 from data.choices import CountryChoices
 from data.fields import MultipleChoiceField
 from data.validators import validate_siret, validate_vat
@@ -40,6 +40,21 @@ class Address(models.Model):
         ]
         return "\n".join(filter(None, lines))
 
+    @property
+    def department(self):
+        if self.country != CountryChoices.FRANCE:
+            return None
+
+        if self.postal_code[:2] == "97" or self.postal_code[:2] == "98":
+            return self.postal_code[:3]
+
+        # Cas pour la corse : Corse du Sud : 2A, Corse du Nord : 2B
+        if self.postal_code[:2] == "20":
+            corsica_identifier = self.postal_code[2:3]
+            return "2A" if corsica_identifier == "0" or corsica_identifier == "1" else "2B"
+
+        return self.postal_code[:2]
+
 
 class CompanyContact(models.Model):
     class Meta:
@@ -59,44 +74,7 @@ class ActivityChoices(models.TextChoices):
     DISTRIBUTEUR = auto()
 
 
-class TeleicareCompany(models.Model):
-    class Meta:
-        abstract = True
-
-    # ce champ devrait être une ForeignKey vers la table unmanaged IcaEtablissement
-    # mais une ForeignKey vers une table unmanaged implique de cla complexité au niveau du code :
-    # création des tables au setup des tests notamment
-    # https://docs.djangoproject.com/fr/5.1/ref/models/options/#managed
-
-    siccrf_id = models.IntegerField(
-        blank=True,
-        null=True,
-        editable=False,
-        db_index=True,
-        unique=True,
-        verbose_name="etab_ident dans le modèle IcaEtablissement SICCRF",
-    )
-    matched = models.BooleanField(
-        default=False, verbose_name="La Company Compl'Alim a été matchée avec un Etablissement TeleIcare"
-    )
-    old_siret = models.CharField(
-        "n° SIRET dans TeleIcare, si différent",
-        help_text="14 chiffres",
-        unique=True,
-        null=True,
-        blank=True,  # nécessaire pour valider les données issues de l'admin form, avec la méthode custom save()
-        validators=[validate_siret],
-    )
-    old_vat = models.CharField(
-        "n° TVA intracommunautaire dans TeleIcare, si différent",
-        unique=True,
-        null=True,
-        blank=True,  # nécessaire pour valider les données issues de l'admin form, avec la méthode custom save()
-        validators=[validate_vat],
-    )
-
-
-class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.Model):
+class Company(AutoValidable, Address, CompanyContact, TimeStampable, models.Model):
     class Meta:
         verbose_name = "entreprise"
 
@@ -158,6 +136,13 @@ class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.M
             raise ValidationError("Une entreprise ne peut avoir plusieurs fois la même activité")
 
     @property
+    def registration_date(self):
+        """Retourne la plus ancienne date d'adhésion à la déclaration en ligne
+        * soit date de première adhésion à TeleIcare,
+        soit date d'adhésion à Compl'Alim"""
+        return self.etablissementtocompanyrelation_set.earliest("siccrf_registration_date") or self.creation_date
+
+    @property
     def collaborators(self):
         """Retourne l'ensemble des objets `User` ayant au moins un rôle dans cette entreprise"""
         return self.supervisors.all().union(self.declarants.all())
@@ -171,10 +156,6 @@ class Company(AutoValidable, Address, CompanyContact, TeleicareCompany, models.M
             self.vat = None
         if not self.siret:
             self.siret = None
-        if not self.old_vat:
-            self.old_vat = None
-        if not self.old_siret:
-            self.old_siret = None
         super().save(*args, **kwargs)
 
 
@@ -211,3 +192,49 @@ class DeclarantRole(CompanyRole, models.Model):
 
     company = models.ForeignKey(Company, related_name="declarant_roles", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="declarant_roles", on_delete=models.CASCADE)
+
+
+class EtablissementToCompanyRelation(models.Model):
+    class Meta:
+        verbose_name = "Anciens n° SIRET et n° TVA intracommunautaire, relation avec table d'entreprises TeleIcare et les entreprises Compl'Alim"
+
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    # ce champ devrait être une ForeignKey vers la table unmanaged IcaEtablissement
+    # mais une ForeignKey vers une table unmanaged implique de cla complexité au niveau du code :
+    # création des tables au setup des tests notamment
+    # https://docs.djangoproject.com/fr/5.1/ref/models/options/#managed
+
+    siccrf_id = models.IntegerField(
+        verbose_name="etab_ident dans le modèle IcaEtablissement SICCRF",
+        null=True,
+        editable=False,
+        db_index=True,
+        unique=True,
+        default=None,
+    )
+    old_siret = models.CharField(
+        verbose_name="n° SIRET dans TeleIcare, si différent",
+        unique=True,
+        null=True,
+        blank=True,  # nécessaire pour valider les données issues de l'admin form, avec la méthode custom save()
+        validators=[validate_siret],
+        help_text="14 chiffres",
+    )
+    old_vat = models.CharField(
+        verbose_name="n° TVA intracommunautaire dans TeleIcare, si différent",
+        unique=True,
+        null=True,
+        blank=True,  # nécessaire pour valider les données issues de l'admin form, avec la méthode custom save()
+        validators=[validate_vat],
+    )
+    siccrf_registration_date = models.DateField(
+        verbose_name="date d'adhésion à la plateforme TeleIcare", editable=False, null=True
+    )
+
+    def save(self, *args, **kwargs):
+        # Les valeurs "" ne sont pas unique, mais None oui
+        if not self.old_vat:
+            self.old_vat = None
+        if not self.old_siret:
+            self.old_siret = None
+        super().save(*args, **kwargs)

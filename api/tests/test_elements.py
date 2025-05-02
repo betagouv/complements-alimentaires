@@ -18,7 +18,7 @@ from data.factories import (
     SubstanceSynonymFactory,
     SubstanceUnitFactory,
 )
-from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Plant, Population
+from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Plant, Population, Part
 from data.models.substance import MaxQuantityPerPopulationRelation, Substance
 
 from .utils import authenticate
@@ -276,7 +276,7 @@ class TestElementsCreateApi(APITestCase):
                 {"name": "A second one"},
                 {"name": "My new plant"},
             ],
-            "plantParts": [part_1.id, part_2.id],
+            "plantParts": [{"plantpart": part_1.id, "isUseful": True}, {"plantpart": part_2.id, "isUseful": False}],
             "substances": [substance.id],
             "publicComments": "Test",
             "privateComments": "Test private",
@@ -293,7 +293,9 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(plant.plantsynonym_set.count(), 2)  # deduplication of synonym
         self.assertTrue(plant.plantsynonym_set.filter(name="A latin name").exists())
         self.assertTrue(plant.plantsynonym_set.filter(name="A second one").exists())
-        self.assertEqual(plant.plant_parts.count(), 2)
+        self.assertEqual(plant.part_set.count(), 2)
+        self.assertTrue(plant.part_set.get(plantpart=part_1.id).is_useful)
+        self.assertFalse(plant.part_set.get(plantpart=part_2.id).is_useful)
         self.assertEqual(plant.substances.count(), 1)
         self.assertEqual(plant.ca_public_comments, "Test")
         self.assertEqual(plant.ca_private_comments, "Test private")
@@ -484,6 +486,8 @@ class TestElementsModifyApi(APITestCase):
             unit=SubstanceUnitFactory.create(),
             siccrf_status=IngredientStatus.NO_STATUS,
             ca_status=IngredientStatus.AUTHORIZED,
+            siccrf_must_specify_quantity=True,
+            ca_must_specify_quantity=None,
         )
         MaxQuantityPerPopulationRelationFactory(
             substance=substance,
@@ -495,6 +499,9 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(
             substance.max_quantity, 3.4, "La quantité max pour la population générale est la bonne avant modification"
         )
+        self.assertTrue(
+            substance.siccrf_must_specify_quantity, "Le champ siccrf est vrai, comme donné dans le factory"
+        )
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
             {
@@ -502,6 +509,7 @@ class TestElementsModifyApi(APITestCase):
                 "unit": new_unit.id,
                 "maxQuantities": [{"population": self.general_pop.id, "maxQuantity": 35}],
                 "status": IngredientStatus.NO_STATUS,
+                "mustSpecifyQuantity": False,
                 "changeReason": "Test change",
             },
             format="json",
@@ -517,7 +525,32 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(
             substance.status, IngredientStatus.NO_STATUS, "C'est possible de remettre la valeur originelle"
         )
-        self.assertEqual(substance.history.first().history_change_reason, "Test change")
+        self.assertFalse(substance.must_specify_quantity, "Le champ calculé prend la nouvelle valeur de ca_")
+        self.assertFalse(substance.ca_must_specify_quantity, "Le champ ca_ est donné une valeur")
+        self.assertTrue(substance.siccrf_must_specify_quantity, "Le champ siccrf n'est pas changé")
+        self.assertEqual(
+            substance.history.first().history_change_reason,
+            "Test change",
+            "Le message en texte libre est sauvegardée comme raison de changement",
+        )
+
+    @authenticate
+    def test_can_give_public_change_reason(self):
+        """
+        Ainsi qu'une raison de changement privé, c'est possible de donner une raison de visibilité publique
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        ingredient = IngredientFactory.create()
+
+        payload = {"name": "Nouvel nom", "changeReason": "Raison privée", "publicChangeReason": "Raison publique"}
+        response = self.client.patch(
+            reverse("api:single_ingredient", kwargs={"pk": ingredient.id}), payload, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        ingredient.refresh_from_db()
+        self.assertEqual(ingredient.history.first().history_change_reason, "Raison privée")
+        self.assertEqual(ingredient.history.first().history_public_change_reason, "Raison publique")
 
     @authenticate
     def test_can_modify_substance_max_quantities(self):
@@ -630,6 +663,72 @@ class TestElementsModifyApi(APITestCase):
         self.assertTrue(
             MaxQuantityPerPopulationRelation.objects.filter(substance=substance, population=self.general_pop).exists()
         )
+
+    @authenticate
+    def test_can_modify_plant_parts(self):
+        """
+        Les instructrices peuvent modifier les parties de plantes autorisées et non-autorisées
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        old_part = PlantPartFactory.create()
+        questionable_part = PlantPartFactory.create()
+        new_dangerous_part = PlantPartFactory.create()
+        plant = PlantFactory.create()
+        Part.objects.create(plant=plant, plantpart=old_part, ca_is_useful=True)
+        Part.objects.create(plant=plant, plantpart=questionable_part, ca_is_useful=False)
+
+        self.assertTrue(plant.part_set.get(plantpart=old_part.id).is_useful)
+        self.assertFalse(plant.part_set.get(plantpart=questionable_part.id).is_useful)
+        self.assertFalse(plant.part_set.filter(plantpart=new_dangerous_part.id).exists())
+
+        payload = {
+            "plantParts": [
+                {"plantpart": questionable_part.id, "isUseful": True},
+                {"plantpart": new_dangerous_part.id, "isUseful": False},
+            ],
+        }
+        response = self.client.patch(reverse("api:single_plant", kwargs={"pk": plant.id}), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        plant.refresh_from_db()
+        self.assertFalse(plant.part_set.filter(plantpart=old_part.id).exists())
+        self.assertTrue(plant.part_set.get(plantpart=questionable_part.id).is_useful)
+        self.assertFalse(plant.part_set.get(plantpart=new_dangerous_part.id).is_useful)
+
+    @authenticate
+    def test_cannot_give_same_part_twice(self):
+        """
+        Si la même partie est donnée en autorisée et non-autorisée, donne un 400
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        duplicate_part = PlantPartFactory.create()
+        other_part = PlantPartFactory.create()
+        plant = PlantFactory.create()
+
+        self.assertFalse(plant.part_set.filter(plantpart=duplicate_part.id).exists())
+        self.assertFalse(plant.part_set.filter(plantpart=other_part.id).exists())
+
+        payload = {
+            "name": "new name",
+            "plantParts": [
+                {"plantpart": other_part.id, "isUseful": True},
+                {"plantpart": duplicate_part.id, "isUseful": True},
+                {"plantpart": duplicate_part.id, "isUseful": False},
+            ],
+        }
+        response = self.client.patch(reverse("api:single_plant", kwargs={"pk": plant.id}), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        plant.refresh_from_db()
+        self.assertFalse(
+            plant.part_set.filter(plantpart=duplicate_part.id).exists(),
+            "la partie en doublon ne devrait pas été ajoutée à la plante",
+        )
+        self.assertFalse(
+            plant.part_set.filter(plantpart=other_part.id).exists(),
+            "l'autre partie ne devrait pas été ajoutée à la plante",
+        )
+        self.assertNotEqual(plant.name, "new name", "autres modifications devraient être ignorées aussi")
 
     @authenticate
     def test_update_siccrf_max_quantity(self):

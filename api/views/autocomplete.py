@@ -25,9 +25,14 @@ class AutocompleteView(APIView):
                 global_error=f"Le terme de recherche doit être supérieur ou égal à {self.min_query_length} caractères"
             )
 
+        search_all_substances = bool(request.data.get("all", False))
+
         query = {"term": term, "type": request.data.get("type")}
         results = search_elements(
-            query, deduplicate=False, exclude_not_authorized=True, keep_only_standalone_usable=True
+            query,
+            deduplicate=False,
+            exclude_not_authorized=(not search_all_substances),
+            keep_only_standalone_usable=(not search_all_substances),
         )[: self.max_autocomplete_items]
         return JsonResponse(self.serialize_results(results), safe=False)
 
