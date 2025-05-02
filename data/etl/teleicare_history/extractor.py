@@ -472,13 +472,15 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     ),
                     company=EtablissementToCompanyRelation.objects.get(
                         siccrf_id=ica_complement_alimentaire.etab_id
-                    ).company,  # resp étiquetage, resp commercialisation
+                    ).company,  # resp commercialisation (entreprise qui déclare ou pour laquelle une entreprise mandataire déclare)
+                    mandated_company=EtablissementToCompanyRelation.objects.get(
+                        siccrf_id=latest_ica_declaration.etab_id
+                    ).company,  # resp de la déclaration
                     brand=ica_complement_alimentaire.cplalim_marque or "",
                     gamme=ica_complement_alimentaire.cplalim_gamme or "",
                     name=ica_complement_alimentaire.cplalim_nom,
                     flavor=ica_complement_alimentaire.dclencours_gout_arome_parfum or "",
                     other_galenic_formulation=ica_complement_alimentaire.cplalim_forme_galenique_autre or "",
-                    # extraction d'un nombre depuis une chaîne de caractères
                     unit_quantity=latest_ica_version_declaration.vrsdecl_poids_uc,
                     unit_measurement=SubstanceUnit.objects.get(siccrf_id=latest_ica_version_declaration.unt_ident),
                     conditioning=latest_ica_version_declaration.vrsdecl_conditionnement or "",
@@ -487,12 +489,14 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     instructions=latest_ica_version_declaration.vrsdecl_mode_emploi or "",
                     warning=latest_ica_version_declaration.vrsdecl_mise_en_garde or "",
                     calculated_article=DECLARATION_TYPE_TO_ARTICLE_MAPPING[latest_ica_declaration.tydcl_ident],
-                    # TODO: ces champs sont à importer
-                    # address=
-                    # postal_code=
-                    # city=
-                    # country=
                     status=status,
+                    # responsable d'etiquettage
+                    address=latest_ica_version_declaration.vrsdecl_adre_voie,
+                    additional_details=latest_ica_version_declaration.vrsdecl_adre_comp,
+                    postal_code=latest_ica_version_declaration.vrsdecl_adre_cp,
+                    city=latest_ica_version_declaration.vrsdecl_adre_ville,
+                    # cedex= parfois compris dans vrsdecl_adre_comp ou vrsdecl_adre_comp2
+                    # country=
                 )
                 # aucun de ces champs `other_` n'est rempli dans Teleicare
                 # IcaPopulationCibleDeclaree.vrspcb_popcible_autre n'est pas importé
