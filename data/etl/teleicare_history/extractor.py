@@ -435,7 +435,9 @@ def create_declarations_from_teleicare_history(company_ids=[]):
         all_ica_declarations = IcaDeclaration.objects.filter(
             cplalim_id=ica_complement_alimentaire.cplalim_ident
         ).exclude(icaversiondeclaration__isnull=True)  # la déclaration doit être liée à une version de déclaration
+
         if all_ica_declarations.exists():
+            # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
             oldest_ica_declaration, latest_ica_declaration = get_oldest_and_latest(all_ica_declarations)
 
             # retrouve la version de déclaration la plus à jour correspondant à cette déclaration
