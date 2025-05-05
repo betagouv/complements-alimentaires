@@ -11,7 +11,7 @@ from data.models import Declaration, Snapshot
 from .utils import authenticate
 
 
-class DeclarationFilterTests(APITestCase):
+class DeclarationDateFilterTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.declaration = AuthorizedDeclarationFactory()
