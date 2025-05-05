@@ -109,7 +109,10 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                 )  # si le siret est celui actuel (Company.siret) la relation n'existe pas encore
                 relation.siccrf_id = etab.etab_ident
                 relation.siccrf_registration_date = convert_str_date(etab.etab_date_adhesion)
-                relation.save()
+                try:
+                    relation.save()
+                except IntegrityError as err:
+                    logger.error(f"Relation entre {relation.company_id} et {relation.siccrf_id} : {err}.")
 
         elif etab.etab_numero_tva_intra is not None:
             company_with_vat_matching = Company.objects.filter(
@@ -126,7 +129,11 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                 )  # si le vat est celui actuel (Company.vat) la relation n'existe pas encore
                 relation.siccrf_id = etab.etab_ident
                 relation.siccrf_registration_date = convert_str_date(etab.etab_date_adhesion)
-                relation.save()
+                try:
+                    relation.save()
+                except IntegrityError as err:
+                    logger.error(f"Relation entre {relation.company_id} et {relation.siccrf_id} : {err}.")
+
         # creation de la company
         if not matched and create_if_not_exist:
             new_company = Company(
