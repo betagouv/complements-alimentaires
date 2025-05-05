@@ -6,7 +6,12 @@
     <div class="mb-2 md:flex gap-8 search-area">
       <div class="md:w-1/3 lg:w-2/5 pt-1">
         <DsfrFieldset legend="Recherche" class="!mb-0">
-          <DsfrSearchBar v-model="searchTerm" placeholder="Nom du produit, ID ou entreprise" @search="search" />
+          <DsfrSearchBar
+            v-model="searchTerm"
+            placeholder="Nom du produit, ID ou entreprise"
+            @search="search"
+            @update:modelValue="(val) => val === '' && search()"
+          />
         </DsfrFieldset>
       </div>
       <div class="md:w-2/3 lg:w-3/5 md:flex gap-3">
