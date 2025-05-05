@@ -54,6 +54,12 @@
         <div>
           <div class="md:flex gap-16">
             <div class="md:w-2/4">
+              <StatusFilter
+                :exclude="['DRAFT']"
+                @updateFilter="updateStatusFilter"
+                :statusString="filteredStatus"
+                class="my-6"
+              />
               <DsfrFieldset legend="Cible" class="min-w-60">
                 <DsfrInputGroup>
                   <DsfrSelect
@@ -95,8 +101,6 @@
               </DsfrFieldset>
             </div>
             <div class="md:w-2/4">
-              <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" :statusString="filteredStatus" />
-
               <DsfrInputGroup>
                 <DsfrSelect
                   label="Article"
@@ -134,6 +138,39 @@
               <div class="mt-4">
                 <label for="dose-filter" class="fr-label">Dose</label>
                 <DoseFilterModal :modelValue="dose" @update:modelValue="updateDose" id="dose-filter" />
+              </div>
+
+              <div class="mt-8">
+                <DsfrFieldset legend="Date de soumission" legendClass="fr-label !font-medium">
+                  <div class="flex gap-4 mt-2">
+                    <DateFilterField
+                      :dateField="submissionDateAfter"
+                      label="Après le"
+                      :updateFn="updateSubmissionDateAfter"
+                    />
+                    <DateFilterField
+                      :dateField="submissionDateBefore"
+                      label="Avant le"
+                      :updateFn="updateSubmissionDateBefore"
+                    />
+                  </div>
+                </DsfrFieldset>
+              </div>
+              <div class="mt-8">
+                <DsfrFieldset legend="Date de la prise de décision" legendClass="fr-label !font-medium">
+                  <div class="flex gap-4 mt-2">
+                    <DateFilterField
+                      :dateField="decisionDateAfter"
+                      label="Après le"
+                      :updateFn="updateDecisionDateAfter"
+                    />
+                    <DateFilterField
+                      :dateField="decisionDateBefore"
+                      label="Avant le"
+                      :updateFn="updateDecisionDateBefore"
+                    />
+                  </div>
+                </DsfrFieldset>
               </div>
             </div>
           </div>
@@ -183,6 +220,7 @@ import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import { getTypeIcon, getTypeInFrench, typesMapping } from "@/utils/mappings"
 import CountryField from "@/components/fields/CountryField"
 import DoseFilterModal from "./DoseFilterModal"
+import DateFilterField from "./DateFilterField"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -206,6 +244,10 @@ const galenicFormulation = computed(() => (route.query.formeGalenique ? parseInt
 const country = computed(() => route.query.pays)
 const dose = computed(() => route.query.dose)
 const limit = computed(() => route.query.limit)
+const submissionDateAfter = computed(() => route.query.soumissionAvant)
+const submissionDateBefore = computed(() => route.query.soumissionApres)
+const decisionDateAfter = computed(() => route.query.decisionAvant)
+const decisionDateBefore = computed(() => route.query.decisionApres)
 
 // Mises à jour de la requête lors des changements des filtres et recherche
 
@@ -225,6 +267,10 @@ const updateDose = (newValue) => updateQuery({ dose: newValue })
 const updateLimit = (newValue) => updateQuery({ limit: newValue })
 const updateComposition = () =>
   updateQuery({ composition: ingredientsToFilter.value.map((x) => x.join("||")).join("|||") })
+const updateSubmissionDateAfter = (newValue) => updateQuery({ soumissionAvant: newValue })
+const updateSubmissionDateBefore = (newValue) => updateQuery({ soumissionApres: newValue })
+const updateDecisionDateAfter = (newValue) => updateQuery({ decisionAvant: newValue })
+const updateDecisionDateBefore = (newValue) => updateQuery({ decisionApres: newValue })
 
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
@@ -282,6 +328,14 @@ const apiQueryParams = computed(() => {
   const galenicFormulationQuery = galenicFormulation.value ? `&galenic_formulation=${galenicFormulation.value}` : ""
   const countryQuery = country.value ? `&country=${country.value}` : ""
   const doseQuery = dose.value ? `&dose=${dose.value}` : ""
+  const submissionDateAfterQuery = submissionDateAfter.value
+    ? `&submission_date_after=${submissionDateAfter.value}`
+    : ""
+  const submissionDateBeforeQuery = submissionDateBefore.value
+    ? `&submission_date_before=${submissionDateBefore.value}`
+    : ""
+  const decisionDateAfterQuery = decisionDateAfter.value ? `&decision_date_after=${decisionDateAfter.value}` : ""
+  const decisionDateBeforeQuery = decisionDateBefore.value ? `&decision_date_before=${decisionDateBefore.value}` : ""
   const searchQuery = searchTerm.value ? `&search=${searchTerm.value}` : ""
 
   const plantIds = getApiUrlIdsForType(["plant"])
@@ -301,7 +355,7 @@ const apiQueryParams = computed(() => {
   const substancesQuery = substanceIds ? `&substances=${substanceIds}` : ""
   const ingredientsQuery = ingredientsIds ? `&ingredients=${ingredientsIds}` : ""
 
-  const queryParams = `/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}${countryQuery}${doseQuery}`
+  const queryParams = `/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}${countryQuery}${doseQuery}${submissionDateAfterQuery}${submissionDateBeforeQuery}${decisionDateAfterQuery}${decisionDateBeforeQuery}`
 
   // Enlève les `&` consecutifs
   return queryParams.replace(/&+/g, "&").replace(/&$/, "")
