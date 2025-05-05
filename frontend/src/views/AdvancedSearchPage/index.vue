@@ -140,6 +140,11 @@
       <ProgressSpinner />
     </div>
     <div v-else-if="hasDeclarations">
+      <div class="text-right">
+        <p class="!text-sm -mb-2 -mt-4 font-medium">
+          {{ data.count }} {{ data.count === 1 ? "résultat" : "résultats" }}
+        </p>
+      </div>
       <SearchResultsTable :data="data" />
 
       <DsfrPagination
@@ -256,7 +261,7 @@ const getApiUrlIdsForType = (types) => {
   return ids.length ? ids : null
 }
 
-const maxDownloadSize = 2000
+const maxDownloadSize = 5000
 const canDownloadFile = computed(() => (data.value?.count || 0) <= maxDownloadSize)
 
 // Requêtes
