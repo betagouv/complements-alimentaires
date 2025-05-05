@@ -40,5 +40,5 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(fill_company_creation_date, reverse_fill_company_creation_date),
-        migrations.RunPython(fill_siccrf_registration_date, reverse_fill_siccrf_registration_date),
+        # migrations.RunPython(fill_siccrf_registration_date, reverse_fill_siccrf_registration_date),
     ]

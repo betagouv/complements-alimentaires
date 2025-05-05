@@ -257,7 +257,7 @@ class GenericDeclarationsListView(ListAPIView):
 
 class CommonOngoingDeclarationView(GenericDeclarationsListView):
     permission_classes = [(IsInstructor | IsVisor)]
-    search_fields = ["name", "id", "company__social_name"]
+    search_fields = ["name", "id", "company__social_name", "teleicare_id"]
     filter_backends = [
         django_filters.DjangoFilterBackend,
         InstructionDateOrderingFilter,
@@ -297,7 +297,7 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
     serializer_class = ExcelExportDeclarationSerializer
     filename = "declarations-resultats.xlsx"
 
-    max_rows = 2000
+    max_rows = 5000
 
     def filter_queryset(self, queryset):
         """

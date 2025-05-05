@@ -6,7 +6,12 @@
     <div class="mb-2 md:flex gap-8 search-area">
       <div class="md:w-1/3 lg:w-2/5 pt-1">
         <DsfrFieldset legend="Recherche" class="!mb-0">
-          <DsfrSearchBar v-model="searchTerm" placeholder="Nom du produit, ID ou entreprise" @search="search" />
+          <DsfrSearchBar
+            v-model="searchTerm"
+            placeholder="Nom du produit, ID ou entreprise"
+            @search="search"
+            @update:modelValue="(val) => val === '' && search()"
+          />
         </DsfrFieldset>
       </div>
       <div class="md:w-2/3 lg:w-3/5 md:flex gap-3">
@@ -177,6 +182,11 @@
       <ProgressSpinner />
     </div>
     <div v-else-if="hasDeclarations">
+      <div class="text-right">
+        <p class="!text-sm -mb-2 -mt-4 font-medium" aria-live="polite">
+          {{ data.count }} {{ data.count === 1 ? "résultat" : "résultats" }}
+        </p>
+      </div>
       <SearchResultsTable :data="data" />
 
       <DsfrPagination
@@ -302,7 +312,7 @@ const getApiUrlIdsForType = (types) => {
   return ids.length ? ids : null
 }
 
-const maxDownloadSize = 2000
+const maxDownloadSize = 5000
 const canDownloadFile = computed(() => (data.value?.count || 0) <= maxDownloadSize)
 
 // Requêtes
