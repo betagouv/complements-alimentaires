@@ -1800,7 +1800,9 @@ class TestDeclarationApi(APITestCase):
         magnesium = AwaitingInstructionDeclarationFactory(company=umbrella_corp, name="Magnésium")
 
         fer = AwaitingInstructionDeclarationFactory(company=globex, name="Fer")
-        creatine = AwaitingInstructionDeclarationFactory(company=globex, name="Créatine")
+        creatine = AwaitingInstructionDeclarationFactory(
+            company=globex, name="Créatine", teleicare_id="old_teleicare_id"
+        )
 
         # Checher "globex". Les deux compléments de l'entreprise Globex doivent être renvoyés
         results = get_search_results("Globex")
@@ -1821,6 +1823,11 @@ class TestDeclarationApi(APITestCase):
         results = get_search_results("magnesium")
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["id"], magnesium.id)
+
+        # Chercher par ID téléicare
+        results = get_search_results("old_teleicare_id")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], creatine.id)
 
 
 class TestDeclaredElementsApi(APITestCase):
