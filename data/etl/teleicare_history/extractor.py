@@ -177,6 +177,8 @@ def get_oldest_and_latest(list_of_declarations):
     Cette fonction n'utilise pas les outils de comparaison de date de la BDD
     car le champ `dcl_date` est un champ text et non date
     """
+    if len(list_of_declarations) == 1:
+        return list_of_declarations[0], list_of_declarations[0]
     latest_date = date.min
     oldest_date = date.max
     for ica_declaration in list_of_declarations:
