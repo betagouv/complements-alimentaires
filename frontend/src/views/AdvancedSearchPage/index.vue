@@ -141,7 +141,7 @@
     </div>
     <div v-else-if="hasDeclarations">
       <div class="text-right">
-        <p class="!text-sm -mb-2 -mt-4 font-medium">
+        <p class="!text-sm -mb-2 -mt-4 font-medium" aria-live="polite">
           {{ data.count }} {{ data.count === 1 ? "résultat" : "résultats" }}
         </p>
       </div>
