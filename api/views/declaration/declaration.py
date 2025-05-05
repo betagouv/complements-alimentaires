@@ -297,7 +297,7 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
     serializer_class = ExcelExportDeclarationSerializer
     filename = "declarations-resultats.xlsx"
 
-    max_rows = 2000
+    max_rows = 5000
 
     def filter_queryset(self, queryset):
         """
