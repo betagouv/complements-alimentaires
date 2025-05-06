@@ -206,8 +206,7 @@ def recalculate_article_for_ongoing_declarations(declarations, change_reason):
         declaration.assign_calculated_article()
         if previous_article != declaration.calculated_article:
             declaration.save()
-            if change_reason:
-                # il faut faire un refresh pour update_change_reason de retrouver le record à MAJ
-                declaration.refresh_from_db()
-                update_change_reason(declaration, change_reason)
+            # il faut faire un refresh pour update_change_reason de retrouver le record à MAJ
+            declaration.refresh_from_db()
+            update_change_reason(declaration, change_reason)
             logger.info(f"Declaration {declaration.id} article recalculated.")
