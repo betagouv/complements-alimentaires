@@ -252,7 +252,7 @@ const decisionDateBefore = computed(() => route.query.decisionApres)
 // Mises à jour de la requête lors des changements des filtres et recherche
 
 const updateQuery = (newQuery) => {
-  router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } }).then(fetchSearchResults)
+  router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } })
 }
 
 const updateStatusFilter = (status) => updateQuery({ status })
@@ -367,10 +367,10 @@ const { response, data, isFetching, execute } = useFetch(apiUrl, { headers: { Ac
   .get()
   .json()
 
-const fetchSearchResults = async () => {
+watch(route, async () => {
   await execute()
   if (response?.value) await handleError(response) // Utile pour éviter des traiter les NS_BINDING_ABORTED de Firefox
-}
+})
 
 // Remplissage d'options dans les champs select
 
