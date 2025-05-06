@@ -3,6 +3,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from unittest.mock import patch
+
 from data.choices import IngredientActivity
 from data.factories import (
     IngredientFactory,
@@ -946,3 +948,51 @@ class TestElementsModifyApi(APITestCase):
         self.assertTrue(microorganism.substances.filter(id=substance.id).exists())
         self.assertTrue(microorganism.substances.filter(id=new_substance.id).exists())
         self.assertFalse(microorganism.substances.filter(id=substance_to_delete.id).exists())
+
+    @authenticate
+    @patch("config.tasks.recalculate_article_for_ongoing_declarations")
+    def test_article_recalculation_triggered(self, mocked_task):
+        """
+        Si une modif pourrait modifier l'article calculé d'une déclaration, la tâche pour recalculer les déclarations
+        en masse devrait être appelée
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        microorganism = MicroorganismFactory.create()
+
+        self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {"substances": []},
+            format="json",
+        )
+
+        mocked_task.assert_called_once()
+
+    @authenticate
+    @patch("config.tasks.recalculate_article_for_ongoing_declarations")
+    def test_article_recalculation_not_triggered_boring_fields(self, mocked_task):
+        """
+        Si une modif est effectuée que sur des champs "safe", n'appelle pas la tâche
+        On fait la vérif sur les champs "safe" parce que c'est moins un pb si l'article est recalculé sans avoir besoin
+        que si ce n'est pas recalculé quand il y a besoin
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        microorganism = MicroorganismFactory.create()
+
+        self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {
+                "genus": "test",
+                "species": "test",
+                "synonymes": [],
+                "public_comments": "",
+                "private_comments": "",
+                "novel_food": False,
+                "change_reason": "",
+                "public_change_reason": "",
+            },
+            format="json",
+        )
+
+        mocked_task.assert_not_called()
