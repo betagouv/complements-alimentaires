@@ -25,20 +25,6 @@ class Migration(migrations.Migration):
     def reverse_fill_company_creation_date(apps, schema_editor):
         pass
 
-    def fill_siccrf_registration_date(apps, schema_editor):
-        IcaEtablissement = apps.get_model("data", "IcaEtablissement")
-        EtablissementToCompanyRelation = apps.get_model("data", "EtablissementToCompanyRelation")
-        for relation in EtablissementToCompanyRelation.objects.all():
-            # IcaEtablissement.etab_date_adhesion est parfois None
-            relation.siccrf_registration_date = IcaEtablissement.objects.get(
-                etab_ident=relation.siccrf_id
-            ).etab_date_adhesion
-            relation.save()
-
-    def reverse_fill_siccrf_registration_date(apps, schema_editor):
-        pass
-
     operations = [
         migrations.RunPython(fill_company_creation_date, reverse_fill_company_creation_date),
-        # migrations.RunPython(fill_siccrf_registration_date, reverse_fill_siccrf_registration_date),
     ]

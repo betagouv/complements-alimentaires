@@ -108,8 +108,11 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                     old_siret=etab.etab_siret,
                 )  # si le siret est celui actuel (Company.siret) la relation n'existe pas encore
                 relation.siccrf_id = etab.etab_ident
-                relation.siccrf_registration_date = etab.etab_date_adhesion
-                relation.save()
+                relation.siccrf_registration_date = convert_str_date(etab.etab_date_adhesion)
+                try:
+                    relation.save()
+                except IntegrityError as err:
+                    logger.error(f"Relation entre {relation.company_id} et {relation.siccrf_id} : {err}.")
 
         elif etab.etab_numero_tva_intra is not None:
             company_with_vat_matching = Company.objects.filter(
@@ -125,8 +128,12 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                     old_vat=etab.etab_numero_tva_intra,
                 )  # si le vat est celui actuel (Company.vat) la relation n'existe pas encore
                 relation.siccrf_id = etab.etab_ident
-                relation.siccrf_registration_date = etab.etab_date_adhesion
-                relation.save()
+                relation.siccrf_registration_date = convert_str_date(etab.etab_date_adhesion)
+                try:
+                    relation.save()
+                except IntegrityError as err:
+                    logger.error(f"Relation entre {relation.company_id} et {relation.siccrf_id} : {err}.")
+
         # creation de la company
         if not matched and create_if_not_exist:
             new_company = Company(
@@ -149,7 +156,7 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                     siccrf_id=etab.etab_ident,
                     old_siret=etab.etab_siret,
                     old_vat=etab.etab_numero_tva_intra,
-                    siccrf_registration_date=etab.etab_date_adhesion,
+                    siccrf_registration_date=convert_str_date(etab.etab_date_adhesion),
                 )
                 relation.save()
                 nb_created_companies += 1
@@ -187,6 +194,8 @@ def get_oldest_and_latest(list_of_declarations):
 
 
 def convert_str_date(value, aware=False):
+    if value is None:
+        return
     dt = datetime.strptime(value, "%m/%d/%Y %H:%M:%S %p")
     if aware:
         return dt.replace(tzinfo=timezone.utc)
