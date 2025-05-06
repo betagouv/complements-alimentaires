@@ -31,9 +31,8 @@ class RecomputeDeclarationArticleAtIngredientSaveMixin:
         super().save_model(request, obj, form, change)
         # recalcul de l'article pour les déclarations concernées
         if change and form["is_risky"]._has_changed():
-            ids = getattr(obj, self.declaredingredient_set).values_list("declaration_id", flat=True)
-            declarations_using_ingredient = Declaration.objects.filter(id__in=ids)
+            ids_using_ingredient = getattr(obj, self.declaredingredient_set).values_list("declaration_id", flat=True)
             tasks.recalculate_article_for_ongoing_declarations(
-                declarations_using_ingredient,
+                Declaration.objects.filter(id__in=ids_using_ingredient),
                 f"Article recalculé après modification via l'admin de {obj.name} ({obj.object_type} id {obj.id})",
             )
