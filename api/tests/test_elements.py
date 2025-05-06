@@ -966,6 +966,8 @@ class TestElementsModifyApi(APITestCase):
             format="json",
         )
 
+        # TODO: test other types, especially substance, to make sure are getting all declarations (declared and computed)
+
         mocked_task.assert_called_once()
 
     @authenticate
