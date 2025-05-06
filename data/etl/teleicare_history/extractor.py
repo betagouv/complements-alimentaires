@@ -432,9 +432,9 @@ def create_declarations_from_teleicare_history(company_ids=[]):
     ).values_list("siccrf_id", flat=True)
     # Parcourir tous les compléments alimentaires dont l'entreprise déclarante a été matchée
     for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(etab_id__in=etab_ids):
-        # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
-        all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=ica_complement_alimentaire.cplalim_ident)
-        # le champ date est stocké en text, il faut donc faire la conversion en python
+        all_ica_declarations = IcaDeclaration.objects.filter(
+            cplalim_id=ica_complement_alimentaire.cplalim_ident
+        ).exclude(icaversiondeclaration__isnull=True)  # la déclaration doit être liée à une version de déclaration
         if all_ica_declarations.exists():
             oldest_ica_declaration, latest_ica_declaration = get_oldest_and_latest(all_ica_declarations)
 
