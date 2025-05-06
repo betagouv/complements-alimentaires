@@ -98,7 +98,7 @@
             :to="{ name: 'AdvancedSearchPage', query: { composition: `${element.id}||${element.name}||${type}` } }"
             class="h-fit"
           >
-            Les déclarations
+            Voir les déclarations concernées
           </router-link>
           <router-link
             :to="{ name: 'ModifyElement', params: { urlComponent: props.urlComponent } }"
