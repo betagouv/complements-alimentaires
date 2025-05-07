@@ -2,7 +2,7 @@
   <div>
     <h2>Retirer du marché</h2>
     <p>
-      Votre produit « {{ declaration.name }} » a été autorisé. Vous pouvez néanmoins déclarer son arrêt de
+      Votre produit « {{ declaration.name }} » a été déclaré. Vous pouvez néanmoins signaler son arrêt de
       commercialisation en cliquant ci-dessous. Veuillez noter que cette opération est irreversible.
     </p>
     <h3 class="fr-h5">Date effective du retrait du marché</h3>
@@ -45,7 +45,8 @@ const emit = defineEmits("withdraw")
 
 const withdrawDeclaration = async () => {
   const url = `/api/v1/declarations/${declaration.value.id}/withdraw/`
-  const { response } = await useFetch(url, { headers: headers() }).post().json()
+  const payload = { effectiveWithdrawalDate: effectiveDate.value }
+  const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
   $externalResults.value = await handleError(response)
 
   if (response.value.ok) {
@@ -56,17 +57,24 @@ const withdrawDeclaration = async () => {
 
 // Gestion de la date effective de retrait du marché
 const today = new Date()
+const chosenDateOption = ref(`${today}`)
+const otherDate = ref()
+
+// NOTE: Le champ DLUO est un champ de texte. Certaines déclarations ne contiennent donc pas un
+// champ parseable en int (p.e « 24 à 36 mois selon les lots », « exempté » ou « Voir l'emballage »
 const dluoDate = computed(() => {
-  const months = parseInt(declaration.value?.minimumDuration)
+  const dluoIsNumeric = /^\d+$/.test(declaration.value?.minimumDuration)
+  if (!dluoIsNumeric) return
+
+  const months = parseInt(declaration.value.minimumDuration)
   if (!months) return
+
   const afterDluo = new Date(today.getTime())
   afterDluo.setMonth(afterDluo.getMonth() + months)
   if (afterDluo.getDate() != today.getDate()) afterDluo.setDate(0)
   return afterDluo
 })
 
-const chosenDateOption = ref(`${today}`)
-const otherDate = ref()
 const dateOptions = computed(() => {
   const options = [
     {
