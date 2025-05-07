@@ -340,6 +340,10 @@ def add_product_info_from_teleicare_history(declaration, vrsdecl_ident):
     Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
     `create_declarations_from_teleicare_history` pour updater leurs champs ManyToMany.
     """
+    # aucun des champs `other_` n'est rempli dans Teleicare
+    # IcaPopulationCibleDeclaree.vrspcb_popcible_autre n'est pas importé car vide
+    # IcaPopulationRisqueDeclaree.vrsprs_poprisque_autre n'est pas importé car vide
+    # IcaEffetDeclare.vrs_autre_objectif n'est pas importé car vide
     declaration.effects.set(
         [
             Effect.objects.get(siccrf_id=TIcare_effect.objeff_ident)
@@ -527,10 +531,6 @@ def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=
                     if latest_ica_declaration.dcl_date_fin_commercialisation
                     else declaration_acceptation_date
                 )
-                # aucun des champs `other_` n'est rempli dans Teleicare
-                # IcaPopulationCibleDeclaree.vrspcb_popcible_autre n'est pas importé car vide
-                # IcaPopulationRisqueDeclaree.vrsprs_poprisque_autre n'est pas importé car vide
-                # IcaEffetDeclare.vrs_autre_objectif n'est pas importé car vide
 
                 with suppress_autotime(declaration, ["creation_date", "modification_date"]):
                     declaration.save()
