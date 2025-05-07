@@ -25,7 +25,7 @@ from data.models.ingredient_status import IngredientStatus
 
 class DeclarationTestCase(TestCase):
     def setUp(self):
-        self.general_pop = PopulationFactory.create(ca_name="Population générale")
+        self.general_pop = PopulationFactory.create(name="Population générale")
 
     def test_json_representation(self):
         declaration = InstructionReadyDeclarationFactory()
@@ -441,9 +441,9 @@ class DeclarationTestCase(TestCase):
         que la population générale doivent être considérées comme dépassées
         si elles font partie des populations cibles
         """
-        pop_biggest_quantity = PopulationFactory(ca_name="Population extradosée")
-        pop_smallest_quantity = PopulationFactory(ca_name="Population microdosée")
-        pop_no_quantity = PopulationFactory(ca_name="Population sans indication")
+        pop_biggest_quantity = PopulationFactory(name="Population extradosée")
+        pop_smallest_quantity = PopulationFactory(name="Population microdosée")
+        pop_no_quantity = PopulationFactory(name="Population sans indication")
         nutriment_type = choice([[SubstanceType.VITAMIN], [SubstanceType.MINERAL]])
         other_substance_type = choice(
             [
