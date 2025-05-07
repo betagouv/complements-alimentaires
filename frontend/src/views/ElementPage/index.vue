@@ -91,16 +91,23 @@
         <DsfrTable :headers="historyHeaders" :rows="historyDataDedup"></DsfrTable>
       </DsfrAccordion>
 
-      <!-- bouton temporaire à enlever quand on a une page dédiée à la recherche d'ingrédients interne -->
       <div v-if="isInstructor" class="text-right mt-4">
         <p class="mb-2"><em>Vous avez le role d'instruction :</em></p>
-        <router-link
-          :to="{ name: 'ModifyElement', params: { urlComponent: props.urlComponent } }"
-          class="fr-btn fr-btn--tertiary fr-btn--sm"
-        >
-          <v-icon name="ri-pencil-line" :scale="0.85" class="mr-1"></v-icon>
-          Modifier
-        </router-link>
+        <div class="flex justify-end items-center">
+          <router-link
+            :to="{ name: 'AdvancedSearchPage', query: { composition: `${element.id}||${element.name}||${type}` } }"
+            class="h-fit"
+          >
+            Voir les déclarations concernées
+          </router-link>
+          <router-link
+            :to="{ name: 'ModifyElement', params: { urlComponent: props.urlComponent } }"
+            class="fr-btn fr-btn--tertiary fr-btn--sm ml-4"
+          >
+            <v-icon name="ri-pencil-line" :scale="0.85" class="mr-1"></v-icon>
+            Modifier
+          </router-link>
+        </div>
       </div>
     </div>
 

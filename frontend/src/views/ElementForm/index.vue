@@ -20,7 +20,7 @@
 
       <DsfrTabs v-model="activeTab" :tab-list-name="tabListName" :tab-titles="tabTitles">
         <DsfrTabContent panel-id="form-content" tab-id="form">
-          <FormFields :element="element" :type="type" />
+          <FormFields :element="element" :type="type" :urlComponent="props.urlComponent" />
         </DsfrTabContent>
 
         <DsfrTabContent panel-id="history-content" tab-id="history">
