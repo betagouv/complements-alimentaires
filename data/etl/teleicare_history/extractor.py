@@ -503,20 +503,10 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     # country=
                     status=status,
                 )
-                # aucun de ces champs `other_` n'est rempli dans Teleicare
-                # IcaPopulationCibleDeclaree.vrspcb_popcible_autre n'est pas importé
-                other_effects = IcaEffetDeclare.objects.filter(
-                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident,
-                    objeff_ident=4,  # Autre
-                )
-                if other_effects.exists():
-                    declaration.other_effects = other_effects.first().vrs_autre_objectif or ""
-                other_conditions = IcaPopulationRisqueDeclaree.objects.filter(
-                    vrsdecl_ident=latest_ica_version_declaration.vrsdecl_ident,
-                    poprs_ident=6,  # Autre
-                )
-                if other_conditions.exists():
-                    declaration.other_conditions = other_conditions.first().vrsprs_poprisque_autre or ""
+                # aucun des champs `other_` n'est rempli dans Teleicare
+                # IcaPopulationCibleDeclaree.vrspcb_popcible_autre n'est pas importé car vide
+                # IcaPopulationRisqueDeclaree.vrsprs_poprisque_autre n'est pas importé car vide
+                # IcaEffetDeclare.vrs_autre_objectif n'est pas importé car vide
 
                 try:
                     with suppress_autotime(declaration, ["creation_date", "modification_date"]):
