@@ -177,6 +177,8 @@ def get_oldest_and_latest(list_of_declarations):
     Cette fonction n'utilise pas les outils de comparaison de date de la BDD
     car le champ `dcl_date` est un champ text et non date
     """
+    if len(list_of_declarations) == 1:
+        return list_of_declarations[0], list_of_declarations[0]
     latest_date = date.min
     oldest_date = date.max
     for ica_declaration in list_of_declarations:
@@ -234,6 +236,40 @@ DECLARATION_TYPE_TO_ARTICLE_MAPPING = {
     2: Declaration.Article.ARTICLE_16,
     3: None,  # Type "simplifié" dans Teleicare, normalement liées à des modifications de déclarations déjà instruites
 }
+
+
+def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declaration, latest_ica_version_declaration):
+    status = (
+        Declaration.DeclarationStatus.WITHDRAWN
+        if latest_ica_declaration.dcl_date_fin_commercialisation
+        else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident]
+    )
+    return {
+        "siccrf_id": ica_complement_alimentaire.cplalim_ident,
+        "teleicare_id": create_teleicare_id(latest_ica_declaration),
+        "galenic_formulation": GalenicFormulation.objects.get(siccrf_id=ica_complement_alimentaire.frmgal_ident),
+        # resp étiquetage, resp commercialisation
+        "brand": ica_complement_alimentaire.cplalim_marque or "",
+        "gamme": ica_complement_alimentaire.cplalim_gamme or "",
+        "name": ica_complement_alimentaire.cplalim_nom,
+        "flavor": ica_complement_alimentaire.dclencours_gout_arome_parfum or "",
+        "other_galenic_formulation": ica_complement_alimentaire.cplalim_forme_galenique_autre or "",
+        # extraction d'un nombre depuis une chaîne de caractères
+        "unit_quantity": latest_ica_version_declaration.vrsdecl_poids_uc,
+        "unit_measurement": SubstanceUnit.objects.get(siccrf_id=latest_ica_version_declaration.unt_ident),
+        "conditioning": latest_ica_version_declaration.vrsdecl_conditionnement or "",
+        "daily_recommended_dose": latest_ica_version_declaration.vrsdecl_djr,
+        "minimum_duration": latest_ica_version_declaration.vrsdecl_durabilite,
+        "instructions": latest_ica_version_declaration.vrsdecl_mode_emploi or "",
+        "warning": latest_ica_version_declaration.vrsdecl_mise_en_garde or "",
+        "calculated_article": DECLARATION_TYPE_TO_ARTICLE_MAPPING[latest_ica_declaration.tydcl_ident],
+        "status": status,
+        # TODO: ces champs sont à importer
+        # "address":
+        # "postal_code":
+        # "city":
+        # "country":
+    }
 
 
 def create_declared_plant(declaration, teleIcare_plant, active):
@@ -414,7 +450,7 @@ def add_final_state_snapshot(
             snapshot.save()
 
 
-def create_declarations_from_teleicare_history(company_ids=[]):
+def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=False):
     """
     Dans Teleicare une entreprise peut-être relié à une déclaration par 3 relations différentes :
     * responsable de l'étiquetage (équivalent Declaration.mandated_company)
@@ -430,10 +466,12 @@ def create_declarations_from_teleicare_history(company_ids=[]):
     ).values_list("siccrf_id", flat=True)
     # Parcourir tous les compléments alimentaires dont l'entreprise déclarante a été matchée
     for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(etab_id__in=etab_ids):
-        # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
-        all_ica_declarations = IcaDeclaration.objects.filter(cplalim_id=ica_complement_alimentaire.cplalim_ident)
-        # le champ date est stocké en text, il faut donc faire la conversion en python
+        all_ica_declarations = IcaDeclaration.objects.filter(
+            cplalim_id=ica_complement_alimentaire.cplalim_ident
+        ).exclude(icaversiondeclaration__isnull=True)  # la déclaration doit être liée à une version de déclaration
+
         if all_ica_declarations.exists():
+            # retrouve la déclaration la plus à jour correspondant à ce complément alimentaire
             oldest_ica_declaration, latest_ica_declaration = get_oldest_and_latest(all_ica_declarations)
 
             # retrouve la version de déclaration la plus à jour correspondant à cette déclaration
@@ -451,7 +489,29 @@ def create_declarations_from_teleicare_history(company_ids=[]):
             latest_ica_version_declaration = declaration_versions.order_by("vrsdecl_numero").last()
             # la déclaration a une version finalisée
             if latest_ica_version_declaration:
-                declaration_creation_date = (
+                try:  # pas possible d'utiliser update_or_create
+                    declaration = Declaration.objects.get(
+                        siccrf_id=ica_complement_alimentaire.cplalim_ident,
+                        company=EtablissementToCompanyRelation.objects.get(
+                            siccrf_id=ica_complement_alimentaire.etab_id
+                        ).company,
+                    )
+                    if not rewrite_existing:
+                        continue
+                except Declaration.DoesNotExist:
+                    declaration = Declaration(
+                        siccrf_id=ica_complement_alimentaire.cplalim_ident,
+                        company=EtablissementToCompanyRelation.objects.get(
+                            siccrf_id=ica_complement_alimentaire.etab_id
+                        ).company,
+                    )
+                declaration_attrs = compute_declaration_attributes(
+                    ica_complement_alimentaire, latest_ica_declaration, latest_ica_version_declaration
+                )
+                for key, value in declaration_attrs.items():
+                    declaration.__setattr__(key, value)
+
+                declaration.creation_date = (
                     convert_str_date(oldest_ica_declaration.dcl_date, aware=True)
                     if oldest_ica_declaration.dcl_date
                     else ""
@@ -461,47 +521,11 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                     if latest_ica_declaration.dcl_date
                     else ""
                 )
-                status = (
-                    Declaration.DeclarationStatus.WITHDRAWN
+                # la date de modification est la date de fin de commercialisation si elle existe ou la date d'acceptation
+                declaration.modification_date = (
+                    convert_str_date(latest_ica_declaration.dcl_date_fin_commercialisation, aware=True)
                     if latest_ica_declaration.dcl_date_fin_commercialisation
-                    else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident]
-                )
-                declaration = Declaration(
-                    creation_date=declaration_creation_date,
-                    # la date de modification est la date de fin de commercialisation si elle existe ou la date d'acceptation
-                    modification_date=convert_str_date(
-                        latest_ica_declaration.dcl_date_fin_commercialisation, aware=True
-                    )
-                    if latest_ica_declaration.dcl_date_fin_commercialisation
-                    else declaration_acceptation_date,
-                    siccrf_id=ica_complement_alimentaire.cplalim_ident,
-                    teleicare_id=create_teleicare_id(latest_ica_declaration),
-                    galenic_formulation=GalenicFormulation.objects.get(
-                        siccrf_id=ica_complement_alimentaire.frmgal_ident
-                    ),
-                    company=EtablissementToCompanyRelation.objects.get(
-                        siccrf_id=ica_complement_alimentaire.etab_id
-                    ).company,  # resp étiquetage, resp commercialisation
-                    brand=ica_complement_alimentaire.cplalim_marque or "",
-                    gamme=ica_complement_alimentaire.cplalim_gamme or "",
-                    name=ica_complement_alimentaire.cplalim_nom,
-                    flavor=ica_complement_alimentaire.dclencours_gout_arome_parfum or "",
-                    other_galenic_formulation=ica_complement_alimentaire.cplalim_forme_galenique_autre or "",
-                    # extraction d'un nombre depuis une chaîne de caractères
-                    unit_quantity=latest_ica_version_declaration.vrsdecl_poids_uc,
-                    unit_measurement=SubstanceUnit.objects.get(siccrf_id=latest_ica_version_declaration.unt_ident),
-                    conditioning=latest_ica_version_declaration.vrsdecl_conditionnement or "",
-                    daily_recommended_dose=latest_ica_version_declaration.vrsdecl_djr,
-                    minimum_duration=latest_ica_version_declaration.vrsdecl_durabilite,
-                    instructions=latest_ica_version_declaration.vrsdecl_mode_emploi or "",
-                    warning=latest_ica_version_declaration.vrsdecl_mise_en_garde or "",
-                    calculated_article=DECLARATION_TYPE_TO_ARTICLE_MAPPING[latest_ica_declaration.tydcl_ident],
-                    # TODO: ces champs sont à importer
-                    # address=
-                    # postal_code=
-                    # city=
-                    # country=
-                    status=status,
+                    else declaration_acceptation_date
                 )
                 # aucun de ces champs `other_` n'est rempli dans Teleicare
                 # IcaPopulationCibleDeclaree.vrspcb_popcible_autre n'est pas importé
@@ -518,39 +542,17 @@ def create_declarations_from_teleicare_history(company_ids=[]):
                 if other_conditions.exists():
                     declaration.other_conditions = other_conditions.first().vrsprs_poprisque_autre or ""
 
-                try:
-                    with suppress_autotime(declaration, ["creation_date", "modification_date"]):
-                        declaration.save()
+                with suppress_autotime(declaration, ["creation_date", "modification_date"]):
+                    declaration.save()
 
-                        add_product_info_from_teleicare_history(
-                            declaration, latest_ica_version_declaration.vrsdecl_ident
-                        )
-                        add_composition_from_teleicare_history(
-                            declaration, latest_ica_version_declaration.vrsdecl_ident
-                        )
-                        add_final_state_snapshot(
-                            declaration,
-                            latest_ica_version_declaration,
-                            declaration_acceptation_date,
-                            nb_version_declaration,
-                        )
-                        nb_created_declarations += 1
-                except IntegrityError as err:
-                    if 'duplicate key value violates unique constraint "data_declaration_siccrf_id_key"' not in str(
-                        err
-                    ):
-                        raise
-                    else:
-                        declaration = Declaration.objects.get(siccrf_id=ica_complement_alimentaire.cplalim_ident)
-                        declaration.creation_date = declaration_creation_date
-                        declaration.save()
-                        add_final_state_snapshot(
-                            declaration,
-                            latest_ica_version_declaration,
-                            declaration_acceptation_date,
-                            nb_version_declaration,
-                        )
-                        # cette Déclaration a déjà été créée
-                        pass
+                    add_product_info_from_teleicare_history(declaration, latest_ica_version_declaration.vrsdecl_ident)
+                    add_composition_from_teleicare_history(declaration, latest_ica_version_declaration.vrsdecl_ident)
+                    add_final_state_snapshot(
+                        declaration,
+                        latest_ica_version_declaration,
+                        declaration_acceptation_date,
+                        nb_version_declaration,
+                    )
+                    nb_created_declarations += 1
 
     logger.info(f"Sur {len(IcaComplementAlimentaire.objects.all())} : {nb_created_declarations} déclarations créées.")
