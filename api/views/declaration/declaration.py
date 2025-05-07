@@ -630,6 +630,16 @@ class DeclarationWithdrawView(DeclarationFlowView):
     snapshot_action = Snapshot.SnapshotActions.WITHDRAW
     brevo_template_id = 8
 
+    def perform_snapshot_creation(self, request, declaration):
+        """
+        Il faut renseigner la date effective de retrait du marché
+        """
+        declaration.create_snapshot(
+            user=request.user,
+            action=self.get_snapshot_action(request, declaration),
+            effective_withdrawal_date=request.data.get("effective_withdrawal_date"),
+        )
+
 
 class DeclarationAbandonView(DeclarationFlowView):
     permission_classes = [(IsDeclarationAuthor | IsDeclarant)]
