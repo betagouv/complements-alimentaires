@@ -56,8 +56,9 @@ const withdrawDeclaration = async () => {
 }
 
 // Gestion de la date effective de retrait du marché
+const formatApiDate = (date) => date.toISOString().split("T")[0]
 const today = new Date()
-const chosenDateOption = ref(`${today}`)
+const chosenDateOption = ref(`${formatApiDate(today)}`)
 const otherDate = ref()
 
 // NOTE: Le champ DLUO est un champ de texte. Certaines déclarations ne contiennent donc pas un
@@ -79,14 +80,14 @@ const dateOptions = computed(() => {
   const options = [
     {
       label: `Aujourd'hui (${isoToPrettyDate(today)})`,
-      value: `${today}`,
+      value: `${formatApiDate(today)}`,
     },
   ]
   if (dluoDate.value)
     options.push({
       label: `Aujourd'hui + DLUO (${isoToPrettyDate(dluoDate.value)})`,
       hint: `Vous avez spécifié une durabilité minimale / DLUO de ${declaration.value.minimumDuration} mois`,
-      value: `${dluoDate.value}`,
+      value: `${formatApiDate(dluoDate.value)}`,
     })
   options.push({
     label: "Une autre date (à spécifier)",
