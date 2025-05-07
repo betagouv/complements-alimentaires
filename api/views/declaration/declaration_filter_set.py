@@ -243,6 +243,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
         self, queryset, ingredient_id, operation, quantity, quantity_max=None, unit=None
     ):
         filters = Q(computed_substances__substance__in=Ingredient.objects.get(pk=ingredient_id).substances.all())
+        filters &= Q(declared_ingredients__ingredient_id=ingredient_id)
         return self._apply_quantity_filter(
             queryset, filters, operation, quantity, quantity_max, "computed_substances__", unit
         )

@@ -185,8 +185,14 @@ class DeclarationDoseFilterTests(APITestCase):
         DeclaredIngredientFactory(declaration=declaration, ingredient=cyanocobalamine)
         ComputedSubstanceFactory(declaration=declaration, substance=vitamin_b12, quantity=80.0, unit=self.unit_mg)
 
+        other_declaration = AuthorizedDeclarationFactory()
+        ComputedSubstanceFactory(
+            declaration=other_declaration, substance=vitamin_b12, quantity=80.0, unit=self.unit_mg
+        )
+
         # La recherche par forme d'apport doit chercher la dose de la substance qu'elle contient
-        # via les computed substances
+        # via les computed substances. Seulement les déclarations contenant la forme d'apport doivent
+        # être prises.
 
         dose = f"dose=form_of_supply||Cyanocobalamine||{cyanocobalamine.id}||≥||80||{self.unit_mg.id}"
         results = self.make_request(dose)
@@ -207,8 +213,12 @@ class DeclarationDoseFilterTests(APITestCase):
         DeclaredIngredientFactory(declaration=declaration, ingredient=pyruvate_de_creatine)
         ComputedSubstanceFactory(declaration=declaration, substance=creatine, quantity=80.0, unit=self.unit_mg)
 
+        other_declaration = AuthorizedDeclarationFactory()
+        ComputedSubstanceFactory(declaration=other_declaration, substance=creatine, quantity=80.0, unit=self.unit_mg)
+
         # La recherche par ingrédient actif doit chercher la dose de la substance qu'elle contient
-        # via les computed substances
+        # via les computed substances. Seulement les déclarations contenant la forme d'apport doivent
+        # être prises.
 
         dose = f"dose=active_ingredient||Pyruvate de créatine||{pyruvate_de_creatine.id}||≥||80||{self.unit_mg.id}"
         results = self.make_request(dose)
