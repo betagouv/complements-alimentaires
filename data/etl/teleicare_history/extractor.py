@@ -17,7 +17,6 @@ from data.models import (
     Microorganism,
     Plant,
     PlantPart,
-    Population,
     Preparation,
     Snapshot,
     Substance,
@@ -238,6 +237,26 @@ DECLARATION_TYPE_TO_ARTICLE_MAPPING = {
 }
 
 
+def get_CA_corresponding_population(teleicare_population_ids):
+    TARGET_POPULATION_MAPPING = {
+        1: [6],  # Adolescents
+        3: [5],  # Enfants
+        4: [4],  # Enfants en bas âge (1 à 3 ans)
+        5: [12],  # Femmes
+        6: [11],  # Hommes
+        7: [10],  # Personnes agées
+        9: [2, 3],  # Nourrissons (0 à 12 mois)
+        10: [8],  # Femmes enceintes,
+        11: [9],  # Femmes allaitantes
+        # La population autre n'existe pas dans Compl'Alim
+        # 2: "Autre (à préciser)",
+    }
+    list_of_CA_population_id = []
+    for teleicare_population_id in teleicare_population_ids:
+        list_of_CA_population_id.extend(TARGET_POPULATION_MAPPING[teleicare_population_id])
+    return list_of_CA_population_id
+
+
 def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declaration, latest_ica_version_declaration):
     status = (
         Declaration.DeclarationStatus.WITHDRAWN
@@ -356,11 +375,13 @@ def add_product_info_from_teleicare_history(declaration, vrsdecl_ident):
             for TIcare_condition in IcaPopulationRisqueDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident)
         ]
     )
+
     declaration.populations.set(
-        [
-            Population.objects.get(siccrf_id=TIcare_population.popcbl_ident)
-            for TIcare_population in IcaPopulationCibleDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident)
-        ]
+        get_CA_corresponding_population(
+            IcaPopulationCibleDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident).values_list(
+                "popcbl_ident", flat=True
+            )
+        )
     )
 
 
