@@ -53,7 +53,7 @@ class IcaPreparation(models.Model):
 
 
 class IcaSubstanceDeclaree(models.Model):
-    vrsdecl_ident = models.IntegerField(primary_key=True)  # idem IcaPopulationCibleDeclaree
+    vrsdecl_ident = models.IntegerField()  # idem IcaPopulationCibleDeclaree
     sbsact_ident = models.IntegerField()
     sbsact_commentaires = models.TextField(blank=True, null=True)
     sbsactdecl_quantite_par_djr = models.FloatField(blank=True, null=True)

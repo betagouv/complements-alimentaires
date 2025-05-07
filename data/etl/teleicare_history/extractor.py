@@ -249,11 +249,11 @@ def get_CA_corresponding_population(teleicare_population_ids):
         10: [8],  # Femmes enceintes,
         11: [9],  # Femmes allaitantes
         # La population autre n'existe pas dans Compl'Alim
-        # 2: "Autre (à préciser)",
+        2: [],  # "Autre (à préciser)",
     }
     list_of_CA_population_id = []
     for teleicare_population_id in teleicare_population_ids:
-        list_of_CA_population_id.extend(TARGET_POPULATION_MAPPING[teleicare_population_id])
+        list_of_CA_population_id.extend(TARGET_POPULATION_MAPPING.get(teleicare_population_id, []))
     return list_of_CA_population_id
 
 

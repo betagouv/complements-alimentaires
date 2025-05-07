@@ -10,10 +10,12 @@ from data.etl.teleicare_history.extractor import (
 )
 from data.factories.company import CompanyFactory, EtablissementToCompanyRelationFactory, _make_siret, _make_vat
 from data.factories.galenic_formulation import GalenicFormulationFactory
+from data.factories.population import PopulationFactory
 from data.factories.teleicare_history import (
     ComplementAlimentaireFactory,
     DeclarationFactory,
     EtablissementFactory,
+    IcaPopulationCibleDeclareeFactory,
     VersionDeclarationFactory,
 )
 from data.factories.unit import SubstanceUnitFactory
@@ -387,3 +389,43 @@ class TeleicareHistoryImporterTestCase(TestCase):
             declaration[0].daily_recommended_dose,
             version_declaration_to_create_as_declaration.vrsdecl_djr,
         )
+
+    @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
+    def test_historic_declaration_has_right_populations(self, mocked_add_composition_function):
+        galenic_formulation_id = 1
+        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
+        unit_id = 1
+        SubstanceUnitFactory(siccrf_id=unit_id)
+        PopulationFactory(id=8, name="Femme enceinte")
+        PopulationFactory(id=9, name="Femme allaitante")
+
+        siret = _make_siret()
+        etablissement = EtablissementFactory(etab_siret=siret)
+        company = CompanyFactory(siret=siret)
+        EtablissementToCompanyRelationFactory(company=company, old_siret=siret)
+        CA = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=galenic_formulation_id)
+        declaration = DeclarationFactory(
+            cplalim=CA,
+            tydcl_ident=1,
+            dcl_date="03/20/2021 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        version_declaration = VersionDeclarationFactory(
+            dcl=declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        IcaPopulationCibleDeclareeFactory(
+            vrsdecl_ident=version_declaration.vrsdecl_ident, popcbl_ident=11
+        )  # Femme allaitante
+        IcaPopulationCibleDeclareeFactory(
+            vrsdecl_ident=version_declaration.vrsdecl_ident, popcbl_ident=10
+        )  # Femme enceinte
+        IcaPopulationCibleDeclareeFactory(vrsdecl_ident=version_declaration.vrsdecl_ident, popcbl_ident=2)  # Autre
+        match_companies_on_siret_or_vat()
+        create_declarations_from_teleicare_history()
+        declaration = Declaration.objects.get(siccrf_id=CA.cplalim_ident)
+        self.assertIn("Femme enceinte", declaration.populations.all().values_list("name", flat=True))
+        self.assertIn("Femme allaitante", declaration.populations.all().values_list("name", flat=True))

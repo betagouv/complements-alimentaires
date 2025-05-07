@@ -100,9 +100,7 @@ class IcaVersionDeclaration(models.Model):
 
 
 class IcaPopulationCibleDeclaree(models.Model):
-    vrsdecl_ident = models.IntegerField(
-        primary_key=True
-    )  # ce champ n'est en réalité pas une primary key, car la primary key est composite.
+    vrsdecl_ident = models.IntegerField()
     # Django ne permet pas de créer des clés composites et nécessite la création d'un champ id, si ce champ n'est pas spécifié comme primary_key
     # Comme le modèle est unmanaged, cette contrainte ne change rien en BDD
     popcbl_ident = models.IntegerField()
@@ -115,7 +113,7 @@ class IcaPopulationCibleDeclaree(models.Model):
 
 
 class IcaPopulationRisqueDeclaree(models.Model):
-    vrsdecl_ident = models.IntegerField(primary_key=True)  # idem IcaPopulationCibleDeclaree
+    vrsdecl_ident = models.IntegerField()  # idem IcaPopulationCibleDeclaree
     poprs_ident = models.IntegerField()
     vrsprs_poprisque_autre = models.TextField(blank=True, null=True)
 
@@ -126,7 +124,7 @@ class IcaPopulationRisqueDeclaree(models.Model):
 
 
 class IcaEffetDeclare(models.Model):
-    vrsdecl_ident = models.IntegerField(primary_key=True)  # idem IcaPopulationCibleDeclaree
+    vrsdecl_ident = models.IntegerField()  # idem IcaPopulationCibleDeclaree
     objeff_ident = models.IntegerField()
     vrs_autre_objectif = models.TextField(blank=True, null=True)
 
