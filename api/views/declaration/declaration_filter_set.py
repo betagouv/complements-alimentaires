@@ -11,7 +11,7 @@ from unidecode import unidecode
 
 from api.exceptions import ProjectAPIException
 from api.utils.filters import BaseNumberInFilter
-from data.models import Condition, Declaration, Population, Snapshot, SubstanceUnit
+from data.models import Condition, Declaration, Ingredient, Population, Snapshot, SubstanceUnit
 
 logger = logging.getLogger(__name__)
 
@@ -209,22 +209,23 @@ class DeclarationFilterSet(django_filters.FilterSet):
                 )
             elif element_type == "substance":
                 return self.filter_substance_dose(queryset, element_id, operation, quantity, quantity_max, unit)
+            elif element_type in ["form_of_supply", "active_ingredient"]:
+                ingredient = Ingredient.objects.get(pk=element_id)
+                if ingredient.substances.count():
+                    return self.filter_active_ingredient_dose(
+                        queryset, ingredient, operation, quantity, quantity_max, unit
+                    )
+                else:
+                    return self.filter_ingredient_dose(queryset, element_id, operation, quantity, quantity_max, unit)
             elif element_type == "microorganism":
                 return self.filter_microorganism_dose(queryset, element_id, operation, quantity, quantity_max)
-            elif element_type in [
-                "ingredient",
-                "form_of_supply",
-                "aroma",
-                "additive",
-                "active_ingredient",
-                "non_active_ingredient",
-            ]:
+            elif element_type in ["ingredient", "aroma", "additive", "non_active_ingredient"]:
                 return self.filter_ingredient_dose(queryset, element_id, operation, quantity, quantity_max, unit)
             logger.error(
                 f"Declaration filter by dose error : {element_type} not supported (needs plant, substance, microorganism or ingredient)"
             )
             return queryset.none()
-        except (ValueError, IndexError, SubstanceUnit.DoesNotExist) as e:
+        except (ValueError, IndexError, SubstanceUnit.DoesNotExist, Ingredient.DoesNotExist) as e:
             logger.exception(e)
             return queryset.none()
 
@@ -238,6 +239,13 @@ class DeclarationFilterSet(django_filters.FilterSet):
 
     def filter_substance_dose(self, queryset, substance_id, operation, quantity, quantity_max=None, unit=None):
         filters = Q(computed_substances__substance_id=substance_id)
+        return self._apply_quantity_filter(
+            queryset, filters, operation, quantity, quantity_max, "computed_substances__", unit
+        )
+
+    def filter_active_ingredient_dose(self, queryset, ingredient, operation, quantity, quantity_max=None, unit=None):
+        filters = Q(computed_substances__substance__in=ingredient.substances.all())
+        filters &= Q(declared_ingredients__ingredient_id=ingredient.id)
         return self._apply_quantity_filter(
             queryset, filters, operation, quantity, quantity_max, "computed_substances__", unit
         )
