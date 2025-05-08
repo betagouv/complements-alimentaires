@@ -1,3 +1,5 @@
+import datetime
+
 from django.urls import reverse
 
 from rest_framework import status
@@ -803,12 +805,14 @@ class TestDeclarationFlow(APITestCase):
         """
         declaration = AuthorizedDeclarationFactory(author=authenticate.user)
 
-        response = self.client.post(reverse("api:withdraw", kwargs={"pk": declaration.id}), format="json")
+        payload = {"effective_withdrawal_date": "2026-05-08"}
+        response = self.client.post(reverse("api:withdraw", kwargs={"pk": declaration.id}), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         declaration.refresh_from_db()
         latest_snapshot = declaration.snapshots.latest("creation_date")
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.WITHDRAWN)
         self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.WITHDRAW)
+        self.assertEqual(latest_snapshot.effective_withdrawal_date, datetime.date(2026, 5, 8))
 
         declaration = AuthorizedDeclarationFactory()
         VisaRoleFactory(user=authenticate.user)
