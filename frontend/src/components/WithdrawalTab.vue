@@ -16,7 +16,7 @@
         required
       />
     </DsfrInputGroup>
-    <DsfrButton secondary label="Retirer ce complément" @click="openModal" />
+    <DsfrButton label="Retirer ce complément" @click="openModal" />
 
     <DsfrModal title="Veuillez confirmer" :opened="confirmationModalOpened" @close="confirmationModalOpened = false">
       <p>Êtes-vous sûr de vouloir retirer ce produit du marché ?</p>
