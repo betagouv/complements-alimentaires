@@ -200,6 +200,28 @@ class DeclarationDoseFilterTests(APITestCase):
         self.assertEqual(results[0]["id"], declaration.id)
 
     @authenticate
+    def test_form_of_supply_without_substances(self):
+        """
+        Si une forme d'apport ou ingrédient actif n'a pas de substances liées le filtre
+        par dose doit chercher par la quantité et unité spécifiée au niveau de l'ingrédient.
+        Pour plus de détails regarder la fonction `showFields` de src/components/ElementCard.vue
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        sulfur = IngredientFactory(
+            name="Soufre",
+            ingredient_type=IngredientType.FORM_OF_SUPPLY,
+            substances=[],
+        )
+
+        declaration = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration, ingredient=sulfur, quantity=80.0, unit=self.unit_mg)
+
+        dose = f"dose=form_of_supply||Soufre||{sulfur.id}||≥||80||{self.unit_mg.id}"
+        results = self.make_request(dose)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
     def test_active_ingredient(self):
         InstructionRoleFactory(user=authenticate.user)
         creatine = SubstanceFactory(name="Créatine")

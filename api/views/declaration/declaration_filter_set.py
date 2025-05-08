@@ -210,9 +210,13 @@ class DeclarationFilterSet(django_filters.FilterSet):
             elif element_type == "substance":
                 return self.filter_substance_dose(queryset, element_id, operation, quantity, quantity_max, unit)
             elif element_type in ["form_of_supply", "active_ingredient"]:
-                return self.filter_active_ingredient_dose(
-                    queryset, element_id, operation, quantity, quantity_max, unit
-                )
+                ingredient = Ingredient.objects.get(pk=element_id)
+                if ingredient.substances.count():
+                    return self.filter_active_ingredient_dose(
+                        queryset, ingredient, operation, quantity, quantity_max, unit
+                    )
+                else:
+                    return self.filter_ingredient_dose(queryset, element_id, operation, quantity, quantity_max, unit)
             elif element_type == "microorganism":
                 return self.filter_microorganism_dose(queryset, element_id, operation, quantity, quantity_max)
             elif element_type in ["ingredient", "aroma", "additive", "non_active_ingredient"]:
@@ -239,11 +243,9 @@ class DeclarationFilterSet(django_filters.FilterSet):
             queryset, filters, operation, quantity, quantity_max, "computed_substances__", unit
         )
 
-    def filter_active_ingredient_dose(
-        self, queryset, ingredient_id, operation, quantity, quantity_max=None, unit=None
-    ):
-        filters = Q(computed_substances__substance__in=Ingredient.objects.get(pk=ingredient_id).substances.all())
-        filters &= Q(declared_ingredients__ingredient_id=ingredient_id)
+    def filter_active_ingredient_dose(self, queryset, ingredient, operation, quantity, quantity_max=None, unit=None):
+        filters = Q(computed_substances__substance__in=ingredient.substances.all())
+        filters &= Q(declared_ingredients__ingredient_id=ingredient.id)
         return self._apply_quantity_filter(
             queryset, filters, operation, quantity, quantity_max, "computed_substances__", unit
         )
