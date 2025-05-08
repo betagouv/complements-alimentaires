@@ -1,5 +1,6 @@
 from django import forms
 
+from config import tasks
 from data.models import Declaration
 
 
@@ -30,15 +31,8 @@ class RecomputeDeclarationArticleAtIngredientSaveMixin:
         super().save_model(request, obj, form, change)
         # recalcul de l'article pour les déclarations concernées
         if change and form["is_risky"]._has_changed():
-            for declaration in Declaration.objects.filter(
-                id__in=getattr(obj, self.declaredingredient_set).values_list("declaration_id", flat=True),
-                status__in=(
-                    Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
-                    Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
-                    Declaration.DeclarationStatus.AWAITING_VISA,
-                    Declaration.DeclarationStatus.OBSERVATION,
-                    Declaration.DeclarationStatus.OBJECTION,
-                ),
-            ):
-                declaration.assign_calculated_article()
-                declaration.save()
+            ids_using_ingredient = getattr(obj, self.declaredingredient_set).values_list("declaration_id", flat=True)
+            tasks.recalculate_article_for_ongoing_declarations(
+                Declaration.objects.filter(id__in=ids_using_ingredient),
+                f"Article recalculé après modification via l'admin de {obj.name} ({obj.object_type} id {obj.id})",
+            )

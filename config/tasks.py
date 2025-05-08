@@ -9,6 +9,8 @@ from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from viewflow import fsm
 
+from simple_history.utils import update_change_reason
+
 from config import email
 from data.etl.transformer_loader import ETL_OPEN_DATA_DECLARATIONS
 from data.models import Declaration, Snapshot
@@ -185,3 +187,26 @@ def export_datasets_to_data_gouv():
     etl.extract_dataset()
     etl.transform_dataset()
     etl.load_dataset()
+
+
+@app.task
+def recalculate_article_for_ongoing_declarations(declarations, change_reason):
+    for declaration in declarations.filter(
+        status__in=(
+            Declaration.DeclarationStatus.DRAFT,
+            Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
+            Declaration.DeclarationStatus.AWAITING_VISA,
+            Declaration.DeclarationStatus.ONGOING_VISA,
+            Declaration.DeclarationStatus.OBSERVATION,
+            Declaration.DeclarationStatus.OBJECTION,
+        ),
+    ):
+        previous_article = declaration.calculated_article
+        declaration.assign_calculated_article()
+        if previous_article != declaration.calculated_article:
+            declaration.save()
+            # il faut faire un refresh pour update_change_reason de retrouver le record à MAJ
+            declaration.refresh_from_db()
+            update_change_reason(declaration, change_reason)
+            logger.info(f"Declaration {declaration.id} article recalculated.")

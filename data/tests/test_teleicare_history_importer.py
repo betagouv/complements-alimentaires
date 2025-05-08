@@ -332,3 +332,58 @@ class TeleicareHistoryImporterTestCase(TestCase):
             declaration.snapshots.all().first().creation_date,
             datetime.datetime(2021, 3, 20, 20, 20, 20, tzinfo=datetime.timezone.utc),
         )
+
+    @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
+    @patch("data.etl.teleicare_history.extractor.add_product_info_from_teleicare_history")
+    def test_declaration_is_created_even_if_latest_ica_declaration_has_no_version_declaration(
+        self, mocked_add_composition_function, mocked_add_product_function
+    ):
+        galenic_formulation_id = 1
+        galenic_formulation = GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
+        unit_id = 1
+        unit = SubstanceUnitFactory(siccrf_id=unit_id)
+        etablissement = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
+
+        CA = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=galenic_formulation_id)
+        oldest_declaration_to_create_as_declaration = DeclarationFactory(
+            cplalim=CA,
+            tydcl_ident=1,
+            dcl_date="06/20/2017 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        DeclarationFactory(
+            cplalim=CA,
+            tydcl_ident=1,
+            dcl_date="03/20/2021 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        version_declaration_to_create_as_declaration = VersionDeclarationFactory(
+            dcl=oldest_declaration_to_create_as_declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        match_companies_on_siret_or_vat(create_if_not_exist=True)
+        create_declarations_from_teleicare_history()
+        declaration = Declaration.objects.filter(siccrf_id=CA.cplalim_ident)
+        self.assertTrue(declaration.exists())
+        self.assertEqual(declaration.count(), 1)
+        self.assertEqual(
+            declaration[0].creation_date, datetime.datetime(2017, 6, 20, 20, 20, 20, tzinfo=datetime.timezone.utc)
+        )
+        self.assertEqual(
+            declaration[0].modification_date, datetime.datetime(2017, 6, 20, 20, 20, 20, tzinfo=datetime.timezone.utc)
+        )
+        self.assertEqual(
+            declaration[0].galenic_formulation,
+            galenic_formulation,
+        )
+        self.assertEqual(
+            declaration[0].unit_measurement,
+            unit,
+        )
+        self.assertEqual(
+            declaration[0].daily_recommended_dose,
+            version_declaration_to_create_as_declaration.vrsdecl_djr,
+        )

@@ -20,5 +20,6 @@ class SnapshotSerializer(serializers.ModelSerializer):
             "id",
             "action",
             "post_validation_status",
+            "effective_withdrawal_date",
         ]
         read_only_fields = fields
