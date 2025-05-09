@@ -286,7 +286,7 @@ def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declar
         "warning": latest_ica_version_declaration.vrsdecl_mise_en_garde or "",
         "calculated_article": DECLARATION_TYPE_TO_ARTICLE_MAPPING[latest_ica_declaration.tydcl_ident],
         "status": status,
-        # responsable d'etiquettage
+        # responsable d'etiquetage
         "address": latest_ica_version_declaration.vrsdecl_adre_voie,
         "additional_details": latest_ica_version_declaration.vrsdecl_adre_comp,
         "postal_code": latest_ica_version_declaration.vrsdecl_adre_cp,
