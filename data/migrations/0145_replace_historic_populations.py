@@ -12,8 +12,8 @@ class Migration(migrations.Migration):
 
     def replace_population_of_teleicare_declarations(apps, schema_editor):
         Declaration = apps.get_model("data", "Declaration")
-        for declaration in Declaration.objects.exclude(siccrf_id=None):
-            bad_populations = declaration.populations.all().values_list("id", flat=True)
+        for declaration in Declaration.objects.exclude(siccrf_id=None).exclude(populations=None):
+            bad_populations = list(declaration.populations.all().values_list("id", flat=True)) # création d'une copy
             declaration.populations.clear()
             declaration.populations.set(get_CA_corresponding_population(bad_populations))
 

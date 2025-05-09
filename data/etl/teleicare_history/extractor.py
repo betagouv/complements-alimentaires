@@ -240,6 +240,7 @@ DECLARATION_TYPE_TO_ARTICLE_MAPPING = {
 def get_CA_corresponding_population(teleicare_population_ids):
     TARGET_POPULATION_MAPPING = {
         1: [6],  # Adolescents
+        2: [],  # "Autre (à préciser)",
         3: [5],  # Enfants
         4: [4],  # Enfants en bas âge (1 à 3 ans)
         5: [12],  # Femmes
@@ -249,7 +250,6 @@ def get_CA_corresponding_population(teleicare_population_ids):
         10: [8],  # Femmes enceintes,
         11: [9],  # Femmes allaitantes
         # La population autre n'existe pas dans Compl'Alim
-        2: [],  # "Autre (à préciser)",
     }
     list_of_CA_population_id = []
     for teleicare_population_id in teleicare_population_ids:
@@ -376,13 +376,11 @@ def add_product_info_from_teleicare_history(declaration, vrsdecl_ident):
         ]
     )
 
-    declaration.populations.set(
-        get_CA_corresponding_population(
-            IcaPopulationCibleDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident).values_list(
-                "popcbl_ident", flat=True
-            )
-        )
+    teleicare_population_ids = IcaPopulationCibleDeclaree.objects.filter(vrsdecl_ident=vrsdecl_ident).values_list(
+        "popcbl_ident", flat=True
     )
+    if teleicare_population_ids.exists():
+        declaration.populations.set(get_CA_corresponding_population(teleicare_population_ids))
 
 
 @transaction.atomic
