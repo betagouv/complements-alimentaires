@@ -90,8 +90,10 @@ class IcaVersionDeclaration(models.Model):
     vrsdecl_adre_voie = models.TextField(blank=True, null=True)
     vrsdecl_adre_comp = models.TextField(blank=True, null=True)
     vrsdecl_adre_comp2 = models.TextField(blank=True, null=True)
-    vrsdecl_adre_dist = models.TextField(blank=True, null=True)
-    vrsdecl_adre_region = models.TextField(blank=True, null=True)
+    vrsdecl_adre_dist = models.TextField(
+        blank=True, null=True
+    )  # n'est pas repris dans Compl'Alim ce champ est toujours vide
+    vrsdecl_adre_region = models.TextField(blank=True, null=True)  # n'est pas repris dans Compl'Alim
     vrsdecl_adre_raison_sociale = models.TextField(blank=True, null=True)
 
     class Meta:
