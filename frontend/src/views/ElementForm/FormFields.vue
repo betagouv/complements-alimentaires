@@ -312,7 +312,6 @@ const saveElement = async () => {
 
   const url = `/api/v1/${apiType.value}s/`
   const payload = JSON.parse(JSON.stringify(state.value))
-  // TODO: diff the payload to only send chaanges?
   if (payload.substances?.length) {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
