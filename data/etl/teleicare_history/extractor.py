@@ -86,7 +86,8 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
     * Q(email__icontains=etab.etab_courriel)
     * Q(phone_number__icontains=etab.etab_telephone)
     Mais il serait moins précis.
-    Cette méthode créé les entreprises non matchées pour avoir toutes les données intégrées dans le nouveau système.
+    si create_if_not_exist=True, création des entreprises non matchées
+    avec risque de doublon (si le SIRET/VAT avec lequel l'entreprise a été créée est différent)
     """
     nb_vat_match = 0
     nb_siret_match = 0
@@ -263,10 +264,18 @@ def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declar
         if latest_ica_declaration.dcl_date_fin_commercialisation
         else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident]
     )
-    try:
-        mandated_company = EtablissementToCompanyRelation.objects.get(siccrf_id=latest_ica_declaration.etab_id).company
-    except EtablissementToCompanyRelation.DoesNotExist:
-        mandated_company = None
+    mandated_company = None
+    if latest_ica_declaration.etab_id is not None:
+        try:
+            # si l'entreprise mandataire a été créée sur Compl'Alim et matchée avec un Etablissement historique grâce au SIRET/VAT avec match_companies_on_siret_or_vat
+            mandated_company = EtablissementToCompanyRelation.objects.get(
+                siccrf_id=latest_ica_declaration.etab_id
+            ).company
+        except EtablissementToCompanyRelation.DoesNotExist:
+            # ne devrait pas arriver si toutes les entreprises ont été créées avec match_companies_on_siret_or_vat(create_if_not_exist=True)
+            logger.error(
+                "La company mandataire etab_ident={latest_ica_declaration.etab_id} du complément alimentaire déclaré dans Teleicare cplalim_ident={ica_complement_alimentaire.cplalim_ident} n'existe pas dans Compl'Alim."
+            )
     return {
         "mandated_company": mandated_company,
         "siccrf_id": ica_complement_alimentaire.cplalim_ident,
