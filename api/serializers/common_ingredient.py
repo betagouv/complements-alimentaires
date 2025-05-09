@@ -7,10 +7,12 @@ from rest_framework.exceptions import ParseError
 from simple_history.utils import update_change_reason
 
 from api.utils.choice_field import GoodReprChoiceField
-from data.models import Substance, IngredientStatus
+from data.models import Substance, IngredientStatus, Declaration
 
 from .historical_record import HistoricalRecordField
 from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
+
+from config import tasks
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +114,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             if not existing_synonyms.filter(name=synonym["name"]).exists():
                 self.add_synonym(instance, synonym)
 
+        self.update_declaration_articles(instance, validated_data)
         return instance
 
     def add_synonym(self, instance, synonym):
@@ -128,6 +131,30 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
         record = instance.history.order_by("-history_date").first()
         record.history_public_change_reason = public_change_reason
         record.save()
+
+    def update_declaration_articles(self, instance, validated_data):
+        irrelevant_changes = [
+            # synonyms, change_reason and public_change_reason ont été popped avant
+            "ca_public_comments",
+            "ca_private_comments",
+            "novel_food",
+            "ca_family",  # plante
+            # substance
+            "ca_cas_number",
+            "ca_einec_number",
+            "ca_must_specify_quantity",
+            # microorganism
+            "ca_genus",
+            "ca_species",
+        ]
+        if len(set(validated_data.keys()) - set(irrelevant_changes)) > 0:
+            ids_using_ingredient = []
+            for field_name in self.declaredingredient_set_field_names:
+                ids_using_ingredient += getattr(instance, field_name).values_list("declaration_id", flat=True)
+            tasks.recalculate_article_for_ongoing_declarations(
+                Declaration.objects.filter(id__in=ids_using_ingredient),
+                f"Article recalculé après modification via l'interface de {instance.name} ({instance.object_type} id {instance.id})",
+            )
 
 
 class CommonIngredientReadSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
