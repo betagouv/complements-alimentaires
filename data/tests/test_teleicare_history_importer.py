@@ -210,6 +210,13 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
         version_declaration_to_create_as_declaration.refresh_from_db()
         created_declaration = Declaration.objects.get(siccrf_id=CA_to_create_as_declaration.cplalim_ident)
+        self.assertEqual(
+            created_declaration.company,
+            EtablissementToCompanyRelation.objects.get(
+                siccrf_id=etablissement_to_create_as_company.etab_ident
+            ).company,
+        )
+        self.assertEqual(created_declaration.mandated_company, None)
         self.assertEqual(created_declaration.name, CA_to_create_as_declaration.cplalim_nom)
         self.assertEqual(created_declaration.brand, CA_to_create_as_declaration.cplalim_marque)
         self.assertEqual(created_declaration.gamme, CA_to_create_as_declaration.cplalim_gamme)
@@ -460,3 +467,42 @@ class TeleicareHistoryImporterTestCase(TestCase):
         self.assertIn("Femme enceinte", CA_dec_2.populations.all().values_list("name", flat=True))
         CA_dec_3 = Declaration.objects.get(siccrf_id=CA_3.cplalim_ident)
         self.assertFalse(CA_dec_3.populations.all().exists())
+
+    @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
+    def test_historic_declaration_has_right_mandated_company(self, mocked_add_composition_function):
+        galenic_formulation_id = 1
+        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
+        unit_id = 1
+        SubstanceUnitFactory(siccrf_id=unit_id)
+
+        siret_declarant = _make_siret()
+        siret_mandataire = _make_siret()
+        etablissement_declarant = EtablissementFactory(etab_siret=siret_declarant)
+        etablissement_mandataire = EtablissementFactory(etab_siret=siret_mandataire)
+        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=galenic_formulation_id)
+        declaration = DeclarationFactory(
+            cplalim=CA,
+            etab=etablissement_mandataire,
+            tydcl_ident=1,
+            dcl_date="03/20/2021 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        VersionDeclarationFactory(
+            dcl=declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        match_companies_on_siret_or_vat(create_if_not_exist=True)
+        create_declarations_from_teleicare_history()
+        CA_declaration = Declaration.objects.get(siccrf_id=CA.cplalim_ident)
+        self.assertEqual(
+            CA_declaration.mandated_company,
+        )
+        self.assertEqual(
+            CA_declaration.company,
+        )
+
+    # la company fabriquante existe sur Compl'Alim -> elle a un match dans EtablissementToCompanyRelation
+    # la company mandataire n'existe pas sur Compl'Alim -> pas de EtablissementToCompanyRelation.
