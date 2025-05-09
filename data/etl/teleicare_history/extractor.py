@@ -263,10 +263,12 @@ def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declar
         if latest_ica_declaration.dcl_date_fin_commercialisation
         else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident]
     )
+    try:
+        mandated_company = EtablissementToCompanyRelation.objects.get(siccrf_id=latest_ica_declaration.etab_id).company
+    except EtablissementToCompanyRelation.DoesNotExist:
+        mandated_company = None
     return {
-        "mandated_company": EtablissementToCompanyRelation.objects.get(
-            siccrf_id=latest_ica_declaration.etab_id
-        ).company,  # resp de la déclaration
+        "mandated_company": mandated_company,
         "siccrf_id": ica_complement_alimentaire.cplalim_ident,
         "teleicare_id": create_teleicare_id(latest_ica_declaration),
         "galenic_formulation": GalenicFormulation.objects.get(siccrf_id=ica_complement_alimentaire.frmgal_ident),
@@ -289,7 +291,9 @@ def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declar
         # responsable d'etiquetage
         "address": latest_ica_version_declaration.vrsdecl_adre_voie,
         "additional_details": latest_ica_version_declaration.vrsdecl_adre_comp,
-        "postal_code": latest_ica_version_declaration.vrsdecl_adre_cp,
+        "postal_code": latest_ica_version_declaration.vrsdecl_adre_cp[
+            :10
+        ],  # from TextField to CharField(max_length=10)
         "city": latest_ica_version_declaration.vrsdecl_adre_ville,
         # "cedex": parfois compris dans vrsdecl_adre_comp ou vrsdecl_adre_comp2
         # "country":
