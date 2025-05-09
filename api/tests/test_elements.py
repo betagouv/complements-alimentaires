@@ -966,9 +966,31 @@ class TestElementsModifyApi(APITestCase):
             format="json",
         )
 
-        # TODO: test other types, especially substance, to make sure are getting all declarations (declared and computed)
-
         mocked_task.assert_called_once()
+
+        # Malheureusement je ne sais pas comment faire le check `assert_called_with` quand on veut tester le queryset,
+        # vu que deux querysets avec les mêmes items ne sont pas considéré comme égale. Je laisse le code suivant ici
+        # quand même, car avec l'echec de l'assert, on voit que les querysets sont les mêmes.
+        # Il faut ajouter les imports pour lancer cette partie du test.
+
+        # declared_substance_declaration = OngoingInstructionDeclarationFactory.create()
+        # computed_substance_declaration = OngoingInstructionDeclarationFactory.create()
+        # substance = SubstanceFactory.create(status=IngredientStatus.AUTHORIZED)
+
+        # DeclaredSubstanceFactory.create(substance=substance, declaration=declared_substance_declaration)
+        # ComputedSubstanceFactory.create(substance=substance, declaration=computed_substance_declaration)
+
+        # self.assertTrue(declared_substance_declaration.declared_substances.filter(substance=substance).exists())
+        # self.assertTrue(computed_substance_declaration.computed_substances.filter(substance=substance).exists())
+
+        # self.client.patch(
+        #     reverse("api:single_substance", kwargs={"pk": substance.id}),
+        #     {"status": IngredientStatus.NOT_AUTHORIZED},
+        #     format="json",
+        # )
+
+        # # Les déclarations avec des substances calculées ainsi que les substances déclarées sont MAJ
+        # mocked_task.assert_called_with(Declaration.objects.filter(id__in=[declared_substance_declaration.id, computed_substance_declaration.id]), f"Article recalculé après modification via l'interface de {substance.name} ({substance.object_type} id {substance.id})")
 
     @authenticate
     @patch("config.tasks.recalculate_article_for_ongoing_declarations")

@@ -147,7 +147,6 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             "ca_genus",
             "ca_species",
         ]
-        # TODO: do we need to refresh instance from db? How to test?
         if len(set(validated_data.keys()) - set(irrelevant_changes)) > 0:
             ids_using_ingredient = []
             for field_name in self.declaredingredient_set_field_names:
