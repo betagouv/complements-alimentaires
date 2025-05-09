@@ -29,7 +29,6 @@ from data.models import (
     PlantFamily,
     PlantPart,
     PlantSynonym,
-    Population,
     Preparation,
     Substance,
     SubstanceSynonym,
@@ -48,7 +47,7 @@ CSV_TO_MODEL_MAPPING = {
     "REF_ICA_PLANTE.csv": Plant,
     "REF_ICA_FAMILLE_PLANTE.csv": PlantFamily,
     "REF_ICA_SUBSTANCE_ACTIVE.csv": Substance,
-    "POPULATION_CIBLE.csv": Population,
+    # "POPULATION_CIBLE.csv": Population,
     "REF_ICA_POPULATION_ARISQUE.csv": Condition,
     "REF_ICA_OBJECTIFS_EFFETS.csv": Effect,
     "REF_ICA_FORME_GALENIQUE.csv": GalenicFormulation,
@@ -95,7 +94,7 @@ class CSVImporter:
         "TYPPREP": Preparation,
         "STINGSBS": IngredientStatus,
         "POPRS": Condition,
-        "": Population,
+        # "": Population,
         # "REF_ICA_PARTIE_PL_A_SURVEILLER.csv": "",
         # "REF_ICA_PARTIE_UTILE.csv": "",
     }
@@ -148,6 +147,7 @@ class CSVImporter:
         "missing_import_data",
         "to_be_entered_in_next_decree",
         "substance_types",
+        "is_obsolete",
         # Les dernières modification de modèle de données s'éloignent du modèle de données TeleIcare
         # cela rend difficile l'automatisation (via csv_importer) pour remplir les nouveaux champs
         "max_quantities",

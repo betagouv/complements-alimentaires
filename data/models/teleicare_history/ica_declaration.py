@@ -100,11 +100,10 @@ class IcaVersionDeclaration(models.Model):
 
 
 class IcaPopulationCibleDeclaree(models.Model):
-    vrsdecl_ident = models.IntegerField(
-        primary_key=True
-    )  # ce champ n'est en réalité pas une primary key, car la primary key est composite.
+    vrsdecl_ident = models.IntegerField(primary_key=True)
     # Django ne permet pas de créer des clés composites et nécessite la création d'un champ id, si ce champ n'est pas spécifié comme primary_key
     # Comme le modèle est unmanaged, cette contrainte ne change rien en BDD
+    # Elle pose problème seulement pour les tests
     popcbl_ident = models.IntegerField()
     vrspcb_popcible_autre = models.TextField(blank=True, null=True)
 
