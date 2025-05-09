@@ -403,29 +403,60 @@ class TeleicareHistoryImporterTestCase(TestCase):
         etablissement = EtablissementFactory(etab_siret=siret)
         company = CompanyFactory(siret=siret)
         EtablissementToCompanyRelationFactory(company=company, old_siret=siret)
-        CA = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=galenic_formulation_id)
-        declaration = DeclarationFactory(
-            cplalim=CA,
+        CA_1 = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=galenic_formulation_id)
+        declaration_1 = DeclarationFactory(
+            cplalim=CA_1,
             tydcl_ident=1,
             dcl_date="03/20/2021 20:20:20 AM",
             dcl_date_fin_commercialisation=None,
         )
-        version_declaration = VersionDeclarationFactory(
-            dcl=declaration,
+        version_declaration_1 = VersionDeclarationFactory(
+            dcl=declaration_1,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        CA_2 = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=galenic_formulation_id)
+        declaration_2 = DeclarationFactory(
+            cplalim=CA_2,
+            tydcl_ident=1,
+            dcl_date="03/20/2021 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        version_declaration_2 = VersionDeclarationFactory(
+            dcl=declaration_2,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        CA_3 = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=galenic_formulation_id)
+        declaration_3 = DeclarationFactory(
+            cplalim=CA_3,
+            tydcl_ident=1,
+            dcl_date="03/20/2021 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        version_declaration_3 = VersionDeclarationFactory(
+            dcl=declaration_3,
             stadcl_ident=8,
             stattdcl_ident=2,
             unt_ident=unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
         IcaPopulationCibleDeclareeFactory(
-            vrsdecl_ident=version_declaration.vrsdecl_ident, popcbl_ident=11
+            vrsdecl_ident=version_declaration_1.vrsdecl_ident, popcbl_ident=11
         )  # Femme allaitante
         IcaPopulationCibleDeclareeFactory(
-            vrsdecl_ident=version_declaration.vrsdecl_ident, popcbl_ident=10
+            vrsdecl_ident=version_declaration_2.vrsdecl_ident, popcbl_ident=10
         )  # Femme enceinte
-        IcaPopulationCibleDeclareeFactory(vrsdecl_ident=version_declaration.vrsdecl_ident, popcbl_ident=2)  # Autre
+        IcaPopulationCibleDeclareeFactory(vrsdecl_ident=version_declaration_3.vrsdecl_ident, popcbl_ident=2)  # Autre
         match_companies_on_siret_or_vat()
         create_declarations_from_teleicare_history()
-        declaration = Declaration.objects.get(siccrf_id=CA.cplalim_ident)
-        self.assertIn("Femme enceinte", declaration.populations.all().values_list("name", flat=True))
-        self.assertIn("Femme allaitante", declaration.populations.all().values_list("name", flat=True))
+        CA_dec_1 = Declaration.objects.get(siccrf_id=CA_1.cplalim_ident)
+        self.assertIn("Femme allaitante", CA_dec_1.populations.all().values_list("name", flat=True))
+        CA_dec_2 = Declaration.objects.get(siccrf_id=CA_2.cplalim_ident)
+        self.assertIn("Femme enceinte", CA_dec_2.populations.all().values_list("name", flat=True))
+        CA_dec_3 = Declaration.objects.get(siccrf_id=CA_3.cplalim_ident)
+        self.assertFalse(CA_dec_3.populations.all().exists())
