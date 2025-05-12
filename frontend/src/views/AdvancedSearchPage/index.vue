@@ -6,7 +6,12 @@
     <div class="mb-2 md:flex gap-8 search-area">
       <div class="md:w-1/3 lg:w-2/5 pt-1">
         <DsfrFieldset legend="Recherche" class="!mb-0">
-          <DsfrSearchBar v-model="searchTerm" placeholder="Nom du produit, ID ou entreprise" @search="search" />
+          <DsfrSearchBar
+            v-model="searchTerm"
+            placeholder="Nom du produit, ID ou entreprise"
+            @search="search"
+            @update:modelValue="(val) => val === '' && search()"
+          />
         </DsfrFieldset>
       </div>
       <div class="md:w-2/3 lg:w-3/5 md:flex gap-3">
@@ -49,6 +54,12 @@
         <div>
           <div class="md:flex gap-16">
             <div class="md:w-2/4">
+              <StatusFilter
+                :exclude="['DRAFT']"
+                @updateFilter="updateStatusFilter"
+                :statusString="filteredStatus"
+                class="my-6"
+              />
               <DsfrFieldset legend="Cible" class="min-w-60">
                 <DsfrInputGroup>
                   <DsfrSelect
@@ -90,8 +101,6 @@
               </DsfrFieldset>
             </div>
             <div class="md:w-2/4">
-              <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" :statusString="filteredStatus" />
-
               <DsfrInputGroup>
                 <DsfrSelect
                   label="Article"
@@ -130,6 +139,39 @@
                 <label for="dose-filter" class="fr-label">Dose</label>
                 <DoseFilterModal :modelValue="dose" @update:modelValue="updateDose" id="dose-filter" />
               </div>
+
+              <div class="mt-8">
+                <DsfrFieldset legend="Date de soumission" legendClass="fr-label !font-medium">
+                  <div class="flex gap-4 mt-2">
+                    <DateFilterField
+                      :dateField="submissionDateAfter"
+                      label="Après le"
+                      :updateFn="updateSubmissionDateAfter"
+                    />
+                    <DateFilterField
+                      :dateField="submissionDateBefore"
+                      label="Avant le"
+                      :updateFn="updateSubmissionDateBefore"
+                    />
+                  </div>
+                </DsfrFieldset>
+              </div>
+              <div class="mt-8">
+                <DsfrFieldset legend="Date de la prise de décision" legendClass="fr-label !font-medium">
+                  <div class="flex gap-4 mt-2">
+                    <DateFilterField
+                      :dateField="decisionDateAfter"
+                      label="Après le"
+                      :updateFn="updateDecisionDateAfter"
+                    />
+                    <DateFilterField
+                      :dateField="decisionDateBefore"
+                      label="Avant le"
+                      :updateFn="updateDecisionDateBefore"
+                    />
+                  </div>
+                </DsfrFieldset>
+              </div>
             </div>
           </div>
         </div>
@@ -140,6 +182,11 @@
       <ProgressSpinner />
     </div>
     <div v-else-if="hasDeclarations">
+      <div class="text-right">
+        <p class="!text-sm -mb-2 -mt-4 font-medium" aria-live="polite">
+          {{ data.count }} {{ data.count === 1 ? "résultat" : "résultats" }}
+        </p>
+      </div>
       <SearchResultsTable :data="data" />
 
       <DsfrPagination
@@ -173,6 +220,7 @@ import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import { getTypeIcon, getTypeInFrench, typesMapping } from "@/utils/mappings"
 import CountryField from "@/components/fields/CountryField"
 import DoseFilterModal from "./DoseFilterModal"
+import DateFilterField from "./DateFilterField"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -196,11 +244,15 @@ const galenicFormulation = computed(() => (route.query.formeGalenique ? parseInt
 const country = computed(() => route.query.pays)
 const dose = computed(() => route.query.dose)
 const limit = computed(() => route.query.limit)
+const submissionDateAfter = computed(() => route.query.soumissionAvant)
+const submissionDateBefore = computed(() => route.query.soumissionApres)
+const decisionDateAfter = computed(() => route.query.decisionAvant)
+const decisionDateBefore = computed(() => route.query.decisionApres)
 
 // Mises à jour de la requête lors des changements des filtres et recherche
 
 const updateQuery = (newQuery) => {
-  router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } }).then(fetchSearchResults)
+  router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } })
 }
 
 const updateStatusFilter = (status) => updateQuery({ status })
@@ -215,6 +267,10 @@ const updateDose = (newValue) => updateQuery({ dose: newValue })
 const updateLimit = (newValue) => updateQuery({ limit: newValue })
 const updateComposition = () =>
   updateQuery({ composition: ingredientsToFilter.value.map((x) => x.join("||")).join("|||") })
+const updateSubmissionDateAfter = (newValue) => updateQuery({ soumissionAvant: newValue })
+const updateSubmissionDateBefore = (newValue) => updateQuery({ soumissionApres: newValue })
+const updateDecisionDateAfter = (newValue) => updateQuery({ decisionAvant: newValue })
+const updateDecisionDateBefore = (newValue) => updateQuery({ decisionApres: newValue })
 
 const hasDeclarations = computed(() => data.value?.count > 0)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
@@ -256,7 +312,7 @@ const getApiUrlIdsForType = (types) => {
   return ids.length ? ids : null
 }
 
-const maxDownloadSize = 2000
+const maxDownloadSize = 5000
 const canDownloadFile = computed(() => (data.value?.count || 0) <= maxDownloadSize)
 
 // Requêtes
@@ -272,6 +328,14 @@ const apiQueryParams = computed(() => {
   const galenicFormulationQuery = galenicFormulation.value ? `&galenic_formulation=${galenicFormulation.value}` : ""
   const countryQuery = country.value ? `&country=${country.value}` : ""
   const doseQuery = dose.value ? `&dose=${dose.value}` : ""
+  const submissionDateAfterQuery = submissionDateAfter.value
+    ? `&submission_date_after=${submissionDateAfter.value}`
+    : ""
+  const submissionDateBeforeQuery = submissionDateBefore.value
+    ? `&submission_date_before=${submissionDateBefore.value}`
+    : ""
+  const decisionDateAfterQuery = decisionDateAfter.value ? `&decision_date_after=${decisionDateAfter.value}` : ""
+  const decisionDateBeforeQuery = decisionDateBefore.value ? `&decision_date_before=${decisionDateBefore.value}` : ""
   const searchQuery = searchTerm.value ? `&search=${searchTerm.value}` : ""
 
   const plantIds = getApiUrlIdsForType(["plant"])
@@ -291,7 +355,7 @@ const apiQueryParams = computed(() => {
   const substancesQuery = substanceIds ? `&substances=${substanceIds}` : ""
   const ingredientsQuery = ingredientsIds ? `&ingredients=${ingredientsIds}` : ""
 
-  const queryParams = `/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}${countryQuery}${doseQuery}`
+  const queryParams = `/${limitQuery}${offsetQuery}${statusQuery}${orderingQuery}${articleQuery}${populationQuery}${conditionQuery}${galenicFormulationQuery}${searchQuery}${plantsQuery}${microorganismsQuery}${substancesQuery}${ingredientsQuery}${countryQuery}${doseQuery}${submissionDateAfterQuery}${submissionDateBeforeQuery}${decisionDateAfterQuery}${decisionDateBeforeQuery}`
 
   // Enlève les `&` consecutifs
   return queryParams.replace(/&+/g, "&").replace(/&$/, "")
@@ -303,10 +367,10 @@ const { response, data, isFetching, execute } = useFetch(apiUrl, { headers: { Ac
   .get()
   .json()
 
-const fetchSearchResults = async () => {
+watch(route, async () => {
   await execute()
   if (response?.value) await handleError(response) // Utile pour éviter des traiter les NS_BINDING_ABORTED de Firefox
-}
+})
 
 // Remplissage d'options dans les champs select
 

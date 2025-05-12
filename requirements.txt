@@ -51,7 +51,7 @@ et_xmlfile==2.0.0
 executing==2.2.0
 factory_boy==3.3.3
 Faker==37.1.0
-filelock==3.16.1
+filelock==3.18.0
 gprof2dot==2025.4.14
 html5lib==1.1
 identify==2.6.9
@@ -62,8 +62,8 @@ ipython==8.32.0
 jedi==0.19.2
 Jinja2==3.1.6
 jmespath==1.0.1
-kombu==5.5.2
-lxml==5.3.2
+kombu==5.5.3
+lxml==5.4.0
 MarkupSafe==3.0.2
 matplotlib-inline==0.1.7
 nodeenv==1.9.1
@@ -81,14 +81,14 @@ pipdeptree==2.25.1
 platformdirs==4.3.7
 pluggy==1.5.0
 pre_commit==4.2.0
-prompt_toolkit==3.0.50
+prompt_toolkit==3.0.51
 psycopg2==2.9.10
 ptyprocess==0.7.0
 pure_eval==0.2.3
 pycodestyle==2.12.1
 pycparser==2.22
 Pygments==2.19.1
-pyHanko==0.25.3
+pyHanko==0.26.0
 pyhanko-certvalidator==0.26.8
 pypdf==5.4.0
 pytest==8.3.5
@@ -99,7 +99,7 @@ PyYAML==6.0.2
 qrcode==8.1
 redis==5.2.1
 regex==2024.11.6
-reportlab==4.3.1
+reportlab==4.4.0
 requests==2.32.3
 requests-mock==1.12.1
 ruff==0.11.5
@@ -108,7 +108,7 @@ sentry-sdk==2.20.0
 sib-api-v3-sdk==7.6.0
 six==1.17.0
 soupsieve==2.7
-sqlfluff==3.3.1
+sqlfluff==3.4.0
 sqlparse==0.5.3
 stack-data==0.6.3
 svglib==1.5.1
@@ -121,7 +121,7 @@ tzdata==2025.2
 tzlocal==5.3.1
 Unidecode==1.3.8
 uritools==4.0.3
-urllib3==2.3.0
+urllib3==2.4.0
 vine==5.1.0
 wcwidth==0.2.13
 webencodings==0.5.1

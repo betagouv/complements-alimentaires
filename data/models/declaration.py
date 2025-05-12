@@ -219,6 +219,7 @@ class Declaration(Historisable, TimeStampable):
         post_validation_status="",
         expiration_days=None,
         blocking_reasons=None,
+        effective_withdrawal_date=None,
     ):
         # Sinon on a des imports circulaires
         from data.factories import SnapshotFactory
@@ -234,6 +235,7 @@ class Declaration(Historisable, TimeStampable):
             action=action or Snapshot.SnapshotActions.OTHER,
             post_validation_status=post_validation_status,
             blocking_reasons=blocking_reasons,
+            effective_withdrawal_date=effective_withdrawal_date,
         )
 
     @property

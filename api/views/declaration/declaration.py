@@ -257,7 +257,7 @@ class GenericDeclarationsListView(ListAPIView):
 
 class CommonOngoingDeclarationView(GenericDeclarationsListView):
     permission_classes = [(IsInstructor | IsVisor)]
-    search_fields = ["name", "id", "company__social_name"]
+    search_fields = ["name", "id", "company__social_name", "teleicare_id"]
     filter_backends = [
         django_filters.DjangoFilterBackend,
         InstructionDateOrderingFilter,
@@ -297,7 +297,7 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
     serializer_class = ExcelExportDeclarationSerializer
     filename = "declarations-resultats.xlsx"
 
-    max_rows = 2000
+    max_rows = 5000
 
     def filter_queryset(self, queryset):
         """
@@ -629,6 +629,16 @@ class DeclarationWithdrawView(DeclarationFlowView):
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.WITHDRAW
     brevo_template_id = 8
+
+    def perform_snapshot_creation(self, request, declaration):
+        """
+        Il faut renseigner la date effective de retrait du marché
+        """
+        declaration.create_snapshot(
+            user=request.user,
+            action=self.get_snapshot_action(request, declaration),
+            effective_withdrawal_date=request.data.get("effective_withdrawal_date"),
+        )
 
 
 class DeclarationAbandonView(DeclarationFlowView):

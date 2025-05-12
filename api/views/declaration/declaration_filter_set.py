@@ -1,15 +1,17 @@
 import logging
 import re
+from datetime import datetime, time
 
 from django.db.models import F, Func, Q
 from django.db.models.functions import Lower
+from django.utils import timezone
 
 from django_filters import rest_framework as django_filters
 from unidecode import unidecode
 
 from api.exceptions import ProjectAPIException
 from api.utils.filters import BaseNumberInFilter
-from data.models import Condition, Declaration, Population, SubstanceUnit
+from data.models import Condition, Declaration, Ingredient, Population, Snapshot, SubstanceUnit
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +41,10 @@ class DeclarationFilterSet(django_filters.FilterSet):
     substances = django_filters.CharFilter(method="substances__and")
     ingredients = django_filters.CharFilter(method="ingredients__and")
     dose = django_filters.CharFilter(method="filter_by_dose")
+    submission_date_after = django_filters.CharFilter(method="filter_submission_date_after")
+    submission_date_before = django_filters.CharFilter(method="filter_submission_date_before")
+    decision_date_after = django_filters.CharFilter(method="filter_decision_date_after")
+    decision_date_before = django_filters.CharFilter(method="filter_decision_date_before")
 
     # Une fois https://github.com/carltongibson/django-filter/issues/1673 on peut
     # enlever cette ligne
@@ -59,6 +65,10 @@ class DeclarationFilterSet(django_filters.FilterSet):
             "company_name_end",
             "article",
             "dose",
+            "submission_date_after",
+            "submission_date_before",
+            "decision_date_after",
+            "decision_date_before",
         ]
 
     def nullable_instructor(self, queryset, value, *args, **kwargs):
@@ -199,22 +209,23 @@ class DeclarationFilterSet(django_filters.FilterSet):
                 )
             elif element_type == "substance":
                 return self.filter_substance_dose(queryset, element_id, operation, quantity, quantity_max, unit)
+            elif element_type in ["form_of_supply", "active_ingredient"]:
+                ingredient = Ingredient.objects.get(pk=element_id)
+                if ingredient.substances.count():
+                    return self.filter_active_ingredient_dose(
+                        queryset, ingredient, operation, quantity, quantity_max, unit
+                    )
+                else:
+                    return self.filter_ingredient_dose(queryset, element_id, operation, quantity, quantity_max, unit)
             elif element_type == "microorganism":
                 return self.filter_microorganism_dose(queryset, element_id, operation, quantity, quantity_max)
-            elif element_type in [
-                "ingredient",
-                "form_of_supply",
-                "aroma",
-                "additive",
-                "active_ingredient",
-                "non_active_ingredient",
-            ]:
+            elif element_type in ["ingredient", "aroma", "additive", "non_active_ingredient"]:
                 return self.filter_ingredient_dose(queryset, element_id, operation, quantity, quantity_max, unit)
             logger.error(
                 f"Declaration filter by dose error : {element_type} not supported (needs plant, substance, microorganism or ingredient)"
             )
             return queryset.none()
-        except (ValueError, IndexError, SubstanceUnit.DoesNotExist) as e:
+        except (ValueError, IndexError, SubstanceUnit.DoesNotExist, Ingredient.DoesNotExist) as e:
             logger.exception(e)
             return queryset.none()
 
@@ -228,6 +239,13 @@ class DeclarationFilterSet(django_filters.FilterSet):
 
     def filter_substance_dose(self, queryset, substance_id, operation, quantity, quantity_max=None, unit=None):
         filters = Q(computed_substances__substance_id=substance_id)
+        return self._apply_quantity_filter(
+            queryset, filters, operation, quantity, quantity_max, "computed_substances__", unit
+        )
+
+    def filter_active_ingredient_dose(self, queryset, ingredient, operation, quantity, quantity_max=None, unit=None):
+        filters = Q(computed_substances__substance__in=ingredient.substances.all())
+        filters &= Q(declared_ingredients__ingredient_id=ingredient.id)
         return self._apply_quantity_filter(
             queryset, filters, operation, quantity, quantity_max, "computed_substances__", unit
         )
@@ -337,3 +355,52 @@ class DeclarationFilterSet(django_filters.FilterSet):
                 continue
 
         return equivalences
+
+    # Les filtres pour les dates se passent ici.
+    # À noter que si le filtre est trop lent (ou beaucoup utilisé) l'ajout de ces indexes pourrait
+    # accélerer les choses :
+    # class Meta:
+    # indexes = [
+    #     models.Index(fields=['action', 'creation_date']),
+    #     models.Index(fields=['status', 'creation_date']),
+    # ]
+
+    def _parse_date(self, date_str, end_of_day):
+        """Helper to parse dd-mm-yyyy dates into timezone-aware datetimes"""
+        try:
+            naive_date = datetime.strptime(date_str, "%Y-%m-%d")
+            time_to_use = time.max if end_of_day else time.min
+            naive_datetime = datetime.combine(naive_date, time_to_use)
+            return timezone.make_aware(naive_datetime)
+        except (ValueError, TypeError):
+            logger.exception(f"Unable to convert to date object: {date_str}")
+            return None
+
+    def filter_submission_date_after(self, queryset, name, value):
+        filters = Q(snapshots__action=Snapshot.SnapshotActions.SUBMIT)
+        return self.filter_date(queryset, value, filters, False, "snapshots__creation_date__gte")
+
+    def filter_submission_date_before(self, queryset, name, value):
+        filters = Q(snapshots__action=Snapshot.SnapshotActions.SUBMIT)
+        return self.filter_date(queryset, value, filters, True, "snapshots__creation_date__lte")
+
+    def filter_decision_date_after(self, queryset, name, value):
+        filters = Q(
+            snapshots__status__in=[Declaration.DeclarationStatus.AUTHORIZED, Declaration.DeclarationStatus.REJECTED],
+        )
+        return self.filter_date(queryset, value, filters, False, "snapshots__creation_date__gte")
+
+    def filter_decision_date_before(self, queryset, name, value):
+        filters = Q(
+            snapshots__status__in=[Declaration.DeclarationStatus.AUTHORIZED, Declaration.DeclarationStatus.REJECTED],
+        )
+        return self.filter_date(queryset, value, filters, True, "snapshots__creation_date__lte")
+
+    def filter_date(self, queryset, value, other_filters, end_of_day, date_lookup_parameter):
+        date = self._parse_date(value, end_of_day)
+        if not date:
+            return queryset.none()
+
+        final_filters = other_filters or Q()
+        final_filters &= Q(**{f"{date_lookup_parameter}": date})
+        return queryset.filter(final_filters)

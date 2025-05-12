@@ -6,5 +6,4 @@ class PopulationFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Population
 
-    siccrf_name = factory.Faker("text", max_nb_chars=20)
-    ca_name = factory.Faker("text", max_nb_chars=20)
+    name = factory.Faker("text", max_nb_chars=20)

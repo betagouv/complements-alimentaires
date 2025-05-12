@@ -1,3 +1,5 @@
+from config import tasks
+
 from django import forms
 from django.contrib import admin
 from django.core.exceptions import ValidationError
@@ -199,15 +201,8 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         if change and form["is_risky"]._has_changed():
             declared_substances_ids = obj.declaredsubstance_set.values_list("declaration_id", flat=True)
             computed_substances_ids = obj.computedsubstance_set.values_list("declaration_id", flat=True)
-            for declaration in Declaration.objects.filter(
-                id__in=declared_substances_ids.union(computed_substances_ids),
-                status__in=(
-                    Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
-                    Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
-                    Declaration.DeclarationStatus.AWAITING_VISA,
-                    Declaration.DeclarationStatus.OBSERVATION,
-                    Declaration.DeclarationStatus.OBJECTION,
-                ),
-            ):
-                declaration.assign_calculated_article()
-                declaration.save()
+            declarations = Declaration.objects.filter(id__in=declared_substances_ids.union(computed_substances_ids))
+            tasks.recalculate_article_for_ongoing_declarations(
+                declarations,
+                f"Article recalculé après modification via l'admin de {obj.name} ({obj.object_type} id {obj.id})",
+            )

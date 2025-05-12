@@ -14,6 +14,7 @@ from data.models.teleicare_history.ica_declaration import (
     IcaComplementAlimentaire,
     IcaDeclaration,
     IcaVersionDeclaration,
+    IcaPopulationCibleDeclaree,
 )
 from data.utils.string_utils import make_random_str
 from data.factories.company import _make_siret, _make_vat, _make_phone_number
@@ -46,6 +47,7 @@ class EtablissementFactory(factory.django.DjangoModelFactory):
     etab_adre_ville = factory.Faker("city", locale="FR")
     etab_adre_cp = factory.Faker("postcode", locale="FR")
     etab_adre_voie = factory.Faker("street_address", locale="FR")
+    etab_date_adhesion = datetime.strftime(random_date(start=datetime(2016, 1, 1)), "%m/%d/%Y %H:%M:%S %p")
 
 
 class ComplementAlimentaireFactory(factory.django.DjangoModelFactory):
@@ -115,3 +117,12 @@ class VersionDeclarationFactory(factory.django.DjangoModelFactory):
     vrsdecl_adre_dist = factory.Faker("text", max_nb_chars=20)
     vrsdecl_adre_region = factory.Faker("text", max_nb_chars=20)
     vrsdecl_adre_raison_sociale = factory.Faker("text", max_nb_chars=20)
+
+
+class IcaPopulationCibleDeclareeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = IcaPopulationCibleDeclaree
+
+    vrsdecl_ident = factory.Sequence(lambda n: n + 1)
+    popcbl_ident = factory.Sequence(lambda n: n + 1)
+    vrspcb_popcible_autre = factory.Faker("text", max_nb_chars=20)

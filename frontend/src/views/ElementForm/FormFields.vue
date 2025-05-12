@@ -136,6 +136,7 @@
           :hideSearchButton="true"
           @selected="selectOption"
           type="substance"
+          :searchAll="true"
           :required="false"
         />
         <div class="md:ml-4 md:my-7 md:col-span-2">
@@ -265,7 +266,7 @@ import FormWrapper from "@/components/FormWrapper"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 import NumberField from "@/components/NumberField"
 
-const props = defineProps({ element: Object, type: String })
+const props = defineProps({ element: Object, type: String, urlComponent: String })
 
 const isNewIngredient = computed(() => !props.element?.id)
 
@@ -338,8 +339,8 @@ const saveElement = async () => {
       id: "element-creation-success",
       description: `L'ingrédient a été ${isNewIngredient.value ? "créé" : "modifié"}`,
     })
-    if (isNewIngredient.value) router.push({ name: "DashboardPage" })
-    else router.navigateBack({ name: "DashboardPage" })
+    if (isNewIngredient.value) router.push({ name: "NewElementsPage" })
+    else router.push({ name: "ElementPage", params: { urlComponent: props.urlComponent } })
   } else {
     if ($externalResults.value.fieldErrors?.maxQuantities) {
       maxQuantitiesError.value = $externalResults.value.fieldErrors.maxQuantities[0]

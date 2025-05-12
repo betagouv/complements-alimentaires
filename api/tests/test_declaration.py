@@ -273,7 +273,7 @@ class TestDeclarationApi(APITestCase):
         """
         declarant_role = DeclarantRoleFactory(user=authenticate.user)
         company = declarant_role.company
-        PopulationFactory(ca_name="Population générale")
+        PopulationFactory(name="Population générale")
         plant = PlantFactory()
         plant_part = PlantPartFactory()
         plant.plant_parts.add(plant_part)
@@ -882,7 +882,7 @@ class TestDeclarationApi(APITestCase):
         Il est possible d'ajouter un query_param pour forcer le calcul de l'article
         dans la sauvegarde
         """
-        PopulationFactory(ca_name="Population générale")
+        PopulationFactory(name="Population générale")
         declarant_role = DeclarantRoleFactory(user=authenticate.user)
         company = declarant_role.company
         user_declaration = DeclarationFactory(author=authenticate.user, name="Old name", company=company)
@@ -1658,7 +1658,7 @@ class TestDeclarationApi(APITestCase):
         """
         Les viseuses ou instructrices peuvent changer l'article d'une déclaration
         """
-        PopulationFactory(ca_name="Population générale")
+        PopulationFactory(name="Population générale")
         InstructionRoleFactory(user=authenticate.user)
         art_15 = AwaitingInstructionDeclarationFactory(
             declared_plants=[],
@@ -1800,7 +1800,9 @@ class TestDeclarationApi(APITestCase):
         magnesium = AwaitingInstructionDeclarationFactory(company=umbrella_corp, name="Magnésium")
 
         fer = AwaitingInstructionDeclarationFactory(company=globex, name="Fer")
-        creatine = AwaitingInstructionDeclarationFactory(company=globex, name="Créatine")
+        creatine = AwaitingInstructionDeclarationFactory(
+            company=globex, name="Créatine", teleicare_id="old_teleicare_id"
+        )
 
         # Checher "globex". Les deux compléments de l'entreprise Globex doivent être renvoyés
         results = get_search_results("Globex")
@@ -1821,6 +1823,11 @@ class TestDeclarationApi(APITestCase):
         results = get_search_results("magnesium")
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["id"], magnesium.id)
+
+        # Chercher par ID téléicare
+        results = get_search_results("old_teleicare_id")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], creatine.id)
 
 
 class TestDeclaredElementsApi(APITestCase):
@@ -2776,7 +2783,7 @@ class TestSingleDeclaredElementApi(APITestCase):
         """
         Vérifier que l'article est recalculé avec un remplacement d'une demande
         """
-        PopulationFactory(ca_name="Population générale")
+        PopulationFactory(name="Population générale")
 
         InstructionRoleFactory(user=authenticate.user)
 
