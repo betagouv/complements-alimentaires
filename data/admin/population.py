@@ -1,4 +1,3 @@
-from django import forms
 from django.contrib import admin
 
 from simple_history.admin import SimpleHistoryAdmin
@@ -9,10 +8,7 @@ from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
 class PopulationForm(ChangeReasonFormMixin):
-    class Meta:
-        widgets = {
-            "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-        }
+    pass
 
 
 @admin.register(Population)
@@ -21,10 +17,8 @@ class PopulationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     fields = [
         "change_reason",
         "name",
-        "ca_name",
         "category",
         "is_obsolete",
-        "ca_is_obsolete",
         "is_defined_by_anses",
         "min_age",
         "max_age",

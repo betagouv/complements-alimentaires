@@ -15,7 +15,7 @@ class CommonModelManager(models.Manager):
 
     def get_queryset(self):
         if self.avoid_obsolete:
-            return super().get_queryset().filter(is_obsolete=False)
+            return super().get_queryset().exclude(is_obsolete=True)
         return super().get_queryset().all()
 
 
