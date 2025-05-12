@@ -18,7 +18,7 @@ class Population(TimeStampable, WithMissingImportBoolean):
         verbose_name = "Population cible"
         verbose_name_plural = "Populations cibles"
 
-    name = models.TextField(blank=True, verbose_name="nom CA")
+    name = models.TextField(blank=True, verbose_name="nom")
 
     is_obsolete = models.BooleanField(null=True, default=None, verbose_name="objet obsolète selon CA")
 
