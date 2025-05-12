@@ -136,6 +136,7 @@
           :hideSearchButton="true"
           @selected="selectOption"
           type="substance"
+          :searchAll="true"
           :required="false"
         />
         <div class="md:ml-4 md:my-7 md:col-span-2">
