@@ -20,7 +20,7 @@ from data.factories import (
     SubstanceSynonymFactory,
     SubstanceUnitFactory,
 )
-from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Plant, Population, Part
+from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Part, Plant, Population
 from data.models.substance import MaxQuantityPerPopulationRelation, Substance
 
 from .utils import authenticate
@@ -254,7 +254,7 @@ class TestElementsFetchApi(APITestCase):
 
 class TestElementsCreateApi(APITestCase):
     def setUp(self):
-        self.general_pop = PopulationFactory.create(ca_name="Population générale")
+        self.general_pop = PopulationFactory.create(name="Population générale")
 
     @authenticate
     def test_create_single_plant(self):
@@ -359,7 +359,7 @@ class TestElementsCreateApi(APITestCase):
         Une instructrice peut créer une nouvelle substance avec des synonymes et plusieurs quantités maximales
         """
         InstructionRoleFactory(user=authenticate.user)
-        other_pop = PopulationFactory(ca_name="Autre population")
+        other_pop = PopulationFactory(name="Autre population")
 
         unit = SubstanceUnitFactory.create()
         self.assertEqual(Substance.objects.count(), 0)
@@ -457,7 +457,7 @@ class TestElementsCreateApi(APITestCase):
 
 class TestElementsModifyApi(APITestCase):
     def setUp(self):
-        self.general_pop = PopulationFactory.create(ca_name="Population générale")
+        self.general_pop = PopulationFactory.create(name="Population générale")
 
     def test_cannot_modify_ingredient_not_authenticated(self):
         substance = SubstanceFactory.create(siccrf_name="original name", ca_name="")
@@ -584,7 +584,7 @@ class TestElementsModifyApi(APITestCase):
         self.assertTrue(
             MaxQuantityPerPopulationRelation.objects.filter(substance=substance, population=self.general_pop).exists()
         )
-        other_pop = PopulationFactory.create(ca_name="pop non-autorisée")
+        other_pop = PopulationFactory.create(name="pop non-autorisée")
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
             {
@@ -607,7 +607,7 @@ class TestElementsModifyApi(APITestCase):
         )
         self.assertEqual(
             MaxQuantityPerPopulationRelation.objects.get(
-                substance=substance, population=Population.objects.get(ca_name="pop non-autorisée")
+                substance=substance, population=Population.objects.get(name="pop non-autorisée")
             ).max_quantity,
             0,
             "Une restriction d'usage pour une pop a été créé",
