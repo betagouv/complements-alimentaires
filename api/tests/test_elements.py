@@ -19,6 +19,9 @@ from data.factories import (
     SubstanceFactory,
     SubstanceSynonymFactory,
     SubstanceUnitFactory,
+    OngoingInstructionDeclarationFactory,
+    DeclaredSubstanceFactory,
+    ComputedSubstanceFactory,
 )
 from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Part, Plant, Population
 from data.models.substance import MaxQuantityPerPopulationRelation, Substance
@@ -968,29 +971,39 @@ class TestElementsModifyApi(APITestCase):
 
         mocked_task.assert_called_once()
 
-        # Malheureusement je ne sais pas comment faire le check `assert_called_with` quand on veut tester le queryset,
-        # vu que deux querysets avec les mêmes items ne sont pas considéré comme égale. Je laisse le code suivant ici
-        # quand même, car avec l'echec de l'assert, on voit que les querysets sont les mêmes.
-        # Il faut ajouter les imports pour lancer cette partie du test.
+    @authenticate
+    @patch("config.tasks.recalculate_article_for_ongoing_declarations")
+    def test_article_recalculation_triggered_with_computed_and_declared_substance_declarations(self, mocked_task):
+        """
+        Si il y a un changement de substance, la tâche doit être appelé avec toutes les déclarations qui utilisent
+        la substance, si c'est de manière déclarée ou calculée
+        """
+        InstructionRoleFactory(user=authenticate.user)
 
-        # declared_substance_declaration = OngoingInstructionDeclarationFactory.create()
-        # computed_substance_declaration = OngoingInstructionDeclarationFactory.create()
-        # substance = SubstanceFactory.create(status=IngredientStatus.AUTHORIZED)
+        declared_substance_declaration = OngoingInstructionDeclarationFactory.create()
+        computed_substance_declaration = OngoingInstructionDeclarationFactory.create()
+        substance = SubstanceFactory.create(status=IngredientStatus.AUTHORIZED)
 
-        # DeclaredSubstanceFactory.create(substance=substance, declaration=declared_substance_declaration)
-        # ComputedSubstanceFactory.create(substance=substance, declaration=computed_substance_declaration)
+        DeclaredSubstanceFactory.create(substance=substance, declaration=declared_substance_declaration)
+        ComputedSubstanceFactory.create(substance=substance, declaration=computed_substance_declaration)
 
-        # self.assertTrue(declared_substance_declaration.declared_substances.filter(substance=substance).exists())
-        # self.assertTrue(computed_substance_declaration.computed_substances.filter(substance=substance).exists())
+        self.assertTrue(declared_substance_declaration.declared_substances.filter(substance=substance).exists())
+        self.assertTrue(computed_substance_declaration.computed_substances.filter(substance=substance).exists())
 
-        # self.client.patch(
-        #     reverse("api:single_substance", kwargs={"pk": substance.id}),
-        #     {"status": IngredientStatus.NOT_AUTHORIZED},
-        #     format="json",
-        # )
+        self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {"status": IngredientStatus.NOT_AUTHORIZED},
+            format="json",
+        )
 
-        # # Les déclarations avec des substances calculées ainsi que les substances déclarées sont MAJ
-        # mocked_task.assert_called_with(Declaration.objects.filter(id__in=[declared_substance_declaration.id, computed_substance_declaration.id]), f"Article recalculé après modification via l'interface de {substance.name} ({substance.object_type} id {substance.id})")
+        # Les déclarations avec des substances calculées ainsi que les substances déclarées sont MAJ
+        mocked_task.assert_called_once()
+        arguments = mocked_task.call_args.args
+        queryset_argument = arguments[0]
+        self.assertEqual(queryset_argument.count(), 2)
+        self.assertTrue(queryset_argument.filter(id=declared_substance_declaration.id).exists())
+        self.assertTrue(queryset_argument.filter(id=computed_substance_declaration.id).exists())
+        # self.assertEqual(list(queryset_argument), list(Declaration.objects.filter(id__in=[declared_substance_declaration.id, computed_substance_declaration.id])))
 
     @authenticate
     @patch("config.tasks.recalculate_article_for_ongoing_declarations")
