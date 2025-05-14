@@ -829,6 +829,10 @@ class Attachment(Historisable):
         LABEL = "LABEL", "Étiquetage"
         REGULATORY_PROOF = "REGULATORY_PROOF", "Preuve règlementaire"
         CERTIFICATE_AUTHORITY = "CERTIFICATE_AUTHORITY", "Attestation d'une autorité compétente"
+        SPEC_SHEET = (
+            "SPEC_SHEET",
+            "Fiche technique",
+        )
         ADDITIONAL_INFO = (
             "ADDITIONAL_INFO",
             "Compléments info professionnel",

@@ -44,6 +44,7 @@ const documentTypes = [
   { value: "LABEL", text: "Étiquetage" },
   { value: "REGULATORY_PROOF", text: "Preuve règlementaire" },
   { value: "CERTIFICATE_AUTHORITY", text: "Attestation d'une autorité compétente" },
+  { value: "SPEC_SHEET", text: "Fiche technique" },
   { value: "ADDITIONAL_INFO", text: "Compléments info professionnel" },
   { value: "OBSERVATIONS", text: "Observations professionnel" },
   { value: "PROFESSIONAL_MAIL", text: "Autre courrier du professionnel" },
