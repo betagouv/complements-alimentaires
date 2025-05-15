@@ -71,3 +71,4 @@ class Snapshot(TimeStampable):
     blocking_reasons = ArrayField(
         models.TextField(), null=True, blank=True, verbose_name="raisons de la dernière décision défavorable"
     )
+    effective_withdrawal_date = models.DateField("date effective de retrait du marché", blank=True, null=True)

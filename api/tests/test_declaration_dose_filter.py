@@ -16,6 +16,7 @@ from data.factories import (
     SubstanceFactory,
     SubstanceUnitFactory,
 )
+from data.models import IngredientType
 
 from .utils import authenticate
 
@@ -169,3 +170,79 @@ class DeclarationDoseFilterTests(APITestCase):
         dose = f"dose=ingredient||Ginger Root||{self.ginger.id}||≥||5||{unit_iu.id}"
         results = self.make_request(dose)
         self.assertEqual(len(results), 0)
+
+    @authenticate
+    def test_form_of_supply(self):
+        InstructionRoleFactory(user=authenticate.user)
+        vitamin_b12 = SubstanceFactory(name="Vitamin B12")
+        cyanocobalamine = IngredientFactory(
+            name="Cyanocobalamine",
+            ingredient_type=IngredientType.FORM_OF_SUPPLY,
+            substances=[vitamin_b12],
+        )
+
+        declaration = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration, ingredient=cyanocobalamine)
+        ComputedSubstanceFactory(declaration=declaration, substance=vitamin_b12, quantity=80.0, unit=self.unit_mg)
+
+        other_declaration = AuthorizedDeclarationFactory()
+        ComputedSubstanceFactory(
+            declaration=other_declaration, substance=vitamin_b12, quantity=80.0, unit=self.unit_mg
+        )
+
+        # La recherche par forme d'apport doit chercher la dose de la substance qu'elle contient
+        # via les computed substances. Seulement les déclarations contenant la forme d'apport doivent
+        # être prises.
+
+        dose = f"dose=form_of_supply||Cyanocobalamine||{cyanocobalamine.id}||≥||80||{self.unit_mg.id}"
+        results = self.make_request(dose)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
+    def test_form_of_supply_without_substances(self):
+        """
+        Si une forme d'apport ou ingrédient actif n'a pas de substances liées le filtre
+        par dose doit chercher par la quantité et unité spécifiée au niveau de l'ingrédient.
+        Pour plus de détails regarder la fonction `showFields` de src/components/ElementCard.vue
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        sulfur = IngredientFactory(
+            name="Soufre",
+            ingredient_type=IngredientType.FORM_OF_SUPPLY,
+            substances=[],
+        )
+
+        declaration = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration, ingredient=sulfur, quantity=80.0, unit=self.unit_mg)
+
+        dose = f"dose=form_of_supply||Soufre||{sulfur.id}||≥||80||{self.unit_mg.id}"
+        results = self.make_request(dose)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
+    def test_active_ingredient(self):
+        InstructionRoleFactory(user=authenticate.user)
+        creatine = SubstanceFactory(name="Créatine")
+        pyruvate_de_creatine = IngredientFactory(
+            name="Pyruvate de créatine",
+            ingredient_type=IngredientType.ACTIVE_INGREDIENT,
+            substances=[creatine],
+        )
+
+        declaration = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration, ingredient=pyruvate_de_creatine)
+        ComputedSubstanceFactory(declaration=declaration, substance=creatine, quantity=80.0, unit=self.unit_mg)
+
+        other_declaration = AuthorizedDeclarationFactory()
+        ComputedSubstanceFactory(declaration=other_declaration, substance=creatine, quantity=80.0, unit=self.unit_mg)
+
+        # La recherche par ingrédient actif doit chercher la dose de la substance qu'elle contient
+        # via les computed substances. Seulement les déclarations contenant la forme d'apport doivent
+        # être prises.
+
+        dose = f"dose=active_ingredient||Pyruvate de créatine||{pyruvate_de_creatine.id}||≥||80||{self.unit_mg.id}"
+        results = self.make_request(dose)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration.id)

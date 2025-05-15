@@ -4,6 +4,7 @@
     <router-view></router-view>
     <DsfrFooter
       :logo-text="logoText"
+      :a11yComplianceLink="{ name: 'A11yPage' }"
       :cookiesLink="{ name: 'CookiesInfoPage' }"
       :legalLink="{ name: 'LegalNoticesPage' }"
       :personalDataLink="{ name: 'PrivacyPolicyPage' }"

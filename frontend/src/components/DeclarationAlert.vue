@@ -32,11 +32,10 @@ const displayData = computed(() => {
   }
 })
 
-const canDownloadAbandonedCertificate = computed(() => {
-  if (!props.snapshots) return false
-  const latestSnapshot = [...props.snapshots].sort((a, b) => b.creationDate.localeCompare(a.creationDate))?.[0]
-  return latestSnapshot?.status === "OBJECTION"
-})
+const latestSnapshot = computed(
+  () => [...(props.snapshots || [])].sort((a, b) => b.creationDate.localeCompare(a.creationDate))?.[0]
+)
+const canDownloadAbandonedCertificate = computed(() => latestSnapshot.value?.status === "OBJECTION")
 
 const declarantDisplayData = computed(() => {
   switch (props.declaration.status) {
@@ -104,7 +103,14 @@ const declarantDisplayData = computed(() => {
         canDownloadCertificate: true,
       }
     case "WITHDRAWN":
-      return { type: "info", title: "Ce produit a été retiré du marché", canDownloadCertificate: true }
+      return {
+        type: "info",
+        title: "Ce produit a été retiré du marché",
+        canDownloadCertificate: true,
+        body: latestSnapshot.value?.effectiveWithdrawalDate
+          ? `Date effective de retrait du marché : ${isoToPrettyDate(latestSnapshot.value.effectiveWithdrawalDate)}`
+          : null,
+      }
     default:
       return null
   }

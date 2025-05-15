@@ -16,6 +16,18 @@
           />
         </DsfrInputGroup>
         <div v-if="selectedIngredient">
+          <DsfrAlert
+            small
+            type="warning"
+            v-if="showMultipleSubstanceWarning"
+            description="Cet ingrédient contient plusieurs substances. Les résultats contiendront les déclarations où au moins une substance correspond à la condition chosie."
+          />
+          <DsfrAlert
+            small
+            type="warning"
+            v-else-if="showDoseMissingWarning"
+            description="Les additifs, arômes et autres ingrédients non-actifs n'ont pas forcément de dose renseigné dans les déclarations. Vous pouvez néanmoins filtrer par composition."
+          />
           <hr class="mt-2 pb-2" />
           <div class="md:flex gap-4 mt-4 mb-8 items-end">
             <div class="md:w-2/4 flex border items-center rounded p-2">
@@ -131,10 +143,11 @@ import { ref, computed, onMounted, nextTick } from "vue"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { getTypeIcon, getTypeInFrench, typesMapping } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, typesMapping, getApiType } from "@/utils/mappings"
 import { useVuelidate } from "@vuelidate/core"
 import { required, helpers } from "@vuelidate/validators"
 import { firstErrorMsg, errorNumeric } from "@/utils/forms"
+import { useFetch } from "@vueuse/core"
 
 const OPERATION = { GT: ">", GTE: "≥", LT: "<", LTE: "≤", EQ: "=", BT: "≬" }
 const { units, plantParts } = storeToRefs(useRootStore())
@@ -154,10 +167,18 @@ const ingredientIsPlant = computed(() => selectedIngredient.value?.objectType ==
 const ingredientIsMicroorganism = computed(() => selectedIngredient.value?.objectType === "microorganism")
 const ingredientIsSubstance = computed(() => selectedIngredient.value?.objectType === "substance")
 
-const addIngredient = (ingredient) => {
+const addIngredient = async (ingredient) => {
   selectedIngredient.value = ingredient
   if (!ingredientIsPlant.value) selectedPart.value = null
   if (ingredientIsSubstance.value) selectedUnit.value = selectedIngredient.value.unit
+  if (
+    selectedIngredient.value?.objectType === "form_of_supply" ||
+    selectedIngredient.value?.objectType === "active_ingredient"
+  ) {
+    const url = `/api/v1/${getApiType(selectedIngredient.value?.objectType)}s/${selectedIngredient.value.id}`
+    const { data } = await useFetch(url, { immediate: true }).get().json()
+    selectedIngredient.value.substances = data.value?.substances
+  }
 }
 
 const showDoubleQuantity = computed(() => selectedOperation.value === OPERATION.BT)
@@ -325,6 +346,18 @@ const modelStringIsValid = computed(() => {
     if (!quantityB) return false
   }
   return true
+})
+
+// Alertes en cas de recherche par dose des ingrédients
+const showMultipleSubstanceWarning = computed(() => {
+  const objectType = selectedIngredient.value?.objectType
+  if (objectType !== "form_of_supply" && objectType !== "active_ingredient") return false
+  return selectedIngredient.value.substances?.length >= 2
+})
+
+const showDoseMissingWarning = computed(() => {
+  const ingredientTypes = ["additive", "aroma", "non_active_ingredient"]
+  return ingredientTypes.indexOf(selectedIngredient.value?.objectType) > -1
 })
 
 onMounted(() => {
