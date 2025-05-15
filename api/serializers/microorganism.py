@@ -51,6 +51,8 @@ class MicroorganismModificationSerializer(CommonIngredientModificationSerializer
     synonym_model = MicroorganismSynonym
     synonym_set_field_name = "microorganismsynonym_set"
 
+    declaredingredient_set_field_names = ["declaredmicroorganism_set"]
+
     class Meta:
         model = Microorganism
         fields = COMMON_FIELDS + (
