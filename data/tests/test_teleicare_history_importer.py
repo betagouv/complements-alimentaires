@@ -196,7 +196,9 @@ class TeleicareHistoryImporterTestCase(TestCase):
         CA_to_create_as_declaration = ComplementAlimentaireFactory(
             etab=etablissement_to_create_as_company, frmgal_ident=galenic_formulation_id
         )
-        declaration_to_create_as_declaration = DeclarationFactory(cplalim=CA_to_create_as_declaration, tydcl_ident=1)
+        declaration_to_create_as_declaration = DeclarationFactory(
+            cplalim=CA_to_create_as_declaration, tydcl_ident=1, etab=None
+        )
         version_declaration_to_create_as_declaration = VersionDeclarationFactory(
             dcl=declaration_to_create_as_declaration,
             stadcl_ident=8,
@@ -497,12 +499,14 @@ class TeleicareHistoryImporterTestCase(TestCase):
         match_companies_on_siret_or_vat(create_if_not_exist=True)
         create_declarations_from_teleicare_history()
         CA_declaration = Declaration.objects.get(siccrf_id=CA.cplalim_ident)
-        self.assertEqual(
-            CA_declaration.mandated_company,
-        )
-        self.assertEqual(
-            CA_declaration.company,
-        )
+        declarant_company = EtablissementToCompanyRelation.objects.get(
+            siccrf_id=etablissement_declarant.etab_ident
+        ).company
+        mandataire_company = EtablissementToCompanyRelation.objects.get(
+            siccrf_id=etablissement_mandataire.etab_ident
+        ).company
+        self.assertEqual(CA_declaration.mandated_company, mandataire_company)
+        self.assertEqual(CA_declaration.company, declarant_company)
 
     # la company fabriquante existe sur Compl'Alim -> elle a un match dans EtablissementToCompanyRelation
     # la company mandataire n'existe pas sur Compl'Alim -> pas de EtablissementToCompanyRelation.

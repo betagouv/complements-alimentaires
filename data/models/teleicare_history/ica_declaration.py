@@ -37,8 +37,8 @@ class IcaDeclaration(models.Model):
     cplalim = models.ForeignKey(IcaComplementAlimentaire, on_delete=models.CASCADE, db_column="cplalim_ident")
     tydcl_ident = models.IntegerField()  # Article 15 ou 16
     etab = models.ForeignKey(
-        IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident"
-    )  # correspond à l'entreprise gestionnaire de la déclaration
+        IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident", null=True
+    )  # correspond à l'entreprise gestionnaire de la déclaration. Null dans 76% des cas
     etab_ident_rmm_declarant = models.IntegerField()
     dcl_date = models.TextField()
     dcl_saisie_administration = models.BooleanField(null=True)  # rendu nullable pour simplifier les Factories
