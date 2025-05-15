@@ -37,6 +37,17 @@
         La déclaration prévue à l’article 15 du décret n°2006-352 vise à informer l’administration
         de la mise sur le marché d’un complément alimentaire.
     </p>
+    {% if effective_withdrawal_date %}
+    <p>
+        Postérieurement à votre déclaration, le {{ withdrawal_date|date:"l j F Y" }} vous avez signalé
+        le retrait du marché du produit indiquant comme date effective le {{ effective_withdrawal_date|date:"l j F Y" }}.
+    </p>
+    {% elif withdrawal_date %}
+    <p>
+        Postérieurement à votre déclaration, le {{ withdrawal_date|date:"l j F Y" }} vous avez signalé
+        le retrait du marché du produit.
+    </p>
+    {% endif %}
     <p>
         Votre produit reste consultable à l’adresse suivante :
         <a href="{{ declaration.producer_url }}">{{ declaration.producer_url }}</a>.

@@ -103,6 +103,20 @@ class CertificateView(PdfView):
             )
             last_submission_date = declaration.creation_date
 
+        withdrawal_date = None
+        effective_withdrawal_date = None
+        if declaration.status == Declaration.DeclarationStatus.WITHDRAWN:
+            try:
+                withdrawal_snapshot = declaration.snapshots.filter(action=Snapshot.SnapshotActions.WITHDRAW).latest(
+                    "creation_date"
+                )
+                withdrawal_date = withdrawal_snapshot.creation_date
+                effective_withdrawal_date = withdrawal_snapshot.effective_withdrawal_date
+            except Snapshot.DoesNotExist:
+                logger.error(
+                    f"Declaration with ID {declaration.id} is withdrawn but has no withdrawal snapshots associated with it"
+                )
+
         return {
             "date": date,
             "last_submission_date": last_submission_date,
@@ -120,6 +134,8 @@ class CertificateView(PdfView):
             "mail": mail,
             "signature_title": signature_title,
             "signature_name": signature_name,
+            "withdrawal_date": withdrawal_date,
+            "effective_withdrawal_date": effective_withdrawal_date,
         }
 
     def get_pdf_file_name(self, declaration):
