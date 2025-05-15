@@ -93,10 +93,16 @@ const actionText = computed(() => {
     REQUEST_VISA: `a demandé un visa pour passer à l'état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
     APPROVE_VISA: `a mis la déclaration en état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
     REFUSE_VISA: `a refusé le visa pour passer à l'état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
-    WITHDRAW: "a retiré le produit du marché",
+    WITHDRAW: getWithdrawalText(props.snapshot),
   }
   return mapping[props.snapshot.action] ? `${fullName.value} ${mapping[props.snapshot.action]}.` : null
 })
+
+const getWithdrawalText = (snapshot) => {
+  const baseText = "a retiré le produit du marché"
+  if (!snapshot.effectiveWithdrawalDate) return baseText
+  return `${baseText} (date effective : ${isoToPrettyDate(snapshot.effectiveWithdrawalDate)})`
+}
 </script>
 
 <style scoped>
