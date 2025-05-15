@@ -297,7 +297,7 @@ def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declar
         "warning": latest_ica_version_declaration.vrsdecl_mise_en_garde or "",
         "calculated_article": DECLARATION_TYPE_TO_ARTICLE_MAPPING[latest_ica_declaration.tydcl_ident],
         "status": status,
-        # responsable d'etiquetage
+        # addresse responsable d'etiquetage
         "address": latest_ica_version_declaration.vrsdecl_adre_voie,
         "additional_details": latest_ica_version_declaration.vrsdecl_adre_comp,
         "postal_code": latest_ica_version_declaration.vrsdecl_adre_cp[
@@ -533,7 +533,7 @@ def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=
                 try:  # pas possible d'utiliser update_or_create
                     declaration = Declaration.objects.get(
                         siccrf_id=ica_complement_alimentaire.cplalim_ident,
-                        # resp commercialisation (entreprise qui déclare ou pour laquelle une entreprise mandataire déclare)
+                        # resp mise sur le marché (entreprise qui déclare ou pour laquelle une entreprise mandataire déclare)
                         company=EtablissementToCompanyRelation.objects.get(
                             siccrf_id=ica_complement_alimentaire.etab_id
                         ).company,
@@ -543,7 +543,7 @@ def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=
                 except Declaration.DoesNotExist:
                     declaration = Declaration(
                         siccrf_id=ica_complement_alimentaire.cplalim_ident,
-                        # resp commercialisation (entreprise qui déclare ou pour laquelle une entreprise mandataire déclare)
+                        # resp mise sur le marché (entreprise qui déclare ou pour laquelle une entreprise mandataire déclare)
                         company=EtablissementToCompanyRelation.objects.get(
                             siccrf_id=ica_complement_alimentaire.etab_id
                         ).company,
