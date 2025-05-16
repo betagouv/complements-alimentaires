@@ -591,7 +591,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
         create_declarations_from_teleicare_history(rewrite_existing=False)
         CA_declaration.refresh_from_db()
-        self.assertEqual(CA_declaration.mandated_company, None)
+        self.assertIsNone(CA_declaration.mandated_company)
 
         create_declarations_from_teleicare_history(rewrite_existing=True)
         CA_declaration.refresh_from_db()
