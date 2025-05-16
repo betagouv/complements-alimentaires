@@ -14,7 +14,7 @@
     <p>
         Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré{% if declaration.teleicare_id %}, sur la plateforme TELEICARE,{% endif %} la mise sur le marché du produit :
         <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
-            {{ declaration.name }} / {{ declaration.galenic_formulation }}
+            {{ declaration.name }} / {{ declaration.galenic_formulation }} / {{ declaration.company.social_name }}
         </span>
     <p>
         Des objections ont été émises à l’égard de cette déclaration. A la suite de ces objections, vous m’avez fait part de vos observations.
