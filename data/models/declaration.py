@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models import Case, Min, Q, Value, When
 from django.db.models.functions import Coalesce
 from django.template.defaultfilters import filesizeformat
+from django.utils.formats import date_format
 
 from dateutil.relativedelta import relativedelta
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
@@ -286,25 +287,34 @@ class Declaration(Historisable, TimeStampable):
         Dictionnaire utilisé dans les différentes communications emails avec
         l'API Brevo
         """
+        status = Declaration.DeclarationStatus
         try:
             expiration_days = (
-                self.snapshots.filter(
-                    status__in=[
-                        Declaration.DeclarationStatus.OBSERVATION,
-                        Declaration.DeclarationStatus.OBJECTION,
-                    ]
-                )
+                self.snapshots.filter(status__in=[status.OBSERVATION, status.OBJECTION])
                 .latest("creation_date")
                 .expiration_days
             )
         except Exception as _:
             expiration_days = ""
+
+        effective_withdrawal_date = None
+        if self.status == status.WITHDRAWN:
+            try:
+                snapshot_withdrawal_date = (
+                    self.snapshots.filter(status=status.WITHDRAWN).latest("creation_date").effective_withdrawal_date
+                )
+                effective_withdrawal_date = (
+                    date_format(snapshot_withdrawal_date, "l j F Y") if snapshot_withdrawal_date else None
+                )
+            except Exception as _:
+                pass
         return {
             "PRODUCT_NAME": self.name,
             "COMPANY_NAME": self.company.social_name if self.company else "",
             "DECLARATION_LINK": self.producer_url,
             "DECLARATION_ID": self.id,
             "EXPIRATION_DAYS": expiration_days,
+            "EFFECTIVE_WITHDRAWAL_DATE": effective_withdrawal_date,
         }
 
     @property
