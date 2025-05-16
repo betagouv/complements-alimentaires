@@ -60,6 +60,12 @@ def convert_phone_number(phone_number_to_parse):
     return ""
 
 
+def clean_vat(vat_to_parse):
+    if vat_to_parse:
+        return vat_to_parse.replace(" ", "").replace(".", "").replace("-", "")
+    return None
+
+
 def convert_activities(etab):
     activities = []
     if etab.etab_ica_faconnier:
@@ -121,9 +127,9 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                     logger.error(f"Relation entre {relation.company_id} et {relation.siccrf_id} : {err}.")
 
         elif etab.etab_numero_tva_intra is not None:
+            clean_numero_tva_intra = clean_vat(etab.etab_numero_tva_intra)
             company_with_vat_matching = Company.objects.filter(
-                Q(vat=etab.etab_numero_tva_intra)
-                | Q(etablissementtocompanyrelation__old_vat=etab.etab_numero_tva_intra)
+                Q(vat=clean_numero_tva_intra) | Q(etablissementtocompanyrelation__old_vat=clean_numero_tva_intra)
             )
             # seulement 2 options possible pour len(company_with_vat_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.vat
             if len(company_with_vat_matching) == 1:
@@ -131,7 +137,7 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                 matched = True
                 relation, _ = EtablissementToCompanyRelation.objects.get_or_create(
                     company=company_with_vat_matching[0],
-                    old_vat=etab.etab_numero_tva_intra,
+                    old_vat=clean_numero_tva_intra,
                 )  # si le vat est celui actuel (Company.vat) la relation n'existe pas encore
                 relation.siccrf_id = etab.etab_ident
                 relation.siccrf_registration_date = convert_str_date(etab.etab_date_adhesion)
@@ -151,7 +157,7 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                 social_name=etab.etab_raison_sociale,
                 commercial_name=etab.etab_enseigne or "",
                 siret=etab.etab_siret,
-                vat=etab.etab_numero_tva_intra,
+                vat=clean_vat(etab.etab_numero_tva_intra),
                 activities=convert_activities(etab),
             )
 
@@ -161,7 +167,7 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                     company=new_company,
                     siccrf_id=etab.etab_ident,
                     old_siret=etab.etab_siret,
-                    old_vat=etab.etab_numero_tva_intra,
+                    old_vat=clean_vat(etab.etab_numero_tva_intra),
                     siccrf_registration_date=convert_str_date(etab.etab_date_adhesion),
                 )
                 relation.save()
