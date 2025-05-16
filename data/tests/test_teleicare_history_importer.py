@@ -88,7 +88,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             etab_ica_fabricant=True,
         )
 
-        match_companies_on_siret_or_vat()
+        match_companies_on_siret_or_vat(create_only_useful=False)
         company_with_siret.refresh_from_db()
         etablissement_with_siret.refresh_from_db()
         company_with_vat.refresh_from_db()
@@ -134,7 +134,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             EtablissementToCompanyRelation.objects.filter(company=company, old_vat=vat_2).exists(),
         )
 
-        match_companies_on_siret_or_vat()
+        match_companies_on_siret_or_vat(create_only_useful=False)
         self.assertEqual(
             EtablissementToCompanyRelation.objects.filter(company=company).count(),
             2,
@@ -162,7 +162,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             0,
         )
 
-        match_companies_on_siret_or_vat(create_if_not_exist=True)
+        match_companies_on_siret_or_vat(create_if_not_exist=True, create_only_useful=False)
         self.assertTrue(
             EtablissementToCompanyRelation.objects.filter(
                 siccrf_id=etablissement_to_create_as_company.etab_ident

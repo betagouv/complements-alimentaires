@@ -84,7 +84,7 @@ def convert_activities(etab):
     return activities
 
 
-def match_companies_on_siret_or_vat(create_if_not_exist=False):
+def match_companies_on_siret_or_vat(create_if_not_exist=False, create_only_useful=True):
     """
     Le matching pourrait aussi être fait sur
     * Q(social_name__icontains=etab.etab_raison_sociale)
@@ -98,12 +98,15 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
     nb_vat_match, nb_siret_match = 0, 0
     nb_creation_success, nb_creation_fail = 0, 0
     # ne créé que les etablissement qui ont des déclarations reliées
-    used_etab_ident = (
-        IcaComplementAlimentaire.objects.values_list("etab_id")
-        .union(IcaDeclaration.objects.values_list("etab_id"))
-        .union(IcaVersionDeclaration.objects.values_list("etab_id"))
-    )
-    etab_to_create = IcaEtablissement.objects.filter(etab_ident__in=used_etab_ident)
+    if create_only_useful:
+        used_etab_ident = (
+            IcaComplementAlimentaire.objects.values_list("etab_id")
+            .union(IcaDeclaration.objects.values_list("etab_id"))
+            .union(IcaVersionDeclaration.objects.values_list("etab_id"))
+        )
+        etab_to_create = IcaEtablissement.objects.filter(etab_ident__in=used_etab_ident)
+    else:
+        etab_to_create = IcaEtablissement.objects.all()
     for etab in etab_to_create:
         matched = False
         # recherche de l'etablissement dans les Company déjà enregistrées
