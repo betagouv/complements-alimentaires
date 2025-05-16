@@ -313,7 +313,7 @@ def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declar
         "status": status,
         # addresse responsable d'etiquetage
         "address": latest_ica_version_declaration.vrsdecl_adre_voie,
-        "additional_details": latest_ica_version_declaration.vrsdecl_adre_comp,
+        "additional_details": latest_ica_version_declaration.vrsdecl_adre_comp or "",
         "postal_code": latest_ica_version_declaration.vrsdecl_adre_cp[
             :10
         ],  # from TextField to CharField(max_length=10)
