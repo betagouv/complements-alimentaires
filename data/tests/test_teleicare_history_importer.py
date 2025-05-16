@@ -552,7 +552,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             EtablissementToCompanyRelation.objects.filter(siccrf_id=etablissement_mandataire.etab_ident).count(), 0
         )
         self.assertEqual(CA_declaration.company, declarant_company)
-        self.assertEqual(CA_declaration.mandated_company, None)
+        self.assertIsNone(CA_declaration.mandated_company)
 
     @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
     def test_historic_declaration_is_updated_with_mandataire(self, mocked_add_composition_function):
