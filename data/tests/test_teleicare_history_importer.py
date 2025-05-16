@@ -219,7 +219,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
                 siccrf_id=etablissement_to_create_as_company.etab_ident
             ).company,
         )
-        # self.assertEqual(created_declaration.mandated_company, None)
+        self.assertIsNone(created_declaration.mandated_company)
         self.assertEqual(created_declaration.name, CA_to_create_as_declaration.cplalim_nom)
         self.assertEqual(created_declaration.brand, CA_to_create_as_declaration.cplalim_marque)
         self.assertEqual(created_declaration.gamme, CA_to_create_as_declaration.cplalim_gamme)
