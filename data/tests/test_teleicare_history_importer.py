@@ -568,7 +568,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
         CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=galenic_formulation_id)
         CA_declaration = AuthorizedDeclarationFactory(company=declarant_company, siccrf_id=CA.cplalim_ident)
 
-        self.assertEqual(CA_declaration.mandated_company, None)
+        self.assertIsNone(CA_declaration.mandated_company)
         self.assertEqual(Declaration.objects.all().count(), 1)
 
         siret_mandataire = _make_siret()
