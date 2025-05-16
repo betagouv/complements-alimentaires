@@ -366,6 +366,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     decision = serializers.SerializerMethodField()
     responsable_mise_sur_marche = serializers.SerializerMethodField()
     siret_responsable_mise_sur_marche = serializers.SerializerMethodField()
+    vat_responsable_mise_sur_marche = serializers.SerializerMethodField()
     nom_commercial = serializers.SerializerMethodField()
     marque = serializers.SerializerMethodField()
     gamme = serializers.SerializerMethodField()
@@ -396,6 +397,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             "decision",
             "responsable_mise_sur_marche",
             "siret_responsable_mise_sur_marche",
+            "vat_responsable_mise_sur_marche",
             "nom_commercial",
             "marque",
             "gamme",
@@ -436,6 +438,9 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     def get_siret_responsable_mise_sur_marche(self, obj):
         return obj.company.siret
+
+    def get_vat_responsable_mise_sur_marche(self, obj):
+        return obj.company.vat
 
     def get_nom_commercial(self, obj):
         return obj.name
