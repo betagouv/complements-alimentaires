@@ -89,10 +89,16 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
     si create_if_not_exist=True, création des entreprises non matchées
     avec risque de doublon (si le SIRET/VAT avec lequel l'entreprise a été créée est différent)
     """
-    nb_vat_match = 0
-    nb_siret_match = 0
-    nb_created_companies = 0
-    for etab in IcaEtablissement.objects.all():
+    nb_vat_match, nb_siret_match = 0, 0
+    nb_creation_success, nb_creation_fail = 0, 0
+    # ne créé que les etablissement qui ont des déclarations reliées
+    used_etab_ident = (
+        IcaComplementAlimentaire.objects.values_list("etab_id")
+        .union(IcaDeclaration.objects.values_list("etab_id"))
+        .union(IcaVersionDeclaration.objects.values_list("etab_id"))
+    )
+    etab_to_create = IcaEtablissement.objects.filter(etab_ident__in=used_etab_ident)
+    for etab in etab_to_create:
         matched = False
         # recherche de l'etablissement dans les Company déjà enregistrées
         if etab.etab_siret is not None:
@@ -159,17 +165,16 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                     siccrf_registration_date=convert_str_date(etab.etab_date_adhesion),
                 )
                 relation.save()
-                nb_created_companies += 1
+                nb_creation_success += 1
             except ValidationError as e:
+                nb_creation_fail += 1
                 logger.error(f"Impossible de créer la Company à partir du siccrf_id = {etab.etab_ident}: {e}")
 
+    logger.info(f"Sur {etab_to_create.count()} : {nb_siret_match} entreprises réconcilliées par le siret.")
+    logger.info(f"Sur {etab_to_create.count()} : {nb_vat_match} entreprises réconcilliées par le n°TVA intracom.")
     logger.info(
-        f"Sur {len(IcaEtablissement.objects.all())} : {nb_siret_match} entreprises réconcilliées par le siret."
+        f"Sur {etab_to_create.count()} : {nb_creation_success} entreprises créées, et {nb_creation_fail} non créées."
     )
-    logger.info(
-        f"Sur {len(IcaEtablissement.objects.all())} : {nb_vat_match} entreprises réconcilliées par le n°TVA intracom."
-    )
-    logger.info(f"Sur {len(IcaEtablissement.objects.all())} : {nb_created_companies} entreprises créées.")
 
 
 def get_oldest_and_latest(list_of_declarations):
