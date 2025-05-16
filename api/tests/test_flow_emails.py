@@ -197,12 +197,17 @@ class TestDeclarationFlow(APITestCase):
         """
         declaration = AuthorizedDeclarationFactory(author=authenticate.user)
         template_number = 8
+        payload = {"effective_withdrawal_date": "2026-05-08"}
 
-        self.client.post(reverse("api:withdraw", kwargs={"pk": declaration.id}), format="json")
+        self.client.post(reverse("api:withdraw", kwargs={"pk": declaration.id}), payload, format="json")
+        declaration.refresh_from_db()
+        brevo_parameters = declaration.brevo_parameters
+
+        self.assertEqual(brevo_parameters["EFFECTIVE_WITHDRAWAL_DATE"], "vendredi 8 mai 2026")
 
         mocked_brevo.assert_called_once_with(
             template_number,
-            declaration.brevo_parameters,
+            brevo_parameters,
             declaration.author.email,
             declaration.author.get_full_name(),
         )
