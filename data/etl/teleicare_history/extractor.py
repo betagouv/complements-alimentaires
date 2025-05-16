@@ -60,6 +60,12 @@ def convert_phone_number(phone_number_to_parse):
     return ""
 
 
+def clean_vat(vat_to_parse):
+    if vat_to_parse:
+        return vat_to_parse.replace(" ", "").replace(".", "").replace("-", "")
+    return None
+
+
 def convert_activities(etab):
     activities = []
     if etab.etab_ica_faconnier:
@@ -78,7 +84,7 @@ def convert_activities(etab):
     return activities
 
 
-def match_companies_on_siret_or_vat(create_if_not_exist=False):
+def match_companies_on_siret_or_vat(create_if_not_exist=False, create_only_useful=True):
     """
     Le matching pourrait aussi être fait sur
     * Q(social_name__icontains=etab.etab_raison_sociale)
@@ -86,12 +92,22 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
     * Q(email__icontains=etab.etab_courriel)
     * Q(phone_number__icontains=etab.etab_telephone)
     Mais il serait moins précis.
-    Cette méthode créé les entreprises non matchées pour avoir toutes les données intégrées dans le nouveau système.
+    si create_if_not_exist=True, création des entreprises non matchées
+    avec risque de doublon (si le SIRET/VAT avec lequel l'entreprise a été créée est différent)
     """
-    nb_vat_match = 0
-    nb_siret_match = 0
-    nb_created_companies = 0
-    for etab in IcaEtablissement.objects.all():
+    nb_vat_match, nb_siret_match = 0, 0
+    nb_creation_success, nb_creation_fail = 0, 0
+    # ne créé que les etablissement qui ont des déclarations reliées
+    if create_only_useful:
+        used_etab_ident = (
+            IcaComplementAlimentaire.objects.values_list("etab_id")
+            .union(IcaDeclaration.objects.values_list("etab_id"))
+            .union(IcaVersionDeclaration.objects.values_list("etab_id"))
+        )
+        etab_to_create = IcaEtablissement.objects.filter(etab_ident__in=used_etab_ident)
+    else:
+        etab_to_create = IcaEtablissement.objects.all()
+    for etab in etab_to_create:
         matched = False
         # recherche de l'etablissement dans les Company déjà enregistrées
         if etab.etab_siret is not None:
@@ -114,9 +130,9 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                     logger.error(f"Relation entre {relation.company_id} et {relation.siccrf_id} : {err}.")
 
         elif etab.etab_numero_tva_intra is not None:
+            clean_numero_tva_intra = clean_vat(etab.etab_numero_tva_intra)
             company_with_vat_matching = Company.objects.filter(
-                Q(vat=etab.etab_numero_tva_intra)
-                | Q(etablissementtocompanyrelation__old_vat=etab.etab_numero_tva_intra)
+                Q(vat=clean_numero_tva_intra) | Q(etablissementtocompanyrelation__old_vat=clean_numero_tva_intra)
             )
             # seulement 2 options possible pour len(company_with_vat_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.vat
             if len(company_with_vat_matching) == 1:
@@ -124,7 +140,7 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                 matched = True
                 relation, _ = EtablissementToCompanyRelation.objects.get_or_create(
                     company=company_with_vat_matching[0],
-                    old_vat=etab.etab_numero_tva_intra,
+                    old_vat=clean_numero_tva_intra,
                 )  # si le vat est celui actuel (Company.vat) la relation n'existe pas encore
                 relation.siccrf_id = etab.etab_ident
                 relation.siccrf_registration_date = convert_str_date(etab.etab_date_adhesion)
@@ -144,7 +160,7 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                 social_name=etab.etab_raison_sociale,
                 commercial_name=etab.etab_enseigne or "",
                 siret=etab.etab_siret,
-                vat=etab.etab_numero_tva_intra,
+                vat=clean_vat(etab.etab_numero_tva_intra),
                 activities=convert_activities(etab),
             )
 
@@ -154,21 +170,20 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False):
                     company=new_company,
                     siccrf_id=etab.etab_ident,
                     old_siret=etab.etab_siret,
-                    old_vat=etab.etab_numero_tva_intra,
+                    old_vat=clean_vat(etab.etab_numero_tva_intra),
                     siccrf_registration_date=convert_str_date(etab.etab_date_adhesion),
                 )
                 relation.save()
-                nb_created_companies += 1
+                nb_creation_success += 1
             except ValidationError as e:
+                nb_creation_fail += 1
                 logger.error(f"Impossible de créer la Company à partir du siccrf_id = {etab.etab_ident}: {e}")
 
+    logger.info(f"Sur {etab_to_create.count()} : {nb_siret_match} entreprises réconcilliées par le siret.")
+    logger.info(f"Sur {etab_to_create.count()} : {nb_vat_match} entreprises réconcilliées par le n°TVA intracom.")
     logger.info(
-        f"Sur {len(IcaEtablissement.objects.all())} : {nb_siret_match} entreprises réconcilliées par le siret."
+        f"Sur {etab_to_create.count()} : {nb_creation_success} entreprises créées, et {nb_creation_fail} non créées."
     )
-    logger.info(
-        f"Sur {len(IcaEtablissement.objects.all())} : {nb_vat_match} entreprises réconcilliées par le n°TVA intracom."
-    )
-    logger.info(f"Sur {len(IcaEtablissement.objects.all())} : {nb_created_companies} entreprises créées.")
 
 
 def get_oldest_and_latest(list_of_declarations):
@@ -263,7 +278,20 @@ def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declar
         if latest_ica_declaration.dcl_date_fin_commercialisation
         else DECLARATION_STATUS_MAPPING[latest_ica_version_declaration.stattdcl_ident]
     )
+    mandated_company = None
+    if latest_ica_declaration.etab_id is not None:
+        try:
+            # si l'entreprise mandataire a été créée sur Compl'Alim et matchée avec un Etablissement historique grâce au SIRET/VAT avec match_companies_on_siret_or_vat
+            mandated_company = EtablissementToCompanyRelation.objects.get(
+                siccrf_id=latest_ica_declaration.etab_id
+            ).company
+        except EtablissementToCompanyRelation.DoesNotExist:
+            # ne devrait pas arriver si toutes les entreprises ont été créées avec match_companies_on_siret_or_vat(create_if_not_exist=True)
+            logger.error(
+                "La company mandataire etab_ident={latest_ica_declaration.etab_id} du complément alimentaire déclaré dans Teleicare cplalim_ident={ica_complement_alimentaire.cplalim_ident} n'existe pas dans Compl'Alim."
+            )
     return {
+        "mandated_company": mandated_company,
         "siccrf_id": ica_complement_alimentaire.cplalim_ident,
         "teleicare_id": create_teleicare_id(latest_ica_declaration),
         "galenic_formulation": GalenicFormulation.objects.get(siccrf_id=ica_complement_alimentaire.frmgal_ident),
@@ -283,10 +311,14 @@ def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declar
         "warning": latest_ica_version_declaration.vrsdecl_mise_en_garde or "",
         "calculated_article": DECLARATION_TYPE_TO_ARTICLE_MAPPING[latest_ica_declaration.tydcl_ident],
         "status": status,
-        # TODO: ces champs sont à importer
-        # "address":
-        # "postal_code":
-        # "city":
+        # addresse responsable d'etiquetage
+        "address": latest_ica_version_declaration.vrsdecl_adre_voie,
+        "additional_details": latest_ica_version_declaration.vrsdecl_adre_comp,
+        "postal_code": latest_ica_version_declaration.vrsdecl_adre_cp[
+            :10
+        ],  # from TextField to CharField(max_length=10)
+        "city": latest_ica_version_declaration.vrsdecl_adre_ville,
+        # "cedex": parfois compris dans vrsdecl_adre_comp ou vrsdecl_adre_comp2
         # "country":
     }
 
@@ -515,6 +547,7 @@ def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=
                 try:  # pas possible d'utiliser update_or_create
                     declaration = Declaration.objects.get(
                         siccrf_id=ica_complement_alimentaire.cplalim_ident,
+                        # resp mise sur le marché (entreprise qui déclare ou pour laquelle une entreprise mandataire déclare)
                         company=EtablissementToCompanyRelation.objects.get(
                             siccrf_id=ica_complement_alimentaire.etab_id
                         ).company,
@@ -524,6 +557,7 @@ def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=
                 except Declaration.DoesNotExist:
                     declaration = Declaration(
                         siccrf_id=ica_complement_alimentaire.cplalim_ident,
+                        # resp mise sur le marché (entreprise qui déclare ou pour laquelle une entreprise mandataire déclare)
                         company=EtablissementToCompanyRelation.objects.get(
                             siccrf_id=ica_complement_alimentaire.etab_id
                         ).company,

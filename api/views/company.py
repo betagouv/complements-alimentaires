@@ -66,7 +66,6 @@ class CheckCompanyIdentifierView(APIView):
 
     def get(self, request, identifier):
         identifier_type = _get_identifier_type(request)
-
         # Utilise les validateurs siret/vat pour réinjecter les potentielles erreurs
         # On n'utilise pas un model serializer car ça testerait d'autres contraintes (ex : unicité du champ)
         validation_fuction = globals()[f"validate_{identifier_type}"]

@@ -139,7 +139,7 @@
       "type": "string"
     },
     {
-      "description": "Mise en garde et avertissement (fournies par le fabricant). Certains avertissements doivent obligatoirement être notés sur l'étiquettage.",
+      "description": "Mise en garde et avertissement (fournies par le fabricant). Certains avertissements doivent obligatoirement être notés sur l'étiquetage.",
       "example": "Ne pas dépasser la dose journalière recommandée. Tenir hors de portée des jeunes enfants. Ne peut se substituer à un régime alimentaire varié.",
       "name": "mises_en_garde",
       "title": "Mises en garde",
