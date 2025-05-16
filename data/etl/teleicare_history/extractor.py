@@ -313,7 +313,7 @@ def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declar
         "status": status,
         # addresse responsable d'etiquetage
         "address": latest_ica_version_declaration.vrsdecl_adre_voie,
-        "additional_details": latest_ica_version_declaration.vrsdecl_adre_comp,
+        "additional_details": latest_ica_version_declaration.vrsdecl_adre_comp or "",
         "postal_code": latest_ica_version_declaration.vrsdecl_adre_cp[
             :10
         ],  # from TextField to CharField(max_length=10)
@@ -485,7 +485,11 @@ last_word_to_administration_status = (Declaration.DeclarationStatus.REJECTED, Sn
 
 @transaction.atomic
 def add_final_state_snapshot(
-    declaration, latest_ica_version_declaration, declaration_acceptation_date, nb_version_declaration
+    declaration,
+    latest_ica_version_declaration,
+    declaration_acceptation_date,
+    nb_version_declaration,
+    effective_withdrawal_date=None,
 ):
     if not declaration.snapshots.exists():
         snapshot = Snapshot(
@@ -578,11 +582,14 @@ def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=
                     if latest_ica_declaration.dcl_date
                     else ""
                 )
-                # la date de modification est la date de fin de commercialisation si elle existe ou la date d'acceptation
-                declaration.modification_date = (
+                effective_withdrawal_date = (
                     convert_str_date(latest_ica_declaration.dcl_date_fin_commercialisation, aware=True)
                     if latest_ica_declaration.dcl_date_fin_commercialisation
-                    else declaration_acceptation_date
+                    else None
+                )
+                # la date de modification est la date de fin de commercialisation si elle existe ou la date d'acceptation
+                declaration.modification_date = (
+                    effective_withdrawal_date if effective_withdrawal_date else declaration_acceptation_date
                 )
 
                 with suppress_autotime(declaration, ["creation_date", "modification_date"]):
@@ -595,6 +602,7 @@ def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=
                         latest_ica_version_declaration,
                         declaration_acceptation_date,
                         nb_version_declaration,
+                        effective_withdrawal_date=effective_withdrawal_date,
                     )
                     nb_created_declarations += 1
 
