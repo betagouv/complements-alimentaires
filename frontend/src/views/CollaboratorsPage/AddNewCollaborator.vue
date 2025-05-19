@@ -41,8 +41,9 @@ import { roleNameDisplayNameMapping } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 
+const emit = defineEmits(["added"])
 const opened = ref(false)
-const props = defineProps({ companyId: Number, collaboratorsExecute: Function })
+const props = defineProps({ companyId: Number })
 
 // Form state & rules
 
@@ -93,7 +94,7 @@ const submit = async () => {
     .json()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
-    await props.collaboratorsExecute() // met à jour les collaborateurs existants, car ils peuvent avoir changé
+    emit("added")
     useToaster().addMessage({
       type: "success",
       // exceptionnellement on utilise le message directement du back, car plusieurs cas possibles
