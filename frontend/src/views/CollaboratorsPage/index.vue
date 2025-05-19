@@ -9,6 +9,7 @@
       <SectionTitle :title="`Collaborateurs actuels de ${company.socialName}`" icon="ri-user-line" />
       <AddNewCollaborator
         :companyId="company.id"
+        :disabled="requestOngoing"
         @added="() => ongoingInvitationsExecute() && collaboratorsExecute()"
       />
     </div>
@@ -90,13 +91,14 @@ const company = computed(() => companies.value?.find((c) => +c.id === +route.par
 const canRoleBeAddedTo = (roleName, user) => !user.roles.some((role) => role.name === roleName)
 
 const rootUrl = computed(() => `/api/v1/companies/${company.value.id}`)
-const params = { immediate: false, headers: headers() }
+const params = { immediate: false }
 
 // Requête initiale pour récupérer les collaborateurs de l'entreprise
 const {
   data: collaborators,
   response: collaboratorsResponse,
   execute: collaboratorsExecute,
+  isFetching: collaboratorsIsFetching,
 } = useFetch(`${rootUrl.value}/collaborators`, params).json()
 
 // Requête pour obtenir les invitations en cours
@@ -104,6 +106,7 @@ const {
   data: ongoingInvitations,
   response: ongoingInvitationsResponse,
   execute: ongoingInvitationsExecute,
+  isFetching: ongoingInvitationsIsFetching,
 } = useFetch(`${rootUrl.value}/collaboration-invitations/`, params).json()
 
 // Requête pour obtenir les demandes / solicitations
@@ -111,7 +114,12 @@ const {
   data: solicitations,
   response: solicitationsResponse,
   execute: solicitationsExecute,
+  isFetching: solicitationsIsFetching,
 } = useFetch(`${rootUrl.value}/company-access-claims/`, params).json()
+
+const requestOngoing = computed(
+  () => !!(collaboratorsIsFetching.value || ongoingInvitationsIsFetching.value || solicitationsIsFetching.value)
+)
 
 onMounted(async () => {
   await collaboratorsExecute()
