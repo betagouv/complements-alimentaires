@@ -244,7 +244,7 @@
       </div>
     </DsfrFieldset>
     <DsfrAlert v-if="element" class="mt-0 mb-8">
-      <p>Cette modification pourrait impacter des déclarations en cours qui utilisent cet ingrédient.</p>
+      <p>Des modifications pourrait impacter les déclarations en cours qui utilisent cet ingrédient.</p>
       <p>
         <router-link
           :to="{
