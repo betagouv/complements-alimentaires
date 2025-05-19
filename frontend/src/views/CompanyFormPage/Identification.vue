@@ -95,6 +95,7 @@ const submitIdentifier = async () => {
           component: "ClaimCompanyAccess",
         })
         break
+      // ce cas correspond notamment aux entreprises importées de TeleIcare
       case "registered_and_unsupervised":
         emit("changeStep", {
           name: "Demande de gestion d'une entreprise existante",

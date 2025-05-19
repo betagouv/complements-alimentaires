@@ -8,7 +8,11 @@
     <p>
         La Direction générale de l'alimentation (DGAL) atteste que
         <span style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
-            {% if declaration.company %}{{ declaration.company.social_name }}{% endif %}
+            {% if declaration.mandated_company %}
+            l'entreprise mandataire {{ declaration.mandated_company.social_name }}
+            {% elif declaration.company %}
+            {{ declaration.company.social_name }}
+            {% endif %}
         </span>
         a effectué, le {{ last_submission_date|date:"l j F Y" }}, la déclaration prévue par les dispositions
         du décret n°2006-352 du 20 mars 2006 relatif aux compléments alimentaires pour le produit :
@@ -46,6 +50,13 @@
     <p>
         La déclaration prévue à l’article 15 du décret n°2006-352 vise à informer l’administration
         de la mise sur le marché d’un complément alimentaire.
+        {% if effective_withdrawal_date %}
+            Postérieurement à votre déclaration, le {{ withdrawal_date|date:"l j F Y" }} vous avez signalé
+            le retrait du marché du produit indiquant comme date effective le {{ effective_withdrawal_date|date:"l j F Y" }}.
+        {% elif withdrawal_date %}
+            Postérieurement à votre déclaration, le {{ withdrawal_date|date:"l j F Y" }} vous avez signalé
+            le retrait du marché du produit.
+        {% endif %}
     </p>
     <p>
         Votre produit reste consultable à l’adresse suivante :

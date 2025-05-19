@@ -22,13 +22,13 @@ click-didyoumean==0.3.1
 click-plugins==1.1.1
 click-repl==0.3.0
 colorama==0.4.6
-cryptography==44.0.2
+cryptography==45.0.2
 cssselect2==0.8.0
 decorator==5.2.1
 diff_cover==9.2.4
 distlib==0.3.9
 Django==5.1.7
-django-anymail==12.0
+django-anymail==13.0
 django-ckeditor==6.7.2
 django-ckeditor-5==0.2.17
 django-environ==0.12.0
@@ -40,7 +40,7 @@ django-prose==2.1.0
 django-redis==5.4.0
 django-silk==5.3.2
 django-simple-history==3.8.0
-django-storages==1.14.5
+django-storages==1.14.6
 django-viewflow==2.2.9
 django-webpack-loader==3.1.1
 djangorestframework==3.15.2
@@ -79,7 +79,7 @@ phonenumbers==9.0.1
 pillow==11.2.1
 pipdeptree==2.25.1
 platformdirs==4.3.7
-pluggy==1.5.0
+pluggy==1.6.0
 pre_commit==4.2.0
 prompt_toolkit==3.0.51
 psycopg2==2.9.10
@@ -102,7 +102,7 @@ regex==2024.11.6
 reportlab==4.4.0
 requests==2.32.3
 requests-mock==1.12.1
-ruff==0.11.5
+ruff==0.11.10
 s3transfer==0.12.0
 sentry-sdk==2.20.0
 sib-api-v3-sdk==7.6.0

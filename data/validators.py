@@ -23,6 +23,7 @@ def validate_siret(value):
 
 def validate_vat(value):
     """Validateur pour les numéros de TVA intracommunautaires"""
-
     if not re.match(r"^[A-Z]{2,}\w{2,12}$", value):
-        raise ValidationError("Un numéro de TVA valide doit commencer par 2 lettres suivies de 2 à 12 chiffres.")
+        raise ValidationError(
+            "Un numéro de TVA valide doit commencer par minimum 2 lettres suivies de 2 à 12 chiffres."
+        )

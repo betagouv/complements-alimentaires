@@ -89,6 +89,13 @@
       "type": "string"
     },
     {
+      "description": "N° de TVA intracommunautaire de l'entreprise responsable de la mise sur le marché du complément alimentaire.",
+      "example": "SK9999999999",
+      "name": "vat_responsable_mise_sur_marche",
+      "title": "N° TVA intracommunautaire responsable de la mise sur le marché",
+      "type": "string"
+    },
+    {
       "constraints": {
         "enum": [
           "Article 15",
@@ -132,7 +139,7 @@
       "type": "string"
     },
     {
-      "description": "Mise en garde et avertissement (fournies par le fabricant). Certains avertissements doivent obligatoirement être notés sur l'étiquettage.",
+      "description": "Mise en garde et avertissement (fournies par le fabricant). Certains avertissements doivent obligatoirement être notés sur l'étiquetage.",
       "example": "Ne pas dépasser la dose journalière recommandée. Tenir hors de portée des jeunes enfants. Ne peut se substituer à un régime alimentaire varié.",
       "name": "mises_en_garde",
       "title": "Mises en garde",

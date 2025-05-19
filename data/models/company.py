@@ -165,7 +165,7 @@ class CompanyRoleClassChoices(models.TextChoices):
 
 
 class CompanyRole(Deactivable):
-    """Réprésente un rôle d'utilisateur qui n'a de sens que pour une entreprise donnée"""
+    """Représente un rôle d'utilisateur qui n'a de sens que pour une entreprise donnée"""
 
     class Meta:
         abstract = True

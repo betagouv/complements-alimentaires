@@ -11,7 +11,7 @@ from .ica_etablissement import IcaEtablissement
 # Les etablissements en lien avec ces 3 modèles peuvent être tous différents (cas rare) ou tous les mêmes
 # * entreprise responsable de l'étiquetage du modèle IcaComplementAlimentaire
 # * entreprise télédéclarante du modèle IcaVersionDeclaration
-# * entreprise gestionnaire du modèle IcaDeclaration
+# * entreprise mandataire/gestionnaire du modèle IcaDeclaration
 
 
 class IcaComplementAlimentaire(models.Model):
@@ -19,7 +19,7 @@ class IcaComplementAlimentaire(models.Model):
     frmgal_ident = models.IntegerField(blank=True, null=True)
     etab = models.ForeignKey(
         IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident"
-    )  # correspond à l'entreprise responsable de l'étiquetage
+    )  # correspond à l'entreprise responsable de la mise sur le marché
     cplalim_marque = models.TextField(blank=True, null=True)
     cplalim_gamme = models.TextField(blank=True, null=True)
     cplalim_nom = models.TextField()
@@ -37,8 +37,8 @@ class IcaDeclaration(models.Model):
     cplalim = models.ForeignKey(IcaComplementAlimentaire, on_delete=models.CASCADE, db_column="cplalim_ident")
     tydcl_ident = models.IntegerField()  # Article 15 ou 16
     etab = models.ForeignKey(
-        IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident"
-    )  # correspond à l'entreprise gestionnaire de la déclaration
+        IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident", null=True
+    )  # correspond à l'entreprise gestionnaire/mandataire de la déclaration. Null dans 76% des cas
     etab_ident_rmm_declarant = models.IntegerField()
     dcl_date = models.TextField()
     dcl_saisie_administration = models.BooleanField(null=True)  # rendu nullable pour simplifier les Factories
@@ -62,7 +62,7 @@ class IcaVersionDeclaration(models.Model):
     pays_ident_adre = models.IntegerField(blank=True, null=True)
     etab = models.ForeignKey(
         IcaEtablissement, on_delete=models.CASCADE, db_column="etab_ident"
-    )  # correspond à l'entreprise télédéclarante
+    )  # correspond à l'entreprise télédéclarante (mandataire s'il existe sinon resp mise sur le marché)
     ex_ident = models.IntegerField(null=True)  # rendu nullable pour simplifier les Factories
     pays_ident_pays_de_reference = models.IntegerField(blank=True, null=True)
     dcl = models.ForeignKey(
@@ -85,13 +85,15 @@ class IcaVersionDeclaration(models.Model):
     vrsdecl_mode_json = models.BooleanField(null=True)  # rendu nullable pour simplifier les Factories
     vrsdecl_numero_dossiel = models.TextField(blank=True, null=True)
     vrsdecl_mode_sans_verif = models.BooleanField(null=True)  # rendu nullable pour simplifier les Factories
-    vrsdecl_adre_ville = models.TextField(blank=True, null=True)
-    vrsdecl_adre_cp = models.TextField(blank=True, null=True)
-    vrsdecl_adre_voie = models.TextField(blank=True, null=True)
+    vrsdecl_adre_ville = models.TextField()  # jamais null
+    vrsdecl_adre_cp = models.TextField()  # jamais null
+    vrsdecl_adre_voie = models.TextField()  # jamais null
     vrsdecl_adre_comp = models.TextField(blank=True, null=True)
     vrsdecl_adre_comp2 = models.TextField(blank=True, null=True)
-    vrsdecl_adre_dist = models.TextField(blank=True, null=True)
-    vrsdecl_adre_region = models.TextField(blank=True, null=True)
+    vrsdecl_adre_dist = models.TextField(
+        blank=True, null=True
+    )  # n'est pas repris dans Compl'Alim ce champ est toujours vide
+    vrsdecl_adre_region = models.TextField(blank=True, null=True)  # n'est pas repris dans Compl'Alim
     vrsdecl_adre_raison_sociale = models.TextField(blank=True, null=True)
 
     class Meta:

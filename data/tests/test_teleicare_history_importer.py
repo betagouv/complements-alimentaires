@@ -9,6 +9,7 @@ from data.etl.teleicare_history.extractor import (
     match_companies_on_siret_or_vat,
 )
 from data.factories.company import CompanyFactory, EtablissementToCompanyRelationFactory, _make_siret, _make_vat
+from data.factories.declaration import AuthorizedDeclarationFactory
 from data.factories.galenic_formulation import GalenicFormulationFactory
 from data.factories.population import PopulationFactory
 from data.factories.teleicare_history import (
@@ -87,7 +88,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             etab_ica_fabricant=True,
         )
 
-        match_companies_on_siret_or_vat()
+        match_companies_on_siret_or_vat(create_only_useful=False)
         company_with_siret.refresh_from_db()
         etablissement_with_siret.refresh_from_db()
         company_with_vat.refresh_from_db()
@@ -133,7 +134,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             EtablissementToCompanyRelation.objects.filter(company=company, old_vat=vat_2).exists(),
         )
 
-        match_companies_on_siret_or_vat()
+        match_companies_on_siret_or_vat(create_only_useful=False)
         self.assertEqual(
             EtablissementToCompanyRelation.objects.filter(company=company).count(),
             2,
@@ -161,7 +162,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             0,
         )
 
-        match_companies_on_siret_or_vat(create_if_not_exist=True)
+        match_companies_on_siret_or_vat(create_if_not_exist=True, create_only_useful=False)
         self.assertTrue(
             EtablissementToCompanyRelation.objects.filter(
                 siccrf_id=etablissement_to_create_as_company.etab_ident
@@ -196,7 +197,9 @@ class TeleicareHistoryImporterTestCase(TestCase):
         CA_to_create_as_declaration = ComplementAlimentaireFactory(
             etab=etablissement_to_create_as_company, frmgal_ident=galenic_formulation_id
         )
-        declaration_to_create_as_declaration = DeclarationFactory(cplalim=CA_to_create_as_declaration, tydcl_ident=1)
+        declaration_to_create_as_declaration = DeclarationFactory(
+            cplalim=CA_to_create_as_declaration, tydcl_ident=1, etab=None
+        )
         version_declaration_to_create_as_declaration = VersionDeclarationFactory(
             dcl=declaration_to_create_as_declaration,
             stadcl_ident=8,
@@ -210,6 +213,13 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
         version_declaration_to_create_as_declaration.refresh_from_db()
         created_declaration = Declaration.objects.get(siccrf_id=CA_to_create_as_declaration.cplalim_ident)
+        self.assertEqual(
+            created_declaration.company,
+            EtablissementToCompanyRelation.objects.get(
+                siccrf_id=etablissement_to_create_as_company.etab_ident
+            ).company,
+        )
+        self.assertIsNone(created_declaration.mandated_company)
         self.assertEqual(created_declaration.name, CA_to_create_as_declaration.cplalim_nom)
         self.assertEqual(created_declaration.brand, CA_to_create_as_declaration.cplalim_marque)
         self.assertEqual(created_declaration.gamme, CA_to_create_as_declaration.cplalim_gamme)
@@ -460,3 +470,134 @@ class TeleicareHistoryImporterTestCase(TestCase):
         self.assertIn("Femme enceinte", CA_dec_2.populations.all().values_list("name", flat=True))
         CA_dec_3 = Declaration.objects.get(siccrf_id=CA_3.cplalim_ident)
         self.assertFalse(CA_dec_3.populations.all().exists())
+
+    @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
+    def test_historic_declaration_has_right_mandated_company_with_all_historic_companies_created(
+        self, mocked_add_composition_function
+    ):
+        galenic_formulation_id = 1
+        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
+        unit_id = 1
+        SubstanceUnitFactory(siccrf_id=unit_id)
+
+        siret_declarant = _make_siret()
+        siret_mandataire = _make_siret()
+        etablissement_declarant = EtablissementFactory(etab_siret=siret_declarant)
+        etablissement_mandataire = EtablissementFactory(etab_siret=siret_mandataire)
+        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=galenic_formulation_id)
+        declaration = DeclarationFactory(
+            cplalim=CA,
+            etab=etablissement_mandataire,
+            tydcl_ident=1,
+            dcl_date="03/20/2021 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        version_declaration = VersionDeclarationFactory(
+            dcl=declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        match_companies_on_siret_or_vat(create_if_not_exist=True)
+        create_declarations_from_teleicare_history()
+        CA_declaration = Declaration.objects.get(siccrf_id=CA.cplalim_ident)
+        declarant_company = EtablissementToCompanyRelation.objects.get(
+            siccrf_id=etablissement_declarant.etab_ident
+        ).company
+        mandataire_company = EtablissementToCompanyRelation.objects.get(
+            siccrf_id=etablissement_mandataire.etab_ident
+        ).company  # les objets Company et EtablissementToCompanyRelation ont été créés
+        self.assertEqual(CA_declaration.mandated_company, mandataire_company)
+        self.assertEqual(CA_declaration.company, declarant_company)
+        self.assertEqual(CA_declaration.address, version_declaration.vrsdecl_adre_voie)
+        self.assertEqual(CA_declaration.postal_code, version_declaration.vrsdecl_adre_cp[:10])
+        self.assertEqual(CA_declaration.city, version_declaration.vrsdecl_adre_ville)
+
+    @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
+    def test_historic_declaration_has_right_mandated_company_without_precreation_mandated_companies(
+        self, mocked_add_composition_function
+    ):
+        galenic_formulation_id = 1
+        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
+        unit_id = 1
+        SubstanceUnitFactory(siccrf_id=unit_id)
+
+        siret_declarant = _make_siret()
+        siret_mandataire = _make_siret()
+        etablissement_declarant = EtablissementFactory(etab_siret=siret_declarant)
+        declarant_company = CompanyFactory(siret=siret_declarant)
+
+        etablissement_mandataire = EtablissementFactory(etab_siret=siret_mandataire)
+        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=galenic_formulation_id)
+        declaration = DeclarationFactory(
+            cplalim=CA,
+            etab=etablissement_mandataire,
+            tydcl_ident=1,
+            dcl_date="03/20/2021 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        VersionDeclarationFactory(
+            dcl=declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        match_companies_on_siret_or_vat()
+        create_declarations_from_teleicare_history()
+        CA_declaration = Declaration.objects.get(siccrf_id=CA.cplalim_ident)
+
+        self.assertEqual(
+            EtablissementToCompanyRelation.objects.filter(siccrf_id=etablissement_mandataire.etab_ident).count(), 0
+        )
+        self.assertEqual(CA_declaration.company, declarant_company)
+        self.assertIsNone(CA_declaration.mandated_company)
+
+    @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
+    def test_historic_declaration_is_updated_with_mandataire(self, mocked_add_composition_function):
+        galenic_formulation_id = 1
+        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
+        unit_id = 1
+        SubstanceUnitFactory(siccrf_id=unit_id)
+
+        siret_declarant = _make_siret()
+        etablissement_declarant = EtablissementFactory(etab_siret=siret_declarant)
+        declarant_company = CompanyFactory(siret=siret_declarant)
+
+        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=galenic_formulation_id)
+        CA_declaration = AuthorizedDeclarationFactory(company=declarant_company, siccrf_id=CA.cplalim_ident)
+
+        self.assertIsNone(CA_declaration.mandated_company)
+        self.assertEqual(Declaration.objects.all().count(), 1)
+
+        siret_mandataire = _make_siret()
+        etablissement_mandataire = EtablissementFactory(etab_siret=siret_mandataire)
+        declaration = DeclarationFactory(
+            cplalim=CA,
+            etab=etablissement_mandataire,
+            tydcl_ident=1,
+            dcl_date="03/20/2021 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        VersionDeclarationFactory(
+            dcl=declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        match_companies_on_siret_or_vat(create_if_not_exist=True)
+
+        create_declarations_from_teleicare_history(rewrite_existing=False)
+        CA_declaration.refresh_from_db()
+        self.assertIsNone(CA_declaration.mandated_company)
+
+        create_declarations_from_teleicare_history(rewrite_existing=True)
+        CA_declaration.refresh_from_db()
+        self.assertEqual(Declaration.objects.all().count(), 1)
+        self.assertTrue(EtablissementToCompanyRelation.objects.exclude(siccrf_id=None).exists())
+        mandataire_company = EtablissementToCompanyRelation.objects.get(
+            siccrf_id=etablissement_mandataire.etab_ident
+        ).company  # les objets Company et EtablissementToCompanyRelation ont été créés
+        self.assertEqual(CA_declaration.mandated_company, mandataire_company)

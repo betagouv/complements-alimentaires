@@ -71,8 +71,13 @@ const tooltipContent = computed(() => {
   if (hasMaxQuantities.value) content += `Quantités maximales : ${maxQuantitiesString.value}. `
   if (element.value?.publicComments) content += `Commentaires : ${element.value?.publicComments}. `
   if (element.value?.privateComments && !props.hidePrivateComments)
-    content += `Commentaires privés : ${element.value?.privateComments}.`
-  return content || "Pas de commentaires"
+    content += `Commentaires privés : ${element.value?.privateComments}. `
+  content = content || "Pas de commentaires. "
+
+  if (constitutingSubstances.value && constitutingSubstances.value.length)
+    content += "Cliquez pour plus d'informations sur les substances contenues."
+
+  return content
 })
 
 const infoModalOpened = ref(false)
