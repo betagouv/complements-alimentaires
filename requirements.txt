@@ -79,7 +79,7 @@ phonenumbers==9.0.1
 pillow==11.2.1
 pipdeptree==2.25.1
 platformdirs==4.3.7
-pluggy==1.5.0
+pluggy==1.6.0
 pre_commit==4.2.0
 prompt_toolkit==3.0.51
 psycopg2==2.9.10
