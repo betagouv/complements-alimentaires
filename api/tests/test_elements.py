@@ -1003,7 +1003,6 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(queryset_argument.count(), 2)
         self.assertTrue(queryset_argument.filter(id=declared_substance_declaration.id).exists())
         self.assertTrue(queryset_argument.filter(id=computed_substance_declaration.id).exists())
-        # self.assertEqual(list(queryset_argument), list(Declaration.objects.filter(id__in=[declared_substance_declaration.id, computed_substance_declaration.id])))
 
     @authenticate
     @patch("config.tasks.recalculate_article_for_ongoing_declarations")
