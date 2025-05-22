@@ -208,7 +208,6 @@ class Declaration(Historisable, TimeStampable):
         blank=True,
         null=True,
         editable=False,
-        unique=True,
         verbose_name="identifiant Teleicare connu par les déclarants et indiqué dans les attestations",
     )
 
