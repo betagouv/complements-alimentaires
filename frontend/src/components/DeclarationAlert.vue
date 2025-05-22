@@ -46,28 +46,28 @@ const declarantDisplayData = computed(() => {
         type: "info",
         title: "Votre dossier est en attente",
         canDownloadCertificate: true,
-        downloadButtonText: "Accusé d'enregistrement",
+        downloadButtonText: "Accusé d'enregistrement de la dernière soumission",
       }
     case "ONGOING_INSTRUCTION":
       return {
         type: "info",
         title: "Votre dossier est en attente",
         canDownloadCertificate: true,
-        downloadButtonText: "Accusé d'enregistrement",
+        downloadButtonText: "Accusé d'enregistrement de la dernière soumission",
       }
     case "AWAITING_VISA":
       return {
         type: "info",
         title: "Votre dossier est en attente",
         canDownloadCertificate: true,
-        downloadButtonText: "Accusé d'enregistrement",
+        downloadButtonText: "Accusé d'enregistrement de la dernière soumission",
       }
     case "ONGOING_VISA":
       return {
         type: "info",
         title: "Votre dossier est en attente",
         canDownloadCertificate: true,
-        downloadButtonText: "Accusé d'enregistrement",
+        downloadButtonText: "Accusé d'enregistrement de la dernière soumission",
       }
     case "OBJECTION":
       return {

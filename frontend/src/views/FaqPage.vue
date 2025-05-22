@@ -341,7 +341,7 @@
               cliquez sur le nom du produit qui vous intéresse dans le tableau récapitulatif ("Toutes mes
               déclarations").
             </li>
-            <li>cliquez sur le bouton “Accusé d’enregistrement”.</li>
+            <li>cliquez sur le bouton “Accusé d’enregistrement de la dernière soumission”.</li>
           </ul>
           <p>
             Ce PDF contient l’accusé d’enregistrement de déclaration de votre complément alimentaire ainsi que votre
