@@ -24,19 +24,21 @@ class CertificateView(PdfView):
             Declaration.Article.ARTICLE_18: 18,
             Declaration.Article.ANSES_REFERAL: "anses",
         }
-        # essayer de prendre l'article de la dernière soumission et non pas l'article actuel, qui pourrait être
+        # essayer de prendre l'article de la soumission et non pas l'article actuel, qui pourrait être
         # different grâce à l'instruction
         try:
-            last_submission = CertificateView.get_latest_submission_snapshot(declaration)
-            declaration_article = last_submission.json_declaration["article"]
+            first_submission = declaration.snapshots.filter(action=Snapshot.SnapshotActions.SUBMIT).earliest(
+                "creation_date"
+            )
+            declaration_article = first_submission.json_declaration["article"]
             if not declaration_article:
                 logger.info(
-                    f"Error obtaining article from last submission snapshot for declaration {declaration.id}, falling back to using current article"
+                    f"Error obtaining article from first submission snapshot for declaration {declaration.id}, falling back to using current article"
                 )
                 declaration_article = declaration.article
         except Snapshot.DoesNotExist:
             logger.info(
-                f"Error obtaining last submission snapshot for declaration {declaration.id}, falling back to using current article"
+                f"Error obtaining first submission snapshot for declaration {declaration.id}, falling back to using current article"
             )
             declaration_article = declaration.article
         article = article_map.get(declaration_article)
@@ -105,8 +107,14 @@ class CertificateView(PdfView):
             date = declaration.creation_date
 
         try:
-            last_submission = CertificateView.get_latest_submission_snapshot(declaration)
-            last_submission_date = last_submission.creation_date
+            submission_actions = [
+                Snapshot.SnapshotActions.SUBMIT,
+                Snapshot.SnapshotActions.RESPOND_TO_OBJECTION,
+                Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION,
+            ]
+            last_submission_date = (
+                declaration.snapshots.filter(action__in=submission_actions).latest("creation_date").creation_date
+            )
         except Snapshot.DoesNotExist:
             logger.info(
                 f"Error obtaining last submission date for declaration {declaration.id}, falling back to creation date"
@@ -153,12 +161,3 @@ class CertificateView(PdfView):
         # https://github.com/betagouv/complements-alimentaires/issues/1367
         name = declaration.name.encode("ascii", "ignore")
         return f"attestation-{name.decode()}.pdf"
-
-    @staticmethod
-    def get_latest_submission_snapshot(declaration):
-        submission_actions = [
-            Snapshot.SnapshotActions.SUBMIT,
-            Snapshot.SnapshotActions.RESPOND_TO_OBJECTION,
-            Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION,
-        ]
-        return declaration.snapshots.filter(action__in=submission_actions).latest("creation_date")

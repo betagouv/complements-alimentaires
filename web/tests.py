@@ -61,7 +61,7 @@ class CertificateViewTests(DeclarationPdfViewTests, APITestCase):
 
     def test_get_certificate_with_submitted_article(self):
         """
-        L'accusé d'enregistrement devrait montrer l'article qui a été assigné au moment de la dernière
+        L'accusé d'enregistrement devrait montrer l'article qui a été assigné au moment de la première
         soumission et pas l'article actuel
         """
         SnapshotFactory(
@@ -83,8 +83,8 @@ class CertificateViewTests(DeclarationPdfViewTests, APITestCase):
 
         view = CertificateView()
         self.assertTrue(
-            "art-15" in view.get_template_path(self.declaration),
-            "On prend le template de l'article 15 même quand maintenant c'est different",
+            "art-16" in view.get_template_path(self.declaration),
+            "On prend le template de l'article 16 même quand maintenant c'est different",
         )
 
 
