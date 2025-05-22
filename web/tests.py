@@ -61,12 +61,18 @@ class CertificateViewTests(DeclarationPdfViewTests, APITestCase):
 
     def test_get_certificate_with_submitted_article(self):
         """
-        L'accusé d'enregistrement devrait montrer l'article qui a été assigné au moment de la soumission
-        et pas l'article actuel
+        L'accusé d'enregistrement devrait montrer l'article qui a été assigné au moment de la dernière
+        soumission et pas l'article actuel
         """
         SnapshotFactory(
             declaration=self.declaration,
             action=Snapshot.SnapshotActions.SUBMIT,
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            json_declaration={"article": Declaration.Article.ARTICLE_16},
+        )
+        SnapshotFactory(
+            declaration=self.declaration,
+            action=Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION,
             status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
             json_declaration={"article": Declaration.Article.ARTICLE_15},
         )
