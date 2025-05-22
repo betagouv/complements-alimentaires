@@ -86,7 +86,6 @@ class CertificateViewTests(DeclarationPdfViewTests, APITestCase):
             "art-15" in view.get_template_path(self.declaration),
             "On prend le template de l'article 15 même quand maintenant c'est different",
         )
-        # TODO: does the content of the certificate need updating?
 
 
 class SummaryViewTests(DeclarationPdfViewTests, APITestCase):
