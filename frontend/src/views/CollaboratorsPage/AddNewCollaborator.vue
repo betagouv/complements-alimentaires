@@ -21,8 +21,8 @@
         />
       </DsfrInputGroup>
       <DsfrCheckboxSet
-        :error-message="firstErrorMsg(v$, 'selectedRoles')"
-        v-model="state.selectedRoles"
+        :error-message="firstErrorMsg(v$, 'roles')"
+        v-model="state.roles"
         :options="selectableRoles"
         small
         legend="Sélectionnez un ou plusieurs rôles qui lui seront attribués :"
@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import useVuelidate from "@vuelidate/core"
 import { useFetch } from "@vueuse/core"
 import useToaster from "@/composables/use-toaster"
@@ -41,21 +41,22 @@ import { roleNameDisplayNameMapping } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 
+const emit = defineEmits(["added"])
 const opened = ref(false)
-const props = defineProps({ companyId: Number, collaboratorsExecute: Function })
+const props = defineProps({ companyId: Number, disabled: Boolean })
 
 // Form state & rules
 
 const getInitialState = () => ({
   recipientEmail: "",
-  selectedRoles: [],
+  roles: [],
 })
 
 const state = ref(getInitialState())
 
 const rules = {
   recipientEmail: errorRequiredEmail,
-  selectedRoles: errorRequiredField,
+  roles: errorRequiredField,
 }
 
 const $externalResults = ref({})
@@ -81,37 +82,40 @@ const close = () => {
   v$.value.$reset()
 }
 
+const { response, data, isFetching, execute } = useFetch(
+  `/api/v1/companies/${props.companyId}/add-new-collaborator/`,
+  { headers: headers() },
+  { immediate: false }
+)
+  .post(state)
+  .json()
+
 const submit = async () => {
   v$.value.$clearExternalResults()
   v$.value.$validate()
   if (v$.value.$error) {
     return
   }
-  const url = `/api/v1/companies/${props.companyId}/add-new-collaborator/`
-  const { response, data } = await useFetch(url, { headers: headers() })
-    .post({ roles: state.value.selectedRoles, recipientEmail: state.value.recipientEmail })
-    .json()
+  await execute()
   $externalResults.value = await handleError(response)
   if (response.value.ok) {
-    await props.collaboratorsExecute() // met à jour les collaborateurs existants, car ils peuvent avoir changé
-    useToaster().addMessage({
-      type: "success",
-      // exceptionnellement on utilise le message directement du back, car plusieurs cas possibles
-      description: data.value.message,
-    })
+    emit("added")
+    // exceptionnellement on utilise le message directement du back, car plusieurs cas possibles
+    useToaster().addMessage({ type: "success", description: data.value.message })
     close()
   }
 }
 
-const actions = [
+const actions = computed(() => [
   {
     label: "Valider",
     onClick: submit,
+    disabled: props.disabled || isFetching.value,
   },
   {
     label: "Annuler",
     onClick: close,
     secondary: true,
   },
-]
+])
 </script>
