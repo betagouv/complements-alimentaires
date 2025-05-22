@@ -285,6 +285,8 @@ class DeclarationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     )
     search_fields = (
         "name",
+        "id",
+        "teleicare_id",
         "author__first_name",
         "author__last_name",
         "company__social_name",
