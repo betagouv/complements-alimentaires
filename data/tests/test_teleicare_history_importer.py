@@ -601,3 +601,57 @@ class TeleicareHistoryImporterTestCase(TestCase):
             siccrf_id=etablissement_mandataire.etab_ident
         ).company  # les objets Company et EtablissementToCompanyRelation ont été créés
         self.assertEqual(CA_declaration.mandated_company, mandataire_company)
+
+    @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
+    def test_historic_declaration_has_been_assigned_to_other_company(self, mocked_add_composition_function):
+        galenic_formulation_id = 1
+        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
+        unit_id = 1
+        SubstanceUnitFactory(siccrf_id=unit_id)
+
+        siret_declarant = _make_siret()
+        etablissement_declarant = EtablissementFactory(etab_siret=siret_declarant)
+        declarant_company = CompanyFactory(siret=siret_declarant)
+
+        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=galenic_formulation_id)
+        CA_declaration = AuthorizedDeclarationFactory(company=declarant_company, siccrf_id=CA.cplalim_ident)
+
+        self.assertIsNone(CA_declaration.mandated_company)
+        self.assertEqual(Declaration.objects.all().count(), 1)
+
+        siret_mandataire = _make_siret()
+        etablissement_mandataire = EtablissementFactory(etab_siret=siret_mandataire)
+        declaration = DeclarationFactory(
+            cplalim=CA,
+            etab=etablissement_mandataire,
+            tydcl_ident=1,
+            dcl_date="03/20/2021 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        VersionDeclarationFactory(
+            dcl=declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        match_companies_on_siret_or_vat(create_if_not_exist=True)
+
+        create_declarations_from_teleicare_history(rewrite_existing=False)
+        CA_declaration.refresh_from_db()
+        self.assertEqual(CA_declaration.company, declarant_company)
+
+        purchaser_company = CompanyFactory()
+        CA_declaration.company = purchaser_company
+        CA_declaration.save()
+        self.assertEqual(CA_declaration.company, purchaser_company)
+
+        create_declarations_from_teleicare_history(rewrite_existing=True)
+        CA_declaration.refresh_from_db()
+        self.assertEqual(Declaration.objects.all().count(), 1)
+        self.assertTrue(EtablissementToCompanyRelation.objects.exclude(siccrf_id=None).exists())
+        mandataire_company = EtablissementToCompanyRelation.objects.get(
+            siccrf_id=etablissement_mandataire.etab_ident
+        ).company  # les objets Company et EtablissementToCompanyRelation ont été créés
+        self.assertEqual(CA_declaration.mandated_company, mandataire_company)
+        self.assertEqual(CA_declaration.company, purchaser_company)
