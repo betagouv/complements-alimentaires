@@ -122,6 +122,8 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
     synonym_model = SubstanceSynonym
     synonym_set_field_name = "substancesynonym_set"
 
+    declaredingredient_set_field_names = ["declaredsubstance_set", "computedsubstance_set"]
+
     class Meta:
         model = Substance
         fields = (

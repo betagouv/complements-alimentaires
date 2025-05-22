@@ -102,6 +102,8 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
     synonym_model = PlantSynonym
     synonym_set_field_name = "plantsynonym_set"
 
+    declaredingredient_set_field_names = ["declaredplant_set"]
+
     class Meta:
         model = Plant
         fields = (

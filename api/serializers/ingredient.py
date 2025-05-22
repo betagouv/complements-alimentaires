@@ -51,6 +51,8 @@ class IngredientModificationSerializer(CommonIngredientModificationSerializer, W
     synonym_model = IngredientSynonym
     synonym_set_field_name = "ingredientsynonym_set"
 
+    declaredingredient_set_field_names = ["declaredingredient_set"]
+
     class Meta:
         model = Ingredient
         fields = (

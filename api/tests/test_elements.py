@@ -3,6 +3,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from unittest.mock import patch
+
 from data.choices import IngredientActivity
 from data.factories import (
     IngredientFactory,
@@ -17,6 +19,9 @@ from data.factories import (
     SubstanceFactory,
     SubstanceSynonymFactory,
     SubstanceUnitFactory,
+    OngoingInstructionDeclarationFactory,
+    DeclaredSubstanceFactory,
+    ComputedSubstanceFactory,
 )
 from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Part, Plant, Population
 from data.models.substance import MaxQuantityPerPopulationRelation, Substance
@@ -946,3 +951,84 @@ class TestElementsModifyApi(APITestCase):
         self.assertTrue(microorganism.substances.filter(id=substance.id).exists())
         self.assertTrue(microorganism.substances.filter(id=new_substance.id).exists())
         self.assertFalse(microorganism.substances.filter(id=substance_to_delete.id).exists())
+
+    @authenticate
+    @patch("config.tasks.recalculate_article_for_ongoing_declarations")
+    def test_article_recalculation_triggered(self, mocked_task):
+        """
+        Si une modif pourrait modifier l'article calculé d'une déclaration, la tâche pour recalculer les déclarations
+        en masse devrait être appelée
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        microorganism = MicroorganismFactory.create()
+
+        self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {"substances": []},
+            format="json",
+        )
+
+        mocked_task.assert_called_once()
+
+    @authenticate
+    @patch("config.tasks.recalculate_article_for_ongoing_declarations")
+    def test_article_recalculation_triggered_with_computed_and_declared_substance_declarations(self, mocked_task):
+        """
+        Si il y a un changement de substance, la tâche doit être appelé avec toutes les déclarations qui utilisent
+        la substance, si c'est de manière déclarée ou calculée
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declared_substance_declaration = OngoingInstructionDeclarationFactory.create()
+        computed_substance_declaration = OngoingInstructionDeclarationFactory.create()
+        substance = SubstanceFactory.create(status=IngredientStatus.AUTHORIZED)
+
+        DeclaredSubstanceFactory.create(substance=substance, declaration=declared_substance_declaration)
+        ComputedSubstanceFactory.create(substance=substance, declaration=computed_substance_declaration)
+
+        self.assertTrue(declared_substance_declaration.declared_substances.filter(substance=substance).exists())
+        self.assertTrue(computed_substance_declaration.computed_substances.filter(substance=substance).exists())
+
+        self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {"status": IngredientStatus.NOT_AUTHORIZED},
+            format="json",
+        )
+
+        # Les déclarations avec des substances calculées ainsi que les substances déclarées sont MAJ
+        mocked_task.assert_called_once()
+        arguments = mocked_task.call_args.args
+        queryset_argument = arguments[0]
+        self.assertEqual(queryset_argument.count(), 2)
+        self.assertTrue(queryset_argument.filter(id=declared_substance_declaration.id).exists())
+        self.assertTrue(queryset_argument.filter(id=computed_substance_declaration.id).exists())
+
+    @authenticate
+    @patch("config.tasks.recalculate_article_for_ongoing_declarations")
+    def test_article_recalculation_not_triggered_boring_fields(self, mocked_task):
+        """
+        Si une modif est effectuée que sur des champs "safe", n'appelle pas la tâche
+        On fait la vérif sur les champs "safe" parce que c'est moins un pb si l'article est recalculé sans avoir besoin
+        que si ce n'est pas recalculé quand il y a besoin
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        microorganism = MicroorganismFactory.create()
+
+        self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {
+                "genus": "test",
+                "species": "test",
+                "synonymes": [],
+                "public_comments": "",
+                "private_comments": "",
+                "novel_food": False,
+                "change_reason": "",
+                "public_change_reason": "",
+            },
+            format="json",
+        )
+
+        mocked_task.assert_not_called()
