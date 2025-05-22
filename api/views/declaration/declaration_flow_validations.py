@@ -65,7 +65,7 @@ def validate_mandatory_fields(declaration) -> tuple[list, list]:
 
 def declared_plant_is_complete(plant):
     if not plant.active:
-        return True
+        return plant.used_part and plant.quantity and plant.unit
     return plant.used_part and plant.quantity and plant.unit and plant.preparation
 
 
