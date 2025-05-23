@@ -12,9 +12,6 @@
 
 /* The utilities layer is for small, single-purpose classes that should always take precedence over any other styles. */
 @layer utilities {
-    .gradient-dsfr {
-        @apply bg-gradient-to-r from-blue-france-925 via-blue-france-850 via-30% to-transparent
-    }
     .icon {
         @apply bg-slate-600;
     }
