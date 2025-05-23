@@ -4,7 +4,7 @@
       v-for="rule in passwordRules"
       :key="rule"
       :label="rule"
-      class="!block !lowercase !bg-transparent !pl-0"
+      class="block! lowercase! bg-transparent! pl-0!"
       small
       type="info"
     />

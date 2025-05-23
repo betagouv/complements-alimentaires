@@ -13,8 +13,8 @@
     <div v-else>
       <div class="sm:flex">
         <div class="flex-1">
-          <h1 class="fr-text--sm font-normal !mb-0">Résultat de la recherche</h1>
-          <h2 class="!mb-1">{{ declaration?.name }}</h2>
+          <h1 class="fr-text--sm font-normal mb-0!">Résultat de la recherche</h1>
+          <h2 class="mb-1!">{{ declaration?.name }}</h2>
           <DsfrTag
             small
             v-if="declaration?.status"

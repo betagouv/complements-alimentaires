@@ -149,6 +149,8 @@ const fetchElement = async (apiType, type, id) => {
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 .list-move,
 .list-enter-active {
   @apply transition-all ease-out duration-200;

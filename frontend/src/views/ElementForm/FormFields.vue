@@ -1,6 +1,6 @@
 <template>
   <FormWrapper :externalResults="$externalResults" class="mx-auto">
-    <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
+    <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 mb-0! pb-2!">
       <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-8">
         <div class="col-span-2 lg:col-span-4" v-if="formForType.name">
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'name')">
@@ -69,7 +69,7 @@
         />
       </div>
       <div class="grid md:grid-cols-2 mt-4">
-        <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4">
+        <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg pb-0! mb-2! mt-4!">
           <DsfrInput
             v-for="(_, idx) in state.synonyms"
             :key="`synonym-${idx}`"
@@ -87,7 +87,7 @@
         </DsfrFieldset>
       </div>
     </DsfrFieldset>
-    <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
+    <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 mb-0! pb-2!">
       <div v-if="formForType.plantParts" class="grid md:grid-cols-3 items-end my-4 md:my-2">
         <DsfrMultiselect
           v-model="state.authorisedPlantParts"
@@ -187,7 +187,7 @@
           v-if="state.maxQuantities.length"
           title="Quantités maximales par population"
           :headers="maxQuantitiesHeaders"
-          class="!mb-2 quantities-table"
+          class="mb-2! quantities-table"
         >
           <tr v-for="(q, idx) in state.maxQuantities" :key="`max-quantity-row-${idx}`">
             <td><DsfrSelect v-model="q.population" :options="populationOptions" /></td>
@@ -215,7 +215,7 @@
         />
       </div>
     </DsfrFieldset>
-    <DsfrFieldset legend="Commentaires" legendClass="fr-h4 !mb-0">
+    <DsfrFieldset legend="Commentaires" legendClass="fr-h4 mb-0!">
       <div class="grid md:grid-cols-2 md:gap-4">
         <div class="mb-4">
           <DsfrInput label="Commentaire public" v-model="state.publicComments" :isTextarea="true" label-visible />

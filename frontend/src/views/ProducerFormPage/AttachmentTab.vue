@@ -15,7 +15,7 @@
 
     <FileGrid :files="labelFiles" @remove="removeFile" hideTypeSelection />
 
-    <SectionTitle title="Autres" class="!mt-10" sizeTag="h6" icon="ri-attachment-2" />
+    <SectionTitle title="Autres" class="mt-10!" sizeTag="h6" icon="ri-attachment-2" />
 
     <DsfrInputGroup>
       <DsfrFileUpload

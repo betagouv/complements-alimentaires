@@ -1,5 +1,5 @@
 <template>
-  <div :class="lowContrastMode ? '!bg-[#f6f6f6]' : ''">
+  <div :class="lowContrastMode ? 'bg-grey-975!' : ''">
     <AppHeader :logo-text="logoText" />
     <router-view></router-view>
     <DsfrFooter
@@ -41,6 +41,8 @@ const lowContrastMode = computed(() => route.name === "InstructionPage")
 </script>
 
 <style>
+@reference "./styles/index.css";
+
 .fr-pagination__list {
   @apply justify-center;
 }
