@@ -1,7 +1,7 @@
 @layer theme, base, components, utilities;
 
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/preflight.css" layer(base);
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
 
 @theme {
   --breakpoint-*: initial;
@@ -57,30 +57,6 @@
   --color-ca-aroma: #a94645;
   --color-ca-additive: #006a6f;
   --color-ca-form-of-supply: #e4794a;
-}
-
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-}
-
-/* The utilities layer is for small, single-purpose classes that should always take precedence over any other styles. */
-/* Pour que toutes les classes de tailwind prennent précedence de DSFR. https://github.com/tailwindlabs/tailwindcss/discussions/15866#discussioncomment-11954216 */
-#app {
-  @tailwind utilities;
 }
 
 @utility gradient-dsfr {
@@ -208,4 +184,28 @@
   .fr-table & .ov-icon {
     @apply mr-2!;
   }
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+/* The utilities layer is for small, single-purpose classes that should always take precedence over any other styles. */
+/* Pour que toutes les classes de tailwind prennent précedence de DSFR. https://github.com/tailwindlabs/tailwindcss/discussions/15866#discussioncomment-11954216 */
+#app {
+  @import 'tailwindcss/utilities' layer(utilities);
 }

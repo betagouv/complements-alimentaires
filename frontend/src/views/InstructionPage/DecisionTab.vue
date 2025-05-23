@@ -9,14 +9,14 @@
             v-model="decisionCategory"
             :value="category.value"
             name="decisionCategory"
-            class="col-span-2 sm:col-span-1 !mb-0"
+            class="col-span-2 sm:col-span-1 mb-0!"
           >
             <template v-slot:label>
               <div class="font-bold">
                 <v-icon :color="category.color" :name="category.icon" aria-hidden />
                 {{ category.title }}
               </div>
-              <p class="fr-text--sm !mb-0">
+              <p class="fr-text--sm mb-0!">
                 {{ category.description }}
               </p>
             </template>

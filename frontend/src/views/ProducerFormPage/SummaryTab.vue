@@ -13,7 +13,7 @@
     <DsfrAlert v-if="!readonly">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'comment')">
         <DsfrInput
-          class="!max-w-lg"
+          class="max-w-lg!"
           label="Commentaires à destination de l'administration"
           labelVisible
           v-model="comment"

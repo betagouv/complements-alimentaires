@@ -20,7 +20,7 @@
       </DsfrInputGroup>
     </template>
 
-    <SectionTitle title="Dénomination commerciale" class="!mt-10" sizeTag="h6" icon="ri-price-tag-2-fill" />
+    <SectionTitle title="Dénomination commerciale" class="mt-10!" sizeTag="h6" icon="ri-price-tag-2-fill" />
     <div class="grid grid-cols-2 gap-4">
       <div class="col-span-2 md:col-span-1 max-w-md">
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'name')">
@@ -46,9 +46,9 @@
         <DsfrInput is-textarea v-model="payload.description" label-visible label="Description" />
       </DsfrInputGroup>
     </div>
-    <SectionTitle title="Format" class="!mt-10" sizeTag="h6" icon="ri-capsule-fill" />
+    <SectionTitle title="Format" class="mt-10!" sizeTag="h6" icon="ri-capsule-fill" />
     <div class="grid grid-cols-2 gap-4">
-      <DsfrFieldset legend="Forme galénique" legendClass="fr-label !pb-0">
+      <DsfrFieldset legend="Forme galénique" legendClass="fr-label pb-0!">
         <div class="flex">
           <div class="max-w-32">
             <DsfrSelect :required="true" label="État" :options="formulationStates" v-model="galenicFormulationState" />
@@ -87,7 +87,7 @@
 
     <div class="grid grid-cols-2 gap-4">
       <div class="col-span-2 md:col-span-1 max-w-md mt-6">
-        <DsfrFieldset legend="Poids ou volume d'une unité de consommation" legendClass="fr-label !pb-0">
+        <DsfrFieldset legend="Poids ou volume d'une unité de consommation" legendClass="fr-label pb-0!">
           <div class="flex">
             <div class="max-w-64">
               <NumberField
@@ -142,7 +142,7 @@
     <DsfrInputGroup class="max-w-2xl mt-6">
       <DsfrInput v-model="payload.instructions" label-visible label="Mode d'emploi" />
     </DsfrInputGroup>
-    <SectionTitle title="Populations cibles et à risque" class="!mt-10" sizeTag="h6" icon="ri-file-user-fill" />
+    <SectionTitle title="Populations cibles et à risque" class="mt-10!" sizeTag="h6" icon="ri-file-user-fill" />
     <PopulationsCheckboxes v-model="payload.populations" :populations="populations" />
     <ConditionsCheckboxes v-model="payload.conditionsNotRecommended" :conditions="conditions" />
 
@@ -157,7 +157,7 @@
       <DsfrInput is-textarea v-model="payload.warning" label-visible label="Mise en garde et avertissement" />
     </DsfrInputGroup>
 
-    <SectionTitle title="Objectifs / effets" class="!mt-10" sizeTag="h6" icon="ri-focus-2-fill" />
+    <SectionTitle title="Objectifs / effets" class="mt-10!" sizeTag="h6" icon="ri-focus-2-fill" />
     <DsfrFieldset>
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
         <div
@@ -177,7 +177,7 @@
       label="Merci de préciser les autres objectifs ou effets"
     ></OtherChoiceField>
 
-    <SectionTitle title="Adresse sur l'étiquetage" class="!mt-10" sizeTag="h6" icon="ri-home-2-fill" />
+    <SectionTitle title="Adresse sur l'étiquetage" class="mt-10!" sizeTag="h6" icon="ri-home-2-fill" />
     <div class="max-w-2xl mb-8 address-form">
       <DsfrInputGroup>
         <DsfrInput v-model="payload.address" label-visible label="Adresse" hint="Numéro et voie" :required="true" />

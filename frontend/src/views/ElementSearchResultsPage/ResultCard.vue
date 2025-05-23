@@ -7,7 +7,7 @@
       </div>
       <div class="mt-2 flex gap-x-1">
         <div><v-icon scale="0.85" :name="icon" /></div>
-        <div class="mt-[1px]">{{ frenchType }}</div>
+        <div class="mt-px">{{ frenchType }}</div>
       </div>
       <div class="italic" v-if="result.match && result.match !== result.name">
         {{ result.match }}

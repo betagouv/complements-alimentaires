@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-[1px]">
+  <div class="flex gap-px">
     <div class="h-3 w-3 rounded-full bg-red-500" v-if="hasRefusedVisa"></div>
     <div class="h-3 w-3 rounded-full bg-orange-400" v-if="hasPendingProResponses"></div>
   </div>

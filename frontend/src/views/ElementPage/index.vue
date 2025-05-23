@@ -18,7 +18,7 @@
   </div>
   <template v-if="element">
     <div class="fr-container my-8">
-      <h1 class="fr-h4 !mb-1 capitalize">
+      <h1 class="fr-h4 mb-1! capitalize">
         {{ element.name }}
         <DsfrBadge v-if="novelFood" label="Novel Food" small type="new" />
       </h1>

@@ -9,7 +9,7 @@
       class="mb-2"
     />
     <div v-if="useCompactAttachmentView">
-      <h3 class="fr-h6 !mt-8">
+      <h3 class="fr-h6 mt-8!">
         Pièces jointes
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
       </h3>
@@ -52,7 +52,7 @@
       <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
     </div>
     <div>
-      <h3 class="fr-h6 !mt-8">
+      <h3 class="fr-h6 mt-8!">
         Composition
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
       </h3>
@@ -128,14 +128,14 @@
       </DsfrAlert>
       <SubstancesTable v-model="payload" readonly />
       <div v-if="!payload.siccrfId">
-        <h3 class="fr-h6 !mt-8">
+        <h3 class="fr-h6 mt-8!">
           Adresse sur l'étiquetage
           <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
         </h3>
         <AddressLine :payload="payload" />
       </div>
       <div v-if="!useCompactAttachmentView & !payload.siccrfId">
-        <h3 class="fr-h6 !mt-8">
+        <h3 class="fr-h6 mt-8!">
           Pièces jointes
           <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
         </h3>

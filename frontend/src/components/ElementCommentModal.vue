@@ -2,18 +2,18 @@
   <div class="flex border w-8 aspect-square rounded-full content-center justify-center">
     <DsfrModal :title="elementName" size="lg" :opened="infoModalOpened" @close="infoModalOpened = false">
       <div v-if="element?.publicComments">
-        <h2 class="fr-h6 !mb-2">Commentaires</h2>
+        <h2 class="fr-h6 mb-2!">Commentaires</h2>
         <p>{{ element?.publicComments }}</p>
       </div>
       <div v-if="element?.privateComments && !hidePrivateComments">
-        <h2 class="fr-h6 !mb-2">Commentaires privés</h2>
+        <h2 class="fr-h6 mb-2!">Commentaires privés</h2>
         <p>{{ element?.privateComments }}</p>
       </div>
       <div v-if="hasMaxQuantities">
         <ElementDoses :maxQuantities="maxQuantities" :unit="element?.unit" />
       </div>
       <div v-if="constitutingSubstances && constitutingSubstances.length">
-        <h2 class="fr-h6 !mb-2">Substances</h2>
+        <h2 class="fr-h6 mb-2!">Substances</h2>
         <ul>
           <li v-for="substance in constitutingSubstances" :key="`Substance-${substance.id}`">
             <p class="capitalize font-bold mb-1">{{ getElementName({ element: substance }) }}</p>

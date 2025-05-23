@@ -5,7 +5,7 @@
     />
     <div class="mb-2 md:flex gap-8 search-area">
       <div class="md:w-1/3 lg:w-2/5 pt-1">
-        <DsfrFieldset legend="Recherche" class="!mb-0">
+        <DsfrFieldset legend="Recherche" class="mb-0!">
           <DsfrSearchBar
             v-model="searchTerm"
             placeholder="Nom du produit, ID ou entreprise"
@@ -22,7 +22,7 @@
             :modelValue="ordering"
             @update:modelValue="updateOrdering"
             :options="orderingOptions"
-            class="!text-sm"
+            class="text-sm!"
           />
         </DsfrInputGroup>
         <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
@@ -68,7 +68,7 @@
                     :modelValue="population"
                     @update:modelValue="updatePopulation"
                     :options="populationOptions"
-                    class="!text-sm"
+                    class="text-sm!"
                   />
                 </DsfrInputGroup>
                 <DsfrInputGroup>
@@ -78,7 +78,7 @@
                     :modelValue="condition"
                     @update:modelValue="updateCondition"
                     :options="conditionOptions"
-                    class="!text-sm"
+                    class="text-sm!"
                   />
                 </DsfrInputGroup>
               </DsfrFieldset>
@@ -90,7 +90,7 @@
                     :modelValue="galenicFormulation"
                     @update:modelValue="updateGalenicFormulation"
                     :options="galenicFormulationOptions"
-                    class="!text-sm"
+                    class="text-sm!"
                   />
                 </DsfrInputGroup>
               </DsfrFieldset>
@@ -108,7 +108,7 @@
                   :modelValue="article"
                   @update:modelValue="updateArticle"
                   :options="articleSelectOptions"
-                  class="!text-sm"
+                  class="text-sm!"
                 />
               </DsfrInputGroup>
 
@@ -141,7 +141,7 @@
               </div>
 
               <div class="mt-8">
-                <DsfrFieldset legend="Date de soumission" legendClass="fr-label !font-medium">
+                <DsfrFieldset legend="Date de soumission" legendClass="fr-label font-medium!">
                   <div class="flex gap-4 mt-2">
                     <DateFilterField
                       :dateField="submissionDateAfter"
@@ -157,7 +157,7 @@
                 </DsfrFieldset>
               </div>
               <div class="mt-8">
-                <DsfrFieldset legend="Date de la prise de décision" legendClass="fr-label !font-medium">
+                <DsfrFieldset legend="Date de la prise de décision" legendClass="fr-label font-medium!">
                   <div class="flex gap-4 mt-2">
                     <DateFilterField
                       :dateField="decisionDateAfter"
@@ -183,7 +183,7 @@
     </div>
     <div v-else-if="hasDeclarations">
       <div class="text-right">
-        <p class="!text-sm -mb-2 -mt-4 font-medium" aria-live="polite">
+        <p class="text-sm! -mb-2 -mt-4 font-medium" aria-live="polite">
           {{ data.count }} {{ data.count === 1 ? "résultat" : "résultats" }}
         </p>
       </div>

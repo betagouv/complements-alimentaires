@@ -34,7 +34,7 @@
             :modelValue="article"
             @update:modelValue="updateArticle"
             :options="articleSelectOptions"
-            class="!text-sm"
+            class="text-sm!"
           />
         </DsfrInputGroup>
       </div>
