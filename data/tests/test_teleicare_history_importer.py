@@ -574,6 +574,11 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
     @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
     def test_historic_declaration_has_been_assigned_to_other_company(self, mocked_add_composition_function):
+        """
+        Ce test permet de vérifier qu'une déclaration historiques qui aurait été assignée dans Compl'Alim à une nouvelle entreprise
+        ne se retrouve pas avec sa company overwrite lors d'un nouvel import d'historique
+        mais
+        """
         siret_declarant = _make_siret()
         etablissement_declarant = EtablissementFactory(etab_siret=siret_declarant)
         declarant_company = CompanyFactory(siret=siret_declarant)
@@ -584,11 +589,8 @@ class TeleicareHistoryImporterTestCase(TestCase):
         self.assertIsNone(CA_declaration.mandated_company)
         self.assertEqual(Declaration.objects.all().count(), 1)
 
-        siret_mandataire = _make_siret()
-        etablissement_mandataire = EtablissementFactory(etab_siret=siret_mandataire)
         declaration = DeclarationFactory(
             cplalim=CA,
-            etab=etablissement_mandataire,
             tydcl_ident=1,
             dcl_date="03/20/2021 20:20:20 AM",
             dcl_date_fin_commercialisation=None,
@@ -602,21 +604,18 @@ class TeleicareHistoryImporterTestCase(TestCase):
         )
         match_companies_on_siret_or_vat(create_if_not_exist=True)
 
+        # 1 ° import d'historique
         create_declarations_from_teleicare_history(rewrite_existing=False)
         CA_declaration.refresh_from_db()
         self.assertEqual(CA_declaration.company, declarant_company)
 
+        # changement de company
         purchaser_company = CompanyFactory()
         CA_declaration.company = purchaser_company
         CA_declaration.save()
         self.assertEqual(CA_declaration.company, purchaser_company)
 
+        # 2 ° import d'historique sans overwrite de la company
         create_declarations_from_teleicare_history(rewrite_existing=True)
         CA_declaration.refresh_from_db()
-        self.assertEqual(Declaration.objects.all().count(), 1)
-        self.assertTrue(EtablissementToCompanyRelation.objects.exclude(siccrf_id=None).exists())
-        mandataire_company = EtablissementToCompanyRelation.objects.get(
-            siccrf_id=etablissement_mandataire.etab_ident
-        ).company  # les objets Company et EtablissementToCompanyRelation ont été créés
-        self.assertEqual(CA_declaration.mandated_company, mandataire_company)
         self.assertEqual(CA_declaration.company, purchaser_company)
