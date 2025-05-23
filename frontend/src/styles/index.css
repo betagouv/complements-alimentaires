@@ -205,7 +205,7 @@
 }
 
 /* The utilities layer is for small, single-purpose classes that should always take precedence over any other styles. */
-/* Pour que toutes les classes de tailwind prennent précedence de DSFR. https://github.com/tailwindlabs/tailwindcss/discussions/15866#discussioncomment-11954216 */
+/* Pour que toutes les classes de tailwind prennent précedence de DSFR. https://github.com/tailwindlabs/tailwindcss/discussions/15866 */
 #app {
-  @import 'tailwindcss/utilities' layer(utilities);
+  @import 'tailwindcss/utilities' layer(utilities) important;
 }
