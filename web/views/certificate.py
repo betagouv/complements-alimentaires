@@ -24,7 +24,25 @@ class CertificateView(PdfView):
             Declaration.Article.ARTICLE_18: 18,
             Declaration.Article.ANSES_REFERAL: "anses",
         }
-        article = article_map.get(declaration.article, 15)
+        # essayer de prendre l'article de la soumission et non pas l'article actuel, qui pourrait être
+        # different grâce à l'instruction
+        try:
+            first_submission = declaration.snapshots.filter(action=Snapshot.SnapshotActions.SUBMIT).earliest(
+                "creation_date"
+            )
+            declaration_article = first_submission.json_declaration["article"]
+            if not declaration_article:
+                logger.info(
+                    f"Error obtaining article from first submission snapshot for declaration {declaration.id}, falling back to using current article"
+                )
+                declaration_article = declaration.article
+        except Snapshot.DoesNotExist:
+            logger.info(
+                f"Error obtaining first submission snapshot for declaration {declaration.id}, falling back to using current article"
+            )
+            declaration_article = declaration.article
+        article = article_map.get(declaration_article)
+
         if declaration.status in [
             status.AWAITING_INSTRUCTION,
             status.AWAITING_VISA,
