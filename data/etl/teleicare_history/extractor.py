@@ -551,10 +551,6 @@ def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=
                 try:  # pas possible d'utiliser update_or_create
                     declaration = Declaration.objects.get(
                         siccrf_id=ica_complement_alimentaire.cplalim_ident,
-                        # resp mise sur le marché (entreprise qui déclare ou pour laquelle une entreprise mandataire déclare)
-                        company=EtablissementToCompanyRelation.objects.get(
-                            siccrf_id=ica_complement_alimentaire.etab_id
-                        ).company,
                     )
                     if not rewrite_existing:
                         continue
