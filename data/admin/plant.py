@@ -26,6 +26,9 @@ class PartInlineAdmin(admin.TabularInline):
     model = Plant.plant_parts.through
     extra = 1
 
+    fields = ("plantpart", "siccrf_is_useful", "ca_is_useful")
+    readonly_fields = ("siccrf_is_useful",)
+
 
 class SubstanceInlineAdmin(admin.TabularInline):
     model = Plant.substances.through
