@@ -415,14 +415,16 @@ watch(activeAccordion, (x) => setTimeout(() => (seeOverflow.value = x === 0), 50
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 .search-area :deep(.fr-select-group) {
-  @apply !my-0;
+  @apply my-0!;
 }
 .filter-area :deep(.fr-fieldset__legend) {
-  @apply !py-0;
+  @apply py-0!;
 }
 .filter-area :deep(.fr-fieldset__element) {
-  @apply !my-0;
+  @apply my-0!;
 }
 div.seeOverflow :deep(#filter-accordeon.fr-collapse--expanded) {
   overflow: visible;
