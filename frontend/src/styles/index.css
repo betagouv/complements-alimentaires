@@ -41,25 +41,25 @@
     }
     /* Je spécifier ici les couleurs pour les tags car Tailwind ne fait pas des classes dynamiques pour le bg */
     /* https://stackoverflow.com/questions/72481680/tailwinds-background-color-is-not-being-applied-when-added-dynamically */
-    .fr-tag.draft {
+    .fr-tag.DRAFT {
         @apply !bg-blue-france-925;
     }
-    .fr-tag.awaiting_instruction {
+    .fr-tag.AWAITING_INSTRUCTION {
         @apply !bg-gray-200;
     }
-    .fr-tag.ongoing_instruction {
+    .fr-tag.ONGOING_INSTRUCTION {
         @apply !bg-blue-200;
     }
-    .fr-tag.observation {
+    .fr-tag.OBSERVATION {
         @apply !bg-amber-200;
     }
-    .fr-tag.objection {
+    .fr-tag.OBJECTION {
         @apply !bg-orange-200;
     }
-    .fr-tag.abandoned {
+    .fr-tag.ABANDONED {
         @apply !bg-red-100;
     }
-    .fr-tag.authorized {
+    .fr-tag.AUTHORIZED {
         @apply !bg-success-950;
     }
     .fr-tag .ov-icon {
