@@ -6,7 +6,7 @@ export const getStatusTagForCell = (status, groupInstruction = false) => {
   return {
     component: "DsfrTag",
     label: statusProps[processedStatus].label,
-    class: processedStatus,
+    class: processedStatus.toLowerCase(),
     icon: statusProps[processedStatus].icon,
   }
 }
