@@ -208,9 +208,8 @@ class Declaration(Historisable, TimeStampable):
         blank=True,
         null=True,
         editable=False,
-        unique=True,
         verbose_name="identifiant Teleicare connu par les déclarants et indiqué dans les attestations",
-    )
+    )  # pas de contrainte d'unicité car dans 124 cas le teleicare_id est dupliqué
 
     def create_snapshot(
         self,
