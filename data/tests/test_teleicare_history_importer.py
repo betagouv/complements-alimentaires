@@ -43,6 +43,10 @@ class TeleicareHistoryImporterTestCase(TestCase):
         Adapted from: https://stackoverflow.com/a/49800437
         """
         super().setUp()
+        self.galenic_formulation_id = 1
+        self.galenic_formulation = GalenicFormulationFactory(siccrf_id=self.galenic_formulation_id)
+        self.unit_id = 1
+        self.unit = SubstanceUnitFactory(siccrf_id=self.unit_id)
         for table in [
             IcaEtablissement,
             IcaComplementAlimentaire,
@@ -188,14 +192,11 @@ class TeleicareHistoryImporterTestCase(TestCase):
         """
         Les déclarations sont créées à partir d'object historiques des modèles Ica_
         """
-        galenic_formulation_id = 1
-        galenic_formulation = GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
-        unit_id = 1
-        unit = SubstanceUnitFactory(siccrf_id=unit_id)
+
         etablissement_to_create_as_company = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
 
         CA_to_create_as_declaration = ComplementAlimentaireFactory(
-            etab=etablissement_to_create_as_company, frmgal_ident=galenic_formulation_id
+            etab=etablissement_to_create_as_company, frmgal_ident=self.galenic_formulation_id
         )
         declaration_to_create_as_declaration = DeclarationFactory(
             cplalim=CA_to_create_as_declaration, tydcl_ident=1, etab=None
@@ -204,7 +205,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             dcl=declaration_to_create_as_declaration,
             stadcl_ident=8,
             stattdcl_ident=2,
-            unt_ident=unit_id,
+            unt_ident=self.unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
 
@@ -224,9 +225,9 @@ class TeleicareHistoryImporterTestCase(TestCase):
         self.assertEqual(created_declaration.brand, CA_to_create_as_declaration.cplalim_marque)
         self.assertEqual(created_declaration.gamme, CA_to_create_as_declaration.cplalim_gamme)
         self.assertEqual(created_declaration.flavor, CA_to_create_as_declaration.dclencours_gout_arome_parfum)
-        self.assertEqual(created_declaration.galenic_formulation, galenic_formulation)
+        self.assertEqual(created_declaration.galenic_formulation, self.galenic_formulation)
         self.assertEqual(created_declaration.daily_recommended_dose, "32 kg of ppo")
-        self.assertEqual(created_declaration.unit_measurement, unit)
+        self.assertEqual(created_declaration.unit_measurement, self.unit)
         self.assertEqual(created_declaration.article, Declaration.Article.ARTICLE_15)
         self.assertEqual(
             created_declaration.conditioning, version_declaration_to_create_as_declaration.vrsdecl_conditionnement
@@ -247,10 +248,6 @@ class TeleicareHistoryImporterTestCase(TestCase):
         """
         Les déclarations sont créées à partir d'object historiques des modèles Ica_ seulement pour les companies spécifiées
         """
-        galenic_formulation_id = 1
-        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
-        unit_id = 1
-        SubstanceUnitFactory(siccrf_id=unit_id)
         etablissement_to_create_as_company = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
         matching_company = CompanyFactory()
         EtablissementToCompanyRelationFactory(
@@ -258,14 +255,14 @@ class TeleicareHistoryImporterTestCase(TestCase):
         )
 
         CA_to_create_as_declaration = ComplementAlimentaireFactory(
-            etab=etablissement_to_create_as_company, frmgal_ident=galenic_formulation_id
+            etab=etablissement_to_create_as_company, frmgal_ident=self.galenic_formulation_id
         )
         declaration_to_create_as_declaration = DeclarationFactory(cplalim=CA_to_create_as_declaration, tydcl_ident=1)
         version_declaration_to_create_as_declaration = VersionDeclarationFactory(
             dcl=declaration_to_create_as_declaration,
             stadcl_ident=8,
             stattdcl_ident=2,
-            unt_ident=unit_id,
+            unt_ident=self.unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
         other_etablissement = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
@@ -291,12 +288,8 @@ class TeleicareHistoryImporterTestCase(TestCase):
     @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
     @patch("data.etl.teleicare_history.extractor.add_product_info_from_teleicare_history")
     def test_acceptation_snapshot_is_created(self, mocked_add_composition_function, mocked_add_product_function):
-        galenic_formulation_id = 1
-        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
-        unit_id = 1
-        SubstanceUnitFactory(siccrf_id=unit_id)
         etablissement = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
-        CA = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=galenic_formulation_id)
+        CA = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=self.galenic_formulation_id)
         oldest_declaration = DeclarationFactory(
             cplalim=CA,
             tydcl_ident=1,
@@ -313,14 +306,14 @@ class TeleicareHistoryImporterTestCase(TestCase):
             dcl=oldest_declaration,
             stadcl_ident=8,
             stattdcl_ident=2,
-            unt_ident=unit_id,
+            unt_ident=self.unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
         VersionDeclarationFactory(
             dcl=latest_declaration,
             stadcl_ident=8,
             stattdcl_ident=2,
-            unt_ident=unit_id,
+            unt_ident=self.unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
         match_companies_on_siret_or_vat(create_if_not_exist=True)
@@ -350,13 +343,9 @@ class TeleicareHistoryImporterTestCase(TestCase):
     def test_declaration_is_created_even_if_latest_ica_declaration_has_no_version_declaration(
         self, mocked_add_composition_function, mocked_add_product_function
     ):
-        galenic_formulation_id = 1
-        galenic_formulation = GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
-        unit_id = 1
-        unit = SubstanceUnitFactory(siccrf_id=unit_id)
         etablissement = EtablissementFactory(etab_siret=None, etab_ica_importateur=True)
 
-        CA = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=galenic_formulation_id)
+        CA = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=self.galenic_formulation_id)
         oldest_declaration_to_create_as_declaration = DeclarationFactory(
             cplalim=CA,
             tydcl_ident=1,
@@ -373,7 +362,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             dcl=oldest_declaration_to_create_as_declaration,
             stadcl_ident=8,
             stattdcl_ident=2,
-            unt_ident=unit_id,
+            unt_ident=self.unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
         match_companies_on_siret_or_vat(create_if_not_exist=True)
@@ -389,11 +378,11 @@ class TeleicareHistoryImporterTestCase(TestCase):
         )
         self.assertEqual(
             declaration[0].galenic_formulation,
-            galenic_formulation,
+            self.galenic_formulation,
         )
         self.assertEqual(
             declaration[0].unit_measurement,
-            unit,
+            self.unit,
         )
         self.assertEqual(
             declaration[0].daily_recommended_dose,
@@ -402,10 +391,6 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
     @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
     def test_historic_declaration_has_right_populations(self, mocked_add_composition_function):
-        galenic_formulation_id = 1
-        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
-        unit_id = 1
-        SubstanceUnitFactory(siccrf_id=unit_id)
         PopulationFactory(id=8, name="Femme enceinte")
         PopulationFactory(id=9, name="Femme allaitante")
 
@@ -413,7 +398,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
         etablissement = EtablissementFactory(etab_siret=siret)
         company = CompanyFactory(siret=siret)
         EtablissementToCompanyRelationFactory(company=company, old_siret=siret)
-        CA_1 = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=galenic_formulation_id)
+        CA_1 = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=self.galenic_formulation_id)
         declaration_1 = DeclarationFactory(
             cplalim=CA_1,
             tydcl_ident=1,
@@ -424,10 +409,10 @@ class TeleicareHistoryImporterTestCase(TestCase):
             dcl=declaration_1,
             stadcl_ident=8,
             stattdcl_ident=2,
-            unt_ident=unit_id,
+            unt_ident=self.unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
-        CA_2 = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=galenic_formulation_id)
+        CA_2 = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=self.galenic_formulation_id)
         declaration_2 = DeclarationFactory(
             cplalim=CA_2,
             tydcl_ident=1,
@@ -438,10 +423,10 @@ class TeleicareHistoryImporterTestCase(TestCase):
             dcl=declaration_2,
             stadcl_ident=8,
             stattdcl_ident=2,
-            unt_ident=unit_id,
+            unt_ident=self.unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
-        CA_3 = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=galenic_formulation_id)
+        CA_3 = ComplementAlimentaireFactory(etab=etablissement, frmgal_ident=self.galenic_formulation_id)
         declaration_3 = DeclarationFactory(
             cplalim=CA_3,
             tydcl_ident=1,
@@ -452,7 +437,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             dcl=declaration_3,
             stadcl_ident=8,
             stattdcl_ident=2,
-            unt_ident=unit_id,
+            unt_ident=self.unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
         IcaPopulationCibleDeclareeFactory(
@@ -475,16 +460,11 @@ class TeleicareHistoryImporterTestCase(TestCase):
     def test_historic_declaration_has_right_mandated_company_with_all_historic_companies_created(
         self, mocked_add_composition_function
     ):
-        galenic_formulation_id = 1
-        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
-        unit_id = 1
-        SubstanceUnitFactory(siccrf_id=unit_id)
-
         siret_declarant = _make_siret()
         siret_mandataire = _make_siret()
         etablissement_declarant = EtablissementFactory(etab_siret=siret_declarant)
         etablissement_mandataire = EtablissementFactory(etab_siret=siret_mandataire)
-        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=galenic_formulation_id)
+        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=self.galenic_formulation_id)
         declaration = DeclarationFactory(
             cplalim=CA,
             etab=etablissement_mandataire,
@@ -496,7 +476,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             dcl=declaration,
             stadcl_ident=8,
             stattdcl_ident=2,
-            unt_ident=unit_id,
+            unt_ident=self.unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
         match_companies_on_siret_or_vat(create_if_not_exist=True)
@@ -518,18 +498,13 @@ class TeleicareHistoryImporterTestCase(TestCase):
     def test_historic_declaration_has_right_mandated_company_without_precreation_mandated_companies(
         self, mocked_add_composition_function
     ):
-        galenic_formulation_id = 1
-        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
-        unit_id = 1
-        SubstanceUnitFactory(siccrf_id=unit_id)
-
         siret_declarant = _make_siret()
         siret_mandataire = _make_siret()
         etablissement_declarant = EtablissementFactory(etab_siret=siret_declarant)
         declarant_company = CompanyFactory(siret=siret_declarant)
 
         etablissement_mandataire = EtablissementFactory(etab_siret=siret_mandataire)
-        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=galenic_formulation_id)
+        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=self.galenic_formulation_id)
         declaration = DeclarationFactory(
             cplalim=CA,
             etab=etablissement_mandataire,
@@ -541,7 +516,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             dcl=declaration,
             stadcl_ident=8,
             stattdcl_ident=2,
-            unt_ident=unit_id,
+            unt_ident=self.unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
         match_companies_on_siret_or_vat()
@@ -556,16 +531,11 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
     @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
     def test_historic_declaration_is_updated_with_mandataire(self, mocked_add_composition_function):
-        galenic_formulation_id = 1
-        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
-        unit_id = 1
-        SubstanceUnitFactory(siccrf_id=unit_id)
-
         siret_declarant = _make_siret()
         etablissement_declarant = EtablissementFactory(etab_siret=siret_declarant)
         declarant_company = CompanyFactory(siret=siret_declarant)
 
-        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=galenic_formulation_id)
+        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=self.galenic_formulation_id)
         CA_declaration = AuthorizedDeclarationFactory(company=declarant_company, siccrf_id=CA.cplalim_ident)
 
         self.assertIsNone(CA_declaration.mandated_company)
@@ -584,7 +554,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             dcl=declaration,
             stadcl_ident=8,
             stattdcl_ident=2,
-            unt_ident=unit_id,
+            unt_ident=self.unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
         match_companies_on_siret_or_vat(create_if_not_exist=True)
@@ -604,16 +574,11 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
     @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
     def test_historic_declaration_has_been_assigned_to_other_company(self, mocked_add_composition_function):
-        galenic_formulation_id = 1
-        GalenicFormulationFactory(siccrf_id=galenic_formulation_id)
-        unit_id = 1
-        SubstanceUnitFactory(siccrf_id=unit_id)
-
         siret_declarant = _make_siret()
         etablissement_declarant = EtablissementFactory(etab_siret=siret_declarant)
         declarant_company = CompanyFactory(siret=siret_declarant)
 
-        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=galenic_formulation_id)
+        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=self.galenic_formulation_id)
         CA_declaration = AuthorizedDeclarationFactory(company=declarant_company, siccrf_id=CA.cplalim_ident)
 
         self.assertIsNone(CA_declaration.mandated_company)
@@ -632,7 +597,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
             dcl=declaration,
             stadcl_ident=8,
             stattdcl_ident=2,
-            unt_ident=unit_id,
+            unt_ident=self.unit_id,
             vrsdecl_djr="32 kg of ppo",
         )
         match_companies_on_siret_or_vat(create_if_not_exist=True)
