@@ -158,7 +158,7 @@ def match_company_on_siret_or_vat(etab, create_if_not_exist=False):
     # creation de la company
     if not (siret_matched or vat_matched) and create_if_not_exist:
         new_company = create_company_from_historic_etablissement(etab)
-    return siret_matched, vat_matched, new_company is not None
+    return siret_matched, vat_matched, new_company
 
 
 def match_companies_on_siret_or_vat(create_if_not_exist=False, create_only_useful=True):
@@ -192,7 +192,7 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False, create_only_usefu
             nb_siret_match += 1
         elif vat_matched:
             nb_vat_match += 1
-        elif created_company:
+        elif created_company is not None:
             nb_creation_success += 1
         else:
             nb_creation_fail += 1
