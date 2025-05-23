@@ -61,7 +61,7 @@
             :options="store.preparations?.map((preparation) => ({ text: preparation.name, value: preparation.id }))"
             v-model.number="model.preparation"
             defaultUnselectedText=""
-            :required="true"
+            :required="model.active"
           />
         </div>
       </div>
@@ -136,7 +136,8 @@ const plantParts = computed(() => {
 })
 
 const showFields = computed(() => {
-  if (model.value.active && ["plant", "microorganism"].indexOf(props.objectType) >= 0) return true
+  if (props.objectType === "plant") return true
+  if (model.value.active && props.objectType === "microorganism") return true
   if (
     model.value.active &&
     ["active_ingredient", "form_of_supply", "substance"].indexOf(props.objectType) >= 0 &&
