@@ -26,6 +26,8 @@ class SubstanceInlineAdmin(admin.TabularInline):
     model = Ingredient.substances.through
     extra = 0
 
+    readonly_fields = ("siccrf_is_related",)
+
 
 class IngredientForm(ChangeReasonFormMixin):
     class Meta:
@@ -41,6 +43,43 @@ class IngredientForm(ChangeReasonFormMixin):
 class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonAdminMixin, SimpleHistoryAdmin):
     declaredingredient_set = "declaredingredient_set"
     form = IngredientForm
+    fieldsets = [
+        (
+            None,
+            {"fields": ["change_reason"]},
+        ),
+        (
+            None,  # Pas d'entête
+            {
+                "fields": [
+                    "siccrf_name",
+                    "ca_name",
+                    "siccrf_name_en",
+                    "siccrf_description",
+                    "ingredient_type",
+                    "is_obsolete",
+                    "is_risky",
+                    "novel_food",
+                    "siccrf_status",
+                    "ca_status",
+                    "ca_is_obsolete",
+                ],
+            },
+        ),
+        (
+            "Commentaires",
+            {
+                "fields": [
+                    "siccrf_public_comments",
+                    "ca_public_comments",
+                    "siccrf_private_comments",
+                    "ca_private_comments",
+                    "siccrf_to_be_entered_in_next_decree",
+                    "ca_to_be_entered_in_next_decree",
+                ],
+            },
+        ),
+    ]
     inlines = (
         SubstanceInlineAdmin,
         IngredientSynonymInline,
@@ -49,11 +88,14 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
     list_filter = ("is_obsolete", "status", "is_risky", "novel_food", "ingredient_type")
     show_facets = admin.ShowFacets.NEVER
     readonly_fields = (
-        "name",
+        "siccrf_name",
+        "siccrf_name_en",
+        "siccrf_description",
         "is_obsolete",
         "siccrf_status",
         "siccrf_public_comments",
         "siccrf_private_comments",
+        "siccrf_to_be_entered_in_next_decree",
     )
     search_fields = ["id", "name"]
 
