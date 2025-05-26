@@ -7,7 +7,11 @@
 
     <div class="flex justify-between">
       <SectionTitle :title="`Collaborateurs actuels de ${company.socialName}`" icon="ri-user-line" />
-      <AddNewCollaborator :companyId="company.id" :collaboratorsExecute="collaboratorsExecute" />
+      <AddNewCollaborator
+        :companyId="company.id"
+        :disabled="requestOngoing"
+        @added="() => ongoingInvitationsExecute() && collaboratorsExecute()"
+      />
     </div>
     <p>Gérez ici l'ensemble des collaborateurs et leurs rôles.</p>
 
@@ -47,8 +51,20 @@
       </div>
       <hr class="mt-4 -mb-2 border" />
     </div>
-    <ClaimsBlock class="mt-8" :companyId="company.id" :collaboratorsExecute="collaboratorsExecute" />
-    <SentInvitationsBlock class="mt-8" :companyId="company.id" />
+    <ClaimsBlock
+      class="mt-8"
+      :solicitations="solicitations"
+      @process="() => solicitationsExecute() && collaboratorsExecute()"
+    />
+    <SolicitationsHolder
+      v-if="ongoingInvitations"
+      title="Invitations envoyées"
+      icon="ri-chat-upload-line"
+      :solicitations="ongoingInvitations"
+      emptyText="Vous n'avez envoyé aucune invitation."
+      :actions="[]"
+      showRecipientEmail
+    />
   </div>
 </template>
 
@@ -59,11 +75,11 @@ import { storeToRefs } from "pinia"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import SectionTitle from "@/components/SectionTitle"
-import RoleTag from "@/components/RoleTag.vue"
+import RoleTag from "@/components/RoleTag"
 import { headers } from "@/utils/data-fetching"
 import { roleNameDisplayNameMapping } from "@/utils/mappings"
 import ClaimsBlock from "./ClaimsBlock"
-import SentInvitationsBlock from "./SentInvitationsBlock.vue"
+import SolicitationsHolder from "./SolicitationsHolder"
 import AddNewCollaborator from "./AddNewCollaborator"
 import { useRoute } from "vue-router"
 
@@ -74,17 +90,44 @@ const { loggedUser, companies } = storeToRefs(store)
 const company = computed(() => companies.value?.find((c) => +c.id === +route.params.id))
 const canRoleBeAddedTo = (roleName, user) => !user.roles.some((role) => role.name === roleName)
 
+const rootUrl = computed(() => `/api/v1/companies/${company.value.id}`)
+const params = { immediate: false }
+
 // Requête initiale pour récupérer les collaborateurs de l'entreprise
-const collaboratorsUrl = computed(() => `/api/v1/companies/${company.value.id}/collaborators`)
 const {
   data: collaborators,
   response: collaboratorsResponse,
   execute: collaboratorsExecute,
-} = useFetch(collaboratorsUrl, { immediate: false }).json()
+  isFetching: collaboratorsIsFetching,
+} = useFetch(`${rootUrl.value}/collaborators`, params).json()
+
+// Requête pour obtenir les invitations en cours
+const {
+  data: ongoingInvitations,
+  response: ongoingInvitationsResponse,
+  execute: ongoingInvitationsExecute,
+  isFetching: ongoingInvitationsIsFetching,
+} = useFetch(`${rootUrl.value}/collaboration-invitations/`, params).json()
+
+// Requête pour obtenir les demandes / solicitations
+const {
+  data: solicitations,
+  response: solicitationsResponse,
+  execute: solicitationsExecute,
+  isFetching: solicitationsIsFetching,
+} = useFetch(`${rootUrl.value}/company-access-claims/`, params).json()
+
+const requestOngoing = computed(
+  () => collaboratorsIsFetching.value || ongoingInvitationsIsFetching.value || solicitationsIsFetching.value
+)
 
 onMounted(async () => {
   await collaboratorsExecute()
+  await ongoingInvitationsExecute()
+  await solicitationsExecute()
   await handleError(collaboratorsResponse)
+  await handleError(ongoingInvitationsResponse)
+  await handleError(solicitationsResponse)
 })
 
 // Requête pour modifier les rôles d'un utilisateur pour une entreprise donnée
