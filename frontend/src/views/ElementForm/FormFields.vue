@@ -215,7 +215,7 @@
         />
       </div>
     </DsfrFieldset>
-    <DsfrFieldset legend="Commentaires" legendClass="fr-h4 !mb-0">
+    <DsfrFieldset legend="Commentaires" legendClass="fr-h4 !mb-0" class="!mb-0">
       <div class="grid md:grid-cols-2 md:gap-4">
         <div class="mb-4">
           <DsfrInput label="Commentaire public" v-model="state.publicComments" :isTextarea="true" label-visible />
@@ -243,7 +243,17 @@
         </DsfrInputGroup>
       </div>
     </DsfrFieldset>
-    <DsfrAlert v-if="element" class="mt-0 mb-8">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
+      <DsfrToggleSwitch
+        v-model="state.toBeEnteredInNextDecree"
+        label="À rentrer dans le prochain décret&nbsp;?"
+        activeText="Oui"
+        inactiveText="Non"
+        label-left
+        class="self-center mt-4 col-span-2 sm:col-span-1"
+      />
+    </div>
+    <DsfrAlert v-if="element" class="mb-8">
       <p>Des modifications pourrait impacter les déclarations en cours qui utilisent cet ingrédient.</p>
       <p>
         <router-link
@@ -299,6 +309,7 @@ const state = ref({
   substances: [],
   synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
   maxQuantities: [],
+  toBeEnteredInNextDecree: true, // vrai pour les nouveaux ingrédients
 })
 
 watch(
