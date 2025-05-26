@@ -33,7 +33,7 @@ django-ckeditor==6.7.2
 django-ckeditor-5==0.2.17
 django-environ==0.12.0
 django-filter==25.1
-django-hijack==3.7.1
+django-hijack==3.7.2
 django-js-asset==3.0.1
 django-phonenumber-field==8.1.0
 django-prose==2.1.0
