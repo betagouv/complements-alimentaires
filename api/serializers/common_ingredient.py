@@ -142,6 +142,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             "ca_public_comments",
             "ca_private_comments",
             "novel_food",
+            "ca_to_be_entered_in_next_decree",
             "ca_family",  # plante
             # substance
             "ca_cas_number",
