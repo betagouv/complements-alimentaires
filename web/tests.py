@@ -6,7 +6,12 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from data.factories import AwaitingInstructionDeclarationFactory, UserFactory, SnapshotFactory
+from data.factories import (
+    AwaitingInstructionDeclarationFactory,
+    UserFactory,
+    SnapshotFactory,
+    AuthorizedDeclarationFactory,
+)
 from data.models import Snapshot, Declaration
 
 from web.views import CertificateView
@@ -83,8 +88,26 @@ class CertificateViewTests(DeclarationPdfViewTests, APITestCase):
 
         view = CertificateView()
         self.assertTrue(
-            "art-16" in view.get_template_path(self.declaration),
+            "submitted-art-16" in view.get_template_path(self.declaration),
             "On prend le template de l'article 16 même quand maintenant c'est different",
+        )
+
+    def test_get_certificate_with_final_article(self):
+        """
+        L'attestation de déclaration devrait montrer l'article final de la déclaration
+        """
+        authorized = AuthorizedDeclarationFactory.create(overridden_article=Declaration.Article.ARTICLE_18)
+        SnapshotFactory(
+            declaration=authorized,
+            action=Snapshot.SnapshotActions.SUBMIT,
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            json_declaration={"article": Declaration.Article.ARTICLE_16},
+        )
+
+        view = CertificateView()
+        self.assertTrue(
+            "certificate-art-18" in view.get_template_path(authorized),
+            "On prend le template de l'article 18 même quand l'article de la soumission est different",
         )
 
 
