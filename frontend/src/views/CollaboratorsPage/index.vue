@@ -118,7 +118,7 @@ const {
 } = useFetch(`${rootUrl.value}/company-access-claims/`, params).json()
 
 const requestOngoing = computed(
-  () => !!(collaboratorsIsFetching.value || ongoingInvitationsIsFetching.value || solicitationsIsFetching.value)
+  () => collaboratorsIsFetching.value || ongoingInvitationsIsFetching.value || solicitationsIsFetching.value
 )
 
 onMounted(async () => {
