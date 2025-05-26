@@ -206,3 +206,9 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
                 declarations,
                 f"Article recalculé après modification via l'admin de {obj.name} ({obj.object_type} id {obj.id})",
             )
+
+    @staticmethod
+    def get_readonly_fields(request, obj):
+        if obj:
+            return [*SubstanceAdmin.readonly_fields, "unit"]
+        return SubstanceAdmin.readonly_fields

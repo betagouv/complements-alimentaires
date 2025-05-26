@@ -243,6 +243,23 @@
         </DsfrInputGroup>
       </div>
     </DsfrFieldset>
+    <DsfrAlert v-if="element" class="mt-0 mb-8">
+      <p>Des modifications pourrait impacter les déclarations en cours qui utilisent cet ingrédient.</p>
+      <p>
+        <router-link
+          :to="{
+            name: 'AdvancedSearchPage',
+            query: {
+              composition: `${element.id}||${element.name}||${type}`,
+              status: 'AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA,OBJECTION,OBSERVATION',
+            },
+          }"
+          target="_blank"
+        >
+          Voir les déclarations en cours
+        </router-link>
+      </p>
+    </DsfrAlert>
     <div class="flex gap-x-2 mt-4">
       <DsfrButton label="Enregistrer ingrédient" @click="saveElement" />
     </div>
