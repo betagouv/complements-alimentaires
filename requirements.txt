@@ -9,7 +9,7 @@ beautifulsoup4==4.13.3
 billiard==4.2.1
 bleach==6.2.0
 boto3==1.38.23
-botocore==1.38.13
+botocore==1.38.23
 bs4==0.0.2
 celery==5.4.0
 certifi==2025.1.31
