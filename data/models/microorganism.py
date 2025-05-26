@@ -69,6 +69,7 @@ class Microorganism(IngredientCommonModel):
             "species",
             "status",
             "siccrf_status",
+            "to_be_entered_in_next_decree",
         ],
     )
 

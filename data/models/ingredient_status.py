@@ -51,5 +51,15 @@ class WithStatus(models.Model):
         db_persist=True,
     )
     siccrf_to_be_entered_in_next_decree = models.BooleanField(
-        editable=False, default=False, verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"
+        editable=False,
+        default=False,
+        verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ? (selon SICCRF)",
+    )
+    ca_to_be_entered_in_next_decree = models.BooleanField(
+        null=True, default=None, verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"
+    )
+    to_be_entered_in_next_decree = models.GeneratedField(
+        expression=Coalesce(F("ca_to_be_entered_in_next_decree"), F("siccrf_to_be_entered_in_next_decree")),
+        output_field=models.BooleanField(verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"),
+        db_persist=True,
     )
