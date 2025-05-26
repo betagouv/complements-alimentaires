@@ -1,5 +1,5 @@
 <template>
-  <div class="fr-container p-6 sm:py-4! sm:px-0! grid grid-cols-12 gap-0 sm:gap-4 md:gap-10">
+  <div class="fr-container py-6 sm:py-4! sm:px-0! grid grid-cols-12 gap-0 sm:gap-4 md:gap-10">
     <div class="col-span-12 md:col-span-6">
       <h2>Notre Mission</h2>
       <p class="fr-h6">Accroître la transparence du secteur des compléments alimentaires</p>
