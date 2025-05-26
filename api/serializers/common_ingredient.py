@@ -28,7 +28,7 @@ COMMON_FIELDS = (
     "is_risky",
     "change_reason",
     "public_change_reason",
-    "to_be_entered_in_next_decree",
+    # "to_be_entered_in_next_decree",
 )
 
 COMMON_READ_ONLY_FIELDS = ("id",)
@@ -47,7 +47,7 @@ COMMON_FETCH_FIELDS = (
     # Les suivants sont cachés si l'utilisateur.ice ne fait pas partie de l'administration
     "private_comments",
     "origin_declaration",
-    "to_be_entered_in_next_decree",
+    # "to_be_entered_in_next_decree",
 )
 
 
@@ -164,4 +164,5 @@ class CommonIngredientReadSerializer(HistoricalModelSerializer, PrivateFieldsSer
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
     history = HistoricalRecordField(read_only=True)
 
-    private_fields = ("private_comments", "origin_declaration", "to_be_entered_in_next_decree")
+    # private_fields = ("private_comments", "origin_declaration", "to_be_entered_in_next_decree")
+    private_fields = ("private_comments", "origin_declaration")
