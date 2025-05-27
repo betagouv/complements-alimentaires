@@ -35,7 +35,6 @@ class Ingredient(IngredientCommonModel):
             "public_comments",
             "status",
             "siccrf_status",
-            "to_be_entered_in_next_decree",
         ],
     )
 

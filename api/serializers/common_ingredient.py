@@ -65,7 +65,6 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     status = serializers.IntegerField(source="ca_status", required=False)
     change_reason = serializers.CharField(required=False, allow_blank=True)
     public_change_reason = serializers.CharField(required=False, allow_blank=True)
-    to_be_entered_in_next_decree = serializers.BooleanField(source="ca_to_be_entered_in_next_decree", required=False)
 
     # DRF ne gère pas automatiquement la création des nested-fields :
     # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
@@ -142,7 +141,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             "ca_public_comments",
             "ca_private_comments",
             "novel_food",
-            "ca_to_be_entered_in_next_decree",
+            "to_be_entered_in_next_decree",
             "ca_family",  # plante
             # substance
             "ca_cas_number",

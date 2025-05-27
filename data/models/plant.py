@@ -90,7 +90,6 @@ class Plant(IngredientCommonModel):
             "public_comments",
             "status",
             "siccrf_status",
-            "to_be_entered_in_next_decree",
             "family_by_id",
             "family",
         ],

@@ -74,8 +74,7 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
                     "ca_public_comments",
                     "siccrf_private_comments",
                     "ca_private_comments",
-                    "siccrf_to_be_entered_in_next_decree",
-                    "ca_to_be_entered_in_next_decree",
+                    "to_be_entered_in_next_decree",
                 ],
             },
         ),
@@ -95,7 +94,6 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
         "siccrf_status",
         "siccrf_public_comments",
         "siccrf_private_comments",
-        "siccrf_to_be_entered_in_next_decree",
     )
     search_fields = ["id", "name"]
 
