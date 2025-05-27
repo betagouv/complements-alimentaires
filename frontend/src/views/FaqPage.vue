@@ -178,7 +178,7 @@
             recherchés. Plus précisément, vous devez renseigner :
           </p>
           <ul>
-            <li>Nom de l'entreprise qui produit le complément alimentaire</li>
+            <li>Nom de l'entreprise responsable de mise sur le marché du complément alimentaire</li>
             <li>Nom du complément alimentaire</li>
             <li>Marque</li>
             <li>Gamme</li>
