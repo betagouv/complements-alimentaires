@@ -17,6 +17,7 @@
         v-for="(row, rowIndex) in rows"
         :key="`row-${rowIndex}`"
       >
+        <!-- Commentaire -->
         <div class="sm:table-cell ca-cell">
           <ElementCommentModal
             :hidePrivateComments="hidePrivateComments"
@@ -64,6 +65,10 @@
               >
                 * champ obligatoire
               </div>
+              <div v-if="amountInfoText[rowIndex]" class="border p-1 rounded mt-2">
+                <v-icon name="ri-information-fill"></v-icon>
+                {{ amountInfoText[rowIndex] }}
+              </div>
             </DsfrInputGroup>
           </div>
         </div>
@@ -103,14 +108,26 @@ const elements = computed(() =>
 )
 const activeElements = computed(() => elements.value.filter((x) => x.active && !x.new))
 
-const sourceElements = (substance) => {
-  const sources = activeElements.value.filter(
+const getSources = (substance) =>
+  activeElements.value.filter(
     (x) =>
       (x.element.objectType === "substance" && x.element.id === substance.id) ||
       x.element.substances?.map((item) => item.id).indexOf(substance.id) > -1
   )
+
+const sourceElements = (substance) => {
+  const sources = getSources(substance)
   return sources.map((x) => x.element.name).join(", ")
 }
+
+const amountInfoText = computed(() => {
+  return payload.value.computedSubstances.map((x) => {
+    const sourceElements = getSources(x.substance) || []
+    const substanceSourceElements = sourceElements.filter((x) => x.type === "substance")
+    if (!substanceSourceElements.length) return ""
+    return "La quantité est inférieure à celle indiquée plus haut"
+  })
+})
 
 // cette logique devrait reflechir la logique de `_has_max_quantity_exceeded`
 // substance ici est une substance déclarée ou calculée
