@@ -46,7 +46,7 @@
           </div>
           <div
             :class="{
-              '!text-red-marianne-425 font-bold': getMaxQuantityExceeded(payload, payload.computedSubstances[rowIndex]),
+              'text-red-marianne-425! font-bold': getMaxQuantityExceeded(payload, payload.computedSubstances[rowIndex]),
             }"
             v-if="props.readonly"
           >
@@ -60,7 +60,7 @@
                 :required="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
               />
               <div
-                class="!text-neutral-500 mt-1"
+                class="text-neutral-500! mt-1"
                 v-if="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
               >
                 * champ obligatoire
@@ -178,6 +178,8 @@ watch(
 </script>
 
 <style scoped>
+@reference "../styles/index.css";
+
 .ca-cell {
   @apply align-middle p-0 sm:p-2 border-0 sm:border-b;
 }
