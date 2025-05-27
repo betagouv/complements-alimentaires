@@ -168,6 +168,38 @@ class TestDeclarationFlow(APITestCase):
         )
 
     @authenticate
+    def test_observe_with_visa_modifying_original(self, mocked_brevo):
+        """
+        Passage de ONGOING_VISA à OBSERVATION = Template 4
+        """
+        VisaRoleFactory(user=authenticate.user)
+        template_number = 4
+
+        declaration = OngoingVisaDeclarationFactory(
+            post_validation_status=Declaration.DeclarationStatus.REJECTED,
+            post_validation_producer_message="À refuser",
+            post_validation_expiration_days=20,
+        )
+
+        body = {
+            "comment": "overridden comment",
+            "proposal": "OBSERVATION",
+            "delayDays": 6,
+            "reasons": [
+                "a",
+                "b",
+            ],
+        }
+        self.client.post(reverse("api:accept_visa", kwargs={"pk": declaration.id}), body, format="json")
+
+        mocked_brevo.assert_called_once_with(
+            template_number,
+            declaration.brevo_parameters,
+            declaration.author.email,
+            declaration.author.get_full_name(),
+        )
+
+    @authenticate
     def test_object_with_visa(self, mocked_brevo):
         """
         Passage de ONGOING_VISA à OBJECTION = Template 5
