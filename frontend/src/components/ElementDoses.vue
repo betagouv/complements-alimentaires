@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="fr-h6 !mb-1">Quantités maximales autorisées par population</h2>
+    <h2 class="fr-h6 mb-1!">Quantités maximales autorisées par population</h2>
     <DsfrTable :headers="maxQuantityHeaders" :rows="maxQuantityRows" />
   </div>
 </template>
