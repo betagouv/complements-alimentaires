@@ -9,6 +9,19 @@ class Migration(migrations.Migration):
         ('data', '0149_alter_declaration_teleicare_id_and_more'),
     ]
 
+    def add_new_ingredients_to_next_decree(apps, schema_editor):
+        Ingredient = apps.get_model("data", "Ingredient")
+        Ingredient.objects.filter(siccrf_id__isnull=True).update(to_be_entered_in_next_decree=True)
+        Microorganism = apps.get_model("data", "Microorganism")
+        Microorganism.objects.filter(siccrf_id__isnull=True).update(to_be_entered_in_next_decree=True)
+        Plant = apps.get_model("data", "Plant")
+        Plant.objects.filter(siccrf_id__isnull=True).update(to_be_entered_in_next_decree=True)
+        Substance = apps.get_model("data", "Substance")
+        Substance.objects.filter(siccrf_id__isnull=True).update(to_be_entered_in_next_decree=True)
+
+    def reverse_add_new_ingredients_to_next_decree(apps, schema_editor):
+        pass
+
     operations = [
         migrations.AlterField(
             model_name='historicalingredient',
@@ -50,4 +63,5 @@ class Migration(migrations.Migration):
             name='to_be_entered_in_next_decree',
             field=models.BooleanField(default=False, verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"),
         ),
+        migrations.RunPython(add_new_ingredients_to_next_decree, reverse_add_new_ingredients_to_next_decree),
     ]
