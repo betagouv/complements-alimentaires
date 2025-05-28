@@ -3,7 +3,6 @@ from django.urls import reverse
 from django.utils.html import format_html, format_html_join, mark_safe
 
 from ..models.company import Company, DeclarantRole, EtablissementToCompanyRelation, SupervisorRole
-from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
 class SupervisionInline(admin.TabularInline):
@@ -22,13 +21,8 @@ class EtablissementToCompanyRelationInline(admin.TabularInline):
     extra = 0
 
 
-class CompanyForm(ChangeReasonFormMixin):
-    pass
-
-
 @admin.register(Company)
-class CompanyAdmin(ChangeReasonAdminMixin, admin.ModelAdmin):
-    form = CompanyForm
+class CompanyAdmin(admin.ModelAdmin):
     filter_horizontal = ("mandated_companies",)
     readonly_fields = ("display_represented_companies",)
 
@@ -40,10 +34,6 @@ class CompanyAdmin(ChangeReasonAdminMixin, admin.ModelAdmin):
     )
 
     fieldsets = (
-        (
-            None,
-            {"fields": ["change_reason"]},
-        ),
         (
             "",
             {
