@@ -2,8 +2,6 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html, format_html_join, mark_safe
 
-from simple_history.admin import SimpleHistoryAdmin
-
 from ..models.company import Company, DeclarantRole, EtablissementToCompanyRelation, SupervisorRole
 from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
@@ -29,7 +27,7 @@ class CompanyForm(ChangeReasonFormMixin):
 
 
 @admin.register(Company)
-class CompanyAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
+class CompanyAdmin(ChangeReasonAdminMixin, admin.ModelAdmin):
     form = CompanyForm
     filter_horizontal = ("mandated_companies",)
     readonly_fields = ("display_represented_companies",)
