@@ -2,7 +2,7 @@
   <div class="flex flex-row justify-between border p-2">
     <span class="self-center">{{ helperText }}</span>
     <DsfrButton
-      class="!text-red-marianne-425"
+      class="text-red-marianne-425!"
       size="sm"
       icon="ri-delete-bin-line"
       tertiary

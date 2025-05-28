@@ -1,68 +1,211 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@layer theme, base, components, utilities;
 
-/* The base layer is for things like reset rules or default styles applied to plain HTML elements. */
-@layer base {
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1440px;
+
+  --color-blue-france-main-525: #6a6af4;
+  --color-blue-france-sun-113: #000091;
+  --color-blue-france-975: #f5f5fe;
+  --color-blue-france-950: #ececfe;
+  --color-blue-france-925: #e3e3fd;
+  --color-blue-france-850: #cacafb;
+  --color-blue-france-625: #8585f6;
+  --color-blue-france-200: #313178;
+  --color-blue-france-125: #272747;
+  --color-blue-france-100: #21213f;
+  --color-blue-france-75: #1b1b35;
+  --color-red-marianne-main-472: #e1000f;
+  --color-red-marianne-425: #c9191e;
+  --color-red-marianne-975: #fef4f4;
+  --color-red-marianne-950: #fee9e9;
+  --color-red-marianne-925: #fddede;
+  --color-red-marianne-850: #fcbfbf;
+  --color-red-marianne-625: #f95c5e;
+  --color-red-marianne-200: #5e2a2b;
+  --color-red-marianne-125: #3b2424;
+  --color-red-marianne-100: #331f1f;
+  --color-red-marianne-75: #2b1919;
+  --color-grey-975: #f6f6f6;
+  --color-success-main-525: #1f8d49;
+  --color-success-425: #18753c;
+  --color-success-975: #dffee6;
+  --color-success-950: #b8fec9;
+  --color-success-925: #88fdaa;
+  --color-success-850: #3bea7e;
+  --color-success-625: #27a658;
+  --color-success-200: #204129;
+  --color-success-125: #1e2e22;
+  --color-success-100: #19271d;
+  --color-success-75: #142117;
+  --color-warning-main-525: #d64d00;
+  --color-warning-425: #b34000;
+  --color-warning-975: #fff4f3;
+  --color-warning-950: #ffe9e6;
+  --color-warning-925: #ffded9;
+  --color-warning-850: #ffbeb4;
+  --color-ca-plant: #18753c;
+  --color-ca-microorganism: #6e445a;
+  --color-ca-substance: #465f9d;
+  --color-ca-ingredient: #8d533e;
+  --color-ca-aroma: #a94645;
+  --color-ca-additive: #006a6f;
+  --color-ca-form-of-supply: #e4794a;
 }
 
-/* The components layer is for class-based styles that you want to be able to override with utilities. */
-@layer components {
+@utility gradient-dsfr {
+  @apply bg-linear-to-r from-blue-france-925 via-blue-france-850 via-30% to-transparent;
+}
+@utility icon {
+  @apply bg-slate-600;
+  &.icon-plant {
+    @apply bg-ca-plant;
+  }
+  &.icon-microorganism {
+    @apply bg-ca-microorganism;
+  }
+  &.icon-substance {
+    @apply bg-ca-substance;
+  }
+  &.icon-active_ingredient {
+    @apply bg-ca-ingredient;
+  }
+  &.icon-non_active_ingredient {
+    @apply bg-ca-ingredient;
+  }
+  &.icon-aroma {
+    @apply bg-ca-aroma;
+  }
+  &.icon-additive {
+    @apply bg-ca-additive;
+  }
+  &.icon-form_of_supply {
+    @apply bg-ca-form-of-supply;
+  }
+}
+@utility icon-plant {
+  &.icon {
+    @apply bg-ca-plant;
+  }
+}
+@utility icon-microorganism {
+  &.icon {
+    @apply bg-ca-microorganism;
+  }
+}
+@utility icon-substance {
+  &.icon {
+    @apply bg-ca-substance;
+  }
+}
+@utility icon-active_ingredient {
+  &.icon {
+    @apply bg-ca-ingredient;
+  }
+}
+@utility icon-non_active_ingredient {
+  & .icon {
+    @apply bg-ca-ingredient;
+  }
+}
+@utility icon-aroma {
+  &.icon {
+    @apply bg-ca-aroma;
+  }
+}
+@utility icon-additive {
+  &.icon {
+    @apply bg-ca-additive;
+  }
+}
+@utility icon-form_of_supply {
+  &.icon {
+    @apply bg-ca-form-of-supply;
+  }
+}
+@utility fr-table {
+  /* Je spécifier ici les couleurs pour les tags car Tailwind ne fait pas des classes dynamiques pour le bg */
+  /* https://stackoverflow.com/questions/72481680/tailwinds-background-color-is-not-being-applied-when-added-dynamically */
+  & .fr-tag.DRAFT {
+    @apply bg-blue-france-925!;
+  }
+  & .fr-tag.AWAITING_INSTRUCTION {
+    @apply bg-gray-200!;
+  }
+  & .fr-tag.ONGOING_INSTRUCTION {
+    @apply bg-blue-200!;
+  }
+  & .fr-tag.OBSERVATION {
+    @apply bg-amber-200!;
+  }
+  & .fr-tag.OBJECTION {
+    @apply bg-orange-200!;
+  }
+  & .fr-tag.ABANDONED {
+    @apply bg-red-100!;
+  }
+  & .fr-tag.AUTHORIZED {
+    @apply bg-success-950!;
+  }
+  & .fr-tag .ov-icon {
+    @apply mr-2!;
+  }
+}
+@utility fr-tag {
+  /* Je spécifier ici les couleurs pour les tags car Tailwind ne fait pas des classes dynamiques pour le bg */
+  /* https://stackoverflow.com/questions/72481680/tailwinds-background-color-is-not-being-applied-when-added-dynamically */
+  .fr-table &.DRAFT {
+    @apply bg-blue-france-925!;
+  }
+  .fr-table &.AWAITING_INSTRUCTION {
+    @apply bg-gray-200!;
+  }
+  .fr-table &.ONGOING_INSTRUCTION {
+    @apply bg-blue-200!;
+  }
+  .fr-table &.OBSERVATION {
+    @apply bg-amber-200!;
+  }
+  .fr-table &.OBJECTION {
+    @apply bg-orange-200!;
+  }
+  .fr-table &.ABANDONED {
+    @apply bg-red-100!;
+  }
+  .fr-table &.AUTHORIZED {
+    @apply bg-success-950!;
+  }
+  .fr-table & .ov-icon {
+    @apply mr-2!;
+  }
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
 }
 
 /* The utilities layer is for small, single-purpose classes that should always take precedence over any other styles. */
-@layer utilities {
-    .gradient-dsfr {
-        @apply bg-gradient-to-r from-blue-france-925 via-blue-france-850 via-30% to-transparent
-    }
-    .icon {
-        @apply bg-slate-600;
-    }
-    .icon.icon-plant {
-        @apply bg-ca-plant;
-    }
-    .icon.icon-microorganism {
-        @apply bg-ca-microorganism;
-    }
-    .icon.icon-substance {
-        @apply bg-ca-substance;
-    }
-    .icon.icon-active_ingredient, .icon.icon-non_active_ingredient {
-        @apply bg-ca-ingredient;
-    }
-    .icon.icon-aroma {
-        @apply bg-ca-aroma;
-    }
-    .icon.icon-additive {
-        @apply bg-ca-additive;
-    }
-    .icon.icon-form_of_supply {
-        @apply bg-ca-form-of-supply;
-    }
-    /* Je spécifier ici les couleurs pour les tags car Tailwind ne fait pas des classes dynamiques pour le bg */
-    /* https://stackoverflow.com/questions/72481680/tailwinds-background-color-is-not-being-applied-when-added-dynamically */
-    .fr-tag.DRAFT {
-        @apply !bg-blue-france-925;
-    }
-    .fr-tag.AWAITING_INSTRUCTION {
-        @apply !bg-gray-200;
-    }
-    .fr-tag.ONGOING_INSTRUCTION {
-        @apply !bg-blue-200;
-    }
-    .fr-tag.OBSERVATION {
-        @apply !bg-amber-200;
-    }
-    .fr-tag.OBJECTION {
-        @apply !bg-orange-200;
-    }
-    .fr-tag.ABANDONED {
-        @apply !bg-red-100;
-    }
-    .fr-tag.AUTHORIZED {
-        @apply !bg-success-950;
-    }
-    .fr-tag .ov-icon {
-        @apply !mr-2;
-    }
+/* Pour que toutes les classes de tailwind prennent précedence de DSFR. https://github.com/tailwindlabs/tailwindcss/discussions/15866 */
+#app {
+  @import 'tailwindcss/utilities' layer(utilities) important;
 }

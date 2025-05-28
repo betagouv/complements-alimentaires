@@ -58,17 +58,18 @@ const rows = computed(() =>
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
 .fr-table :deep(table) {
-  @apply !table;
+  @apply table!;
 }
 .fr-table :deep(.fr-tag) {
-  @apply !bg-gray-200;
+  @apply bg-gray-200!;
 }
 /* On surcharge les couleurs dans `index.css` car pour les instructeur.ices les points d'attentions sont différents */
 .fr-table :deep(.fr-tag.AWAITING_VISA) {
-  @apply !bg-amber-100;
+  @apply bg-amber-100!;
 }
 .fr-table :deep(.fr-tag.ONGOING_VISA) {
-  @apply !bg-blue-france-925;
+  @apply bg-blue-france-925!;
 }
 </style>

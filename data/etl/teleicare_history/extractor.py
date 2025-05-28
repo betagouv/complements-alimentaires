@@ -509,7 +509,7 @@ def add_final_state_snapshot(
             snapshot.save()
 
 
-def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=False):
+def create_declarations_from_teleicare_history(etab_ids=[], company_ids=[], rewrite_existing=False):
     """
     Dans Teleicare une entreprise peut-être relié à une déclaration par 3 relations différentes :
     * responsable de l'étiquetage (équivalent Declaration.mandated_company)
@@ -517,14 +517,21 @@ def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=
     * télédéclarante de la déclaration (cette relation n'est pour le moment pas conservée, car le BEPIAS ne sait pas ce qu'elle signifie)
     """
     nb_created_declarations = 0
-
-    etab_ids = (
-        EtablissementToCompanyRelation.objects.exclude(siccrf_id=None)
-        if not company_ids
-        else EtablissementToCompanyRelation.objects.filter(company_id__in=company_ids)
-    ).values_list("siccrf_id", flat=True)
+    old_etab_id = 0
+    if not etab_ids:
+        etab_ids = (
+            EtablissementToCompanyRelation.objects.exclude(siccrf_id=None)
+            if not company_ids
+            else EtablissementToCompanyRelation.objects.filter(company_id__in=company_ids)
+        ).values_list("siccrf_id", flat=True)
     # Parcourir tous les compléments alimentaires dont l'entreprise déclarante a été matchée
-    for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(etab_id__in=etab_ids):
+    for ica_complement_alimentaire in IcaComplementAlimentaire.objects.filter(etab_id__in=etab_ids).order_by(
+        "etab_id"
+    ):
+        if ica_complement_alimentaire.etab_id != old_etab_id:
+            old_etab_id = ica_complement_alimentaire.etab_id
+            company = EtablissementToCompanyRelation.objects.get(siccrf_id=ica_complement_alimentaire.etab_id).company
+            logger.info(f"Importation des déclarations historiques de etab_ident={old_etab_id}")
         all_ica_declarations = IcaDeclaration.objects.filter(
             cplalim_id=ica_complement_alimentaire.cplalim_ident
         ).exclude(icaversiondeclaration__isnull=True)  # la déclaration doit être liée à une version de déclaration
@@ -551,10 +558,6 @@ def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=
                 try:  # pas possible d'utiliser update_or_create
                     declaration = Declaration.objects.get(
                         siccrf_id=ica_complement_alimentaire.cplalim_ident,
-                        # resp mise sur le marché (entreprise qui déclare ou pour laquelle une entreprise mandataire déclare)
-                        company=EtablissementToCompanyRelation.objects.get(
-                            siccrf_id=ica_complement_alimentaire.etab_id
-                        ).company,
                     )
                     if not rewrite_existing:
                         continue
@@ -562,9 +565,7 @@ def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=
                     declaration = Declaration(
                         siccrf_id=ica_complement_alimentaire.cplalim_ident,
                         # resp mise sur le marché (entreprise qui déclare ou pour laquelle une entreprise mandataire déclare)
-                        company=EtablissementToCompanyRelation.objects.get(
-                            siccrf_id=ica_complement_alimentaire.etab_id
-                        ).company,
+                        company=company,
                     )
                 declaration_attrs = compute_declaration_attributes(
                     ica_complement_alimentaire, latest_ica_declaration, latest_ica_version_declaration

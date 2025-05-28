@@ -44,7 +44,9 @@ const rows = computed(() =>
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 .fr-table :deep(table) {
-  @apply !table;
+  @apply table!;
 }
 </style>

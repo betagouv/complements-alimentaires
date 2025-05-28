@@ -42,10 +42,10 @@
                 ></v-icon>
               </div>
               <div>
-                <p class="!mb-0 fr-text--sm font-bold">
+                <p class="mb-0! fr-text--sm font-bold">
                   {{ selectedIngredient.name }}
                 </p>
-                <p class="!mb-0 fr-text--sm italic">{{ getTypeInFrench(selectedIngredient.objectType) }}</p>
+                <p class="mb-0! fr-text--sm italic">{{ getTypeInFrench(selectedIngredient.objectType) }}</p>
               </div>
             </div>
             <div>
