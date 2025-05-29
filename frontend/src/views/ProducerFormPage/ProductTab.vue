@@ -12,7 +12,7 @@
       </DsfrAlert>
       <DsfrInputGroup class="max-w-md" :error-message="firstErrorMsg(v$, 'company')" v-else>
         <DsfrSelect
-          label="Entreprise qui produit le complément"
+          label="Entreprise responsable de mise sur le marché du complément"
           v-model="selectedCompanyOption"
           :options="companiesSelectOptions"
           :required="true"

@@ -49,7 +49,7 @@
           </template>
         </div>
       </div>
-      <hr class="mt-4 -mb-2 border" />
+      <hr class="mt-4 -mb-2" />
     </div>
     <ClaimsBlock
       class="mt-8"
