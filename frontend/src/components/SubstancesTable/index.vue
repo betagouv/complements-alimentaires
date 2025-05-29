@@ -1,4 +1,6 @@
 <template>
+  <DsfrTable ref="table" class="w-full" :headers="headers" :rows="tableRows" :no-caption="true" :pagination="false" />
+
   <div class="text-sm sm:table w-full" v-show="rows?.length">
     <div class="hidden sm:table-header-group bg-gray-100">
       <div class="table-row">
@@ -93,6 +95,32 @@ const payload = defineModel()
 const props = defineProps({ readonly: Boolean, hidePrivateComments: Boolean })
 
 const headers = ["", "Nom", "Ingrédient(s) source", "Qté totale par DJR", "Unité"]
+
+const tableRows = computed(() => {
+  return payload.value.computedSubstances.map((s) => ({
+    rowData: [
+      {
+        component: ElementCommentModal,
+        hidePrivateComments: props.hidePrivateComments,
+        modelValue: s,
+      },
+      {
+        component: "span",
+        text: s.substance.name.toLowerCase(),
+        class: "capitalize",
+      },
+      {
+        component: "span",
+        text: sourceElements(s.substance),
+        class: "capitalize",
+      },
+      "",
+      "",
+      "",
+    ],
+  }))
+})
+
 const rows = computed(() =>
   payload.value.computedSubstances.map((x) => [x.substance.name.toLowerCase(), sourceElements(x.substance)])
 )
