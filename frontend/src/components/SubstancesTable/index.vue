@@ -13,31 +13,31 @@ const props = defineProps({ readonly: Boolean, hidePrivateComments: Boolean })
 const headers = ["", "Nom", "Ingrédient(s) source", "Qté totale par DJR", "Unité"]
 
 const rows = computed(() => {
-  return payload.value.computedSubstances.map((s, i) => ({
+  return payload.value.computedSubstances.map((substance, index) => ({
     rowData: [
       {
         component: ElementCommentModal,
         hidePrivateComments: props.hidePrivateComments,
-        modelValue: s,
+        modelValue: substance,
       },
       {
         component: "span",
-        text: s.substance.name.toLowerCase(),
+        text: substance.substance.name.toLowerCase(),
         class: "capitalize",
       },
       {
         component: "span",
-        text: sourceElements(s.substance),
+        text: sourceElements(substance.substance),
         class: "capitalize",
       },
       {
         component: QuantityInputCell,
         modelValue: payload.value,
-        amountInfoText: amountInfoText.value[i],
+        amountInfoText: amountInfoText.value[index],
         readonly: props.readonly,
-        rowIndex: i,
+        rowIndex: index,
       },
-      payload.value.computedSubstances[i].substance.unit,
+      payload.value.computedSubstances[index].substance.unit,
     ],
   }))
 })
@@ -67,10 +67,19 @@ const sourceElements = (substance) => {
 
 const amountInfoText = computed(() => {
   return payload.value.computedSubstances.map((x) => {
+    if (!x.quantity) return ""
+
     const sourceElements = getSources(x.substance) || []
-    const substanceSourceElements = sourceElements.filter((x) => x.type === "substance")
-    if (!substanceSourceElements.length) return ""
-    return "La quantité est inférieure à celle indiquée plus haut"
+    const substanceSourceElements = sourceElements.filter((x) => x.element.objectType === "substance")
+    const substanceSourcesHaveQuantities = substanceSourceElements?.some((x) => x.quantity)
+
+    if (!substanceSourcesHaveQuantities) return ""
+
+    const sourceQuantitySum = substanceSourceElements.reduce((acc, obj) => acc + (obj.quantity || 0), 0)
+    if (x.quantity < sourceQuantitySum) {
+      return `La quantité est inférieure à celle indiquée précédemment (${sourceQuantitySum} ${x.substance.unit})`
+    }
+    return ""
   })
 })
 
