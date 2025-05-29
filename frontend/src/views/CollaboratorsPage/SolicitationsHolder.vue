@@ -30,7 +30,7 @@
           </div>
         </div>
       </div>
-      <hr class="mt-4 -mb-2 border" />
+      <hr class="mt-4 -mb-2" />
     </div>
     <div v-if="solicitations.length === 0">
       <p class="italic">{{ emptyText }}</p>

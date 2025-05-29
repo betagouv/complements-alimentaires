@@ -7,7 +7,7 @@ from data.models import Declaration
 class ChangeReasonFormMixin(forms.ModelForm):
     # thanks to https://github.com/jazzband/django-simple-history/issues/853#issuecomment-1105754544
     change_reason = forms.CharField(
-        label="Raison de modification (rendue publique dans le cas des Ingrédients, Plantes, Substances, Microorganismes)",
+        label="Raison de modification",
         help_text="100 caractères max",
         max_length=100,
         widget=forms.TextInput(attrs={"size": "100"}),
