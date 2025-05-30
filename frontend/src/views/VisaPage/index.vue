@@ -220,8 +220,9 @@ const onDecisionDone = () => {
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
 div :deep(.fr-input-group) {
-  @apply !mt-0;
+  @apply mt-0!;
   flex: 1;
 }
 </style>

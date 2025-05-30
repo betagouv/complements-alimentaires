@@ -3,7 +3,7 @@
     <DsfrModal :opened="opened" @close="opened = false">
       <DsfrCheckboxSet v-model="selectedOptions" :options="options" />
     </DsfrModal>
-    <p class="!mb-2">
+    <p class="mb-2!">
       {{ filterTitle }}
 
       <span v-if="selectedOptions.length">

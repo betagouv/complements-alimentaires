@@ -51,5 +51,5 @@ class WithStatus(models.Model):
         db_persist=True,
     )
     to_be_entered_in_next_decree = models.BooleanField(
-        editable=False, default=False, verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"
+        default=False, verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"
     )

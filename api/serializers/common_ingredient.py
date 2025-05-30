@@ -28,6 +28,7 @@ COMMON_FIELDS = (
     "is_risky",
     "change_reason",
     "public_change_reason",
+    "to_be_entered_in_next_decree",
 )
 
 COMMON_READ_ONLY_FIELDS = ("id",)
@@ -37,14 +38,16 @@ COMMON_FETCH_FIELDS = (
     "name",
     "synonyms",
     "public_comments",
-    "private_comments",  # Caché si l'utilisateur.ice ne fait pas partie de l'administration
     "activity",
     "status",
     "novel_food",
     "is_risky",
     "history",
     "object_type",
+    # Les suivants sont cachés si l'utilisateur.ice ne fait pas partie de l'administration
+    "private_comments",
     "origin_declaration",
+    "to_be_entered_in_next_decree",
 )
 
 
@@ -93,7 +96,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
                     logger.info(
                         f"SICCRF champ supprimé : le champ '{siccrf_key}' a été supprimé sur l'ingrédient type '{instance.object_type}', id '{instance.id}'"
                     )
-                elif value == siccrf_value and not ca_value:
+                elif value == siccrf_value and (ca_value is None or ca_value == "" or value == ca_value):
                     # si la valeur siccrf n'a pas été surpassée par une valeur CA, et la valeur donnée est la même que l'existante, pas besoin de la sauvegarder
                     validated_data.pop(key, None)
 
@@ -138,6 +141,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             "ca_public_comments",
             "ca_private_comments",
             "novel_food",
+            "to_be_entered_in_next_decree",
             "ca_family",  # plante
             # substance
             "ca_cas_number",
@@ -161,4 +165,4 @@ class CommonIngredientReadSerializer(HistoricalModelSerializer, PrivateFieldsSer
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
     history = HistoricalRecordField(read_only=True)
 
-    private_fields = ("private_comments", "origin_declaration")
+    private_fields = ("private_comments", "origin_declaration", "to_be_entered_in_next_decree")

@@ -1,6 +1,6 @@
 <template>
   <FormWrapper :externalResults="$externalResults" class="mx-auto">
-    <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
+    <DsfrFieldset legend="Identité de l’ingrédient" legendClass="fr-h4 mb-0! pb-2!">
       <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-8">
         <div class="col-span-2 lg:col-span-4" v-if="formForType.name">
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'name')">
@@ -69,7 +69,7 @@
         />
       </div>
       <div class="grid md:grid-cols-2 mt-4">
-        <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg !pb-0 !mb-2 !mt-4">
+        <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg pb-0! mb-2! mt-4!">
           <DsfrInput
             v-for="(_, idx) in state.synonyms"
             :key="`synonym-${idx}`"
@@ -87,7 +87,7 @@
         </DsfrFieldset>
       </div>
     </DsfrFieldset>
-    <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 !mb-0 !pb-2">
+    <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 mb-0! pb-2!">
       <div v-if="formForType.plantParts" class="grid md:grid-cols-3 items-end my-4 md:my-2">
         <DsfrMultiselect
           v-model="state.authorisedPlantParts"
@@ -187,7 +187,7 @@
           v-if="state.maxQuantities.length"
           title="Quantités maximales par population"
           :headers="maxQuantitiesHeaders"
-          class="!mb-2 quantities-table"
+          class="mb-2! quantities-table"
         >
           <tr v-for="(q, idx) in state.maxQuantities" :key="`max-quantity-row-${idx}`">
             <td><DsfrSelect v-model="q.population" :options="populationOptions" /></td>
@@ -215,7 +215,7 @@
         />
       </div>
     </DsfrFieldset>
-    <DsfrFieldset legend="Commentaires" legendClass="fr-h4 !mb-0">
+    <DsfrFieldset legend="Commentaires" legendClass="fr-h4 mb-0!" class="mb-0">
       <div class="grid md:grid-cols-2 md:gap-4">
         <div class="mb-4">
           <DsfrInput label="Commentaire public" v-model="state.publicComments" :isTextarea="true" label-visible />
@@ -243,7 +243,17 @@
         </DsfrInputGroup>
       </div>
     </DsfrFieldset>
-    <DsfrAlert v-if="element" class="mt-0 mb-8">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
+      <DsfrToggleSwitch
+        v-model="state.toBeEnteredInNextDecree"
+        label="À rentrer dans le prochain décret&nbsp;?"
+        activeText="Oui"
+        inactiveText="Non"
+        label-left
+        class="self-center mt-4 col-span-2 sm:col-span-1"
+      />
+    </div>
+    <DsfrAlert v-if="element" class="mb-8">
       <p>Des modifications pourrait impacter les déclarations en cours qui utilisent cet ingrédient.</p>
       <p>
         <router-link
@@ -299,6 +309,7 @@ const state = ref({
   substances: [],
   synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
   maxQuantities: [],
+  toBeEnteredInNextDecree: true, // vrai pour les nouveaux ingrédients
 })
 
 watch(

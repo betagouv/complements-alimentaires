@@ -128,6 +128,7 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
                     "siccrf_private_comments",
                     "ca_public_comments",
                     "ca_private_comments",
+                    "to_be_entered_in_next_decree",
                 ],
             },
         ),

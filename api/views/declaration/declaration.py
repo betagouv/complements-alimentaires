@@ -739,7 +739,7 @@ class DeclarationAcceptVisaView(VisaDecisionView):
             Declaration.DeclarationStatus.OBJECTION: 5,
             Declaration.DeclarationStatus.OBSERVATION: 4,
         }
-        return template_map.get(declaration.post_validation_status)
+        return template_map.get(self.get_validation_status(request, declaration))
 
 
 # Nous utilisons une Non-deterministic state machine. Lors qu'un.e instructeur.ice demande une

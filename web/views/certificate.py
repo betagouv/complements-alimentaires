@@ -24,13 +24,31 @@ class CertificateView(PdfView):
             Declaration.Article.ARTICLE_18: 18,
             Declaration.Article.ANSES_REFERAL: "anses",
         }
-        article = article_map.get(declaration.article, 15)
+
         if declaration.status in [
             status.AWAITING_INSTRUCTION,
             status.AWAITING_VISA,
             status.ONGOING_INSTRUCTION,
             status.ONGOING_VISA,
         ]:
+            # essayer de prendre l'article de la soumission et non pas l'article actuel, qui pourrait être
+            # different grâce à l'instruction
+            try:
+                first_submission = declaration.snapshots.filter(action=Snapshot.SnapshotActions.SUBMIT).earliest(
+                    "creation_date"
+                )
+                declaration_article = first_submission.json_declaration["article"]
+                if not declaration_article:
+                    logger.info(
+                        f"Error obtaining article from first submission snapshot for declaration {declaration.id}, falling back to using current article"
+                    )
+                    declaration_article = declaration.article
+            except Snapshot.DoesNotExist:
+                logger.info(
+                    f"Error obtaining first submission snapshot for declaration {declaration.id}, falling back to using current article"
+                )
+                declaration_article = declaration.article
+            article = article_map.get(declaration_article)
             return f"certificates/certificate-submitted-art-{article}.html"
 
         template_status = declaration.status
@@ -41,6 +59,7 @@ class CertificateView(PdfView):
             template_status = declaration.snapshots.latest("creation_date").status
 
         if template_status in [status.AUTHORIZED, status.WITHDRAWN]:
+            article = article_map.get(declaration.article)
             return f"certificates/certificate-art-{article}.html"
         if template_status == status.OBJECTION:
             return "certificates/certificate-objected.html"

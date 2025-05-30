@@ -7,11 +7,11 @@
     <div class="border px-4 mb-2 md:flex gap-4 items-baseline filters">
       <div>
         <div class="sm:flex gap-4 items-baseline md:border-r">
-          <DsfrFieldset legend="Nom d'entreprise" class="!mb-0 min-w-44">
+          <DsfrFieldset legend="Nom d'entreprise" class="mb-0! min-w-44">
             <div class="flex gap-4">
               <DsfrInputGroup>
                 <DsfrInput
-                  class="max-w-16 !text-sm"
+                  class="max-w-16 text-sm!"
                   label="De :"
                   :modelValue="companyNameStart"
                   label-visible
@@ -20,7 +20,7 @@
               </DsfrInputGroup>
               <DsfrInputGroup>
                 <DsfrInput
-                  class="max-w-16 !text-sm"
+                  class="max-w-16 text-sm!"
                   label="À :"
                   :modelValue="companyNameEnd"
                   label-visible
@@ -29,7 +29,7 @@
               </DsfrInputGroup>
             </div>
           </DsfrFieldset>
-          <DsfrFieldset class="!mb-0 min-w-52">
+          <DsfrFieldset class="mb-0! min-w-52">
             <div class="md:px-4 md:border-l">
               <DsfrInputGroup>
                 <DsfrSelect
@@ -38,14 +38,14 @@
                   @update:modelValue="updateInstructorFilter"
                   defaultUnselectedText=""
                   :options="instructorSelectOptions"
-                  class="!text-sm"
+                  class="text-sm!"
                 />
               </DsfrInputGroup>
             </div>
           </DsfrFieldset>
         </div>
         <div class="md:pr-4 md:border-r md:border-t md:-mt-3">
-          <DsfrFieldset legend="Recherche" class="!mb-0">
+          <DsfrFieldset legend="Recherche" class="mb-0!">
             <DsfrSearchBar v-model="searchTerm" placeholder="Nom, ID ou entreprise" @search="search" />
           </DsfrFieldset>
         </div>
@@ -61,7 +61,7 @@
                 :modelValue="ordering"
                 @update:modelValue="updateOrdering"
                 :options="orderingOptions"
-                class="!text-sm"
+                class="text-sm!"
               />
             </DsfrInputGroup>
           </div>
@@ -73,7 +73,7 @@
                 :modelValue="article"
                 @update:modelValue="updateArticle"
                 :options="articleSelectOptions"
-                class="!text-sm"
+                class="text-sm!"
               />
             </DsfrInputGroup>
           </div>
@@ -176,6 +176,8 @@ const search = () => {
 </script>
 
 <style scoped>
+@reference "../../styles/index.css";
+
 .filters :deep(legend.fr-fieldset__legend) {
   @apply pb-0 pt-4;
 }

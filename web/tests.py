@@ -6,7 +6,15 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from data.factories import AwaitingInstructionDeclarationFactory, UserFactory
+from data.factories import (
+    AwaitingInstructionDeclarationFactory,
+    UserFactory,
+    SnapshotFactory,
+    AuthorizedDeclarationFactory,
+)
+from data.models import Snapshot, Declaration
+
+from web.views import CertificateView
 
 
 class RobotsTxtTests(TestCase):
@@ -34,6 +42,8 @@ class DeclarationPdfViewTests:
     def setUp(self):
         self.user = UserFactory()
         self.declaration = AwaitingInstructionDeclarationFactory(author=self.user)
+        self.declaration.assign_calculated_article()
+        self.declaration.save()
 
     def test_get_certificate(self):
         self.client.force_login(self.user)
@@ -53,6 +63,52 @@ class DeclarationPdfViewTests:
 
 class CertificateViewTests(DeclarationPdfViewTests, APITestCase):
     view_name = "web:certificate"
+
+    def test_get_certificate_with_submitted_article(self):
+        """
+        L'accusé d'enregistrement devrait montrer l'article qui a été assigné au moment de la première
+        soumission et pas l'article actuel
+        """
+        SnapshotFactory(
+            declaration=self.declaration,
+            action=Snapshot.SnapshotActions.SUBMIT,
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            json_declaration={"article": Declaration.Article.ARTICLE_16},
+        )
+        SnapshotFactory(
+            declaration=self.declaration,
+            action=Snapshot.SnapshotActions.RESPOND_TO_OBSERVATION,
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            json_declaration={"article": Declaration.Article.ARTICLE_15},
+        )
+        self.declaration.overridden_article = Declaration.Article.ANSES_REFERAL
+        self.declaration.save()
+        self.declaration.refresh_from_db()
+        self.assertEqual(self.declaration.article, Declaration.Article.ANSES_REFERAL)
+
+        view = CertificateView()
+        self.assertTrue(
+            "submitted-art-16" in view.get_template_path(self.declaration),
+            "On prend le template de l'article 16 même quand maintenant c'est different",
+        )
+
+    def test_get_certificate_with_final_article(self):
+        """
+        L'attestation de déclaration devrait montrer l'article final de la déclaration
+        """
+        authorized = AuthorizedDeclarationFactory.create(overridden_article=Declaration.Article.ARTICLE_18)
+        SnapshotFactory(
+            declaration=authorized,
+            action=Snapshot.SnapshotActions.SUBMIT,
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            json_declaration={"article": Declaration.Article.ARTICLE_16},
+        )
+
+        view = CertificateView()
+        self.assertTrue(
+            "certificate-art-18" in view.get_template_path(authorized),
+            "On prend le template de l'article 18 même quand l'article de la soumission est different",
+        )
 
 
 class SummaryViewTests(DeclarationPdfViewTests, APITestCase):

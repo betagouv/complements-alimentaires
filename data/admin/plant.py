@@ -26,6 +26,9 @@ class PartInlineAdmin(admin.TabularInline):
     model = Plant.plant_parts.through
     extra = 1
 
+    fields = ("plantpart", "siccrf_is_useful", "ca_is_useful")
+    readonly_fields = ("siccrf_is_useful",)
+
 
 class SubstanceInlineAdmin(admin.TabularInline):
     model = Plant.substances.through
@@ -75,6 +78,7 @@ class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonA
                     "siccrf_private_comments",
                     "ca_public_comments",
                     "ca_private_comments",
+                    "to_be_entered_in_next_decree",
                 ],
             },
         ),
