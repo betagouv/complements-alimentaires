@@ -109,21 +109,6 @@ class CompanyAdmin(admin.ModelAdmin):
 
     display_represented_companies.short_description = "Entreprises representées"
 
-    def save_related(self, request, form, formsets, change):
-        for formset in formsets:
-            # Found this simple way to check dynamic class instance.
-            if formset.model == EtablissementToCompanyRelation:
-                # instances = formset.save(commit=False)
-                # hostel = form.instance
-
-                for added_historic_siret in formset.new_objects:
-                    pass
-                    # match avec les ica_etablissement
-                    # importe les déclarations de l'établissement
-                    # soft delete l'ancien établissement
-
-        super().save_related(request, form, formsets, change)
-
 
 @admin.register(SupervisorRole)
 class SupervisorRoleAdmin(admin.ModelAdmin):
