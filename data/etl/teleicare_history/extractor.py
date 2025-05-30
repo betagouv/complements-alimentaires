@@ -84,6 +84,84 @@ def convert_activities(etab):
     return activities
 
 
+def create_company_from_historic_etablissement(etab):
+    new_company = Company(
+        address=etab.etab_adre_voie,
+        postal_code=etab.etab_adre_cp,
+        city=etab.etab_adre_ville,
+        phone_number=convert_phone_number(etab.etab_telephone),
+        email=etab.etab_courriel or "",
+        social_name=etab.etab_raison_sociale,
+        commercial_name=etab.etab_enseigne or "",
+        siret=etab.etab_siret,
+        vat=clean_vat(etab.etab_numero_tva_intra),
+        activities=convert_activities(etab),
+    )
+
+    try:
+        new_company.save(fields_with_no_validation=("phone_number"))
+        relation = EtablissementToCompanyRelation(
+            company=new_company,
+            siccrf_id=etab.etab_ident,
+            old_siret=etab.etab_siret,
+            old_vat=clean_vat(etab.etab_numero_tva_intra),
+            siccrf_registration_date=convert_str_date(etab.etab_date_adhesion),
+        )
+        relation.save()
+        return new_company
+    except ValidationError as e:
+        logger.error(f"Impossible de créer la Company à partir du siccrf_id = {etab.etab_ident}: {e}")
+        return
+
+
+def match_company_on_siret_or_vat(etab, create_if_not_exist=False):
+    siret_matched = False
+    vat_matched = False
+    # recherche de l'etablissement dans les Company déjà enregistrées
+    if etab.etab_siret is not None:
+        company_with_siret_matching = Company.objects.filter(
+            Q(siret=etab.etab_siret) | Q(etablissementtocompanyrelation__old_siret=etab.etab_siret)
+        )
+        # seulement 2 options possible pour len(company_with_siret_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.siret
+        if len(company_with_siret_matching) == 1:
+            siret_matched = True
+            relation, _ = EtablissementToCompanyRelation.objects.get_or_create(
+                company=company_with_siret_matching[0],
+                old_siret=etab.etab_siret,
+            )  # si le siret est celui actuel (Company.siret) la relation n'existe pas encore
+            relation.siccrf_id = etab.etab_ident
+            relation.siccrf_registration_date = convert_str_date(etab.etab_date_adhesion)
+            try:
+                relation.save()
+            except IntegrityError as err:
+                logger.error(f"Relation entre {relation.company_id} et {relation.siccrf_id} : {err}.")
+
+    elif etab.etab_numero_tva_intra is not None:
+        clean_numero_tva_intra = clean_vat(etab.etab_numero_tva_intra)
+        company_with_vat_matching = Company.objects.filter(
+            Q(vat=clean_numero_tva_intra) | Q(etablissementtocompanyrelation__old_vat=clean_numero_tva_intra)
+        )
+        # seulement 2 options possible pour len(company_with_vat_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.vat
+        if len(company_with_vat_matching) == 1:
+            vat_matched = True
+            relation, _ = EtablissementToCompanyRelation.objects.get_or_create(
+                company=company_with_vat_matching[0],
+                old_vat=clean_numero_tva_intra,
+            )  # si le vat est celui actuel (Company.vat) la relation n'existe pas encore
+            relation.siccrf_id = etab.etab_ident
+            relation.siccrf_registration_date = convert_str_date(etab.etab_date_adhesion)
+            try:
+                relation.save()
+            except IntegrityError as err:
+                logger.error(f"Relation entre {relation.company_id} et {relation.siccrf_id} : {err}.")
+
+    # creation de la company
+    new_company = None
+    if not (siret_matched or vat_matched) and create_if_not_exist:
+        new_company = create_company_from_historic_etablissement(etab)
+    return siret_matched, vat_matched, new_company
+
+
 def match_companies_on_siret_or_vat(create_if_not_exist=False, create_only_useful=True):
     """
     Le matching pourrait aussi être fait sur
@@ -108,76 +186,17 @@ def match_companies_on_siret_or_vat(create_if_not_exist=False, create_only_usefu
     else:
         etab_to_create = IcaEtablissement.objects.all()
     for etab in etab_to_create:
-        matched = False
-        # recherche de l'etablissement dans les Company déjà enregistrées
-        if etab.etab_siret is not None:
-            company_with_siret_matching = Company.objects.filter(
-                Q(siret=etab.etab_siret) | Q(etablissementtocompanyrelation__old_siret=etab.etab_siret)
-            )
-            # seulement 2 options possible pour len(company_with_siret_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.siret
-            if len(company_with_siret_matching) == 1:
-                nb_siret_match += 1
-                matched = True
-                relation, _ = EtablissementToCompanyRelation.objects.get_or_create(
-                    company=company_with_siret_matching[0],
-                    old_siret=etab.etab_siret,
-                )  # si le siret est celui actuel (Company.siret) la relation n'existe pas encore
-                relation.siccrf_id = etab.etab_ident
-                relation.siccrf_registration_date = convert_str_date(etab.etab_date_adhesion)
-                try:
-                    relation.save()
-                except IntegrityError as err:
-                    logger.error(f"Relation entre {relation.company_id} et {relation.siccrf_id} : {err}.")
-
-        elif etab.etab_numero_tva_intra is not None:
-            clean_numero_tva_intra = clean_vat(etab.etab_numero_tva_intra)
-            company_with_vat_matching = Company.objects.filter(
-                Q(vat=clean_numero_tva_intra) | Q(etablissementtocompanyrelation__old_vat=clean_numero_tva_intra)
-            )
-            # seulement 2 options possible pour len(company_with_vat_matching) sont 0 et 1 car il y a une contrainte d'unicité sur le champ Company.vat
-            if len(company_with_vat_matching) == 1:
-                nb_vat_match += 1
-                matched = True
-                relation, _ = EtablissementToCompanyRelation.objects.get_or_create(
-                    company=company_with_vat_matching[0],
-                    old_vat=clean_numero_tva_intra,
-                )  # si le vat est celui actuel (Company.vat) la relation n'existe pas encore
-                relation.siccrf_id = etab.etab_ident
-                relation.siccrf_registration_date = convert_str_date(etab.etab_date_adhesion)
-                try:
-                    relation.save()
-                except IntegrityError as err:
-                    logger.error(f"Relation entre {relation.company_id} et {relation.siccrf_id} : {err}.")
-
-        # creation de la company
-        if not matched and create_if_not_exist:
-            new_company = Company(
-                address=etab.etab_adre_voie,
-                postal_code=etab.etab_adre_cp,
-                city=etab.etab_adre_ville,
-                phone_number=convert_phone_number(etab.etab_telephone),
-                email=etab.etab_courriel or "",
-                social_name=etab.etab_raison_sociale,
-                commercial_name=etab.etab_enseigne or "",
-                siret=etab.etab_siret,
-                vat=clean_vat(etab.etab_numero_tva_intra),
-                activities=convert_activities(etab),
-            )
-
-            try:
-                new_company.save(fields_with_no_validation=("phone_number"))
-                relation = EtablissementToCompanyRelation(
-                    company=new_company,
-                    siccrf_id=etab.etab_ident,
-                    old_siret=etab.etab_siret,
-                    old_vat=clean_vat(etab.etab_numero_tva_intra),
-                    siccrf_registration_date=convert_str_date(etab.etab_date_adhesion),
-                )
-                relation.save()
-                nb_creation_success += 1
-            except ValidationError as e:
-                nb_creation_fail += 1
-                logger.error(f"Impossible de créer la Company à partir du siccrf_id = {etab.etab_ident}: {e}")
+        siret_matched, vat_matched, created_company = match_company_on_siret_or_vat(
+            etab, create_if_not_exist=create_if_not_exist
+        )
+        if siret_matched:
+            nb_siret_match += 1
+        elif vat_matched:
+            nb_vat_match += 1
+        elif created_company is not None:
+            nb_creation_success += 1
+        else:
+            nb_creation_fail += 1
 
     logger.info(f"Sur {etab_to_create.count()} : {nb_siret_match} entreprises réconcilliées par le siret.")
     logger.info(f"Sur {etab_to_create.count()} : {nb_vat_match} entreprises réconcilliées par le n°TVA intracom.")

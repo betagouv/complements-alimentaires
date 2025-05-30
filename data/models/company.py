@@ -9,6 +9,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from data.behaviours import AutoValidable, Deactivable, TimeStampable
 from data.choices import CountryChoices
 from data.fields import MultipleChoiceField
+from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 from data.validators import validate_siret, validate_vat
 
 
@@ -165,7 +166,7 @@ class CompanyRoleClassChoices(models.TextChoices):
 
 
 class CompanyRole(Deactivable):
-    """Représente un rôle d'utilisateur qui n'a de sens que pour une entreprise donnée"""
+    """Réprésente un rôle d'utilisateur qui n'a de sens que pour une entreprise donnée"""
 
     class Meta:
         abstract = True
@@ -196,7 +197,8 @@ class DeclarantRole(CompanyRole, models.Model):
 
 class EtablissementToCompanyRelation(models.Model):
     class Meta:
-        verbose_name = "Anciens n° SIRET et n° TVA intracommunautaire, relation avec table d'entreprises TeleIcare et les entreprises Compl'Alim"
+        verbose_name = "Relation Entreprises Compl'Alim <-> Entreprises Teleicare"
+        verbose_name_plural = "Relation Entreprises Compl'Alim <-> Entreprises Teleicare"
 
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     # ce champ devrait être une ForeignKey vers la table unmanaged IcaEtablissement
@@ -238,3 +240,11 @@ class EtablissementToCompanyRelation(models.Model):
         if not self.old_siret:
             self.old_siret = None
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        etablissement_teleicare = IcaEtablissement.objects.get(etab_ident=self.siccrf_id)
+        if self.old_siret:
+            return f"Relation de {self.company} -> {etablissement_teleicare} [n°SIRET {self.old_siret}]"
+        elif self.old_vat:
+            return f"Relation de {self.company} -> {etablissement_teleicare}  [n°VAT {self.old_vat}]"
+        return f"Relation de {self.company}"
