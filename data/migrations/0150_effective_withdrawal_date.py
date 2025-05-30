@@ -11,11 +11,12 @@ class Migration(migrations.Migration):
     ]
 
     def set_default(apps, schema_editor):
-        Snapshot = apps.get_model("data", "Snapshot")
         IcaDeclaration = apps.get_model("data", "IcaDeclaration")
-        for teleicare_snapshot in Snapshot.objects.filter(status="WITHDRAWN").exclude(declaration__siccrf_id=None):
+        Declaration = apps.get_model("data", "Declaration")
+        for teleicare_withdrawn_declaration in Declaration.objects.filter(status="WITHDRAWN").exclude(siccrf_id=None):
+            teleicare_snapshot = teleicare_withdrawn_declaration.snapshots.latest()
             all_ica_declarations = IcaDeclaration.objects.filter(
-                    cplalim_id=teleicare_snapshot.declaration.siccrf_id
+                    cplalim_id=teleicare_withdrawn_declaration.siccrf_id
                 ).exclude(icaversiondeclaration__isnull=True)
             _, latest_ica_declaration = get_oldest_and_latest(all_ica_declarations)
             teleicare_snapshot.effective_withdrawal_date = (
@@ -24,6 +25,8 @@ class Migration(migrations.Migration):
                     else None
                 )
             teleicare_snapshot.save()
+            if teleicare_withdrawn_declaration.snapshots.count() == 1:
+                logger.info(f'{teleicare_withdrawn_declaration.id} a plusieurs snapshot')
 
     def reverse_set_default(apps, schema_editor):
         pass

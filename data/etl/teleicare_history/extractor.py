@@ -594,7 +594,7 @@ def create_declarations_from_teleicare_history(company_ids=[], rewrite_existing=
 
                 with suppress_autotime(declaration, ["creation_date", "modification_date"]):
                     declaration.save()
-
+                    declaration.refresh_from_db()
                     add_product_info_from_teleicare_history(declaration, latest_ica_version_declaration.vrsdecl_ident)
                     add_composition_from_teleicare_history(declaration, latest_ica_version_declaration.vrsdecl_ident)
                     add_final_state_snapshot(
