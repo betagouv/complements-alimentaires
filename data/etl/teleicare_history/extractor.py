@@ -156,6 +156,7 @@ def match_company_on_siret_or_vat(etab, create_if_not_exist=False):
                 logger.error(f"Relation entre {relation.company_id} et {relation.siccrf_id} : {err}.")
 
     # creation de la company
+    new_company = None
     if not (siret_matched or vat_matched) and create_if_not_exist:
         new_company = create_company_from_historic_etablissement(etab)
     return siret_matched, vat_matched, new_company
