@@ -199,7 +199,7 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         # recalcul de l'article pour les déclarations concernées
-        if change and form["is_risky"]._has_changed():
+        if change:
             declared_substances_ids = obj.declaredsubstance_set.values_list("declaration_id", flat=True)
             computed_substances_ids = obj.computedsubstance_set.values_list("declaration_id", flat=True)
             declarations = Declaration.objects.filter(id__in=declared_substances_ids.union(computed_substances_ids))
