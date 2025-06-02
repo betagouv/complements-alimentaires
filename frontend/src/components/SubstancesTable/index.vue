@@ -67,7 +67,7 @@ const sourceElements = (substance) => {
 
 const amountInfoText = computed(() => {
   return payload.value.computedSubstances.map((x) => {
-    if (!x.quantity) return ""
+    if (x.quantity !== 0 && !x.quantity) return ""
 
     const sourceElements = getSources(x.substance) || []
     const substanceSourceElements = sourceElements.filter((x) => x.element.objectType === "substance")
