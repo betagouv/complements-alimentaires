@@ -6,7 +6,7 @@ from django.db import models
 
 from phonenumber_field.modelfields import PhoneNumberField
 
-from data.behaviours import AutoValidable, Deactivable, TimeStampable
+from data.behaviours import AutoValidable, Deactivable, Historisable, TimeStampable
 from data.choices import CountryChoices
 from data.fields import MultipleChoiceField
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
@@ -75,7 +75,7 @@ class ActivityChoices(models.TextChoices):
     DISTRIBUTEUR = auto()
 
 
-class Company(AutoValidable, Address, CompanyContact, TimeStampable, models.Model):
+class Company(AutoValidable, Address, CompanyContact, TimeStampable, Historisable, models.Model):
     class Meta:
         verbose_name = "entreprise"
 
