@@ -1,15 +1,20 @@
 <template>
   <div v-if="payload">
     <div v-if="readonly">
-      {{ payload.computedSubstances[rowIndex].quantity }}
-    </div>
-    <div
-      :class="{
-        'text-red-marianne-425! font-bold': getMaxQuantityExceeded(payload, payload.computedSubstances[rowIndex]),
-      }"
-      v-if="readonly"
-    >
-      {{ getMaxQuantityExceeded(payload, payload.computedSubstances[rowIndex]) }}
+      <div>
+        {{ payload.computedSubstances[rowIndex].quantity }}
+      </div>
+      <div
+        :class="{
+          'text-red-marianne-425! font-bold': getMaxQuantityExceeded(payload, payload.computedSubstances[rowIndex]),
+        }"
+      >
+        {{ getMaxQuantityExceeded(payload, payload.computedSubstances[rowIndex]) }}
+      </div>
+      <p v-if="amountInfoText[rowIndex]" class="amount-info-text">
+        <v-icon name="ri-information-fill"></v-icon>
+        {{ amountInfoText }}
+      </p>
     </div>
 
     <!-- Champ input -->
@@ -24,16 +29,16 @@
         <div class="text-neutral-500! mt-1" v-if="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity">
           * champ obligatoire
         </div>
-        <div
+        <p
           v-if="amountInfoText[rowIndex]"
           role="alert"
           aria-live="polite"
           :id="`substance-info-${rowIndex}`"
-          class="border p-1 rounded mt-2"
+          class="amount-info-text"
         >
           <v-icon name="ri-information-fill"></v-icon>
           {{ amountInfoText }}
-        </div>
+        </p>
       </DsfrInputGroup>
     </div>
   </div>
@@ -71,3 +76,15 @@ const getMaxQuantityExceeded = (declaration, substance) => {
   return intro + maxQuantitiesExceeded.map((p) => `${p.maxQuantity} pour ${p.population?.name}`).join(", ")
 }
 </script>
+
+<style scoped>
+@reference "../../styles/index.css";
+
+p.amount-info-text {
+  @apply mt-2;
+  @apply text-sm;
+  @apply border;
+  @apply rounded;
+  @apply p-1;
+}
+</style>

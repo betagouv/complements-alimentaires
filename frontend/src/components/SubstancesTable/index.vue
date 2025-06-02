@@ -77,7 +77,7 @@ const amountInfoText = computed(() => {
 
     const sourceQuantitySum = substanceSourceElements.reduce((acc, obj) => acc + (obj.quantity || 0), 0)
     if (x.quantity < sourceQuantitySum) {
-      return `La quantité est inférieure à celle indiquée précédemment (${sourceQuantitySum} ${x.substance.unit})`
+      return `La quantité est inférieure à celle indiquée dans la composition (${sourceQuantitySum} ${x.substance.unit})`
     }
     return ""
   })
