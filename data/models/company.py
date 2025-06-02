@@ -242,9 +242,12 @@ class EtablissementToCompanyRelation(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        etablissement_teleicare = IcaEtablissement.objects.get(etab_ident=self.siccrf_id)
         if self.old_siret:
-            return f"Relation de {self.company} -> {etablissement_teleicare} [n°SIRET {self.old_siret}]"
+            return f"Relation de {self.company} -> {self.etablissement_teleicare} [n°SIRET {self.old_siret}]"
         elif self.old_vat:
-            return f"Relation de {self.company} -> {etablissement_teleicare}  [n°VAT {self.old_vat}]"
+            return f"Relation de {self.company} -> {self.etablissement_teleicare}  [n°VAT {self.old_vat}]"
         return f"Relation de {self.company}"
+
+    @property
+    def etablissement_teleicare(self):
+        return IcaEtablissement.objects.get(etab_ident=self.siccrf_id)
