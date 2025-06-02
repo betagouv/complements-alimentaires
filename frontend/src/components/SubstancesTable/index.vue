@@ -113,7 +113,10 @@ watch(
   @apply table!;
 }
 .fr-table :deep(td) {
-  @apply py-0;
+  @apply py-2;
+}
+.fr-table :deep(.fr-input-group) {
+  @apply mt-0;
 }
 /* Colonne commentaire */
 .fr-table :deep(td:nth-child(1)) {

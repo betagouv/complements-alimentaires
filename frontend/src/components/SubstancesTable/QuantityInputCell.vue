@@ -13,7 +13,7 @@
     </div>
 
     <!-- Champ input -->
-    <div v-else class="-mt-1 pb-2">
+    <div v-else class="-mt-1 pb-1">
       <DsfrInputGroup>
         <NumberField
           v-model="payload.computedSubstances[rowIndex].quantity"
