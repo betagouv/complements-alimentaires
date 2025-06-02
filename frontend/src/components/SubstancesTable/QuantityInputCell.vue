@@ -19,11 +19,18 @@
           v-model="payload.computedSubstances[rowIndex].quantity"
           label="Quantité par DJR"
           :required="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
+          :descriptionId="`substance-info-${rowIndex}`"
         />
         <div class="text-neutral-500! mt-1" v-if="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity">
           * champ obligatoire
         </div>
-        <div v-if="amountInfoText[rowIndex]" class="border p-1 rounded mt-2">
+        <div
+          v-if="amountInfoText[rowIndex]"
+          role="alert"
+          aria-live="polite"
+          :id="`substance-info-${rowIndex}`"
+          class="border p-1 rounded mt-2"
+        >
           <v-icon name="ri-information-fill"></v-icon>
           {{ amountInfoText }}
         </div>
