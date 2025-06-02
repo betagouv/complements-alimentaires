@@ -48,7 +48,6 @@ const elements = computed(() =>
     payload.value.declaredMicroorganisms,
     payload.value.declaredIngredients,
     payload.value.declaredSubstances
-    // Aromas et Additives ne sont pas actif et ne sont donc pas liés à des substances actives
   )
 )
 const activeElements = computed(() => elements.value.filter((x) => x.active && !x.new))
