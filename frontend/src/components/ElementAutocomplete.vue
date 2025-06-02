@@ -26,7 +26,7 @@
     <ul
       v-show="displayOptions"
       ref="optionsList"
-      class="list-none absolute m-0 right-0 z-1 left-0 bg-white box-shadow max-h-17 scroll pointer p-0!"
+      class="list-none absolute m-0 right-0 z-1 max-h-80 left-0 bg-white box-shadow scroll pointer p-0!"
       :class="{
         'at-the-top': displayAtTheTop,
         'z-10': true,
@@ -216,10 +216,6 @@ watch(searchTerm, fetchAutocompleteResults)
   box-shadow:
     0px 16px 16px -16px rgba(0, 0, 0, 0.32),
     0px 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.max-h-17 {
-  max-height: 17rem;
 }
 
 .scroll {
