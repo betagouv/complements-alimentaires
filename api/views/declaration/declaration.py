@@ -90,6 +90,7 @@ class UserDeclarationsListCreateApiView(ListCreateAPIView):
     filter_backends = [
         django_filters.DjangoFilterBackend,
         CamelCaseOrderingFilter,
+        UnaccentSearchFilter,
     ]
     filterset_class = DeclarationFilterSet
 

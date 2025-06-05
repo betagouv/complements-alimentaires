@@ -735,6 +735,58 @@ class TestDeclarationApi(APITestCase):
         self.assertNotIn(other_declaration.id, ids)
 
     @authenticate
+    def test_search_list_create_declaration(self):
+        """
+        Un·e utilisateur·ice peut chercher dans ses propres déclarations et celles des entreprises pour lesquelles
+        iel a des droits.
+        """
+
+        def get_search_results(search_term):
+            response = self.client.get(
+                f"{reverse('api:list_create_declaration', kwargs={'user_pk': authenticate.user.id})}?search={search_term}",
+                format="json",
+            )
+            return response.json()["results"]
+
+        umbrella_corp = CompanyFactory(social_name="Umbrella corporation")
+        globex = CompanyFactory(social_name="Globex")
+
+        SupervisorRoleFactory(user=authenticate.user, company=umbrella_corp)
+        SupervisorRoleFactory(user=authenticate.user, company=globex)
+
+        omega = AwaitingInstructionDeclarationFactory(company=umbrella_corp, name="Omega")
+        magnesium = AwaitingInstructionDeclarationFactory(company=umbrella_corp, name="Magnésium")
+        fer = AwaitingInstructionDeclarationFactory(company=globex, name="Fer")
+        creatine = AwaitingInstructionDeclarationFactory(
+            company=globex, name="Créatine", teleicare_id="old_teleicare_id"
+        )
+
+        # Checher "globex". Les deux compléments de l'entreprise Globex doivent être renvoyés
+        results = get_search_results("Globex")
+        self.assertEqual(len(results), 2)
+        (self.assertIn(x.id, map(lambda x: x["id"], results)) for x in [fer, creatine])
+
+        # Checher "omega". Seulement omega devrait sortir
+        results = get_search_results("omega")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], omega.id)
+
+        # Checher par ID (magnésium)
+        results = get_search_results(magnesium.id)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], magnesium.id)
+
+        # Chercher en ignorant les accents (magnésium)
+        results = get_search_results("magnesium")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], magnesium.id)
+
+        # Chercher par ID téléicare
+        results = get_search_results("old_teleicare_id")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], creatine.id)
+
+    @authenticate
     def test_retrieve_single_declaration(self):
         """
         Un user peut récupérer les informations complètes d'une de leurs déclarations
