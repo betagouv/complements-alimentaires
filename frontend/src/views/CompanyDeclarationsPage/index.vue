@@ -12,7 +12,12 @@
     <div class="border p-4 mb-2 sm:flex gap-8 items-baseline filters">
       <div class="pr-4 border-r md:min-w-lg">
         <DsfrFieldset class="mb-0!">
-          <DsfrSearchBar v-model="searchTerm" placeholder="Nom, ID ou entreprise" @search="search" />
+          <DsfrSearchBar
+            v-model="searchTerm"
+            placeholder="Nom, ID ou entreprise"
+            @search="search"
+            @update:modelValue="(val) => val === '' && search()"
+          />
         </DsfrFieldset>
         <div class="sm:flex gap-8 items-baseline">
           <DsfrFieldset class="mb-0!">
