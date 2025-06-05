@@ -9,44 +9,46 @@
     />
     <HistoryAlert />
 
-    <div class="border px-4 pt-4 pb-0 mb-2">
-      <div class="md:pr-4 md:-mt-1 md:max-w-xl">
-        <DsfrFieldset legend="Recherche" class="mb-0!">
+    <div class="border p-4 mb-2 sm:flex gap-8 items-baseline filters">
+      <div class="pr-4 border-r md:min-w-lg">
+        <DsfrFieldset class="mb-0!">
           <DsfrSearchBar v-model="searchTerm" placeholder="Nom, ID ou entreprise" @search="search" />
         </DsfrFieldset>
+        <div class="sm:flex gap-8 items-baseline">
+          <DsfrFieldset class="mb-0!">
+            <div>
+              <DsfrInputGroup>
+                <DsfrSelect
+                  label="Entreprise"
+                  :modelValue="company"
+                  @update:modelValue="updateCompany"
+                  defaultUnselectedText="Toutes"
+                  :options="companiesOptions"
+                  class="text-sm!"
+                />
+              </DsfrInputGroup>
+            </div>
+          </DsfrFieldset>
+          <DsfrFieldset class="mb-0!">
+            <div class="md:border-l md:pl-4">
+              <DsfrInputGroup>
+                <DsfrSelect
+                  label="Personne assignée"
+                  :modelValue="author"
+                  @update:modelValue="updateAuthor"
+                  defaultUnselectedText="Toutes"
+                  :options="authorOptions"
+                  class="text-sm!"
+                />
+              </DsfrInputGroup>
+            </div>
+          </DsfrFieldset>
+        </div>
       </div>
-      <div class="sm:flex gap-8 items-baseline filters">
-        <DsfrFieldset class="mb-0!">
-          <div>
-            <DsfrInputGroup>
-              <DsfrSelect
-                label="Entreprise"
-                :modelValue="company"
-                @update:modelValue="updateCompany"
-                defaultUnselectedText="Toutes"
-                :options="companiesOptions"
-                class="text-sm!"
-              />
-            </DsfrInputGroup>
-          </div>
-        </DsfrFieldset>
-        <DsfrFieldset class="mb-0!">
-          <div class="md:border-x md:px-4">
-            <DsfrInputGroup>
-              <DsfrSelect
-                label="Personne assignée"
-                :modelValue="author"
-                @update:modelValue="updateAuthor"
-                defaultUnselectedText="Toutes"
-                :options="authorOptions"
-                class="text-sm!"
-              />
-            </DsfrInputGroup>
-          </div>
-        </DsfrFieldset>
+      <div class="pb-4">
         <StatusFilter
           :exclude="['DRAFT']"
-          class="max-w-xl"
+          class=""
           @updateFilter="updateStatusFilter"
           :statusString="filteredStatus"
           :groupInstruction="true"
@@ -140,3 +142,14 @@ const search = () => {
 
 watch([page, filteredStatus, company, author], fetchSearchResults)
 </script>
+
+<style scoped>
+@reference "../../styles/index.css";
+
+.filters :deep(.fr-select-group) {
+  @apply mb-0!;
+}
+.filters :deep(.fr-fieldset__element) {
+  @apply mb-0!;
+}
+</style>
