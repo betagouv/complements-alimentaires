@@ -53,7 +53,6 @@
       <div class="pb-4">
         <StatusFilter
           :exclude="['DRAFT']"
-          class=""
           @updateFilter="updateStatusFilter"
           :statusString="filteredStatus"
           :groupInstruction="true"

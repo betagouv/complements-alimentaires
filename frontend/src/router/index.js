@@ -265,6 +265,7 @@ const routes = [
         company: "",
         author: "",
         limit: "10",
+        recherche: "",
       },
     },
   },
