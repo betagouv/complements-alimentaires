@@ -27,6 +27,7 @@ import CollaboratorsPage from "@/views/CollaboratorsPage"
 import InstructionDeclarationsPage from "@/views/InstructionDeclarationsPage"
 import NewElementsPage from "@/views/NewElementsPage"
 import InstructionPage from "@/views/InstructionPage"
+import NewInstructionPage from "@/views/NewInstructionPage"
 import VisaDeclarationsPage from "@/views/VisaDeclarationsPage"
 import VisaPage from "@/views/VisaPage"
 import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
@@ -361,6 +362,20 @@ const routes = [
     props: true,
     name: "InstructionPage",
     component: InstructionPage,
+    meta: {
+      title: "Instruction",
+      requiredRoles: ["InstructionRole"],
+      authenticationRequired: true,
+      defaultQueryParams: {
+        tab: 1,
+      },
+    },
+  },
+  {
+    path: "/instruction-v2/:declarationId",
+    props: true,
+    name: "NewInstructionPage",
+    component: NewInstructionPage,
     meta: {
       title: "Instruction",
       requiredRoles: ["InstructionRole"],
