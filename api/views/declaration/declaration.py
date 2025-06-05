@@ -85,6 +85,7 @@ class UserDeclarationPagination(DeclarationPagination):
 class UserDeclarationsListCreateApiView(ListCreateAPIView):
     model = Declaration
     permission_classes = [CanAccessUserDeclatarions]
+    search_fields = ["name", "id", "company__social_name", "teleicare_id"]
     pagination_class = UserDeclarationPagination
     filter_backends = [
         django_filters.DjangoFilterBackend,

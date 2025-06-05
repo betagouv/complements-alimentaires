@@ -314,6 +314,7 @@ const routes = [
         status: "INSTRUCTION,OBJECTION,OBSERVATION,ABANDONED,AUTHORIZED,WITHDRAWN",
         company: "",
         author: "",
+        recherche: "",
       },
     },
   },
