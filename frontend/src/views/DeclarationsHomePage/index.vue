@@ -16,40 +16,53 @@
 
     <HistoryAlert />
 
-    <div class="border px-4 pt-4 mb-2 sm:flex gap-8 items-baseline filters">
-      <DsfrFieldset class="mb-0!">
-        <div class="md:pl-4">
-          <DsfrInputGroup>
-            <DsfrSelect
-              label="Entreprise"
-              :modelValue="company"
-              @update:modelValue="updateCompany"
-              defaultUnselectedText="Toutes"
-              :options="companiesOptions"
-              class="text-sm!"
-            />
-          </DsfrInputGroup>
+    <div class="border px-4 mb-2 md:flex gap-8 items-baseline filters">
+      <div class="md:border-r pt-4 md:pr-4">
+        <DsfrFieldset class="mb-0!">
+          <DsfrSearchBar
+            v-model="searchTerm"
+            placeholder="Nom, ID ou entreprise"
+            @search="search"
+            @update:modelValue="(val) => val === '' && search()"
+          />
+        </DsfrFieldset>
+
+        <div class="sm:flex gap-8 items-baseline">
+          <DsfrFieldset class="mb-0!">
+            <div>
+              <DsfrInputGroup>
+                <DsfrSelect
+                  label="Entreprise"
+                  :modelValue="company"
+                  @update:modelValue="updateCompany"
+                  defaultUnselectedText="Toutes"
+                  :options="companiesOptions"
+                  class="text-sm!"
+                />
+              </DsfrInputGroup>
+            </div>
+          </DsfrFieldset>
+          <DsfrFieldset class="mb-0!">
+            <div class="md:border-x md:px-4 min-w-44">
+              <DsfrInputGroup>
+                <DsfrSelect
+                  label="Personne assignée"
+                  :modelValue="author"
+                  @update:modelValue="updateAuthor"
+                  defaultUnselectedText="Toutes"
+                  :options="authorOptions"
+                  class="text-sm!"
+                />
+              </DsfrInputGroup>
+            </div>
+          </DsfrFieldset>
+          <div class="min-w-48">
+            <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
+          </div>
         </div>
-      </DsfrFieldset>
-      <DsfrFieldset class="mb-0!">
-        <div class="md:border-x md:px-4 min-w-44">
-          <DsfrInputGroup>
-            <DsfrSelect
-              label="Personne assignée"
-              :modelValue="author"
-              @update:modelValue="updateAuthor"
-              defaultUnselectedText="Toutes"
-              :options="authorOptions"
-              class="text-sm!"
-            />
-          </DsfrInputGroup>
-        </div>
-      </DsfrFieldset>
-      <div class="md:border-r md:pr-4 min-w-48">
-        <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
       </div>
       <StatusFilter
-        class="max-w-lg"
+        class="max-w-lg pb-2"
         @updateFilter="updateStatusFilter"
         :statusString="filteredStatus"
         :groupInstruction="true"
@@ -74,7 +87,7 @@
 </template>
 
 <script setup>
-import { computed, watch } from "vue"
+import { computed, watch, ref } from "vue"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import { handleError } from "@/utils/error-handling"
 import DeclarationsTable from "./DeclarationsTable"
@@ -93,6 +106,7 @@ const router = useRouter()
 const route = useRoute()
 const company = computed(() => (route.query.company ? parseInt(route.query.company) : ""))
 const author = computed(() => (route.query.author ? parseInt(route.query.author) : ""))
+const searchTerm = ref(route.query.recherche)
 
 const hasDeclarations = computed(() => !!data.value?.results?.length)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
@@ -135,7 +149,7 @@ const url = computed(() => {
   let statusQuery = filteredStatus.value
   if (filteredStatus.value?.indexOf("INSTRUCTION") > -1)
     statusQuery += `${statusQuery.length ? "," : ""}AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA`
-  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit.value}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate&company=${company.value}&author=${author.value}`
+  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit.value}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate&company=${company.value}&author=${author.value}&search=${searchTerm.value}`
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -143,5 +157,18 @@ const fetchSearchResults = async () => {
   await handleError(response)
 }
 
+const search = () => {
+  updateQuery({ recherche: searchTerm.value })
+  fetchSearchResults()
+}
+
 watch([page, filteredStatus, company, author, limit], fetchSearchResults)
 </script>
+
+<style scoped>
+@reference "../../styles/index.css";
+
+.filters :deep(.fr-fieldset__element) {
+  @apply mb-0!;
+}
+</style>

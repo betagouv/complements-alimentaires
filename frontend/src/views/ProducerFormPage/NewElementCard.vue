@@ -37,7 +37,7 @@
     </DsfrInputGroup>
     <div v-if="model.authorizationMode === 'FR'">
       <hr class="pb-1 -mt-3" />
-      <div class="">
+      <div>
         <DsfrInputGroup>
           <DsfrRadioButtonSet
             v-model="model.frReason"

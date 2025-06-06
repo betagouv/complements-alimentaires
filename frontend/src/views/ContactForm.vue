@@ -12,7 +12,7 @@
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'message')">
         <DsfrInput class="max-w-2xl" isTextarea v-model="state.message" label="Message" required label-visible />
       </DsfrInputGroup>
-      <div class="">
+      <div>
         <DsfrButton size="lg" label="Envoyer" icon="ri-mail-send-line" @click="sendEmail" />
       </div>
     </FormWrapper>
