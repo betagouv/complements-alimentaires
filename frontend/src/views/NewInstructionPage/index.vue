@@ -20,7 +20,7 @@
           </div>
         </div>
         <div class="col-span-12 sm:col-span-9">
-          <router-view :declaration="declaration" :declarant="declarant" :snapshots="snapshots" />
+          <router-view :declaration="declaration" :declarant="declarant" :company="company" :snapshots="snapshots" />
         </div>
       </div>
     </div>
@@ -60,7 +60,7 @@ const {
 } = makeRequest(`/api/v1/declarations/${props.declarationId}`)
 
 const {
-  response: declarantResponse,
+  // response: declarantResponse,
   data: declarant,
   execute: executeDeclarantFetch,
   isFetching: isFetchingDeclarant,
@@ -68,7 +68,7 @@ const {
   .get()
   .json()
 const {
-  response: companyResponse,
+  // response: companyResponse,
   data: company,
   execute: executeCompanyFetch,
   isFetching: isFetchingCompany,
@@ -76,7 +76,7 @@ const {
   .get()
   .json()
 const {
-  response: snapshotsResponse,
+  // response: snapshotsResponse,
   data: snapshots,
   execute: executeSnapshotsFetch,
   isFetching: isFetchingSnapshots,
@@ -87,7 +87,7 @@ const {
 const {
   response: takeResponse,
   execute: executeTakeForInstruction,
-  isFetching: isFetchingInstruction,
+  // isFetching: isFetchingInstruction,
 } = useFetch(
   `/api/v1/declarations/${props.declarationId}/take-for-instruction/`,
   {

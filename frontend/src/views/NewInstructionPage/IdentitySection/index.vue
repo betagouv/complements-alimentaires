@@ -12,5 +12,5 @@
 </template>
 
 <script setup>
-defineProps({ declarant: Object })
+defineProps({ declarant: Object, company: Object })
 </script>
