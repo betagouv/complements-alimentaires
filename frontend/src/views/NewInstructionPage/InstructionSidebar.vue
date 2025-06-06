@@ -1,9 +1,9 @@
 <template>
-  <DsfrSideMenu :menuItems="menuItems" @toggleExpand="(s) => (expandedId = s)" />
+  <DsfrSideMenu :menuItems="menuItems" />
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+import { computed } from "vue"
 import { useRoute } from "vue-router"
 
 // Note:
@@ -11,7 +11,7 @@ import { useRoute } from "vue-router"
 // Par exemple, la gestion de `expanded` ne devrait pas se faire avec le route
 // Aussi, on cache l'icône (dans les styles scoped) pour ne pas faire penser aux gens
 // qu'on peut collapse les sections.
-
+const declaration = defineModel()
 const route = useRoute()
 const makeRoute = (name) => ({ name, params: { declarationId: declaration.value.id } })
 const appendHash = (route, hash) => ({ ...{ hash }, ...route })
@@ -24,8 +24,6 @@ const instructionRoute = computed(() => makeRoute("InstructionSection"))
 const identityRoute = computed(() => makeRoute("IdentitySection"))
 const historyRoute = computed(() => makeRoute("HistorySection"))
 
-const expandedId = ref("1")
-const declaration = defineModel()
 const menuItems = computed(() => [
   {
     to: instructionRoute.value,

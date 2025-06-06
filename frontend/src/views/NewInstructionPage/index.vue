@@ -12,7 +12,6 @@
       <ProgressSpinner />
     </div>
     <div v-else-if="declaration">
-      <DsfrAlert type="warning" title="Cette interface est en construction" class="mb-4" />
       <h1 v-if="declaration">{{ declaration.name }}</h1>
       <div class="sm:grid sm:grid-cols-12">
         <div class="hidden sm:block col-span-3">
@@ -21,7 +20,7 @@
           </div>
         </div>
         <div class="col-span-12 sm:col-span-9">
-          <router-view v-model="declaration" />
+          <router-view :declaration="declaration" :declarant="declarant" :snapshots="snapshots" />
         </div>
       </div>
     </div>
@@ -34,6 +33,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
+import { headers } from "@/utils/data-fetching"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import InstructionSidebar from "./InstructionSidebar"
 
@@ -84,6 +84,29 @@ const {
   .get()
   .json()
 
+const {
+  response: takeResponse,
+  execute: executeTakeForInstruction,
+  isFetching: isFetchingInstruction,
+} = useFetch(
+  `/api/v1/declarations/${props.declarationId}/take-for-instruction/`,
+  {
+    headers: headers(),
+  },
+  { immediate: false }
+)
+  .post({})
+  .json()
+
+const instructDeclaration = async () => {
+  await executeTakeForInstruction()
+  // $externalResults.value = await handleError(takeResponse)
+
+  if (takeResponse.value.ok) {
+    await executeDeclarationFetch()
+  }
+}
+
 onMounted(async () => {
   await executeDeclarationFetch()
   handleError(declarationResponse)
@@ -94,8 +117,8 @@ onMounted(async () => {
   // Si on arrive à cette page avec une déclaration déjà assignée à quelqun.e mais en état
   // AWAITING_INSTRUCTION, on la passe directement à ONGOING_INSTRUCTION.
   // TODO
-  // if (declaration.value?.instructor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_INSTRUCTION")
-  //   await instructDeclaration()
+  if (declaration.value?.instructor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_INSTRUCTION")
+    await instructDeclaration()
 
   // TODO gestion d'erreur
   if (declaration.value) await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), executeSnapshotsFetch()])
