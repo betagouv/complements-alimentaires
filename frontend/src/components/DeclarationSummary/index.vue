@@ -13,22 +13,7 @@
         Pièces jointes
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
       </h3>
-      <div class="grid grid-cols-12 gap-3 mb-8">
-        <div
-          class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 overflow-auto"
-          v-for="(file, index) in payload.attachments"
-          :key="`file-download-${index}`"
-        >
-          <DsfrFileDownload
-            :title="`${truncateMiddle(file.name, 22)}`"
-            :href="file.file"
-            :size="file.size"
-            :format="file.typeDisplay"
-            :download="null"
-            target="_blank"
-          />
-        </div>
-      </div>
+      <CompactAttachmentGrid :attachments="payload.attachments" />
     </div>
     <h3 class="fr-h6">
       Informations sur le produit
@@ -171,7 +156,7 @@ import { storeToRefs } from "pinia"
 import { useRouter } from "vue-router"
 import SummaryModificationButton from "./SummaryModificationButton"
 import HistoryBadge from "../History/HistoryBadge.vue"
-import { truncateMiddle } from "@/utils/string"
+import CompactAttachmentGrid from "@/components/CompactAttachmentGrid"
 
 const router = useRouter()
 const { units, populations, conditions, effects, galenicFormulations } = storeToRefs(useRootStore())
