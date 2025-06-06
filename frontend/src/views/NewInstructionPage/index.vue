@@ -11,16 +11,18 @@
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
-    <div v-else>
+    <div v-else-if="declaration">
       <DsfrAlert type="warning" title="Cette interface est en construction" class="mb-4" />
       <h1 v-if="declaration">{{ declaration.name }}</h1>
-      <div class="sm:grid sm:grid-cols-12 sm:gap-4">
+      <div class="sm:grid sm:grid-cols-12">
         <div class="hidden sm:block col-span-3">
           <div class="sticky top-2 sidebar-content">
-            <InstructionSidebar />
+            <InstructionSidebar v-model="declaration" />
           </div>
         </div>
-        <div class="col-span-12 sm:col-span-9 h-lvh">Colonne à droite</div>
+        <div class="col-span-12 sm:col-span-9">
+          <router-view v-model="declaration" />
+        </div>
       </div>
     </div>
   </div>

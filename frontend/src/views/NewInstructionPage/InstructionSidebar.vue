@@ -4,68 +4,96 @@
 
 <script setup>
 import { ref, computed } from "vue"
+import { useRoute } from "vue-router"
 
-// Ceci est un hack en attendant la résolution de https://github.com/dnum-mi/vue-dsfr/issues/1076
+// Note:
+// Il y a des hacks en attendant la résolution de https://github.com/dnum-mi/vue-dsfr/issues/1076
+// Par exemple, la gestion de `expanded` ne devrait pas se faire avec le route
+// Aussi, on cache l'icône (dans les styles scoped) pour ne pas faire penser aux gens
+// qu'on peut collapse les sections.
+
+const route = useRoute()
+const makeRoute = (name) => ({ name, params: { declarationId: declaration.value.id } })
+const appendHash = (route, hash) => ({ ...{ hash }, ...route })
+
+const isInInstruction = computed(() => route.name === "InstructionSection")
+const isInIdentity = computed(() => route.name === "IdentitySection")
+const isInHistory = computed(() => route.name === "HistorySection")
+
+const instructionRoute = computed(() => makeRoute("InstructionSection"))
+const identityRoute = computed(() => makeRoute("IdentitySection"))
+const historyRoute = computed(() => makeRoute("HistorySection"))
+
 const expandedId = ref("1")
+const declaration = defineModel()
 const menuItems = computed(() => [
   {
-    id: "1",
-    to: "#",
-    active: true,
+    to: instructionRoute.value,
+    active: isInInstruction.value,
     text: "Instruction",
-    expanded: expandedId.value === "1",
-    menuItems: [
-      {
-        id: "11",
-        to: "#",
-        text: "Pièces jointes",
-      },
-      {
-        id: "12",
-        to: "#",
-        text: "Composition du produit",
-      },
-      {
-        id: "13",
-        to: "#",
-        text: "Dernier commentaire",
-      },
-      {
-        id: "14",
-        to: "#",
-        text: "Résultat de l'instruction",
-      },
-      {
-        id: "15",
-        to: "#",
-        text: "Notes pour l'administration",
-      },
-    ],
+    expanded: isInInstruction.value,
+    menuItems: isInInstruction.value
+      ? [
+          {
+            to: appendHash(instructionRoute.value, "#pieces-jointes"),
+            text: "Pièces jointes",
+          },
+          {
+            to: appendHash(instructionRoute.value, "#dernier-commentaire"),
+            text: "Dernier commentaire",
+          },
+          {
+            to: appendHash(instructionRoute.value, "#composition-produit"),
+            text: "Composition du produit",
+          },
+          {
+            to: appendHash(instructionRoute.value, "#resultat-instruction"),
+            text: "Résultat de l'instruction",
+            expanded: true,
+            menuItems: [
+              {
+                to: appendHash(instructionRoute.value, "#decision"),
+                text: "Décision",
+              },
+              {
+                to: appendHash(instructionRoute.value, "#justification"),
+                text: "Justification",
+              },
+            ],
+          },
+          {
+            to: appendHash(instructionRoute.value, "#notes"),
+            text: "Notes pour l'administration",
+          },
+        ]
+      : null,
   },
   {
-    id: "2",
-    to: "#",
+    to: identityRoute.value,
     text: "Identité produit et entreprise",
-    expanded: expandedId.value === "2",
-    menuItems: [
-      {
-        id: "21",
-        to: "#",
-        text: "Déclarant·e",
-      },
-      {
-        id: "22",
-        to: "#",
-        text: "Informations sur le produit",
-      },
-      {
-        id: "23",
-        to: "#",
-        text: "Identité de l’entreprise",
-      },
-    ],
+    expanded: isInIdentity.value,
+    active: isInIdentity.value,
+    menuItems: isInIdentity.value
+      ? [
+          {
+            to: appendHash(identityRoute.value, "#declarant-e"),
+            text: "Déclarant·e",
+          },
+          {
+            to: appendHash(identityRoute.value, "#produit"),
+            text: "Informations sur le produit",
+          },
+          {
+            to: appendHash(identityRoute.value, "#entreprise"),
+            text: "Identité de l’entreprise",
+          },
+        ]
+      : null,
+  },
+  {
+    to: historyRoute.value,
+    text: "Historique",
+    active: isInHistory.value,
   },
 ])
 </script>
-
-<style scoped></style>

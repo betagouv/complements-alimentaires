@@ -28,6 +28,9 @@ import InstructionDeclarationsPage from "@/views/InstructionDeclarationsPage"
 import NewElementsPage from "@/views/NewElementsPage"
 import InstructionPage from "@/views/InstructionPage"
 import NewInstructionPage from "@/views/NewInstructionPage"
+import InstructionSection from "@/views/NewInstructionPage/InstructionSection"
+import IdentitySection from "@/views/NewInstructionPage/IdentitySection"
+import HistorySection from "@/views/NewInstructionPage/HistorySection"
 import VisaDeclarationsPage from "@/views/VisaDeclarationsPage"
 import VisaPage from "@/views/VisaPage"
 import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
@@ -374,16 +377,29 @@ const routes = [
   {
     path: "/instruction-v2/:declarationId",
     props: true,
-    name: "NewInstructionPage",
     component: NewInstructionPage,
     meta: {
       title: "Instruction",
       requiredRoles: ["InstructionRole"],
       authenticationRequired: true,
-      defaultQueryParams: {
-        tab: 1,
-      },
     },
+    children: [
+      {
+        name: "InstructionSection",
+        path: "instruction",
+        component: InstructionSection,
+      },
+      {
+        name: "IdentitySection",
+        path: "identite",
+        component: IdentitySection,
+      },
+      {
+        name: "HistorySection",
+        path: "historique",
+        component: HistorySection,
+      },
+    ],
   },
   {
     path: "/visa",
