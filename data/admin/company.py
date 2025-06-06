@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html, format_html_join, mark_safe
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from ..models.company import Company, DeclarantRole, EtablissementToCompanyRelation, SupervisorRole
 
 
@@ -22,7 +24,7 @@ class EtablissementToCompanyRelationInline(admin.TabularInline):
 
 
 @admin.register(Company)
-class CompanyAdmin(admin.ModelAdmin):
+class CompanyAdmin(SimpleHistoryAdmin):
     filter_horizontal = ("mandated_companies",)
     readonly_fields = ("display_represented_companies",)
 

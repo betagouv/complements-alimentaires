@@ -17,6 +17,7 @@ from .declaration import DeclarationAdmin
 from .solicitation import SupervisionClaimAdmin, CompanyAccessClaim, CollaborationInvitation
 from .global_roles import InstructionRoleAdmin
 from .error_report import ErrorReportAdmin
+from .teleicare_etablissement_to_complalim_company_relation import EtablissementToCompanyRelationAdmin
 
 from data.models import PlantPart, PlantFamily
 from simple_history.admin import SimpleHistoryAdmin
