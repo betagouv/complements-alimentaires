@@ -119,7 +119,7 @@ traitlets==5.14.3
 typing_extensions==4.13.2
 tzdata==2025.2
 tzlocal==5.3.1
-Unidecode==1.3.8
+Unidecode==1.4.0
 uritools==5.0.0
 urllib3==2.4.0
 vine==5.1.0
