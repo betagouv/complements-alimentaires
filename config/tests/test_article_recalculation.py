@@ -1,6 +1,6 @@
-from django.test import TestCase
-
 from unittest.mock import patch
+
+from django.test import TestCase
 
 from config.tasks import recalculate_article_for_ongoing_declarations
 from data.factories import (
@@ -77,11 +77,15 @@ class TestArticleRecalculation(TestCase):
     @patch.object(Declaration, "assign_calculated_article", set_article_16)
     def test_history_change_reason(self):
         """
-        Quand un article est recalculé, c'est possible de sauvegarder un message comme raison de changement
+        Quand un article est recalculé, c'est possible de sauvegarder un message comme raison de changement.
+        Si le message est trop long les premiers 100 caractères seront sauvegardés.
         """
-        change_reason = "change reason"
-        self.assertNotEqual(self.ongoing_instruction_declaration.history.first().history_change_reason, change_reason)
+        long_reason = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ornare lacus id quam sodales, eget tellus."
+        truncated_reason = (
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ornare lacus id quam sodales, eg"
+        )
+        self.assertNotEqual(self.ongoing_instruction_declaration.history.first().history_change_reason, long_reason)
 
-        recalculate_article_for_ongoing_declarations(Declaration.objects.all(), change_reason)
+        recalculate_article_for_ongoing_declarations(Declaration.objects.all(), long_reason)
 
-        self.assertEqual(self.ongoing_instruction_declaration.history.first().history_change_reason, change_reason)
+        self.assertEqual(self.ongoing_instruction_declaration.history.first().history_change_reason, truncated_reason)
