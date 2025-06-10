@@ -1,3 +1,5 @@
+import logging
+
 from django.db.models import (
     CharField,
     FloatField,
@@ -10,6 +12,8 @@ from simple_history.exceptions import NotHistoricalModelError
 from simple_history.utils import update_change_reason
 
 from data.models.ingredient_status import IngredientStatus
+
+logger = logging.getLogger(__name__)
 
 
 def pre_import_treatments(field, value):
@@ -92,6 +96,9 @@ def clean_text(dirty_text):
 
 def update_or_create_object(model, object_definition, default_extra_fields, change_message):
     model_object, created = model.objects.update_or_create(**object_definition, defaults=default_extra_fields)
+    if len(change_message) > 100:
+        logger.warn(f"change_message '{change_message}' too long. Truncating to 100 characters.")
+        change_message = change_message[:100]
     try:
         update_change_reason(model_object, change_message)
     except NotHistoricalModelError:
