@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 
 from simple_history.utils import update_change_reason
 
@@ -26,12 +26,20 @@ class EtablissementToCompanyRelationAdmin(admin.ModelAdmin):
         if change and form["company"]._has_changed():
             old_company_id = self.model.objects.get(id=obj.id).company_id
             new_company_id = int(form["company"].value())
+            change_reason = (
+                f"Transfert des déclarations de l'entreprise {old_company_id} à l'entreprise {new_company_id}"
+            )
+            messages.add_message(request, messages.INFO, change_reason)
+
             for declaration in Declaration.objects.filter(company_id=old_company_id):
                 declaration.company_id = new_company_id
                 declaration.save()
-                update_change_reason(
-                    declaration, f"Transfert de l'entreprise {old_company_id} à l'entreprise {new_company_id}"
-                )
+                update_change_reason(declaration, change_reason)
+
+            messages.add_message(
+                request, messages.INFO, f"Vous devez supprimer manuellement l'entreprise {old_company_id}"
+            )
+
             # Suppression manuelle de la Company
             # old_company = Company.objects.get(id=old_company_id)
             # old_company.delete()
