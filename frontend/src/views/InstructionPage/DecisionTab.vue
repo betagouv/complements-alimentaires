@@ -73,7 +73,6 @@
             />
           </DsfrInputGroup>
           <DsfrButton
-            class=""
             label="Soumettre"
             @click="submitDecision"
             :disabled="isFetching || (needsAnsesReferal && decisionCategory === 'approve')"
