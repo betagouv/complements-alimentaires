@@ -54,7 +54,7 @@ Faker==37.1.0
 filelock==3.18.0
 gprof2dot==2025.4.14
 html5lib==1.1
-identify==2.6.9
+identify==2.6.12
 idna==3.10
 iniconfig==2.1.0
 ipdb==0.13.13
