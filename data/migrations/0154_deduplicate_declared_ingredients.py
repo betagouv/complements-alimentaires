@@ -48,12 +48,10 @@ class Migration(migrations.Migration):
                 ["substance_id"],
             )
 
-
     def reverse_deduplicate_declared_ingredients(apps, schema_editor):
         pass
 
-
     operations = [
-        migrations.RunPython(deduplicate_declared_ingredients, reverse_deduplicate_declared_ingredients),
-
+        # appliquée manuellement pour ne pas dépasser le timeout CC du deploiement
+        # migrations.RunPython(deduplicate_declared_ingredients, reverse_deduplicate_declared_ingredients),
     ]
