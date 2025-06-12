@@ -142,13 +142,21 @@ const props = defineProps({
 const synonyms = computed(() => model.value.element?.synonyms?.map((x) => x.name)?.join(", "))
 
 const plantParts = computed(() => {
-  let parts = store.plantParts || []
-  // if (!props.canAddNewPlantPart && model.value.element?.plantParts?.length) {
-  //   parts = model.value.element.plantParts.filter((p) => !!p.isUseful)
-  // }
+  const elementParts = model.value.element?.plantParts || []
+  const authorizedParts = elementParts.filter((p) => p.isUseful)
+  let parts = authorizedParts
+  if (props.canAddNewPlantPart || !elementParts.length) {
+    if (parts.length) {
+      parts.unshift({ text: "Parties autorisées", disabled: true })
+      parts.push({ text: "Toutes parties", disabled: true })
+    }
+    parts = parts.concat(store.plantParts || [])
+  }
   // TODO: sort alphabetically
   // parts.sort((a, b) => a.name - b.name)
-  return parts.map((x) => ({ text: x.name, value: x.id }))
+  return parts.map((x) => {
+    return x.text ? x : { text: x.name, value: x.id }
+  })
 })
 
 const showFields = computed(() => {
