@@ -5,7 +5,7 @@
     <div v-if="!snapshots" class="flex justify-center items-center min-h-60">
       <ProgressSpinner />
     </div>
-    <div v-if="snapshots && snapshots.length" class="flex flex-col gap-6">
+    <div v-if="snapshots.length" class="flex flex-col gap-6">
       <SnapshotItem
         v-for="snapshot in snapshots"
         :key="`snapshot-${snapshot.id}`"
