@@ -32,7 +32,9 @@ import { getObjectSubTypeList } from "@/utils/elements"
 
 const payload = defineModel()
 
-const newPlantParts = computed(() => payload.value.declaredPlants.filter((x) => !x.new && !x.usedPart.isUseful))
+const newPlantParts = computed(() =>
+  payload.value.declaredPlants.filter((x) => !x.new && x.usedPart && !x.usedPart.isUseful)
+)
 const newPlants = computed(() => payload.value.declaredPlants.filter((x) => x.new))
 const newMicroorganisms = computed(() => payload.value.declaredMicroorganisms.filter((x) => x.new))
 const newIngredients = computed(() => payload.value.declaredIngredients.filter((x) => x.new))

@@ -3,7 +3,7 @@
     <div class="flex">
       <div class="self-center font-bold capitalize">
         {{ getElementName(model).toLowerCase() }}
-        <!-- TODO: add plant part name if objectType === plant_part? -->
+        <!-- TODO: add plant part name and status badge if objectType === plant_part -->
       </div>
     </div>
     <hr class="mt-4 pb-1" />

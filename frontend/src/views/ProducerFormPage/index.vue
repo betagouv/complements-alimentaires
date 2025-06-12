@@ -203,14 +203,20 @@ watch(data, () => {
 })
 
 const hasNewElements = computed(() => {
-  return []
-    .concat(
-      payload.value.declaredPlants,
-      payload.value.declaredMicroorganisms,
-      payload.value.declaredIngredients,
-      payload.value.declaredSubstances
-    )
-    .some((x) => x.new)
+  const hasNewPart = payload.value.declaredPlants.some(
+    (x) => x.usedPart && !x.element.plantParts.find((ep) => ep.id === x.usedPart)?.isUseful
+  )
+  return (
+    hasNewPart ||
+    []
+      .concat(
+        payload.value.declaredPlants,
+        payload.value.declaredMicroorganisms,
+        payload.value.declaredIngredients,
+        payload.value.declaredSubstances
+      )
+      .some((x) => x.new)
+  )
 })
 const readonly = computed(
   () =>
