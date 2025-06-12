@@ -32,7 +32,7 @@
           {{ date }}
         </div>
         <div>
-          <DsfrButton tertiary label="Voir" size="sm" @click="modalOpened = true" />
+          <DsfrButton v-if="displayViewButton" tertiary label="Voir" size="sm" @click="modalOpened = true" />
         </div>
       </div>
       <div v-if="actionText">
@@ -103,6 +103,10 @@ const getWithdrawalText = (snapshot) => {
   if (!snapshot.effectiveWithdrawalDate) return baseText
   return `${baseText} (date effective : ${isoToPrettyDate(snapshot.effectiveWithdrawalDate)})`
 }
+
+const displayViewButton = computed(
+  () => props.snapshot.action !== "TAKE_FOR_INSTRUCTION" && props.snapshot.action !== "TAKE_FOR_VISA"
+)
 </script>
 
 <style scoped>
