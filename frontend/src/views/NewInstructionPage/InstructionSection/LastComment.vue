@@ -1,10 +1,13 @@
 <template>
-  <div v-if="snapshot">
-    <div class="p-4 bg-white rounded mb-4">
-      <SnapshotItem :snapshot="snapshot" />
-    </div>
+  <div>
+    <div v-if="snapshot">
+      <div class="p-4 bg-white rounded mb-4">
+        <SnapshotItem :snapshot="snapshot" />
+      </div>
 
-    <DsfrButton @click="goToHistory" label="Voir l'historique" secondary size="small" />
+      <DsfrButton @click="goToHistory" label="Voir l'historique" secondary size="small" />
+    </div>
+    <p v-else>Aucun commentaire n'a été ajouté</p>
   </div>
 </template>
 
