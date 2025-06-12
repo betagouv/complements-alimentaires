@@ -6,7 +6,7 @@
       <h2 id="dernier-commentaire">Dernier commentaire</h2>
       <LastComment class="mb-6" :snapshot="lastSnapshot" />
       <h2 id="composition-produit">Composition produit</h2>
-      <DsfrAlert small description="Ce segment est en construction" class="mb-6" />
+      <CompositionInfo :useAccordions="true" :showElementAuthorization="true" :model-value="declaration" />
       <h2 id="resultat-instruction">Résultat de l'instruction</h2>
       <DsfrAlert small description="Ce segment est en construction" class="mb-6" />
       <h3 id="decision">Décision</h3>
@@ -24,6 +24,7 @@
 <script setup>
 import CompactAttachmentGrid from "@/components/CompactAttachmentGrid.vue"
 import LastComment from "./LastComment"
+import CompositionInfo from "@/components/CompositionInfo"
 import { computed } from "vue"
 
 const props = defineProps({ declaration: Object, snapshots: Array })
