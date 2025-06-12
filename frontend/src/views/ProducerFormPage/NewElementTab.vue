@@ -5,8 +5,8 @@
       Vous avez ajouté de nouveaux ingrédients ou nouvelles parties de plantes. Des informations complémentaires sont
       requises.
     </p>
-    <NewElementList objectType="plant_part" :elements="newPlantParts" />
     <NewElementList objectType="plant" :elements="newPlants" />
+    <NewElementList objectType="plant_part" :elements="newPlantParts" />
     <NewElementList objectType="microorganism" :elements="newMicroorganisms" />
     <NewElementList objectType="form_of_supply" :elements="getObjectSubTypeList(newIngredients, 'form_of_supply')" />
     <NewElementList objectType="aroma" :elements="getObjectSubTypeList(newIngredients, 'aroma')" />
@@ -32,10 +32,10 @@ import { getObjectSubTypeList } from "@/utils/elements"
 
 const payload = defineModel()
 
+const newPlants = computed(() => payload.value.declaredPlants.filter((x) => x.new))
 const newPlantParts = computed(() =>
   payload.value.declaredPlants.filter((x) => !x.new && x.usedPart && !x.usedPart.isUseful)
 )
-const newPlants = computed(() => payload.value.declaredPlants.filter((x) => x.new))
 const newMicroorganisms = computed(() => payload.value.declaredMicroorganisms.filter((x) => x.new))
 const newIngredients = computed(() => payload.value.declaredIngredients.filter((x) => x.new))
 const newSubstances = computed(() => payload.value.declaredSubstances.filter((x) => x.new))

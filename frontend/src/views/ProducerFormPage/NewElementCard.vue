@@ -3,8 +3,17 @@
     <div class="flex">
       <div class="self-center font-bold capitalize">
         {{ getElementName(model).toLowerCase() }}
-        <!-- TODO: add plant part name and status badge if objectType === plant_part -->
       </div>
+      <!-- TODO: use semantic HTML here and in TypeHeader (which is used in two places, so need to check if the same heading level works in both) -->
+      <div v-if="objectType === 'plant_part'" class="self-center ml-2">
+        {{ plantPartName }}
+      </div>
+      <span v-if="plantPartStatus === 'unknown'" class="self-center mt-1 ml-2">
+        <DsfrBadge label="Nouvelle partie de plante" type="info" />
+      </span>
+      <span v-else-if="plantPartStatus === 'unauthorized'" class="self-center mt-1 ml-2">
+        <DsfrBadge label="Partie de plante non autorisée" type="error" />
+      </span>
     </div>
     <hr class="mt-4 pb-1" />
     <DsfrInputGroup>
@@ -98,6 +107,7 @@
 
 <script setup>
 import { computed } from "vue"
+import { useRootStore } from "@/stores/root"
 import CountryField from "@/components/fields/CountryField"
 import { getElementName } from "@/utils/elements"
 import { getAuthorizationModeInFrench } from "@/utils/mappings"
@@ -105,6 +115,7 @@ import { getCurrentInstance } from "vue"
 
 const model = defineModel()
 const { uid } = getCurrentInstance()
+const store = useRootStore()
 
 const props = defineProps(["objectType"])
 
@@ -149,5 +160,19 @@ const textForType = computed(() => {
       "L'ingrédient figure sur la liste de l'Union des nouveaux aliments conformément au règlement (UE) 2017/2470",
     missingHint: "L'ingrédient est autorisé en France mais ne figure pas dans la base de données",
   }
+})
+
+const plantPartName = computed(() => {
+  if (!model.value.usedPart || !store.plantParts) return ""
+  return store.plantParts.find((p) => p.id === model.value.usedPart)?.name
+})
+
+const plantPartStatus = computed(() => {
+  if (model.value.usedPart && model.value.element?.plantParts?.length) {
+    const associatedPart = model.value.element.plantParts.find((p) => p.id === model.value.usedPart)
+    if (!associatedPart) return "unknown"
+    else if (!associatedPart.isUseful) return "unauthorized"
+  }
+  return ""
 })
 </script>
