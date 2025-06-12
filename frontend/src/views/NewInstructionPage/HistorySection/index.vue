@@ -26,7 +26,7 @@ import SnapshotItem from "@/components/SnapshotItem"
 defineProps({ snapshots: Array })
 
 const showOnRight = (snapshot) => {
-  const rightSideStatus = ["OBSERVATION", "AUTHORIZED", "AWAITING_VISA", "OBJECTION"]
+  const rightSideStatus = ["OBSERVATION", "AUTHORIZED", "ONGOING_INSTRUCTION", "AWAITING_VISA", "OBJECTION", "REJECTED"]
   return rightSideStatus.indexOf(snapshot.status) > -1
 }
 </script>
