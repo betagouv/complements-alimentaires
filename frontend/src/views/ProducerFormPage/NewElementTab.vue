@@ -34,7 +34,9 @@ const payload = defineModel()
 
 const newPlants = computed(() => payload.value.declaredPlants.filter((x) => x.new))
 const newPlantParts = computed(() =>
-  payload.value.declaredPlants.filter((x) => !x.new && x.usedPart && !x.usedPart.isUseful)
+  payload.value.declaredPlants.filter(
+    (x) => !x.new && x.usedPart && !x.element?.plantParts?.find((ep) => ep.id === x.usedPart)?.isUseful
+  )
 )
 const newMicroorganisms = computed(() => payload.value.declaredMicroorganisms.filter((x) => x.new))
 const newIngredients = computed(() => payload.value.declaredIngredients.filter((x) => x.new))
