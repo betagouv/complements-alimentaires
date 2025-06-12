@@ -7,6 +7,11 @@
       <LastComment class="mb-6" :snapshot="lastSnapshot" />
       <h2 id="composition-produit">Composition produit</h2>
       <CompositionInfo :useAccordions="true" :showElementAuthorization="true" :model-value="declaration" />
+      <div v-if="declaration.computedSubstances.length">
+        <p class="font-bold mt-8">Substances contenues dans la composition :</p>
+        <ComputedSubstancesInfo :model-value="declaration" />
+      </div>
+      <p class="font-bold mt-8" v-else>Pas de substances calculées à partir de la composition</p>
       <h2 id="resultat-instruction">Résultat de l'instruction</h2>
       <DsfrAlert small description="Ce segment est en construction" class="mb-6" />
       <h3 id="decision">Décision</h3>
@@ -25,6 +30,7 @@
 import CompactAttachmentGrid from "@/components/CompactAttachmentGrid.vue"
 import LastComment from "./LastComment"
 import CompositionInfo from "@/components/CompositionInfo"
+import ComputedSubstancesInfo from "@/components/ComputedSubstancesInfo"
 import { computed } from "vue"
 
 const props = defineProps({ declaration: Object, snapshots: Array })
