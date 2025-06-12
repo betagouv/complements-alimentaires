@@ -14,7 +14,7 @@
       </DsfrInputGroup>
     </div>
 
-    <div v-if="decisionCategory === 'modify'" class="changes-needed-fields mb-4">
+    <div v-if="decisionCategory === 'modify'" class="mb-4">
       <h3 id="justification">Justification de la contestation</h3>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reasons')">
         <DsfrMultiselect
@@ -22,11 +22,11 @@
           v-model="reasons"
           :options="blockingReasons.flatMap((x) => x.items)"
           :required="true"
-          class="max-w-lg"
           :search="true"
+          :button-label="reasons?.length ? reasons.join(', ') : 'Sélectionner une option'"
         />
       </DsfrInputGroup>
-      <div class="sm:flex gap-4">
+      <div class="sm:flex gap-4 changes-needed-fields">
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'proposal')">
           <DsfrSelect label="Proposition" v-model="proposal" :options="proposalOptions"></DsfrSelect>
         </DsfrInputGroup>
@@ -184,5 +184,9 @@ div.decision-action :deep(.fr-input-group) {
 div.changes-needed-fields :deep(.fr-input-group) {
   @apply mb-0;
   @apply mt-1;
+}
+
+.fr-multiselect__collapse :deep(.fr-input-group) {
+  @apply my-4;
 }
 </style>
