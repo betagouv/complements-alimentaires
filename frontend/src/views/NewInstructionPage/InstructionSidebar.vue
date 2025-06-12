@@ -47,17 +47,6 @@ const menuItems = computed(() => [
           {
             to: appendHash(instructionRoute.value, "#resultat-instruction"),
             text: "Résultat de l'instruction",
-            expanded: true,
-            menuItems: [
-              {
-                to: appendHash(instructionRoute.value, "#decision"),
-                text: "Décision",
-              },
-              {
-                to: appendHash(instructionRoute.value, "#justification"),
-                text: "Justification",
-              },
-            ],
           },
           {
             to: appendHash(instructionRoute.value, "#notes"),
