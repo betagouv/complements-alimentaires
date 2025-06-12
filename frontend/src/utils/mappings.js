@@ -1,6 +1,7 @@
 export const getTypeIcon = (type) => {
   const iconMapping = {
     plant: "ri-plant-line",
+    plant_part: "ri-seedling-line",
     microorganism: "ri-microscope-line",
     form_of_supply: "ri-contrast-drop-line",
     aroma: "ri-bubble-chart-line",
@@ -14,6 +15,7 @@ export const getTypeIcon = (type) => {
 
 export const typesMapping = {
   plant: "Plante",
+  plant_part: { singular: "Partie de plante", plural: "Parties de plante" },
   microorganism: "Micro-organisme",
   form_of_supply: "Forme d'apport", // nutrient: "Nutriment"
   aroma: "Arôme",

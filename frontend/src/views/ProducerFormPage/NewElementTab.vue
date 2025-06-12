@@ -2,9 +2,10 @@
   <div>
     <SectionTitle title="Nouveaux ingrédients" sizeTag="h6" icon="ri-flask-line" />
     <p>
-      Vous avez ajouté les nouveaux ingrédients affichés ci-dessous. Des informations supplémentaires les concernant
-      sont requises.
+      Vous avez ajouté de nouveaux ingrédients ou nouvelles parties de plantes. Des informations complémentaires sont
+      requises.
     </p>
+    <NewElementList objectType="plant_part" :elements="newPlantParts" />
     <NewElementList objectType="plant" :elements="newPlants" />
     <NewElementList objectType="microorganism" :elements="newMicroorganisms" />
     <NewElementList objectType="form_of_supply" :elements="getObjectSubTypeList(newIngredients, 'form_of_supply')" />
@@ -31,6 +32,7 @@ import { getObjectSubTypeList } from "@/utils/elements"
 
 const payload = defineModel()
 
+const newPlantParts = computed(() => payload.value.declaredPlants.filter((x) => !x.new && !x.usedPart.isUseful))
 const newPlants = computed(() => payload.value.declaredPlants.filter((x) => x.new))
 const newMicroorganisms = computed(() => payload.value.declaredMicroorganisms.filter((x) => x.new))
 const newIngredients = computed(() => payload.value.declaredIngredients.filter((x) => x.new))
