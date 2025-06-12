@@ -43,8 +43,9 @@ const isFetching = computed(() =>
   [isFetchingDeclaration, isFetchingDeclarant, isFetchingCompany, isFetchingSnapshots].some((x) => !!x.value)
 )
 
-const privateNotesInstruction = computed(() => declaration.value?.privateNotesInstruction || "")
-const privateNotesVisa = computed(() => declaration.value?.privateNotesVisa || "")
+// Note : à utiliser dans les text-areas en bas de l'écran
+// const privateNotesInstruction = computed(() => declaration.value?.privateNotesInstruction || "")
+// const privateNotesVisa = computed(() => declaration.value?.privateNotesVisa || "")
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
