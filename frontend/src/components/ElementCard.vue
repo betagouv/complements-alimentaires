@@ -12,6 +12,12 @@
           <div v-if="model.new" class="self-center mt-1">
             <DsfrBadge label="Nouvel ingrédient" type="info" />
           </div>
+          <div v-else-if="plantPartStatus === 'unknown'" class="self-center mt-1">
+            <DsfrBadge label="Nouvelle partie de plante" type="info" />
+          </div>
+          <div v-else-if="plantPartStatus === 'unauthorized'" class="self-center mt-1">
+            <DsfrBadge label="Partie de plante non autorisée" type="error" />
+          </div>
         </div>
         <div class="content-center ml-6 pl-4 sm:border-l">
           <ElementCommentModal v-model="model" :hidePrivateComments="true" />
@@ -35,6 +41,7 @@
       <hr class="mt-2" />
       <div v-if="objectType === 'plant'" class="md:flex gap-2 md:gap-4 items-end">
         <div class="mb-4 md:max-w-sm" v-if="plantParts.length > 0">
+          <!-- TODO: make this the searchable dropdown -->
           <DsfrSelect
             label="Partie utilisée"
             defaultUnselectedText=""
@@ -118,7 +125,7 @@
 <script setup>
 import NumberField from "@/components/NumberField"
 import { useRootStore } from "@/stores/root"
-import { computed, watch } from "vue"
+import { computed, watch, ref, onMounted } from "vue"
 import { getElementName } from "@/utils/elements"
 import { getActivityReadonlyByType } from "@/utils/mappings"
 import ElementCommentModal from "@/components/ElementCommentModal"
@@ -127,12 +134,21 @@ const model = defineModel()
 const store = useRootStore()
 
 defineEmits(["remove"])
-const props = defineProps({ objectType: { type: String }, canRemove: { type: Boolean, default: true } })
+const props = defineProps({
+  objectType: { type: String },
+  canRemove: { type: Boolean, default: true },
+  canAddNewPlantPart: { type: Boolean },
+})
 const synonyms = computed(() => model.value.element?.synonyms?.map((x) => x.name)?.join(", "))
 
 const plantParts = computed(() => {
-  const parts = model.value.element?.plantParts?.filter((p) => !!p.isUseful) || store.plantParts
-  return parts?.map((x) => ({ text: x.name, value: x.id })) || []
+  let parts = store.plantParts || []
+  // if (!props.canAddNewPlantPart && model.value.element?.plantParts?.length) {
+  //   parts = model.value.element.plantParts.filter((p) => !!p.isUseful)
+  // }
+  // TODO: sort alphabetically
+  // parts.sort((a, b) => a.name - b.name)
+  return parts.map((x) => ({ text: x.name, value: x.id }))
 })
 
 const showFields = computed(() => {
@@ -158,4 +174,16 @@ watch(
     }
   }
 )
+
+const plantPartStatus = ref("")
+const setPartStatus = (part) => {
+  plantPartStatus.value = ""
+  if (part && model.value.element?.plantParts?.length) {
+    const associatedPart = model.value.element.plantParts.find((p) => p.id === part)
+    if (!associatedPart) plantPartStatus.value = "unknown"
+    else if (!associatedPart.isUseful) plantPartStatus.value = "unauthorized"
+  }
+}
+watch(() => model.value.usedPart, setPartStatus)
+onMounted(() => setPartStatus(model.value.usedPart))
 </script>
