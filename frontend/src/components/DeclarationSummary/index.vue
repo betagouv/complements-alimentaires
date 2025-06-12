@@ -49,26 +49,8 @@
       />
 
       <p class="font-bold mt-8" v-if="payload.computedSubstances.length">Substances contenues dans la composition :</p>
-      <DsfrAlert
-        v-if="replacedRequestsWithSubstances.length"
-        type="warning"
-        class="mb-4"
-        title="Vérifiez les doses totales des substances"
-      >
-        <p>
-          Les ingrédients suivants, ajoutés pour remplacer une demande, rajoutent des substances dans la composition.
-        </p>
-        <p>
-          Veuillez vérifier que les doses totales des substances restent pertinentes. Si besoin, renvoyez la déclaration
-          vers le déclarant pour les mettre à jour.
-        </p>
-        <ul>
-          <li v-for="i in replacedRequestsWithSubstances" :key="`${i.type}-${i.id}`">
-            {{ i.element.name }}
-          </li>
-        </ul>
-      </DsfrAlert>
-      <SubstancesTable v-model="payload" readonly />
+      <ComputedSubstancesInfo v-model="payload" />
+
       <div v-if="!payload.siccrfId">
         <h3 class="fr-h6 mt-8!">
           Adresse sur l'étiquetage
@@ -106,7 +88,7 @@ import AddressLine from "@/components/AddressLine"
 import SummaryInfoSegment from "./SummaryInfoSegment"
 import ArticleInfoRow from "./ArticleInfoRow"
 import CompositionInfo from "@/components/CompositionInfo"
-import SubstancesTable from "@/components/SubstancesTable"
+import ComputedSubstancesInfo from "@/components/ComputedSubstancesInfo"
 import FilePreview from "@/components/FilePreview"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
@@ -168,16 +150,6 @@ const conditionNames = computed(() => {
 })
 
 const editLink = (tab) => ({ query: { tab } })
-
-const replacedRequestsWithSubstances = computed(() => {
-  const data = payload.value
-  if (!data) return false
-  const elements = data.declaredPlants
-    .concat(data.declaredMicroorganisms)
-    .concat(data.declaredSubstances)
-    .concat(data.declaredIngredients)
-  return elements?.filter((i) => i.requestStatus === "REPLACED" && i.element?.substances?.length)
-})
 </script>
 
 <style scoped>
