@@ -81,8 +81,8 @@
             <hr class="p-0 my-2" />
             <p class="my-1">
               <v-icon name="ri-error-warning-line"></v-icon>
-              La déclaration ne peut pas être validée en nécessitant une saisine ANSEES. Merci de changer l'article
-              avant de la valider.
+              La déclaration ne peut pas être validée en nécessitant une saisine ANSES. Merci de changer l'article avant
+              de la valider.
             </p>
             <ArticleInfoRow v-model="declaration" v-if="needsAnsesReferal && decisionCategory === 'approve'" />
           </div>
