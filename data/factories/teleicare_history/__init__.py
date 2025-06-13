@@ -16,6 +16,13 @@ from data.models.teleicare_history.ica_declaration import (
     IcaVersionDeclaration,
     IcaPopulationCibleDeclaree,
 )
+from data.models.teleicare_history.ica_declaration_composition import (
+    IcaIngredient,
+    IcaIngredientAutre,
+    IcaMicroOrganisme,
+    IcaPreparation,
+    IcaSubstanceDeclaree,
+)
 from data.utils.string_utils import make_random_str
 from data.factories.company import _make_siret, _make_vat, _make_phone_number
 
@@ -126,3 +133,54 @@ class IcaPopulationCibleDeclareeFactory(factory.django.DjangoModelFactory):
     vrsdecl_ident = factory.Sequence(lambda n: n + 1)
     popcbl_ident = factory.Sequence(lambda n: n + 1)
     vrspcb_popcible_autre = factory.Faker("text", max_nb_chars=20)
+
+
+class IcaIngredientFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = IcaIngredient
+
+    ingr_ident = factory.Sequence(lambda n: n + 1)
+    vrsdecl_ident = factory.Sequence(lambda n: n + 1)
+    fctingr_ident = factory.Faker("pyint", min_value=1, max_value=3)
+    tying_ident = factory.Faker("pyint", min_value=1, max_value=3)  # 1 = Ingredient, 2 = Microorganism, 3 = Plant
+    ingr_commentaires = factory.Faker("text", max_nb_chars=20)
+
+
+class IcaIngredientAutreFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = IcaIngredientAutre
+
+    ingr_ident = factory.SubFactory(IcaIngredient)
+    inga_ident = factory.Faker("pyint", min_value=1, max_value=20)
+
+
+class IcaMicroOrganismeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = IcaMicroOrganisme
+
+    ingr_ident = factory.SubFactory(IcaIngredient)
+    morg_ident = factory.Faker("pyint", min_value=1, max_value=20)
+    ingmorg_souche = factory.Faker("text", max_nb_chars=10)
+    ingmorg_quantite_par_djr = factory.Faker("pyfloat")
+
+
+class IcaPreparationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = IcaPreparation
+
+    ingr_ident = factory.SubFactory(IcaIngredient)
+    plte_ident = factory.Faker("pyint", min_value=1, max_value=20)
+    pplan_ident = factory.Faker("pyint", min_value=1, max_value=20)
+    unt_ident = factory.Faker("pyint", min_value=1, max_value=5)
+    typprep_ident = factory.Faker("pyint", min_value=1, max_value=20)
+    prepa_qte = factory.Faker("pyfloat")
+
+
+class IcaSubstanceDeclareeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = IcaSubstanceDeclaree
+
+    vrsdecl_ident = factory.Sequence(lambda n: n + 1)
+    sbsact_ident = factory.Faker("pyint", min_value=1, max_value=20)
+    sbsact_commentaires = factory.Faker("text", max_nb_chars=20)
+    sbsactdecl_quantite_par_djr = factory.Faker("pyfloat")

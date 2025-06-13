@@ -483,7 +483,8 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
             bulk_ingredients[ComputedSubstance].append(computed_substance)
 
     for model, bulk_of_objects in bulk_ingredients.items():
-        model.objects.bulk_create(bulk_of_objects)
+        if not model.objects.filter(declaration=declaration).exists():
+            model.objects.bulk_create(bulk_of_objects)
 
 
 def compute_action(status, nb_version_declaration):
