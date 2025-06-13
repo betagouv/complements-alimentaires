@@ -43,5 +43,5 @@ const showComputedSubstances = computed(() => {
     .some((x) => x.requestStatus === "REPLACED" && x.element?.substances?.length)
 })
 
-const canInstruct = computed(() => props.declaration?.value?.status === "ONGOING_INSTRUCTION")
+const canInstruct = computed(() => props.declaration?.status === "ONGOING_INSTRUCTION")
 </script>
