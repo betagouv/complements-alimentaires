@@ -13,7 +13,7 @@
       </div>
       <p class="font-bold mt-8" v-else>Pas de substances calculées à partir de la composition</p>
       <h2 id="resultat-instruction">Résultat de l'instruction</h2>
-      <InstructionResults :model-value="declaration" />
+      <InstructionResults :model-value="declaration" :readonly="!canInstruct" />
     </div>
     <div class="p-6">
       <h2 id="notes">Notes à destination de l'administration</h2>
@@ -42,4 +42,6 @@ const showComputedSubstances = computed(() => {
     .concat(props.declaration.declaredIngredients)
     .some((x) => x.requestStatus === "REPLACED" && x.element?.substances?.length)
 })
+
+const canInstruct = computed(() => props.declaration?.value?.status === "ONGOING_INSTRUCTION")
 </script>
