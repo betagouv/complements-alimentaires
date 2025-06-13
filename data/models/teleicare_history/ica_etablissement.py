@@ -43,3 +43,6 @@ class IcaEtablissement(models.Model):
     class Meta:
         managed = False
         db_table = "ica_etablissement"
+
+    def __str__(self):
+        return f"{self.etab_raison_sociale}"

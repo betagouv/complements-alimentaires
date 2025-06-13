@@ -7,7 +7,7 @@
       <LastComment class="mb-6" :snapshot="lastSnapshot" />
       <h2 id="composition-produit">Composition produit</h2>
       <CompositionInfo :useAccordions="true" :showElementAuthorization="true" :model-value="declaration" />
-      <div v-if="declaration.computedSubstances.length">
+      <div v-if="showComputedSubstances">
         <p class="font-bold mt-8">Substances contenues dans la composition :</p>
         <ComputedSubstancesInfo :model-value="declaration" />
       </div>
@@ -33,4 +33,13 @@ import { computed } from "vue"
 const props = defineProps({ declaration: Object, snapshots: Array })
 
 const lastSnapshot = computed(() => props.snapshots?.findLast((x) => !!x.comment))
+
+const showComputedSubstances = computed(() => {
+  if (props.declaration?.computedSubstances?.length) return true
+  return props.declaration.declaredPlants
+    .concat(props.declaration.declaredMicroorganisms)
+    .concat(props.declaration.declaredSubstances)
+    .concat(props.declaration.declaredIngredients)
+    .some((x) => x.requestStatus === "REPLACED" && x.element?.substances?.length)
+})
 </script>

@@ -1,5 +1,6 @@
 import copy
 import logging
+
 from django.db import transaction
 
 from rest_framework import serializers
@@ -7,12 +8,11 @@ from rest_framework.exceptions import ParseError
 from simple_history.utils import update_change_reason
 
 from api.utils.choice_field import GoodReprChoiceField
-from data.models import Substance, IngredientStatus, Declaration
+from config import tasks
+from data.models import Declaration, IngredientStatus, Substance
 
 from .historical_record import HistoricalRecordField
 from .utils import HistoricalModelSerializer, PrivateFieldsSerializer
-
-from config import tasks
 
 logger = logging.getLogger(__name__)
 
@@ -130,6 +130,12 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
 
     # inspiré par https://github.com/jazzband/django-simple-history/blob/626ece4082c4a7f87d14566e7a3c568043233ac5/simple_history/utils.py#L8
     def update_change_reason(self, instance, private_change_reason, public_change_reason):
+        if len(private_change_reason) > 100:
+            logger.warn(f"private_change_reason '{private_change_reason}' too long. Truncating to 100 characters.")
+            private_change_reason = private_change_reason[:100]
+        if len(public_change_reason) > 100:
+            logger.warn(f"public_change_reason '{public_change_reason}' too long. Truncating to 100 characters.")
+            public_change_reason = public_change_reason[:100]
         update_change_reason(instance, private_change_reason)
         record = instance.history.order_by("-history_date").first()
         record.history_public_change_reason = public_change_reason
@@ -157,7 +163,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
                 ids_using_ingredient += getattr(instance, field_name).values_list("declaration_id", flat=True)
             tasks.recalculate_article_for_ongoing_declarations(
                 Declaration.objects.filter(id__in=ids_using_ingredient),
-                f"Article recalculé après modification via l'interface de {instance.name} ({instance.object_type} id {instance.id})",
+                f"Article recalculé après modification via l'interface de {instance.object_type} id {instance.id} : {instance.name}",
             )
 
 

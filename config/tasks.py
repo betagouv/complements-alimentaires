@@ -7,9 +7,8 @@ from django.db.models import Count, F, Max, Q
 from django.utils import timezone
 
 from dateutil.relativedelta import relativedelta
-from viewflow import fsm
-
 from simple_history.utils import update_change_reason
+from viewflow import fsm
 
 from config import email
 from data.etl.transformer_loader import ETL_OPEN_DATA_DECLARATIONS
@@ -208,5 +207,8 @@ def recalculate_article_for_ongoing_declarations(declarations, change_reason):
             declaration.save()
             # il faut faire un refresh pour update_change_reason de retrouver le record à MAJ
             declaration.refresh_from_db()
+            if len(change_reason) > 100:
+                logger.warn(f"change_reason '{change_reason}' too long. Truncating to 100 characters.")
+                change_reason = change_reason[:100]
             update_change_reason(declaration, change_reason)
             logger.info(f"Declaration {declaration.id} article recalculated.")

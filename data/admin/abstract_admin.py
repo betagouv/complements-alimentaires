@@ -34,5 +34,5 @@ class RecomputeDeclarationArticleAtIngredientSaveMixin:
             ids_using_ingredient = getattr(obj, self.declaredingredient_set).values_list("declaration_id", flat=True)
             tasks.recalculate_article_for_ongoing_declarations(
                 Declaration.objects.filter(id__in=ids_using_ingredient),
-                f"Article recalculé après modification via l'admin de {obj.name} ({obj.object_type} id {obj.id})",
+                f"Article recalculé après modification via l'admin de {obj.object_type} id {obj.id} : {obj.name}",
             )
