@@ -205,7 +205,7 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             declarations = Declaration.objects.filter(id__in=declared_substances_ids.union(computed_substances_ids))
             tasks.recalculate_article_for_ongoing_declarations(
                 declarations,
-                f"Article recalculé après modification via l'admin de {obj.name} ({obj.object_type} id {obj.id})",
+                f"Article recalculé après modification via l'admin de {obj.object_type} id {obj.id} : {obj.name}",
             )
 
     @staticmethod

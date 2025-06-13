@@ -163,7 +163,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
                 ids_using_ingredient += getattr(instance, field_name).values_list("declaration_id", flat=True)
             tasks.recalculate_article_for_ongoing_declarations(
                 Declaration.objects.filter(id__in=ids_using_ingredient),
-                f"Article recalculé après modification via l'interface de {instance.name} ({instance.object_type} id {instance.id})",
+                f"Article recalculé après modification via l'interface de {instance.object_type} id {instance.id} : {instance.name}",
             )
 
 
