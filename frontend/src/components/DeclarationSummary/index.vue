@@ -42,76 +42,15 @@
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
       </h3>
 
-      <SummaryElementList
+      <CompositionInfo
+        v-model="payload"
         :useAccordions="useAccordions"
         :showElementAuthorization="showElementAuthorization"
-        objectType="plant"
-        :elements="payload.declaredPlants"
-      />
-      <SummaryElementList
-        :useAccordions="useAccordions"
-        :showElementAuthorization="showElementAuthorization"
-        objectType="microorganism"
-        :elements="payload.declaredMicroorganisms"
-      />
-      <SummaryElementList
-        objectType="form_of_supply"
-        :useAccordions="useAccordions"
-        :showElementAuthorization="showElementAuthorization"
-        :elements="getObjectSubTypeList(payload.declaredIngredients, 'form_of_supply')"
-      />
-      <SummaryElementList
-        :useAccordions="useAccordions"
-        :showElementAuthorization="showElementAuthorization"
-        objectType="aroma"
-        :elements="getObjectSubTypeList(payload.declaredIngredients, 'aroma')"
-      />
-      <SummaryElementList
-        objectType="additive"
-        :useAccordions="useAccordions"
-        :showElementAuthorization="showElementAuthorization"
-        :elements="getObjectSubTypeList(payload.declaredIngredients, 'additive')"
-      />
-      <SummaryElementList
-        objectType="active_ingredient"
-        :useAccordions="useAccordions"
-        :showElementAuthorization="showElementAuthorization"
-        :elements="getObjectSubTypeList(payload.declaredIngredients, 'active_ingredient')"
-      />
-      <SummaryElementList
-        objectType="non_active_ingredient"
-        :useAccordions="useAccordions"
-        :showElementAuthorization="showElementAuthorization"
-        :elements="getObjectSubTypeList(payload.declaredIngredients, 'non_active_ingredient')"
-      />
-      <SummaryElementList
-        objectType="substance"
-        :useAccordions="useAccordions"
-        :showElementAuthorization="showElementAuthorization"
-        :elements="payload.declaredSubstances"
       />
 
       <p class="font-bold mt-8" v-if="payload.computedSubstances.length">Substances contenues dans la composition :</p>
-      <DsfrAlert
-        v-if="replacedRequestsWithSubstances.length"
-        type="warning"
-        class="mb-4"
-        title="Vérifiez les doses totales des substances"
-      >
-        <p>
-          Les ingrédients suivants, ajoutés pour remplacer une demande, rajoutent des substances dans la composition.
-        </p>
-        <p>
-          Veuillez vérifier que les doses totales des substances restent pertinentes. Si besoin, renvoyez la déclaration
-          vers le déclarant pour les mettre à jour.
-        </p>
-        <ul>
-          <li v-for="i in replacedRequestsWithSubstances" :key="`${i.type}-${i.id}`">
-            {{ i.element.name }}
-          </li>
-        </ul>
-      </DsfrAlert>
-      <SubstancesTable v-model="payload" readonly />
+      <ComputedSubstancesInfo v-model="payload" />
+
       <div v-if="!payload.siccrfId">
         <h3 class="fr-h6 mt-8!">
           Adresse sur l'étiquetage
@@ -143,13 +82,13 @@ export default { name: "DeclarationSummary" }
 </script>
 
 <script setup>
-import { getObjectSubTypeList, getUnitQuantityString } from "@/utils/elements"
+import { getUnitQuantityString } from "@/utils/elements"
 import { computed } from "vue"
 import AddressLine from "@/components/AddressLine"
 import SummaryInfoSegment from "./SummaryInfoSegment"
-import SummaryElementList from "./SummaryElementList"
 import ArticleInfoRow from "./ArticleInfoRow"
-import SubstancesTable from "@/components/SubstancesTable"
+import CompositionInfo from "@/components/CompositionInfo"
+import ComputedSubstancesInfo from "@/components/ComputedSubstancesInfo"
 import FilePreview from "@/components/FilePreview"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
@@ -211,16 +150,6 @@ const conditionNames = computed(() => {
 })
 
 const editLink = (tab) => ({ query: { tab } })
-
-const replacedRequestsWithSubstances = computed(() => {
-  const data = payload.value
-  if (!data) return false
-  const elements = data.declaredPlants
-    .concat(data.declaredMicroorganisms)
-    .concat(data.declaredSubstances)
-    .concat(data.declaredIngredients)
-  return elements?.filter((i) => i.requestStatus === "REPLACED" && i.element?.substances?.length)
-})
 </script>
 
 <style scoped>
