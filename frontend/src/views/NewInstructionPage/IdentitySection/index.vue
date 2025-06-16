@@ -4,7 +4,7 @@
       <SectionHeader id="declarant-e" text="Déclarant·e" icon="ri-user-fill" />
       <DeclarantIdentity class="mb-8" :user="declarant" />
       <SectionHeader id="produit" text="Informations sur le produit" icon="ri-file-info-fill" />
-      <DsfrAlert small description="Ce segment est en construction" class="mb-6" />
+      <ProductInfoSegment class="mb-8" :payload="declaration" />
       <SectionHeader id="entreprise" text="Identité de l’entreprise" icon="ri-building-4-fill" />
       <CompanyIdentity :company="company" />
     </div>
@@ -15,6 +15,7 @@
 import SectionHeader from "../SectionHeader"
 import DeclarantIdentity from "@/components/DeclarantIdentity"
 import CompanyIdentity from "@/components/CompanyIdentity"
+import ProductInfoSegment from "@/components/ProductInfoSegment"
 
-defineProps({ declarant: Object, company: Object })
+defineProps({ declarant: Object, company: Object, declaration: Object })
 </script>
