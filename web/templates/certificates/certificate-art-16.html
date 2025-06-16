@@ -14,7 +14,7 @@
             {{ declaration.company.social_name }}
             {% endif %}
         </span>
-        a effectué {% if declaration.teleicare_id %}sur la plateforme TELEICARE,{% endif %}
+        a effectué {% if declaration.teleicare_declaration_number %}sur la plateforme TELEICARE,{% endif %}
         le {{ last_submission_date|date:"l j F Y" }}, la déclaration mentionnée à l’article 16 du décret
         n°2006-352 du 20 mars 2006 relatif aux compléments alimentaires pour le produit :
     </p>
@@ -30,8 +30,8 @@
     <p>
         Cette déclaration, acceptée, est enregistrée sous le numéro
         <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
-            {% if declaration.teleicare_id %}
-            {{ declaration.teleicare_id }}
+            {% if declaration.teleicare_declaration_number %}
+            {{ declaration.teleicare_declaration_number }}
             {% else %}
             {{ declaration.id }}
             {% endif %}
@@ -74,7 +74,7 @@
     </p>
     <p>
         Pour tout renseignement d’ordre général sur le cadre réglementaire applicable aux compléments alimentaires,
-        rendez-vous sur le site de la DGAL {% if declaration.teleicare_id %}(autorité compétente depuis le 1° janvier 2023 pour la sécurité sanitaire des compléments alimentaires){% endif %} à l’adresse suivante :
+        rendez-vous sur le site de la DGAL {% if declaration.teleicare_declaration_number %}(autorité compétente depuis le 1° janvier 2023 pour la sécurité sanitaire des compléments alimentaires){% endif %} à l’adresse suivante :
         <a href="https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire">
             https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire
         </a>.

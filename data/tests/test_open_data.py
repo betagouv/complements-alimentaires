@@ -77,7 +77,9 @@ class IngredientTestCase(TestCase):
             quantity=10.0,
             unit=unit_mg,
         )
-        declaration_teleicare = AuthorizedDeclarationFactory(siccrf_id=567365, teleicare_id="2025-06-07")
+        declaration_teleicare = AuthorizedDeclarationFactory(
+            siccrf_id=567365, teleicare_declaration_number="2025-06-07"
+        )
         DeclaredMicroorganismFactory(
             declaration=declaration_teleicare,
             microorganism=MicroorganismFactory(ca_genus="Lactobasine", ca_species="en bois"),

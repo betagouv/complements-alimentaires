@@ -277,7 +277,7 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
-            "teleicare_id",
+            "teleicare_declaration_number",
             "siccrf_id",
             "status",
             "author",
@@ -435,7 +435,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         return obj.siccrf_id
 
     def get_numero_declaration_teleicare(self, obj):
-        return obj.teleicare_id
+        return obj.teleicare_declaration_number
 
     def get_decision(self, obj):
         return obj.get_status_display()
@@ -631,7 +631,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
-            "teleicare_id",
+            "teleicare_declaration_number",
             "siccrf_id",
             "article",
             "status",
@@ -799,7 +799,7 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
-            "teleicare_id",
+            "teleicare_declaration_number",
             "siccrf_id",
             "status",
             "author",

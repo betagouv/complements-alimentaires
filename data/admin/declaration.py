@@ -271,7 +271,7 @@ class DeclarationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     list_display = ("id", "name", "status", "company", "author")
     list_filter = ("status", "company", "author")
     list_select_related = ["author", "company"]
-    readonly_fields = ("declared_in_teleicare", "teleicare_id")
+    readonly_fields = ("declared_in_teleicare", "teleicare_declaration_number")
 
     show_facets = admin.ShowFacets.NEVER
     inlines = (
@@ -286,7 +286,7 @@ class DeclarationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     search_fields = (
         "name",
         "id",
-        "teleicare_id",
+        "teleicare_declaration_number",
         "author__first_name",
         "author__last_name",
         "company__social_name",
@@ -317,7 +317,7 @@ class DeclarationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
                 "classes": ["collapse"],
                 "fields": (
                     "declared_in_teleicare",
-                    "teleicare_id",
+                    "teleicare_declaration_number",
                 ),
             },
         ),
