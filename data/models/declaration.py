@@ -665,7 +665,14 @@ class Addable(models.Model):
             )
 
 
-class DeclaredPlant(Historisable, Addable):
+class AddablePlant(Addable):
+    class Meta:
+        abstract = True
+
+    new_part = models.BooleanField(default=False)
+
+
+class DeclaredPlant(Historisable, AddablePlant):
     class Meta:
         verbose_name = "plante déclarée"
         verbose_name_plural = "plantes déclarées"
