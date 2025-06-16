@@ -16,7 +16,6 @@
         :label="isAwaitingInstruction ? 'Instruire' : 'M\'assigner cette déclaration'"
         tertiary
         @click="isAwaitingInstruction ? emit('instruct') : emit('assign')"
-        :disabled="isFetchingInstruction || isFetchingDeclaration"
       />
     </DsfrAlert>
     <DeclarationAlert
@@ -34,6 +33,8 @@
 import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
+import DeclarationAlert from "@/components/DeclarationAlert"
+import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromTeleicareAlert"
 
 const declaration = defineModel()
 

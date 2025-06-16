@@ -14,8 +14,16 @@
     <div v-else-if="declaration">
       <h1>{{ declaration.name }}</h1>
       <AlertsSection v-model="declaration" @instruct="instructDeclaration" @assign="assignToSelf" />
+      <DeclarationSummary
+        :allowArticleChange="!declaration.siccrfId"
+        :useAccordions="true"
+        :showElementAuthorization="true"
+        :readonly="true"
+        v-model="declaration"
+        v-if="isAwaitingInstruction"
+      />
 
-      <div class="sm:grid sm:grid-cols-12">
+      <div v-else class="sm:grid sm:grid-cols-12">
         <div class="hidden sm:block col-span-3">
           <div class="sticky top-2 sidebar-content">
             <InstructionSidebar v-model="declaration" />
@@ -40,6 +48,7 @@ import useToaster from "@/composables/use-toaster"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import InstructionSidebar from "./InstructionSidebar"
 import AlertsSection from "./AlertsSection"
+import DeclarationSummary from "@/components/DeclarationSummary"
 
 const props = defineProps({ declarationId: String })
 
@@ -122,6 +131,8 @@ const assignToSelf = async () => {
     useToaster().addSuccessMessage("La déclaration vous a été assignée")
   }
 }
+
+const isAwaitingInstruction = computed(() => declaration.value?.status === "AWAITING_INSTRUCTION")
 
 onMounted(async () => {
   await executeDeclarationFetch()
