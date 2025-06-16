@@ -362,6 +362,7 @@ def add_enum_or_personnalized_value(item, custom_value):
 
 class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
+    teleicare_id = serializers.SerializerMethodField()
     numero_declaration_teleicare = serializers.SerializerMethodField()
     decision = serializers.SerializerMethodField()
     responsable_mise_sur_marche = serializers.SerializerMethodField()
@@ -423,9 +424,15 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     def get_id(self, obj):
         """
-        Cette fonction retourne le TeleIcare id s'il existe sinon le Compl'Alim id
+        Cette fonction retourne le Compl'Alim id
         """
-        return obj.siccrf_id or obj.id
+        return obj.id
+
+    def get_teleicare_id(self, obj):
+        """
+        Cette fonction retourne l'id qui était utilisé dans TeleIcare (qui est différent du numéro de déclaration)
+        """
+        return obj.siccrf_id
 
     def get_numero_declaration_teleicare(self, obj):
         return obj.teleicare_id
