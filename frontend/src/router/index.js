@@ -387,6 +387,10 @@ const routes = [
     },
     children: [
       {
+        path: "",
+        redirect: { name: "InstructionSection" },
+      },
+      {
         name: "InstructionSection",
         path: "instruction",
         component: InstructionSection,

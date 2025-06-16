@@ -13,7 +13,12 @@
     </div>
     <div v-else-if="declaration">
       <h1>{{ declaration.name }}</h1>
-      <AlertsSection v-model="declaration" @instruct="instructDeclaration" @assign="assignToSelf" />
+      <AlertsSection
+        v-model="declaration"
+        @instruct="instructDeclaration"
+        @assign="assignToSelf"
+        :snapshots="snapshots"
+      />
       <DeclarationSummary
         :allowArticleChange="!declaration.siccrfId"
         :useAccordions="true"
@@ -53,7 +58,14 @@ import DeclarationSummary from "@/components/DeclarationSummary"
 const props = defineProps({ declarationId: String })
 
 const isFetching = computed(() =>
-  [isFetchingDeclaration, isFetchingDeclarant, isFetchingCompany, isFetchingSnapshots].some((x) => !!x.value)
+  [
+    isFetchingDeclaration,
+    isFetchingDeclarant,
+    isFetchingCompany,
+    isFetchingSnapshots,
+    isFetchingInstruction,
+    isFetchingAssignToSelf,
+  ].some((x) => !!x.value)
 )
 
 // Note : à utiliser dans les text-areas en bas de l'écran
@@ -101,9 +113,23 @@ const {
 const {
   response: takeResponse,
   execute: executeTakeForInstruction,
-  // isFetching: isFetchingInstruction,
+  isFetching: isFetchingInstruction,
 } = useFetch(
   `/api/v1/declarations/${props.declarationId}/take-for-instruction/`,
+  {
+    headers: headers(),
+  },
+  { immediate: false }
+)
+  .post({})
+  .json()
+
+const {
+  response: assignResponse,
+  execute: executeAssignToSelf,
+  isFetching: isFetchingAssignToSelf,
+} = useFetch(
+  `/api/v1/declarations/${props.declarationId}/assign-instruction/`,
   {
     headers: headers(),
   },
@@ -122,11 +148,10 @@ const instructDeclaration = async () => {
 }
 
 const assignToSelf = async () => {
-  const url = `/api/v1/declarations/${props.declarationId}/assign-instruction/`
-  const { response } = await useFetch(url, { headers: headers() }).post({}).json()
+  await executeAssignToSelf()
   // $externalResults.value = await handleError(response)
 
-  if (response.value.ok) {
+  if (assignResponse.value.ok) {
     await executeDeclarationFetch()
     useToaster().addSuccessMessage("La déclaration vous a été assignée")
   }
