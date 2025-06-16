@@ -1,6 +1,6 @@
 <template>
   <div class="bg-grey-975! p-6" v-if="snapshots">
-    <h2 id="declarant-e">Historique</h2>
+    <SectionHeader icon="ri-history-fill" text="Historique" />
 
     <div v-if="!snapshots" class="flex justify-center items-center min-h-60">
       <ProgressSpinner />
@@ -22,6 +22,7 @@
 <script setup>
 import ProgressSpinner from "@/components/ProgressSpinner"
 import SnapshotItem from "@/components/SnapshotItem"
+import SectionHeader from "../SectionHeader"
 
 defineProps({ snapshots: Array })
 
