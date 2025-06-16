@@ -441,6 +441,7 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
     Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
     `create_declarations_from_teleicare_history` pour updater leurs champs ManyToMany.
     """
+    # TODO : cette fonction aussi devrait tenir compte du paramètre rewrite_existing
     bulk_ingredients = {DeclaredPlant: [], DeclaredMicroorganism: [], DeclaredIngredient: [], ComputedSubstance: []}
     for ingredient in IcaIngredient.objects.filter(vrsdecl_ident=vrsdecl_ident):
         if ingredient.tying_ident == 1:

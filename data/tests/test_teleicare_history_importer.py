@@ -669,9 +669,8 @@ class TeleicareHistoryImporterTestCase(TestCase):
 
         # 1 ° import d'historique
         create_declarations_from_teleicare_history(rewrite_existing=False)
-
         self.assertEqual(DeclaredIngredient.objects.filter(declaration__siccrf_id=CA.cplalim_ident).count(), 1)
 
-        # 2 ° import d'historique sans overwrite de la company
+        # 2 ° import d'historique sans doublons de composition
         create_declarations_from_teleicare_history(rewrite_existing=True)
         self.assertEqual(DeclaredIngredient.objects.filter(declaration__siccrf_id=CA.cplalim_ident).count(), 1)
