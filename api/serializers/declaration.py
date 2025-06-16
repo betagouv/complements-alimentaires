@@ -394,6 +394,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
         fields = (
             "id",
+            "teleicare_id",
             "numero_declaration_teleicare",
             "decision",
             "responsable_mise_sur_marche",

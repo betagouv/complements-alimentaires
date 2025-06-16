@@ -56,7 +56,8 @@ class Migration(migrations.Migration):
         pass
 
     operations = [
-        migrations.RunPython(set_action, reverse_set_action),
-        migrations.RunPython(set_missing_snapshots, reverse_set_missing_snapshots),
+        # cette migration a été appliquée une fois, mais empêche la bonne exécution des tests
+        # migrations.RunPython(set_action, reverse_set_action),
+        # migrations.RunPython(set_missing_snapshots, reverse_set_missing_snapshots),
 
     ]
