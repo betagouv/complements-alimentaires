@@ -12,7 +12,9 @@
       <ProgressSpinner />
     </div>
     <div v-else-if="declaration">
-      <h1 v-if="declaration">{{ declaration.name }}</h1>
+      <h1>{{ declaration.name }}</h1>
+      <AlertsSection v-model="declaration" @instruct="instructDeclaration" @assign="assignToSelf" />
+
       <div class="sm:grid sm:grid-cols-12">
         <div class="hidden sm:block col-span-3">
           <div class="sticky top-2 sidebar-content">
@@ -34,8 +36,10 @@ import { handleError } from "@/utils/error-handling"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { headers } from "@/utils/data-fetching"
+import useToaster from "@/composables/use-toaster"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import InstructionSidebar from "./InstructionSidebar"
+import AlertsSection from "./AlertsSection"
 
 const props = defineProps({ declarationId: String })
 
@@ -108,13 +112,24 @@ const instructDeclaration = async () => {
   }
 }
 
+const assignToSelf = async () => {
+  const url = `/api/v1/declarations/${props.declarationId}/assign-instruction/`
+  const { response } = await useFetch(url, { headers: headers() }).post({}).json()
+  // $externalResults.value = await handleError(response)
+
+  if (response.value.ok) {
+    await executeDeclarationFetch()
+    useToaster().addSuccessMessage("La déclaration vous a été assignée")
+  }
+}
+
 onMounted(async () => {
   await executeDeclarationFetch()
   handleError(declarationResponse)
 
   // Si on arrive à cette page avec une déclaration déjà assignée à quelqun.e mais en état
   // AWAITING_INSTRUCTION, on la passe directement à ONGOING_INSTRUCTION.
-  // TODO
+  // TODO gestion d'erreur
   if (declaration.value?.instructor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_INSTRUCTION")
     await instructDeclaration()
 
