@@ -15,7 +15,7 @@
     <p v-if="company.vat">Numéro de TVA : {{ company.vat }}</p>
     <p v-if="company.phoneNumber">
       Numéro téléphone :
-      <a :href="`tel:${company.phoneNumber}`" target="_blank">{{ company.phoneNumber }}</a>
+      <a :href="`tel:${company.phoneNumber}`">{{ company.phoneNumber }}</a>
     </p>
     <p v-if="company.address">
       <span>

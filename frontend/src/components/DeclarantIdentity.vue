@@ -7,7 +7,7 @@
     </p>
   </div>
   <p v-else>
-    Cette déclaration n'a pas de déclarant ou déclarante assigné. Le compte a probablement été supprimé depuis.
+    Cette déclaration n'a pas de déclarant ou déclarante assignée. Le compte a probablement été supprimé depuis.
   </p>
 </template>
 <script setup>
