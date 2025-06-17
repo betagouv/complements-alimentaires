@@ -171,7 +171,14 @@ const instructorDisplayData = computed(() => {
         canDownloadCertificate: true,
       }
     case "WITHDRAWN":
-      return { type: "info", title: "Ce produit a été retiré du marché", canDownloadCertificate: false }
+      return {
+        type: "info",
+        title: "Ce produit a été retiré du marché",
+        canDownloadCertificate: false,
+        body: latestSnapshot.value?.effectiveWithdrawalDate
+          ? `Date effective de retrait du marché : ${isoToPrettyDate(latestSnapshot.value.effectiveWithdrawalDate)}`
+          : null,
+      }
     default:
       return null
   }
@@ -232,7 +239,14 @@ const visorDisplayData = computed(() => {
         canDownloadCertificate: true,
       }
     case "WITHDRAWN":
-      return { type: "info", title: "Ce produit a été retiré du marché", canDownloadCertificate: false }
+      return {
+        type: "info",
+        title: "Ce produit a été retiré du marché",
+        canDownloadCertificate: false,
+        body: latestSnapshot.value?.effectiveWithdrawalDate
+          ? `Date effective de retrait du marché : ${isoToPrettyDate(latestSnapshot.value.effectiveWithdrawalDate)}`
+          : null,
+      }
     default:
       return null
   }
