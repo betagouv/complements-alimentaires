@@ -1,16 +1,18 @@
 <template>
   <div>
     <div class="bg-grey-975! p-6">
-      <h2 id="declarant-e">Déclarant·e</h2>
+      <SectionHeader id="declarant-e" text="Déclarant·e" icon="ri-user-fill" />
       <DsfrAlert small description="Ce segment est en construction" class="mb-6" />
-      <h2 id="produit">Informations sur le produit</h2>
+      <SectionHeader id="produit" text="Informations sur le produit" icon="ri-file-info-fill" />
       <DsfrAlert small description="Ce segment est en construction" class="mb-6" />
-      <h2 id="entreprise">Identité de l’entreprise</h2>
+      <SectionHeader id="entreprise" text="Identité de l’entreprise" icon="ri-building-4-fill" />
       <DsfrAlert small description="Ce segment est en construction" class="mb-6" />
     </div>
   </div>
 </template>
 
 <script setup>
+import SectionHeader from "../SectionHeader"
+
 defineProps({ declarant: Object, company: Object })
 </script>
