@@ -481,10 +481,7 @@ class Declaration(Historisable, TimeStampable):
 
     @property
     def risky_ingredients(self):
-        return self.declared_ingredients.exclude(new=True).filter(
-            Q(ingredient__is_risky=True)
-            | Q(ingredient__name__iregex="([^A-Za-z]+|^)vin([^A-Za-z]+|$)|alcool|vinaigre")
-        )
+        return self.declared_ingredients.exclude(new=True).filter(Q(ingredient__is_risky=True))
 
     @property
     def risky_plants(self):
