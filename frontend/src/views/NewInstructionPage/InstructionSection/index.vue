@@ -20,7 +20,8 @@
     </div>
     <div class="p-6">
       <SectionHeader id="notes" icon="ri-ball-pen-fill" text="Notes à destination de l'administration" />
-      <AdministrationNotes :model-value="declaration" :disableVisaNotes="true" />
+      <AdministrationNotes v-if="!declaration.siccrfId" :model-value="declaration" :disableVisaNotes="true" />
+      <p v-else>Déclaration importée depuis Téléicare, les commentaires ne sont pas disponibles.</p>
     </div>
   </div>
 </template>
