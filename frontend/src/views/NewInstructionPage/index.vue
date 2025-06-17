@@ -52,7 +52,7 @@ import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import InstructionSidebar from "./InstructionSidebar"
-import AlertsSection from "./AlertsSection"
+import AlertsSection from "@/components/AlertsSection"
 import DeclarationSummary from "@/components/DeclarationSummary"
 
 const props = defineProps({ declarationId: String })
