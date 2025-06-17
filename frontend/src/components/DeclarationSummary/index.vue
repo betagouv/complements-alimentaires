@@ -22,7 +22,7 @@
     <div>
       <SummaryInfoSegment
         v-if="!!payload.teleicareDeclarationNumber"
-        label="Identifiant Teleicare"
+        label="Identifiant Téléicare"
         :value="payload.teleicareDeclarationNumber"
       />
       <SummaryInfoSegment label="Nom du produit" :value="payload.name" />
