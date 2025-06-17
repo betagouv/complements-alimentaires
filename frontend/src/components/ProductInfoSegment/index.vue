@@ -77,6 +77,6 @@ const address = computed(() => {
     props.payload.cedex,
     props.payload.country,
   ]
-  return lines.filter((line) => line !== "").join(",")
+  return lines.filter((line) => line !== "").join(", ")
 })
 </script>
