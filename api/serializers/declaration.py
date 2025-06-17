@@ -361,23 +361,24 @@ def add_enum_or_personnalized_value(item, custom_value):
 
 
 class OpenDataDeclarationSerializer(serializers.ModelSerializer):
-    id = serializers.SerializerMethodField()
-    teleicare_id = serializers.SerializerMethodField()
-    numero_declaration_teleicare = serializers.SerializerMethodField()
+    teleicare_id = serializers.IntegerField(source="siccrf_id")
+    numero_declaration_teleicare = serializers.CharField(
+        allow_blank=True, required=False, source="teleicare_declaration_number"
+    )
     decision = serializers.SerializerMethodField()
+    date_decision = serializers.DateTimeField(required=False, source="acceptation_date")
     responsable_mise_sur_marche = serializers.SerializerMethodField()
     siret_responsable_mise_sur_marche = serializers.SerializerMethodField()
     vat_responsable_mise_sur_marche = serializers.SerializerMethodField()
     nom_commercial = serializers.SerializerMethodField()
-    marque = serializers.SerializerMethodField()
-    gamme = serializers.SerializerMethodField()
+    marque = serializers.CharField(allow_blank=True, required=False, source="brand")
     article_procedure = serializers.SerializerMethodField()
     forme_galenique = serializers.SerializerMethodField()
-    dose_journaliere = serializers.SerializerMethodField()
-    mode_emploi = serializers.SerializerMethodField()
-    mises_en_garde = serializers.SerializerMethodField()
+    dose_journaliere = serializers.CharField(allow_blank=True, required=False, source="daily_recommended_dose")
+    mode_emploi = serializers.CharField(allow_blank=True, required=False, source="instructions")
+    mises_en_garde = serializers.CharField(allow_blank=True, required=False, source="warning")
     objectif_effet = serializers.SerializerMethodField()
-    aromes = serializers.SerializerMethodField()
+    aromes = serializers.CharField(allow_blank=True, required=False, source="flavor")
     facteurs_risques = serializers.SerializerMethodField()
     populations_cibles = serializers.SerializerMethodField()
     plantes = serializers.SerializerMethodField()
@@ -387,7 +388,6 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     nutriments = serializers.SerializerMethodField()
     autres_ingredients_actifs = serializers.SerializerMethodField()
     ingredients_inactifs = serializers.SerializerMethodField()
-    date_decision = serializers.SerializerMethodField()
 
     class Meta:
         model = Declaration
@@ -423,21 +423,6 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         )
         read_only_fields = fields
 
-    def get_id(self, obj):
-        """
-        Cette fonction retourne le Compl'Alim id
-        """
-        return obj.id
-
-    def get_teleicare_id(self, obj):
-        """
-        Cette fonction retourne l'id qui était utilisé dans TeleIcare (qui est différent du numéro de déclaration)
-        """
-        return obj.siccrf_id
-
-    def get_numero_declaration_teleicare(self, obj):
-        return obj.teleicare_declaration_number
-
     def get_decision(self, obj):
         return obj.get_status_display()
 
@@ -452,15 +437,6 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     def get_nom_commercial(self, obj):
         return obj.name
-
-    def get_marque(self, obj):
-        return obj.brand
-
-    def get_gamme(self, obj):
-        """
-        Cette fonction est là pour la lisibilité, pas utile d'un point de vue fonctionnel
-        """
-        return obj.gamme
 
     def get_article_procedure(self, obj):
         """
@@ -479,23 +455,11 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def get_forme_galenique(self, obj):
         return add_enum_or_personnalized_value(obj.galenic_formulation, obj.other_galenic_formulation)
 
-    def get_dose_journaliere(self, obj):
-        return obj.daily_recommended_dose
-
-    def get_mode_emploi(self, obj):
-        return obj.instructions
-
-    def get_mises_en_garde(self, obj):
-        return obj.warning
-
     def get_objectif_effet(self, obj):
         effects = []
         for effect in obj.effects.all():
             effects.append(add_enum_or_personnalized_value(effect, obj.other_effects))
         return effects
-
-    def get_aromes(self, obj):
-        return obj.flavor
 
     def get_facteurs_risques(self, obj):
         risk_factors = []
@@ -571,9 +535,6 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             str(declared_ingredient.ingredient.name)
             for declared_ingredient in obj.declared_ingredients.filter(ingredient__ingredient_type=5)
         ]
-
-    def get_date_decision(self, obj):
-        return obj.acceptation_date
 
 
 class DeclarationSerializer(serializers.ModelSerializer):
