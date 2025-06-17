@@ -12,42 +12,13 @@
       <ProgressSpinner />
     </div>
     <div v-else>
-      <DsfrAlert
-        class="mb-4"
-        v-if="isAwaitingInstruction && declaration.instructor?.id !== loggedUser.id"
-        type="info"
-        :title="
-          declaration.instructor?.firstName
-            ? `Cette déclaration est assignée à ${declaration.instructor.firstName} ${declaration.instructor.lastName}`
-            : 'Cette déclaration n\'est pas encore assignée'
-        "
-      >
-        <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
-        <DsfrButton
-          class="mt-2"
-          label="Instruire"
-          tertiary
-          @click="instructDeclaration"
-          :disabled="isFetchingInstruction || isFetchingDeclaration"
-        />
-      </DsfrAlert>
-      <DsfrAlert
-        class="mb-4"
-        v-else-if="declaration.instructor && declaration.instructor.id !== loggedUser.id"
-        type="info"
-        :title="`Cette déclaration est assignée à ${declaration.instructor.firstName} ${declaration.instructor.lastName}`"
-      >
-        <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
-        <DsfrButton class="mt-2" label="M'assigner cette déclaration" tertiary @click="assignInstruction" />
-      </DsfrAlert>
-      <DeclarationAlert
-        class="mb-6"
-        v-else-if="!canInstruct"
-        role="instructor"
-        :declaration="declaration"
+      <AlertsSection
+        v-model="declaration"
+        @instruct="instructDeclaration"
+        @assign="assignInstruction"
         :snapshots="snapshots"
+        v-if="!isFetchingInstruction && !isFetchingDeclaration"
       />
-      <DeclarationFromTeleicareAlert v-else-if="declaration.siccrfId" />
       <div v-if="declaration">
         <DeclarationSummary
           :allowArticleChange="!declaration.siccrfId"
@@ -114,13 +85,12 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import DeclarationSummary from "@/components/DeclarationSummary"
 import IdentityTab from "@/components/IdentityTab"
 import HistoryTab from "@/components/HistoryTab"
+import AlertsSection from "@/components/AlertsSection"
 import DecisionTab from "./DecisionTab"
 import AdministrationNotes from "@/components/AdministrationNotes"
 import { headers } from "@/utils/data-fetching"
-import DeclarationAlert from "@/components/DeclarationAlert"
 import { tabTitles } from "@/utils/mappings"
 import { useRouter, useRoute } from "vue-router"
-import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromTeleicareAlert.vue"
 import useToaster from "@/composables/use-toaster"
 
 const router = useRouter()
