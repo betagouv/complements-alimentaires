@@ -5,6 +5,7 @@
     <SummaryInfoSegment label="Marque" :value="payload.brand" />
     <SummaryInfoSegment label="Gamme" :value="payload.gamme" />
     <SummaryInfoSegment label="Description" :value="payload.description" />
+    <SummaryInfoSegment label="Adresse sur l'étiquette" :value="address" />
     <SummaryInfoSegment label="Populations cibles" :value="populationNames" />
     <SummaryInfoSegment label="Populations à consommation déconseillée" :value="conditionNames" />
     <SummaryInfoSegment label="Mise en garde et avertissement" :value="payload.warning" />
@@ -67,5 +68,15 @@ const conditionNames = computed(() => {
     allConditions.splice(indexOtherConditionLabel, 1)
   }
   return allConditions.join(", ")
+})
+const address = computed(() => {
+  const lines = [
+    props.payload.address,
+    props.payload.additionalDetails,
+    `${props.payload.postalCode} ${props.payload.city}`,
+    props.payload.cedex,
+    props.payload.country,
+  ]
+  return lines.filter((line) => line !== "").join(",")
 })
 </script>

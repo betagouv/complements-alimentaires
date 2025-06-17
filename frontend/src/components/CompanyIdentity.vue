@@ -18,7 +18,6 @@
       <a :href="`tel:${company.phoneNumber}`" target="_blank">{{ company.phoneNumber }}</a>
     </p>
     <p v-if="company.address">
-      {{ company.address }}
       <span>
         Adresse :
         <AddressLine class="inline" :payload="company" />
