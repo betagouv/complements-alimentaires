@@ -68,10 +68,6 @@ const isFetching = computed(() =>
   ].some((x) => !!x.value)
 )
 
-// Note : à utiliser dans les text-areas en bas de l'écran
-// const privateNotesInstruction = computed(() => declaration.value?.privateNotesInstruction || "")
-// const privateNotesVisa = computed(() => declaration.value?.privateNotesVisa || "")
-
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
 store.fetchDeclarationFieldsData()
@@ -86,7 +82,7 @@ const {
 } = makeRequest(`/api/v1/declarations/${props.declarationId}`)
 
 const {
-  // response: declarantResponse,
+  response: declarantResponse,
   data: declarant,
   execute: executeDeclarantFetch,
   isFetching: isFetchingDeclarant,
@@ -94,7 +90,7 @@ const {
   .get()
   .json()
 const {
-  // response: companyResponse,
+  response: companyResponse,
   data: company,
   execute: executeCompanyFetch,
   isFetching: isFetchingCompany,
@@ -102,7 +98,7 @@ const {
   .get()
   .json()
 const {
-  // response: snapshotsResponse,
+  response: snapshotsResponse,
   data: snapshots,
   execute: executeSnapshotsFetch,
   isFetching: isFetchingSnapshots,
@@ -140,7 +136,7 @@ const {
 
 const instructDeclaration = async () => {
   await executeTakeForInstruction()
-  // $externalResults.value = await handleError(takeResponse)
+  await handleError(takeResponse)
 
   if (takeResponse.value.ok) {
     await executeDeclarationFetch()
@@ -149,7 +145,7 @@ const instructDeclaration = async () => {
 
 const assignToSelf = async () => {
   await executeAssignToSelf()
-  // $externalResults.value = await handleError(response)
+  await handleError(assignResponse)
 
   if (assignResponse.value.ok) {
     await executeDeclarationFetch()
@@ -165,11 +161,12 @@ onMounted(async () => {
 
   // Si on arrive à cette page avec une déclaration déjà assignée à quelqun.e mais en état
   // AWAITING_INSTRUCTION, on la passe directement à ONGOING_INSTRUCTION.
-  // TODO gestion d'erreur
   if (declaration.value?.instructor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_INSTRUCTION")
     await instructDeclaration()
 
-  // TODO gestion d'erreur
-  if (declaration.value) await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), executeSnapshotsFetch()])
+  if (declaration.value) {
+    await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), executeSnapshotsFetch()])
+    await Promise.all([handleError(declarantResponse), handleError(companyResponse), handleError(snapshotsResponse)])
+  }
 })
 </script>
