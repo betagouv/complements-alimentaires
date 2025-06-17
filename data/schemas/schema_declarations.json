@@ -18,9 +18,6 @@
       "type": "integer"
     },
     {
-      "constraints": {
-        "required": true
-      },
       "description": "Identifiant unique permettant de référencer une déclaration d'un complément alimentaire dans la plateforme obsolète Teleicare, si la déclaration vient de cette plateforme.",
       "example": "3211",
       "name": "teleicare_id",
