@@ -20,7 +20,7 @@
     </div>
     <div class="p-6">
       <SectionHeader id="notes" icon="ri-ball-pen-fill" text="Notes à destination de l'administration" />
-      <DsfrAlert small description="Ce segment est en construction" class="mb-6" />
+      <AdministrationNotes :model-value="declaration" :disableVisaNotes="true" />
     </div>
   </div>
 </template>
@@ -31,6 +31,7 @@ import LastComment from "./LastComment"
 import InstructionResults from "./InstructionResults"
 import CompositionInfo from "@/components/CompositionInfo"
 import ComputedSubstancesInfo from "@/components/ComputedSubstancesInfo"
+import AdministrationNotes from "@/components/AdministrationNotes"
 import SectionHeader from "../SectionHeader"
 import { computed } from "vue"
 

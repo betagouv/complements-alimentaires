@@ -1,7 +1,6 @@
 <template>
-  <!-- v-slot:content v-if="!declaration.siccrfId" -->
-  <div class="text-left sm:mb-0 sm:flex sm:gap-8">
-    <DsfrInputGroup>
+  <div class="text-left sm:flex sm:gap-8">
+    <DsfrInputGroup class="grow">
       <DsfrInput
         :disabled="disableInstructionNotes"
         v-model="privateNotesInstruction"
@@ -11,7 +10,7 @@
         @update:modelValue="saveInstructionComment"
       />
     </DsfrInputGroup>
-    <DsfrInputGroup>
+    <DsfrInputGroup class="grow">
       <DsfrInput
         :disabled="disableVisaNotes"
         v-model="privateNotesVisa"
@@ -47,3 +46,11 @@ const saveComment = useDebounceFn(async (payload) => {
   handleError(response)
 }, 600)
 </script>
+
+<style scoped>
+@reference "../styles/index.css";
+
+.fr-input-group {
+  @apply grow;
+}
+</style>

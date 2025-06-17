@@ -95,7 +95,7 @@
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
             </h6>
-            <AdministrationNotes class="mb-4" v-model="declaration" :disableVisaNotes="true" />
+            <AdministrationNotes class="mb-4 sm:mb-0" v-model="declaration" :disableVisaNotes="true" />
           </template>
         </TabStepper>
       </div>
