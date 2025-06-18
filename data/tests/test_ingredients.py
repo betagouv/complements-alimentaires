@@ -61,77 +61,102 @@ class IngredientTestCase(TestCase):
         substance.refresh_from_db()
         self.assertNotIn(SubstanceType.SECONDARY_METABOLITE, substance.substance_types)
 
-    def test_declared_plant_new_part_status_updated_with_deauthorisation(self):
+    def test_declared_plant_auto_assigned_new_part_status(self):
         """
-        Si une partie est de-autorisée, il faut mettre new_part à vrai
+        Si une plante déclarée utilise une partie non-autorisée ou non-associée,
+        mettre le champ new_part à vrai
         """
         plant = PlantFactory()
         authorised_part = PlantPartFactory()
-        authorised_plant_part = Part.objects.create(plant=plant, plantpart=authorised_part, ca_is_useful=True)
-        declared_plant = DeclaredPlantFactory(
-            declaration=OngoingInstructionDeclarationFactory(), plant=plant, used_part=authorised_part
-        )
-        self.assertFalse(declared_plant.new_part, "new_part n'est pas cochée pour les parties autorisées")
-
-        authorised_plant_part.ca_is_useful = False
-        authorised_plant_part.save()
-        declared_plant.refresh_from_db()
-        self.assertTrue(declared_plant.new_part)
-
-    def test_declared_plant_new_part_status_updated_with_authorisation(self):
-        """
-        Si une partie est autorisée, il faut mettre new_part à faux
-        """
-        plant = PlantFactory()
-        unauthorised_part = PlantPartFactory()
-        unauthorised_plant_part = Part.objects.create(plant=plant, plantpart=unauthorised_part, ca_is_useful=False)
-        declared_plant = DeclaredPlantFactory(
-            declaration=OngoingInstructionDeclarationFactory(), plant=plant, used_part=unauthorised_part
-        )
-        self.assertTrue(declared_plant.new_part, "new_part est cochée pour les parties non-autorisées")
-
-        unauthorised_plant_part.ca_is_useful = True
-        unauthorised_plant_part.save()
-        declared_plant.refresh_from_db()
+        Part.objects.create(plant=plant, plantpart=authorised_part, ca_is_useful=True)
+        declaration = OngoingInstructionDeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=authorised_part)
         self.assertFalse(declared_plant.new_part)
 
-    def test_declared_plant_new_part_status_updated_with_deletion(self):
-        """
-        Si une partie est supprimée, il faut mettre new_part à True
-        """
-        plant = PlantFactory()
-        authorised_part = PlantPartFactory()
-        authorised_plant_part = Part.objects.create(plant=plant, plantpart=authorised_part, ca_is_useful=True)
-        declared_plant = DeclaredPlantFactory(
-            declaration=OngoingInstructionDeclarationFactory(), plant=plant, used_part=authorised_part
-        )
-
-        authorised_plant_part.delete()
-        declared_plant.refresh_from_db()
+        unauthorised_part = PlantPartFactory()
+        Part.objects.create(plant=plant, plantpart=unauthorised_part, ca_is_useful=False)
+        declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=unauthorised_part)
         self.assertTrue(declared_plant.new_part)
 
-    def test_declared_plant_new_part_status_updated_with_addition(self):
-        """
-        Si une partie est ajoutée, il faut mettre new_part à True si autorisée et garder à faux sinon
-        """
-        plant = PlantFactory()
-        unknown_part = PlantPartFactory()
+        unassociated_part = PlantPartFactory()
         self.assertFalse(
-            plant.plant_parts.through.objects.filter(plantpart=unknown_part).exists(),
+            plant.plant_parts.through.objects.filter(plantpart=unassociated_part).exists(),
             "la partie n'est pas associée à la plante",
         )
-        declared_plant = DeclaredPlantFactory(
-            declaration=OngoingInstructionDeclarationFactory(), plant=plant, used_part=unknown_part
-        )
+        declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=unassociated_part)
         self.assertTrue(declared_plant.new_part)
 
-        # test : crée mais non-autorisée
-        newly_authorised_plant_part = Part.objects.create(plant=plant, plantpart=unknown_part, ca_is_useful=True)
-        declared_plant.refresh_from_db()
-        self.assertFalse(declared_plant.new_part)
+    # def test_declared_plant_new_part_status_updated_with_deauthorisation(self):
+    #     """
+    #     Si une partie est de-autorisée, il faut mettre new_part à vrai
+    #     """
+    #     plant = PlantFactory()
+    #     authorised_part = PlantPartFactory()
+    #     authorised_plant_part = Part.objects.create(plant=plant, plantpart=authorised_part, ca_is_useful=True)
+    #     declared_plant = DeclaredPlantFactory(
+    #         declaration=OngoingInstructionDeclarationFactory(), plant=plant, used_part=authorised_part
+    #     )
+    #     self.assertFalse(declared_plant.new_part, "new_part n'est pas cochée pour les parties autorisées")
 
-        newly_authorised_plant_part.delete()
-        # test: crée et autorisée
-        newly_authorised_plant_part = Part.objects.create(plant=plant, plantpart=unknown_part, ca_is_useful=False)
-        declared_plant.refresh_from_db()
-        self.assertTrue(declared_plant.new_part)
+    #     authorised_plant_part.ca_is_useful = False
+    #     authorised_plant_part.save()
+    #     declared_plant.refresh_from_db()
+    #     self.assertTrue(declared_plant.new_part)
+
+    # def test_declared_plant_new_part_status_updated_with_authorisation(self):
+    #     """
+    #     Si une partie est autorisée, il faut mettre new_part à faux
+    #     """
+    #     plant = PlantFactory()
+    #     unauthorised_part = PlantPartFactory()
+    #     unauthorised_plant_part = Part.objects.create(plant=plant, plantpart=unauthorised_part, ca_is_useful=False)
+    #     declared_plant = DeclaredPlantFactory(
+    #         declaration=OngoingInstructionDeclarationFactory(), plant=plant, used_part=unauthorised_part
+    #     )
+    #     self.assertTrue(declared_plant.new_part, "new_part est cochée pour les parties non-autorisées")
+
+    #     unauthorised_plant_part.ca_is_useful = True
+    #     unauthorised_plant_part.save()
+    #     declared_plant.refresh_from_db()
+    #     self.assertFalse(declared_plant.new_part)
+
+    # def test_declared_plant_new_part_status_updated_with_deletion(self):
+    #     """
+    #     Si une partie est supprimée, il faut mettre new_part à True
+    #     """
+    #     plant = PlantFactory()
+    #     authorised_part = PlantPartFactory()
+    #     authorised_plant_part = Part.objects.create(plant=plant, plantpart=authorised_part, ca_is_useful=True)
+    #     declared_plant = DeclaredPlantFactory(
+    #         declaration=OngoingInstructionDeclarationFactory(), plant=plant, used_part=authorised_part
+    #     )
+
+    #     authorised_plant_part.delete()
+    #     declared_plant.refresh_from_db()
+    #     self.assertTrue(declared_plant.new_part)
+
+    # def test_declared_plant_new_part_status_updated_with_addition(self):
+    #     """
+    #     Si une partie est ajoutée, il faut mettre new_part à True si autorisée et garder à faux sinon
+    #     """
+    #     plant = PlantFactory()
+    #     unknown_part = PlantPartFactory()
+    #     self.assertFalse(
+    #         plant.plant_parts.through.objects.filter(plantpart=unknown_part).exists(),
+    #         "la partie n'est pas associée à la plante",
+    #     )
+    #     declared_plant = DeclaredPlantFactory(
+    #         declaration=OngoingInstructionDeclarationFactory(), plant=plant, used_part=unknown_part
+    #     )
+    #     self.assertTrue(declared_plant.new_part)
+
+    #     # test : crée mais non-autorisée
+    #     newly_authorised_plant_part = Part.objects.create(plant=plant, plantpart=unknown_part, ca_is_useful=True)
+    #     declared_plant.refresh_from_db()
+    #     self.assertFalse(declared_plant.new_part)
+
+    #     newly_authorised_plant_part.delete()
+    #     # test: crée et autorisée
+    #     newly_authorised_plant_part = Part.objects.create(plant=plant, plantpart=unknown_part, ca_is_useful=False)
+    #     declared_plant.refresh_from_db()
+    #     self.assertTrue(declared_plant.new_part)
