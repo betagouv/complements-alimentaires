@@ -41,46 +41,26 @@ class DeclaredElementsView(ListAPIView):
     permission_classes = [(IsInstructor | IsVisor)]
 
     def get_queryset(self):
-        request_statuses = self.request.query_params.get("requestStatus")
-        request_status_filter = Q(new=True)  # by default, only show new elements
-        if request_statuses:
-            request_statuses = request_statuses.split(",")
-            request_status_queries = [DeclaredElementsView.get_query_for_request_status(r) for r in request_statuses]
-            request_status_filter = reduce(lambda x, y: x | y, request_status_queries)
-
-        declaration_statuses = self.request.query_params.get("declarationStatus")
-        closed_statuses = [
-            Declaration.DeclarationStatus.DRAFT,
-            Declaration.DeclarationStatus.AUTHORIZED,
-            Declaration.DeclarationStatus.ABANDONED,
-            Declaration.DeclarationStatus.REJECTED,
-            Declaration.DeclarationStatus.WITHDRAWN,
-        ]
-        open_statuses = [x.value for x in Declaration.DeclarationStatus if x not in closed_statuses]
-        declaration_statuses = declaration_statuses.split(",") if declaration_statuses else open_statuses
-        declaration_status_filter = Q(declaration__status__in=declaration_statuses)
-
         types = self.request.query_params.get("type")
         if types:
-            querysets = []
+            models = []
             if "plant" in types:
-                querysets.append(DeclaredPlant.objects)
+                models.append(DeclaredPlant)
             if "microorganism" in types:
-                querysets.append(DeclaredMicroorganism.objects)
+                models.append(DeclaredMicroorganism)
             if "substance" in types:
-                querysets.append(DeclaredSubstance.objects)
+                models.append(DeclaredSubstance)
             if "other-ingredient" in types:
-                querysets.append(DeclaredIngredient.objects)
+                models.append(DeclaredIngredient)
         else:
-            querysets = [
-                DeclaredPlant.objects,
-                DeclaredMicroorganism.objects,
-                DeclaredSubstance.objects,
-                DeclaredIngredient.objects,
+            models = [
+                DeclaredPlant,
+                DeclaredMicroorganism,
+                DeclaredSubstance,
+                DeclaredIngredient,
             ]
-        filtered_querysets = [
-            queryset.filter(request_status_filter & declaration_status_filter) for queryset in querysets
-        ]
+
+        filtered_querysets = [self.filtered_queryset(model) for model in models]
 
         ordering = self.request.query_params.get("ordering")
         if ordering and ordering.endswith("responseLimitDate"):
@@ -91,6 +71,28 @@ class DeclaredElementsView(ListAPIView):
             )
 
         return list(chain(*filtered_querysets))
+
+    def declaration_status_query(self):
+        declaration_statuses = self.request.query_params.get("declarationStatus")
+        closed_statuses = [
+            Declaration.DeclarationStatus.DRAFT,
+            Declaration.DeclarationStatus.AUTHORIZED,
+            Declaration.DeclarationStatus.ABANDONED,
+            Declaration.DeclarationStatus.REJECTED,
+            Declaration.DeclarationStatus.WITHDRAWN,
+        ]
+        open_statuses = [x.value for x in Declaration.DeclarationStatus if x not in closed_statuses]
+        declaration_statuses = declaration_statuses.split(",") if declaration_statuses else open_statuses
+        return Q(declaration__status__in=declaration_statuses)
+
+    def filtered_queryset(self, model):
+        request_statuses = self.request.query_params.get("requestStatus")
+        request_status_filter = Q(new=True)  # by default, only show new elements
+        if request_statuses:
+            request_statuses = request_statuses.split(",")
+            request_status_queries = [DeclaredElementsView.get_query_for_request_status(r) for r in request_statuses]
+            request_status_filter = reduce(lambda x, y: x | y, request_status_queries)
+        return model.objects.filter(request_status_filter & self.declaration_status_query())
 
     @staticmethod
     def get_query_for_request_status(status):
