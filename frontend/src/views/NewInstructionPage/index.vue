@@ -180,11 +180,11 @@ onMounted(async () => {
     await instructDeclaration()
 
   if (declaration.value) {
-    const fetchMandatedCompany = async () =>
-      declaration.value?.mandatedCompany
-        ? executeMandatedCompanyFetch().then(handleError(mandatedCompanyResponse))
-        : Promise.resolve()
-
+    const fetchMandatedCompany = async () => {
+      if (!declaration.value?.mandatedCompany) return Promise.resolve()
+      await executeMandatedCompanyFetch()
+      await handleError(mandatedCompanyResponse)
+    }
     await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), fetchMandatedCompany(), executeSnapshotsFetch()])
     await Promise.all([handleError(declarantResponse), handleError(companyResponse), handleError(snapshotsResponse)])
   }
