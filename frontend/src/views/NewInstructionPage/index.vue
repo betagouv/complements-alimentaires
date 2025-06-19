@@ -48,6 +48,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
+import { useRoute } from "vue-router"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import ProgressSpinner from "@/components/ProgressSpinner"
@@ -56,6 +57,7 @@ import AlertsSection from "@/components/AlertsSection"
 import DeclarationSummary from "@/components/DeclarationSummary"
 
 const props = defineProps({ declarationId: String })
+const route = useRoute()
 
 const isFetching = computed(() =>
   [
@@ -167,6 +169,13 @@ onMounted(async () => {
   if (declaration.value) {
     await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), executeSnapshotsFetch()])
     await Promise.all([handleError(declarantResponse), handleError(companyResponse), handleError(snapshotsResponse)])
+
+    if (route.hash) {
+      // La fonction scrollBehavior du router est lancée avant le rendu asynchrone de cette
+      // vue, donc on doit vérifier s'il y a un ancrage dans l'URL pour scroller dessus
+      const el = document.querySelector(route.hash)
+      if (el) el.scrollIntoView({ behavior: "smooth" })
+    }
   }
 })
 </script>
