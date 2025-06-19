@@ -1,5 +1,14 @@
 <template>
   <div v-if="company">
+    <div v-if="mandatedCompany" class="border p-2 mb-4">
+      <p class="mb-0">
+        <v-icon name="ri-information-fill" />
+        L'entreprise {{ mandatedCompany.socialName }}
+        <span v-if="mandatedCompany.siret">(SIRET: {{ mandatedCompany.siret }})</span>
+        <span v-else-if="mandatedCompany.vat">(TVA: {{ mandatedCompany.vat }})</span>
+        a été mandatée pour la déclaration de ce complément.
+      </p>
+    </div>
     <p class="font-bold">{{ company.socialName }}</p>
     <p v-if="company.siret">
       Numéro SIRET : {{ company.siret }}
@@ -29,7 +38,7 @@
 
 <script setup>
 import AddressLine from "@/components/AddressLine"
-defineProps({ company: Object })
+defineProps({ company: Object, mandatedCompany: Object })
 </script>
 
 <style scoped>

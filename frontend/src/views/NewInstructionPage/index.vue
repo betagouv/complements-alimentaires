@@ -35,7 +35,13 @@
           </div>
         </div>
         <div class="col-span-12 sm:col-span-9">
-          <router-view :declaration="declaration" :declarant="declarant" :company="company" :snapshots="snapshots" />
+          <router-view
+            :declaration="declaration"
+            :declarant="declarant"
+            :company="company"
+            :mandatedCompany="mandatedCompany"
+            :snapshots="snapshots"
+          />
         </div>
       </div>
     </div>
@@ -62,6 +68,7 @@ const isFetching = computed(() =>
     isFetchingDeclaration,
     isFetchingDeclarant,
     isFetchingCompany,
+    isFetchingMandatedCompany,
     isFetchingSnapshots,
     isFetchingInstruction,
     isFetchingAssignToSelf,
@@ -95,6 +102,14 @@ const {
   execute: executeCompanyFetch,
   isFetching: isFetchingCompany,
 } = makeRequest(() => `/api/v1/companies/${declaration.value?.company}`)
+  .get()
+  .json()
+const {
+  response: mandatedCompanyResponse,
+  data: mandatedCompany,
+  execute: executeMandatedCompanyFetch,
+  isFetching: isFetchingMandatedCompany,
+} = makeRequest(() => `/api/v1/companies/${declaration.value?.mandatedCompany}`)
   .get()
   .json()
 const {
@@ -165,7 +180,12 @@ onMounted(async () => {
     await instructDeclaration()
 
   if (declaration.value) {
-    await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), executeSnapshotsFetch()])
+    const fetchMandatedCompany = async () =>
+      declaration.value?.mandatedCompany
+        ? executeMandatedCompanyFetch().then(handleError(mandatedCompanyResponse))
+        : Promise.resolve()
+
+    await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), fetchMandatedCompany(), executeSnapshotsFetch()])
     await Promise.all([handleError(declarantResponse), handleError(companyResponse), handleError(snapshotsResponse)])
   }
 })
