@@ -4,7 +4,7 @@
       <p class="mb-0">
         <v-icon name="ri-information-fill" />
         L'entreprise {{ mandatedCompany.socialName }}
-        <span v-if="mandatedCompany.siret">(SIRET: {{ mandatedCompany.siret }})</span>
+        <span v-if="mandatedCompany.siret">(SIRET : {{ mandatedCompany.siret }})</span>
         <span v-else-if="mandatedCompany.vat">(TVA: {{ mandatedCompany.vat }})</span>
         a été mandatée pour la déclaration de ce complément.
       </p>
