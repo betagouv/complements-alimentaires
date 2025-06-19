@@ -1,7 +1,5 @@
 # Compléments Alimentaires
 
-_Projet en construction_
-
 ## Installation du projet
 
 Il existe 2 méthodes distinctes d'installation pour ce projet :
