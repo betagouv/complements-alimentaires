@@ -179,14 +179,18 @@ onMounted(async () => {
   if (declaration.value?.instructor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_INSTRUCTION")
     await instructDeclaration()
 
-  if (declaration.value) {
-    const fetchMandatedCompany = async () => {
-      if (!declaration.value?.mandatedCompany) return Promise.resolve()
-      await executeMandatedCompanyFetch()
-      await handleError(mandatedCompanyResponse)
-    }
-    await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), fetchMandatedCompany(), executeSnapshotsFetch()])
-    await Promise.all([handleError(declarantResponse), handleError(companyResponse), handleError(snapshotsResponse)])
-  }
+  if (!declaration.value) return
+
+  const mandatedCompany = declaration.value?.mandatedCompany
+  const fetchMandatedCompany = mandatedCompany ? executeMandatedCompanyFetch : () => Promise.resolve
+  const handleMandatedError = mandatedCompany ? () => handleError(mandatedCompanyResponse) : () => Promise.resolve
+
+  await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), fetchMandatedCompany(), executeSnapshotsFetch()])
+  await Promise.all([
+    handleError(declarantResponse),
+    handleError(companyResponse),
+    handleMandatedError(),
+    handleError(snapshotsResponse),
+  ])
 })
 </script>
