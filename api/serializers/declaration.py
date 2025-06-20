@@ -368,6 +368,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     decision = serializers.SerializerMethodField()
     date_decision = serializers.DateTimeField(required=False, source="acceptation_date")
     responsable_mise_sur_marche = serializers.SerializerMethodField()
+    adresse_responsable_mise_sur_marche = serializers.SerializerMethodField()
     siret_responsable_mise_sur_marche = serializers.SerializerMethodField()
     vat_responsable_mise_sur_marche = serializers.SerializerMethodField()
     nom_commercial = serializers.SerializerMethodField()
