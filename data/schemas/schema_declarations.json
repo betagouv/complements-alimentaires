@@ -87,6 +87,16 @@
     },
     {
       "constraints": {
+        "required": true
+      },
+      "description": "Code postal et pays de l'entreprise responsable de la mise sur le marché du complément alimentaire",
+      "example": "{'code_postal': '35000', 'pays': 'FR'}",
+      "name": "adresse_responsable_mise_sur_marche",
+      "title": "Addresse responsable de la mise sur le marché",
+      "type": "string"
+    },
+    {
+      "constraints": {
         "pattern": "^[0-9]{14}$"
       },
       "description": "Siret de l'entreprise responsable de la mise sur le marché du complément alimentaire.",
