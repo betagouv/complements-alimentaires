@@ -1893,19 +1893,20 @@ class TestDeclaredElementsApi(APITestCase):
 
         declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         draft = DeclarationFactory(status=Declaration.DeclarationStatus.DRAFT)
-        for _ in range(3):
-            DeclaredPlantFactory(new=True, declaration=declaration)
-            DeclaredSubstanceFactory(new=True, declaration=declaration)
-            DeclaredMicroorganismFactory(new=True, declaration=declaration)
-            DeclaredIngredientFactory(new=True, declaration=declaration)
-            # don't return not new ones
-            DeclaredPlantFactory(new=False, declaration=declaration)
-            # don't return ones attached to draft declarations
-            DeclaredIngredientFactory(new=True, declaration=draft)
+
+        DeclaredPlantFactory(new=True, declaration=declaration)
+        DeclaredPlantFactory(new=False, new_part=True, declaration=declaration)
+        DeclaredSubstanceFactory(new=True, declaration=declaration)
+        DeclaredMicroorganismFactory(new=True, declaration=declaration)
+        DeclaredIngredientFactory(new=True, declaration=declaration)
+        # don't return not new ones
+        DeclaredPlantFactory(new=False, declaration=declaration)
+        # don't return ones attached to draft declarations
+        DeclaredIngredientFactory(new=True, declaration=draft)
 
         response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
         results = response.json()
-        self.assertEqual(results["count"], 12)
+        self.assertEqual(results["count"], 5)
         result = results["results"][0]
         self.assertEqual(result["declaration"]["id"], declaration.id)
 

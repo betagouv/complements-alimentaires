@@ -662,7 +662,14 @@ class Addable(models.Model):
             )
 
 
-class DeclaredPlant(Historisable, Addable):
+class AddablePlant(Addable):
+    class Meta:
+        abstract = True
+
+    new_part = models.BooleanField(default=False)
+
+
+class DeclaredPlant(Historisable, AddablePlant):
     class Meta:
         verbose_name = "plante déclarée"
         verbose_name_plural = "plantes déclarées"
@@ -697,6 +704,14 @@ class DeclaredPlant(Historisable, Addable):
     @property
     def type(self):
         return "plant"
+
+    def save(self, *args, **kwargs):
+        self.new_part = False
+        if self.plant and self.used_part:
+            associated_part = self.plant.plant_parts.through.objects.filter(plantpart=self.used_part)
+            if not associated_part.exists() or associated_part.first().is_useful is False:
+                self.new_part = True
+        super().save(*args, **kwargs)
 
 
 class DeclaredMicroorganism(Historisable, Addable):
