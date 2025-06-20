@@ -1,7 +1,7 @@
 <template>
   <div>
     <SectionTitle title="Entreprise" icon="ri-home-2-fill" />
-    <CompanyIdentity :company="company" />
+    <CompanyIdentity :company="company" :mandatedCompany="mandatedCompany" />
 
     <SectionTitle class="mt-8!" title="Déclarant ou déclarante" icon="ri-user-fill" />
     <DeclarantIdentity :user="user" />
@@ -12,7 +12,7 @@
 import SectionTitle from "@/components/SectionTitle"
 import DeclarantIdentity from "@/components/DeclarantIdentity"
 import CompanyIdentity from "@/components/CompanyIdentity"
-defineProps({ user: Object, company: Object })
+defineProps({ user: Object, company: Object, mandatedCompany: Object })
 </script>
 
 <style scoped>

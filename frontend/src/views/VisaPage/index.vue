@@ -50,6 +50,7 @@
               :showElementAuthorization="true"
               :user="declarant"
               :company="company"
+              :mandatedCompany="mandatedCompany"
               :snapshots="snapshots"
               :useCompactAttachmentView="true"
               @decision-done="onDecisionDone"
@@ -135,6 +136,14 @@ const {
   .json()
 
 const {
+  response: mandatedCompanyResponse,
+  data: mandatedCompany,
+  execute: executeMandatedCompanyFetch,
+} = useFetch(() => `/api/v1/companies/${declaration.value?.mandatedCompany}`, { immediate: false })
+  .get()
+  .json()
+
+const {
   response: snapshotsResponse,
   data: snapshots,
   execute: executeSnapshotsFetch,
@@ -155,6 +164,12 @@ onMounted(async () => {
   handleError(declarantResponse)
   await executeCompanyFetch()
   handleError(companyResponse)
+
+  if (declaration.value?.mandatedCompany) {
+    await executeMandatedCompanyFetch()
+    handleError(mandatedCompanyResponse)
+  }
+
   await executeSnapshotsFetch()
   handleError(snapshotsResponse)
   isFetching.value = false
