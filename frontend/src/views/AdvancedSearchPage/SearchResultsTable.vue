@@ -33,7 +33,7 @@ const rows = computed(() => {
 
   return props.data.results.map((d) => ({
     rowData: [
-      d.siccrfId ? (d.teleicareId ? d.teleicareId : "") : d.id,
+      d.siccrfId ? (d.teleicareDeclarationNumber ? d.teleicareDeclarationNumber : "") : d.id,
       {
         component: DeclarationName,
         withHistoryBadge: !!d.siccrfId,

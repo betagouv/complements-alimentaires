@@ -202,14 +202,14 @@ class Declaration(Historisable, TimeStampable):
         editable=False,
         db_index=True,
         unique=True,
-        verbose_name="cplalim_ident dans le modèle IcaComplementAlimentaire si la déclaration provient de Teleicare",
+        verbose_name="identifiant Teleicare si la déclaration provient de Teleicare, IcaComplementAlimentaire.cplalim_ident",
     )
-    teleicare_id = models.TextField(
+    teleicare_declaration_number = models.TextField(
         blank=True,
         null=True,
         editable=False,
-        verbose_name="identifiant Teleicare connu par les déclarants et indiqué dans les attestations",
-    )  # pas de contrainte d'unicité car dans 124 cas le teleicare_id est dupliqué
+        verbose_name="numéro de déclaration Teleicare connu par les déclarants et indiqué dans les attestations",
+    )  # pas de contrainte d'unicité car dans 124 cas le teleicare_declaration_number est dupliqué
 
     def create_snapshot(
         self,
@@ -419,7 +419,7 @@ class Declaration(Historisable, TimeStampable):
 
     @property
     def declared_in_teleicare(self):
-        return self.teleicare_id is not None
+        return self.teleicare_declaration_number is not None
 
     def _has_max_quantity_exceeded(self, substance):
         max_for_target_populations = MaxQuantityPerPopulationRelation.objects.filter(

@@ -85,7 +85,7 @@ class UserDeclarationPagination(DeclarationPagination):
 class UserDeclarationsListCreateApiView(ListCreateAPIView):
     model = Declaration
     permission_classes = [CanAccessUserDeclatarions]
-    search_fields = ["name", "id", "company__social_name", "teleicare_id"]
+    search_fields = ["name", "id", "company__social_name", "teleicare_declaration_number"]
     pagination_class = UserDeclarationPagination
     filter_backends = [
         django_filters.DjangoFilterBackend,
@@ -259,7 +259,7 @@ class GenericDeclarationsListView(ListAPIView):
 
 class CommonOngoingDeclarationView(GenericDeclarationsListView):
     permission_classes = [(IsInstructor | IsVisor)]
-    search_fields = ["name", "id", "company__social_name", "teleicare_id"]
+    search_fields = ["name", "id", "company__social_name", "teleicare_declaration_number"]
     filter_backends = [
         django_filters.DjangoFilterBackend,
         InstructionDateOrderingFilter,
