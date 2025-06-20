@@ -11,9 +11,16 @@
       "constraints": {
         "required": true
       },
-      "description": "Identifiant unique permettant de référencer une déclaration d'un complément alimentaire. Le format d'identifiant est différent si la déclaration a été déclarée dans la plateforme obsolète Teleicare",
+      "description": "Identifiant unique permettant de référencer une déclaration d'un complément alimentaire dans Compl'Alim.",
       "example": "3211",
       "name": "id",
+      "title": "Identifiant",
+      "type": "integer"
+    },
+    {
+      "description": "Identifiant unique permettant de référencer une déclaration d'un complément alimentaire dans la plateforme obsolète Teleicare, si la déclaration vient de cette plateforme.",
+      "example": "3211",
+      "name": "teleicare_id",
       "title": "Identifiant",
       "type": "integer"
     },

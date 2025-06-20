@@ -1,6 +1,10 @@
 <template>
   <div>
-    <SummaryInfoSegment v-if="!!payload.teleicareId" label="Identifiant Teleicare" :value="payload.teleicareId" />
+    <SummaryInfoSegment
+      v-if="!!payload.teleicareDeclarationNumber"
+      label="Identifiant Teleicare"
+      :value="payload.teleicareDeclarationNumber"
+    />
     <SummaryInfoSegment label="Nom du produit" :value="payload.name" />
     <SummaryInfoSegment label="Marque" :value="payload.brand" />
     <SummaryInfoSegment label="Gamme" :value="payload.gamme" />

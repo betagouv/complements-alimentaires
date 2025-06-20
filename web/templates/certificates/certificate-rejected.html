@@ -1,8 +1,8 @@
 {% extends 'certificates/certificate-base-template.html' %}
 {% block 'body' %}
 <h1 style="font-family: 'Marianne-Bold'; font-weight: bold;">
-    Réf. : Dossier {% if declaration.teleicare_id %}
-    TELEICARE n° {{ declaration.teleicare_id }}
+    Réf. : Dossier {% if declaration.teleicare_declaration_number %}
+    TELEICARE n° {{ declaration.teleicare_declaration_number }}
     {% else %}
     n° {{ declaration.id }}
     {% endif %}
@@ -12,7 +12,7 @@
         Madame, Monsieur,
     </p>
     <p>
-        Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré{% if declaration.teleicare_id %}, sur la plateforme TELEICARE,{% endif %} la mise sur le marché du produit :
+        Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré{% if declaration.teleicare_declaration_number %}, sur la plateforme TELEICARE,{% endif %} la mise sur le marché du produit :
         <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
             {{ declaration.name }} / {{ declaration.galenic_formulation }} / {{ declaration.company.social_name }}
         </span>

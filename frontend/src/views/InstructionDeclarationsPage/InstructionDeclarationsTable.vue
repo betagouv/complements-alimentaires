@@ -34,7 +34,7 @@ const rows = computed(() =>
         component: CircleIndicators,
         declaration: x,
       },
-      x.siccrfId ? (x.teleicareId ? x.teleicareId : "") : x.id,
+      x.siccrfId ? (x.teleicareDeclarationNumber ? x.teleicareDeclarationNumber : "") : x.id,
       {
         component: DeclarationName,
         withHistoryBadge: !!x.siccrfId,
