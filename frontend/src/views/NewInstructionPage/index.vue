@@ -35,7 +35,13 @@
           </div>
         </div>
         <div class="col-span-12 sm:col-span-9">
-          <router-view :declaration="declaration" :declarant="declarant" :company="company" :snapshots="snapshots" />
+          <router-view
+            :declaration="declaration"
+            :declarant="declarant"
+            :company="company"
+            :mandatedCompany="mandatedCompany"
+            :snapshots="snapshots"
+          />
         </div>
       </div>
     </div>
@@ -64,6 +70,7 @@ const isFetching = computed(() =>
     isFetchingDeclaration,
     isFetchingDeclarant,
     isFetchingCompany,
+    isFetchingMandatedCompany,
     isFetchingSnapshots,
     isFetchingInstruction,
     isFetchingAssignToSelf,
@@ -97,6 +104,14 @@ const {
   execute: executeCompanyFetch,
   isFetching: isFetchingCompany,
 } = makeRequest(() => `/api/v1/companies/${declaration.value?.company}`)
+  .get()
+  .json()
+const {
+  response: mandatedCompanyResponse,
+  data: mandatedCompany,
+  execute: executeMandatedCompanyFetch,
+  isFetching: isFetchingMandatedCompany,
+} = makeRequest(() => `/api/v1/companies/${declaration.value?.mandatedCompany}`)
   .get()
   .json()
 const {
@@ -166,16 +181,25 @@ onMounted(async () => {
   if (declaration.value?.instructor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_INSTRUCTION")
     await instructDeclaration()
 
-  if (declaration.value) {
-    await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), executeSnapshotsFetch()])
-    await Promise.all([handleError(declarantResponse), handleError(companyResponse), handleError(snapshotsResponse)])
+  if (!declaration.value) return
 
-    if (route.hash) {
-      // La fonction scrollBehavior du router est lancée avant le rendu asynchrone de cette
-      // vue, donc on doit vérifier s'il y a un ancrage dans l'URL pour scroller dessus
-      const el = document.querySelector(route.hash)
-      if (el) el.scrollIntoView({ behavior: "smooth" })
-    }
+  const mandatedCompany = declaration.value?.mandatedCompany
+  const fetchMandatedCompany = mandatedCompany ? executeMandatedCompanyFetch : () => Promise.resolve
+  const handleMandatedError = mandatedCompany ? () => handleError(mandatedCompanyResponse) : () => Promise.resolve
+
+  await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), fetchMandatedCompany(), executeSnapshotsFetch()])
+  await Promise.all([
+    handleError(declarantResponse),
+    handleError(companyResponse),
+    handleMandatedError(),
+    handleError(snapshotsResponse),
+  ])
+
+  if (route.hash) {
+    // La fonction scrollBehavior du router est lancée avant le rendu asynchrone de cette
+    // vue, donc on doit vérifier s'il y a un ancrage dans l'URL pour scroller dessus
+    const el = document.querySelector(route.hash)
+    if (el) el.scrollIntoView({ behavior: "smooth" })
   }
 })
 </script>
