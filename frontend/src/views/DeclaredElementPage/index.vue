@@ -7,7 +7,7 @@
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
-          <ReplacementSearch @replacement="(obj) => (replacement = obj)" />
+          <ReplacementSearch @replacement="(obj) => (replacement = obj)" v-if="!element.newPart" />
         </div>
         <div v-if="replacement" class="my-4">
           <ElementCard :objectType="replacement.objectType" v-model="additionalFields" :canRemove="false" />
