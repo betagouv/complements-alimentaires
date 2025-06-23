@@ -825,6 +825,13 @@ class DeclaredElementSerializer(serializers.Serializer):
     authorization_mode = serializers.CharField()
     declaration = DeclaredElementDeclarationSerializer()
     request_status = serializers.CharField()
+    new_part = serializers.SerializerMethodField()
 
     def get_name(self, obj):
         return str(obj)
+
+    def get_new_part(self, obj):
+        try:
+            return obj.new_part
+        except AttributeError:
+            return None
