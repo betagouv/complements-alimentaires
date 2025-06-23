@@ -1899,7 +1899,8 @@ class TestDeclaredElementsApi(APITestCase):
         self.assertFalse(plant.plant_parts.through.objects.filter(plantpart=unknown_part).exists())
 
         DeclaredPlantFactory(new=True, declaration=declaration)
-        DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=unknown_part)
+        t = DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=unknown_part)
+        self.assertTrue(t.new_part)
         DeclaredSubstanceFactory(new=True, declaration=declaration)
         DeclaredMicroorganismFactory(new=True, declaration=declaration)
         DeclaredIngredientFactory(new=True, declaration=declaration)

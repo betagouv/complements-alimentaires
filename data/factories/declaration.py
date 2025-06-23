@@ -8,6 +8,7 @@ from data.models import (
     DeclaredMicroorganism,
     DeclaredPlant,
     DeclaredSubstance,
+    Part,
 )
 
 from .company import CompanyFactory
@@ -48,7 +49,17 @@ class DeclaredPlantFactory(factory.django.DjangoModelFactory):
     quantity = factory.Faker("pyfloat")
     unit = factory.SubFactory(SubstanceUnitFactory)
     preparation = factory.SubFactory(PreparationFactory)
-    used_part = factory.SubFactory(PlantPartFactory)
+
+    @factory.post_generation
+    def used_part(obj, create, extracted, **kwargs):
+        if extracted:
+            obj.used_part = extracted
+            return
+        # par défaut, rattacher une partie de plante marqué comme utile
+        # pour ne pas avoir une demande d'ajout de partie de plante
+        used_part = PlantPartFactory()
+        Part.objects.create(plant=obj.plant, plantpart=used_part, ca_is_useful=True)
+        obj.used_part = used_part
 
 
 class DeclaredMicroorganismFactory(factory.django.DjangoModelFactory):
