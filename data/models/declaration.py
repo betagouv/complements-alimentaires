@@ -711,7 +711,7 @@ class DeclaredPlant(Historisable, AddablePlant):
     def save(self, *args, **kwargs):
         self.new_part = False
         if self.plant and self.used_part:
-            associated_part = self.plant.plant_parts.through.objects.filter(plantpart=self.used_part)
+            associated_part = self.plant.plant_parts.through.objects.filter(plant=self.plant, plantpart=self.used_part)
             if not associated_part.exists() or associated_part.first().is_useful is False:
                 self.new_part = True
         super().save(*args, **kwargs)
