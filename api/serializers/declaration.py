@@ -368,6 +368,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     decision = serializers.SerializerMethodField()
     date_decision = serializers.DateTimeField(required=False, source="acceptation_date")
     responsable_mise_sur_marche = serializers.SerializerMethodField()
+    adresse_responsable_mise_sur_marche = serializers.SerializerMethodField()
     siret_responsable_mise_sur_marche = serializers.SerializerMethodField()
     vat_responsable_mise_sur_marche = serializers.SerializerMethodField()
     nom_commercial = serializers.SerializerMethodField()
@@ -398,6 +399,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             "numero_declaration_teleicare",
             "decision",
             "responsable_mise_sur_marche",
+            "adresse_responsable_mise_sur_marche",
             "siret_responsable_mise_sur_marche",
             "vat_responsable_mise_sur_marche",
             "nom_commercial",
@@ -428,6 +430,12 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     def get_responsable_mise_sur_marche(self, obj):
         return obj.company.commercial_name
+
+    def get_adresse_responsable_mise_sur_marche(self, obj):
+        return {
+            "code_postal": obj.company.postal_code,
+            "pays": obj.company.country,
+        }
 
     def get_siret_responsable_mise_sur_marche(self, obj):
         return obj.company.siret
