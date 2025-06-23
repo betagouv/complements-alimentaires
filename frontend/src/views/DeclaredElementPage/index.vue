@@ -1,6 +1,5 @@
 <template>
   <div>
-    <DsfrNotice title="En construction" desc="Des nouvelles fonctionnalités arrivent bientôt !" />
     <div class="fr-container">
       <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
       <ElementAlert :element="element" />
@@ -19,6 +18,9 @@
             <template #default>
               <div v-if="modalToOpen === 'replace'">
                 <ElementSynonyms v-model="synonyms" :requestElement="element" :initialSynonyms="replacement.synonyms" />
+              </div>
+              <div v-else-if="modalToOpen === 'authorizePart'">
+                <!-- TODO: add text? -->
               </div>
               <div v-else>
                 <DsfrInput v-model="notes" label="Notes" label-visible is-textarea />
@@ -83,10 +85,7 @@ const getElementFromApi = async () => {
 
 getElementFromApi()
 watch(element, (newElement) => {
-  if (newElement) {
-    const name = newElement.newName
-    document.title = `${name} - Compl'Alim`
-  }
+  document.title = `${newElement?.newName || newElement?.element?.name} - Compl'Alim`
   additionalFields.value = JSON.parse(JSON.stringify(element.value))
   additionalFields.value.new = false
 })
@@ -129,26 +128,37 @@ watch(replacement, (newReplacement) => {
   }
 })
 
-const actionButtons = computed(() => [
-  {
-    label: "Remplacer",
-    primary: true,
-    onclick: openModal("replace"),
-    disabled: !replacement.value,
-  },
-  {
-    label: "Demander plus d’information",
-    tertiary: true,
-    onclick: openModal("info"),
-  },
-  {
-    label: "Refuser l’ingrédient",
-    tertiary: true,
-    "no-outline": true,
-    icon: "ri-close-line",
-    onclick: openModal("refuse"),
-  },
-])
+const actionButtons = computed(() => {
+  const actions = [
+    {
+      label: "Demander plus d’information",
+      tertiary: true,
+      onclick: openModal("info"),
+    },
+    {
+      label: "Refuser l’ingrédient",
+      tertiary: true,
+      "no-outline": true,
+      icon: "ri-close-line",
+      onclick: openModal("refuse"),
+    },
+  ]
+  if (element.value.newPart) {
+    actions.unshift({
+      label: "Autoriser la partie de plante",
+      primary: true,
+      onclick: openModal("authorizePart"),
+    })
+  } else {
+    actions.unshift({
+      label: "Remplacer",
+      primary: true,
+      onclick: openModal("replace"),
+      disabled: !replacement.value,
+    })
+  }
+  return actions
+})
 
 const updateElement = async (action, payload) => {
   const { data, response } = await useFetch(`${url.value}/${action}`, { headers: headers() }, { onFetchError })
@@ -177,6 +187,17 @@ const modals = computed(() => {
               additionalFields: info,
             }
             updateElement("replace", payload)
+          },
+        },
+      ],
+    },
+    authorizePart: {
+      title: "Autoriser la partie de plante",
+      actions: [
+        {
+          label: "Autoriser la partie de plante",
+          onClick() {
+            updateElement("accept-part", {})
           },
         },
       ],

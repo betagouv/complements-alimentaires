@@ -74,6 +74,7 @@ const elementProfile = computed(() => {
   if (props.element?.newPart) {
     items.push({ label: "Plante", text: props.element.element?.name })
     items.push({ label: "Partie de plante", text: store.plantParts.find((p) => p.id === props.element.usedPart)?.name })
+    items.push({ label: "Statut de la partie", text: plantPartStatus.value })
   } else {
     const detail = detailForType[props.type] || detailForType.default
     detail.forEach((d) => {
@@ -97,5 +98,14 @@ const elementProfile = computed(() => {
     )
   }
   return items
+})
+
+const plantPartStatus = computed(() => {
+  if (props.element.newPart) {
+    const associatedPart = props.element.element.plantParts.find((p) => p.id === props.element.usedPart)
+    if (!associatedPart) return "Non associée"
+    else if (!associatedPart.isUseful) return "Non autorisée"
+  }
+  return ""
 })
 </script>

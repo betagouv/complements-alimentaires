@@ -42,6 +42,11 @@ urlpatterns = {
         views.DeclaredElementReplaceView.as_view(),
         name="declared_element_replace",
     ),
+    path(
+        "declared-elements/<str:type>/<int:pk>/accept-part",
+        views.DeclaredElementAcceptPartView.as_view(),
+        name="declared_element_accept_part",
+    ),
     # References
     path("populations/", views.PopulationListView.as_view(), name="population_list"),
     path("conditions/", views.ConditionListView.as_view(), name="condition_list"),

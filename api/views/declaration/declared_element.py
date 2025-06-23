@@ -18,6 +18,7 @@ from data.models import (
     MicroorganismSynonym,
     SubstanceSynonym,
     IngredientSynonym,
+    Part,
 )
 from api.serializers import (
     DeclaredElementSerializer,
@@ -282,6 +283,24 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             replacement_element.save()
 
         return declared_element
+
+    def _post_save_declared_element(self, declared_element):
+        declared_element.declaration.assign_calculated_article()
+        declared_element.declaration.save()
+
+
+class DeclaredElementAcceptPartView(DeclaredElementActionAbstractView):
+    def _update_element(self, element, request):
+        try:
+            part = Part.objects.get(plant=element.plant, plantpart=element.used_part)
+            part.ca_is_useful = True
+            part.save()
+        except Part.DoesNotExist:
+            part = Part(plant=element.plant, plantpart=element.used_part, ca_is_useful=True)
+            part.save()
+
+        element.request_status = self.type_model.AddableStatus.REPLACED
+        return element
 
     def _post_save_declared_element(self, declared_element):
         declared_element.declaration.assign_calculated_article()
