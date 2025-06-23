@@ -1,4 +1,5 @@
 import abc
+from django.core.exceptions import FieldDoesNotExist
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -86,20 +87,41 @@ class DeclaredElementsView(ListAPIView):
         return Q(declaration__status__in=declaration_statuses)
 
     def filtered_queryset(self, model):
+        filtered_objects = model.objects.filter(self.declaration_status_query())
         request_statuses = self.request.query_params.get("requestStatus")
-        request_status_filter = Q(new=True)  # by default, only show new elements
         if request_statuses:
             request_statuses = request_statuses.split(",")
-            request_status_queries = [DeclaredElementsView.get_query_for_request_status(r) for r in request_statuses]
+            request_status_queries = [
+                DeclaredElementsView.get_query_for_request_status(r, model) for r in request_statuses
+            ]
             request_status_filter = reduce(lambda x, y: x | y, request_status_queries)
-        return model.objects.filter(request_status_filter & self.declaration_status_query())
+        else:
+            # par défaut, afficher toutes les demandes
+            request_status_filter = DeclaredElementsView.new_request_filter(model)
+        return filtered_objects.filter(request_status_filter)
 
     @staticmethod
-    def get_query_for_request_status(status):
+    def new_request_filter(model):
+        try:
+            model._meta.get_field("new_part")
+            # TODO: si un new_part est remplacé, elle sera tjs flaggé comme new_part
+            # alors il faut exclure les demandes de statut REPLACED (pas comme le champ new)
+            return Q(new=True) | Q(new_part=True)
+        except FieldDoesNotExist:
+            return Q(new=True)
+
+    @staticmethod
+    def get_query_for_request_status(status, model):
         if status == "REQUESTED":
-            return Q(new=True) & Q(request_status=status)
+            return DeclaredElementsView.new_request_filter(model) & Q(request_status=status)
         else:
             return Q(request_status=status)
+
+    # new_part will remain True after it is replaced
+    # new will be set to False after it is replaced (does it have to be?)
+    # all statuses except REQUESTED are applied only to requests so can be filtered on directly
+    # REQUESTED should have new or new_part to be included.
+    # there is no current use of not passing requestStatus in the query I believe.
 
 
 TYPE_MAPPING = {
