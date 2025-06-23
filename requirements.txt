@@ -25,7 +25,7 @@ colorama==0.4.6
 cryptography==45.0.2
 cssselect2==0.8.0
 decorator==5.2.1
-diff_cover==9.3.2
+diff_cover==9.4.0
 distlib==0.3.9
 Django==5.1.7
 django-anymail==13.0
