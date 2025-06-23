@@ -19,7 +19,7 @@ from .galenic_formulation import GalenicFormulation
 from .preparation import Preparation
 from .unit import SubstanceUnit
 from .ingredient_status import IngredientStatus
-from .global_roles import InstructionRole, VisaRole
+from .global_roles import InstructionRole, VisaRole, ControlRole
 from .declaration import (
     Declaration,
     DeclaredPlant,

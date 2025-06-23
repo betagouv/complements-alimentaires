@@ -38,5 +38,5 @@ from .declaration import (
     AttachmentFactory,
 )
 from .solicitation import CollaborationInvitationFactory, CompanyAccessClaimFactory, SupervisionClaimFactory
-from .global_roles import InstructionRoleFactory, VisaRoleFactory
+from .global_roles import InstructionRoleFactory, VisaRoleFactory, ControlRoleFactory
 from .snapshot import SnapshotFactory
