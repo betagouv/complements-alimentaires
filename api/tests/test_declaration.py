@@ -1894,13 +1894,20 @@ class TestDeclaredElementsApi(APITestCase):
         declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         draft = DeclarationFactory(status=Declaration.DeclarationStatus.DRAFT)
 
+        plant = PlantFactory()
+        unknown_part = PlantPartFactory()
+        self.assertFalse(plant.plant_parts.through.objects.filter(plantpart=unknown_part).exists())
+
         DeclaredPlantFactory(new=True, declaration=declaration)
-        DeclaredPlantFactory(new=False, new_part=True, declaration=declaration)
+        DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=unknown_part)
         DeclaredSubstanceFactory(new=True, declaration=declaration)
         DeclaredMicroorganismFactory(new=True, declaration=declaration)
         DeclaredIngredientFactory(new=True, declaration=declaration)
         # don't return not new ones
-        DeclaredPlantFactory(new=False, declaration=declaration)
+        authorised_part = plant.plant_parts.through.objects.first()
+        authorised_part.ca_is_useful = True
+        authorised_part.save()
+        DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=authorised_part.plantpart)
         # don't return ones attached to draft declarations
         DeclaredIngredientFactory(new=True, declaration=draft)
 
