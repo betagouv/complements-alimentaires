@@ -157,6 +157,7 @@ class DeclaredPlantSerializer(DeclaredIngredientCommonSerializer):
             "quantity",
             "unit",
             "preparation",
+            "new_part",
         )
 
 

@@ -30,9 +30,11 @@
 
 <script setup>
 import { computed } from "vue"
+import { useRootStore } from "@/stores/root"
 import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
 
 const props = defineProps({ element: Object, type: String, declarationLink: Object })
+const store = useRootStore()
 
 // prepare template data for display
 const icon = computed(() => getTypeIcon(props.type))
@@ -69,10 +71,15 @@ const elementProfile = computed(() => {
 
   const items = []
 
-  const detail = detailForType[props.type] || detailForType.default
-  detail.forEach((d) => {
-    items.push({ label: d.label, text: props.element[d.key] })
-  })
+  if (props.element?.newPart) {
+    items.push({ label: "Plante", text: props.element.element?.name })
+    items.push({ label: "Partie de plante", text: store.plantParts.find((p) => p.id === props.element.usedPart)?.name })
+  } else {
+    const detail = detailForType[props.type] || detailForType.default
+    detail.forEach((d) => {
+      items.push({ label: d.label, text: props.element[d.key] })
+    })
+  }
 
   if (franceAuthorization.value === false) {
     items.push(
