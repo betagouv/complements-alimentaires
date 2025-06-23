@@ -39,7 +39,7 @@ django-phonenumber-field==8.1.0
 django-prose==2.1.0
 django-redis==5.4.0
 django-silk==5.3.2
-django-simple-history==3.8.0
+django-simple-history==3.10.1
 django-storages==1.14.6
 django-viewflow==2.2.9
 django-webpack-loader==3.2.0
