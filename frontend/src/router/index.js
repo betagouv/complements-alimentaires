@@ -44,6 +44,8 @@ import FaqPage from "@/views/FaqPage"
 import AdvancedSearchPage from "@/views/AdvancedSearchPage"
 import AdvancedSearchResult from "@/views/AdvancedSearchResult"
 import StatsPage from "@/views/StatsPage"
+import DeclarationSearchPage from "@/views/DeclarationSearchPage"
+import CompanySearchPage from "@/views/CompanySearchPage"
 import { ref } from "vue"
 
 const routes = [
@@ -500,6 +502,26 @@ const routes = [
       title: "Résultat de recherche",
       authenticationRequired: true,
       requiredRoles: ["InstructionRole", "VisaRole"],
+    },
+  },
+  {
+    path: "/recherche-complements-alimentaires",
+    name: "DeclarationSearchPage",
+    component: DeclarationSearchPage,
+    meta: {
+      title: "Les compléments alimentaires",
+      requiredRoles: ["ControlRole"],
+      authenticationRequired: true,
+    },
+  },
+  {
+    path: "/recherche-entreprises",
+    name: "CompanySearchPage",
+    component: CompanySearchPage,
+    meta: {
+      title: "Les entreprises",
+      requiredRoles: ["ControlRole"],
+      authenticationRequired: true,
     },
   },
   {
