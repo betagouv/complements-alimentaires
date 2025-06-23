@@ -118,6 +118,7 @@ ENABLE_AUTO_VALIDATION= `True` pour activer la validation automatique de déclar
 INSEE_API_KEY= La clé de l'API pour l'application "API-Siren" (https://portail-api.insee.fr/). Nous avons aujourd'hui trois clés différentes pour chaque environnement : prod, staging et démo.
 DATAGOUV_API_KEY=VALUE_TO_GET_FROM_DATAGOUV_ADMIN
 DATAGOUV_DECLARATIONS_ID=XXXXX (can be found via data.gouv.fr's API. Other datasets can be updated. in that case you need to add DATAGOUV_<DATASET_NAME>_ID)
+OBSERVATION_DAYS (optionnel)= Le nombre de jours proposé pour une période d'observation. Par défaut c'est 15.
 ```
 
 #### Créer les différents modèles Django dans la base de données
