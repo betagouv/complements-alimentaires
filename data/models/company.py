@@ -197,8 +197,8 @@ class DeclarantRole(CompanyRole, models.Model):
 
 class EtablissementToCompanyRelation(models.Model):
     class Meta:
-        verbose_name = "Relation Entreprises Compl'Alim <-> Entreprises Teleicare"
-        verbose_name_plural = "Relation Entreprises Compl'Alim <-> Entreprises Teleicare"
+        verbose_name = "Relation Entreprises Teleicare <-> Entreprises Compl'Alim"
+        verbose_name_plural = "Relation Entreprises Teleicare <-> Entreprises Compl'Alim"
 
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     # ce champ devrait être une ForeignKey vers la table unmanaged IcaEtablissement
@@ -243,9 +243,9 @@ class EtablissementToCompanyRelation(models.Model):
 
     def __str__(self):
         if self.old_siret:
-            return f"Relation de {self.company} -> {self.etablissement_teleicare} [n°SIRET {self.old_siret}]"
+            return f"Relation de {self.etablissement_teleicare} [n°SIRET {self.old_siret}] <-> {self.company}"
         elif self.old_vat:
-            return f"Relation de {self.company} -> {self.etablissement_teleicare}  [n°VAT {self.old_vat}]"
+            return f"Relation de {self.etablissement_teleicare}  [n°VAT {self.old_vat}] <-> {self.company}"
         return f"Relation de {self.company}"
 
     @property

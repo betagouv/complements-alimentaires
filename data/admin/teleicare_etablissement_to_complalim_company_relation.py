@@ -29,12 +29,17 @@ class EtablissementToCompanyRelationAdmin(admin.ModelAdmin):
             change_reason = (
                 f"Transfert des déclarations de l'entreprise {old_company_id} à l'entreprise {new_company_id}"
             )
-            messages.add_message(request, messages.INFO, change_reason)
-
-            for declaration in Declaration.objects.filter(company_id=old_company_id):
+            declarations_to_move = Declaration.objects.filter(company_id=old_company_id)
+            for declaration in declarations_to_move:
                 declaration.company_id = new_company_id
                 declaration.save()
                 update_change_reason(declaration, change_reason)
+
+            messages.add_message(
+                request,
+                messages.INFO,
+                f"{declarations_to_move.count()} déclarations transférées de l'entreprise {old_company_id} à l'entreprise {new_company_id}",
+            )
 
             messages.add_message(
                 request, messages.INFO, f"Vous devez supprimer manuellement l'entreprise {old_company_id}"
