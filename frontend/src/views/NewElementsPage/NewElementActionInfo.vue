@@ -9,13 +9,21 @@
     class="mb-4"
   >
     <p v-if="element.requestStatus === 'INFORMATION'">
-      Des informations complémentaires sont nécessaires pour la demande d'ajout de l'ingrédient
+      Des informations complémentaires sont nécessaires pour la demande
+      <span v-if="element.newPart">d'autorisation de la partie de plante</span>
+      <span v-else>d'ajout de l'ingrédient</span>
       <ElementLink :element="element" />
     </p>
     <p v-else-if="element.requestStatus === 'REJECTED'">
-      La demande d'ajout de l'ingrédient
+      La demande
+      <span v-if="element.newPart">d'autorisation de la partie de plante pour</span>
+      <span v-else>d'ajout de l'ingrédient</span>
       <ElementLink :element="element" />
       a été refusée
+    </p>
+    <p v-else-if="element.newPart && element.requestStatus === 'REPLACED'">
+      La partie de plante a été autorisée pour
+      <router-link :to="elementLink" class="text-blue-france-sun-113">{{ element.element.name }}</router-link>
     </p>
     <p v-else-if="element.requestStatus === 'REPLACED'">
       L'ingrédient ajouté
