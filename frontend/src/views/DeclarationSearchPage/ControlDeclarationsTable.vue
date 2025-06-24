@@ -12,13 +12,22 @@
 
 <script setup>
 import { computed } from "vue"
+import { isoToPrettyDate } from "@/utils/date"
+
 const props = defineProps({ data: { type: Object, default: () => {} } })
-const headers = ["Id", "T - ID", "SICCRF - ID"]
+const headers = ["ID décla.", "Produit", "Entreprise", "Marque", "Statut du produit", "Date d'application du statut"]
 
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowAttrs: { class: "" },
-    rowData: [x.id, x.teleicareDeclarationNumber, x.siccrfid],
+    rowData: [
+      x.id || x.siccrfid || x.teleicareDeclarationNumber,
+      { component: "p", text: x.name, class: "font-bold" },
+      x.companyName,
+      x.brand,
+      x.simplifiedStatus,
+      isoToPrettyDate(x.simplifiedStatusDate),
+    ],
   }))
 )
 </script>

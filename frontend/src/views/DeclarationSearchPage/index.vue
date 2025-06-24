@@ -7,7 +7,7 @@
       ]"
     />
     <h1 class="fr-h3">Tableau des compléments alimentaires</h1>
-    <div>Filters</div>
+    <DsfrAlert title="Filtres en construction" />
     <ControlDeclarationsTable :data="data" v-if="data" />
   </div>
 </template>
