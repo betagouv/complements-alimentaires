@@ -25,6 +25,13 @@
           <DsfrBadge v-if="novelFood" label="Novel Food" type="new" class="self-center ml-2" small />
           <DsfrBadge v-if="isRequest" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
           <DsfrBadge
+            v-else-if="isPartRequest"
+            label="Nouvelle partie de plante"
+            type="info"
+            class="self-center ml-2"
+            small
+          />
+          <DsfrBadge
             v-if="treatedRequest"
             label="Demande traitée"
             class="self-center ml-2 purple-glycine"
@@ -99,8 +106,9 @@ const elementInfo = computed(() => {
 })
 
 const isRequest = computed(() => model.value.new || model.value.requestStatus === "REPLACED")
+const isPartRequest = computed(() => model.value.newPart)
 
-const showRequestInspectionLink = computed(() => isRequest.value && isInstructor.value)
+const showRequestInspectionLink = computed(() => (isRequest.value || isPartRequest.value) && isInstructor.value)
 
 const showRequestComment = computed(
   () =>
