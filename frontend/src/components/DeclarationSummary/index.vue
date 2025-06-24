@@ -219,7 +219,7 @@ const replacedRequestsWithSubstances = computed(() => {
     .concat(data.declaredMicroorganisms)
     .concat(data.declaredSubstances)
     .concat(data.declaredIngredients)
-  return elements?.filter((i) => i.requestStatus === "REPLACED" && i.element?.substances?.length)
+  return elements?.filter((i) => i.requestStatus === "REPLACED" && !i.newPart && i.element?.substances?.length)
 })
 </script>
 
