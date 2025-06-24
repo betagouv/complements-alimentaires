@@ -18,7 +18,7 @@
         window.CSRF_TOKEN = "{{ csrf_token }}";
         window.ENVIRONMENT = "{% environment %}";
         window.MATOMO_ID = "{% matomo_id %}";
-        window.OBSERVATION_DAYS = "{% observation_days %}";
+        window.OBSERVATION_DAYS = parseInt("{% observation_days %}", 10);
     </script>
 </head>
 
