@@ -137,7 +137,7 @@ watch(proposal, (newProposal) => {
   if (mandatoryVisaProposals.indexOf(newProposal) > -1) needsVisa.value = true
   else needsVisa.value = false
   if (newProposal === "objection") delayDays.value = 30
-  else if (newProposal === "observation") delayDays.value = 15
+  else if (newProposal === "observation") delayDays.value = window.OBSERVATION_DAYS
   else delayDays.value = null
 })
 
