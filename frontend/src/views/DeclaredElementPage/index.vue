@@ -137,6 +137,7 @@ const actionButtons = computed(() => {
       label: "Demander plus d’information",
       tertiary: true,
       onclick: openModal("info"),
+      disabled: element.value.newPart && element.value.requestStatus === "REPLACED",
     },
     {
       label: element.value.newPart ? "Refuser la partie de plante" : "Refuser l’ingrédient",
@@ -144,6 +145,7 @@ const actionButtons = computed(() => {
       "no-outline": true,
       icon: "ri-close-line",
       onclick: openModal("refuse"),
+      disabled: element.value.newPart && element.value.requestStatus === "REPLACED",
     },
   ]
   if (element.value.newPart) {
@@ -151,6 +153,7 @@ const actionButtons = computed(() => {
       label: "Autoriser la partie de plante",
       primary: true,
       onclick: openModal("authorizePart"),
+      disabled: element.value.newPart && element.value.requestStatus === "REPLACED",
     })
   } else {
     actions.unshift({
