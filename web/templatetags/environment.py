@@ -11,4 +11,4 @@ def environment():
 
 @register.simple_tag
 def observation_days():
-    return getattr(settings, "OBSERVATION_DAYS", "")
+    return getattr(settings, "OBSERVATION_DAYS")
