@@ -263,6 +263,16 @@ class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
         return file
 
 
+class ControllerDeclarationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Declaration
+        fields = (
+            "id",
+            "teleicare_declaration_number",
+            "siccrf_id",
+        )
+
+
 class SimpleDeclarationSerializer(serializers.ModelSerializer):
     instructor = SimpleUserSerializer(read_only=True, source="instructor.user")
     visor = SimpleUserSerializer(read_only=True, source="visor.user")

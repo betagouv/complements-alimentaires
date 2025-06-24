@@ -25,6 +25,7 @@ from api.permissions import (
     CanAccessIndividualDeclaration,
     CanAccessUserDeclatarions,
     CanTakeAuthorship,
+    IsController,
     IsDeclarant,
     IsDeclarationAuthor,
     IsInstructor,
@@ -32,6 +33,7 @@ from api.permissions import (
     IsVisor,
 )
 from api.serializers import (
+    ControllerDeclarationSerializer,
     DeclarationSerializer,
     DeclarationShortSerializer,
     ExcelExportDeclarationSerializer,
@@ -351,6 +353,12 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
 class OngoingDeclarationsListView(CommonOngoingDeclarationView):
     pagination_class = InstructionDeclarationPagination
     serializer_class = SimpleDeclarationSerializer
+
+
+class ControllerDeclarationsListView(CommonOngoingDeclarationView):
+    permission_classes = [IsController]
+    pagination_class = InstructionDeclarationPagination
+    serializer_class = ControllerDeclarationSerializer
 
 
 class OpenDataDeclarationsListView(GenericDeclarationsListView):
