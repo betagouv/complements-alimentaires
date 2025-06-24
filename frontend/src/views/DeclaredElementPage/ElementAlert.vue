@@ -24,7 +24,7 @@ const alerts = computed(() => {
         type: "info",
       },
       INFORMATION: {
-        title: "Attente d'information",
+        title: "En attente d'information",
         description: props.element?.requestPrivateNotes,
         type: "warning",
       },
@@ -46,7 +46,7 @@ const alerts = computed(() => {
       type: "info",
     },
     INFORMATION: {
-      title: "Attente d'information",
+      title: "En attente d'information",
       description: props.element?.requestPrivateNotes,
       type: "warning",
     },

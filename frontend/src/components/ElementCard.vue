@@ -148,7 +148,7 @@ const plantParts = computed(() => {
   if (props.canAddNewPlantPart || !elementParts.length) {
     if (parts.length) {
       parts.unshift({ text: "Parties autorisées", disabled: true })
-      parts.push({ text: "Toutes parties", disabled: true })
+      parts.push({ text: "Toutes les parties", disabled: true })
     }
     parts = parts.concat(store.plantParts || [])
   }

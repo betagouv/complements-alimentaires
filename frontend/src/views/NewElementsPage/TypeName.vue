@@ -1,7 +1,7 @@
 <template>
   <div>
     {{ getTypeInFrench(element.type) }}
-    <DsfrBadge v-if="element.newPart" label="Partie" />
+    <DsfrBadge v-if="element.newPart" label="Nouvelle partie" />
   </div>
 </template>
 
