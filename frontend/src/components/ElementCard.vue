@@ -16,7 +16,7 @@
             <DsfrBadge label="Nouvelle partie de plante" type="info" />
           </div>
           <div v-else-if="plantPartStatus === 'unauthorized'" class="self-center mt-1">
-            <DsfrBadge label="Partie de plante non autorisée" type="error" />
+            <DsfrBadge label="Partie de plante non autorisée" type="warning" />
           </div>
         </div>
         <div class="content-center ml-6 pl-4 sm:border-l">
