@@ -7,6 +7,7 @@ from rest_framework import status
 
 from data.factories import (
     CompanyFactory,
+    ControlRoleFactory,
     DeclarantRoleFactory,
     InstructionRoleFactory,
     SupervisorRoleFactory,
@@ -103,6 +104,17 @@ class TestGetLoggedUser(ProjectAPITestCase):
 
         self.assertEqual(len(response["globalRoles"]), 1)
         self.assertEqual(response["globalRoles"][0]["name"], "VisaRole")
+
+    def test_control_roles(self):
+        """
+        Les rôles du contrôle sont serialisées dans le call du logged user
+        """
+        user = self.login()
+        ControlRoleFactory(user=user)
+        response = self.get(self.url()).json()
+
+        self.assertEqual(len(response["globalRoles"]), 1)
+        self.assertEqual(response["globalRoles"][0]["name"], "ControlRole")
 
     def test_mandated_companies(self):
         """

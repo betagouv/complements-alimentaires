@@ -16,6 +16,12 @@
       <ActionGrid v-if="isDeclarant" :actions="declarantActions" title="Mes déclarations" icon="ri-capsule-fill" />
       <ActionGrid v-if="isInstructor" :actions="instructionActions" title="Instruction" icon="ri-survey-fill" />
       <ActionGrid v-if="isVisor" :actions="visorActions" title="Visa / Signature" icon="ri-file-search-fill" />
+      <ActionGrid
+        v-if="isController"
+        :actions="controllerActions"
+        title="Bases de données Compl’Alim"
+        icon="ri-building-fill"
+      />
       <ActionGrid v-if="emptyRoles" :actions="onboardingActions" title="Démarrez chez Compl-Alim !" />
       <ActionGrid :actions="userActions" title="Mon compte" icon="ri-account-circle-line" />
     </div>
@@ -40,6 +46,7 @@ const isSupervisor = computed(() => companies?.value.some((c) => c.roles?.some((
 const isDeclarant = computed(() => companies?.value.some((c) => c.roles?.some((x) => x.name === "DeclarantRole")))
 const isInstructor = computed(() => loggedUser.value?.globalRoles.some((x) => x.name === "InstructionRole"))
 const isVisor = computed(() => loggedUser.value?.globalRoles.some((x) => x.name === "VisaRole"))
+const isController = computed(() => loggedUser.value?.globalRoles.some((x) => x.name === "ControlRole"))
 const emptyRoles = computed(() => !isSupervisor.value && !isDeclarant.value && !isInstructor.value)
 
 const isSupervisorForActiveCompany = computed(() => company.value?.roles?.some((x) => x.name === "SupervisorRole"))
@@ -161,6 +168,25 @@ const userActions = [
     title: "Contactez notre équipe",
     description: "Une question ? Contactez-nous",
     link: { name: "ContactForm" },
+  },
+]
+
+const controllerActions = [
+  {
+    title: "Les ingrédients",
+    description:
+      "Accédez à la liste des ingrédients et leurs usages réglementés (autorisé, dosage, population à risque, etc)",
+    link: { name: "ProducerHomePage" },
+  },
+  {
+    title: "Les compléments alimentaires",
+    description: "Accédez à la liste des produits déclarés par les entreprises auprès de la DGAL et leur composition.",
+    link: { name: "DeclarationSearchPage" },
+  },
+  {
+    title: "Les entreprises",
+    description: "Accédez à la liste des entreprises déclarantes et leurs produits déclarés auprès de la DGAL.",
+    link: { name: "CompanySearchPage" },
   },
 ]
 </script>
