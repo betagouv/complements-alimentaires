@@ -8,6 +8,8 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
+from simple_history.utils import update_change_reason
+
 from data.models import (
     DeclaredPlant,
     DeclaredSubstance,
@@ -295,9 +297,11 @@ class DeclaredElementAcceptPartView(DeclaredElementActionAbstractView):
             part = Part.objects.get(plant=element.plant, plantpart=element.used_part)
             part.ca_is_useful = True
             part.save()
+            update_change_reason(part, f"Autorisée après une demande par la déclaration id : {element.declaration.id}")
         except Part.DoesNotExist:
             part = Part(plant=element.plant, plantpart=element.used_part, ca_is_useful=True)
             part.save()
+            update_change_reason(part, f"Ajoutée après une demande par la déclaration id : {element.declaration.id}")
 
         element.request_status = self.type_model.AddableStatus.REPLACED
         return element
