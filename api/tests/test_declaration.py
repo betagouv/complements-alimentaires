@@ -1900,7 +1900,7 @@ class TestDeclaredElementsApi(APITestCase):
 
         DeclaredPlantFactory(new=True, declaration=declaration)
         t = DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=unknown_part)
-        self.assertTrue(t.is_part_request)
+        self.assertTrue(t.is_part_request, "vérifier que ce champ est bien assigné quand on utilise le factory")
         DeclaredSubstanceFactory(new=True, declaration=declaration)
         DeclaredMicroorganismFactory(new=True, declaration=declaration)
         DeclaredIngredientFactory(new=True, declaration=declaration)

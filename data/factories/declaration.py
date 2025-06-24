@@ -50,16 +50,17 @@ class DeclaredPlantFactory(factory.django.DjangoModelFactory):
     unit = factory.SubFactory(SubstanceUnitFactory)
     preparation = factory.SubFactory(PreparationFactory)
 
-    @factory.post_generation
-    def used_part(obj, create, extracted, **kwargs):
-        if extracted:
-            obj.used_part = extracted
-            return
-        # par défaut, rattacher une partie de plante marqué comme utile
-        # pour ne pas avoir une demande d'ajout de partie de plante
-        used_part = PlantPartFactory()
-        Part.objects.create(plant=obj.plant, plantpart=used_part, ca_is_useful=True)
-        obj.used_part = used_part
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        obj = model_class(*args, **kwargs)
+        if not obj.used_part:
+            # par défaut, rattacher une partie de plante marqué comme utile
+            # pour ne pas avoir une demande d'ajout de partie de plante
+            used_part = PlantPartFactory()
+            Part.objects.create(plant=obj.plant, plantpart=used_part, ca_is_useful=True)
+            obj.used_part = used_part
+        obj.save()
+        return obj
 
 
 class DeclaredMicroorganismFactory(factory.django.DjangoModelFactory):
