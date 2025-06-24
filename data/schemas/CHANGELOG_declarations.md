@@ -50,3 +50,8 @@ Tous les changements notables apportés aux jeux de données exposés sur data.g
 ## 2025-05-19 - Ajout
 - champ vat_responsable_mise_sur_marche
 - entièreté de l'historique de déclarations déclarées dans TeleIcare
+
+## 2025-06-23 - Ajout
+- le champ id contient uniquement l'identifiant Compl'Alim
+- le champ teleicare_id contient uniquement l'identifiant Teleicare (si concerné)
+- ajout du champ adresse_responsable_mise_sur_marche

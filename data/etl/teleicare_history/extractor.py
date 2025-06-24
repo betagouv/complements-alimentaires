@@ -238,7 +238,7 @@ def convert_str_date(value, aware=False):
         return dt.date()
 
 
-def create_teleicare_id(latest_ica_declaration):
+def create_teleicare_declaration_number(latest_ica_declaration):
     if latest_ica_declaration.dcl_annee and latest_ica_declaration.dcl_mois and latest_ica_declaration.dcl_numero:
         return "-".join(
             [
@@ -312,7 +312,7 @@ def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declar
     return {
         "mandated_company": mandated_company,
         "siccrf_id": ica_complement_alimentaire.cplalim_ident,
-        "teleicare_id": create_teleicare_id(latest_ica_declaration),
+        "teleicare_declaration_number": create_teleicare_declaration_number(latest_ica_declaration),
         "galenic_formulation": GalenicFormulation.objects.get(siccrf_id=ica_complement_alimentaire.frmgal_ident),
         # resp étiquetage, resp commercialisation
         "brand": ica_complement_alimentaire.cplalim_marque or "",
@@ -441,6 +441,7 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
     Il est nécessaire que les objets soient enregistrés en base (et aient obtenu un id) grâce à la fonction
     `create_declarations_from_teleicare_history` pour updater leurs champs ManyToMany.
     """
+    # TODO : cette fonction aussi devrait tenir compte du paramètre rewrite_existing
     bulk_ingredients = {DeclaredPlant: [], DeclaredMicroorganism: [], DeclaredIngredient: [], ComputedSubstance: []}
     for ingredient in IcaIngredient.objects.filter(vrsdecl_ident=vrsdecl_ident):
         if ingredient.tying_ident == 1:
@@ -483,7 +484,8 @@ def add_composition_from_teleicare_history(declaration, vrsdecl_ident):
             bulk_ingredients[ComputedSubstance].append(computed_substance)
 
     for model, bulk_of_objects in bulk_ingredients.items():
-        model.objects.bulk_create(bulk_of_objects)
+        if not model.objects.filter(declaration=declaration).exists():
+            model.objects.bulk_create(bulk_of_objects)
 
 
 def compute_action(status, nb_version_declaration):

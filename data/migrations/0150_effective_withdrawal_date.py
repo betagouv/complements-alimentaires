@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         IcaDeclaration = apps.get_model("data", "IcaDeclaration")
         Declaration = apps.get_model("data", "Declaration")
         for teleicare_withdrawn_declaration in Declaration.objects.filter(status="WITHDRAWN").exclude(siccrf_id=None):
-            teleicare_snapshot = teleicare_withdrawn_declaration.snapshots.latest()
+            teleicare_snapshot = teleicare_withdrawn_declaration.snapshots.latest("creation_date")
             all_ica_declarations = IcaDeclaration.objects.filter(
                     cplalim_id=teleicare_withdrawn_declaration.siccrf_id
                 ).exclude(icaversiondeclaration__isnull=True)
@@ -24,6 +24,7 @@ class Migration(migrations.Migration):
                     if latest_ica_declaration.dcl_date_fin_commercialisation
                     else None
                 )
+            teleicare_snapshot.action = 'WITHDRAWN'
             teleicare_snapshot.save()
             if teleicare_withdrawn_declaration.snapshots.count() == 1:
                 logger.info(f'{teleicare_withdrawn_declaration.id} a plusieurs snapshot')

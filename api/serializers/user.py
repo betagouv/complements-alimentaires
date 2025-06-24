@@ -3,7 +3,7 @@ from django.contrib.auth.password_validation import validate_password as django_
 
 from rest_framework import serializers
 
-from data.models import InstructionRole, VisaRole
+from data.models import ControlRole, InstructionRole, VisaRole
 from data.models.company import DeclarantRole, SupervisorRole
 
 from .company import (
@@ -12,7 +12,7 @@ from .company import (
     SimpleCompanySerializer,
     SupervisorRoleSerializer,
 )
-from .global_roles import InstructionRoleSerializer, VisaRoleSerializer
+from .global_roles import ControlRoleSerializer, InstructionRoleSerializer, VisaRoleSerializer
 
 User = get_user_model()
 
@@ -21,6 +21,7 @@ ROLE_SERIALIZER_MAPPING = {
     DeclarantRole: DeclarantRoleSerializer,
     InstructionRole: InstructionRoleSerializer,
     VisaRole: VisaRoleSerializer,
+    ControlRole: ControlRoleSerializer,
 }
 
 

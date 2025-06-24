@@ -12,42 +12,13 @@
       <ProgressSpinner />
     </div>
     <div v-else>
-      <DsfrAlert
-        class="mb-4"
-        v-if="isAwaitingInstruction && declaration.instructor?.id !== loggedUser.id"
-        type="info"
-        :title="
-          declaration.instructor?.firstName
-            ? `Cette déclaration est assignée à ${declaration.instructor.firstName} ${declaration.instructor.lastName}`
-            : 'Cette déclaration n\'est pas encore assignée'
-        "
-      >
-        <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
-        <DsfrButton
-          class="mt-2"
-          label="Instruire"
-          tertiary
-          @click="instructDeclaration"
-          :disabled="isFetchingInstruction || isFetchingDeclaration"
-        />
-      </DsfrAlert>
-      <DsfrAlert
-        class="mb-4"
-        v-else-if="declaration.instructor && declaration.instructor.id !== loggedUser.id"
-        type="info"
-        :title="`Cette déclaration est assignée à ${declaration.instructor.firstName} ${declaration.instructor.lastName}`"
-      >
-        <p>Vous pouvez vous assigner cette déclaration pour instruction</p>
-        <DsfrButton class="mt-2" label="M'assigner cette déclaration" tertiary @click="assignInstruction" />
-      </DsfrAlert>
-      <DeclarationAlert
-        class="mb-6"
-        v-else-if="!canInstruct"
-        role="instructor"
-        :declaration="declaration"
+      <AlertsSection
+        v-model="declaration"
+        @instruct="instructDeclaration"
+        @assign="assignInstruction"
         :snapshots="snapshots"
+        v-if="!isFetchingInstruction && !isFetchingDeclaration"
       />
-      <DeclarationFromTeleicareAlert v-else-if="declaration.siccrfId" />
       <div v-if="declaration">
         <DeclarationSummary
           :allowArticleChange="!declaration.siccrfId"
@@ -75,6 +46,7 @@
               :declarationId="declaration?.id"
               :user="declarant"
               :company="company"
+              :mandatedCompany="mandatedCompany"
               :snapshots="snapshots"
               @decision-done="onDecisionDone"
               :allowArticleChange="!declaration.siccrfId"
@@ -95,26 +67,7 @@
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
             </h6>
-            <div class="text-left mb-4 sm:mb-0 sm:flex sm:gap-8">
-              <DsfrInputGroup>
-                <DsfrInput
-                  v-model="privateNotesInstruction"
-                  is-textarea
-                  label-visible
-                  label="Notes de l'instruction"
-                  @update:modelValue="saveComment"
-                />
-              </DsfrInputGroup>
-              <DsfrInputGroup>
-                <DsfrInput
-                  :disabled="true"
-                  v-model="privateNotesVisa"
-                  is-textarea
-                  label-visible
-                  label="Notes du visa"
-                />
-              </DsfrInputGroup>
-            </div>
+            <AdministrationNotes class="mb-4 sm:mb-0" v-model="declaration" :disableVisaNotes="true" />
           </template>
         </TabStepper>
       </div>
@@ -127,18 +80,18 @@ import TabStepper from "@/components/TabStepper"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { onMounted, computed, ref } from "vue"
-import { useFetch, useDebounceFn } from "@vueuse/core"
+import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import DeclarationSummary from "@/components/DeclarationSummary"
 import IdentityTab from "@/components/IdentityTab"
 import HistoryTab from "@/components/HistoryTab"
+import AlertsSection from "@/components/AlertsSection"
 import DecisionTab from "./DecisionTab"
+import AdministrationNotes from "@/components/AdministrationNotes"
 import { headers } from "@/utils/data-fetching"
-import DeclarationAlert from "@/components/DeclarationAlert"
 import { tabTitles } from "@/utils/mappings"
 import { useRouter, useRoute } from "vue-router"
-import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromTeleicareAlert.vue"
 import useToaster from "@/composables/use-toaster"
 
 const router = useRouter()
@@ -166,8 +119,7 @@ const {
   execute: executeDeclarationFetch,
   isFetching: isFetchingDeclaration,
 } = useFetch(`/api/v1/declarations/${props.declarationId}`, { immediate: false }).get().json()
-const privateNotesInstruction = ref(declaration.value?.privateNotesInstruction || "")
-const privateNotesVisa = ref(declaration.value?.privateNotesVisa || "")
+
 const {
   response: declarantResponse,
   data: declarant,
@@ -185,6 +137,14 @@ const {
   .json()
 
 const {
+  response: mandatedCompanyResponse,
+  data: mandatedCompany,
+  execute: executeMandatedCompanyFetch,
+} = useFetch(() => `/api/v1/companies/${declaration.value?.mandatedCompany}`, { immediate: false })
+  .get()
+  .json()
+
+const {
   response: snapshotsResponse,
   data: snapshots,
   execute: executeSnapshotsFetch,
@@ -192,22 +152,9 @@ const {
   .get()
   .json()
 
-// Sauvegarde du commentaire privé
-const saveComment = useDebounceFn(async () => {
-  const { response } = await useFetch(() => `/api/v1/declarations/${declaration.value?.id}`, {
-    headers: headers(),
-  })
-    .patch({ privateNotesInstruction: privateNotesInstruction.value })
-    .json()
-  handleError(response)
-}, 600)
-
 onMounted(async () => {
   await executeDeclarationFetch()
   handleError(declarationResponse)
-
-  privateNotesInstruction.value = declaration.value?.privateNotesInstruction || ""
-  privateNotesVisa.value = declaration.value?.privateNotesVisa || ""
 
   // Si on arrive à cette page avec une déclaration déjà assignée à quelqun.e mais en état
   // AWAITING_INSTRUCTION, on la passe directement à ONGOING_INSTRUCTION.
@@ -218,6 +165,12 @@ onMounted(async () => {
   handleError(declarantResponse)
   await executeCompanyFetch()
   handleError(companyResponse)
+
+  if (declaration.value?.mandatedCompany) {
+    await executeMandatedCompanyFetch()
+    handleError(mandatedCompanyResponse)
+  }
+
   await executeSnapshotsFetch()
   handleError(snapshotsResponse)
   isFetching.value = false

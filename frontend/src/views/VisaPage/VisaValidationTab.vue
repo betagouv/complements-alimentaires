@@ -151,7 +151,7 @@ const decisionCategories = computed(() => {
 })
 
 const validationHelperText = computed(() => {
-  if (shouldBlockApproval.value) return "La déclaration ne peut pas être autorisée en nécessitant une saisine ANSEES."
+  if (shouldBlockApproval.value) return "La déclaration ne peut pas être autorisée en nécessitant une saisine ANSES."
   if (hasOverriddenOriginalDecision.value)
     return "Je vise cette déclaration avec les modifications effectuées et signe."
   return "Je vise cette déclaration et signe."

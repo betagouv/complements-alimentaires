@@ -50,6 +50,7 @@
               :showElementAuthorization="true"
               :user="declarant"
               :company="company"
+              :mandatedCompany="mandatedCompany"
               :snapshots="snapshots"
               :useCompactAttachmentView="true"
               @decision-done="onDecisionDone"
@@ -69,26 +70,7 @@
               <v-icon name="ri-pencil-fill"></v-icon>
               Notes à destination de l'administration
             </h6>
-            <div class="text-left mb-4 sm:mb-0 sm:flex sm:gap-8">
-              <DsfrInputGroup>
-                <DsfrInput
-                  :disabled="true"
-                  v-model="privateNotesInstruction"
-                  is-textarea
-                  label-visible
-                  label="Notes de l'instruction"
-                />
-              </DsfrInputGroup>
-              <DsfrInputGroup>
-                <DsfrInput
-                  @update:modelValue="saveComment"
-                  v-model="privateNotesVisa"
-                  is-textarea
-                  label-visible
-                  label="Notes du visa"
-                />
-              </DsfrInputGroup>
-            </div>
+            <AdministrationNotes class="mb-4 sm:mb-0" v-model="declaration" :disableInstructionNotes="true" />
           </template>
         </TabStepper>
       </div>
@@ -101,7 +83,7 @@ import TabStepper from "@/components/TabStepper"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { onMounted, computed, ref } from "vue"
-import { useFetch, useDebounceFn } from "@vueuse/core"
+import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import DeclarationSummary from "@/components/DeclarationSummary"
@@ -109,6 +91,7 @@ import IdentityTab from "@/components/IdentityTab"
 import HistoryTab from "@/components/HistoryTab"
 import DeclarationAlert from "@/components/DeclarationAlert"
 import VisaValidationTab from "./VisaValidationTab"
+import AdministrationNotes from "@/components/AdministrationNotes"
 import { headers } from "@/utils/data-fetching"
 import { tabTitles } from "@/utils/mappings"
 import { useRouter } from "vue-router"
@@ -153,6 +136,14 @@ const {
   .json()
 
 const {
+  response: mandatedCompanyResponse,
+  data: mandatedCompany,
+  execute: executeMandatedCompanyFetch,
+} = useFetch(() => `/api/v1/companies/${declaration.value?.mandatedCompany}`, { immediate: false })
+  .get()
+  .json()
+
+const {
   response: snapshotsResponse,
   data: snapshots,
   execute: executeSnapshotsFetch,
@@ -160,14 +151,9 @@ const {
   .get()
   .json()
 
-const privateNotesInstruction = ref(declaration.value?.privateNotesInstruction || "")
-const privateNotesVisa = ref(declaration.value?.privateNotesVisa || "")
 onMounted(async () => {
   await executeDeclarationFetch()
   handleError(declarationResponse)
-
-  privateNotesInstruction.value = declaration.value?.privateNotesInstruction || ""
-  privateNotesVisa.value = declaration.value?.privateNotesVisa || ""
 
   // Si on arrive à cette page avec une déclaration déjà assignée à quelqun.e mais en état
   // AWAITING_VISA, on la passe directement à ONGOING_VISA.
@@ -178,20 +164,16 @@ onMounted(async () => {
   handleError(declarantResponse)
   await executeCompanyFetch()
   handleError(companyResponse)
+
+  if (declaration.value?.mandatedCompany) {
+    await executeMandatedCompanyFetch()
+    handleError(mandatedCompanyResponse)
+  }
+
   await executeSnapshotsFetch()
   handleError(snapshotsResponse)
   isFetching.value = false
 })
-
-// Sauvegarde du commentaire privé
-const saveComment = useDebounceFn(async () => {
-  const { response } = await useFetch(() => `/api/v1/declarations/${declaration.value?.id}`, {
-    headers: headers(),
-  })
-    .patch({ privateNotesVisa: privateNotesVisa.value })
-    .json()
-  handleError(response)
-}, 600)
 
 // Tab management
 const components = computed(() => {

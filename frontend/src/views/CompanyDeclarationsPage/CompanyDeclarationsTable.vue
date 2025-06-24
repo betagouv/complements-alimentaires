@@ -28,7 +28,7 @@ const headers = ["ID", "Nom du produit", "Entreprise", "Auteur", "État", "Date 
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
-      x.siccrfId ? (x.teleicareId ? x.teleicareId : "") : x.id,
+      x.siccrfId ? (x.teleicareDeclarationNumber ? x.teleicareDeclarationNumber : "") : x.id,
       {
         component: DeclarationName,
         withHistoryBadge: !!x.siccrfId,

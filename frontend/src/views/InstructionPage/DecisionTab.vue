@@ -81,8 +81,8 @@
             <hr class="p-0 my-2" />
             <p class="my-1">
               <v-icon name="ri-error-warning-line"></v-icon>
-              La déclaration ne peut pas être validée en nécessitant une saisine ANSEES. Merci de changer l'article
-              avant de la valider.
+              La déclaration ne peut pas être validée en nécessitant une saisine ANSES. Merci de changer l'article avant
+              de la valider.
             </p>
             <ArticleInfoRow v-model="declaration" v-if="needsAnsesReferal && decisionCategory === 'approve'" />
           </div>
@@ -137,7 +137,7 @@ watch(proposal, (newProposal) => {
   if (mandatoryVisaProposals.indexOf(newProposal) > -1) needsVisa.value = true
   else needsVisa.value = false
   if (newProposal === "objection") delayDays.value = 30
-  else if (newProposal === "observation") delayDays.value = 15
+  else if (newProposal === "observation") delayDays.value = window.OBSERVATION_DAYS
   else delayDays.value = null
 })
 

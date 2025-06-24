@@ -1,16 +1,21 @@
 <template>
   <div>
     <div class="bg-grey-975! p-6">
-      <h2 id="declarant-e">Déclarant·e</h2>
-      <DsfrAlert small description="Ce segment est en construction" class="mb-6" />
-      <h2 id="produit">Informations sur le produit</h2>
-      <DsfrAlert small description="Ce segment est en construction" class="mb-6" />
-      <h2 id="entreprise">Identité de l’entreprise</h2>
-      <DsfrAlert small description="Ce segment est en construction" class="mb-6" />
+      <SectionHeader id="declarant-e" text="Déclarant·e" icon="ri-user-fill" />
+      <DeclarantIdentity class="mb-8" :user="declarant" />
+      <SectionHeader id="produit" text="Informations sur le produit" icon="ri-file-info-fill" />
+      <ProductInfoSegment class="mb-8" :payload="declaration" />
+      <SectionHeader id="entreprise" text="Identité de l’entreprise" icon="ri-building-4-fill" />
+      <CompanyIdentity :company="company" :mandatedCompany="mandatedCompany" />
     </div>
   </div>
 </template>
 
 <script setup>
-defineProps({ declarant: Object, company: Object })
+import SectionHeader from "../SectionHeader"
+import DeclarantIdentity from "@/components/DeclarantIdentity"
+import CompanyIdentity from "@/components/CompanyIdentity"
+import ProductInfoSegment from "@/components/ProductInfoSegment"
+
+defineProps({ declarant: Object, company: Object, mandatedCompany: Object, declaration: Object })
 </script>

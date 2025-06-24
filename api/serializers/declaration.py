@@ -278,7 +278,7 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
-            "teleicare_id",
+            "teleicare_declaration_number",
             "siccrf_id",
             "status",
             "author",
@@ -362,22 +362,25 @@ def add_enum_or_personnalized_value(item, custom_value):
 
 
 class OpenDataDeclarationSerializer(serializers.ModelSerializer):
-    id = serializers.SerializerMethodField()
-    numero_declaration_teleicare = serializers.SerializerMethodField()
+    teleicare_id = serializers.IntegerField(source="siccrf_id")
+    numero_declaration_teleicare = serializers.CharField(
+        allow_blank=True, required=False, source="teleicare_declaration_number"
+    )
     decision = serializers.SerializerMethodField()
+    date_decision = serializers.DateTimeField(required=False, source="acceptation_date")
     responsable_mise_sur_marche = serializers.SerializerMethodField()
+    adresse_responsable_mise_sur_marche = serializers.SerializerMethodField()
     siret_responsable_mise_sur_marche = serializers.SerializerMethodField()
     vat_responsable_mise_sur_marche = serializers.SerializerMethodField()
     nom_commercial = serializers.SerializerMethodField()
-    marque = serializers.SerializerMethodField()
-    gamme = serializers.SerializerMethodField()
+    marque = serializers.CharField(allow_blank=True, required=False, source="brand")
     article_procedure = serializers.SerializerMethodField()
     forme_galenique = serializers.SerializerMethodField()
-    dose_journaliere = serializers.SerializerMethodField()
-    mode_emploi = serializers.SerializerMethodField()
-    mises_en_garde = serializers.SerializerMethodField()
+    dose_journaliere = serializers.CharField(allow_blank=True, required=False, source="daily_recommended_dose")
+    mode_emploi = serializers.CharField(allow_blank=True, required=False, source="instructions")
+    mises_en_garde = serializers.CharField(allow_blank=True, required=False, source="warning")
     objectif_effet = serializers.SerializerMethodField()
-    aromes = serializers.SerializerMethodField()
+    aromes = serializers.CharField(allow_blank=True, required=False, source="flavor")
     facteurs_risques = serializers.SerializerMethodField()
     populations_cibles = serializers.SerializerMethodField()
     plantes = serializers.SerializerMethodField()
@@ -387,16 +390,17 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     nutriments = serializers.SerializerMethodField()
     autres_ingredients_actifs = serializers.SerializerMethodField()
     ingredients_inactifs = serializers.SerializerMethodField()
-    date_decision = serializers.SerializerMethodField()
 
     class Meta:
         model = Declaration
 
         fields = (
             "id",
+            "teleicare_id",
             "numero_declaration_teleicare",
             "decision",
             "responsable_mise_sur_marche",
+            "adresse_responsable_mise_sur_marche",
             "siret_responsable_mise_sur_marche",
             "vat_responsable_mise_sur_marche",
             "nom_commercial",
@@ -422,20 +426,17 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         )
         read_only_fields = fields
 
-    def get_id(self, obj):
-        """
-        Cette fonction retourne le TeleIcare id s'il existe sinon le Compl'Alim id
-        """
-        return obj.siccrf_id or obj.id
-
-    def get_numero_declaration_teleicare(self, obj):
-        return obj.teleicare_id
-
     def get_decision(self, obj):
         return obj.get_status_display()
 
     def get_responsable_mise_sur_marche(self, obj):
         return obj.company.commercial_name
+
+    def get_adresse_responsable_mise_sur_marche(self, obj):
+        return {
+            "code_postal": obj.company.postal_code,
+            "pays": obj.company.country,
+        }
 
     def get_siret_responsable_mise_sur_marche(self, obj):
         return obj.company.siret
@@ -445,15 +446,6 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     def get_nom_commercial(self, obj):
         return obj.name
-
-    def get_marque(self, obj):
-        return obj.brand
-
-    def get_gamme(self, obj):
-        """
-        Cette fonction est là pour la lisibilité, pas utile d'un point de vue fonctionnel
-        """
-        return obj.gamme
 
     def get_article_procedure(self, obj):
         """
@@ -472,23 +464,11 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def get_forme_galenique(self, obj):
         return add_enum_or_personnalized_value(obj.galenic_formulation, obj.other_galenic_formulation)
 
-    def get_dose_journaliere(self, obj):
-        return obj.daily_recommended_dose
-
-    def get_mode_emploi(self, obj):
-        return obj.instructions
-
-    def get_mises_en_garde(self, obj):
-        return obj.warning
-
     def get_objectif_effet(self, obj):
         effects = []
         for effect in obj.effects.all():
             effects.append(add_enum_or_personnalized_value(effect, obj.other_effects))
         return effects
-
-    def get_aromes(self, obj):
-        return obj.flavor
 
     def get_facteurs_risques(self, obj):
         risk_factors = []
@@ -565,9 +545,6 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             for declared_ingredient in obj.declared_ingredients.filter(ingredient__ingredient_type=5)
         ]
 
-    def get_date_decision(self, obj):
-        return obj.acceptation_date
-
 
 class DeclarationSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
@@ -625,7 +602,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
-            "teleicare_id",
+            "teleicare_declaration_number",
             "siccrf_id",
             "article",
             "status",
@@ -793,7 +770,7 @@ class DeclarationShortSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
-            "teleicare_id",
+            "teleicare_declaration_number",
             "siccrf_id",
             "status",
             "author",

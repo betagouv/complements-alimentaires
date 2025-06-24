@@ -11,17 +11,23 @@ from data.etl.teleicare_history.extractor import (
 from data.factories.company import CompanyFactory, EtablissementToCompanyRelationFactory, _make_siret, _make_vat
 from data.factories.declaration import AuthorizedDeclarationFactory
 from data.factories.galenic_formulation import GalenicFormulationFactory
+from data.factories.ingredient import IngredientFactory
 from data.factories.population import PopulationFactory
 from data.factories.teleicare_history import (
     ComplementAlimentaireFactory,
     DeclarationFactory,
     EtablissementFactory,
+    IcaIngredientAutreFactory,
+    IcaIngredientFactory,
     IcaPopulationCibleDeclareeFactory,
     VersionDeclarationFactory,
 )
 from data.factories.unit import SubstanceUnitFactory
 from data.models.company import EtablissementToCompanyRelation
-from data.models.declaration import Declaration
+from data.models.declaration import (
+    Declaration,
+    DeclaredIngredient,
+)
 from data.models.teleicare_history.ica_declaration import (
     IcaComplementAlimentaire,
     IcaDeclaration,
@@ -29,6 +35,13 @@ from data.models.teleicare_history.ica_declaration import (
     IcaPopulationCibleDeclaree,
     IcaPopulationRisqueDeclaree,
     IcaVersionDeclaration,
+)
+from data.models.teleicare_history.ica_declaration_composition import (
+    IcaIngredient,
+    IcaIngredientAutre,
+    IcaMicroOrganisme,
+    IcaPreparation,
+    IcaSubstanceDeclaree,
 )
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 
@@ -55,6 +68,11 @@ class TeleicareHistoryImporterTestCase(TestCase):
             IcaEffetDeclare,
             IcaPopulationCibleDeclaree,
             IcaPopulationRisqueDeclaree,
+            IcaIngredient,
+            IcaIngredientAutre,
+            IcaMicroOrganisme,
+            IcaPreparation,
+            IcaSubstanceDeclaree,
         ]:
             with connection.schema_editor() as schema_editor:
                 schema_editor.create_model(table)
@@ -575,9 +593,8 @@ class TeleicareHistoryImporterTestCase(TestCase):
     @patch("data.etl.teleicare_history.extractor.add_composition_from_teleicare_history")
     def test_historic_declaration_has_been_assigned_to_other_company(self, mocked_add_composition_function):
         """
-        Ce test permet de vérifier qu'une déclaration historiques qui aurait été assignée dans Compl'Alim à une nouvelle entreprise
+        Ce test permet de vérifier qu'une déclaration historique qui aurait été assignée dans Compl'Alim à une nouvelle entreprise
         ne se retrouve pas avec sa company overwrite lors d'un nouvel import d'historique
-        mais
         """
         siret_declarant = _make_siret()
         etablissement_declarant = EtablissementFactory(etab_siret=siret_declarant)
@@ -619,3 +636,41 @@ class TeleicareHistoryImporterTestCase(TestCase):
         create_declarations_from_teleicare_history(rewrite_existing=True)
         CA_declaration.refresh_from_db()
         self.assertEqual(CA_declaration.company, purchaser_company)
+
+    def test_declared_ingredients_are_not_duplicated_if_extractor_called_twice(self):
+        """
+        Ce test permet de vérifier qu'une déclaration historique qui aurait déjà été importée
+        ne se retrouve pas avec des ingrédients en doublons si réimportée
+        """
+        siret_declarant = _make_siret()
+        etablissement_declarant = EtablissementFactory(etab_siret=siret_declarant)
+
+        CA = ComplementAlimentaireFactory(etab=etablissement_declarant, frmgal_ident=self.galenic_formulation_id)
+
+        declaration = DeclarationFactory(
+            cplalim=CA,
+            tydcl_ident=1,
+            dcl_date="03/20/2021 20:20:20 AM",
+            dcl_date_fin_commercialisation=None,
+        )
+        vrsdecl = VersionDeclarationFactory(
+            dcl=declaration,
+            stadcl_ident=8,
+            stattdcl_ident=2,
+            unt_ident=self.unit_id,
+            vrsdecl_djr="32 kg of ppo",
+        )
+        CA_ingredient = IngredientFactory()
+
+        ingr = IcaIngredientFactory(vrsdecl_ident=vrsdecl.vrsdecl_ident, tying_ident=3)
+        IcaIngredientAutreFactory(ingr_ident=ingr.ingr_ident, inga_ident=CA_ingredient.siccrf_id)
+
+        match_companies_on_siret_or_vat(create_if_not_exist=True)
+
+        # 1 ° import d'historique
+        create_declarations_from_teleicare_history(rewrite_existing=False)
+        self.assertEqual(DeclaredIngredient.objects.filter(declaration__siccrf_id=CA.cplalim_ident).count(), 1)
+
+        # 2 ° import d'historique sans doublons de composition
+        create_declarations_from_teleicare_history(rewrite_existing=True)
+        self.assertEqual(DeclaredIngredient.objects.filter(declaration__siccrf_id=CA.cplalim_ident).count(), 1)

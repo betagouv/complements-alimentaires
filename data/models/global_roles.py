@@ -44,3 +44,9 @@ class VisaRole(BaseGlobalRole):
     class Meta:
         verbose_name = "rôle de visa"
         verbose_name_plural = "rôles de visa"
+
+
+class ControlRole(BaseGlobalRole):
+    class Meta:
+        verbose_name = "rôle de contrôle"
+        verbose_name_plural = "rôles de contrôle"
