@@ -1,7 +1,6 @@
 <template>
   <DsfrTable
     ref="table"
-    class="w-full"
     title="Toutes les déclarations"
     :headers="headers"
     :rows="rows"
@@ -26,7 +25,7 @@ const rows = computed(() =>
       x.companyName,
       x.brand,
       x.simplifiedStatus,
-      isoToPrettyDate(x.simplifiedStatusDate),
+      x.simplifiedStatusDate ? isoToPrettyDate(x.simplifiedStatusDate) : "",
     ],
   }))
 )

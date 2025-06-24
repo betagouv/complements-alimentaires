@@ -1,3 +1,5 @@
+import logging
+
 from drf_base64.fields import Base64FileField
 from openpyxl.cell.cell import Hyperlink
 from rest_framework import serializers
@@ -33,6 +35,8 @@ from .plant import PlantSerializer
 from .substance import SubstanceSerializer
 from .user import SimpleUserSerializer
 from .utils import PrivateFieldsSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class IdPassthrough:
@@ -310,6 +314,8 @@ class ControllerDeclarationSerializer(serializers.ModelSerializer):
         WITHDRAWN = "Retiré du marché"
         INTERRUPTED = "Instruction interrompue"
 
+        if instance.status == Declaration.DeclarationStatus.AUTHORIZED:
+            return MARKET_READY
         if instance.status in self.ongoing_instruction:
             return MARKET_READY if instance.article in self.passthrough_articles else ONGOING
         if instance.status == Declaration.DeclarationStatus.WITHDRAWN:
@@ -325,16 +331,28 @@ class ControllerDeclarationSerializer(serializers.ModelSerializer):
         """
         snapshots = instance.snapshots
         queryset = None
-        if instance.status in self.ongoing_instruction:
+        if instance.status == Declaration.DeclarationStatus.AUTHORIZED:
+            if instance.article in self.passthrough_articles:
+                queryset = snapshots.filter(action=Snapshot.SnapshotActions.SUBMIT)
+            else:
+                queryset = snapshots.filter(status=Declaration.DeclarationStatus.AUTHORIZED)
+        elif instance.status in self.ongoing_instruction:
             queryset = snapshots.filter(action=Snapshot.SnapshotActions.SUBMIT)
-        if instance.status == Declaration.DeclarationStatus.WITHDRAWN:
+        elif instance.status == Declaration.DeclarationStatus.WITHDRAWN:
             queryset = snapshots.filter(action=Snapshot.SnapshotActions.WITHDRAW)
-        if instance.status == Declaration.DeclarationStatus.REJECTED:
+        elif instance.status == Declaration.DeclarationStatus.REJECTED:
             queryset = snapshots.filter(status=Declaration.DeclarationStatus.REJECTED)
-        if instance.status == Declaration.DeclarationStatus.ABANDONED:
+        elif instance.status == Declaration.DeclarationStatus.ABANDONED:
             queryset = snapshots.filter(action=Snapshot.SnapshotActions.ABANDON)
+        else:
+            return None
 
-        return queryset.latest("creation_date").creation_date
+        try:
+            return queryset.latest("creation_date").creation_date
+        except Snapshot.DoesNotExist as e:
+            logger.exception(e)
+            logger.error(f"Declaration with ID {instance.id} was unable to obtain a simplified_status_date")
+            return None
 
 
 class SimpleDeclarationSerializer(serializers.ModelSerializer):
