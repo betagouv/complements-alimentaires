@@ -23,14 +23,14 @@
           />
 
           <DsfrBadge v-if="novelFood" label="Novel Food" type="new" class="self-center ml-2" small />
-          <DsfrBadge v-if="isRequest" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
           <DsfrBadge
-            v-else-if="isPartRequest"
+            v-if="isPartRequest"
             label="Nouvelle partie de plante"
             type="info"
             class="self-center ml-2"
             small
           />
+          <DsfrBadge v-else-if="isRequest" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
           <DsfrBadge
             v-if="treatedRequest"
             label="Demande traitée"
@@ -119,15 +119,19 @@ const showRequestComment = computed(
 const treatedRequest = computed(() => {
   return {
     INFORMATION: {
-      label: "Des informations complémentaires sont nécessaires concernant la demande d'ajout d'ingrédient",
+      label: model.value.newPart
+        ? "Des informations complémentaires sont nécessaires concernant la demande d'autorisation de la partie de plante"
+        : "Des informations complémentaires sont nécessaires concernant la demande d'ajout d'ingrédient",
       type: "warning",
     },
     REJECTED: {
-      label: "La demande d'ajout d'ingrédient a été refusée",
+      label: model.value.newPart
+        ? "La demande d'autorisation de partie de plante a été refusée"
+        : "La demande d'ajout d'ingrédient a été refusée",
       type: "error",
     },
     REPLACED: {
-      label: "Demande initiale remplacée dans la composition",
+      label: model.value.newPart ? "Partie de plante autorisée" : "Demande initiale remplacée dans la composition",
       type: "info",
     },
   }[model.value.requestStatus]

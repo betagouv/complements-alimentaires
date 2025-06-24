@@ -1,6 +1,11 @@
 <template>
   <DsfrAlert v-if="alert" v-bind="alert" class="mb-4">
     <span v-if="alert.description">{{ alert.description }}</span>
+    <span v-else-if="element.newPart && element.requestStatus === 'REPLACED'">
+      Partie de plante autorisée pour
+      <router-link :to="elementLink">{{ element.element.name }}</router-link>
+      dans la composition de la déclaration.
+    </span>
     <span v-else-if="element.requestStatus === 'REPLACED'">
       Ingrédient initial remplacé par
       <router-link :to="elementLink">{{ element.element.name }}</router-link>
