@@ -592,7 +592,13 @@ class Declaration(Historisable, TimeStampable):
                 x.filter(new=True).exists() for x in composition_ingredients if issubclass(x.model, Addable)
             )
 
-            if has_new_ingredients:
+            has_new_plant_parts = any(
+                x.filter(new_part=True).exclude(request_status=Addable.AddableStatus.REPLACED).exists()
+                for x in composition_ingredients
+                if issubclass(x.model, AddablePlant)
+            )
+
+            if has_new_ingredients or has_new_plant_parts:
                 self.calculated_article = Declaration.Article.ARTICLE_16
             elif self.has_risky_ingredients or (self.galenic_formulation and self.galenic_formulation.is_risky):
                 self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
