@@ -20,7 +20,10 @@
                 <ElementSynonyms v-model="synonyms" :requestElement="element" :initialSynonyms="replacement.synonyms" />
               </div>
               <div v-else-if="modalToOpen === 'authorizePart'">
-                <!-- TODO: add text? -->
+                <p>
+                  Voulez-vous autoriser la partie de plante {{ plantPartName }} pour la plante
+                  {{ element.element?.name }} ?
+                </p>
               </div>
               <div v-else>
                 <DsfrInput v-model="notes" label="Notes" label-visible is-textarea />
@@ -136,7 +139,7 @@ const actionButtons = computed(() => {
       onclick: openModal("info"),
     },
     {
-      label: "Refuser l’ingrédient",
+      label: element.value.newPart ? "Refuser la partie de plante" : "Refuser l’ingrédient",
       tertiary: true,
       "no-outline": true,
       icon: "ri-close-line",
@@ -203,7 +206,9 @@ const modals = computed(() => {
       ],
     },
     info: {
-      title: "L’ajout du nouvel ingrédient nécessite plus d’information.",
+      title: element.value.newPart
+        ? "L'autorisation de la partie de plante nécessite plus d'information"
+        : "L’ajout du nouvel ingrédient nécessite plus d’information.",
       actions: [
         {
           label: "Enregistrer",
@@ -216,7 +221,9 @@ const modals = computed(() => {
       ],
     },
     refuse: {
-      title: "L’ajout du nouvel ingrédient sera refusé.",
+      title: element.value.newPart
+        ? "L'autorisation de la partie de plante sera refusé"
+        : "L’ajout du nouvel ingrédient sera refusé.",
       actions: [
         {
           label: "Refuser",
@@ -243,5 +250,9 @@ const modalActions = computed(() => {
       },
     },
   ])
+})
+
+const plantPartName = computed(() => {
+  return store.plantParts?.find((p) => p.id === element.value.usedPart)?.name
 })
 </script>
