@@ -157,7 +157,7 @@ class DeclaredPlantSerializer(DeclaredIngredientCommonSerializer):
             "quantity",
             "unit",
             "preparation",
-            "new_part",
+            "is_part_request",
         )
 
 
@@ -803,13 +803,13 @@ class DeclaredElementSerializer(serializers.Serializer):
     authorization_mode = serializers.CharField()
     declaration = DeclaredElementDeclarationSerializer()
     request_status = serializers.CharField()
-    new_part = serializers.SerializerMethodField()
+    is_part_request = serializers.SerializerMethodField()
 
     def get_name(self, obj):
         return str(obj)
 
-    def get_new_part(self, obj):
+    def get_is_part_request(self, obj):
         try:
-            return obj.new_part
+            return obj.is_part_request
         except AttributeError:
             return None

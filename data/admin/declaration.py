@@ -105,7 +105,7 @@ class DeclaredPlantInline(admin.StackedInline):
         "preparation",
         "first_ocurrence",
         "new",
-        "new_part",
+        "is_part_request",
         "new_name",
         "new_description",
     ) + REQUEST_FIELDS

@@ -1,7 +1,7 @@
 <template>
   <DsfrAlert v-if="alert" v-bind="alert" class="mb-4">
     <span v-if="alert.description">{{ alert.description }}</span>
-    <span v-else-if="element.newPart && element.requestStatus === 'REPLACED'">
+    <span v-else-if="element.isPartRequest && element.requestStatus === 'REPLACED'">
       Partie de plante autorisée pour
       <router-link :to="elementLink">{{ element.element.name }}</router-link>
       dans la composition de la déclaration.
@@ -21,7 +21,7 @@ import { getElementUrlComponent } from "@/utils/elements"
 const props = defineProps({ element: Object })
 
 const alerts = computed(() => {
-  if (props.element?.newPart) {
+  if (props.element?.isPartRequest) {
     return {
       REQUESTED: {
         title: "Nouvelle partie de plante",

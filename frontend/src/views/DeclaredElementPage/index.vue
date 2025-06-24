@@ -6,7 +6,7 @@
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
-          <ReplacementSearch @replacement="(obj) => (replacement = obj)" v-if="!element.newPart" />
+          <ReplacementSearch @replacement="(obj) => (replacement = obj)" v-if="!element.isPartRequest" />
         </div>
         <div v-if="replacement" class="my-4">
           <ElementCard :objectType="replacement.objectType" v-model="additionalFields" :canRemove="false" />
@@ -137,23 +137,23 @@ const actionButtons = computed(() => {
       label: "Demander plus d’information",
       tertiary: true,
       onclick: openModal("info"),
-      disabled: element.value.newPart && element.value.requestStatus === "REPLACED",
+      disabled: element.value.isPartRequest && element.value.requestStatus === "REPLACED",
     },
     {
-      label: element.value.newPart ? "Refuser la partie de plante" : "Refuser l’ingrédient",
+      label: element.value.isPartRequest ? "Refuser la partie de plante" : "Refuser l’ingrédient",
       tertiary: true,
       "no-outline": true,
       icon: "ri-close-line",
       onclick: openModal("refuse"),
-      disabled: element.value.newPart && element.value.requestStatus === "REPLACED",
+      disabled: element.value.isPartRequest && element.value.requestStatus === "REPLACED",
     },
   ]
-  if (element.value.newPart) {
+  if (element.value.isPartRequest) {
     actions.unshift({
       label: "Autoriser la partie de plante",
       primary: true,
       onclick: openModal("authorizePart"),
-      disabled: element.value.newPart && element.value.requestStatus === "REPLACED",
+      disabled: element.value.isPartRequest && element.value.requestStatus === "REPLACED",
     })
   } else {
     actions.unshift({
@@ -209,7 +209,7 @@ const modals = computed(() => {
       ],
     },
     info: {
-      title: element.value.newPart
+      title: element.value.isPartRequest
         ? "L'autorisation de la partie de plante nécessite plus d'information"
         : "L’ajout du nouvel ingrédient nécessite plus d’information.",
       actions: [
@@ -224,7 +224,7 @@ const modals = computed(() => {
       ],
     },
     refuse: {
-      title: element.value.newPart
+      title: element.value.isPartRequest
         ? "L'autorisation de la partie de plante sera refusé"
         : "L’ajout du nouvel ingrédient sera refusé.",
       actions: [

@@ -590,7 +590,7 @@ class Declaration(Historisable, TimeStampable):
             )
 
             has_new_plant_parts = any(
-                x.filter(new_part=True).exclude(request_status=Addable.AddableStatus.REPLACED).exists()
+                x.filter(is_part_request=True).exclude(request_status=Addable.AddableStatus.REPLACED).exists()
                 for x in composition_ingredients
                 if issubclass(x.model, AddablePlant)
             )
@@ -672,7 +672,7 @@ class AddablePlant(Addable):
     class Meta:
         abstract = True
 
-    new_part = models.BooleanField(default=False)
+    is_part_request = models.BooleanField(default=False)
 
 
 class DeclaredPlant(Historisable, AddablePlant):
@@ -713,13 +713,13 @@ class DeclaredPlant(Historisable, AddablePlant):
 
     def save(self, *args, **kwargs):
         if self._state.adding:
-            self.new_part = False
+            self.is_part_request = False
             if self.plant and self.used_part:
                 associated_part = self.plant.plant_parts.through.objects.filter(
                     plant=self.plant, plantpart=self.used_part
                 )
                 if not associated_part.exists() or associated_part.first().is_useful is False:
-                    self.new_part = True
+                    self.is_part_request = True
         super().save(*args, **kwargs)
 
 

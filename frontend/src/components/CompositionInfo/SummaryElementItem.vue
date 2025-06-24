@@ -106,7 +106,7 @@ const elementInfo = computed(() => {
 })
 
 const isRequest = computed(() => model.value.new || model.value.requestStatus === "REPLACED")
-const isPartRequest = computed(() => model.value.newPart)
+const isPartRequest = computed(() => model.value.isPartRequest)
 
 const showRequestInspectionLink = computed(() => (isRequest.value || isPartRequest.value) && isInstructor.value)
 
@@ -119,19 +119,21 @@ const showRequestComment = computed(
 const treatedRequest = computed(() => {
   return {
     INFORMATION: {
-      label: model.value.newPart
+      label: model.value.isPartRequest
         ? "Des informations complémentaires sont nécessaires concernant la demande d'autorisation de la partie de plante"
         : "Des informations complémentaires sont nécessaires concernant la demande d'ajout d'ingrédient",
       type: "warning",
     },
     REJECTED: {
-      label: model.value.newPart
+      label: model.value.isPartRequest
         ? "La demande d'autorisation de partie de plante a été refusée"
         : "La demande d'ajout d'ingrédient a été refusée",
       type: "error",
     },
     REPLACED: {
-      label: model.value.newPart ? "Partie de plante autorisée" : "Demande initiale remplacée dans la composition",
+      label: model.value.isPartRequest
+        ? "Partie de plante autorisée"
+        : "Demande initiale remplacée dans la composition",
       type: "info",
     },
   }[model.value.requestStatus]

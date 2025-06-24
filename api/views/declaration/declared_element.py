@@ -106,10 +106,10 @@ class DeclaredElementsView(ListAPIView):
     @staticmethod
     def new_request_filter(model):
         try:
-            model._meta.get_field("new_part")
-            # TODO: si un new_part est remplacé, elle sera tjs flaggé comme new_part
+            model._meta.get_field("is_part_request")
+            # TODO: si un is_part_request est remplacé, elle sera tjs flaggé comme is_part_request
             # alors il faut exclure les demandes de statut REPLACED (pas comme le champ new)
-            return Q(new=True) | Q(new_part=True)
+            return Q(new=True) | Q(is_part_request=True)
         except FieldDoesNotExist:
             return Q(new=True)
 
@@ -120,10 +120,10 @@ class DeclaredElementsView(ListAPIView):
         else:
             return Q(request_status=status)
 
-    # new_part will remain True after it is replaced
+    # is_part_request will remain True after it is replaced
     # new will be set to False after it is replaced (does it have to be?)
     # all statuses except REQUESTED are applied only to requests so can be filtered on directly
-    # REQUESTED should have new or new_part to be included.
+    # REQUESTED should have new or is_part_request to be included.
     # there is no current use of not passing requestStatus in the query I believe.
 
 

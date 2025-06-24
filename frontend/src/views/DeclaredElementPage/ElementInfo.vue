@@ -72,7 +72,7 @@ const elementProfile = computed(() => {
 
   const items = []
 
-  if (props.element?.newPart) {
+  if (props.element?.isPartRequest) {
     items.push({ label: "Plante", text: props.element.element?.name })
     items.push({
       label: "Partie de plante",
@@ -105,7 +105,7 @@ const elementProfile = computed(() => {
 })
 
 const plantPartBadge = computed(() => {
-  if (props.element.newPart) {
+  if (props.element.isPartRequest) {
     const associatedPart = props.element.element.plantParts.find((p) => p.id === props.element.usedPart)
     if (!associatedPart) return { label: "Non associée", type: "info", component: "DsfrBadge" }
     else if (!associatedPart.isUseful) return { label: "Non autorisée", type: "warning", component: "DsfrBadge" }
