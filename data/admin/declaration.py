@@ -109,6 +109,7 @@ class DeclaredPlantInline(admin.StackedInline):
         "new_name",
         "new_description",
     ) + REQUEST_FIELDS
+    readonly_fields = ("is_part_request",)
     autocomplete_fields = ("plant",)
     extra = 0
     classes = ["collapse"]
