@@ -4,7 +4,6 @@
       <div class="self-center font-bold capitalize">
         {{ getElementName(model).toLowerCase() }}
       </div>
-      <!-- TODO: use semantic HTML here and in TypeHeader (which is used in two places, so need to check if the same heading level works in both) -->
       <div v-if="objectType === 'plant_part'" class="self-center ml-2">
         {{ plantPartName }}
       </div>

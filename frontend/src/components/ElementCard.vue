@@ -41,7 +41,6 @@
       <hr class="mt-2" />
       <div v-if="objectType === 'plant'" class="md:flex gap-2 md:gap-4 items-end">
         <div class="mb-4 md:max-w-sm" v-if="plantParts.length > 0">
-          <!-- TODO: make this the searchable dropdown -->
           <DsfrSelect
             label="Partie utilisée"
             defaultUnselectedText=""
@@ -152,8 +151,6 @@ const plantParts = computed(() => {
     }
     parts = parts.concat(store.plantParts || [])
   }
-  // TODO: sort alphabetically
-  // parts.sort((a, b) => a.name - b.name)
   return parts.map((x) => {
     return x.text ? x : { text: x.name, value: x.id }
   })
