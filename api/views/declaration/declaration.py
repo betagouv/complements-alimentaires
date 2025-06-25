@@ -358,7 +358,12 @@ class OngoingDeclarationsListView(CommonOngoingDeclarationView):
 class ControllerDeclarationsListView(CommonOngoingDeclarationView):
     permission_classes = [IsController]
     pagination_class = InstructionDeclarationPagination
+    ordering_fields = ["name", "company_name"]
     serializer_class = ControllerDeclarationSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset().select_related("company")
+        return queryset.annotate(company_name=F("company__social_name"))
 
 
 class OpenDataDeclarationsListView(GenericDeclarationsListView):
