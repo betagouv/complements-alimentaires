@@ -8,6 +8,7 @@ from .declaration.declaration import (
     DeclarationSubmitView,
     OngoingDeclarationsExcelView,
     OngoingDeclarationsListView,
+    ControllerDeclarationsListView,
     CompanyDeclarationsListView,
     DeclarationTakeForInstructionView,
     DeclarationTakeForVisaView,

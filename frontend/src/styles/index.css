@@ -156,6 +156,18 @@
   & .fr-tag .ov-icon {
     @apply mr-2!;
   }
+  & .fr-tag.blue {
+    background-color: #e3e3fd;
+    color: #000091;
+  }
+  & .fr-tag.green {
+    background-color: #b8fec9;
+    color: #18753c;
+  }
+  & .fr-tag.red {
+    background-color: #ffe9e9;
+    color: #ce0500;
+  }
 }
 @utility fr-tag {
   /* Je spécifier ici les couleurs pour les tags car Tailwind ne fait pas des classes dynamiques pour le bg */
