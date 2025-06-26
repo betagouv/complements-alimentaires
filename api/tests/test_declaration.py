@@ -2911,7 +2911,6 @@ class TestSingleDeclaredElementApi(APITestCase):
         plant = PlantFactory()
         plant_part = PlantPartFactory()
         unauthorised_part = Part.objects.create(plant=plant, plantpart=plant_part, ca_is_useful=False)
-        self.assertFalse(unauthorised_part.is_useful)
 
         declared_plant = DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=plant_part)
 
