@@ -1905,12 +1905,9 @@ class TestDeclaredElementsApi(APITestCase):
         DeclaredSubstanceFactory(new=True, declaration=declaration)
         DeclaredMicroorganismFactory(new=True, declaration=declaration)
         DeclaredIngredientFactory(new=True, declaration=declaration)
-        # don't return not new ones
-        authorised_part = plant.plant_parts.through.objects.first()
-        authorised_part.ca_is_useful = True
-        authorised_part.save()
-        DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=authorised_part.plantpart)
-        # don't return ones attached to draft declarations
+        # n'envoie pas des ingrédients qui ne sont pas nouveaux et qui n'ont pas de nouvelles parties
+        DeclaredPlantFactory(new=False, declaration=declaration)
+        # n'envoie pas des ingrédients liés aux déclarations en brouillon
         DeclaredIngredientFactory(new=True, declaration=draft)
 
         response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
@@ -1944,7 +1941,7 @@ class TestDeclaredElementsApi(APITestCase):
         ingredient = DeclaredIngredientFactory(
             new=False, declaration=declaration, request_status=Addable.AddableStatus.REPLACED
         )
-        # don't return ones attached to draft declarations
+        # n'envoie pas des ingrédients liés aux déclarations en brouillon
         DeclaredIngredientFactory(new=True, declaration=draft, request_status=Addable.AddableStatus.REQUESTED)
 
         filter_url = f"{reverse('api:list_new_declared_elements')}?requestStatus=REQUESTED,REPLACED"
