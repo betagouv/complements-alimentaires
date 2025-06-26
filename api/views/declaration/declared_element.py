@@ -1,5 +1,4 @@
 import abc
-from django.core.exceptions import FieldDoesNotExist
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -32,6 +31,7 @@ from api.serializers import (
 from api.permissions import IsInstructor, IsVisor
 from itertools import chain
 from functools import reduce
+from operator import or_
 
 
 class DeclaredElementsPagination(LimitOffsetPagination):
@@ -98,6 +98,7 @@ class DeclaredElementsView(ListAPIView):
                 DeclaredElementsView.get_query_for_request_status(r, model) for r in request_statuses
             ]
             request_status_filter = reduce(lambda x, y: x | y, request_status_queries)
+            request_status_filter = reduce(or_, request_status_queries)
         else:
             # par défaut, afficher toutes les demandes
             request_status_filter = DeclaredElementsView.new_request_filter(model)
@@ -105,10 +106,10 @@ class DeclaredElementsView(ListAPIView):
 
     @staticmethod
     def new_request_filter(model):
-        try:
+        if issubclass(model, DeclaredPlant):
             model._meta.get_field("is_part_request")
             return Q(new=True) | Q(is_part_request=True)
-        except FieldDoesNotExist:
+        else:
             return Q(new=True)
 
     @staticmethod

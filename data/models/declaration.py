@@ -592,7 +592,7 @@ class Declaration(Historisable, TimeStampable):
             has_new_plant_parts = any(
                 x.filter(is_part_request=True).exclude(request_status=Addable.AddableStatus.REPLACED).exists()
                 for x in composition_ingredients
-                if issubclass(x.model, AddablePlant)
+                if issubclass(x.model, DeclaredPlant)
             )
 
             if has_new_ingredients or has_new_plant_parts:
@@ -668,14 +668,7 @@ class Addable(models.Model):
             )
 
 
-class AddablePlant(Addable):
-    class Meta:
-        abstract = True
-
-    is_part_request = models.BooleanField(default=False)
-
-
-class DeclaredPlant(Historisable, AddablePlant):
+class DeclaredPlant(Historisable, Addable):
     class Meta:
         verbose_name = "plante déclarée"
         verbose_name_plural = "plantes déclarées"
@@ -700,6 +693,7 @@ class DeclaredPlant(Historisable, AddablePlant):
     preparation = models.ForeignKey(
         Preparation, null=True, blank=True, verbose_name="préparation", on_delete=models.RESTRICT
     )
+    is_part_request = models.BooleanField(default=False)
 
     def __str__(self):
         if self.new:
