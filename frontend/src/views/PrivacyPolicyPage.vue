@@ -193,6 +193,15 @@
     <p>
       Le responsable de traitement s’engage à ce que les données soient traitées par les seules personnes autorisées.
     </p>
+    <p>
+      Ces destinaires sont : les agents DGAL, les agents habilités à rechercher les infractions relatives aux
+      compléments alimentaires affectés dans les directions régionales de l'alimentation, de l'agriculture et de la
+      forêt (DRAAF) dans les directions de l'alimentation, de l'agriculture et de la forêt (DAAF), dans les directions
+      départementales de la protection des populations (DDPP), dans les directions départementales de l’emploi, du
+      travail, des solidarités et de la protection des populations (DDETSPP) et dans les services à compétences
+      nationales ainsi que les agents de l’Agence nationale de sécurité sanitaire de l’alimentation, de l’environnement
+      et du travail (Anses).
+    </p>
     <h3>Sous-traitants</h3>
     <p>
       Certaines des données sont envoyées à des sous-traitants pour réaliser certaines missions. Le responsable de
