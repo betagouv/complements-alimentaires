@@ -707,7 +707,6 @@ class DeclaredPlant(Historisable, Addable):
 
     def save(self, *args, **kwargs):
         if self._state.adding:
-            self.is_part_request = False
             if self.plant and self.used_part:
                 associated_part = self.plant.plant_parts.through.objects.filter(
                     plant=self.plant, plantpart=self.used_part
