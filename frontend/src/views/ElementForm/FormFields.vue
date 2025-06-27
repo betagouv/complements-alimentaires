@@ -349,7 +349,7 @@ const saveElement = async () => {
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
   if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
-  if (payload.authorisedPlantParts?.length || payload.forbiddenPlantParts?.length) {
+  if (formForType.value.plantParts) {
     const authorisedParts = payload.authorisedPlantParts
     const forbiddenParts = payload.forbiddenPlantParts
     payload.plantParts = authorisedParts
