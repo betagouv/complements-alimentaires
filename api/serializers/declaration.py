@@ -367,11 +367,11 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     )
     decision = serializers.SerializerMethodField()
     date_decision = serializers.DateTimeField(required=False, source="acceptation_date")
-    responsable_mise_sur_marche = serializers.SerializerMethodField()
+    responsable_mise_sur_marche = serializers.CharField(read_only=True, source="company.social_name")
     adresse_responsable_mise_sur_marche = serializers.SerializerMethodField()
-    siret_responsable_mise_sur_marche = serializers.SerializerMethodField()
-    vat_responsable_mise_sur_marche = serializers.SerializerMethodField()
-    nom_commercial = serializers.SerializerMethodField()
+    siret_responsable_mise_sur_marche = serializers.CharField(read_only=True, source="company.siret")
+    vat_responsable_mise_sur_marche = serializers.CharField(read_only=True, source="company.vat")
+    nom_commercial = serializers.CharField(read_only=True, source="name")
     marque = serializers.CharField(allow_blank=True, required=False, source="brand")
     article_procedure = serializers.SerializerMethodField()
     forme_galenique = serializers.SerializerMethodField()
@@ -425,26 +425,42 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         )
         read_only_fields = fields
 
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """
+        Pre-chargement des données nécessaires pour éviter des soucis de prod
+        http://ses4j.github.io/2015/11/23/optimizing-slow-django-rest-framework-performance/
+        """
+        queryset = queryset.select_related(
+            "company",
+            "galenic_formulation",
+        )
+
+        queryset = queryset.prefetch_related(
+            "effects__name",
+            "populations__name",
+            "conditions_not_recommended__name",
+            "declared_plants__plant__substances",
+            "declared_plants__plant",
+            "declared_plants__preparation",
+            "declared_plants__unit",
+            "declared_microorganisms__microorganism__substances",
+            "declared_ingredients__ingredient__substances",
+            "declared_substances__substance",
+            "declared_substances__unit",
+            "computed_substances__substance",
+            "computed_substances__unit",
+        )
+        return queryset
+
     def get_decision(self, obj):
         return obj.get_status_display()
-
-    def get_responsable_mise_sur_marche(self, obj):
-        return obj.company.commercial_name
 
     def get_adresse_responsable_mise_sur_marche(self, obj):
         return {
             "code_postal": obj.company.postal_code,
             "pays": obj.company.country,
         }
-
-    def get_siret_responsable_mise_sur_marche(self, obj):
-        return obj.company.siret
-
-    def get_vat_responsable_mise_sur_marche(self, obj):
-        return obj.company.vat
-
-    def get_nom_commercial(self, obj):
-        return obj.name
 
     def get_article_procedure(self, obj):
         """
