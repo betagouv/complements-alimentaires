@@ -7,6 +7,8 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
+from simple_history.utils import update_change_reason
+
 from data.models import (
     DeclaredPlant,
     DeclaredSubstance,
@@ -17,6 +19,7 @@ from data.models import (
     MicroorganismSynonym,
     SubstanceSynonym,
     IngredientSynonym,
+    Part,
 )
 from api.serializers import (
     DeclaredElementSerializer,
@@ -28,6 +31,7 @@ from api.serializers import (
 from api.permissions import IsInstructor, IsVisor
 from itertools import chain
 from functools import reduce
+from operator import or_
 
 
 class DeclaredElementsPagination(LimitOffsetPagination):
@@ -41,46 +45,26 @@ class DeclaredElementsView(ListAPIView):
     permission_classes = [(IsInstructor | IsVisor)]
 
     def get_queryset(self):
-        request_statuses = self.request.query_params.get("requestStatus")
-        request_status_filter = Q(new=True)  # by default, only show new elements
-        if request_statuses:
-            request_statuses = request_statuses.split(",")
-            request_status_queries = [DeclaredElementsView.get_query_for_request_status(r) for r in request_statuses]
-            request_status_filter = reduce(lambda x, y: x | y, request_status_queries)
-
-        declaration_statuses = self.request.query_params.get("declarationStatus")
-        closed_statuses = [
-            Declaration.DeclarationStatus.DRAFT,
-            Declaration.DeclarationStatus.AUTHORIZED,
-            Declaration.DeclarationStatus.ABANDONED,
-            Declaration.DeclarationStatus.REJECTED,
-            Declaration.DeclarationStatus.WITHDRAWN,
-        ]
-        open_statuses = [x.value for x in Declaration.DeclarationStatus if x not in closed_statuses]
-        declaration_statuses = declaration_statuses.split(",") if declaration_statuses else open_statuses
-        declaration_status_filter = Q(declaration__status__in=declaration_statuses)
-
         types = self.request.query_params.get("type")
         if types:
-            querysets = []
+            models = []
             if "plant" in types:
-                querysets.append(DeclaredPlant.objects)
+                models.append(DeclaredPlant)
             if "microorganism" in types:
-                querysets.append(DeclaredMicroorganism.objects)
+                models.append(DeclaredMicroorganism)
             if "substance" in types:
-                querysets.append(DeclaredSubstance.objects)
+                models.append(DeclaredSubstance)
             if "other-ingredient" in types:
-                querysets.append(DeclaredIngredient.objects)
+                models.append(DeclaredIngredient)
         else:
-            querysets = [
-                DeclaredPlant.objects,
-                DeclaredMicroorganism.objects,
-                DeclaredSubstance.objects,
-                DeclaredIngredient.objects,
+            models = [
+                DeclaredPlant,
+                DeclaredMicroorganism,
+                DeclaredSubstance,
+                DeclaredIngredient,
             ]
-        filtered_querysets = [
-            queryset.filter(request_status_filter & declaration_status_filter) for queryset in querysets
-        ]
+
+        filtered_querysets = [self.filtered_queryset(model) for model in models]
 
         ordering = self.request.query_params.get("ordering")
         if ordering and ordering.endswith("responseLimitDate"):
@@ -92,10 +76,46 @@ class DeclaredElementsView(ListAPIView):
 
         return list(chain(*filtered_querysets))
 
+    def declaration_status_query(self):
+        declaration_statuses = self.request.query_params.get("declarationStatus")
+        closed_statuses = [
+            Declaration.DeclarationStatus.DRAFT,
+            Declaration.DeclarationStatus.AUTHORIZED,
+            Declaration.DeclarationStatus.ABANDONED,
+            Declaration.DeclarationStatus.REJECTED,
+            Declaration.DeclarationStatus.WITHDRAWN,
+        ]
+        open_statuses = [x.value for x in Declaration.DeclarationStatus if x not in closed_statuses]
+        declaration_statuses = declaration_statuses.split(",") if declaration_statuses else open_statuses
+        return Q(declaration__status__in=declaration_statuses)
+
+    def filtered_queryset(self, model):
+        filtered_objects = model.objects.filter(self.declaration_status_query())
+        request_statuses = self.request.query_params.get("requestStatus")
+        if request_statuses:
+            request_statuses = request_statuses.split(",")
+            request_status_queries = [
+                DeclaredElementsView.get_query_for_request_status(r, model) for r in request_statuses
+            ]
+            request_status_filter = reduce(lambda x, y: x | y, request_status_queries)
+            request_status_filter = reduce(or_, request_status_queries)
+        else:
+            # par défaut, afficher toutes les demandes
+            request_status_filter = DeclaredElementsView.new_request_filter(model)
+        return filtered_objects.filter(request_status_filter)
+
     @staticmethod
-    def get_query_for_request_status(status):
+    def new_request_filter(model):
+        if issubclass(model, DeclaredPlant):
+            model._meta.get_field("is_part_request")
+            return Q(new=True) | Q(is_part_request=True)
+        else:
+            return Q(new=True)
+
+    @staticmethod
+    def get_query_for_request_status(status, model):
         if status == "REQUESTED":
-            return Q(new=True) & Q(request_status=status)
+            return DeclaredElementsView.new_request_filter(model) & Q(request_status=status)
         else:
             return Q(request_status=status)
 
@@ -258,6 +278,26 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             replacement_element.save()
 
         return declared_element
+
+    def _post_save_declared_element(self, declared_element):
+        declared_element.declaration.assign_calculated_article()
+        declared_element.declaration.save()
+
+
+class DeclaredElementAcceptPartView(DeclaredElementActionAbstractView):
+    def _update_element(self, element, request):
+        try:
+            part = Part.objects.get(plant=element.plant, plantpart=element.used_part)
+            part.ca_is_useful = True
+            part.save()
+            update_change_reason(part, f"Autorisée après une demande par la déclaration id : {element.declaration.id}")
+        except Part.DoesNotExist:
+            part = Part(plant=element.plant, plantpart=element.used_part, ca_is_useful=True)
+            part.save()
+            update_change_reason(part, f"Ajoutée après une demande par la déclaration id : {element.declaration.id}")
+
+        element.request_status = self.type_model.AddableStatus.REPLACED
+        return element
 
     def _post_save_declared_element(self, declared_element):
         declared_element.declaration.assign_calculated_article()

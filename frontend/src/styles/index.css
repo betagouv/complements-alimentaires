@@ -67,6 +67,9 @@
   &.icon-plant {
     @apply bg-ca-plant;
   }
+  &.icon-plant_part {
+    @apply bg-ca-plant;
+  }
   &.icon-microorganism {
     @apply bg-ca-microorganism;
   }
@@ -90,6 +93,11 @@
   }
 }
 @utility icon-plant {
+  &.icon {
+    @apply bg-ca-plant;
+  }
+}
+@utility icon-plant_part {
   &.icon {
     @apply bg-ca-plant;
   }

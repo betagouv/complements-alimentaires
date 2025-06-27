@@ -23,7 +23,14 @@
           />
 
           <DsfrBadge v-if="novelFood" label="Novel Food" type="new" class="self-center ml-2" small />
-          <DsfrBadge v-if="isRequest" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
+          <DsfrBadge
+            v-if="isPartRequest"
+            label="Nouvelle partie de plante"
+            type="info"
+            class="self-center ml-2"
+            small
+          />
+          <DsfrBadge v-else-if="isRequest" label="Nouvel ingrédient" type="info" class="self-center ml-2" small />
           <DsfrBadge
             v-if="treatedRequest"
             label="Demande traitée"
@@ -99,8 +106,9 @@ const elementInfo = computed(() => {
 })
 
 const isRequest = computed(() => model.value.new || model.value.requestStatus === "REPLACED")
+const isPartRequest = computed(() => model.value.isPartRequest)
 
-const showRequestInspectionLink = computed(() => isRequest.value && isInstructor.value)
+const showRequestInspectionLink = computed(() => (isRequest.value || isPartRequest.value) && isInstructor.value)
 
 const showRequestComment = computed(
   () =>
@@ -111,15 +119,21 @@ const showRequestComment = computed(
 const treatedRequest = computed(() => {
   return {
     INFORMATION: {
-      label: "Des informations complémentaires sont nécessaires concernant la demande d'ajout d'ingrédient",
+      label: model.value.isPartRequest
+        ? "Des informations complémentaires sont nécessaires concernant la demande d'autorisation de la partie de plante"
+        : "Des informations complémentaires sont nécessaires concernant la demande d'ajout d'ingrédient",
       type: "warning",
     },
     REJECTED: {
-      label: "La demande d'ajout d'ingrédient a été refusée",
+      label: model.value.isPartRequest
+        ? "La demande d'autorisation de partie de plante a été refusée"
+        : "La demande d'ajout d'ingrédient a été refusée",
       type: "error",
     },
     REPLACED: {
-      label: "Demande initiale remplacée dans la composition",
+      label: model.value.isPartRequest
+        ? "Partie de plante autorisée"
+        : "Demande initiale remplacée dans la composition",
       type: "info",
     },
   }[model.value.requestStatus]

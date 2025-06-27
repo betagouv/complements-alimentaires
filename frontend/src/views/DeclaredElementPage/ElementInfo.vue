@@ -13,7 +13,8 @@
         <b>{{ info.label }}</b>
       </p>
       <p class="col-span-2">
-        <a v-if="info.href" :href="info.href" target="_blank" rel="noopener" class="text-blue-france-sun-113">
+        <component v-if="info.component" :is="info.component.component" v-bind="info.component" />
+        <a v-else-if="info.href" :href="info.href" target="_blank" rel="noopener" class="text-blue-france-sun-113">
           {{ info.text }}
         </a>
         <span v-else>{{ info.text }}</span>
@@ -30,9 +31,11 @@
 
 <script setup>
 import { computed } from "vue"
+import { useRootStore } from "@/stores/root"
 import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
 
 const props = defineProps({ element: Object, type: String, declarationLink: Object })
+const store = useRootStore()
 
 // prepare template data for display
 const icon = computed(() => getTypeIcon(props.type))
@@ -69,10 +72,19 @@ const elementProfile = computed(() => {
 
   const items = []
 
-  const detail = detailForType[props.type] || detailForType.default
-  detail.forEach((d) => {
-    items.push({ label: d.label, text: props.element[d.key] })
-  })
+  if (props.element?.isPartRequest) {
+    items.push({ label: "Plante", text: props.element.element?.name })
+    items.push({
+      label: "Partie de plante",
+      text: store.plantParts?.find((p) => p.id === props.element.usedPart)?.name,
+    })
+    items.push({ label: "Statut de la partie", component: plantPartBadge.value })
+  } else {
+    const detail = detailForType[props.type] || detailForType.default
+    detail.forEach((d) => {
+      items.push({ label: d.label, text: props.element[d.key] })
+    })
+  }
 
   if (franceAuthorization.value === false) {
     items.push(
@@ -90,5 +102,15 @@ const elementProfile = computed(() => {
     )
   }
   return items
+})
+
+const plantPartBadge = computed(() => {
+  if (props.element.isPartRequest) {
+    const associatedPart = props.element.element.plantParts.find((p) => p.id === props.element.usedPart)
+    if (!associatedPart) return { label: "Non associée", type: "info", component: "DsfrBadge" }
+    else if (!associatedPart.isUseful) return { label: "Non autorisée", type: "warning", component: "DsfrBadge" }
+    else return { label: "Autorisée", type: "success", component: "DsfrBadge" }
+  }
+  return undefined
 })
 </script>

@@ -1,6 +1,11 @@
 <template>
   <TypeHeader :objectType="objectType" v-if="elements.length" />
-  <NewElementCard :key="`new-${objectType}-${index}`" v-for="(_, index) in elements" v-model="elements[index]" />
+  <NewElementCard
+    :key="`new-${objectType}-${index}`"
+    v-for="(_, index) in elements"
+    v-model="elements[index]"
+    :objectType="objectType"
+  />
 </template>
 
 <script setup>

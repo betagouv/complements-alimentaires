@@ -1,6 +1,5 @@
 <template>
   <div>
-    <DsfrNotice title="En construction" desc="Des nouvelles fonctionnalités arrivent bientôt !" />
     <div class="fr-container">
       <DsfrBreadcrumb
         class="mb-8"
