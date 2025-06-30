@@ -70,7 +70,6 @@ const getSortIcon = (sortParam) =>
 // Construction des files de la table
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
-    rowAttrs: { class: "" },
     rowData: [
       x.id || x.siccrfid || x.teleicareDeclarationNumber,
       { component: "p", text: x.name, class: "font-bold" },
