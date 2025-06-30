@@ -7,7 +7,7 @@
       ]"
     />
     <h1 class="fr-h3">Tableau des compléments alimentaires</h1>
-    <DsfrAlert title="Filtres en construction" />
+    <DsfrAlert title="Recherche et filtrage avancé en construction" />
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
