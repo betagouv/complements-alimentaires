@@ -71,7 +71,7 @@ const getSortIcon = (sortParam) =>
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
-      x.id || x.siccrfid || x.teleicareDeclarationNumber,
+      x.id || x.siccrfId || x.teleicareDeclarationNumber,
       { component: "p", text: x.name, class: "font-bold" },
       x.companyName,
       x.brand,
