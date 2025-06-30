@@ -85,7 +85,7 @@ prompt_toolkit==3.0.51
 psycopg2==2.9.10
 ptyprocess==0.7.0
 pure_eval==0.2.3
-pycodestyle==2.13.0
+pycodestyle==2.14.0
 pycparser==2.22
 Pygments==2.19.2
 pyHanko==0.29.0
