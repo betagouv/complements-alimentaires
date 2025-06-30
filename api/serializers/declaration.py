@@ -350,8 +350,7 @@ class ControllerDeclarationSerializer(serializers.ModelSerializer):
         try:
             return queryset.latest("creation_date").creation_date
         except Snapshot.DoesNotExist as e:
-            logger.exception(e)
-            logger.error(f"Declaration with ID {instance.id} was unable to obtain a simplified_status_date")
+            logger.error(f"Declaration with ID {instance.id} was unable to obtain a simplified_status_date. {e}")
             return None
 
 
