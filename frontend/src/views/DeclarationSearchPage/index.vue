@@ -57,7 +57,7 @@ const fetchSearchResults = async () => {
 }
 
 // Mise à jour des paramètres
-const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
+const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } })
 
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 const updateOrdering = (sortValue) => updateQuery({ triage: sortValue || "-creationDate" })
