@@ -5,7 +5,7 @@
       :to="{ name: 'DeclaredElementPage', params: { type: element.type, id: element.id } }"
       class="text-blue-france-sun-113"
     >
-      {{ element.newName }}
+      {{ element.newName || element.element?.name }}
     </router-link>
     »
   </span>

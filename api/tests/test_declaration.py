@@ -48,6 +48,7 @@ from data.models import (
     DeclaredSubstance,
     IngredientType,
     Snapshot,
+    Part,
 )
 
 from .utils import authenticate
@@ -1893,19 +1894,25 @@ class TestDeclaredElementsApi(APITestCase):
 
         declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         draft = DeclarationFactory(status=Declaration.DeclarationStatus.DRAFT)
-        for _ in range(3):
-            DeclaredPlantFactory(new=True, declaration=declaration)
-            DeclaredSubstanceFactory(new=True, declaration=declaration)
-            DeclaredMicroorganismFactory(new=True, declaration=declaration)
-            DeclaredIngredientFactory(new=True, declaration=declaration)
-            # don't return not new ones
-            DeclaredPlantFactory(new=False, declaration=declaration)
-            # don't return ones attached to draft declarations
-            DeclaredIngredientFactory(new=True, declaration=draft)
+
+        plant = PlantFactory()
+        unknown_part = PlantPartFactory()
+        self.assertFalse(plant.plant_parts.through.objects.filter(plantpart=unknown_part).exists())
+
+        DeclaredPlantFactory(new=True, declaration=declaration)
+        t = DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=unknown_part)
+        self.assertTrue(t.is_part_request, "vérifier que ce champ est bien assigné quand on utilise le factory")
+        DeclaredSubstanceFactory(new=True, declaration=declaration)
+        DeclaredMicroorganismFactory(new=True, declaration=declaration)
+        DeclaredIngredientFactory(new=True, declaration=declaration)
+        # n'envoie pas des ingrédients qui ne sont pas nouveaux et qui n'ont pas de nouvelles parties
+        DeclaredPlantFactory(new=False, declaration=declaration)
+        # n'envoie pas des ingrédients liés aux déclarations en brouillon
+        DeclaredIngredientFactory(new=True, declaration=draft)
 
         response = self.client.get(reverse("api:list_new_declared_elements"), format="json")
         results = response.json()
-        self.assertEqual(results["count"], 12)
+        self.assertEqual(results["count"], 5)
         result = results["results"][0]
         self.assertEqual(result["declaration"]["id"], declaration.id)
 
@@ -1934,7 +1941,7 @@ class TestDeclaredElementsApi(APITestCase):
         ingredient = DeclaredIngredientFactory(
             new=False, declaration=declaration, request_status=Addable.AddableStatus.REPLACED
         )
-        # don't return ones attached to draft declarations
+        # n'envoie pas des ingrédients liés aux déclarations en brouillon
         DeclaredIngredientFactory(new=True, declaration=draft, request_status=Addable.AddableStatus.REQUESTED)
 
         filter_url = f"{reverse('api:list_new_declared_elements')}?requestStatus=REQUESTED,REPLACED"
@@ -2852,6 +2859,100 @@ class TestSingleDeclaredElementApi(APITestCase):
         response = self.client.post(
             reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
             {"element": {"id": plant.id, "type": "plant"}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        declaration.refresh_from_db()
+        self.assertEqual(
+            declaration.calculated_article,
+            Declaration.Article.ARTICLE_15,
+            "L'article passe à 15 maintenant qu'il n'y a plus de nouveaux ingrédients",
+        )
+
+    @authenticate
+    def test_part_created_on_accept_part(self):
+        """
+        Vérifier qu'une partie de plante est créée et autorisée quand on accepte une demande
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+        plant = PlantFactory()
+        unknown_part = PlantPartFactory()
+        self.assertFalse(plant.plant_parts.through.objects.filter(plant=plant, plantpart=unknown_part).exists())
+
+        declared_plant = DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=unknown_part)
+
+        response = self.client.post(
+            reverse("api:declared_element_accept_part", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        plant_part = plant.plant_parts.through.objects.get(plant=plant, plantpart=unknown_part)
+        self.assertTrue(plant_part.ca_is_useful)
+        self.assertEqual(
+            plant_part.history.first().history_change_reason,
+            f"Ajoutée après une demande par la déclaration id : {declaration.id}",
+        )
+        declared_plant.refresh_from_db()
+        self.assertEqual(declared_plant.request_status, Addable.AddableStatus.REPLACED)
+        self.assertTrue(declared_plant.is_part_request)
+
+    @authenticate
+    def test_part_authorised_on_accept_part(self):
+        """
+        Vérifier qu'une partie de plante est autorisée quand on accepte une demande
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+        plant = PlantFactory()
+        plant_part = PlantPartFactory()
+        unauthorised_part = Part.objects.create(plant=plant, plantpart=plant_part, ca_is_useful=False)
+
+        declared_plant = DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=plant_part)
+
+        response = self.client.post(
+            reverse("api:declared_element_accept_part", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        unauthorised_part.refresh_from_db()
+        self.assertTrue(unauthorised_part.ca_is_useful)
+        self.assertEqual(
+            unauthorised_part.history.first().history_change_reason,
+            f"Autorisée après une demande par la déclaration id : {declaration.id}",
+        )
+        declared_plant.refresh_from_db()
+        self.assertEqual(declared_plant.request_status, Addable.AddableStatus.REPLACED)
+        self.assertTrue(declared_plant.is_part_request)
+
+    @authenticate
+    def test_article_recalculated_on_accept_part(self):
+        """
+        Vérifier que l'article est recalculé avec une autorisation de partie de plante
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+        plant = PlantFactory()
+        unknown_part = PlantPartFactory()
+        self.assertFalse(plant.plant_parts.through.objects.filter(plantpart=unknown_part).exists())
+
+        declared_plant = DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=unknown_part)
+
+        declaration.assign_calculated_article()
+        declaration.save()
+
+        # on suppose que, avec les nouvelles parties de plantes, la déclaration récoit un article 16
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_16)
+
+        response = self.client.post(
+            reverse("api:declared_element_accept_part", kwargs={"pk": declared_plant.id, "type": "plant"}),
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())

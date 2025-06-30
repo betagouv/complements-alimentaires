@@ -4,12 +4,21 @@
       <div class="self-center font-bold capitalize">
         {{ getElementName(model).toLowerCase() }}
       </div>
+      <div v-if="objectType === 'plant_part'" class="self-center ml-2">
+        {{ plantPartName }}
+      </div>
+      <span v-if="plantPartStatus === 'unknown'" class="self-center mt-1 ml-2">
+        <DsfrBadge label="Nouvelle partie de plante" type="info" />
+      </span>
+      <span v-else-if="plantPartStatus === 'unauthorized'" class="self-center mt-1 ml-2">
+        <DsfrBadge label="Partie de plante non autorisée" type="warning" />
+      </span>
     </div>
     <hr class="mt-4 pb-1" />
     <DsfrInputGroup>
       <DsfrRadioButton
         :name="`authorizationMode-${uid}`"
-        hint="Cet ingrédient est autorisé ou utilisable en France"
+        :hint="textForType.frHint"
         v-model="model.authorizationMode"
         value="FR"
       >
@@ -23,7 +32,7 @@
 
       <DsfrRadioButton
         :name="`authorizationMode-${uid}`"
-        hint="Cet ingrédient n'est pas autorisée en France mais l'est dans un autre pays de l'UE ou EEE (déclaré au titre de l'article 16 du décret 2006-352)"
+        :hint="textForType.euHint"
         v-model="model.authorizationMode"
         value="EU"
       >
@@ -96,6 +105,8 @@
 </template>
 
 <script setup>
+import { computed } from "vue"
+import { useRootStore } from "@/stores/root"
 import CountryField from "@/components/fields/CountryField"
 import { getElementName } from "@/utils/elements"
 import { getAuthorizationModeInFrench } from "@/utils/mappings"
@@ -103,22 +114,64 @@ import { getCurrentInstance } from "vue"
 
 const model = defineModel()
 const { uid } = getCurrentInstance()
+const store = useRootStore()
 
-const additionReasons = [
+const props = defineProps(["objectType"])
+
+const additionReasons = computed(() => [
   {
     label: "Usage établi",
     value: "TRADITIONAL_USAGE",
-    hint: "Ingrédient bénéficiant d'un historique de consommation selon le catalogue Novel Food ou dont l'utilisation en alimentation humaine est bien établie (directive 2004/24/CE)",
+    hint: textForType.value.traditionalHint,
   },
   {
     label: "Novel Food",
     value: "NOVEL_FOOD",
-    hint: "L'ingrédient figure sur la liste de l'Union des nouveaux aliments conformément au règlement (UE) 2017/2470",
+    hint: textForType.value.novelHint,
   },
   {
     label: "Ingrédient absent en base de données",
     value: "MISSING",
-    hint: "L'ingrédient est autorisé en France mais ne figure pas dans la base de données",
+    hint: textForType.value.missingHint,
   },
-]
+])
+
+const textForType = computed(() => {
+  if (props.objectType === "plant_part") {
+    return {
+      frHint: "Cette partie de plante est autorisée ou utilisable en France",
+      euHint:
+        "Cette partie de plante n'est pas autorisée en France mais l'est dans un autre pays de l'UE ou EEE (déclaré au titre de l'article 16 du décret 2006-352)",
+      traditionalHint:
+        "Partie de plante bénéficiante d'un historique de consommation selon le catalogue Novel Food ou dont l'utilisation en alimentation humaine est bien établie (directive 2004/24/CE)",
+      novelHint:
+        "La partie de plante figure sur la liste de l'Union des nouveaux aliments conformément au règlement (UE) 2017/2470",
+      missingHint: "La partie de plante est autorisée en France mais ne figure pas dans la base de données",
+    }
+  }
+  return {
+    frHint: "Cet ingrédient est autorisé ou utilisable en France",
+    euHint:
+      "Cet ingrédient n'est pas autorisé en France mais l'est dans un autre pays de l'UE ou EEE (déclaré au titre de l'article 16 du décret 2006-352)",
+    traditionalHint:
+      "Ingrédient bénéficiant d'un historique de consommation selon le catalogue Novel Food ou dont l'utilisation en alimentation humaine est bien établie (directive 2004/24/CE)",
+    novelHint:
+      "L'ingrédient figure sur la liste de l'Union des nouveaux aliments conformément au règlement (UE) 2017/2470",
+    missingHint: "L'ingrédient est autorisé en France mais ne figure pas dans la base de données",
+  }
+})
+
+const plantPartName = computed(() => {
+  if (!model.value.usedPart || !store.plantParts) return ""
+  return store.plantParts.find((p) => p.id === model.value.usedPart)?.name
+})
+
+const plantPartStatus = computed(() => {
+  if (model.value.usedPart && model.value.element?.plantParts?.length) {
+    const associatedPart = model.value.element.plantParts.find((p) => p.id === model.value.usedPart)
+    if (!associatedPart) return "unknown"
+    else if (!associatedPart.isUseful) return "unauthorized"
+  }
+  return ""
+})
 </script>

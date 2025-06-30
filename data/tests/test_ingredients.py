@@ -1,8 +1,17 @@
 from django.test import TestCase
 
-from data.factories import IngredientFactory, MicroorganismFactory, PlantFactory, SubstanceFactory
+from data.factories import (
+    IngredientFactory,
+    MicroorganismFactory,
+    PlantFactory,
+    SubstanceFactory,
+    PlantPartFactory,
+    DeclaredPlantFactory,
+    OngoingInstructionDeclarationFactory,
+)
 from data.models.ingredient_type import IngredientType
 from data.models.substance import SubstanceType
+from data.models.plant import Part
 
 
 class IngredientTestCase(TestCase):
@@ -51,3 +60,28 @@ class IngredientTestCase(TestCase):
         substance.plant_set.remove(plant_supplying_substance)
         substance.refresh_from_db()
         self.assertNotIn(SubstanceType.SECONDARY_METABOLITE, substance.substance_types)
+
+    def test_declared_plant_auto_assigned_is_part_request_status(self):
+        """
+        Si une plante déclarée utilise une partie non-autorisée ou non-associée,
+        mettre le champ is_part_request à vrai
+        """
+        plant = PlantFactory()
+        authorised_part = PlantPartFactory()
+        Part.objects.create(plant=plant, plantpart=authorised_part, ca_is_useful=True)
+        declaration = OngoingInstructionDeclarationFactory()
+        declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=authorised_part)
+        self.assertFalse(declared_plant.is_part_request)
+
+        unauthorised_part = PlantPartFactory()
+        Part.objects.create(plant=plant, plantpart=unauthorised_part, ca_is_useful=False)
+        declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=unauthorised_part)
+        self.assertTrue(declared_plant.is_part_request)
+
+        unassociated_part = PlantPartFactory()
+        self.assertFalse(
+            plant.plant_parts.through.objects.filter(plantpart=unassociated_part).exists(),
+            "la partie n'est pas associée à la plante",
+        )
+        declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=unassociated_part)
+        self.assertTrue(declared_plant.is_part_request)

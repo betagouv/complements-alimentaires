@@ -32,6 +32,7 @@ from .declaration.declared_element import (
     DeclaredElementRequestInfoView,
     DeclaredElementRejectView,
     DeclaredElementReplaceView,
+    DeclaredElementAcceptPartView,
 )
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
