@@ -72,7 +72,7 @@ const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
       x.id || x.siccrfId || x.teleicareDeclarationNumber,
-      { component: "p", text: x.name, class: "font-bold" },
+      { component: "span", text: x.name, class: "font-bold" },
       x.companyName,
       x.brand,
       getStatusTagForCell(x.simplifiedStatus),
