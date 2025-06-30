@@ -250,4 +250,5 @@ class EtablissementToCompanyRelation(models.Model):
 
     @property
     def etablissement_teleicare(self):
-        return IcaEtablissement.objects.get(etab_ident=self.siccrf_id)
+        if self.siccrf_id and IcaEtablissement.objects.filter(etab_ident=self.siccrf_id).exists():
+            return IcaEtablissement.objects.get(etab_ident=self.siccrf_id)
