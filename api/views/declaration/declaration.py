@@ -357,7 +357,7 @@ class OngoingDeclarationsListView(CommonOngoingDeclarationView):
 
 class ControllerDeclarationsListView(CommonOngoingDeclarationView):
     permission_classes = [IsController]
-    pagination_class = InstructionDeclarationPagination
+    pagination_class = DeclarationPagination
     ordering_fields = ["name", "company_name"]
     serializer_class = ControllerDeclarationSerializer
 
