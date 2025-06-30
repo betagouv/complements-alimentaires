@@ -41,7 +41,7 @@ const pages = computed(() => getPagesForPagination(data.value?.count, limit.valu
 
 const page = computed(() => parseInt(route.query.page))
 const ordering = computed(() => route.query.triage)
-const limit = computed(() => route.query.limit)
+const limit = computed(() => parseInt(route.query.limit))
 
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 

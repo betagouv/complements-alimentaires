@@ -514,7 +514,7 @@ const routes = [
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
-        limit: "10",
+        limit: 10,
         triage: "-creationDate",
       },
     },
