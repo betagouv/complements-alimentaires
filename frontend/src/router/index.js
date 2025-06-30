@@ -509,9 +509,14 @@ const routes = [
     name: "DeclarationSearchPage",
     component: DeclarationSearchPage,
     meta: {
-      title: "Les compléments alimentaires",
+      title: "Tableau des compléments alimentaires",
       requiredRoles: ["ControlRole"],
       authenticationRequired: true,
+      defaultQueryParams: {
+        page: 1,
+        limit: 10,
+        triage: "-creationDate",
+      },
     },
   },
   {

@@ -24,6 +24,7 @@ from .declaration import (
     OpenDataDeclarationSerializer,
     DeclarationSerializer,
     DeclarationShortSerializer,
+    ControllerDeclarationSerializer,
     SimpleDeclarationSerializer,
     ExcelExportDeclarationSerializer,
     DeclaredElementSerializer,
