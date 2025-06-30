@@ -335,6 +335,9 @@ const saveElement = async () => {
   v$.value.$validate()
   validateMaxQuantities()
   if (v$.value.$error || maxQuantitiesError.value) {
+    useToaster().addErrorMessage(
+      "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis"
+    )
     window.scrollTo(0, 0)
     return
   }
@@ -346,7 +349,7 @@ const saveElement = async () => {
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
   if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
-  if (payload.authorisedPlantParts?.length || payload.forbiddenPlantParts?.length) {
+  if (formForType.value.plantParts) {
     const authorisedParts = payload.authorisedPlantParts
     const forbiddenParts = payload.forbiddenPlantParts
     payload.plantParts = authorisedParts
@@ -370,8 +373,15 @@ const saveElement = async () => {
     if (isNewIngredient.value) router.push({ name: "NewElementsPage" })
     else router.push({ name: "ElementPage", params: { urlComponent: props.urlComponent } })
   } else {
-    if ($externalResults.value.fieldErrors?.maxQuantities) {
-      maxQuantitiesError.value = $externalResults.value.fieldErrors.maxQuantities[0]
+    const fieldErrors = $externalResults.value.fieldErrors
+    if (fieldErrors && Object.keys(fieldErrors).length > 0) {
+      if ($externalResults.value?.fieldErrors?.maxQuantities) {
+        maxQuantitiesError.value = $externalResults.value.fieldErrors.maxQuantities[0]
+      }
+      useToaster().addErrorMessage(
+        "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis"
+      )
+      window.scrollTo(0, 0)
     }
   }
 }
