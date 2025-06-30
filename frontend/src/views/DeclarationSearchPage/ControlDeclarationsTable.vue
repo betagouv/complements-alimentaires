@@ -29,8 +29,14 @@ const headers = computed(() => [
   { text: "ID décla." },
   { text: "Produit", headerAttrs: getSortHeaderAttrs("name"), icon: getSortIcon("name") },
   { text: "Entreprise", headerAttrs: getSortHeaderAttrs("companyName"), icon: getSortIcon("companyName") },
-  { text: "Marque", headerAttrs: getFilterHeaderAttrs("brand"), icon: "ri-filter-line" },
-  { text: "Statut du produit", headerAttrs: getFilterHeaderAttrs("status"), icon: "ri-filter-line" },
+
+  { text: "Marque" },
+  { text: "Statut du produit" },
+
+  // Remplacer les deux lignes précedentes par celles-ci lors que le filtrage sera mis en place
+  // { text: "Marque", headerAttrs: getFilterHeaderAttrs("brand"), icon: "ri-filter-line" },
+  // { text: "Statut du produit", headerAttrs: getFilterHeaderAttrs("status"), icon: "ri-filter-line" },
+
   { text: "Date d'application du statut" },
 ])
 
@@ -57,8 +63,9 @@ const getSortIcon = (sortParam) =>
     : "ri-arrow-up-down-line"
 
 // Gestion du filtrage
-const getFilterHeaderAttrs = (filterParam) => ({ class: "cursor-pointer", onClick: () => filterBy(filterParam) })
-const filterBy = (filterParam, filterValue) => console.log(`Filter by ${filterParam} : ${filterValue} not implemented`)
+// Activer les lignes suivantes lors que le filtrage sera mis en place
+// const getFilterHeaderAttrs = (filterParam) => ({ class: "cursor-pointer", onClick: () => filterBy(filterParam) })
+// const filterBy = (filterParam, filterValue) => console.log(`Filter by ${filterParam} : ${filterValue} not implemented`)
 
 // Construction des files de la table
 const rows = computed(() =>
