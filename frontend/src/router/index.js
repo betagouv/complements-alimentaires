@@ -516,6 +516,7 @@ const routes = [
         page: 1,
         limit: 10,
         triage: "-creationDate",
+        status: "",
       },
     },
   },
