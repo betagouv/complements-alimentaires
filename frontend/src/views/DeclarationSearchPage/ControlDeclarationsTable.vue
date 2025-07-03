@@ -103,9 +103,9 @@ const simplifiedStatuses = [
 ]
 const options = simplifiedStatuses.map((x) => ({ label: x, value: x, tagLabel: x }))
 const statusModalOpened = ref(false)
-const filteredStatuses = ref(route.query.status.split(",").filter((x) => !!x))
+const filteredStatuses = ref(route.query.simplifiedStatus.split(",").filter((x) => !!x))
 const applyStatusModal = () => {
-  filterBy("status", filteredStatuses.value.join(","))
+  filterBy("simplifiedStatus", filteredStatuses.value.join(","))
   statusModalOpened.value = false
 }
 

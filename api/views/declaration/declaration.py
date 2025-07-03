@@ -43,7 +43,7 @@ from api.serializers import (
     SimpleUserSerializer,
     SimpleVisorSerializer,
 )
-from api.utils.filters import CamelCaseOrderingFilter
+from api.utils.filters import CamelCaseOrderingFilter, SimplifiedStatusFilter
 from api.utils.search import UnaccentSearchFilter
 from api.views.declaration.declaration_filter_set import DeclarationFilterSet
 from api.views.declaration.declaration_flow import DeclarationFlow
@@ -360,6 +360,12 @@ class ControllerDeclarationsListView(CommonOngoingDeclarationView):
     pagination_class = DeclarationPagination
     ordering_fields = ["name", "company_name"]
     serializer_class = ControllerDeclarationSerializer
+    filter_backends = [
+        SimplifiedStatusFilter,
+        django_filters.DjangoFilterBackend,
+        CamelCaseOrderingFilter,
+        UnaccentSearchFilter,
+    ]
 
     def get_queryset(self):
         queryset = super().get_queryset().select_related("company")

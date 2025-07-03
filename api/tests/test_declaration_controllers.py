@@ -133,3 +133,53 @@ class TestDeclarationControllers(APITestCase):
 
         for result in results:
             self.assertEqual(result["simplifiedStatus"], "En cours d'instruction")
+
+    @authenticate
+    def test_filter_by_simplified_status(self):
+        """
+        Il est possible de filtrer par le status simplifié
+        """
+        ControlRoleFactory(user=authenticate.user)
+
+        ongoing_instruction_1 = AwaitingInstructionDeclarationFactory(
+            overridden_article=Declaration.Article.ARTICLE_16
+        )
+        ongoing_instruction_2 = AwaitingInstructionDeclarationFactory(
+            overridden_article=Declaration.Article.ARTICLE_18
+        )
+        ready_for_sale = AwaitingInstructionDeclarationFactory(
+            overridden_article=Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
+        )
+
+        # Requête pour Commercialisation possible
+        response = self.client.get(
+            reverse("api:list_control_declarations") + "?simplifiedStatus=Commercialisation+possible", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], ready_for_sale.id)
+
+        # Requête pour En cours d'instruction
+        response = self.client.get(
+            reverse("api:list_control_declarations") + "?simplifiedStatus=En+cours+d'instruction", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+        result_ids = (x["id"] for x in results)
+        self.assertIn(ongoing_instruction_1.id, result_ids)
+        self.assertIn(ongoing_instruction_2.id, result_ids)
+
+        # Requête pour tous les deux
+        response = self.client.get(
+            reverse("api:list_control_declarations")
+            + "?simplified_status=Commercialisation+possible,En+cours+d'instruction",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 3)

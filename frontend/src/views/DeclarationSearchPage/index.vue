@@ -42,14 +42,14 @@ const pages = computed(() => getPagesForPagination(data.value?.count, limit.valu
 const page = computed(() => parseInt(route.query.page))
 const ordering = computed(() => route.query.triage)
 const limit = computed(() => parseInt(route.query.limit))
-const status = computed(() => route.query.status)
+const simplifiedStatus = computed(() => route.query.simplifiedStatus)
 
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 
 // Obtention de la donnée via API
 const url = computed(
   () =>
-    `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&status=${status.value}`
+    `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&simplifiedStatus=${simplifiedStatus.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 
@@ -69,5 +69,5 @@ const updateFiltering = (filterKey, filterValue) => {
   updateQuery(filterQuery)
 }
 
-watch([page, limit, ordering, status], fetchSearchResults)
+watch([page, limit, ordering, simplifiedStatus], fetchSearchResults)
 </script>

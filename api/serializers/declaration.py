@@ -6,6 +6,7 @@ from rest_framework import serializers
 
 from api.exceptions import ProjectAPIException
 from api.permissions import IsInstructor, IsVisor
+from api.utils.simplified_status import SimplifiedStatusHelper
 from api.utils.urls import get_base_url
 from data.models import (
     Attachment,
@@ -23,7 +24,6 @@ from data.models import (
     Plant,
     PlantPart,
     Population,
-    Snapshot,
     Substance,
     SubstanceUnit,
 )
@@ -287,72 +287,18 @@ class ControllerDeclarationSerializer(serializers.ModelSerializer):
             "simplified_status_date",
         )
 
-    # Ces articles n'ont pas besoin d'une validation explicite pour
-    # être mis dans le marché
-    passthrough_articles = (
-        Declaration.Article.ARTICLE_15,
-        Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION,
-        Declaration.Article.ARTICLE_15_WARNING,
-    )
-
-    ongoing_instruction = (
-        Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
-        Declaration.DeclarationStatus.ONGOING_INSTRUCTION,
-        Declaration.DeclarationStatus.AWAITING_VISA,
-        Declaration.DeclarationStatus.ONGOING_VISA,
-        Declaration.DeclarationStatus.OBJECTION,
-        Declaration.DeclarationStatus.OBSERVATION,
-    )
-
     def get_simplified_status(self, instance):
         """
         On utilise des statuts simplifiés pour les vues contrôle, cette méthode
         retourne le label à mettre directement dans le frontend
         """
-        MARKET_READY = "Commercialisation possible"
-        ONGOING = "En cours d'instruction"
-        REFUSED = "Commercialisation refusée"
-        WITHDRAWN = "Retiré du marché"
-        INTERRUPTED = "Instruction interrompue"
-
-        if instance.status == Declaration.DeclarationStatus.AUTHORIZED:
-            return MARKET_READY
-        if instance.status in self.ongoing_instruction:
-            return MARKET_READY if instance.article in self.passthrough_articles else ONGOING
-        if instance.status == Declaration.DeclarationStatus.WITHDRAWN:
-            return WITHDRAWN
-        if instance.status == Declaration.DeclarationStatus.REJECTED:
-            return REFUSED
-        if instance.status == Declaration.DeclarationStatus.ABANDONED:
-            return INTERRUPTED
+        return SimplifiedStatusHelper.get_simplified_status(instance)
 
     def get_simplified_status_date(self, instance):
         """
         La date qui nous intéresse peut concerner des snapshots différents
         """
-        snapshots = instance.snapshots
-        queryset = None
-        if instance.status == Declaration.DeclarationStatus.AUTHORIZED:
-            if instance.article in self.passthrough_articles:
-                queryset = snapshots.filter(action=Snapshot.SnapshotActions.SUBMIT)
-            else:
-                queryset = snapshots.filter(status=Declaration.DeclarationStatus.AUTHORIZED)
-        elif instance.status in self.ongoing_instruction:
-            queryset = snapshots.filter(action=Snapshot.SnapshotActions.SUBMIT)
-        elif instance.status == Declaration.DeclarationStatus.WITHDRAWN:
-            queryset = snapshots.filter(action=Snapshot.SnapshotActions.WITHDRAW)
-        elif instance.status == Declaration.DeclarationStatus.REJECTED:
-            queryset = snapshots.filter(status=Declaration.DeclarationStatus.REJECTED)
-        elif instance.status == Declaration.DeclarationStatus.ABANDONED:
-            queryset = snapshots.filter(action=Snapshot.SnapshotActions.ABANDON)
-        else:
-            return None
-
-        try:
-            return queryset.latest("creation_date").creation_date
-        except Snapshot.DoesNotExist as e:
-            logger.error(f"Declaration with ID {instance.id} was unable to obtain a simplified_status_date. {e}")
-            return None
+        return SimplifiedStatusHelper.get_simplified_status_date(instance)
 
 
 class SimpleDeclarationSerializer(serializers.ModelSerializer):
