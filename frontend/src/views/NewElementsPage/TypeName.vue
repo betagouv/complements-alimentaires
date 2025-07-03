@@ -8,7 +8,7 @@
 <script setup>
 import { getTypeInFrench } from "@/utils/mappings"
 
-const props = defineProps({
+defineProps({
   element: { type: Object },
 })
 </script>
