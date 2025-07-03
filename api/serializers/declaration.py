@@ -529,9 +529,9 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         )
 
         queryset = queryset.prefetch_related(
-            "effects__name",
-            "populations__name",
-            "conditions_not_recommended__name",
+            "effects",
+            "populations",
+            "conditions_not_recommended",
             "declared_plants__plant__substances",
             "declared_plants__plant",
             "declared_plants__preparation",
