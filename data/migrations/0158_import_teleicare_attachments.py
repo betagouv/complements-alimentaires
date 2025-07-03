@@ -14,12 +14,10 @@ class Migration(migrations.Migration):
     ]
 
     def set_attachments_from_teleicare(apps, schema_editor):
-        # Cette migration est appliquée manuellement dans le shell django en staging, prod, demo
         teleicare_attachments = pd.read_csv("data/migrations/0158_mappingGUIDFileName.csv", sep=",")
         Attachment = apps.get_model("data", "Attachment")
         Declaration = apps.get_model("data", "Declaration")
         for index, teleicare_attachment in teleicare_attachments.iterrows():
-            # teleicare_attachments['path']
             new_attachment = Attachment(
                 type=teleicare_attachment["type"],
                 declaration=Declaration.objects.get(siccrf_id=teleicare_attachment['cplalim_ident']),
@@ -32,7 +30,8 @@ class Migration(migrations.Migration):
         pass
 
     operations = (
-        [migrations.RunPython(set_attachments_from_teleicare, reverse_set_attachments_from_teleicare)]
-        if "test" not in sys.argv
-        else []
+        # Cette migration est appliquée manuellement dans le shell django en prod, demo
+        # [migrations.RunPython(set_attachments_from_teleicare, reverse_set_attachments_from_teleicare)]
+        # if "test" not in sys.argv
+        # else []
     )
