@@ -2,7 +2,7 @@
   <div>
     <DsfrTable ref="table" title="Toutes les déclarations" :rows="rows" :no-caption="true" :pagination="false">
       <template #header>
-        <TableHeader :headers="headers" />
+        <TableHeaders :headers="headers" />
       </template>
     </DsfrTable>
     <DsfrModal
@@ -21,7 +21,7 @@ import { computed, ref } from "vue"
 import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "./utils"
 import { useRoute } from "vue-router"
-import TableHeader from "@/components/TableHeader"
+import TableHeaders from "@/components/TableHeaders"
 
 const route = useRoute()
 const emit = defineEmits(["sort", "filter"])

@@ -29,18 +29,18 @@ defineProps({ headers: Array })
 th {
   @apply py-2!;
 }
-th .vicon {
+th :deep(.vicon) {
   @apply ml-2!;
 }
 
 /* Ces styles sont appliqués pour les icônes des entêtes du DsfrTable si le filtre
 est actif pour rendre un petit cercle à côté de l'icône. */
-.th.active .header-icon {
+.active :deep(.header-icon) {
   position: relative;
   display: inline-block;
 }
 
-.th.active .header-icon::after {
+.active :deep(.header-icon::after) {
   content: "";
   position: absolute;
   top: 0;
