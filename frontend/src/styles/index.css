@@ -67,6 +67,9 @@
   &.icon-plant {
     @apply bg-ca-plant;
   }
+  &.icon-plant_part {
+    @apply bg-ca-plant;
+  }
   &.icon-microorganism {
     @apply bg-ca-microorganism;
   }
@@ -90,6 +93,11 @@
   }
 }
 @utility icon-plant {
+  &.icon {
+    @apply bg-ca-plant;
+  }
+}
+@utility icon-plant_part {
   &.icon {
     @apply bg-ca-plant;
   }
@@ -155,6 +163,18 @@
   }
   & .fr-tag .ov-icon {
     @apply mr-2!;
+  }
+  & .fr-tag.blue {
+    background-color: #e3e3fd;
+    color: #000091;
+  }
+  & .fr-tag.green {
+    background-color: #b8fec9;
+    color: #18753c;
+  }
+  & .fr-tag.red {
+    background-color: #ffe9e9;
+    color: #ce0500;
   }
 }
 @utility fr-tag {

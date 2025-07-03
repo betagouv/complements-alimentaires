@@ -94,8 +94,12 @@ class IngredientTestCase(TestCase):
             os.path.join(settings.MEDIA_ROOT, self.etl_test.dataset_name + ".csv"), delimiter=";"
         )
         self.assertEqual(len(open_data_jdd), 3)
-        substance_loaded = json.loads(open_data_jdd["substances"][1])
-        self.assertEqual(substance_loaded[0]["nom"], "Vitamine C")
+
+        def is_vitamin_c(substance):
+            json_substance = json.loads(substance)
+            return "nom" in json_substance[0] and json_substance[0]["nom"] == "Vitamine C"
+
+        substance_loaded = json.loads(next(x for x in open_data_jdd["substances"] if is_vitamin_c(x)))
         self.assertEqual(substance_loaded[0]["quantité_par_djr"], 10)
         self.assertEqual(substance_loaded[0]["unite"], "mg")
 

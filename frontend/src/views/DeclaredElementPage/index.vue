@@ -1,13 +1,12 @@
 <template>
   <div>
-    <DsfrNotice title="En construction" desc="Des nouvelles fonctionnalités arrivent bientôt !" />
     <div class="fr-container">
       <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
       <ElementAlert :element="element" />
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
           <ElementInfo :element="element" :type="type" :declarationLink="declarationLink" />
-          <ReplacementSearch @replacement="(obj) => (replacement = obj)" />
+          <ReplacementSearch @replacement="(obj) => (replacement = obj)" v-if="!element.isPartRequest" />
         </div>
         <div v-if="replacement" class="my-4">
           <ElementCard :objectType="replacement.objectType" v-model="additionalFields" :canRemove="false" />
@@ -19,6 +18,12 @@
             <template #default>
               <div v-if="modalToOpen === 'replace'">
                 <ElementSynonyms v-model="synonyms" :requestElement="element" :initialSynonyms="replacement.synonyms" />
+              </div>
+              <div v-else-if="modalToOpen === 'authorizePart'">
+                <p>
+                  Voulez-vous autoriser la partie de plante {{ plantPartName }} pour la plante
+                  {{ element.element?.name }} ?
+                </p>
               </div>
               <div v-else>
                 <DsfrInput v-model="notes" label="Notes" label-visible is-textarea />
@@ -83,10 +88,7 @@ const getElementFromApi = async () => {
 
 getElementFromApi()
 watch(element, (newElement) => {
-  if (newElement) {
-    const name = newElement.newName
-    document.title = `${name} - Compl'Alim`
-  }
+  document.title = `${newElement?.newName || newElement?.element?.name} - Compl'Alim`
   additionalFields.value = JSON.parse(JSON.stringify(element.value))
   additionalFields.value.new = false
 })
@@ -129,26 +131,40 @@ watch(replacement, (newReplacement) => {
   }
 })
 
-const actionButtons = computed(() => [
-  {
-    label: "Remplacer",
-    primary: true,
-    onclick: openModal("replace"),
-    disabled: !replacement.value,
-  },
-  {
-    label: "Demander plus d’information",
-    tertiary: true,
-    onclick: openModal("info"),
-  },
-  {
-    label: "Refuser l’ingrédient",
-    tertiary: true,
-    "no-outline": true,
-    icon: "ri-close-line",
-    onclick: openModal("refuse"),
-  },
-])
+const actionButtons = computed(() => {
+  const actions = [
+    {
+      label: "Demander plus d’information",
+      tertiary: true,
+      onclick: openModal("info"),
+      disabled: element.value.isPartRequest && element.value.requestStatus === "REPLACED",
+    },
+    {
+      label: element.value.isPartRequest ? "Refuser la partie de plante" : "Refuser l’ingrédient",
+      tertiary: true,
+      "no-outline": true,
+      icon: "ri-close-line",
+      onclick: openModal("refuse"),
+      disabled: element.value.isPartRequest && element.value.requestStatus === "REPLACED",
+    },
+  ]
+  if (element.value.isPartRequest) {
+    actions.unshift({
+      label: "Autoriser la partie de plante",
+      primary: true,
+      onclick: openModal("authorizePart"),
+      disabled: element.value.isPartRequest && element.value.requestStatus === "REPLACED",
+    })
+  } else {
+    actions.unshift({
+      label: "Remplacer",
+      primary: true,
+      onclick: openModal("replace"),
+      disabled: !replacement.value,
+    })
+  }
+  return actions
+})
 
 const updateElement = async (action, payload) => {
   const { data, response } = await useFetch(`${url.value}/${action}`, { headers: headers() }, { onFetchError })
@@ -181,8 +197,21 @@ const modals = computed(() => {
         },
       ],
     },
+    authorizePart: {
+      title: "Autoriser la partie de plante",
+      actions: [
+        {
+          label: "Autoriser la partie de plante",
+          onClick() {
+            updateElement("accept-part", {})
+          },
+        },
+      ],
+    },
     info: {
-      title: "L’ajout du nouvel ingrédient nécessite plus d’information.",
+      title: element.value.isPartRequest
+        ? "L'autorisation de la partie de plante nécessite plus d'information"
+        : "L’ajout du nouvel ingrédient nécessite plus d’information.",
       actions: [
         {
           label: "Enregistrer",
@@ -195,7 +224,9 @@ const modals = computed(() => {
       ],
     },
     refuse: {
-      title: "L’ajout du nouvel ingrédient sera refusé.",
+      title: element.value.isPartRequest
+        ? "L'autorisation de la partie de plante sera refusé"
+        : "L’ajout du nouvel ingrédient sera refusé.",
       actions: [
         {
           label: "Refuser",
@@ -222,5 +253,9 @@ const modalActions = computed(() => {
       },
     },
   ])
+})
+
+const plantPartName = computed(() => {
+  return store.plantParts?.find((p) => p.id === element.value.usedPart)?.name
 })
 </script>

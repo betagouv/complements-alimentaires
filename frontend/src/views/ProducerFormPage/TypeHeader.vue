@@ -3,11 +3,17 @@
     <div :class="`mr-4 self-center justify-center rounded-full icon icon-${objectType} size-8 flex`">
       <v-icon class="self-center" fill="white" :name="getTypeIcon(objectType)" />
     </div>
-    <p class="m-0 font-bold capitalize self-center">{{ getTypeInFrench(objectType) }}s</p>
+    <p class="m-0 font-bold self-center">{{ typeName }}</p>
   </div>
 </template>
 
 <script setup>
+import { computed } from "vue"
 import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
-defineProps({ objectType: { type: String } })
+const props = defineProps({ objectType: { type: String } })
+
+const typeName = computed(() => {
+  const typeNameInfo = getTypeInFrench(props.objectType)
+  return typeNameInfo?.plural || `${typeNameInfo}s`
+})
 </script>

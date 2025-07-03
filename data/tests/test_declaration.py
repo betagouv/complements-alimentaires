@@ -14,12 +14,13 @@ from data.factories import (
     InstructionReadyDeclarationFactory,
     MaxQuantityPerPopulationRelationFactory,
     PlantFactory,
+    PlantPartFactory,
     PopulationFactory,
     PreparationFactory,
     SnapshotFactory,
     SubstanceFactory,
 )
-from data.models import Declaration, Snapshot, SubstanceType
+from data.models import Declaration, Snapshot, SubstanceType, Part
 from data.models.ingredient_status import IngredientStatus
 
 
@@ -249,6 +250,8 @@ class DeclarationTestCase(TestCase):
         Teste si l'article 16 est bien assigné pour :
         - un nouvel ingrédient ajouté
         - un ingrédient non autorisé ajouté
+        - une partie de plante inconnue
+        - une partie de plante non autorisée
         """
         declaration_new = InstructionReadyDeclarationFactory(
             declared_plants=[],
@@ -283,6 +286,49 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration_not_autorized.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_not_autorized.calculated_article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_not_autorized.overridden_article, "")
+
+        declaration_part_not_authorized = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+        )
+        plant_with_part_not_authorized = PlantFactory(ca_status=IngredientStatus.AUTHORIZED)
+        plant_part = PlantPartFactory()
+        Part.objects.create(plant=plant_with_part_not_authorized, plantpart=plant_part, ca_is_useful=False)
+
+        DeclaredPlantFactory(
+            plant=plant_with_part_not_authorized, used_part=plant_part, declaration=declaration_part_not_authorized
+        )
+
+        declaration_part_not_authorized.assign_calculated_article()
+        declaration_part_not_authorized.save()
+        declaration_part_not_authorized.refresh_from_db()
+
+        self.assertEqual(declaration_part_not_authorized.article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_part_not_authorized.calculated_article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_part_not_authorized.overridden_article, "")
+
+        declaration_part_unknown = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+        )
+        plant_with_part_unknown = PlantFactory(ca_status=IngredientStatus.AUTHORIZED)
+        plant_part = PlantPartFactory()
+
+        DeclaredPlantFactory(plant=plant_with_part_unknown, used_part=plant_part, declaration=declaration_part_unknown)
+
+        declaration_part_unknown.assign_calculated_article()
+        declaration_part_unknown.save()
+        declaration_part_unknown.refresh_from_db()
+
+        self.assertEqual(declaration_part_unknown.article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_part_unknown.calculated_article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_part_unknown.overridden_article, "")
 
     def test_article_18(self):
         SUBSTANCE_MAX_QUANTITY = 1.0

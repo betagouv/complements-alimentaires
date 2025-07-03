@@ -42,6 +42,11 @@ urlpatterns = {
         views.DeclaredElementReplaceView.as_view(),
         name="declared_element_replace",
     ),
+    path(
+        "declared-elements/<str:type>/<int:pk>/accept-part",
+        views.DeclaredElementAcceptPartView.as_view(),
+        name="declared_element_accept_part",
+    ),
     # References
     path("populations/", views.PopulationListView.as_view(), name="population_list"),
     path("conditions/", views.ConditionListView.as_view(), name="condition_list"),
@@ -134,6 +139,7 @@ urlpatterns = {
         name="list_create_declaration",
     ),
     path("declarations/", views.OngoingDeclarationsListView.as_view(), name="list_all_declarations"),
+    path("control/declarations/", views.ControllerDeclarationsListView.as_view(), name="list_control_declarations"),
     path("declarations-export/", views.OngoingDeclarationsExcelView.as_view(), name="export_excel_declarations"),
     path(
         "declarations/<int:pk>",

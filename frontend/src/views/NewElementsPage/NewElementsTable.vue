@@ -14,7 +14,8 @@
 import { computed } from "vue"
 import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
-import { getTypeInFrench, getAuthorizationModeInFrench } from "@/utils/mappings"
+import { getAuthorizationModeInFrench } from "@/utils/mappings"
+import TypeName from "./TypeName"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
@@ -33,7 +34,10 @@ const rows = computed(() =>
     rowData: [
       x.declaration.company?.socialName,
       x.name,
-      getTypeInFrench(x.type),
+      {
+        component: TypeName,
+        element: x,
+      },
       getAuthorizationModeInFrench(x.authorizationMode),
       x.declaration.responseLimitDate && isoToPrettyDate(x.declaration.responseLimitDate),
       getStatusTagForCell(x.declaration.status),

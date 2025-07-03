@@ -8,6 +8,7 @@
       v-model="elements[index]"
       class="mb-2"
       :objectType="objectType"
+      :canAddNewPlantPart="true"
     />
   </TransitionGroup>
 </template>

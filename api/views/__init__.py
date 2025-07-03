@@ -8,6 +8,7 @@ from .declaration.declaration import (
     DeclarationSubmitView,
     OngoingDeclarationsExcelView,
     OngoingDeclarationsListView,
+    ControllerDeclarationsListView,
     CompanyDeclarationsListView,
     DeclarationTakeForInstructionView,
     DeclarationTakeForVisaView,
@@ -32,6 +33,7 @@ from .declaration.declared_element import (
     DeclaredElementRequestInfoView,
     DeclaredElementRejectView,
     DeclaredElementReplaceView,
+    DeclaredElementAcceptPartView,
 )
 from .effect import EffectListView
 from .galenic_formulation import GalenicFormulationListView
