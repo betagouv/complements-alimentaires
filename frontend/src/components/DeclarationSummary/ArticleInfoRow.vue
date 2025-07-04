@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between items-center border-2 p-2">
+  <div class="flex justify-between items-center border p-2">
     <DsfrModal
       :actions="[{ label: 'Valider', onClick: changeArticle }]"
       @close="articleModalOpened = false"
