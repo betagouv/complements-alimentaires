@@ -11,8 +11,8 @@ class TestPopulationApi(APITestCase):
         """
         The API should return all non obsolete populations that are not missing data
         """
-        complete_populations = [PopulationFactory.create(is_obsolete=False) for i in range(3)]
-        obsolete_populations = [PopulationFactory.create(is_obsolete=True) for i in range(3)]
+        complete_populations = [PopulationFactory.create(ca_is_obsolete=False) for i in range(3)]
+        obsolete_populations = [PopulationFactory.create(ca_is_obsolete=True) for i in range(3)]
         response = self.client.get(reverse("api:population_list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
