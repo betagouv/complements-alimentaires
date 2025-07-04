@@ -21,14 +21,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='condition',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='condition',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='condition',
             name='siccrf_is_obsolete',
         ),
         migrations.RemoveField(
@@ -45,14 +37,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='effect',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='effect',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='effect',
             name='siccrf_is_obsolete',
         ),
         migrations.RemoveField(
@@ -69,14 +53,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='galenicformulation',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='galenicformulation',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='galenicformulation',
             name='siccrf_is_obsolete',
         ),
         migrations.RemoveField(
@@ -90,14 +66,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='historicalcondition',
             name='ca_name',
-        ),
-        migrations.RemoveField(
-            model_name='historicalcondition',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='historicalcondition',
-            name='new_name',
         ),
         migrations.RemoveField(
             model_name='historicalcondition',
@@ -117,14 +85,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='historicaleffect',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='historicaleffect',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='historicaleffect',
             name='siccrf_is_obsolete',
         ),
         migrations.RemoveField(
@@ -138,14 +98,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='historicalgalenicformulation',
             name='ca_name',
-        ),
-        migrations.RemoveField(
-            model_name='historicalgalenicformulation',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='historicalgalenicformulation',
-            name='new_name',
         ),
         migrations.RemoveField(
             model_name='historicalgalenicformulation',
@@ -177,26 +129,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='historicalingredient',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='historicalingredient',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='historicalingredient',
-            name='new_private_comments',
-        ),
-        migrations.RemoveField(
-            model_name='historicalingredient',
-            name='new_public_comments',
-        ),
-        migrations.RemoveField(
-            model_name='historicalingredient',
-            name='new_status',
-        ),
-        migrations.RemoveField(
-            model_name='historicalingredient',
             name='siccrf_is_obsolete',
         ),
         migrations.RemoveField(
@@ -214,10 +146,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='historicalmaxquantityperpopulationrelation',
             name='ca_max_quantity',
-        ),
-        migrations.RemoveField(
-            model_name='historicalmaxquantityperpopulationrelation',
-            name='new_max_quantity',
         ),
         migrations.RemoveField(
             model_name='historicalmaxquantityperpopulationrelation',
@@ -249,34 +177,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='historicalmicroorganism',
-            name='new_genus',
-        ),
-        migrations.RemoveField(
-            model_name='historicalmicroorganism',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='historicalmicroorganism',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='historicalmicroorganism',
-            name='new_private_comments',
-        ),
-        migrations.RemoveField(
-            model_name='historicalmicroorganism',
-            name='new_public_comments',
-        ),
-        migrations.RemoveField(
-            model_name='historicalmicroorganism',
-            name='new_species',
-        ),
-        migrations.RemoveField(
-            model_name='historicalmicroorganism',
-            name='new_status',
-        ),
-        migrations.RemoveField(
-            model_name='historicalmicroorganism',
             name='siccrf_genus',
         ),
         migrations.RemoveField(
@@ -302,14 +202,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='historicalpart',
             name='ca_must_be_monitored',
-        ),
-        migrations.RemoveField(
-            model_name='historicalpart',
-            name='new_is_useful',
-        ),
-        migrations.RemoveField(
-            model_name='historicalpart',
-            name='new_must_be_monitored',
         ),
         migrations.RemoveField(
             model_name='historicalpart',
@@ -345,30 +237,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='historicalplant',
-            name='new_family_by_id',
-        ),
-        migrations.RemoveField(
-            model_name='historicalplant',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='historicalplant',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='historicalplant',
-            name='new_private_comments',
-        ),
-        migrations.RemoveField(
-            model_name='historicalplant',
-            name='new_public_comments',
-        ),
-        migrations.RemoveField(
-            model_name='historicalplant',
-            name='new_status',
-        ),
-        migrations.RemoveField(
-            model_name='historicalplant',
             name='siccrf_family',
         ),
         migrations.RemoveField(
@@ -397,14 +265,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='historicalplantfamily',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='historicalplantfamily',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='historicalplantfamily',
             name='siccrf_is_obsolete',
         ),
         migrations.RemoveField(
@@ -421,14 +281,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='historicalplantpart',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='historicalplantpart',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='historicalplantpart',
             name='siccrf_is_obsolete',
         ),
         migrations.RemoveField(
@@ -442,14 +294,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='historicalpreparation',
             name='ca_name',
-        ),
-        migrations.RemoveField(
-            model_name='historicalpreparation',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='historicalpreparation',
-            name='new_name',
         ),
         migrations.RemoveField(
             model_name='historicalpreparation',
@@ -498,46 +342,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='historicalsubstance',
             name='ca_status',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsubstance',
-            name='new_cas_number',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsubstance',
-            name='new_einec_number',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsubstance',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsubstance',
-            name='new_must_specify_quantity',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsubstance',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsubstance',
-            name='new_nutritional_reference',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsubstance',
-            name='new_private_comments',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsubstance',
-            name='new_public_comments',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsubstance',
-            name='new_source',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsubstance',
-            name='new_status',
         ),
         migrations.RemoveField(
             model_name='historicalsubstance',
@@ -597,26 +401,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='ingredient',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='ingredient',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='ingredient',
-            name='new_private_comments',
-        ),
-        migrations.RemoveField(
-            model_name='ingredient',
-            name='new_public_comments',
-        ),
-        migrations.RemoveField(
-            model_name='ingredient',
-            name='new_status',
-        ),
-        migrations.RemoveField(
-            model_name='ingredient',
             name='siccrf_is_obsolete',
         ),
         migrations.RemoveField(
@@ -638,10 +422,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='maxquantityperpopulationrelation',
             name='ca_max_quantity',
-        ),
-        migrations.RemoveField(
-            model_name='maxquantityperpopulationrelation',
-            name='new_max_quantity',
         ),
         migrations.RemoveField(
             model_name='maxquantityperpopulationrelation',
@@ -670,34 +450,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='microorganism',
             name='ca_status',
-        ),
-        migrations.RemoveField(
-            model_name='microorganism',
-            name='new_genus',
-        ),
-        migrations.RemoveField(
-            model_name='microorganism',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='microorganism',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='microorganism',
-            name='new_private_comments',
-        ),
-        migrations.RemoveField(
-            model_name='microorganism',
-            name='new_public_comments',
-        ),
-        migrations.RemoveField(
-            model_name='microorganism',
-            name='new_species',
-        ),
-        migrations.RemoveField(
-            model_name='microorganism',
-            name='new_status',
         ),
         migrations.RemoveField(
             model_name='microorganism',
@@ -733,14 +485,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='part',
-            name='new_is_useful',
-        ),
-        migrations.RemoveField(
-            model_name='part',
-            name='new_must_be_monitored',
-        ),
-        migrations.RemoveField(
-            model_name='part',
             name='siccrf_is_useful',
         ),
         migrations.RemoveField(
@@ -770,30 +514,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='plant',
             name='ca_status',
-        ),
-        migrations.RemoveField(
-            model_name='plant',
-            name='new_family_by_id',
-        ),
-        migrations.RemoveField(
-            model_name='plant',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='plant',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='plant',
-            name='new_private_comments',
-        ),
-        migrations.RemoveField(
-            model_name='plant',
-            name='new_public_comments',
-        ),
-        migrations.RemoveField(
-            model_name='plant',
-            name='new_status',
         ),
         migrations.RemoveField(
             model_name='plant',
@@ -829,14 +549,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='plantfamily',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='plantfamily',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='plantfamily',
             name='siccrf_is_obsolete',
         ),
         migrations.RemoveField(
@@ -853,14 +565,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='plantpart',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='plantpart',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='plantpart',
             name='siccrf_is_obsolete',
         ),
         migrations.RemoveField(
@@ -874,14 +578,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='preparation',
             name='ca_name',
-        ),
-        migrations.RemoveField(
-            model_name='preparation',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='preparation',
-            name='new_name',
         ),
         migrations.RemoveField(
             model_name='preparation',
@@ -933,46 +629,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='substance',
-            name='new_cas_number',
-        ),
-        migrations.RemoveField(
-            model_name='substance',
-            name='new_einec_number',
-        ),
-        migrations.RemoveField(
-            model_name='substance',
-            name='new_is_obsolete',
-        ),
-        migrations.RemoveField(
-            model_name='substance',
-            name='new_must_specify_quantity',
-        ),
-        migrations.RemoveField(
-            model_name='substance',
-            name='new_name',
-        ),
-        migrations.RemoveField(
-            model_name='substance',
-            name='new_nutritional_reference',
-        ),
-        migrations.RemoveField(
-            model_name='substance',
-            name='new_private_comments',
-        ),
-        migrations.RemoveField(
-            model_name='substance',
-            name='new_public_comments',
-        ),
-        migrations.RemoveField(
-            model_name='substance',
-            name='new_source',
-        ),
-        migrations.RemoveField(
-            model_name='substance',
-            name='new_status',
-        ),
-        migrations.RemoveField(
-            model_name='substance',
             name='siccrf_cas_number',
         ),
         migrations.RemoveField(
@@ -1011,224 +667,180 @@ class Migration(migrations.Migration):
             model_name='substance',
             name='siccrf_status',
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='condition',
             name='is_obsolete',
-            field=models.BooleanField(default=False, verbose_name='objet obsolète'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='condition',
             name='name',
-            field=models.TextField(default='', verbose_name='nom'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='effect',
             name='is_obsolete',
-            field=models.BooleanField(default=False, verbose_name='objet obsolète'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='effect',
             name='name',
-            field=models.TextField(default='', verbose_name='nom'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='galenicformulation',
             name='is_obsolete',
-            field=models.BooleanField(default=False, verbose_name='objet obsolète'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='galenicformulation',
             name='name',
-            field=models.TextField(default='', verbose_name='nom'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='historicalmaxquantityperpopulationrelation',
             name='max_quantity',
-            field=models.FloatField(blank=True, null=True, verbose_name='quantité maximale autorisée pour la population cible'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='ingredient',
             name='is_obsolete',
-            field=models.BooleanField(default=False, verbose_name='objet obsolète'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='ingredient',
             name='name',
-            field=models.TextField(default='', verbose_name='nom'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='ingredient',
             name='private_comments',
-            field=models.TextField(blank=True, verbose_name='commentaires privés'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='ingredient',
             name='public_comments',
-            field=models.TextField(blank=True, verbose_name='commentaires publics'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='ingredient',
             name='status',
-            field=models.IntegerField(blank=True, choices=[(1, 'autorisé'), (2, 'non autorisé'), (3, 'sans objet')], default=None, null=True, verbose_name="statut de l'ingrédient ou substance"),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='maxquantityperpopulationrelation',
             name='max_quantity',
-            field=models.FloatField(blank=True, null=True, verbose_name='quantité maximale autorisée pour la population cible'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='microorganism',
             name='genus',
-            field=models.TextField(verbose_name='genre de micro-organisme'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='microorganism',
             name='is_obsolete',
-            field=models.BooleanField(default=False, verbose_name='objet obsolète'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='microorganism',
             name='name',
-            field=models.GeneratedField(db_persist=True, expression=data.models.microorganism.ConcatOp(models.F('genus'), models.Value(' '), models.F('species')), output_field=models.TextField(verbose_name='nom')),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='microorganism',
             name='private_comments',
-            field=models.TextField(blank=True, verbose_name='commentaires privés'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='microorganism',
             name='public_comments',
-            field=models.TextField(blank=True, verbose_name='commentaires publics'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='microorganism',
             name='species',
-            field=models.TextField(verbose_name='espèce de micro-organisme'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='microorganism',
             name='status',
-            field=models.IntegerField(blank=True, choices=[(1, 'autorisé'), (2, 'non autorisé'), (3, 'sans objet')], default=None, null=True, verbose_name="statut de l'ingrédient ou substance"),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='part',
             name='is_useful',
-            field=models.BooleanField(default=None, verbose_name='🍵 utile ?'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='part',
             name='must_be_monitored',
-            field=models.BooleanField(default=None, verbose_name='⚠️ à surveiller ?'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='plant',
             name='family_by_id',
-            field=models.BigIntegerField(verbose_name='famille de plante'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='plant',
             name='is_obsolete',
-            field=models.BooleanField(default=False, verbose_name='objet obsolète'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='plant',
             name='name',
-            field=models.TextField(default='', verbose_name='nom'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='plant',
             name='private_comments',
-            field=models.TextField(blank=True, verbose_name='commentaires privés'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='plant',
             name='public_comments',
-            field=models.TextField(blank=True, verbose_name='commentaires publics'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='plant',
             name='status',
-            field=models.IntegerField(blank=True, choices=[(1, 'autorisé'), (2, 'non autorisé'), (3, 'sans objet')], default=None, null=True, verbose_name="statut de l'ingrédient ou substance"),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='plantfamily',
             name='is_obsolete',
-            field=models.BooleanField(default=False, verbose_name='objet obsolète'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='plantfamily',
             name='name',
-            field=models.TextField(default='', verbose_name='nom'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='plantpart',
             name='is_obsolete',
-            field=models.BooleanField(default=False, verbose_name='objet obsolète'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='plantpart',
             name='name',
-            field=models.TextField(default='', verbose_name='nom'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='preparation',
             name='is_obsolete',
-            field=models.BooleanField(default=False, verbose_name='objet obsolète'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='preparation',
             name='name',
-            field=models.TextField(default='', verbose_name='nom'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='substance',
             name='cas_number',
-            field=models.CharField(blank=True, max_length=10, verbose_name='numéro CAS'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='substance',
             name='einec_number',
-            field=models.CharField(blank=True, max_length=7, verbose_name='numéro EINECS'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='substance',
             name='is_obsolete',
-            field=models.BooleanField(default=False, verbose_name='objet obsolète'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='substance',
             name='must_specify_quantity',
-            field=models.BooleanField(default=False, verbose_name='spécification de quantité obligatoire'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='substance',
             name='name',
-            field=models.TextField(default='', verbose_name='nom'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='substance',
             name='nutritional_reference',
-            field=models.FloatField(blank=True, null=True, verbose_name='apport nutritionnel conseillé'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='substance',
             name='private_comments',
-            field=models.TextField(blank=True, verbose_name='commentaires privés'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='substance',
             name='public_comments',
-            field=models.TextField(blank=True, verbose_name='commentaires publics'),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='substance',
             name='source',
-            field=models.TextField(blank=True),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='substance',
             name='status',
-            field=models.IntegerField(blank=True, choices=[(1, 'autorisé'), (2, 'non autorisé'), (3, 'sans objet')], default=None, null=True, verbose_name="statut de l'ingrédient ou substance"),
         ),
     ]

@@ -138,12 +138,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='historicalpart',
             name='new_is_useful',
-            field=models.BooleanField(default=None, null=True, verbose_name='🍵 utile ?'),
+            field=models.BooleanField(default=False, null=True, verbose_name='🍵 utile ?'),
         ),
         migrations.AddField(
             model_name='historicalpart',
             name='new_must_be_monitored',
-            field=models.BooleanField(default=None, null=True, verbose_name='⚠️ à surveiller ?'),
+            field=models.BooleanField(default=False, null=True, verbose_name='⚠️ à surveiller ?'),
         ),
         migrations.AddField(
             model_name='historicalplant',
@@ -323,12 +323,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='part',
             name='new_is_useful',
-            field=models.BooleanField(default=None, null=True, verbose_name='🍵 utile ?'),
+            field=models.BooleanField(default=False, null=True, verbose_name='🍵 utile ?'),
         ),
         migrations.AddField(
             model_name='part',
             name='new_must_be_monitored',
-            field=models.BooleanField(default=None, null=True, verbose_name='⚠️ à surveiller ?'),
+            field=models.BooleanField(default=False, null=True, verbose_name='⚠️ à surveiller ?'),
         ),
         migrations.AddField(
             model_name='plant',
