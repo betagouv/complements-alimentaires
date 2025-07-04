@@ -45,6 +45,7 @@
             :company="company"
             :mandatedCompany="mandatedCompany"
             :snapshots="snapshots"
+            role="visa"
           />
         </div>
       </div>
@@ -76,8 +77,7 @@ const isFetching = computed(() =>
     isFetchingCompany,
     isFetchingMandatedCompany,
     isFetchingSnapshots,
-    isFetchingInstruction,
-    isFetchingAssignToSelf,
+    isFetchingVisa,
   ].some((x) => !!x.value)
 )
 
@@ -129,24 +129,10 @@ const {
 
 const {
   response: takeResponse,
-  execute: executeTakeForInstruction,
-  isFetching: isFetchingInstruction,
+  execute: executeTakeForVisa,
+  isFetching: isFetchingVisa,
 } = useFetch(
-  `/api/v1/declarations/${props.declarationId}/take-for-instruction/`,
-  {
-    headers: headers(),
-  },
-  { immediate: false }
-)
-  .post({})
-  .json()
-
-const {
-  response: assignResponse,
-  execute: executeAssignToSelf,
-  isFetching: isFetchingAssignToSelf,
-} = useFetch(
-  `/api/v1/declarations/${props.declarationId}/assign-instruction/`,
+  `/api/v1/declarations/${props.declarationId}/take-for-visa/`,
   {
     headers: headers(),
   },
@@ -156,11 +142,10 @@ const {
   .json()
 
 const takeDeclaration = async () => {
-  const url = `/api/v1/declarations/${props.declarationId}/take-for-visa/`
-  const { response } = await useFetch(url, { headers: headers() }).post({}).json()
-  await handleError(response)
+  await executeTakeForVisa()
+  await handleError(takeResponse)
 
-  if (response.value.ok) {
+  if (takeResponse.value.ok) {
     await executeDeclarationFetch()
   }
 }
