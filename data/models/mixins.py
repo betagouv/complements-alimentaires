@@ -28,9 +28,9 @@ class WithComments(models.Model):
     class Meta:
         abstract = True
 
-    public_comments = models.TextField(default="", blank=True, verbose_name="commentaires publics")
+    public_comments = models.TextField(blank=True, verbose_name="commentaires publics")
 
-    private_comments = models.TextField(default="", blank=True, verbose_name="commentaires privés")
+    private_comments = models.TextField(blank=True, verbose_name="commentaires privés")
 
     siccrf_public_comments_en = models.TextField(
         blank=True, editable=False, verbose_name="commentaires publics en anglais SICCRF"

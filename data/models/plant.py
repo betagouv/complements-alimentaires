@@ -44,7 +44,7 @@ class Plant(IngredientCommonModel):
     class Meta:
         verbose_name = "plante"
 
-    family_by_id = models.BigIntegerField(verbose_name="famille de plante", default=None, null=True)
+    family_by_id = models.BigIntegerField(verbose_name="famille de plante")
     family = models.ForeignObject(
         PlantFamily,
         on_delete=models.SET_NULL,
@@ -84,9 +84,9 @@ class Part(TimeStampable):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
     plantpart = models.ForeignKey(PlantPart, on_delete=models.CASCADE)
 
-    must_be_monitored = models.BooleanField(null=True, default=None, verbose_name="⚠️ à surveiller ?")
+    must_be_monitored = models.BooleanField(default=None, verbose_name="⚠️ à surveiller ?")
 
-    is_useful = models.BooleanField(null=True, default=None, verbose_name="🍵 utile ?")
+    is_useful = models.BooleanField(default=None, verbose_name="🍵 utile ?")
     history = HistoricalRecords(
         inherit=True, excluded_fields=["name", "is_obsolete", "must_be_monitored", "is_useful"]
     )

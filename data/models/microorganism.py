@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models import F, Value
-from django.db.models.functions import Coalesce, NullIf
 
 from simple_history.models import HistoricalRecords
 
@@ -25,23 +24,19 @@ class Microorganism(IngredientCommonModel):
     class Meta:
         verbose_name = "micro-organisme"
 
-    # réécriture des champs provenant de la mixin WithDefaultFields
-    # le champ name n'existe pas dans la base SICCRF il est calculé à partir du genre et de l'espèce
-    siccrf_name = None
-    ca_name = None
     name = models.GeneratedField(
         expression=ConcatOp(
-            Coalesce(NullIf(F("ca_genus"), Value("")), F("siccrf_genus")),
+            F("genus"),
             Value(" "),
-            Coalesce(NullIf(F("ca_species"), Value("")), F("siccrf_species")),
+            F("species"),
         ),
         output_field=models.TextField(verbose_name="nom"),
         db_persist=True,
     )
 
-    new_genus = models.TextField(verbose_name="genre de micro-organisme", default=None, null=True)
+    genus = models.TextField(verbose_name="genre de micro-organisme")
 
-    new_species = models.TextField(verbose_name="espèce de micro-organisme", default=None, null=True)
+    species = models.TextField(verbose_name="espèce de micro-organisme")
 
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
     history = HistoricalRecords(
