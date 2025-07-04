@@ -35,7 +35,7 @@
       <div v-else class="sm:grid sm:grid-cols-12">
         <div class="hidden sm:block col-span-3">
           <div class="sticky top-2 sidebar-content">
-            <InstructionSidebar v-model="declaration" role="visa" />
+            <BepiasSidebar v-model="declaration" role="visa" />
           </div>
         </div>
         <div class="col-span-12 sm:col-span-9">
@@ -62,7 +62,7 @@ import { useRoute } from "vue-router"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import ProgressSpinner from "@/components/ProgressSpinner"
-import InstructionSidebar from "@/views/NewInstructionPage/InstructionSidebar"
+import BepiasSidebar from "@/components/NewBepiasViews/BepiasSidebar"
 import AlertsSection from "@/components/AlertsSection"
 import DeclarationSummary from "@/components/DeclarationSummary"
 

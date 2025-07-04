@@ -29,9 +29,9 @@ import NewElementsPage from "@/views/NewElementsPage"
 import InstructionPage from "@/views/InstructionPage"
 import NewVisaPage from "@/views/NewVisaPage"
 import NewInstructionPage from "@/views/NewInstructionPage"
-import InstructionSection from "@/views/NewInstructionPage/InstructionSection"
-import IdentitySection from "@/views/NewInstructionPage/IdentitySection"
-import HistorySection from "@/views/NewInstructionPage/HistorySection"
+import ProductSection from "@/components/NewBepiasViews/ProductSection"
+import IdentitySection from "@/components/NewBepiasViews/IdentitySection"
+import HistorySection from "@/components/NewBepiasViews/HistorySection"
 import VisaDeclarationsPage from "@/views/VisaDeclarationsPage"
 import VisaPage from "@/views/VisaPage"
 import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
@@ -396,7 +396,7 @@ const routes = [
       {
         name: "InstructionSection",
         path: "instruction",
-        component: InstructionSection,
+        component: ProductSection,
       },
       {
         name: "IdentitySection",
@@ -427,7 +427,7 @@ const routes = [
       {
         name: "VisaProductSection",
         path: "produit",
-        component: InstructionSection,
+        component: ProductSection,
       },
       {
         name: "VisaIdentitySection",
