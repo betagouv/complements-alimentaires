@@ -7,7 +7,7 @@ from simple_history.models import HistoricalRecords
 from data.behaviours import Historisable, TimeStampable
 
 from .abstract_models import IngredientCommonModel
-from .mixins import WithMissingImportBoolean, PublicReasonHistoricalModel
+from .mixins import PublicReasonHistoricalModel
 from .substance import Substance
 
 
@@ -82,7 +82,7 @@ class MicroorganismSubstanceRelation(TimeStampable, Historisable):
     ca_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée au micro-organisme")
 
 
-class MicroorganismSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
+class MicroorganismSynonym(TimeStampable, Historisable):
     class Meta:
         verbose_name = "synonyme de micro-organisme"
 

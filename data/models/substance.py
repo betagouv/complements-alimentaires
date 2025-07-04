@@ -8,7 +8,7 @@ from simple_history.models import HistoricalRecords
 from data.behaviours import Historisable, TimeStampable
 
 from .abstract_models import IngredientCommonModel
-from .mixins import WithMissingImportBoolean, PublicReasonHistoricalModel
+from .mixins import PublicReasonHistoricalModel
 from .population import Population
 from .unit import SubstanceUnit
 
@@ -175,7 +175,7 @@ class Substance(IngredientCommonModel):
         self.update_metabolite_type()
 
 
-class SubstanceSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
+class SubstanceSynonym(TimeStampable, Historisable):
     class Meta:
         verbose_name = "synonyme substance active"
 

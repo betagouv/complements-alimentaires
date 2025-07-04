@@ -319,8 +319,6 @@ class CSVImporter:
                     created = len(field_to_update.all()) != nb_elem_in_field
                 else:
                     # c'est le csv d'un Model qui est importé
-                    # le champ `missing_import_data` devient False
-                    object_definition["missing_import_data"] = False
                     object_with_history, created = update_or_create_object(
                         self.model,
                         object_definition={"siccrf_id": row.get(self.primary_key_label)},

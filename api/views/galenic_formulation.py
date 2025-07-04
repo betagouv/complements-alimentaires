@@ -7,4 +7,4 @@ from data.models import GalenicFormulation
 class GalenicFormulationListView(ListAPIView):
     model = GalenicFormulation
     serializer_class = GalenicFormulationSerializer
-    queryset = GalenicFormulation.up_to_date_objects.filter(missing_import_data=False)
+    queryset = GalenicFormulation.up_to_date_objects.all()

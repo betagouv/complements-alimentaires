@@ -9,7 +9,7 @@ from .utils import IngredientRetrieveUpdateView
 
 class SubstanceRetrieveUpdateView(IngredientRetrieveUpdateView):
     model = Substance
-    queryset = Substance.objects.filter(missing_import_data=False)
+    queryset = Substance.objects.all()
     serializer_class = SubstanceSerializer
     modification_serializer_class = SubstanceModificationSerializer
 
