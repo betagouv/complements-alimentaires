@@ -1,6 +1,4 @@
 from django.db import models
-from django.db.models import F, Value
-from django.db.models.functions import Coalesce, NullIf
 
 
 class WithDefaultFields(models.Model):
@@ -17,19 +15,11 @@ class WithDefaultFields(models.Model):
     )
     siccrf_name = models.TextField(editable=False, verbose_name="nom SICCRF")
     ca_name = models.TextField(blank=True, verbose_name="nom CA")
-    name = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_name"), Value("")), F("siccrf_name")),
-        output_field=models.TextField(verbose_name="nom"),
-        db_persist=True,
-    )
+    name = models.TextField(verbose_name="nom")
 
     siccrf_is_obsolete = models.BooleanField(editable=False, verbose_name="objet obsolète selon SICCRF", default=False)
     ca_is_obsolete = models.BooleanField(null=True, default=None, verbose_name="objet obsolète selon CA")
-    is_obsolete = models.GeneratedField(
-        expression=Coalesce(F("ca_is_obsolete"), F("siccrf_is_obsolete")),
-        output_field=models.BooleanField(verbose_name="objet obsolète"),
-        db_persist=True,
-    )
+    is_obsolete = models.TextField(verbose_name="objet obsolète")
 
 
 class WithComments(models.Model):
@@ -44,19 +34,11 @@ class WithComments(models.Model):
 
     siccrf_public_comments = models.TextField(blank=True, editable=False, verbose_name="commentaires publics SICCRF")
     ca_public_comments = models.TextField(blank=True, verbose_name="commentaires publics CA")
-    public_comments = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_public_comments"), Value("")), F("siccrf_public_comments")),
-        output_field=models.TextField(verbose_name="commentaires publics"),
-        db_persist=True,
-    )
+    public_comments = models.TextField(verbose_name="commentaires publics")
 
     siccrf_private_comments = models.TextField(blank=True, editable=False, verbose_name="commentaires privés SICCRF")
     ca_private_comments = models.TextField(blank=True, verbose_name="commentaires privés CA")
-    private_comments = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_private_comments"), Value("")), F("siccrf_private_comments")),
-        output_field=models.TextField(verbose_name="commentaires privés"),
-        db_persist=True,
-    )
+    private_comments = models.TextField(verbose_name="commentaires privés")
 
     siccrf_public_comments_en = models.TextField(
         blank=True, editable=False, verbose_name="commentaires publics en anglais SICCRF"
