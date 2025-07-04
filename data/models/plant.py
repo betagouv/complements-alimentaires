@@ -108,18 +108,10 @@ class Part(TimeStampable):
         default=False, verbose_name="⚠️ à surveiller (selon la base SICCRF) ?"
     )
     ca_must_be_monitored = models.BooleanField(null=True, default=None, verbose_name="⚠️ à surveiller ?")
-    must_be_monitored = models.GeneratedField(
-        expression=Coalesce(F("ca_must_be_monitored"), F("siccrf_must_be_monitored")),
-        output_field=models.BooleanField(verbose_name="⚠️ à surveiller ?"),
-        db_persist=True,
-    )
+    must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
     siccrf_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile (selon la base SICCRF) ?")
     ca_is_useful = models.BooleanField(null=True, default=None, verbose_name="🍵 utile ?")
-    is_useful = models.GeneratedField(
-        expression=Coalesce(F("ca_is_useful"), F("siccrf_is_useful")),
-        output_field=models.BooleanField(verbose_name="🍵 utile ?"),
-        db_persist=True,
-    )
+    is_useful = models.BooleanField(default=False, verbose_name="🍵 utile ?")
     history = HistoricalRecords(
         inherit=True, excluded_fields=["name", "is_obsolete", "must_be_monitored", "is_useful"]
     )
