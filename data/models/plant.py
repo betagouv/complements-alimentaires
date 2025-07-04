@@ -1,6 +1,4 @@
 from django.db import models
-from django.db.models import F
-from django.db.models.functions import Coalesce
 
 from simple_history.models import HistoricalRecords
 
@@ -46,27 +44,7 @@ class Plant(IngredientCommonModel):
     class Meta:
         verbose_name = "plante"
 
-    siccrf_family = models.ForeignKey(
-        PlantFamily,
-        null=True,
-        on_delete=models.SET_NULL,
-        verbose_name="famille de plante (selon la base SICCRF)",
-        related_name="siccrf_plant_set",
-    )
-    ca_family = models.ForeignKey(
-        PlantFamily,
-        null=True,
-        on_delete=models.SET_NULL,
-        verbose_name="famille de plante",
-        related_name="ca_plant_set",
-    )
-    # TODO: ce champ n'est pas utile en tant que tel, il serait possible de l'éviter en créant un Field custom ForeignGeneratedField(ForeigObject)
-    family_by_id = models.GeneratedField(
-        expression=Coalesce(F("ca_family"), F("siccrf_family")),
-        output_field=models.BigIntegerField(verbose_name="famille de plante"),
-        db_persist=True,
-    )
-    new_family_by_id = models.BigIntegerField(verbose_name="famille de plante", default=None, null=True)
+    family_by_id = models.BigIntegerField(verbose_name="famille de plante", default=None, null=True)
     family = models.ForeignObject(
         PlantFamily,
         on_delete=models.SET_NULL,
@@ -105,24 +83,10 @@ class Part(TimeStampable):
 
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
     plantpart = models.ForeignKey(PlantPart, on_delete=models.CASCADE)
-    siccrf_must_be_monitored = models.BooleanField(
-        default=False, verbose_name="⚠️ à surveiller (selon la base SICCRF) ?"
-    )
-    ca_must_be_monitored = models.BooleanField(null=True, default=None, verbose_name="⚠️ à surveiller ?")
-    must_be_monitored = models.GeneratedField(
-        expression=Coalesce(F("ca_must_be_monitored"), F("siccrf_must_be_monitored")),
-        output_field=models.BooleanField(verbose_name="⚠️ à surveiller ?"),
-        db_persist=True,
-    )
-    new_must_be_monitored = models.BooleanField(null=True, default=None, verbose_name="⚠️ à surveiller ?")
-    siccrf_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile (selon la base SICCRF) ?")
-    ca_is_useful = models.BooleanField(null=True, default=None, verbose_name="🍵 utile ?")
-    is_useful = models.GeneratedField(
-        expression=Coalesce(F("ca_is_useful"), F("siccrf_is_useful")),
-        output_field=models.BooleanField(verbose_name="🍵 utile ?"),
-        db_persist=True,
-    )
-    new_is_useful = models.BooleanField(null=True, default=None, verbose_name="🍵 utile ?")
+
+    must_be_monitored = models.BooleanField(null=True, default=None, verbose_name="⚠️ à surveiller ?")
+
+    is_useful = models.BooleanField(null=True, default=None, verbose_name="🍵 utile ?")
     history = HistoricalRecords(
         inherit=True, excluded_fields=["name", "is_obsolete", "must_be_monitored", "is_useful"]
     )
