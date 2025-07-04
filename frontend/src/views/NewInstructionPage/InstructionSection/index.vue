@@ -1,6 +1,8 @@
 <template>
   <div>
     <div class="bg-grey-975! p-6">
+      <ArticleInfoRow :modelValue="declaration" :allowChange="true" class="mb-4" />
+
       <SectionHeader id="pieces-jointes" icon="ri-attachment-fill" text="Pièces jointes" />
       <CompactAttachmentGrid :attachments="declaration.attachments" />
 
@@ -34,6 +36,7 @@ import CompositionInfo from "@/components/CompositionInfo"
 import ComputedSubstancesInfo from "@/components/ComputedSubstancesInfo"
 import AdministrationNotes from "@/components/AdministrationNotes"
 import SectionHeader from "../SectionHeader"
+import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
 import { computed } from "vue"
 
 const props = defineProps({ declaration: Object, snapshots: Array })
