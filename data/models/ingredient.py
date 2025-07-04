@@ -6,7 +6,7 @@ from data.behaviours import Historisable, TimeStampable
 
 from .abstract_models import IngredientCommonModel
 from .ingredient_type import IngredientType
-from .mixins import WithMissingImportBoolean, PublicReasonHistoricalModel
+from .mixins import PublicReasonHistoricalModel
 from .substance import Substance
 
 
@@ -66,7 +66,7 @@ class IngredientSubstanceRelation(TimeStampable, Historisable):
     ca_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à l'ingrédient")
 
 
-class IngredientSynonym(TimeStampable, Historisable, WithMissingImportBoolean):
+class IngredientSynonym(TimeStampable, Historisable):
     class Meta:
         verbose_name = "synonyme d'ingrédient"
 

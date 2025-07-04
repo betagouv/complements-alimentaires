@@ -4,7 +4,7 @@ from data.behaviours import TimeStampable
 from data.choices import IngredientActivity
 
 from .ingredient_status import WithStatus
-from .mixins import WithComments, WithDefaultFields, WithIsRiskyBoolean, WithMissingImportBoolean, WithNovelFoodBoolean
+from .mixins import WithComments, WithDefaultFields, WithIsRiskyBoolean, WithNovelFoodBoolean
 
 
 # Remplace le manager par défaut pour filtrer tous les modèles ayant un champ `is_obsolete`
@@ -19,7 +19,7 @@ class CommonModelManager(models.Manager):
         return super().get_queryset().all()
 
 
-class CommonModel(TimeStampable, WithMissingImportBoolean, WithDefaultFields):
+class CommonModel(TimeStampable, WithDefaultFields):
     """
     Tous les modèles issus de la base de données TeleIcare héritent de ce modèle
     """

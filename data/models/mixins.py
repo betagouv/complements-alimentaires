@@ -3,18 +3,6 @@ from django.db.models import F, Value
 from django.db.models.functions import Coalesce, NullIf
 
 
-class WithMissingImportBoolean(models.Model):
-    """
-    Lors de l'import CSV certains objets peuvent être créés parce qu'ils sont dans une relation
-    mais ils manquent dans ce cas de données informatives
-    """
-
-    class Meta:
-        abstract = True
-
-    missing_import_data = models.BooleanField(blank=True, null=True, editable=False, default=False)
-
-
 class WithDefaultFields(models.Model):
     class Meta:
         abstract = True

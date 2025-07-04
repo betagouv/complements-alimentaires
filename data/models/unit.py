@@ -1,9 +1,7 @@
 from django.db import models
 
-from .mixins import WithMissingImportBoolean
 
-
-class SubstanceUnit(WithMissingImportBoolean):
+class SubstanceUnit(models.Model):
     class Meta:
         verbose_name = "unité"
 
