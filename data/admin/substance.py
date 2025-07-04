@@ -1,5 +1,3 @@
-from config import tasks
-
 from django import forms
 from django.contrib import admin
 from django.core.exceptions import ValidationError
@@ -9,6 +7,7 @@ from django.utils.html import format_html
 
 from simple_history.admin import SimpleHistoryAdmin
 
+from config import tasks
 from data.models.declaration import Declaration
 from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym, SubstanceType
 
@@ -56,7 +55,6 @@ class SubstanceMaxQuantitiesInline(admin.TabularInline):
     formfield_overrides = {
         models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
     }
-    readonly_fields = ("siccrf_max_quantity",)
 
 
 class SubstanceTypeListFilter(admin.SimpleListFilter):
@@ -105,15 +103,11 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             None,  # Pas d'entête
             {
                 "fields": [
-                    "siccrf_name",
-                    "ca_name",
+                    "name",
                     "siccrf_name_en",
                     "is_obsolete",
-                    "ca_is_obsolete",
-                    "siccrf_status",
-                    "ca_status",
-                    "siccrf_source",
-                    "ca_source",
+                    "status",
+                    "source",
                     "is_risky",
                     "novel_food",
                     "substance_types",
@@ -124,10 +118,8 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             "Commentaires",
             {
                 "fields": [
-                    "siccrf_public_comments",
-                    "siccrf_private_comments",
-                    "ca_public_comments",
-                    "ca_private_comments",
+                    "public_comments",
+                    "private_comments",
                     "to_be_entered_in_next_decree",
                 ],
             },
@@ -136,10 +128,8 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             "Identifiants dans les répertoires de substances chimiques",
             {
                 "fields": [
-                    "siccrf_cas_number",
-                    "siccrf_einec_number",
-                    "ca_cas_number",
-                    "ca_einec_number",
+                    "cas_number",
+                    "einec_number",
                 ],
             },
         ),
@@ -153,10 +143,8 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             "Quantités",
             {
                 "fields": [
-                    "siccrf_must_specify_quantity",
-                    "ca_must_specify_quantity",
-                    "siccrf_nutritional_reference",
-                    "ca_nutritional_reference",
+                    "must_specify_quantity",
+                    "nutritional_reference",
                     "unit",
                 ],
             },
@@ -167,17 +155,8 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         SubstanceSynonymInline,
     )
     readonly_fields = [
-        "siccrf_name",
         "siccrf_name_en",
         "is_obsolete",
-        "siccrf_status",
-        "siccrf_source",
-        "siccrf_public_comments",
-        "siccrf_private_comments",
-        "siccrf_cas_number",
-        "siccrf_einec_number",
-        "siccrf_must_specify_quantity",
-        "siccrf_nutritional_reference",
         "get_plants",
         "get_microorganisms",
         "get_ingredients",
