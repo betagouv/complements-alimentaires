@@ -27,6 +27,7 @@ import CollaboratorsPage from "@/views/CollaboratorsPage"
 import InstructionDeclarationsPage from "@/views/InstructionDeclarationsPage"
 import NewElementsPage from "@/views/NewElementsPage"
 import InstructionPage from "@/views/InstructionPage"
+import NewVisaPage from "@/views/NewVisaPage"
 import NewInstructionPage from "@/views/NewInstructionPage"
 import InstructionSection from "@/views/NewInstructionPage/InstructionSection"
 import IdentitySection from "@/views/NewInstructionPage/IdentitySection"
@@ -404,6 +405,37 @@ const routes = [
       },
       {
         name: "HistorySection",
+        path: "historique",
+        component: HistorySection,
+      },
+    ],
+  },
+  {
+    path: "/visa-v2/:declarationId",
+    props: true,
+    component: NewVisaPage,
+    meta: {
+      title: "Visa",
+      requiredRoles: ["VisaRole"],
+      authenticationRequired: true,
+    },
+    children: [
+      {
+        path: "",
+        redirect: { name: "VisaProductSection" },
+      },
+      {
+        name: "VisaProductSection",
+        path: "produit",
+        component: InstructionSection,
+      },
+      {
+        name: "VisaIdentitySection",
+        path: "identite",
+        component: IdentitySection,
+      },
+      {
+        name: "VisaHistorySection",
         path: "historique",
         component: HistorySection,
       },

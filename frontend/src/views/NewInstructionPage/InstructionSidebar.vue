@@ -6,6 +6,8 @@
 import { computed } from "vue"
 import { useRoute } from "vue-router"
 
+const props = defineProps({ role: { type: String, default: "instruction" } })
+
 // Note:
 // Il y a des hacks en attendant la résolution de https://github.com/dnum-mi/vue-dsfr/issues/1076
 // Par exemple, la gestion de `expanded` ne devrait pas se faire avec le route
@@ -16,19 +18,23 @@ const route = useRoute()
 const makeRoute = (name) => ({ name, params: { declarationId: declaration.value.id } })
 const appendHash = (route, hash) => ({ ...{ hash }, ...route })
 
-const isInInstruction = computed(() => route.name === "InstructionSection")
-const isInIdentity = computed(() => route.name === "IdentitySection")
-const isInHistory = computed(() => route.name === "HistorySection")
+const productRouteName = props.role === "instruction" ? "InstructionSection" : "VisaProductSection"
+const identityRouteName = props.role === "instruction" ? "IdentitySection" : "VisaIdentitySection"
+const historyRouteName = props.role === "instruction" ? "HistorySection" : "VisaHistorySection"
 
-const instructionRoute = computed(() => makeRoute("InstructionSection"))
-const identityRoute = computed(() => makeRoute("IdentitySection"))
-const historyRoute = computed(() => makeRoute("HistorySection"))
+const isInInstruction = computed(() => route.name === productRouteName)
+const isInIdentity = computed(() => route.name === identityRouteName)
+const isInHistory = computed(() => route.name === historyRouteName)
+
+const instructionRoute = computed(() => makeRoute(productRouteName))
+const identityRoute = computed(() => makeRoute(identityRouteName))
+const historyRoute = computed(() => makeRoute(historyRouteName))
 
 const menuItems = computed(() => [
   {
     to: instructionRoute.value,
     active: isInInstruction.value,
-    text: "Instruction",
+    text: props.role === "instruction" ? "Instruction" : "Déclaration",
     expanded: isInInstruction.value,
     menuItems: isInInstruction.value
       ? [
