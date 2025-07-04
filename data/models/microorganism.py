@@ -46,6 +46,7 @@ class Microorganism(IngredientCommonModel):
         output_field=models.TextField(verbose_name="genre de micro-organisme"),
         db_persist=True,
     )
+    new_genus = models.TextField(verbose_name="genre de micro-organisme", default=None, null=True)
     siccrf_species = models.TextField(verbose_name="espèce de micro-organisme (selon la base SICCRF)")
     ca_species = models.TextField(verbose_name="espèce de micro-organisme")
     species = models.GeneratedField(
@@ -53,6 +54,7 @@ class Microorganism(IngredientCommonModel):
         output_field=models.TextField(verbose_name="espèce de micro-organisme"),
         db_persist=True,
     )
+    new_species = models.TextField(verbose_name="espèce de micro-organisme", default=None, null=True)
 
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
     history = HistoricalRecords(

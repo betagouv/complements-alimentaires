@@ -66,6 +66,7 @@ class Plant(IngredientCommonModel):
         output_field=models.BigIntegerField(verbose_name="famille de plante"),
         db_persist=True,
     )
+    new_family_by_id = models.BigIntegerField(verbose_name="famille de plante", default=None, null=True)
     family = models.ForeignObject(
         PlantFamily,
         on_delete=models.SET_NULL,
@@ -113,6 +114,7 @@ class Part(TimeStampable):
         output_field=models.BooleanField(verbose_name="⚠️ à surveiller ?"),
         db_persist=True,
     )
+    new_must_be_monitored = models.BooleanField(null=True, default=None, verbose_name="⚠️ à surveiller ?")
     siccrf_is_useful = models.BooleanField(default=False, verbose_name="🍵 utile (selon la base SICCRF) ?")
     ca_is_useful = models.BooleanField(null=True, default=None, verbose_name="🍵 utile ?")
     is_useful = models.GeneratedField(
@@ -120,6 +122,7 @@ class Part(TimeStampable):
         output_field=models.BooleanField(verbose_name="🍵 utile ?"),
         db_persist=True,
     )
+    new_is_useful = models.BooleanField(null=True, default=None, verbose_name="🍵 utile ?")
     history = HistoricalRecords(
         inherit=True, excluded_fields=["name", "is_obsolete", "must_be_monitored", "is_useful"]
     )

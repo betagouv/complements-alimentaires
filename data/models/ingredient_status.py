@@ -50,6 +50,14 @@ class WithStatus(models.Model):
         ),
         db_persist=True,
     )
+    new_status = models.IntegerField(
+        choices=IngredientStatus.choices,
+        blank=True,
+        default=None,  # un ingrédient n'a pas de status par défaut
+        null=True,
+        verbose_name="statut de l'ingrédient ou substance",
+    )
+
     to_be_entered_in_next_decree = models.BooleanField(
         default=False, verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"
     )

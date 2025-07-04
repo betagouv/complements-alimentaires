@@ -57,7 +57,7 @@ class Substance(IngredientCommonModel):
         output_field=models.CharField(max_length=10, blank=True, verbose_name="numéro CAS"),
         db_persist=True,
     )
-
+    new_cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS")
     # einec_number
     siccrf_einec_number = models.CharField(
         max_length=7,
@@ -74,7 +74,11 @@ class Substance(IngredientCommonModel):
         output_field=models.CharField(max_length=7, blank=True, verbose_name="numéro EINECS"),
         db_persist=True,
     )
-
+    new_einec_number = models.CharField(
+        max_length=7,
+        blank=True,
+        verbose_name="numéro EINECS",
+    )
     # source
     siccrf_source = models.TextField(blank=True)
     ca_source = models.TextField(blank=True)
@@ -83,6 +87,7 @@ class Substance(IngredientCommonModel):
         output_field=models.TextField(),
         db_persist=True,
     )
+    new_source = models.TextField(blank=True)
 
     # must_specify_quantity
     siccrf_must_specify_quantity = models.BooleanField(
@@ -95,6 +100,9 @@ class Substance(IngredientCommonModel):
         expression=Coalesce(F("ca_must_specify_quantity"), F("siccrf_must_specify_quantity")),
         output_field=models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire"),
         db_persist=True,
+    )
+    new_must_specify_quantity = models.BooleanField(
+        default=False, verbose_name="spécification de quantité obligatoire"
     )
 
     # max_quantity
@@ -110,6 +118,7 @@ class Substance(IngredientCommonModel):
         output_field=models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé"),
         db_persist=True,
     )
+    new_nutritional_reference = models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé")
     unit = models.ForeignKey(
         SubstanceUnit,
         default=None,
@@ -227,4 +236,9 @@ class MaxQuantityPerPopulationRelation(Historisable):
         expression=Coalesce(F("ca_max_quantity"), F("siccrf_max_quantity")),
         output_field=models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée"),
         db_persist=True,
+    )
+    new_max_quantity = models.FloatField(
+        null=True,
+        blank=True,
+        verbose_name="quantité maximale autorisée pour la population cible",
     )

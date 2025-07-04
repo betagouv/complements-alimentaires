@@ -22,6 +22,7 @@ class WithDefaultFields(models.Model):
         output_field=models.TextField(verbose_name="nom"),
         db_persist=True,
     )
+    new_name = models.TextField(default="", verbose_name="nom")
 
     siccrf_is_obsolete = models.BooleanField(editable=False, verbose_name="objet obsolète selon SICCRF", default=False)
     ca_is_obsolete = models.BooleanField(null=True, default=None, verbose_name="objet obsolète selon CA")
@@ -30,6 +31,7 @@ class WithDefaultFields(models.Model):
         output_field=models.BooleanField(verbose_name="objet obsolète"),
         db_persist=True,
     )
+    new_is_obsolete = models.BooleanField(verbose_name="objet obsolète", default=False)
 
 
 class WithComments(models.Model):
@@ -49,6 +51,7 @@ class WithComments(models.Model):
         output_field=models.TextField(verbose_name="commentaires publics"),
         db_persist=True,
     )
+    new_public_comments = models.TextField(default="", blank=True, verbose_name="commentaires publics")
 
     siccrf_private_comments = models.TextField(blank=True, editable=False, verbose_name="commentaires privés SICCRF")
     ca_private_comments = models.TextField(blank=True, verbose_name="commentaires privés CA")
@@ -57,6 +60,7 @@ class WithComments(models.Model):
         output_field=models.TextField(verbose_name="commentaires privés"),
         db_persist=True,
     )
+    new_private_comments = models.TextField(default="", blank=True, verbose_name="commentaires privés")
 
     siccrf_public_comments_en = models.TextField(
         blank=True, editable=False, verbose_name="commentaires publics en anglais SICCRF"
