@@ -52,17 +52,14 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
             None,  # Pas d'entête
             {
                 "fields": [
-                    "siccrf_name",
-                    "ca_name",
+                    "name",
                     "siccrf_name_en",
-                    "siccrf_description",
+                    "description",
                     "ingredient_type",
                     "is_obsolete",
                     "is_risky",
                     "novel_food",
-                    "siccrf_status",
-                    "ca_status",
-                    "ca_is_obsolete",
+                    "status",
                 ],
             },
         ),
@@ -70,10 +67,8 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
             "Commentaires",
             {
                 "fields": [
-                    "siccrf_public_comments",
-                    "ca_public_comments",
-                    "siccrf_private_comments",
-                    "ca_private_comments",
+                    "public_comments",
+                    "private_comments",
                     "to_be_entered_in_next_decree",
                 ],
             },
@@ -87,13 +82,8 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
     list_filter = ("is_obsolete", "status", "is_risky", "novel_food", "ingredient_type")
     show_facets = admin.ShowFacets.NEVER
     readonly_fields = (
-        "siccrf_name",
         "siccrf_name_en",
-        "siccrf_description",
         "is_obsolete",
-        "siccrf_status",
-        "siccrf_public_comments",
-        "siccrf_private_comments",
     )
     search_fields = ["id", "name"]
 

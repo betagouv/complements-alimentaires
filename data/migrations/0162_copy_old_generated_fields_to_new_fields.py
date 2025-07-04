@@ -13,16 +13,19 @@ class Migration(migrations.Migration):
         for condition in Condition.objects.all():
             condition.new_is_obsolete = condition.is_obsolete
             condition.new_name = condition.name
+            condition.save()
 
         Effect = apps.get_model("data", "Effect")
         for effect in Effect.objects.all():
             effect.new_is_obsolete = effect.is_obsolete
             effect.new_name = effect.name
+            effect.save()
 
         GalenicFormulation = apps.get_model("data", "GalenicFormulation")
         for galenicformulation in GalenicFormulation.objects.all():
             galenicformulation.new_is_obsolete = galenicformulation.is_obsolete
             galenicformulation.new_name = galenicformulation.name
+            galenicformulation.save()
 
         Ingredient = apps.get_model("data", "Ingredient")
         for ingredient in Ingredient.objects.all():
@@ -31,6 +34,7 @@ class Migration(migrations.Migration):
             ingredient.new_private_comments = ingredient.private_comments
             ingredient.new_public_comments = ingredient.public_comments
             ingredient.new_status = ingredient.status
+            ingredient.save()
 
         Microorganism = apps.get_model("data", "Microorganism")
         for microorganism in Microorganism.objects.all():
@@ -41,6 +45,7 @@ class Migration(migrations.Migration):
             ingredient.new_status = ingredient.status
             microorganism.new_species = microorganism.species
             microorganism.new_genus = microorganism.genus
+            microorganism.save()
 
         Plant = apps.get_model("data", "Plant")
         for plant in Plant.objects.all():
@@ -50,11 +55,13 @@ class Migration(migrations.Migration):
             plant.new_public_comments = plant.public_comments
             ingredient.new_status = ingredient.status
             plant.new_family_by_id = plant.family_by_id
+            plant.save()
 
         Part = apps.get_model("data", "Part")
         for part in Part.objects.all():
             part.new_is_useful = part.is_useful
             part.new_must_be_monitored = part.must_be_monitored
+            part.save()
 
         PlantFamily = apps.get_model("data", "PlantFamily")
         for plantfamily in PlantFamily.objects.all():
@@ -65,11 +72,13 @@ class Migration(migrations.Migration):
         for plantpart in PlantPart.objects.all():
             plantpart.new_is_obsolete = plantpart.is_obsolete
             plantpart.new_name = plantpart.name
+            plantpart.save()
 
         Preparation = apps.get_model("data", "Preparation")
         for preparation in Preparation.objects.all():
             preparation.new_is_obsolete = preparation.is_obsolete
             preparation.new_name = preparation.name
+            preparation.save()
 
         Substance = apps.get_model("data", "Substance")
         for substance in Substance.objects.all():
@@ -83,10 +92,12 @@ class Migration(migrations.Migration):
             substance.new_must_specify_quantity = substance.must_specify_quantity
             substance.new_nutritional_reference = substance.nutritional_reference
             substance.new_source = substance.source
+            substance.save()
 
         MaxquantityPerPopulationRelation = apps.get_model("data", "MaxquantityPerPopulationRelation")
         for maxquantityperpopulationrelation in MaxquantityPerPopulationRelation.objects.all():
             maxquantityperpopulationrelation.new_max_quantity = maxquantityperpopulationrelation.max_quantity
+            maxquantityperpopulationrelation.save()
 
     def reverse_set_new_fields_from_generated(apps, schema_editor):
         pass
