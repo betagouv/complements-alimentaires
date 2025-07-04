@@ -129,11 +129,11 @@ const v$ = useVuelidate(rules, { comment, proposal, reasons, delayDays }, { $ext
 const decisionCategories = [
   {
     value: "approve",
-    title: "Approbation : la déclaration peut être transmise.",
+    title: "Approbation : la déclaration est conforme.",
   },
   {
     value: "modify",
-    title: "Des changements sont nécessaires : la déclaration ne peut pas être transmise en l'état.",
+    title: "Des changements sont nécessaires : la déclaration n’est pas finalisée.",
   },
 ]
 
