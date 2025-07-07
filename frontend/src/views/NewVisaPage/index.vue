@@ -29,7 +29,7 @@
         :showElementAuthorization="true"
         :readonly="true"
         v-model="declaration"
-        v-if="isAwaitingInstruction"
+        v-if="isAwaitingVisa"
       />
 
       <div v-else class="sm:grid sm:grid-cols-12">
@@ -66,6 +66,7 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import BepiasSidebar from "@/components/NewBepiasViews/BepiasSidebar"
 import AlertsSection from "@/components/AlertsSection"
 import DeclarationSummary from "@/components/DeclarationSummary"
+import DeclarationAlert from "@/components/DeclarationAlert"
 
 const props = defineProps({ declarationId: String })
 const route = useRoute()

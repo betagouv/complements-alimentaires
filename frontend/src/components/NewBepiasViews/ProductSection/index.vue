@@ -21,9 +21,9 @@
         <SectionHeader id="resultat-instruction" icon="ri-todo-fill" text="Résultat de l'instruction" />
         <InstructionResults :model-value="declaration" :readonly="!canInstruct" />
       </div>
-      <div v-else>
+      <div v-else-if="canVisa">
         <SectionHeader id="resultat-visa" icon="ri-todo-fill" text="Visa / signature" />
-        <p>On met ici les champs du visa</p>
+        <VisaValidationTab :modelValue="declaration" @decision-done="redirectToVisa" />
       </div>
     </div>
     <div class="p-6">
@@ -48,7 +48,13 @@ import ComputedSubstancesInfo from "@/components/ComputedSubstancesInfo"
 import AdministrationNotes from "@/components/AdministrationNotes"
 import SectionHeader from "../SectionHeader"
 import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
+import VisaValidationTab from "@/views/VisaPage/VisaValidationTab"
 import { computed } from "vue"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
+const previousVisaQueryParams =
+  router.getPreviousRoute().value.name === "VisaDeclarations" ? router.getPreviousRoute().value.query : {}
 
 const props = defineProps({ declaration: Object, snapshots: Array, role: { type: String, default: "instruction" } })
 
@@ -63,5 +69,8 @@ const showComputedSubstances = computed(() => {
     .some((x) => x.requestStatus === "REPLACED" && x.element?.substances?.length)
 })
 
+const redirectToVisa = () => router.push({ name: "VisaDeclarations", query: previousVisaQueryParams })
+
 const canInstruct = computed(() => props.declaration?.status === "ONGOING_INSTRUCTION")
+const canVisa = computed(() => props.declaration?.status === "ONGOING_VISA")
 </script>
