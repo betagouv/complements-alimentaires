@@ -8,7 +8,9 @@
       ]"
     />
     <AppHeader :logo-text="logoText" id="navigation" />
-    <router-view id="main-content"></router-view>
+    <div id="main-content">
+      <router-view></router-view>
+    </div>
     <DsfrFooter
       :logo-text="logoText"
       :a11yComplianceLink="{ name: 'A11yPage' }"
