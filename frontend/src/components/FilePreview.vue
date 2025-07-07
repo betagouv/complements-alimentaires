@@ -2,7 +2,7 @@
   <div class="border p-4 flex flex-col gap-2">
     <div class="border-b -mx-4 -mt-4 h-32 bg-blue-france-975 flex justify-center items-center">
       <v-icon v-if="isPDF" scale="3" name="ri-file-text-line" />
-      <img v-else :src="file.file" class="object-contain h-32" :alt="`Image téléchargée ${props.file.name}`" />
+      <img v-else :src="file.file" class="object-contain h-32" alt="" />
     </div>
     <div class="fr-text--sm grow mb-0!">{{ props.file.name }}</div>
     <DsfrInputGroup class="max-w-sm" v-if="!hideTypeSelection && !props.readonly">

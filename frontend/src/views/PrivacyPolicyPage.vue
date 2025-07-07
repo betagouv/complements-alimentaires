@@ -18,8 +18,12 @@
       <li>la constitution d’un dossier permettant de déclarer un CA,</li>
       <li>les échanges avec l'administration nécessaires à la finalisation de la déclaration,</li>
       <li>la modification d’un produit ou son arrêt de commercialisation,</li>
-      <li>la recherche sur l’état d’un produit par le grand public,</li>
-      <li>l'instruction des dossiers par l'administation</li>
+      <li>la recherche sur l'état d'un produit par le grand public à partir de data.gouv.fr,</li>
+      <li>l'instruction des dossiers par l'administation,</li>
+      <li>
+        la recherche sur l'état d'un produit et sa composition par la DGAL, ses services déconcentrés et ses services à
+        compétence nationale ainsi que par l'Anses
+      </li>
     </ul>
     <p>La recherche sur les ingrédients et les différents CA est disponible avec et sans création de compte.</p>
     <h2>Données à caractère personnel traitées</h2>
