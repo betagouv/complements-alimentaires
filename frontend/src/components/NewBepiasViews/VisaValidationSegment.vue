@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="mb-6">
-      <h3>Proposition à viser / signer</h3>
       <div class="border p-2">
         <VisaInfoLine title="Instructeur·ice" :text="instructorName" icon="ri-account-circle-line" />
         <VisaInfoLine

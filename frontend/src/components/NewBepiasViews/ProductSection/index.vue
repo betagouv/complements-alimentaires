@@ -23,7 +23,7 @@
       </div>
       <div v-else-if="canVisa">
         <SectionHeader id="resultat-visa" icon="ri-todo-fill" text="Visa / signature" />
-        <VisaValidationTab :modelValue="declaration" @decision-done="redirectToVisa" />
+        <VisaValidationSegment :modelValue="declaration" @decision-done="redirectToVisa" />
       </div>
     </div>
     <div class="p-6">
@@ -48,7 +48,7 @@ import ComputedSubstancesInfo from "@/components/ComputedSubstancesInfo"
 import AdministrationNotes from "@/components/AdministrationNotes"
 import SectionHeader from "../SectionHeader"
 import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
-import VisaValidationTab from "@/views/VisaPage/VisaValidationTab"
+import VisaValidationSegment from "../VisaValidationSegment"
 import { computed } from "vue"
 import { useRouter } from "vue-router"
 
