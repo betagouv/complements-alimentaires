@@ -10,6 +10,7 @@
         <img
           src="/static/images/ca-webinar.jpg"
           class="object-scale-down self-center rounded-full bg-white h-40 w-40 border-solid border-4 border-blue-france-main-525"
+          alt=""
         />
       </div>
       <div class="p-6 col-span-12 sm:col-span-8 md:col-span-6">

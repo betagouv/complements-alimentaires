@@ -24,7 +24,7 @@
       >
         <template v-slot:label>
           <div>
-            <img src="/static/images/flags/fr.svg" class="w-5 mr-1 -mt-1 inline rounded-sm" />
+            <img src="/static/images/flags/fr.svg" class="w-5 mr-1 -mt-1 inline rounded-sm" alt="" />
             {{ getAuthorizationModeInFrench("FR") }}
           </div>
         </template>
@@ -38,7 +38,7 @@
       >
         <template v-slot:label>
           <div>
-            <img src="/static/images/flags/eu.svg" class="w-5 mr-1 -mt-1 inline rounded-sm" />
+            <img src="/static/images/flags/eu.svg" class="w-5 mr-1 -mt-1 inline rounded-sm" alt="" />
             {{ getAuthorizationModeInFrench("EU") }}
           </div>
         </template>

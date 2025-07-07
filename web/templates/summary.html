@@ -336,9 +336,9 @@
             <div class="composition-section">
                 <figure>
                     {% if attachment.has_pdf_extension %}
-                    <img class="keep-with-next" width="70" src="{% static 'images/pdf-file.png' %}">
+                    <img class="keep-with-next" width="70" src="{% static 'images/pdf-file.png' %}" alt="">
                     {% else %}
-                    <img class="keep-with-next" width="220" src="{{ attachment.file.url }}">
+                    <img class="keep-with-next" width="220" src="{{ attachment.file.url }}" alt="">
                     {% endif %}
                     <figcaption class="bold-marianne" style="display: block;">
                         {{ attachment.type_display }} ({{ attachment.name }})
