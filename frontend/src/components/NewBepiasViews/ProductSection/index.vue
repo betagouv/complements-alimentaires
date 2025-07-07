@@ -49,7 +49,7 @@ import AdministrationNotes from "@/components/AdministrationNotes"
 import SectionHeader from "../SectionHeader"
 import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
 import VisaValidationSegment from "../VisaValidationSegment"
-import { computed, readonly } from "vue"
+import { computed } from "vue"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
