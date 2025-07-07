@@ -5,10 +5,9 @@ from simple_history.models import HistoricalRecords
 from data.behaviours import TimeStampable
 
 from .abstract_models import CommonModelManager
-from .mixins import WithMissingImportBoolean
 
 
-class Population(TimeStampable, WithMissingImportBoolean):
+class Population(TimeStampable):
     class PopulationCategory(models.TextChoices):
         AGE = "AGE", "âge"
         PREGNANCY = "PREGNANCY", "grossesse et allaitement"

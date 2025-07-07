@@ -120,7 +120,6 @@ class CSVImporterTestCase(TestCase):
         test_path = f"{self.TEST_DIR_PATH}/element_models_creation/"
         call_command("load_ingredients", "2024-05-06", directory=test_path)
         self.assertTrue(PlantFamily.objects.filter(siccrf_id=6).exists())
-        self.assertEqual(PlantFamily.objects.get(siccrf_id=6).missing_import_data, True)
         self.assertEqual(PlantFamily.objects.get(siccrf_id=6).name, "")
 
     def test_import_twice_same_synonym_created_only_once(self):
@@ -155,30 +154,6 @@ class CSVImporterTestCase(TestCase):
         # dans le fichier une ligne de relation est dupliquée
         self.assertEqual(len(second_id.plant_parts.all()), 2)
         self.assertEqual(second_id.name, "")
-
-    def test_missing_import_data_field_well_filled(self):
-        test_path = f"{self.TEST_DIR_PATH}/create_objects_in_relation_if_they_do_not_already_exist/"
-        call_command("load_ingredients", "2024-05-06", directory=test_path)
-
-        missing_plants = Plant.objects.filter(missing_import_data=True)
-        missing_plantparts = PlantPart.objects.filter(missing_import_data=True)
-        self.assertEqual(len(missing_plants), 2)
-        for plant in missing_plants:
-            self.assertIn(plant.name, ["", ""])
-            self.assertEqual(plant.public_comments, "")
-            self.assertEqual(plant.private_comments, "")
-            self.assertEqual(plant.is_obsolete, False)
-            self.assertEqual(plant.family, None)
-            self.assertFalse(plant.substances.all().exists())
-            self.assertTrue(plant.plant_parts.all().exists())
-
-        self.assertEqual(len(missing_plantparts), 1)
-        self.assertEqual(missing_plantparts[0].name, "")
-        for plantparts in missing_plantparts:
-            self.assertEqual(plantparts.name_en, "")
-            self.assertEqual(plantparts.is_obsolete, False)
-            self.assertTrue(plantparts.part_set.all().exists())
-            self.assertTrue(plantparts.plant_set.all().exists())
 
     def test_plantparts_status_is_not_always_useful(self):
         """

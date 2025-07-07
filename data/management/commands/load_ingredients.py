@@ -9,15 +9,8 @@ from django.utils import timezone
 from data.etl.exceptions import CSVFileError
 from data.etl.teleicare_ingredients.csv_importer import import_csv_from_filepath
 from data.etl.teleicare_ingredients.post_load_transformation import deduplicate_substances_ingredients
-from data.models.plant import Part
 
 logger = logging.getLogger(__name__)
-
-
-def check_for_incomplete_data(model):
-    incomplete_objects = model.objects.filter(name="")
-    incomplete_objects.update(missing_import_data=True)
-    logger.info(f"{len(incomplete_objects)} instance(s) de {model.__name__} incomplete(s).")
 
 
 class Command(BaseCommand):
@@ -63,10 +56,6 @@ class Command(BaseCommand):
                         models_to_check = models_to_check.union(updated_models)
                     except CSVFileError as e:
                         logger.error(e.message)
-
-                for model in models_to_check:
-                    if model != Part:
-                        check_for_incomplete_data(model)
 
                 # transform une fois tous les fichiers importés
                 deduplicate_substances_ingredients()
