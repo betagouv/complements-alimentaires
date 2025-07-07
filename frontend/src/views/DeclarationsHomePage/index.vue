@@ -21,6 +21,7 @@
         <DsfrFieldset class="mb-0!">
           <DsfrSearchBar
             v-model="searchTerm"
+            label="Nom, ID ou entreprise"
             placeholder="Nom, ID ou entreprise"
             @search="search"
             @update:modelValue="(val) => val === '' && search()"

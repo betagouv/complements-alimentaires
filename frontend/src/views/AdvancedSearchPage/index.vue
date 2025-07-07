@@ -8,6 +8,7 @@
         <DsfrFieldset legend="Recherche" class="mb-0!">
           <DsfrSearchBar
             v-model="searchTerm"
+            label="Nom du produit, ID ou entreprise"
             placeholder="Nom du produit, ID ou entreprise"
             @search="search"
             @update:modelValue="(val) => val === '' && search()"
