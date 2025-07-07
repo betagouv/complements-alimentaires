@@ -13,8 +13,14 @@
             v-model="decisionCategory"
             :value="category.value"
             name="decisionCategory"
-            :label="category.title"
-          />
+          >
+            <template v-slot:label>
+              <div>
+                <v-icon :color="category.color" :name="category.icon" aria-hidden />
+                {{ category.title }}
+              </div>
+            </template>
+          </DsfrRadioButton>
         </DsfrInputGroup>
       </div>
 
@@ -128,12 +134,16 @@ const v$ = useVuelidate(rules, { comment, proposal, reasons, delayDays }, { $ext
 
 const decisionCategories = [
   {
+    icon: "ri-checkbox-circle-fill",
+    color: "green",
     value: "approve",
-    title: "Approbation : la déclaration peut être transmise.",
+    title: "Approbation : la déclaration est conforme.",
   },
   {
+    icon: "ri-close-circle-fill",
+    color: "red",
     value: "modify",
-    title: "Des changements sont nécessaires : la déclaration ne peut pas être transmise en l'état.",
+    title: "Des changements sont nécessaires : la déclaration n’est pas finalisée.",
   },
 ]
 
