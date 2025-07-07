@@ -24,6 +24,7 @@ const rows = computed(() => {
         component: "span",
         text: substance.substance.name.toLowerCase(),
         class: "capitalize",
+        id: `substance-info-${index}`,
       },
       {
         component: "span",
