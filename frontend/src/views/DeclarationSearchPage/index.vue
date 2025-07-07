@@ -12,7 +12,7 @@
       <ProgressSpinner />
     </div>
     <div v-else>
-      <ControlDeclarationsTable :data="data" v-if="data" @sort="updateOrdering" />
+      <ControlDeclarationsTable :data="data" v-if="data" @sort="updateOrdering" @filter="updateFiltering" />
       <DsfrPagination
         v-if="showPagination"
         @update:currentPage="updatePage"
@@ -42,12 +42,14 @@ const pages = computed(() => getPagesForPagination(data.value?.count, limit.valu
 const page = computed(() => parseInt(route.query.page))
 const ordering = computed(() => route.query.triage)
 const limit = computed(() => parseInt(route.query.limit))
+const simplifiedStatus = computed(() => route.query.simplifiedStatus)
 
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 
 // Obtention de la donnée via API
 const url = computed(
-  () => `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}`
+  () =>
+    `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&simplifiedStatus=${simplifiedStatus.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 
@@ -61,6 +63,11 @@ const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...{ pa
 
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 const updateOrdering = (sortValue) => updateQuery({ triage: sortValue || "-creationDate" })
+const updateFiltering = (filterKey, filterValue) => {
+  const filterQuery = {}
+  filterQuery[filterKey] = filterValue
+  updateQuery(filterQuery)
+}
 
-watch([page, limit, ordering], fetchSearchResults)
+watch([page, limit, ordering, simplifiedStatus], fetchSearchResults)
 </script>
