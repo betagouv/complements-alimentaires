@@ -16,11 +16,11 @@ const route = useRoute()
 const makeRoute = (name) => ({ name, params: { declarationId: declaration.value.id } })
 const appendHash = (route, hash) => ({ ...{ hash }, ...route })
 
-const isInInstruction = computed(() => route.name === "InstructionSection")
+const isInInstruction = computed(() => route.name === "InstructionPage")
 const isInIdentity = computed(() => route.name === "IdentitySection")
 const isInHistory = computed(() => route.name === "HistorySection")
 
-const instructionRoute = computed(() => makeRoute("InstructionSection"))
+const instructionRoute = computed(() => makeRoute("InstructionPage"))
 const identityRoute = computed(() => makeRoute("IdentitySection"))
 const historyRoute = computed(() => makeRoute("HistorySection"))
 
