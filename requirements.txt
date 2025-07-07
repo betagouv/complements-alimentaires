@@ -8,7 +8,7 @@ autopep8==2.3.2
 beautifulsoup4==4.13.4
 billiard==4.2.1
 bleach==6.2.0
-boto3==1.38.36
+boto3==1.39.3
 botocore==1.38.36
 bs4==0.0.2
 celery==5.5.3
