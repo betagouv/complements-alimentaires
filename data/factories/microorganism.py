@@ -14,14 +14,11 @@ class MicroorganismFactory(factory.django.DjangoModelFactory):
 
     name = factory.Faker("text", max_nb_chars=20)
     siccrf_id = factory.Sequence(lambda n: n + 1)
-    siccrf_genus = factory.Faker("text", max_nb_chars=20)
-    ca_genus = factory.Faker("text", max_nb_chars=20)
-    siccrf_species = factory.Faker("text", max_nb_chars=20)
-    ca_species = factory.Faker("text", max_nb_chars=20)
-    siccrf_status = IngredientStatus.AUTHORIZED
+    genus = factory.Faker("text", max_nb_chars=20)
+    species = factory.Faker("text", max_nb_chars=20)
+    status = IngredientStatus.AUTHORIZED
     to_be_entered_in_next_decree = False
-    siccrf_is_obsolete = False
-    ca_is_obsolete = False
+    is_obsolete = False
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):
