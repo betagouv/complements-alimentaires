@@ -20,8 +20,12 @@
     <p>Le Service est une plateforme numérique permettant :</p>
     <ul>
       <li>la constitution d’un dossier permettant de déclarer un CA,</li>
-      <li>la modification d’un produit ou son arrêt de commercialisation</li>
-      <li>la recherche sur l’état d’un produit par le grand public</li>
+      <li>la modification d’un produit ou son arrêt de commercialisation,</li>
+      <li>la recherche sur l'état d'un produit par le grand public à partir de data.gouv.fr,</li>
+      <li>
+        la recherche sur l'état d'un produit et sa composition par la DGAL, ses services déconcentrés et ses services à
+        compétence nationale ainsi que par l'Anses
+      </li>
     </ul>
     <p>Un parcours « instructeur / instructrice » est prévu pour faciliter l’analyse des déclarations.</p>
 
