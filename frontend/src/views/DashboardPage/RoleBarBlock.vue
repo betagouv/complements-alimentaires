@@ -17,6 +17,8 @@
           :options="companiesSelectOptions"
           :modelValue="activeCompany?.id"
           @update:modelValue="(x) => emit('changeCompany', x)"
+          label="Entreprise"
+          class="-mt-5"
         />
       </div>
     </div>
@@ -35,3 +37,11 @@ const companiesSelectOptions = computed(() =>
   props.companies?.filter((c) => !c.representedBy).map((c) => ({ text: c.socialName, value: c.id }))
 )
 </script>
+
+<style>
+@reference "../../styles/index.css";
+
+.fr-label {
+  @apply invisible;
+}
+</style>
