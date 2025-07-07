@@ -1,8 +1,8 @@
 <template>
   <div class="bg-blue-france-975 relative">
-    <img class="hidden lg:block absolute scale-75 top-32 left-1" src="/static/images/cloud-left.png" />
-    <img class="hidden md:block absolute scale-75 top-5 right-1" src="/static/images/cloud-right.png" />
-    <img class="hidden md:block absolute bottom-0 right-20" src="/static/images/plants.png" />
+    <img class="hidden lg:block absolute scale-75 top-32 left-1" src="/static/images/cloud-left.png" alt="" />
+    <img class="hidden md:block absolute scale-75 top-5 right-1" src="/static/images/cloud-right.png" alt="" />
+    <img class="hidden md:block absolute bottom-0 right-20" src="/static/images/plants.png" alt="" />
     <div class="fr-container relative p-6 py-6 sm:py-10 md:py-14 grid grid-cols-12">
       <div class="col-span-12 md:col-span-8 lg:col-span-5">
         <h1>Tester ma composition de compléments alimentaires</h1>

@@ -9,7 +9,7 @@
       <img
         style="max-width: 90%; max-height: 90%; object-fit: contain"
         src="/static/images/illustrations/declaration-illustration.png"
-        alt="Professionnelle effectuant sa déclaration"
+        alt=""
       />
     </div>
   </div>
