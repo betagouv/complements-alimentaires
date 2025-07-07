@@ -21,9 +21,9 @@
         <SectionHeader id="resultat-instruction" icon="ri-todo-fill" text="Résultat de l'instruction" />
         <InstructionResults :model-value="declaration" :readonly="!canInstruct" />
       </div>
-      <div v-else-if="canVisa">
+      <div v-else>
         <SectionHeader id="resultat-visa" icon="ri-todo-fill" text="Visa / signature" />
-        <VisaValidationSegment :modelValue="declaration" @decision-done="redirectToVisa" />
+        <VisaValidationSegment :modelValue="declaration" @decision-done="redirectToVisa" :readonly="!canVisa" />
       </div>
     </div>
     <div class="p-6">
@@ -49,7 +49,7 @@ import AdministrationNotes from "@/components/AdministrationNotes"
 import SectionHeader from "../SectionHeader"
 import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
 import VisaValidationSegment from "../VisaValidationSegment"
-import { computed } from "vue"
+import { computed, readonly } from "vue"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
