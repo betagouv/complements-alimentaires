@@ -155,14 +155,14 @@ onMounted(async () => {
   await executeDeclarationFetch()
   handleError(declarationResponse)
 
-  // Si on arrive à cette page avec une déclaration déjà assignée à l'utilisateur mais en état
-  // AWAITING_VISA, on la passe directement à ONGOING_VISA.
-  if (declaration.value?.visor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_VISA")
-    await takeDeclaration()
-
   if (!declaration.value) return
 
-  const mandatedCompany = declaration.value?.mandatedCompany
+  // Si on arrive à cette page avec une déclaration déjà assignée à l'utilisateur·ice mais en état
+  // AWAITING_VISA, on la passe directement à ONGOING_VISA.
+  if (declaration.value.visor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_VISA")
+    await takeDeclaration()
+
+  const mandatedCompany = declaration.value.mandatedCompany
   const fetchMandatedCompany = mandatedCompany ? executeMandatedCompanyFetch : () => Promise.resolve
   const handleMandatedError = mandatedCompany ? () => handleError(mandatedCompanyResponse) : () => Promise.resolve
 
