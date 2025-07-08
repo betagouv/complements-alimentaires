@@ -14,8 +14,6 @@
       />
     </div>
 
-    <HistoryAlert />
-
     <div class="border px-4 mb-2 md:flex gap-8 items-baseline filters">
       <div class="md:border-r pt-4 md:pr-4">
         <DsfrFieldset class="mb-0!">
@@ -99,7 +97,6 @@ import { storeToRefs } from "pinia"
 import { getPagesForPagination } from "@/utils/components"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import StatusFilter from "@/components/StatusFilter"
-import HistoryAlert from "@/components/History/HistoryAlert.vue"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
