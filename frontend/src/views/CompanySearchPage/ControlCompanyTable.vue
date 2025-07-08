@@ -9,28 +9,24 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
-import { useRoute } from "vue-router"
+import { computed } from "vue"
 import { allActivities } from "@/utils/mappings"
 import TableHeaders from "@/components/TableHeaders"
 
-const route = useRoute()
 const emit = defineEmits(["sort"])
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 const headers = computed(() => [
   {
     text: "Entreprise",
-    onClick: () => sortBy("socialName"),
-    active: currentSort.value === "socialName",
-    icon: getSortIcon("socialName"),
+    sortParam: "socialName",
+    sortCallback: (value) => emit("sort", value),
     ariaLabel: "Trier par nom de l'entreprise",
   },
   {
     text: "Code postal",
-    onClick: () => sortBy("postalCode"),
-    active: currentSort.value === "postalCode",
-    icon: getSortIcon("postalCode"),
+    sortParam: "postalCode",
+    sortCallback: (value) => emit("sort", value),
     ariaLabel: "Trier par code postale",
   },
   {
@@ -46,27 +42,6 @@ const headers = computed(() => [
   //   text: "Date de la dernière déclaration",
   // },
 ])
-
-// Gestion du triage
-const currentSort = ref(route.query.triage ? route.query.triage.substring(1) : undefined)
-const sortDirection = ref(route.query.triage ? route.query.triage.substring(0, 1) : undefined)
-const sortBy = (sortParam) => {
-  if (currentSort.value === sortParam) {
-    if (!sortDirection.value) sortDirection.value = "+"
-    else if (sortDirection.value === "+") sortDirection.value = "-"
-    else sortDirection.value = currentSort.value = "" // Si on a cliqué trois fois on désactive le triage
-  } else {
-    sortDirection.value = "+"
-    currentSort.value = sortParam
-  }
-  emit("sort", `${sortDirection.value}${currentSort.value}`)
-}
-const getSortIcon = (sortParam) =>
-  currentSort.value === sortParam
-    ? sortDirection.value === "+"
-      ? "ri-sort-desc"
-      : "ri-sort-asc"
-    : "ri-arrow-up-down-line"
 
 // Construction des files de la table
 const rows = computed(() =>

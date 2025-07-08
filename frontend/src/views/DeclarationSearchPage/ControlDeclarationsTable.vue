@@ -31,16 +31,14 @@ const headers = computed(() => [
   { text: "ID décla." },
   {
     text: "Produit",
-    onClick: () => sortBy("name"),
-    active: currentSort.value === "name",
-    icon: getSortIcon("name"),
+    sortParam: "name",
+    sortCallback: (value) => emit("sort", value),
     ariaLabel: "Trier par nom de produit",
   },
   {
     text: "Entreprise",
-    onClick: () => sortBy("companyName"),
-    active: currentSort.value === "companyName",
-    icon: getSortIcon("companyName"),
+    sortParam: "companyName",
+    sortCallback: (value) => emit("sort", value),
     ariaLabel: "Trier par nom de l'entreprise",
   },
 
@@ -54,27 +52,6 @@ const headers = computed(() => [
   },
   { text: "Date d'application du statut" },
 ])
-
-// Gestion du triage
-const currentSort = ref(route.query.triage ? route.query.triage.substring(1) : undefined)
-const sortDirection = ref(route.query.triage ? route.query.triage.substring(0, 1) : undefined)
-const sortBy = (sortParam) => {
-  if (currentSort.value === sortParam) {
-    if (!sortDirection.value) sortDirection.value = "+"
-    else if (sortDirection.value === "+") sortDirection.value = "-"
-    else sortDirection.value = currentSort.value = "" // Si on a cliqué trois fois on désactive le triage
-  } else {
-    sortDirection.value = "+"
-    currentSort.value = sortParam
-  }
-  emit("sort", `${sortDirection.value}${currentSort.value}`)
-}
-const getSortIcon = (sortParam) =>
-  currentSort.value === sortParam
-    ? sortDirection.value === "+"
-      ? "ri-sort-desc"
-      : "ri-sort-asc"
-    : "ri-arrow-up-down-line"
 
 // Gestion du filtrage
 const filterBy = (filterParam, filterValue) => emit("filter", filterParam, filterValue)
