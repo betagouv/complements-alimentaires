@@ -47,7 +47,12 @@ const headers = computed(() => [
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
-      { component: "span", text: x.socialName, class: "font-bold" },
+      {
+        component: "router-link",
+        text: x.socialName,
+        class: "font-bold",
+        to: { name: "CompanyDetails", params: { companyId: x.id } },
+      },
       x.postalCode,
       getActivitiesString(x.activities || []),
       // "",
