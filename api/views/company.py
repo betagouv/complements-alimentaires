@@ -7,13 +7,16 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
+from django_filters import rest_framework as django_filters
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveUpdateAPIView
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.utils.filters import CamelCaseOrderingFilter
 from api.utils.urls import get_base_url
 from config import email
 from data.choices import CountryChoices
@@ -23,8 +26,8 @@ from data.utils.external_utils import SiretData
 from data.validators import validate_siret, validate_vat  # noqa
 
 from ..exception_handling import ProjectAPIException
-from ..permissions import IsSupervisor, IsSupervisorOrAgent
-from ..serializers import CollaboratorSerializer, CompanySerializer, MinimalCompanySerializer
+from ..permissions import IsController, IsSupervisor, IsSupervisorOrAgent
+from ..serializers import CollaboratorSerializer, CompanySerializer, MinimalCompanySerializer, SimpleCompanySerializer
 
 User = get_user_model()
 
@@ -293,3 +296,21 @@ class RemoveMandatedCompanyView(GenericAPIView):
 
         serializer = self.get_serializer(company)
         return Response(serializer.data)
+
+
+class CompanyPagination(LimitOffsetPagination):
+    default_limit = 10
+    max_limit = 50
+
+
+class ControlCompanyListView(ListAPIView):
+    model = Company
+    serializer_class = SimpleCompanySerializer
+    permission_classes = [IsController]
+    pagination_class = CompanyPagination
+    filter_backends = [
+        django_filters.DjangoFilterBackend,
+        CamelCaseOrderingFilter,
+    ]
+    ordering_fields = ["creation_date", "modification_date", "social_name"]
+    queryset = Company.objects.all()
