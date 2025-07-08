@@ -528,6 +528,11 @@ const routes = [
       title: "Les entreprises",
       requiredRoles: ["ControlRole"],
       authenticationRequired: true,
+      defaultQueryParams: {
+        page: 1,
+        limit: 10,
+        triage: "-creationDate",
+      },
     },
   },
   {

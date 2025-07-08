@@ -312,5 +312,5 @@ class ControlCompanyListView(ListAPIView):
         django_filters.DjangoFilterBackend,
         CamelCaseOrderingFilter,
     ]
-    ordering_fields = ["creation_date", "modification_date", "social_name"]
+    ordering_fields = ["creation_date", "modification_date", "social_name", "postal_code"]
     queryset = Company.objects.all()
