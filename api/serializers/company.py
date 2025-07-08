@@ -30,6 +30,20 @@ class SimpleCompanySerializer(serializers.ModelSerializer):
         )
 
 
+class ControllerCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = (
+            "id",
+            "social_name",
+            "address",
+            "additional_details",
+            "postal_code",
+            "activities",
+            "country",
+        )
+
+
 class CompanySerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     phone_number = PhoneNumberField()

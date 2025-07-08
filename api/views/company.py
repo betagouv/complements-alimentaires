@@ -27,7 +27,12 @@ from data.validators import validate_siret, validate_vat  # noqa
 
 from ..exception_handling import ProjectAPIException
 from ..permissions import IsController, IsSupervisor, IsSupervisorOrAgent
-from ..serializers import CollaboratorSerializer, CompanySerializer, MinimalCompanySerializer, SimpleCompanySerializer
+from ..serializers import (
+    CollaboratorSerializer,
+    CompanySerializer,
+    ControllerCompanySerializer,
+    MinimalCompanySerializer,
+)
 
 User = get_user_model()
 
@@ -305,7 +310,7 @@ class CompanyPagination(LimitOffsetPagination):
 
 class ControlCompanyListView(ListAPIView):
     model = Company
-    serializer_class = SimpleCompanySerializer
+    serializer_class = ControllerCompanySerializer
     permission_classes = [IsController]
     pagination_class = CompanyPagination
     filter_backends = [

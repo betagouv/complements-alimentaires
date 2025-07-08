@@ -11,6 +11,7 @@
 <script setup>
 import { computed, ref } from "vue"
 import { useRoute } from "vue-router"
+import { allActivities } from "@/utils/mappings"
 import TableHeaders from "@/components/TableHeaders"
 
 const route = useRoute()
@@ -70,9 +71,22 @@ const getSortIcon = (sortParam) =>
 // Construction des files de la table
 const rows = computed(() =>
   props.data?.results?.map((x) => ({
-    rowData: [{ component: "span", text: x.socialName, class: "font-bold" }, x.postalCode, "", "", "", ""],
+    rowData: [
+      { component: "span", text: x.socialName, class: "font-bold" },
+      x.postalCode,
+      getActivitiesString(x.activities || []),
+      "",
+      "",
+      "",
+    ],
   }))
 )
+
+const getActivitiesString = (activities) =>
+  activities
+    .map((x) => allActivities.find((y) => y.value === x).label)
+    .sort((a, b) => a.localeCompare(b))
+    .join(", ")
 </script>
 
 <style scoped>

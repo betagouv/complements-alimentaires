@@ -34,7 +34,7 @@ from .declaration import (
     DeclaredIngredientSerializer,
     DeclaredElementDeclarationSerializer,
 )
-from .company import CompanySerializer, MinimalCompanySerializer, SimpleCompanySerializer
+from .company import CompanySerializer, MinimalCompanySerializer, ControllerCompanySerializer
 from .solicitation import CollaborationInvitationSerializer, CompanyAccessClaimSerializer, AddNewCollaboratorSerializer
 from .snapshot import SnapshotSerializer
 from .error_report import ErrorReportSerializer
