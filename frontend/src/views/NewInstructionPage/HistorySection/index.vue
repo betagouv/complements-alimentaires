@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-grey-975! p-6" v-if="snapshots">
+  <div class="p-6" v-if="snapshots">
     <SectionHeader icon="ri-history-fill" text="Historique" />
 
     <div v-if="!snapshots" class="flex justify-center items-center min-h-60">

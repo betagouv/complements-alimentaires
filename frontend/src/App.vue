@@ -1,5 +1,5 @@
 <template>
-  <div :class="lowContrastMode ? 'bg-grey-975!' : ''">
+  <div :class="lowContrastMode ? 'low-contrast-mode bg-grey-975!' : ''">
     <DsfrSkipLinks
       :links="[
         { id: 'main-content', text: 'Aller au contenu principal' },
@@ -47,7 +47,7 @@ watch(route, (to) => {
   document.title = to.meta.title ? to.meta.title + " - " + suffix : suffix
 })
 
-const lowContrastMode = computed(() => route.name === "InstructionPage")
+const lowContrastMode = computed(() => ["InstructionPage", "IdentitySection", "HistorySection"].includes(route.name))
 </script>
 
 <style>
@@ -55,5 +55,12 @@ const lowContrastMode = computed(() => route.name === "InstructionPage")
 
 .fr-pagination__list {
   @apply justify-center;
+}
+
+.low-contrast-mode {
+  .border,
+  .border-l {
+    @apply border-gray-500;
+  }
 }
 </style>
