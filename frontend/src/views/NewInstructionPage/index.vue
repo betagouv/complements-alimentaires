@@ -30,7 +30,7 @@
 
       <div v-else class="sm:grid sm:grid-cols-12">
         <div class="hidden sm:block col-span-3">
-          <div class="sticky top-2 sidebar-content">
+          <div class="sticky top-2">
             <InstructionSidebar v-model="declaration" />
           </div>
         </div>
