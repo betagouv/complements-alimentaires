@@ -21,8 +21,6 @@ class SimpleCompanySerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "social_name",
-            "address",
-            "additional_details",
             "postal_code",
             "city",
             "cedex",
