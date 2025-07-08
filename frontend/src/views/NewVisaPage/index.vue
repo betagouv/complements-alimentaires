@@ -155,7 +155,7 @@ onMounted(async () => {
   await executeDeclarationFetch()
   handleError(declarationResponse)
 
-  // Si on arrive à cette page avec une déclaration déjà assignée à quelqun.e mais en état
+  // Si on arrive à cette page avec une déclaration déjà assignée à l'utilisateur mais en état
   // AWAITING_VISA, on la passe directement à ONGOING_VISA.
   if (declaration.value?.visor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_VISA")
     await takeDeclaration()
