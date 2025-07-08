@@ -36,15 +36,15 @@ const headers = computed(() => [
   {
     text: "Rôles",
   },
-  {
-    text: "Nb. de produits commercialisables",
-  },
-  {
-    text: "Nb. de produits avec restrictions",
-  },
-  {
-    text: "Date de la dernière déclaration",
-  },
+  // {
+  //   text: "Nb. de produits commercialisables",
+  // },
+  // {
+  //   text: "Nb. de produits avec restrictions",
+  // },
+  // {
+  //   text: "Date de la dernière déclaration",
+  // },
 ])
 
 // Gestion du triage
@@ -75,9 +75,9 @@ const rows = computed(() =>
       { component: "span", text: x.socialName, class: "font-bold" },
       x.postalCode,
       getActivitiesString(x.activities || []),
-      "",
-      "",
-      "",
+      // "",
+      // "",
+      // "",
     ],
   }))
 )
