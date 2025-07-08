@@ -63,6 +63,7 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
                     "siccrf_status",
                     "ca_status",
                     "ca_is_obsolete",
+                    "requires_analysis_report",
                 ],
             },
         ),

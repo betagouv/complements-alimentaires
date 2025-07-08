@@ -41,6 +41,7 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
                     "siccrf_status",
                     "ca_status",
                     "ca_is_obsolete",
+                    "requires_analysis_report",
                 ],
             },
         ),

@@ -50,6 +50,10 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
         blank=True,
     )
 
+    requires_analysis_report = models.BooleanField(
+        default=False, verbose_name="L'utilisation de cet ingrédient nécessite un bulletin d'analyse"
+    )
+
     @property
     def object_type(self):
         """

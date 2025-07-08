@@ -67,6 +67,14 @@
           label-left
           class="self-center mt-4 col-span-2 sm:col-span-2"
         />
+        <DsfrToggleSwitch
+          v-model="state.requiresAnalysisReport"
+          label="Nécessite un bulletin d'analyse ?"
+          activeText="Oui"
+          inactiveText="Non"
+          label-left
+          class="self-center mt-4 col-span-2 sm:col-span-2"
+        />
       </div>
       <div class="grid md:grid-cols-2 mt-4">
         <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg pb-0! mb-2! mt-4!">
