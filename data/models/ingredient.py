@@ -16,7 +16,7 @@ class Ingredient(IngredientCommonModel):
         verbose_name_plural = "autres ingrédients"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
-    siccrf_description = models.TextField(blank=True)
+    description = models.TextField(blank=True)
     ingredient_type = models.IntegerField(
         choices=IngredientType.choices,
         null=True,
@@ -28,23 +28,11 @@ class Ingredient(IngredientCommonModel):
             PublicReasonHistoricalModel,
         ],
         inherit=True,
-        excluded_fields=[
-            "name",
-            "is_obsolete",
-            "private_comments",
-            "public_comments",
-            "status",
-            "siccrf_status",
-        ],
     )
 
     @property
     def name_en(self):
         return self.siccrf_name_en
-
-    @property
-    def description(self):
-        return self.siccrf_description
 
     @property
     def object_type(self):

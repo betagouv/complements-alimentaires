@@ -15,7 +15,7 @@ class PlantFamily(CommonModel):
         verbose_name_plural = "familles de plantes"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
-    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete"])
+    history = HistoricalRecords(inherit=True)
 
     @property
     def name_en(self):
@@ -29,10 +29,6 @@ class PlantPart(CommonModel):
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     history = HistoricalRecords(
         inherit=True,
-        excluded_fields=[
-            "name",
-            "is_obsolete",
-        ],
     )
 
     @property
@@ -44,7 +40,7 @@ class Plant(IngredientCommonModel):
     class Meta:
         verbose_name = "plante"
 
-    family_by_id = models.BigIntegerField(verbose_name="famille de plante")
+    family_by_id = models.BigIntegerField(verbose_name="famille de plante", null=True)
     family = models.ForeignObject(
         PlantFamily,
         on_delete=models.SET_NULL,
@@ -62,15 +58,8 @@ class Plant(IngredientCommonModel):
         ],
         inherit=True,
         excluded_fields=[
-            "name",
-            "is_obsolete",
             "family",
-            "private_comments",
-            "public_comments",
-            "status",
-            "siccrf_status",
             "family_by_id",
-            "family",
         ],
     )
 
@@ -87,9 +76,7 @@ class Part(TimeStampable):
     must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
 
     is_useful = models.BooleanField(default=False, verbose_name="🍵 utile ?")
-    history = HistoricalRecords(
-        inherit=True, excluded_fields=["name", "is_obsolete", "must_be_monitored", "is_useful"]
-    )
+    history = HistoricalRecords(inherit=True)
 
 
 class PlantSubstanceRelation(TimeStampable, Historisable):

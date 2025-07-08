@@ -84,20 +84,6 @@ class Substance(IngredientCommonModel):
             PublicReasonHistoricalModel,
         ],
         inherit=True,
-        excluded_fields=[
-            "name",
-            "is_obsolete",
-            "private_comments",
-            "public_comments",
-            "cas_number",
-            "einec_number",
-            "source",
-            "must_specify_quantity",
-            "nutritional_reference",
-            "status",
-            "siccrf_status",
-            "substance_types",
-        ],
     )
 
     @property

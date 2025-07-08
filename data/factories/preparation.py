@@ -7,5 +7,4 @@ class PreparationFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Preparation
 
-    siccrf_name = factory.Faker("text", max_nb_chars=20)
-    ca_name = factory.Faker("text", max_nb_chars=20)
+    name = factory.Faker("text", max_nb_chars=20)

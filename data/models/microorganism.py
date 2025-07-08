@@ -34,9 +34,9 @@ class Microorganism(IngredientCommonModel):
         db_persist=True,
     )
 
-    genus = models.TextField(verbose_name="genre de micro-organisme")
+    genus = models.TextField(verbose_name="genre de micro-organisme", null=True)
 
-    species = models.TextField(verbose_name="espèce de micro-organisme")
+    species = models.TextField(verbose_name="espèce de micro-organisme", null=True)
 
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
     history = HistoricalRecords(
@@ -46,13 +46,6 @@ class Microorganism(IngredientCommonModel):
         inherit=True,
         excluded_fields=[
             "name",
-            "is_obsolete",
-            "private_comments",
-            "public_comments",
-            "genus",
-            "species",
-            "status",
-            "siccrf_status",
         ],
     )
 

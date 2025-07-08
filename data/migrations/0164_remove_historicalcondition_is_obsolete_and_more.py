@@ -11,6 +11,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RemoveField(
+            model_name="microorganism",
+            name="new_name",
+        ),
+        migrations.RemoveField(
+            model_name="historicalmicroorganism",
+            name="new_name",
+        ),
         migrations.RenameField(
             model_name='condition',
             old_name='new_is_obsolete',
@@ -111,11 +119,11 @@ class Migration(migrations.Migration):
             old_name='new_is_obsolete',
             new_name='is_obsolete'
         ),
-        migrations.RenameField(
-            model_name='historicalmicroorganism',
-            old_name='new_name',
-            new_name='name'
-        ),
+        # migrations.RenameField(
+        #     model_name='historicalmicroorganism',
+        #     old_name='new_name',
+        #     new_name='name'
+        # ),
         migrations.RenameField(
             model_name='historicalmicroorganism',
             old_name='new_private_comments',
@@ -296,11 +304,11 @@ class Migration(migrations.Migration):
             old_name='new_is_obsolete',
             new_name='is_obsolete'
         ),
-        migrations.RenameField(
-            model_name='microorganism',
-            old_name='new_name',
-            new_name='name'
-        ),
+        # migrations.RenameField(
+        #     model_name='microorganism',
+        #     old_name='new_name',
+        #     new_name='name'
+        # ),
         migrations.RenameField(
             model_name='microorganism',
             old_name='new_private_comments',

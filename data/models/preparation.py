@@ -12,7 +12,7 @@ class Preparation(CommonModel):
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais selon la base SICCRF")
     contains_alcohol = models.BooleanField(default=False, verbose_name="la préparation contient-elle de l'alcool ?")
-    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete"])
+    history = HistoricalRecords(inherit=True)
 
     @property
     def name_en(self):

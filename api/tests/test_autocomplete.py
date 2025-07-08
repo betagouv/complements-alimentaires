@@ -41,19 +41,17 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "eucal"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        eucalyptus_1 = SubstanceFactory.create(
-            ca_name="eucalyptus", substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE]
-        )
+        eucalyptus_1 = SubstanceFactory.create(name="eucalyptus", substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE])
 
         # Deuxième position car la chaîne de caractères est plus éloignée
-        eucalyptus_2 = IngredientFactory.create(ca_name="eucalyptus tree")
+        eucalyptus_2 = IngredientFactory.create(name="eucalyptus tree")
 
         # Troisième position grâce à son synonyme de nom « "Eucalyptus Plant" »
-        myrtaceae = PlantFactory.create(ca_name="Myrtaceae")
+        myrtaceae = PlantFactory.create(name="Myrtaceae")
         PlantSynonymFactory.create(name="Eucalyptus Plant", standard_name=myrtaceae)
 
         # Ne devrait pas apparaître
-        PlantFactory.create(ca_name="vanille")
+        PlantFactory.create(name="vanille")
 
         response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -76,17 +74,17 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "buplevre"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        buplevre_1 = SubstanceFactory.create(ca_name="Buplèvre", substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE])
+        buplevre_1 = SubstanceFactory.create(name="Buplèvre", substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE])
 
         # Deuxième position car la chaîne de caractères est plus éloignée
-        buplevre_2 = PlantFactory.create(ca_name="Buplèvre en faux")
+        buplevre_2 = PlantFactory.create(name="Buplèvre en faux")
 
         # Troisième position grâce à son synonyme de nom « "Buplèvre à feuilles rondes" »
         pancic = MicroorganismFactory.create(name="Pančić")
         MicroorganismSynonymFactory.create(name="Buplèvre à feuilles rondes", standard_name=pancic)
 
         # Ne devrait pas apparaître
-        PlantFactory.create(ca_name="vanille")
+        PlantFactory.create(name="vanille")
 
         response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -110,26 +108,26 @@ class TestAutocomplete(APITestCase):
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
         authorized_substance = SubstanceFactory.create(
-            ca_name="Vitamine C",
+            name="Vitamine C",
             siccrf_status=IngredientStatus.AUTHORIZED,
             substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE],
         )
         SubstanceSynonymFactory.create(name="Ephedra", standard_name=authorized_substance)
 
         forbidden_plant = PlantFactory.create(
-            ca_name="Ephedra sepervirens", siccrf_status=IngredientStatus.NOT_AUTHORIZED
+            name="Ephedra sepervirens", siccrf_status=IngredientStatus.NOT_AUTHORIZED
         )
         forbidden_ingredient = IngredientFactory.create(
-            ca_name="Ephedra ingredient", siccrf_status=IngredientStatus.NOT_AUTHORIZED
+            name="Ephedra ingredient", siccrf_status=IngredientStatus.NOT_AUTHORIZED
         )
         forbidden_substance = SubstanceFactory.create(
-            ca_name="Ephedra ine",
+            name="Ephedra ine",
             siccrf_status=IngredientStatus.NOT_AUTHORIZED,
             substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE],
         )
 
         to_be_authorized_plant = PlantFactory.create(
-            ca_name="Ephedralite", siccrf_status=IngredientStatus.AUTHORIZED, to_be_entered_in_next_decree=True
+            name="Ephedralite", siccrf_status=IngredientStatus.AUTHORIZED, to_be_entered_in_next_decree=True
         )
 
         response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term})
@@ -164,22 +162,20 @@ class TestAutocomplete(APITestCase):
         """
         # Création des ingrédients
         substance_to_be_returned_1 = SubstanceFactory.create(
-            ca_name="Vitamine A",
+            name="Vitamine A",
             siccrf_status=IngredientStatus.AUTHORIZED,
             substance_types=[SubstanceType.VITAMIN, SubstanceType.BIOACTIVE_SUBSTANCE],
         )
         substance_to_be_returned_2 = SubstanceFactory.create(
-            ca_name="Vitamine B",
+            name="Vitamine B",
             siccrf_status=IngredientStatus.AUTHORIZED,
             substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE],
         )
         _ = SubstanceFactory.create(
-            ca_name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED, substance_types=[SubstanceType.VITAMIN]
+            name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED, substance_types=[SubstanceType.VITAMIN]
         )
 
-        _ = SubstanceFactory.create(
-            ca_name="Vitamine RAS", siccrf_status=IngredientStatus.AUTHORIZED, substance_types=[]
-        )
+        _ = SubstanceFactory.create(name="Vitamine RAS", siccrf_status=IngredientStatus.AUTHORIZED, substance_types=[])
 
         autocomplete_term = "vitamine"
 
@@ -209,12 +205,10 @@ class TestAutocomplete(APITestCase):
         autocomplete_term = "eucal"
 
         # Devrait apparaître en première position à cause de son score SequenceMatcher
-        eucalyptus_1 = SubstanceFactory.create(
-            ca_name="eucalyptus", substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE]
-        )
+        eucalyptus_1 = SubstanceFactory.create(name="eucalyptus", substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE])
 
         # ne pas faire apparaître
-        IngredientFactory.create(ca_name="eucalyptus tree")
+        IngredientFactory.create(name="eucalyptus tree")
 
         response = self.client.post(
             f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term, "type": "substance"}

@@ -47,8 +47,8 @@ from data.models import (
     DeclaredPlant,
     DeclaredSubstance,
     IngredientType,
-    Snapshot,
     Part,
+    Snapshot,
 )
 
 from .utils import authenticate
@@ -113,8 +113,8 @@ class TestDeclarationApi(APITestCase):
         company = declarant_role.company
 
         conditions = [ConditionFactory() for _ in range(3)]
-        effect1 = EffectFactory(ca_name="Artères et cholestérol")
-        effect2 = EffectFactory(ca_name="Autre (à préciser)")
+        effect1 = EffectFactory(name="Artères et cholestérol")
+        effect2 = EffectFactory(name="Autre (à préciser)")
         populations = [PopulationFactory() for _ in range(3)]
         unit = SubstanceUnitFactory()
         galenic_formulation = GalenicFormulationFactory()
@@ -207,8 +207,8 @@ class TestDeclarationApi(APITestCase):
         plant_part = PlantPartFactory()
         plant.plant_parts.add(plant_part)
         unit = SubstanceUnitFactory()
-        preparation_teinture = PreparationFactory(ca_name="Teinture")
-        preparation_autre = PreparationFactory(ca_name="Autre macérât")
+        preparation_teinture = PreparationFactory(name="Teinture")
+        preparation_autre = PreparationFactory(name="Autre macérât")
 
         payload = {
             "name": "Name",
@@ -279,7 +279,7 @@ class TestDeclarationApi(APITestCase):
         plant_part = PlantPartFactory()
         plant.plant_parts.add(plant_part)
         unit = SubstanceUnitFactory()
-        preparation_autre = PreparationFactory(ca_name="Autre macérât")
+        preparation_autre = PreparationFactory(name="Autre macérât")
 
         payload = {
             "name": "Name",
@@ -2890,7 +2890,7 @@ class TestSingleDeclaredElementApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         plant_part = plant.plant_parts.through.objects.get(plant=plant, plantpart=unknown_part)
-        self.assertTrue(plant_part.ca_is_useful)
+        self.assertTrue(plant_part.is_useful)
         self.assertEqual(
             plant_part.history.first().history_change_reason,
             f"Ajoutée après une demande par la déclaration id : {declaration.id}",
@@ -2910,7 +2910,7 @@ class TestSingleDeclaredElementApi(APITestCase):
 
         plant = PlantFactory()
         plant_part = PlantPartFactory()
-        unauthorised_part = Part.objects.create(plant=plant, plantpart=plant_part, ca_is_useful=False)
+        unauthorised_part = Part.objects.create(plant=plant, plantpart=plant_part, is_useful=False)
 
         declared_plant = DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=plant_part)
 
@@ -2920,7 +2920,7 @@ class TestSingleDeclaredElementApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         unauthorised_part.refresh_from_db()
-        self.assertTrue(unauthorised_part.ca_is_useful)
+        self.assertTrue(unauthorised_part.is_useful)
         self.assertEqual(
             unauthorised_part.history.first().history_change_reason,
             f"Autorisée après une demande par la déclaration id : {declaration.id}",

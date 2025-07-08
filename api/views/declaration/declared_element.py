@@ -1,37 +1,39 @@
 import abc
+from functools import reduce
+from itertools import chain
+from operator import or_
+
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+
 from rest_framework.exceptions import ParseError
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from simple_history.utils import update_change_reason
 
-from data.models import (
-    DeclaredPlant,
-    DeclaredSubstance,
-    DeclaredIngredient,
-    DeclaredMicroorganism,
-    Declaration,
-    PlantSynonym,
-    MicroorganismSynonym,
-    SubstanceSynonym,
-    IngredientSynonym,
-    Part,
-)
+from api.permissions import IsInstructor, IsVisor
 from api.serializers import (
     DeclaredElementSerializer,
-    DeclaredPlantSerializer,
-    DeclaredMicroorganismSerializer,
-    DeclaredSubstanceSerializer,
     DeclaredIngredientSerializer,
+    DeclaredMicroorganismSerializer,
+    DeclaredPlantSerializer,
+    DeclaredSubstanceSerializer,
 )
-from api.permissions import IsInstructor, IsVisor
-from itertools import chain
-from functools import reduce
-from operator import or_
+from data.models import (
+    Declaration,
+    DeclaredIngredient,
+    DeclaredMicroorganism,
+    DeclaredPlant,
+    DeclaredSubstance,
+    IngredientSynonym,
+    MicroorganismSynonym,
+    Part,
+    PlantSynonym,
+    SubstanceSynonym,
+)
 
 
 class DeclaredElementsPagination(LimitOffsetPagination):
@@ -288,11 +290,11 @@ class DeclaredElementAcceptPartView(DeclaredElementActionAbstractView):
     def _update_element(self, element, request):
         try:
             part = Part.objects.get(plant=element.plant, plantpart=element.used_part)
-            part.ca_is_useful = True
+            part.is_useful = True
             part.save()
             update_change_reason(part, f"Autorisée après une demande par la déclaration id : {element.declaration.id}")
         except Part.DoesNotExist:
-            part = Part(plant=element.plant, plantpart=element.used_part, ca_is_useful=True)
+            part = Part(plant=element.plant, plantpart=element.used_part, is_useful=True)
             part.save()
             update_change_reason(part, f"Ajoutée après une demande par la déclaration id : {element.declaration.id}")
 
