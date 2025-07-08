@@ -85,6 +85,11 @@
         :maxQuantities="element.maxQuantities"
         :unit="element.unit"
       ></ElementDoses>
+      <ElementTextSection
+        v-if="element.requiresAnalysisReport"
+        title="Point d'attention"
+        text="Pour déclarer cet ingrédient, il est nécessaire de joindre un bulletin d'analyse."
+      />
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <!-- Date de dernière mise à jour de la donnée -->
