@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-grey-975! p-6">
+    <div class="p-6">
       <SectionHeader id="declarant-e" text="Déclarant·e" icon="ri-user-fill" />
       <DeclarantIdentity class="mb-8" :user="declarant" />
       <SectionHeader id="produit" text="Informations sur le produit" icon="ri-file-info-fill" />
