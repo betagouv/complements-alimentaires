@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-grey-975! p-6">
+    <div class="p-6">
       <ArticleInfoRow :modelValue="declaration" :allowChange="true" class="mb-4" />
 
       <SectionHeader id="pieces-jointes" icon="ri-attachment-fill" text="Pièces jointes" />
