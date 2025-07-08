@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DsfrTable ref="table" title="Toutes les déclarations" :rows="rows" :no-caption="true" :pagination="false">
+    <DsfrTable ref="table" title="Les entreprises" :rows="rows" :no-caption="true" :pagination="false">
       <template #header>
         <TableHeaders :headers="headers" />
       </template>
