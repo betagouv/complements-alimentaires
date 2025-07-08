@@ -109,25 +109,23 @@ class TestAutocomplete(APITestCase):
         # Devrait apparaître en première position à cause de son score SequenceMatcher
         authorized_substance = SubstanceFactory.create(
             name="Vitamine C",
-            siccrf_status=IngredientStatus.AUTHORIZED,
+            status=IngredientStatus.AUTHORIZED,
             substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE],
         )
         SubstanceSynonymFactory.create(name="Ephedra", standard_name=authorized_substance)
 
-        forbidden_plant = PlantFactory.create(
-            name="Ephedra sepervirens", siccrf_status=IngredientStatus.NOT_AUTHORIZED
-        )
+        forbidden_plant = PlantFactory.create(name="Ephedra sepervirens", status=IngredientStatus.NOT_AUTHORIZED)
         forbidden_ingredient = IngredientFactory.create(
-            name="Ephedra ingredient", siccrf_status=IngredientStatus.NOT_AUTHORIZED
+            name="Ephedra ingredient", status=IngredientStatus.NOT_AUTHORIZED
         )
         forbidden_substance = SubstanceFactory.create(
             name="Ephedra ine",
-            siccrf_status=IngredientStatus.NOT_AUTHORIZED,
+            status=IngredientStatus.NOT_AUTHORIZED,
             substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE],
         )
 
         to_be_authorized_plant = PlantFactory.create(
-            name="Ephedralite", siccrf_status=IngredientStatus.AUTHORIZED, to_be_entered_in_next_decree=True
+            name="Ephedralite", status=IngredientStatus.AUTHORIZED, to_be_entered_in_next_decree=True
         )
 
         response = self.client.post(f"{reverse('api:element_autocomplete')}", {"term": autocomplete_term})
@@ -163,19 +161,19 @@ class TestAutocomplete(APITestCase):
         # Création des ingrédients
         substance_to_be_returned_1 = SubstanceFactory.create(
             name="Vitamine A",
-            siccrf_status=IngredientStatus.AUTHORIZED,
+            status=IngredientStatus.AUTHORIZED,
             substance_types=[SubstanceType.VITAMIN, SubstanceType.BIOACTIVE_SUBSTANCE],
         )
         substance_to_be_returned_2 = SubstanceFactory.create(
             name="Vitamine B",
-            siccrf_status=IngredientStatus.AUTHORIZED,
+            status=IngredientStatus.AUTHORIZED,
             substance_types=[SubstanceType.BIOACTIVE_SUBSTANCE],
         )
         _ = SubstanceFactory.create(
-            name="Vitamine C", siccrf_status=IngredientStatus.AUTHORIZED, substance_types=[SubstanceType.VITAMIN]
+            name="Vitamine C", status=IngredientStatus.AUTHORIZED, substance_types=[SubstanceType.VITAMIN]
         )
 
-        _ = SubstanceFactory.create(name="Vitamine RAS", siccrf_status=IngredientStatus.AUTHORIZED, substance_types=[])
+        _ = SubstanceFactory.create(name="Vitamine RAS", status=IngredientStatus.AUTHORIZED, substance_types=[])
 
         autocomplete_term = "vitamine"
 

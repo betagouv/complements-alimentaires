@@ -6,13 +6,12 @@ from data.models import Population
 from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym
 
 from .common_ingredient import (
+    COMMON_FETCH_FIELDS,
     COMMON_FIELDS,
     COMMON_NAME_FIELDS,
     COMMON_READ_ONLY_FIELDS,
-    COMMON_FETCH_FIELDS,
     CommonIngredientModificationSerializer,
     CommonIngredientReadSerializer,
-    WithName,
 )
 from .utils import PrivateFieldsSerializer
 
@@ -101,23 +100,17 @@ class SubstanceSynonymModificationSerializer(serializers.ModelSerializer):
 
 class SubstanceMaxQuantityModificationSerializer(serializers.ModelSerializer):
     population = serializers.PrimaryKeyRelatedField(queryset=Population.objects.all())
-    max_quantity = serializers.FloatField(source="ca_max_quantity")
 
     class Meta:
         model = MaxQuantityPerPopulationRelation
         fields = ("max_quantity", "population")
 
 
-class SubstanceModificationSerializer(CommonIngredientModificationSerializer, WithName):
+class SubstanceModificationSerializer(CommonIngredientModificationSerializer):
     synonyms = SubstanceSynonymModificationSerializer(many=True, source="substancesynonym_set", required=False)
-    cas_number = serializers.CharField(source="ca_cas_number", required=False, allow_blank=True)
-    einec_number = serializers.CharField(source="ca_einec_number", required=False, allow_blank=True)
     max_quantities = SubstanceMaxQuantityModificationSerializer(
         many=True, source="maxquantityperpopulationrelation_set", required=False
     )
-    must_specify_quantity = serializers.BooleanField(source="ca_must_specify_quantity", required=False)
-
-    nutritional_reference = serializers.FloatField(source="ca_nutritional_reference", required=False, allow_null=True)
 
     synonym_model = SubstanceSynonym
     synonym_set_field_name = "substancesynonym_set"
@@ -176,7 +169,7 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
             )
             if existing_q.exists():
                 existing_q = existing_q.first()
-                existing_q.ca_max_quantity = max_quantity["ca_max_quantity"]
+                existing_q.max_quantity = max_quantity["max_quantity"]
                 existing_q.save()
             else:
                 self.add_max_quantity(substance, max_quantity)
@@ -185,5 +178,5 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer, Wi
 
     def add_max_quantity(self, substance, max_quantity):
         MaxQuantityPerPopulationRelation.objects.create(
-            substance=substance, population=max_quantity["population"], ca_max_quantity=max_quantity["ca_max_quantity"]
+            substance=substance, population=max_quantity["population"], max_quantity=max_quantity["max_quantity"]
         )

@@ -1,17 +1,17 @@
 from django.test import TestCase
 
 from data.factories import (
+    DeclaredPlantFactory,
     IngredientFactory,
     MicroorganismFactory,
-    PlantFactory,
-    SubstanceFactory,
-    PlantPartFactory,
-    DeclaredPlantFactory,
     OngoingInstructionDeclarationFactory,
+    PlantFactory,
+    PlantPartFactory,
+    SubstanceFactory,
 )
 from data.models.ingredient_type import IngredientType
-from data.models.substance import SubstanceType
 from data.models.plant import Part
+from data.models.substance import SubstanceType
 
 
 class IngredientTestCase(TestCase):
@@ -20,10 +20,8 @@ class IngredientTestCase(TestCase):
         Les ingrédients avec la valeur True dans le champ `is_obsolete` ne sont jamais retournés dans les QuerySet
         """
         for ingredient_factory in [SubstanceFactory, IngredientFactory, PlantFactory, MicroorganismFactory]:
-            obsolete_obj = ingredient_factory.create(siccrf_is_obsolete=True, ca_is_obsolete=True)
-            non_obsolete_objs = [
-                ingredient_factory.create(ca_is_obsolete=False, siccrf_is_obsolete=False) for _ in range(5)
-            ]
+            obsolete_obj = ingredient_factory.create(is_obsolete=True)
+            non_obsolete_objs = [ingredient_factory.create(is_obsolete=False) for _ in range(5)]
             all_objs = non_obsolete_objs + [obsolete_obj]
 
             qs_without_obsolete = ingredient_factory._meta.model.up_to_date_objects.all()
@@ -36,13 +34,13 @@ class IngredientTestCase(TestCase):
         Les substances ont le type métabolite secondaire calculé automatiquement correctement
         """
         # une substance peut être métabolite et un autre type
-        substance = SubstanceFactory.create(ca_name="substance Z")
+        substance = SubstanceFactory.create(name="substance Z")
 
         ingredient_supplying_substance = IngredientFactory.create(
-            ca_name="substance Z form of supply", ingredient_type=IngredientType.FORM_OF_SUPPLY, substances=[]
+            name="substance Z form of supply", ingredient_type=IngredientType.FORM_OF_SUPPLY, substances=[]
         )
         ingredient_supplying_substance.substances.add(substance)
-        plant_supplying_substance = PlantFactory.create(ca_name="plant supplying substance Z", substances=[])
+        plant_supplying_substance = PlantFactory.create(name="plant supplying substance Z", substances=[])
 
         plant_supplying_substance.substances.add(substance)
         substance.refresh_from_db()
@@ -68,13 +66,13 @@ class IngredientTestCase(TestCase):
         """
         plant = PlantFactory()
         authorised_part = PlantPartFactory()
-        Part.objects.create(plant=plant, plantpart=authorised_part, ca_is_useful=True)
+        Part.objects.create(plant=plant, plantpart=authorised_part, is_useful=True)
         declaration = OngoingInstructionDeclarationFactory()
         declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=authorised_part)
         self.assertFalse(declared_plant.is_part_request)
 
         unauthorised_part = PlantPartFactory()
-        Part.objects.create(plant=plant, plantpart=unauthorised_part, ca_is_useful=False)
+        Part.objects.create(plant=plant, plantpart=unauthorised_part, is_useful=False)
         declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=unauthorised_part)
         self.assertTrue(declared_plant.is_part_request)
 

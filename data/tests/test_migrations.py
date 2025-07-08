@@ -50,27 +50,28 @@ class ApproFieldsTestCase(TestMigrations):
         self.teleicare_substance = SubstanceFactory.create(siccrf_id=4, to_be_entered_in_next_decree=False)
         self.ca_substance = SubstanceFactory.create(siccrf_id=None, to_be_entered_in_next_decree=False)
 
-    def test_migration_0150(self):
-        """
-        Après la modification de champs, les ingrédients sans identifiant SICCRF devrait
-        avoir `to_be_entered_in_next_decree` comme vrai, car ils ont été créés récemment
-        dans compl'alim. La valeur pour les anciens ne devrait pas être modifiée.
-        """
-        self.teleicare_ingredient.refresh_from_db()
-        self.ca_ingredient.refresh_from_db()
-        self.teleicare_microorganism.refresh_from_db()
-        self.ca_microorganism.refresh_from_db()
-        self.teleicare_plant.refresh_from_db()
-        self.ca_plant.refresh_from_db()
-        self.teleicare_substance.refresh_from_db()
-        self.ca_substance.refresh_from_db()
+    # Ce test n'est plus exécuté car le modèle de données à changé
+    # def test_migration_0150(self):
+    #     """
+    #     Après la modification de champs, les ingrédients sans identifiant SICCRF devrait
+    #     avoir `to_be_entered_in_next_decree` comme vrai, car ils ont été créés récemment
+    #     dans compl'alim. La valeur pour les anciens ne devrait pas être modifiée.
+    #     """
+    #     self.teleicare_ingredient.refresh_from_db()
+    #     self.ca_ingredient.refresh_from_db()
+    #     self.teleicare_microorganism.refresh_from_db()
+    #     self.ca_microorganism.refresh_from_db()
+    #     self.teleicare_plant.refresh_from_db()
+    #     self.ca_plant.refresh_from_db()
+    #     self.teleicare_substance.refresh_from_db()
+    #     self.ca_substance.refresh_from_db()
 
-        self.assertTrue(self.ca_ingredient.to_be_entered_in_next_decree)
-        self.assertTrue(self.ca_microorganism.to_be_entered_in_next_decree)
-        self.assertTrue(self.ca_plant.to_be_entered_in_next_decree)
-        self.assertTrue(self.ca_substance.to_be_entered_in_next_decree)
+    #     self.assertTrue(self.ca_ingredient.to_be_entered_in_next_decree)
+    #     self.assertTrue(self.ca_microorganism.to_be_entered_in_next_decree)
+    #     self.assertTrue(self.ca_plant.to_be_entered_in_next_decree)
+    #     self.assertTrue(self.ca_substance.to_be_entered_in_next_decree)
 
-        self.assertFalse(self.teleicare_ingredient.to_be_entered_in_next_decree)
-        self.assertFalse(self.teleicare_microorganism.to_be_entered_in_next_decree)
-        self.assertFalse(self.teleicare_plant.to_be_entered_in_next_decree)
-        self.assertFalse(self.teleicare_substance.to_be_entered_in_next_decree)
+    #     self.assertFalse(self.teleicare_ingredient.to_be_entered_in_next_decree)
+    #     self.assertFalse(self.teleicare_microorganism.to_be_entered_in_next_decree)
+    #     self.assertFalse(self.teleicare_plant.to_be_entered_in_next_decree)
+    #     self.assertFalse(self.teleicare_substance.to_be_entered_in_next_decree)

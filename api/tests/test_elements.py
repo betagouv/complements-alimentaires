@@ -67,7 +67,7 @@ class TestElementsFetchApi(APITestCase):
         body = response.json()
 
         self.assertIn("user", body["history"][0])
-        self.assertEqual(body["history"][0]["changedFields"], ["nom CA"])
+        self.assertEqual(body["history"][0]["changedFields"], ["nom"])
         self.assertIn("historyType", body["history"][0])
         self.assertIn("historyDate", body["history"][0])
         self.assertIn("user", body["history"][0])
@@ -463,7 +463,7 @@ class TestElementsModifyApi(APITestCase):
         self.general_pop = PopulationFactory.create(name="Population générale")
 
     def test_cannot_modify_ingredient_not_authenticated(self):
-        substance = SubstanceFactory.create(name="")
+        substance = SubstanceFactory.create(name="original name")
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}), {"name": "test"}, format="json"
         )
@@ -472,7 +472,7 @@ class TestElementsModifyApi(APITestCase):
 
     @authenticate
     def test_cannot_modify_ingredient_not_instructor(self):
-        substance = SubstanceFactory.create(name="")
+        substance = SubstanceFactory.create(name="original name")
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}), {"name": "test"}, format="json"
         )
@@ -480,7 +480,7 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(substance.name, "original name")
 
     @authenticate
-    def test_can_modify_ingredient_ca_fields(self):
+    def test_can_modify_ingredient_fields(self):
         """
         Les instructrices peuvent modifier un ingrédient, et un mapping est fait entre le nom du champ sans prefix -> ca_
         """
@@ -501,7 +501,9 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(
             substance.max_quantity, 3.4, "La quantité max pour la population générale est la bonne avant modification"
         )
-        self.assertTrue(substance.must_specify_quantity, "Le champ siccrf est vrai, comme donné dans le factory")
+        self.assertTrue(
+            substance.must_specify_quantity, "Le champ must_specify_quantity est vrai, comme donné dans le factory"
+        )
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
             {
@@ -516,7 +518,6 @@ class TestElementsModifyApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         substance.refresh_from_db()
-        self.assertEqual(substance.siccrfname, "original name")
         self.assertEqual(substance.name, "test")
         self.assertEqual(substance.unit, new_unit, "Les champs sans ca_ équivelant sont aussi sauvegardés")
         self.assertEqual(
@@ -525,7 +526,7 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(
             substance.status, IngredientStatus.NO_STATUS, "C'est possible de remettre la valeur originelle"
         )
-        self.assertTrue(substance.must_specify_quantity, "Le champ siccrf n'est pas changé")
+        self.assertFalse(substance.must_specify_quantity, "Le champ must_specify_quantity est changé")
         self.assertEqual(
             substance.history.first().history_change_reason,
             "Test change",

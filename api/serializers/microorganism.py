@@ -2,15 +2,15 @@ from rest_framework import serializers
 
 from data.models import Microorganism, MicroorganismSynonym
 
-from .substance import SubstanceShortSerializer
 from .common_ingredient import (
+    COMMON_FETCH_FIELDS,
     COMMON_FIELDS,
     COMMON_READ_ONLY_FIELDS,
-    COMMON_FETCH_FIELDS,
     CommonIngredientModificationSerializer,
     CommonIngredientReadSerializer,
     WithSubstances,
 )
+from .substance import SubstanceShortSerializer
 
 
 class MicroorganismSynonymSerializer(serializers.ModelSerializer):
@@ -45,8 +45,6 @@ class MicroorganismSynonymModificationSerializer(serializers.ModelSerializer):
 
 class MicroorganismModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
     synonyms = MicroorganismSynonymModificationSerializer(many=True, source="microorganismsynonym_set", required=False)
-    genus = serializers.CharField(source="ca_genus")
-    species = serializers.CharField(source="ca_species")
 
     synonym_model = MicroorganismSynonym
     synonym_set_field_name = "microorganismsynonym_set"
