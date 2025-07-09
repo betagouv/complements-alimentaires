@@ -12,7 +12,6 @@ class MicroorganismFactory(factory.django.DjangoModelFactory):
         model = Microorganism
         django_get_or_create = ("siccrf_id",)
 
-    name = factory.Faker("text", max_nb_chars=20)
     siccrf_id = factory.Sequence(lambda n: n + 1)
     genus = factory.Faker("text", max_nb_chars=20)
     species = factory.Faker("text", max_nb_chars=20)

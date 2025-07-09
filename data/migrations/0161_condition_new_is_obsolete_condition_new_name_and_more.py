@@ -112,11 +112,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='historicalmicroorganism',
-            name='new_name',
-            field=models.TextField(default='', verbose_name='nom'),
-        ),
-        migrations.AddField(
-            model_name='historicalmicroorganism',
             name='new_private_comments',
             field=models.TextField(blank=True, default='', verbose_name='commentaires privés'),
         ),
@@ -294,11 +289,6 @@ class Migration(migrations.Migration):
             model_name='microorganism',
             name='new_is_obsolete',
             field=models.BooleanField(default=False, verbose_name='objet obsolète'),
-        ),
-        migrations.AddField(
-            model_name='microorganism',
-            name='new_name',
-            field=models.TextField(default='', verbose_name='nom'),
         ),
         migrations.AddField(
             model_name='microorganism',

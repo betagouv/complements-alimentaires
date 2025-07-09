@@ -2052,11 +2052,11 @@ class TestDeclaredElementsApi(APITestCase):
         declaration_eucalyptus = AwaitingInstructionDeclarationFactory()
         DeclaredPlantFactory(plant=eucalyptus, declaration=declaration_eucalyptus)
 
-        lactobacilus = MicroorganismFactory(name="Lactobacilus")
+        lactobacilus = MicroorganismFactory(genus="Lactobacilus")
         declaration_lactobacilus = AwaitingInstructionDeclarationFactory()
         DeclaredMicroorganismFactory(microorganism=lactobacilus, declaration=declaration_lactobacilus)
 
-        streptococcus = MicroorganismFactory(name="Streptococcus")
+        streptococcus = MicroorganismFactory(genus="Streptococcus")
         declaration_streptococcus = AwaitingInstructionDeclarationFactory()
         DeclaredMicroorganismFactory(microorganism=streptococcus, declaration=declaration_streptococcus)
 

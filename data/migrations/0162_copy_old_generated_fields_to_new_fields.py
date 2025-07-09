@@ -39,7 +39,6 @@ class Migration(migrations.Migration):
         Microorganism = apps.get_model("data", "Microorganism")
         for microorganism in Microorganism.objects.all():
             microorganism.new_is_obsolete = microorganism.is_obsolete
-            microorganism.new_name = microorganism.name
             microorganism.new_private_comments = microorganism.private_comments
             microorganism.new_public_comments = microorganism.public_comments
             ingredient.new_status = ingredient.status

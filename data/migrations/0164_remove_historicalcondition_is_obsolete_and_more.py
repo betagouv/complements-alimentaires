@@ -11,14 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name="microorganism",
-            name="new_name",
-        ),
-        migrations.RemoveField(
-            model_name="historicalmicroorganism",
-            name="new_name",
-        ),
         migrations.RenameField(
             model_name='condition',
             old_name='new_is_obsolete',
