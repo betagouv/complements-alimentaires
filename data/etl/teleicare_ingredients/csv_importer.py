@@ -152,7 +152,7 @@ class CSVImporter:
         # cela rend difficile l'automatisation (via csv_importer) pour remplir les nouveaux champs
         "max_quantities",
     ]
-    NEW_FIELDS = ["long_name", "is_risky", "novel_food", "category"]
+    NEW_FIELDS = ["long_name", "is_risky", "novel_food", "category", "requires_analysis_report"]
 
     def __init__(self, file, model, is_relation=False, mapping=None):
         """Initialise un CSVImporter avec le fichier source, le modèle de destination, etc
