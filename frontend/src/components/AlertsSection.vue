@@ -18,7 +18,6 @@
         @click="isAwaitingInstruction ? emit('instruct') : emit('assign')"
       />
     </DsfrAlert>
-    <DeclarationFromTeleicareAlert v-else-if="declaration.siccrfId" />
     <DeclarationAlert
       class="mb-6"
       v-else-if="!isOngoingInstruction"
@@ -34,7 +33,6 @@ import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import DeclarationAlert from "@/components/DeclarationAlert"
-import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromTeleicareAlert"
 
 const declaration = defineModel()
 defineProps(["snapshots"])
