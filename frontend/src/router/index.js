@@ -26,10 +26,11 @@ import DeclarationsHomePage from "@/views/DeclarationsHomePage"
 import CollaboratorsPage from "@/views/CollaboratorsPage"
 import InstructionDeclarationsPage from "@/views/InstructionDeclarationsPage"
 import NewElementsPage from "@/views/NewElementsPage"
+import NewVisaPage from "@/views/NewVisaPage"
 import NewInstructionPage from "@/views/NewInstructionPage"
-import InstructionSection from "@/views/NewInstructionPage/InstructionSection"
-import IdentitySection from "@/views/NewInstructionPage/IdentitySection"
-import HistorySection from "@/views/NewInstructionPage/HistorySection"
+import ProductSection from "@/components/NewBepiasViews/ProductSection"
+import IdentitySection from "@/components/NewBepiasViews/IdentitySection"
+import HistorySection from "@/components/NewBepiasViews/HistorySection"
 import VisaDeclarationsPage from "@/views/VisaDeclarationsPage"
 import VisaPage from "@/views/VisaPage"
 import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
@@ -380,7 +381,7 @@ const routes = [
       {
         name: "InstructionPage",
         path: "instruction",
-        component: InstructionSection,
+        component: ProductSection,
       },
       {
         name: "IdentitySection",
@@ -389,6 +390,37 @@ const routes = [
       },
       {
         name: "HistorySection",
+        path: "historique",
+        component: HistorySection,
+      },
+    ],
+  },
+  {
+    path: "/visa-v2/:declarationId",
+    props: true,
+    component: NewVisaPage,
+    meta: {
+      title: "Visa",
+      requiredRoles: ["VisaRole"],
+      authenticationRequired: true,
+    },
+    children: [
+      {
+        path: "",
+        redirect: { name: "VisaProductSection" },
+      },
+      {
+        name: "VisaProductSection",
+        path: "produit",
+        component: ProductSection,
+      },
+      {
+        name: "VisaIdentitySection",
+        path: "identite",
+        component: IdentitySection,
+      },
+      {
+        name: "VisaHistorySection",
         path: "historique",
         component: HistorySection,
       },
