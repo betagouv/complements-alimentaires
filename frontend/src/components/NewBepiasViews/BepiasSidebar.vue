@@ -18,7 +18,7 @@ const route = useRoute()
 const makeRoute = (name) => ({ name, params: { declarationId: declaration.value.id } })
 const appendHash = (route, hash) => ({ ...{ hash }, ...route })
 
-const productRouteName = props.role === "instruction" ? "InstructionPage" : "VisaProductSection"
+const productRouteName = props.role === "instruction" ? "InstructionPage" : "VisaPage"
 const identityRouteName = props.role === "instruction" ? "IdentitySection" : "VisaIdentitySection"
 const historyRouteName = props.role === "instruction" ? "HistorySection" : "VisaHistorySection"
 
