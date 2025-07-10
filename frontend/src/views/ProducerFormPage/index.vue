@@ -13,7 +13,6 @@
     </div>
 
     <div v-else class="mb-4">
-      <DeclarationFromTeleicareAlert v-if="payload.siccrfId" />
       <DeclarationAlert v-if="payload" role="declarant" :declaration="payload" :snapshots="snapshots" class="mb-4" />
 
       <DsfrAlert
@@ -116,7 +115,6 @@ import FormWrapper from "@/components/FormWrapper"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { tabTitles } from "@/utils/mappings"
-import DeclarationFromTeleicareAlert from "@/components/History/DeclarationFromTeleicareAlert.vue"
 
 // Il y a deux refs qui stockent des erreurs. $externalResults sert
 // lors qu'on sauvegarde la déclaration (POST ou PUT) mais qu'on ne change
