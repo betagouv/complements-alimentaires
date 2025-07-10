@@ -13,6 +13,16 @@
     <div v-else-if="company">
       <h1>{{ company.socialName }}</h1>
     </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="col-span-2 sm:col-span-1">
+        <h2>Identité entreprise</h2>
+        <InfoTable :items="identityItems" />
+      </div>
+      <div class="col-span-2 sm:col-span-1">
+        <h2>Chiffres clés</h2>
+        <InfoTable :items="insightsItems" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -22,6 +32,7 @@ import { useFetch } from "@vueuse/core"
 import { onMounted, computed } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
+import InfoTable from "./InfoTable.vue"
 
 const router = useRouter()
 const previousRoute = computed(() => {
@@ -43,5 +54,21 @@ const {
 onMounted(async () => {
   await executeCompanyFetch()
   handleError(companyResponse)
+})
+
+const identityItems = computed(() => {
+  if (!company.value) return []
+  return [
+    { title: "SIRET", body: company.value.siret }, // TODO: Include TVA
+    { title: "No. téléphone", body: company.value.phoneNumber },
+  ]
+})
+
+const insightsItems = computed(() => {
+  if (!company.value) return []
+  return [
+    { title: "Nb. total de déclarations", body: "TODO" },
+    { title: "Nb. de produits commercialisables", body: "TODO" },
+  ]
 })
 </script>
