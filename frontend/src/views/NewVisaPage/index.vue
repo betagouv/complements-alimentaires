@@ -4,8 +4,8 @@
       class="mb-8"
       :links="[
         { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { to: { name: 'InstructionDeclarations' }, text: 'Déclarations pour instruction' },
-        { text: 'Instruction' },
+        { to: { name: 'VisaDeclarations' }, text: 'Déclarations pour visa' },
+        { text: 'Visa' },
       ]"
     />
     <div v-if="isFetching" class="flex justify-center my-10">
@@ -13,25 +13,29 @@
     </div>
     <div v-else-if="declaration">
       <h1>{{ declaration.name }}</h1>
-      <AlertsSection
-        v-model="declaration"
-        @instruct="instructDeclaration"
-        @assign="assignToSelf"
-        :snapshots="snapshots"
-      />
+      <DsfrAlert
+        class="mb-4"
+        v-if="isAwaitingVisa && !declaration.visa"
+        type="info"
+        title="Cette déclaration n'est pas encore assignée pour validation"
+      >
+        <p>Vous pouvez vous assigner cette déclaration pour visa / signature</p>
+        <DsfrButton class="mt-2" label="Prendre pour validation" tertiary @click="takeDeclaration" />
+      </DsfrAlert>
+      <DeclarationAlert role="visor" class="mb-4" :declaration="declaration" :snapshots="snapshots" />
       <DeclarationSummary
         :allowArticleChange="!declaration.siccrfId"
         :useAccordions="true"
         :showElementAuthorization="true"
         :readonly="true"
         v-model="declaration"
-        v-if="isAwaitingInstruction"
+        v-if="isAwaitingVisa"
       />
 
       <div v-else class="sm:grid sm:grid-cols-12">
         <div class="hidden sm:block col-span-3">
-          <div class="sticky top-2">
-            <BepiasSidebar v-model="declaration" />
+          <div class="sticky top-2 sidebar-content">
+            <BepiasSidebar v-model="declaration" role="visa" />
           </div>
         </div>
         <div class="col-span-12 sm:col-span-9">
@@ -41,6 +45,7 @@
             :company="company"
             :mandatedCompany="mandatedCompany"
             :snapshots="snapshots"
+            role="visa"
           />
         </div>
       </div>
@@ -56,11 +61,10 @@ import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRoute } from "vue-router"
 import { headers } from "@/utils/data-fetching"
-import useToaster from "@/composables/use-toaster"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import BepiasSidebar from "@/components/NewBepiasViews/BepiasSidebar"
-import AlertsSection from "@/components/AlertsSection"
 import DeclarationSummary from "@/components/DeclarationSummary"
+import DeclarationAlert from "@/components/DeclarationAlert"
 
 const props = defineProps({ declarationId: String })
 const route = useRoute()
@@ -72,8 +76,7 @@ const isFetching = computed(() =>
     isFetchingCompany,
     isFetchingMandatedCompany,
     isFetchingSnapshots,
-    isFetchingInstruction,
-    isFetchingAssignToSelf,
+    isFetchingVisa,
   ].some((x) => !!x.value)
 )
 
@@ -125,10 +128,10 @@ const {
 
 const {
   response: takeResponse,
-  execute: executeTakeForInstruction,
-  isFetching: isFetchingInstruction,
+  execute: executeTakeForVisa,
+  isFetching: isFetchingVisa,
 } = useFetch(
-  `/api/v1/declarations/${props.declarationId}/take-for-instruction/`,
+  `/api/v1/declarations/${props.declarationId}/take-for-visa/`,
   {
     headers: headers(),
   },
@@ -137,22 +140,8 @@ const {
   .post({})
   .json()
 
-const {
-  response: assignResponse,
-  execute: executeAssignToSelf,
-  isFetching: isFetchingAssignToSelf,
-} = useFetch(
-  `/api/v1/declarations/${props.declarationId}/assign-instruction/`,
-  {
-    headers: headers(),
-  },
-  { immediate: false }
-)
-  .post({})
-  .json()
-
-const instructDeclaration = async () => {
-  await executeTakeForInstruction()
+const takeDeclaration = async () => {
+  await executeTakeForVisa()
   await handleError(takeResponse)
 
   if (takeResponse.value.ok) {
@@ -160,30 +149,20 @@ const instructDeclaration = async () => {
   }
 }
 
-const assignToSelf = async () => {
-  await executeAssignToSelf()
-  await handleError(assignResponse)
-
-  if (assignResponse.value.ok) {
-    await executeDeclarationFetch()
-    useToaster().addSuccessMessage("La déclaration vous a été assignée")
-  }
-}
-
-const isAwaitingInstruction = computed(() => declaration.value?.status === "AWAITING_INSTRUCTION")
+const isAwaitingVisa = computed(() => declaration.value?.status === "AWAITING_VISA")
 
 onMounted(async () => {
   await executeDeclarationFetch()
   handleError(declarationResponse)
 
-  // Si on arrive à cette page avec une déclaration déjà assignée à quelqun.e mais en état
-  // AWAITING_INSTRUCTION, on la passe directement à ONGOING_INSTRUCTION.
-  if (declaration.value?.instructor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_INSTRUCTION")
-    await instructDeclaration()
-
   if (!declaration.value) return
 
-  const mandatedCompany = declaration.value?.mandatedCompany
+  // Si on arrive à cette page avec une déclaration déjà assignée à l'utilisateur·ice mais en état
+  // AWAITING_VISA, on la passe directement à ONGOING_VISA.
+  if (declaration.value.visor?.id === loggedUser.value.id && declaration.value.status === "AWAITING_VISA")
+    await takeDeclaration()
+
+  const mandatedCompany = declaration.value.mandatedCompany
   const fetchMandatedCompany = mandatedCompany ? executeMandatedCompanyFetch : () => Promise.resolve
   const handleMandatedError = mandatedCompany ? () => handleError(mandatedCompanyResponse) : () => Promise.resolve
 
