@@ -8,6 +8,7 @@ from data.models import Microorganism
 from .abstract_admin import (
     ChangeReasonAdminMixin,
     ChangeReasonFormMixin,
+    HasCommentListFilter,
     RecomputeDeclarationArticleAtIngredientSaveMixin,
 )
 
@@ -64,7 +65,7 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
     ]
 
     list_display = ("name", "is_obsolete", "status", "is_risky", "is_novel_food")
-    list_filter = ("is_obsolete", "status", "is_risky", "is_novel_food")
+    list_filter = ("is_obsolete", "status", "is_risky", "is_novel_food", HasCommentListFilter)
     show_facets = admin.ShowFacets.NEVER
     readonly_fields = ("name",)
     search_fields = ["id", "name"]
