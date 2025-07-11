@@ -22,8 +22,9 @@
           <InfoTable :items="insightsItems" />
         </div>
       </div>
-      <h2>Produits déclarés auprès de la DGAL par cette entreprise</h2>
-      <DsfrAlert title="Recherche et filtrage avancé en construction" />
+      <!-- Traiter le cas où l'entreprise n'a pas de déclarations  -->
+      <h2 class="mt-8">Produits déclarés auprès de la DGAL par cette entreprise</h2>
+      <DeclarationsTableSection :companyId="companyId" />
     </div>
   </div>
 </template>
@@ -36,6 +37,7 @@ import { handleError } from "@/utils/error-handling"
 import { getCompanyActivitiesString } from "@/utils/mappings"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import InfoTable from "./InfoTable.vue"
+import DeclarationsTableSection from "@/components/NewBepiasViews/DeclarationsTableSection"
 
 const router = useRouter()
 const previousRoute = computed(() => {
