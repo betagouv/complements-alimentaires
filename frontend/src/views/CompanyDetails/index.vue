@@ -14,16 +14,16 @@
       <h1>{{ company.socialName }}</h1>
       <div class="grid grid-cols-2 gap-3">
         <div class="col-span-2 sm:col-span-1">
-          <h2>Identité entreprise</h2>
+          <h2 class="fr-h4">Identité entreprise</h2>
           <InfoTable :items="identityItems" />
         </div>
         <div class="col-span-2 sm:col-span-1">
-          <h2>Chiffres clés</h2>
+          <h2 class="fr-h4">Chiffres clés</h2>
           <InfoTable :items="insightsItems" />
         </div>
       </div>
       <div v-if="company.totalDeclarations > 0">
-        <h2 class="mt-8">Produits déclarés auprès de la DGAL par cette entreprise</h2>
+        <h2 class="mt-8 fr-h4">Produits déclarés auprès de la DGAL par cette entreprise</h2>
         <DeclarationsTableSection :companyId="companyId" />
       </div>
       <p class="mt-8 italic" v-else>Il n'y a pas de produits déclarés auprès de la DGAL par cette entreprise.</p>
