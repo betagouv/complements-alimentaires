@@ -8,6 +8,7 @@ from data.models import Microorganism
 from .abstract_admin import (
     ChangeReasonAdminMixin,
     ChangeReasonFormMixin,
+    HasCommentListFilter,
     RecomputeDeclarationArticleAtIngredientSaveMixin,
 )
 
@@ -80,6 +81,7 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
         "is_risky",
         "requires_analysis_report",
         "novel_food",
+        HasCommentListFilter,
     )
     show_facets = admin.ShowFacets.NEVER
     readonly_fields = ("name",)
