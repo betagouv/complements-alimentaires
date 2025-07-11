@@ -29,9 +29,9 @@ from ..exception_handling import ProjectAPIException
 from ..permissions import IsController, IsSupervisor, IsSupervisorOrAgent
 from ..serializers import (
     CollaboratorSerializer,
+    CompanyControllerSerializer,
     CompanySerializer,
     ControllerCompanySerializer,
-    FullCompanySerializer,
     MinimalCompanySerializer,
 )
 
@@ -180,7 +180,7 @@ class CompanyRetrieveUpdateView(RetrieveUpdateAPIView):
 class CompanyControlRetrieveView(RetrieveAPIView):
     model = Company
     permission_classes = [IsController]
-    serializer_class = FullCompanySerializer
+    serializer_class = CompanyControllerSerializer
     queryset = Company.objects.all()
 
 

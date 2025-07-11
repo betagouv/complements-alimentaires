@@ -1,7 +1,8 @@
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 
-from data.models import Company, DeclarantRole, Declaration, SupervisorRole
+from api.utils.simplified_status import SimplifiedStatusHelper
+from data.models import Company, DeclarantRole, SupervisorRole
 
 
 class MinimalCompanySerializer(serializers.ModelSerializer):
@@ -82,25 +83,13 @@ class CompanySerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
 
-class InternalDeclarationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Declaration
-        fields = (
-            "id",
-            "teleicare_declaration_number",
-            "siccrf_id",
-            "name",
-            "brand",
-            "status",
-            "gamme",
-            "description",
-            "modification_date",
-        )
-        read_only_fields = fields
-
-
-class FullCompanySerializer(serializers.ModelSerializer):
-    declarations = InternalDeclarationSerializer(read_only=True, many=True)
+class CompanyControllerSerializer(serializers.ModelSerializer):
+    total_declarations = serializers.SerializerMethodField()
+    market_ready_declarations = serializers.SerializerMethodField()
+    refused_declarations = serializers.SerializerMethodField()
+    ongoing_declarations = serializers.SerializerMethodField()
+    withdrawn_declarations = serializers.SerializerMethodField()
+    interrupted_declarations = serializers.SerializerMethodField()
 
     class Meta:
         model = Company
@@ -109,7 +98,12 @@ class FullCompanySerializer(serializers.ModelSerializer):
             "id",
             "social_name",
             "commercial_name",
-            "declarations",
+            "total_declarations",
+            "market_ready_declarations",
+            "refused_declarations",
+            "ongoing_declarations",
+            "withdrawn_declarations",
+            "interrupted_declarations",
             "siret",
             "vat",
             "address",
@@ -124,6 +118,27 @@ class FullCompanySerializer(serializers.ModelSerializer):
             "website",
         )
         read_only_fields = fields
+
+    def get_total_declarations(self, obj):
+        return obj.declarations.count()
+
+    def get_market_ready_declarations(self, obj):
+        return self._count_for_simplified_status(obj, SimplifiedStatusHelper.MARKET_READY)
+
+    def get_refused_declarations(self, obj):
+        return self._count_for_simplified_status(obj, SimplifiedStatusHelper.REFUSED)
+
+    def get_ongoing_declarations(self, obj):
+        return self._count_for_simplified_status(obj, SimplifiedStatusHelper.ONGOING)
+
+    def get_withdrawn_declarations(self, obj):
+        return self._count_for_simplified_status(obj, SimplifiedStatusHelper.WITHDRAWN)
+
+    def get_interrupted_declarations(self, obj):
+        return self._count_for_simplified_status(obj, SimplifiedStatusHelper.INTERRUPTED)
+
+    def _count_for_simplified_status(self, obj, status):
+        return obj.declarations.filter(SimplifiedStatusHelper.get_filter_conditions([status])).count()
 
 
 class BaseRoleSerializer(serializers.ModelSerializer):

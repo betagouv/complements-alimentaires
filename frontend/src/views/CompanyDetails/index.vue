@@ -22,9 +22,11 @@
           <InfoTable :items="insightsItems" />
         </div>
       </div>
-      <!-- Traiter le cas où l'entreprise n'a pas de déclarations  -->
-      <h2 class="mt-8">Produits déclarés auprès de la DGAL par cette entreprise</h2>
-      <DeclarationsTableSection :companyId="companyId" />
+      <div v-if="company.totalDeclarations > 0">
+        <h2 class="mt-8">Produits déclarés auprès de la DGAL par cette entreprise</h2>
+        <DeclarationsTableSection :companyId="companyId" />
+      </div>
+      <p class="mt-8 italic" v-else>Il n'y a pas de produits déclarés auprès de la DGAL par cette entreprise.</p>
     </div>
   </div>
 </template>
@@ -64,8 +66,9 @@ onMounted(async () => {
 const identityItems = computed(() => {
   if (!company.value) return []
   const c = company.value
+  const firstLine = c.siret ? { title: "SIRET", body: [c.siret] } : { title: "No. de TVA", body: [c.vat] }
   return [
-    { title: "SIRET", body: [c.siret] }, // TODO: Include TVA
+    firstLine,
     { title: "No. téléphone", body: [c.phoneNumber] },
     { title: "Adresse siège", body: [c.address, `${c.postalCode}, ${c.city} ${c.country}`] },
     { title: "Rôles", body: [getCompanyActivitiesString(c.activities || []) || "Aucun rôle renseigné"] },
@@ -74,9 +77,14 @@ const identityItems = computed(() => {
 
 const insightsItems = computed(() => {
   if (!company.value) return []
+  const c = company.value
   return [
-    { title: "Nb. total de déclarations", body: ["TODO"] },
-    { title: "Nb. de produits commercialisables", body: ["TODO"] },
+    { title: "Nb. total de déclarations", body: [c.totalDeclarations] },
+    { title: "Nb. de produits commercialisables", body: [c.marketReadyDeclarations] },
+    { title: "Nb. de produits en cours d'instruction", body: [c.ongoingDeclarations] },
+    { title: "Nb. de produits refusés", body: [c.refusedDeclarations] },
+    { title: "Nb. de produits retirés du marché", body: [c.withdrawnDeclarations] },
+    { title: "Nb. de produits en instruction interrompue", body: [c.interruptedDeclarations] },
   ]
 })
 </script>
