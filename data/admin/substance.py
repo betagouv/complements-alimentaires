@@ -156,7 +156,6 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     )
     readonly_fields = [
         "siccrf_name_en",
-        "is_obsolete",
         "get_plants",
         "get_microorganisms",
         "get_ingredients",

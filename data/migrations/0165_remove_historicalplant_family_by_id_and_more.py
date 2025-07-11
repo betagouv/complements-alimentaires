@@ -27,9 +27,9 @@ class Migration(migrations.Migration):
             name='family_by_id',
         ),
         migrations.AddField(
-            model_name='historicalsubstance',
-            name='substance_types',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(choices=[(1, 'Vitamine'), (2, 'Minéral'), (3, 'Métabolite secondaire de plante'), (4, 'Substance active à but nutritionnel ou physiologique')]), default=list, size=None, verbose_name='type(s) de la substance'),
+            model_name='historicalplant',
+            name='family_by_id',
+            field=models.BigIntegerField(null=True, verbose_name='famille de plante'),
         ),
         migrations.AddField(
             model_name='microorganism',

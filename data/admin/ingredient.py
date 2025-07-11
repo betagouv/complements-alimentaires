@@ -81,10 +81,7 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
     list_display = ("name", "is_obsolete", "status", "is_risky", "novel_food", "has_linked_substances")
     list_filter = ("is_obsolete", "status", "is_risky", "novel_food", "ingredient_type")
     show_facets = admin.ShowFacets.NEVER
-    readonly_fields = (
-        "siccrf_name_en",
-        "is_obsolete",
-    )
+    readonly_fields = ("siccrf_name_en",)
     search_fields = ["id", "name"]
 
     def has_linked_substances(self, obj):

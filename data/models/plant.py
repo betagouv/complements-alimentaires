@@ -40,6 +40,7 @@ class Plant(IngredientCommonModel):
     class Meta:
         verbose_name = "plante"
 
+    # TODO: ce champ n'est pas utile en tant que tel, il serait possible de l'éviter en créant un Field custom ForeignGeneratedField(ForeigObject)
     family_by_id = models.BigIntegerField(verbose_name="famille de plante", null=True)
     family = models.ForeignObject(
         PlantFamily,
@@ -59,7 +60,6 @@ class Plant(IngredientCommonModel):
         inherit=True,
         excluded_fields=[
             "family",
-            "family_by_id",
         ],
     )
 
