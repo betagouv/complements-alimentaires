@@ -1,7 +1,7 @@
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 
-from data.models import Company, DeclarantRole, SupervisorRole
+from data.models import Company, DeclarantRole, Declaration, SupervisorRole
 
 
 class MinimalCompanySerializer(serializers.ModelSerializer):
@@ -80,6 +80,50 @@ class CompanySerializer(serializers.ModelSerializer):
         # permet de définir dynamiquement la bonne région pour le numéro de téléphone entré
         self.fields["phone_number"] = PhoneNumberField(region=data["country"])
         return super().to_internal_value(data)
+
+
+class InternalDeclarationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Declaration
+        fields = (
+            "id",
+            "teleicare_declaration_number",
+            "siccrf_id",
+            "name",
+            "brand",
+            "status",
+            "gamme",
+            "description",
+            "modification_date",
+        )
+        read_only_fields = fields
+
+
+class FullCompanySerializer(serializers.ModelSerializer):
+    declarations = InternalDeclarationSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Company
+
+        fields = (
+            "id",
+            "social_name",
+            "commercial_name",
+            "declarations",
+            "siret",
+            "vat",
+            "address",
+            "additional_details",
+            "postal_code",
+            "city",
+            "cedex",
+            "country",
+            "activities",
+            "phone_number",
+            "email",
+            "website",
+        )
+        read_only_fields = fields
 
 
 class BaseRoleSerializer(serializers.ModelSerializer):

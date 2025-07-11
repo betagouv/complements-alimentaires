@@ -141,6 +141,7 @@ urlpatterns = {
     path("declarations/", views.OngoingDeclarationsListView.as_view(), name="list_all_declarations"),
     path("control/declarations/", views.ControllerDeclarationsListView.as_view(), name="list_control_declarations"),
     path("control/companies/", views.ControlCompanyListView.as_view(), name="list_control_companies"),
+    path("control/companies/<int:pk>", views.CompanyControlRetrieveView.as_view(), name="retrieve_control_company"),
     path("declarations-export/", views.OngoingDeclarationsExcelView.as_view(), name="export_excel_declarations"),
     path(
         "declarations/<int:pk>",

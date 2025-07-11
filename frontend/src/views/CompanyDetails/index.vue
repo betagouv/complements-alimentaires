@@ -47,7 +47,7 @@ const {
   data: company,
   execute: executeCompanyFetch,
   isFetching,
-} = useFetch(() => `/api/v1/companies/${props.companyId}`, { immediate: false })
+} = useFetch(() => `/api/v1/control/companies/${props.companyId}`, { immediate: false })
   .get()
   .json()
 

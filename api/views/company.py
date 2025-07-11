@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as django_filters
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
-from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -31,6 +31,7 @@ from ..serializers import (
     CollaboratorSerializer,
     CompanySerializer,
     ControllerCompanySerializer,
+    FullCompanySerializer,
     MinimalCompanySerializer,
 )
 
@@ -174,6 +175,13 @@ class CompanyRetrieveUpdateView(RetrieveUpdateAPIView):
             return [IsAuthenticated(), IsSupervisorOrAgent()]
         else:
             return [IsAuthenticated(), IsSupervisor()]
+
+
+class CompanyControlRetrieveView(RetrieveAPIView):
+    model = Company
+    permission_classes = [IsController]
+    serializer_class = FullCompanySerializer
+    queryset = Company.objects.all()
 
 
 class CompanyCollaboratorsListView(ListAPIView):
