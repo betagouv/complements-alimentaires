@@ -40,10 +40,16 @@ class EtablissementToCompanyRelationAdmin(admin.ModelAdmin):
                 messages.INFO,
                 f"{declarations_to_move.count()} déclarations transférées de l'entreprise {old_company_id} à l'entreprise {new_company_id}",
             )
-
-            messages.add_message(
-                request, messages.INFO, f"Vous devez supprimer manuellement l'entreprise {old_company_id}"
-            )
+            if Declaration.objects.filter(company_id=old_company_id).count() == 0:
+                messages.add_message(
+                    request, messages.INFO, f"Vous devez supprimer manuellement l'entreprise {old_company_id}"
+                )
+            else:
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    f"L'entreprise {old_company_id} issue de TéléIcare, est rattachée à des déclarations Compl'Alim",
+                )
 
             # Suppression manuelle de la Company
             # old_company = Company.objects.get(id=old_company_id)
