@@ -29,7 +29,7 @@ class EtablissementToCompanyRelationAdmin(admin.ModelAdmin):
             change_reason = (
                 f"Transfert des déclarations de l'entreprise {old_company_id} à l'entreprise {new_company_id}"
             )
-            declarations_to_move = Declaration.objects.filter(company_id=old_company_id)
+            declarations_to_move = Declaration.objects.filter(company_id=old_company_id).exclude(siccrf_id=None)
             for declaration in declarations_to_move:
                 declaration.company_id = new_company_id
                 declaration.save()
