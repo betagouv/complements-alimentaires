@@ -90,7 +90,9 @@ def create_company_from_historic_etablissement(etab):
         postal_code=etab.etab_adre_cp,
         city=etab.etab_adre_ville,
         phone_number=convert_phone_number(etab.etab_telephone),
-        email=etab.etab_courriel or "",
+        # L'ajout de cet email générique permet que les entreprises historiques sans contact soient malgré tout crées
+        # Lorsqu'elles seront reprises par un.e gérant l'email sera modifié manuellement.
+        email=etab.etab_courriel or "contact@compl-alim.beta.gouv.fr",
         social_name=etab.etab_raison_sociale,
         commercial_name=etab.etab_enseigne or "",
         siret=etab.etab_siret,
@@ -628,4 +630,6 @@ def create_declarations_from_teleicare_history(etab_ids=[], company_ids=[], rewr
                     )
                     nb_created_declarations += 1
 
-    logger.info(f"Sur {len(IcaComplementAlimentaire.objects.all())} : {nb_created_declarations} déclarations créées.")
+    logger.info(
+        f"Sur {IcaComplementAlimentaire.objects.filter(etab_id__in=etab_ids).count()} : {nb_created_declarations} déclarations créées."
+    )
