@@ -23,7 +23,7 @@ COMMON_FIELDS = (
     "public_comments",
     "private_comments",
     "status",
-    "novel_food",
+    "is_novel_food",
     "is_risky",
     "change_reason",
     "public_change_reason",
@@ -39,7 +39,7 @@ COMMON_FETCH_FIELDS = (
     "public_comments",
     "activity",
     "status",
-    "novel_food",
+    "is_novel_food",
     "is_risky",
     "history",
     "object_type",
@@ -123,7 +123,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             # synonyms, change_reason and public_change_reason ont été popped avant
             "public_comments",
             "private_comments",
-            "novel_food",
+            "is_novel_food",
             "to_be_entered_in_next_decree",
             "family",  # plante
             # substance

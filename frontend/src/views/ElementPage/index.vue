@@ -20,7 +20,7 @@
     <div class="fr-container my-8">
       <h1 class="fr-h4 mb-1! capitalize">
         {{ element.name }}
-        <DsfrBadge v-if="novelFood" label="Novel Food" small type="new" />
+        <DsfrBadge v-if="isNovelFood" label="Novel Food" small type="new" />
       </h1>
 
       <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-1 sm:gap-x-20 mb-8">
@@ -172,7 +172,7 @@ const activity = computed(() => (element.value?.activity ? "Actif" : "Non actif"
 const status = computed(() =>
   ["autorisé", "non autorisé"].includes(element.value?.status) ? element.value?.status : null
 )
-const novelFood = computed(() => element.value?.novelFood)
+const isNovelFood = computed(() => element.value?.isNovelFood)
 const nutritionalReference = computed(() => {
   if (element.value?.unit && (element.value?.nutritionalReference || element.value.nutritionalReference == 0))
     return element.value?.nutritionalReference.toLocaleString("fr-FR") + " " + element.value?.unit

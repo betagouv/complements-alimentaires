@@ -58,7 +58,7 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
                     "ingredient_type",
                     "is_obsolete",
                     "is_risky",
-                    "novel_food",
+                    "is_novel_food",
                     "status",
                 ],
             },
@@ -78,8 +78,8 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
         SubstanceInlineAdmin,
         IngredientSynonymInline,
     )
-    list_display = ("name", "is_obsolete", "status", "is_risky", "novel_food", "has_linked_substances")
-    list_filter = ("is_obsolete", "status", "is_risky", "novel_food", "ingredient_type")
+    list_display = ("name", "is_obsolete", "status", "is_risky", "is_novel_food", "has_linked_substances")
+    list_filter = ("is_obsolete", "status", "is_risky", "is_novel_food", "ingredient_type")
     show_facets = admin.ShowFacets.NEVER
     readonly_fields = ("siccrf_name_en",)
     search_fields = ["id", "name"]

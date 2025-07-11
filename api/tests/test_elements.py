@@ -285,7 +285,7 @@ class TestElementsCreateApi(APITestCase):
             "substances": [substance.id],
             "publicComments": "Test",
             "privateComments": "Test private",
-            "novelFood": True,
+            "isNovelFood": True,
         }
         response = self.client.post(reverse("api:plant_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -305,7 +305,7 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(plant.public_comments, "Test")
         self.assertEqual(plant.private_comments, "Test private")
         self.assertEqual(plant.status, IngredientStatus.AUTHORIZED)
-        self.assertTrue(plant.novel_food)
+        self.assertTrue(plant.is_novel_food)
 
     @authenticate
     def test_cannot_create_single_plant_not_authorized(self):
@@ -331,7 +331,7 @@ class TestElementsCreateApi(APITestCase):
             ],
             "publicComments": "Test",
             "privateComments": "Test private",
-            "novelFood": True,
+            "isNovelFood": True,
         }
         response = self.client.post(reverse("api:microorganism_create"), payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -348,7 +348,7 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(microorganism.public_comments, "Test")
         self.assertEqual(microorganism.private_comments, "Test private")
         self.assertEqual(microorganism.status, IngredientStatus.AUTHORIZED)
-        self.assertTrue(microorganism.novel_food)
+        self.assertTrue(microorganism.is_novel_food)
 
     @authenticate
     def test_cannot_create_single_microorganism_not_authorized(self):
@@ -994,7 +994,7 @@ class TestElementsModifyApi(APITestCase):
                 "synonymes": [],
                 "public_comments": "",
                 "private_comments": "",
-                "novel_food": False,
+                "is_novel_food": False,
                 "change_reason": "",
                 "public_change_reason": "",
             },

@@ -60,7 +60,18 @@ class WithNovelFoodBoolean(models.Model):
     class Meta:
         abstract = True
 
-    novel_food = models.BooleanField(default=False, verbose_name="considéré Novel Food ?")
+    is_novel_food = models.BooleanField(default=False, verbose_name="considéré Novel Food ?")
+
+
+class WithWarning(models.Model):
+    """
+    Les tables ingrédients (plantes, micro-organismes, substances et ingrédients de la SICCRF) peuvent nécessiter l'inscription d'avertissements sur l'étiquette
+    """
+
+    class Meta:
+        abstract = True
+
+    warning = models.TextField(blank=True, editable=False, verbose_name="avertissement")
 
 
 class PublicReasonHistoricalModel(models.Model):

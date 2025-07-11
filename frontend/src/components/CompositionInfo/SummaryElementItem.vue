@@ -22,7 +22,7 @@
             class="self-center ml-2"
           />
 
-          <DsfrBadge v-if="novelFood" label="Novel Food" type="new" class="self-center ml-2" small />
+          <DsfrBadge v-if="isNovelFood" label="Novel Food" type="new" class="self-center ml-2" small />
           <DsfrBadge
             v-if="isPartRequest"
             label="Nouvelle partie de plante"
@@ -78,8 +78,8 @@ const unitName = computed(() => units.value?.find((x) => x.id === model.value.un
 const preparationName = computed(
   () => preparations.value?.find((x) => x.id === parseInt(model.value.preparation))?.name || ""
 )
-const novelFood = computed(() => {
-  return model.value.element?.novelFood
+const isNovelFood = computed(() => {
+  return model.value.element?.isNovelFood
 })
 
 const elementInfo = computed(() => {
