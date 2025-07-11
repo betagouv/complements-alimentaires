@@ -10,7 +10,7 @@
 
 <script setup>
 import { computed } from "vue"
-import { allActivities } from "@/utils/mappings"
+import { getCompanyActivitiesString } from "@/utils/mappings"
 import TableHeaders from "@/components/TableHeaders"
 
 const emit = defineEmits(["sort"])
@@ -54,19 +54,13 @@ const rows = computed(() =>
         to: { name: "CompanyDetails", params: { companyId: x.id } },
       },
       x.postalCode,
-      getActivitiesString(x.activities || []),
+      getCompanyActivitiesString(x.activities || []),
       // "",
       // "",
       // "",
     ],
   }))
 )
-
-const getActivitiesString = (activities) =>
-  activities
-    .map((x) => allActivities.find((y) => y.value === x).label)
-    .sort((a, b) => a.localeCompare(b))
-    .join(", ")
 </script>
 
 <style scoped>

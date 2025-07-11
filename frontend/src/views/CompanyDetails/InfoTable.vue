@@ -2,7 +2,9 @@
   <table>
     <tr v-for="item in items" :key="item.body" class="m-2 p-2">
       <th>{{ item.title }}</th>
-      <th>{{ item.body }}</th>
+      <th>
+        <div v-for="(line, index) in item.body" :key="`infotable${line}${index}`">{{ line }}</div>
+      </th>
     </tr>
   </table>
 </template>

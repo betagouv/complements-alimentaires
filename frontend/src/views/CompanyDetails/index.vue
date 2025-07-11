@@ -12,16 +12,18 @@
     </div>
     <div v-else-if="company">
       <h1>{{ company.socialName }}</h1>
-    </div>
-    <div class="grid grid-cols-2 gap-3">
-      <div class="col-span-2 sm:col-span-1">
-        <h2>Identité entreprise</h2>
-        <InfoTable :items="identityItems" />
+      <div class="grid grid-cols-2 gap-3">
+        <div class="col-span-2 sm:col-span-1">
+          <h2>Identité entreprise</h2>
+          <InfoTable :items="identityItems" />
+        </div>
+        <div class="col-span-2 sm:col-span-1">
+          <h2>Chiffres clés</h2>
+          <InfoTable :items="insightsItems" />
+        </div>
       </div>
-      <div class="col-span-2 sm:col-span-1">
-        <h2>Chiffres clés</h2>
-        <InfoTable :items="insightsItems" />
-      </div>
+      <h2>Produits déclarés auprès de la DGAL par cette entreprise</h2>
+      <DsfrAlert title="Recherche et filtrage avancé en construction" />
     </div>
   </div>
 </template>
@@ -31,6 +33,7 @@ import { useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { onMounted, computed } from "vue"
 import { handleError } from "@/utils/error-handling"
+import { getCompanyActivitiesString } from "@/utils/mappings"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import InfoTable from "./InfoTable.vue"
 
@@ -58,17 +61,20 @@ onMounted(async () => {
 
 const identityItems = computed(() => {
   if (!company.value) return []
+  const c = company.value
   return [
-    { title: "SIRET", body: company.value.siret }, // TODO: Include TVA
-    { title: "No. téléphone", body: company.value.phoneNumber },
+    { title: "SIRET", body: [c.siret] }, // TODO: Include TVA
+    { title: "No. téléphone", body: [c.phoneNumber] },
+    { title: "Adresse siège", body: [c.address, `${c.postalCode}, ${c.city} ${c.country}`] },
+    { title: "Rôles", body: [getCompanyActivitiesString(c.activities || []) || "Aucun rôle renseigné"] },
   ]
 })
 
 const insightsItems = computed(() => {
   if (!company.value) return []
   return [
-    { title: "Nb. total de déclarations", body: "TODO" },
-    { title: "Nb. de produits commercialisables", body: "TODO" },
+    { title: "Nb. total de déclarations", body: ["TODO"] },
+    { title: "Nb. de produits commercialisables", body: ["TODO"] },
   ]
 })
 </script>

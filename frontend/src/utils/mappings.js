@@ -368,3 +368,9 @@ export const allActivities = [
     hint: "Le distributeur achète des compléments alimentaires pour les revendre aux détaillants ou directement aux consommateurs.",
   },
 ]
+
+export const getCompanyActivitiesString = (activities) =>
+  activities
+    .map((x) => allActivities.find((y) => y.value === x).label)
+    .sort((a, b) => a.localeCompare(b))
+    .join(", ")
