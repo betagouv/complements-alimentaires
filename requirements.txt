@@ -90,7 +90,7 @@ pycparser==2.22
 Pygments==2.19.2
 pyHanko==0.29.1
 pyhanko-certvalidator==0.27.0
-pypdf==5.7.0
+pypdf==5.8.0
 pytest==8.4.1
 python-bidi==0.6.6
 python-dateutil==2.9.0.post0
