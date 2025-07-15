@@ -53,10 +53,6 @@ const menuItems = computed(() => {
               to: appendHash(productRoute.value, "#pieces-jointes"),
               text: "Pièces jointes",
             },
-            {
-              to: appendHash(productRoute.value, "#identite"),
-              text: "Identité de la personne déclarante",
-            },
           ]
         : null,
     },

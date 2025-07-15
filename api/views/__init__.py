@@ -54,6 +54,7 @@ from .user import (
     SendNewSignupVerificationEmailView,
     UserCreateView,
     UserRetrieveUpdateDestroyView,
+    UserRetrieveControlView,
     VerifyEmailView,
 )
 from .webinar import WebinarView

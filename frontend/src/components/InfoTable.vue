@@ -14,7 +14,7 @@ defineProps({ items: Array })
 </script>
 
 <style scoped>
-@reference "../../styles/index.css";
+@reference "../styles/index.css";
 
 th {
   @apply border-collapse;

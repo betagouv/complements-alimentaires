@@ -5,7 +5,7 @@ from openpyxl.cell.cell import Hyperlink
 from rest_framework import serializers
 
 from api.exceptions import ProjectAPIException
-from api.permissions import IsInstructor, IsVisor
+from api.permissions import IsController, IsInstructor, IsVisor
 from api.utils.simplified_status import SimplifiedStatusHelper
 from api.utils.urls import get_base_url
 from data.models import (
@@ -299,18 +299,6 @@ class ControllerDeclarationSerializer(serializers.ModelSerializer):
         La date qui nous intéresse peut concerner des snapshots différents
         """
         return SimplifiedStatusHelper.get_simplified_status_date(instance)
-
-
-class ControllerDeclarationFullSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Declaration
-        fields = (
-            "id",
-            "teleicare_declaration_number",
-            "siccrf_id",
-            "name",
-            "brand",
-        )
 
 
 class SimpleDeclarationSerializer(serializers.ModelSerializer):
@@ -623,6 +611,11 @@ class DeclarationSerializer(serializers.ModelSerializer):
 
         is_instructor = IsInstructor().has_permission(request, view)
         is_visor = IsVisor().has_permission(request, view)
+        is_controller = IsController().has_permission(request, view)
+        if not is_controller:
+            self.fields.pop("simplified_status")
+            self.fields.pop("simplified_status_date")
+
         if not is_instructor and not is_visor:
             self.fields.pop("private_notes_instruction")
             self.fields.pop("private_notes_visa")
@@ -662,6 +655,8 @@ class DeclarationSerializer(serializers.ModelSerializer):
     private_notes_instruction = serializers.CharField(allow_blank=True, required=False)
     private_notes_visa = serializers.CharField(allow_blank=True, required=False)
     blocking_reasons = serializers.ListField(read_only=True)
+    simplified_status = serializers.SerializerMethodField(read_only=True)
+    simplified_status_date = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Declaration
@@ -718,6 +713,8 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "blocking_reasons",
             "expiration_date",
             "last_administration_comment",
+            "simplified_status",
+            "simplified_status_date",
         )
         read_only_fields = (
             "id",
@@ -824,6 +821,12 @@ class DeclarationSerializer(serializers.ModelSerializer):
                     serializer.create(declared_elements)
 
         return declaration
+
+    def get_simplified_status(self, instance):
+        return SimplifiedStatusHelper.get_simplified_status(instance)
+
+    def get_simplified_status_date(self, instance):
+        return SimplifiedStatusHelper.get_simplified_status_date(instance)
 
 
 class DeclarationShortSerializer(serializers.ModelSerializer):

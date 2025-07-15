@@ -38,7 +38,7 @@ import { onMounted, computed } from "vue"
 import { handleError } from "@/utils/error-handling"
 import { getCompanyActivitiesString } from "@/utils/mappings"
 import ProgressSpinner from "@/components/ProgressSpinner"
-import InfoTable from "./InfoTable.vue"
+import InfoTable from "@/components/InfoTable.vue"
 import DeclarationsTableSection from "@/components/NewBepiasViews/DeclarationsTableSection"
 
 const router = useRouter()

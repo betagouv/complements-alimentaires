@@ -34,7 +34,6 @@ from api.permissions import (
     IsVisor,
 )
 from api.serializers import (
-    ControllerDeclarationFullSerializer,
     ControllerDeclarationSerializer,
     DeclarationSerializer,
     DeclarationShortSerializer,
@@ -377,7 +376,7 @@ class ControllerDeclarationsListView(CommonOngoingDeclarationView):
 class ControllerDeclarationRetrieveView(RetrieveAPIView):
     permission_classes = [IsController]
     model = Declaration
-    serializer_class = ControllerDeclarationFullSerializer
+    serializer_class = DeclarationSerializer
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT).distinct()
 
 
