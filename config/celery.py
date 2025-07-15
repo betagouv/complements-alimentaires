@@ -45,10 +45,10 @@ app.conf.beat_schedule = {
         "task": "config.tasks.approve_declarations",
         "schedule": daily_workweek,
     },
-    "export_datasets_to_data_gouv": {
-        "task": "config.tasks.export_datasets_to_data_gouv",
-        "schedule": midnights,
-    },
+    # "export_datasets_to_data_gouv": {
+    #     "task": "config.tasks.export_datasets_to_data_gouv",
+    #     "schedule": midnights,
+    # },
 }
 
 app.conf.timezone = "Europe/Paris"
