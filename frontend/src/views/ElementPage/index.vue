@@ -88,7 +88,7 @@
       <ElementTextSection
         v-if="element.requiresAnalysisReport"
         title="Point d'attention"
-        text="Pour déclarer cet ingrédient, il est nécessaire de joindre un bulletin d'analyse."
+        text="Un bulletin d'analyse vous sera demandé."
       />
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
