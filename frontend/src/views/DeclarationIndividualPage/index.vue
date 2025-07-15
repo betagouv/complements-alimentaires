@@ -13,6 +13,17 @@
     </div>
     <div v-else-if="declaration">
       <h1>{{ declaration.name }}</h1>
+
+      <div class="sm:grid sm:grid-cols-12">
+        <div class="hidden sm:block col-span-3">
+          <div class="sticky top-2 sidebar-content">
+            <NavSidebar v-model="declaration" />
+          </div>
+        </div>
+        <div class="col-span-12 sm:col-span-9">
+          <router-view :declaration="declaration" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -23,6 +34,7 @@ import { computed, onMounted } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
+import NavSidebar from "./NavSidebar"
 
 const router = useRouter()
 const previousRoute = computed(() => {
