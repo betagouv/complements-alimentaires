@@ -33,6 +33,7 @@ from .declaration import (
     DeclaredSubstanceSerializer,
     DeclaredIngredientSerializer,
     DeclaredElementDeclarationSerializer,
+    ControllerDeclarationFullSerializer,
 )
 from .company import (
     CompanySerializer,

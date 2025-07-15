@@ -301,6 +301,18 @@ class ControllerDeclarationSerializer(serializers.ModelSerializer):
         return SimplifiedStatusHelper.get_simplified_status_date(instance)
 
 
+class ControllerDeclarationFullSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Declaration
+        fields = (
+            "id",
+            "teleicare_declaration_number",
+            "siccrf_id",
+            "name",
+            "brand",
+        )
+
+
 class SimpleDeclarationSerializer(serializers.ModelSerializer):
     instructor = SimpleUserSerializer(read_only=True, source="instructor.user")
     visor = SimpleUserSerializer(read_only=True, source="visor.user")
