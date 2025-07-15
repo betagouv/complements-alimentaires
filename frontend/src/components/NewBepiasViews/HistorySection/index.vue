@@ -11,6 +11,7 @@
         :key="`snapshot-${snapshot.id}`"
         :snapshot="snapshot"
         :rightSide="showOnRight(snapshot)"
+        :hideInstructionDetails="hideInstructionDetails"
       />
     </div>
     <div v-else>
@@ -24,7 +25,7 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import SnapshotItem from "@/components/SnapshotItem"
 import SectionHeader from "../SectionHeader"
 
-defineProps({ snapshots: Array })
+defineProps({ snapshots: Array, hideInstructionDetails: Boolean })
 
 const showOnRight = (snapshot) => {
   const rightSideStatus = ["OBSERVATION", "AUTHORIZED", "ONGOING_INSTRUCTION", "AWAITING_VISA", "OBJECTION", "REJECTED"]

@@ -1,5 +1,8 @@
 <template>
-  <div>HISTORY</div>
+  <HistorySection :snapshots="snapshots" :hideInstructionDetails="true" />
 </template>
 
-<script setup></script>
+<script setup>
+import HistorySection from "@/components/NewBepiasViews/HistorySection"
+defineProps({ snapshots: Array })
+</script>

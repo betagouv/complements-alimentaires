@@ -26,6 +26,7 @@
             :declarant="declarant"
             :company="company"
             :mandatedCompany="mandatedCompany"
+            :snapshots="snapshots"
           />
         </div>
       </div>
@@ -40,6 +41,10 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import NavSidebar from "./NavSidebar"
+import { useRootStore } from "@/stores/root"
+
+const store = useRootStore()
+store.fetchDeclarationFieldsData()
 
 const router = useRouter()
 const route = useRoute()
@@ -51,11 +56,17 @@ const previousRoute = computed(() => {
 const props = defineProps({ declarationId: String })
 const makeRequest = (url) => useFetch(url, { immediate: false }).get().json()
 
+const isFetching = computed(() =>
+  [isFetchingDeclaration, isFetchingDeclarant, isFetchingCompany, isFetchingMandatedCompany, isFetchingSnapshots].some(
+    (x) => !!x.value
+  )
+)
+
 const {
   response: declarationResponse,
   data: declaration,
   execute: executeDeclarationFetch,
-  isFetching,
+  isFetching: isFetchingDeclaration,
 } = makeRequest(`/api/v1/control/declarations/${props.declarationId}`).get().json()
 
 const {
@@ -84,14 +95,14 @@ const {
   .get()
   .json()
 
-// const {
-//   response: snapshotsResponse,
-//   data: snapshots,
-//   execute: executeSnapshotsFetch,
-//   isFetching: isFetchingSnapshots,
-// } = makeRequest(() => `/api/v1/declarations/${props.declarationId}/snapshots/`)
-//   .get()
-//   .json()
+const {
+  response: snapshotsResponse,
+  data: snapshots,
+  execute: executeSnapshotsFetch,
+  isFetching: isFetchingSnapshots,
+} = makeRequest(() => `/api/v1/declarations/${props.declarationId}/snapshots/`)
+  .get()
+  .json()
 
 onMounted(async () => {
   await executeDeclarationFetch()
@@ -103,8 +114,13 @@ onMounted(async () => {
   const fetchMandatedCompany = mandatedCompany ? executeMandatedCompanyFetch : () => Promise.resolve
   const handleMandatedError = mandatedCompany ? () => handleError(mandatedCompanyResponse) : () => Promise.resolve
 
-  await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), fetchMandatedCompany()])
-  await Promise.all([handleError(declarantResponse), handleError(companyResponse), handleMandatedError()])
+  await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), fetchMandatedCompany(), executeSnapshotsFetch()])
+  await Promise.all([
+    handleError(declarantResponse),
+    handleError(companyResponse),
+    handleMandatedError(),
+    handleError(snapshotsResponse),
+  ])
 
   if (route.hash) {
     // La fonction scrollBehavior du router est lancée avant le rendu asynchrone de cette
