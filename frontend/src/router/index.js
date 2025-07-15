@@ -47,6 +47,7 @@ import StatsPage from "@/views/StatsPage"
 import DeclarationSearchPage from "@/views/DeclarationSearchPage"
 import CompanySearchPage from "@/views/CompanySearchPage"
 import CompanyDetails from "@/views/CompanyDetails"
+import DeclarationIndividualPage from "@/views/DeclarationIndividualPage"
 import { ref } from "vue"
 
 const routes = [
@@ -568,6 +569,17 @@ const routes = [
         triage: "-creationDate",
         simplifiedStatus: "",
       },
+    },
+  },
+  {
+    path: "/complement-alimentaire/:declarationId",
+    props: true,
+    name: "DeclarationIndividualPage",
+    component: DeclarationIndividualPage,
+    meta: {
+      title: "Complément alimentaire",
+      authenticationRequired: true,
+      requiredRoles: ["ControlRole"],
     },
   },
   {
