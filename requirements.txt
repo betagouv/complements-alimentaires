@@ -22,7 +22,7 @@ click-didyoumean==0.3.1
 click-plugins==1.1.1
 click-repl==0.3.0
 colorama==0.4.6
-cryptography==45.0.2
+cryptography==45.0.5
 cssselect2==0.8.0
 decorator==5.2.1
 diff_cover==9.4.1
@@ -90,8 +90,8 @@ pycparser==2.22
 Pygments==2.19.2
 pyHanko==0.29.1
 pyhanko-certvalidator==0.27.0
-pypdf==5.7.0
-pytest==8.3.5
+pypdf==5.8.0
+pytest==8.4.1
 python-bidi==0.6.6
 python-dateutil==2.9.0.post0
 pytz==2024.2

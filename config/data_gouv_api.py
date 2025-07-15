@@ -1,5 +1,6 @@
 import csv
 import logging
+
 import requests
 
 logger = logging.getLogger(__name__)
@@ -9,7 +10,6 @@ class DataGouvAPI:
     def __init__(self):
         self.base_csv_url = "https://metric-api.data.gouv.fr/api/datasets/data/csv"
         self.declaration_data_set_id = "67484631f54100f9e9db2a06"
-        self.siccrf_declaration_data_set_id = "584ecf1ac751df202dc0bb7e"
 
     def _make_csv_request(self, url):
         try:
@@ -34,10 +34,5 @@ class DataGouvAPI:
 
     def get_declaration_stats(self):
         url = f"{self.base_csv_url}/?metric_month__sort=asc&dataset_id__exact={self.declaration_data_set_id}"
-        stats_list = self._make_csv_request(url)
-        return {"reportData": self._format_visit_stats(stats_list)}
-
-    def get_siccrf_declaration_stats(self):
-        url = f"{self.base_csv_url}/?metric_month__sort=asc&dataset_id__exact={self.siccrf_declaration_data_set_id}"
         stats_list = self._make_csv_request(url)
         return {"reportData": self._format_visit_stats(stats_list)}
