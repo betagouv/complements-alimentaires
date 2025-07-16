@@ -46,7 +46,12 @@
         </div>
         <div class="md:pr-4 md:border-r md:border-t md:-mt-3">
           <DsfrFieldset legend="Recherche" class="mb-0!">
-            <DsfrSearchBar v-model="searchTerm" placeholder="Nom, ID ou entreprise" @search="search" />
+            <DsfrSearchBar
+              v-model="searchTerm"
+              label="Nom, ID ou entreprise"
+              placeholder="Nom, ID ou entreprise"
+              @search="search"
+            />
           </DsfrFieldset>
         </div>
       </div>

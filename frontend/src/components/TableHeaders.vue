@@ -1,12 +1,24 @@
 <template>
   <tr>
     <!-- Il faut générer programmatiquement les entêtes à cause du bug : https://github.com/dnum-mi/vue-dsfr/issues/1091 -->
-    <th v-for="header in headers" :key="header.text" :class="header.active ? 'active' : ''">
+    <th
+      v-for="header in headers"
+      :key="header.text"
+      :class="header.active || currentSort === header.sortParam ? 'active' : ''"
+    >
       <div class="flex items-baseline">
         <span class="grow">{{ header.text }}</span>
         <div class="flex-none">
           <DsfrButton
-            v-if="header.icon"
+            v-if="header.sortParam"
+            tertiary
+            :icon="getSortIcon(header.sortParam)"
+            @click="() => sortBy(header.sortParam, header.sortCallback)"
+            :aria-label="header.ariaLabel"
+            class="p-0 header-icon aspect-square justify-center"
+          />
+          <DsfrButton
+            v-else-if="header.icon"
             :icon="header.icon"
             tertiary
             @click="header.onClick"
@@ -20,7 +32,32 @@
 </template>
 
 <script setup>
+import { ref } from "vue"
+import { useRoute } from "vue-router"
+const route = useRoute()
 defineProps({ headers: Array })
+
+const currentSort = ref(route.query.triage ? route.query.triage.substring(1) : undefined)
+const sortDirection = ref(route.query.triage ? route.query.triage.substring(0, 1) : undefined)
+
+const getSortIcon = (sortParam) =>
+  currentSort.value === sortParam
+    ? sortDirection.value === "+"
+      ? "ri-sort-desc"
+      : "ri-sort-asc"
+    : "ri-arrow-up-down-line"
+
+const sortBy = (sortParam, sortCallback) => {
+  if (currentSort.value === sortParam) {
+    if (!sortDirection.value) sortDirection.value = "+"
+    else if (sortDirection.value === "+") sortDirection.value = "-"
+    else sortDirection.value = currentSort.value = "" // Si on a cliqué trois fois on désactive le triage
+  } else {
+    sortDirection.value = "+"
+    currentSort.value = sortParam
+  }
+  sortCallback(`${sortDirection.value}${currentSort.value}`)
+}
 </script>
 
 <style scoped>

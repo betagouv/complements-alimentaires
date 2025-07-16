@@ -7,8 +7,8 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from config.matomo_api import MatomoAPI
 from config.data_gouv_api import DataGouvAPI
+from config.matomo_api import MatomoAPI
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,6 @@ class StatsView(APIView):
         data = {
             "element_visit_stats": MatomoAPI().get_page_evolution(),
             "declaration_visit_stats": DataGouvAPI().get_declaration_stats(),
-            "siccrf_declaration_visit_stats": DataGouvAPI().get_siccrf_declaration_stats(),
         }
 
         # Cache pour une heure

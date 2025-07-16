@@ -1,7 +1,16 @@
 <template>
-  <div :class="lowContrastMode ? 'bg-grey-975!' : ''">
-    <AppHeader :logo-text="logoText" />
-    <router-view></router-view>
+  <div :class="lowContrastMode ? 'low-contrast-mode bg-grey-975!' : ''">
+    <DsfrSkipLinks
+      :links="[
+        { id: 'main-content', text: 'Aller au contenu principal' },
+        { id: 'navigation', text: 'Aller au menu' },
+        { id: 'footer', text: 'Aller au pied de page' },
+      ]"
+    />
+    <AppHeader :logo-text="logoText" id="navigation" />
+    <div id="main-content">
+      <router-view></router-view>
+    </div>
     <DsfrFooter
       :logo-text="logoText"
       :a11yComplianceLink="{ name: 'A11yPage' }"
@@ -12,6 +21,7 @@
         { label: 'Conditions générales d’utilisation', to: { name: 'CGUPage' } },
         { label: 'Mesures d\'impact', to: { name: 'StatsPage' } },
       ]"
+      id="footer"
     >
       <template v-slot:description>
         <p>Compl'Alim</p>
@@ -37,7 +47,7 @@ watch(route, (to) => {
   document.title = to.meta.title ? to.meta.title + " - " + suffix : suffix
 })
 
-const lowContrastMode = computed(() => route.name === "InstructionPage")
+const lowContrastMode = computed(() => ["InstructionPage", "IdentitySection", "HistorySection"].includes(route.name))
 </script>
 
 <style>
@@ -45,5 +55,12 @@ const lowContrastMode = computed(() => route.name === "InstructionPage")
 
 .fr-pagination__list {
   @apply justify-center;
+}
+
+.low-contrast-mode {
+  .border,
+  .border-l {
+    @apply border-gray-500;
+  }
 }
 </style>

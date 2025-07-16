@@ -4,7 +4,7 @@
       <h1 class="mb-2">Nos articles</h1>
       <p>Découvrez notre espace blog et témoignages</p>
     </div>
-    <img class="hidden md:block absolute bottom-0 right-20" src="/static/images/plants.png" />
+    <img class="hidden md:block absolute bottom-0 right-20" src="/static/images/plants.png" alt="" />
   </div>
   <div class="fr-container my-6">
     <div v-if="isFetching" class="flex justify-center">

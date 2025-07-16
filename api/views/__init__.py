@@ -69,6 +69,7 @@ from .company import (
     RemoveCompanyRoleView,
     AddMandatedCompanyView,
     RemoveMandatedCompanyView,
+    ControlCompanyListView,
 )
 from .solicitation import (
     ProcessCompanyAccessClaim,

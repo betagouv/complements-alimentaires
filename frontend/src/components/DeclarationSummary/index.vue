@@ -35,14 +35,12 @@
       <p class="font-bold mt-8" v-if="payload.computedSubstances.length">Substances contenues dans la composition :</p>
       <ComputedSubstancesInfo v-model="payload" />
 
-      <div v-if="!payload.siccrfId">
-        <h3 class="fr-h6 mt-8!">
-          Adresse sur l'étiquetage
-          <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
-        </h3>
-        <AddressLine :payload="payload" />
-      </div>
-      <div v-if="!useCompactAttachmentView & !payload.siccrfId">
+      <h3 class="fr-h6 mt-8!">
+        Adresse sur l'étiquetage
+        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
+      </h3>
+      <AddressLine :payload="payload" />
+      <div v-if="!useCompactAttachmentView">
         <h3 class="fr-h6 mt-8!">
           Pièces jointes
           <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />

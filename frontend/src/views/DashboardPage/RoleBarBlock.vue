@@ -12,12 +12,15 @@
           </div>
         </div>
         <CompanyTag v-if="activeCompany && companies.length === 1" :name="activeCompany.socialName" />
-        <DsfrSelect
-          v-else-if="companies.length > 1"
-          :options="companiesSelectOptions"
-          :modelValue="activeCompany?.id"
-          @update:modelValue="(x) => emit('changeCompany', x)"
-        />
+        <div id="company-select-wrapper" v-else-if="companies.length > 1">
+          <DsfrSelect
+            :options="companiesSelectOptions"
+            :modelValue="activeCompany?.id"
+            @update:modelValue="(x) => emit('changeCompany', x)"
+            label="Entreprise"
+            class="-mt-5"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -35,3 +38,11 @@ const companiesSelectOptions = computed(() =>
   props.companies?.filter((c) => !c.representedBy).map((c) => ({ text: c.socialName, value: c.id }))
 )
 </script>
+
+<style>
+@reference "../../styles/index.css";
+
+#company-select-wrapper .fr-label {
+  @apply invisible;
+}
+</style>
