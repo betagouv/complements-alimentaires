@@ -26,8 +26,6 @@ class SubstanceInlineAdmin(admin.TabularInline):
     model = Ingredient.substances.through
     extra = 0
 
-    readonly_fields = ("siccrf_is_related",)
-
 
 class IngredientForm(ChangeReasonFormMixin):
     class Meta:

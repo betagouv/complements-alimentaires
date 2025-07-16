@@ -48,10 +48,6 @@ class Ingredient(IngredientCommonModel):
 class IngredientSubstanceRelation(TimeStampable, Historisable):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
-    siccrf_is_related = models.BooleanField(
-        default=False, verbose_name="substance associée à l'ingrédient (selon la base SICCRF)"
-    )
-    ca_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à l'ingrédient")
 
 
 class IngredientSynonym(TimeStampable, Historisable):

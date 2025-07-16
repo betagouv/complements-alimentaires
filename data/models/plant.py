@@ -82,10 +82,6 @@ class Part(TimeStampable):
 class PlantSubstanceRelation(TimeStampable, Historisable):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
-    siccrf_is_related = models.BooleanField(
-        default=False, verbose_name="substance associée à la plante (selon la base SICCRF)"
-    )
-    ca_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à la plante")
 
 
 class PlantSynonym(TimeStampable, Historisable):
