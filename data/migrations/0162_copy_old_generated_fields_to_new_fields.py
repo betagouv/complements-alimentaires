@@ -102,92 +102,92 @@ class Migration(migrations.Migration):
     def reverse_set_new_fields_from_generated(apps, schema_editor):
         Condition = apps.get_model("data", "Condition")
         for condition in Condition.objects.all():
-            condition.is_obsolete = condition.new_is_obsolete
-            condition.name = condition.new_name
+            condition.ca_is_obsolete = condition.new_is_obsolete
+            condition.ca_name = condition.new_name
             condition.save()
 
         Effect = apps.get_model("data", "Effect")
         for effect in Effect.objects.all():
-            effect.is_obsolete = effect.new_is_obsolete
-            effect.name = effect.new_name
+            effect.ca_is_obsolete = effect.new_is_obsolete
+            effect.ca_name = effect.new_name
             effect.save()
 
         GalenicFormulation = apps.get_model("data", "GalenicFormulation")
         for galenicformulation in GalenicFormulation.objects.all():
-            galenicformulation.is_obsolete = galenicformulation.new_is_obsolete
-            galenicformulation.name = galenicformulation.new_name
+            galenicformulation.ca_is_obsolete = galenicformulation.new_is_obsolete
+            galenicformulation.ca_name = galenicformulation.new_name
             galenicformulation.save()
 
         Ingredient = apps.get_model("data", "Ingredient")
         for ingredient in Ingredient.objects.all():
-            ingredient.is_obsolete = ingredient.new_is_obsolete
-            ingredient.name = ingredient.new_name
-            ingredient.private_comments = ingredient.new_private_comments
-            ingredient.public_comments = ingredient.new_public_comments
-            ingredient.status = ingredient.new_status
+            ingredient.ca_is_obsolete = ingredient.new_is_obsolete
+            ingredient.ca_name = ingredient.new_name
+            ingredient.ca_private_comments = ingredient.new_private_comments
+            ingredient.ca_public_comments = ingredient.new_public_comments
+            ingredient.ca_status = ingredient.new_status
             ingredient.save()
 
         Microorganism = apps.get_model("data", "Microorganism")
         for microorganism in Microorganism.objects.all():
-            microorganism.is_obsolete = microorganism.new_is_obsolete
-            microorganism.private_comments = microorganism.new_private_comments
-            microorganism.public_comments = microorganism.new_public_comments
-            ingredient.status = ingredient.new_status
-            microorganism.species = microorganism.new_species
-            microorganism.genus = microorganism.new_genus
+            microorganism.ca_is_obsolete = microorganism.new_is_obsolete
+            microorganism.ca_private_comments = microorganism.new_private_comments
+            microorganism.ca_public_comments = microorganism.new_public_comments
+            ingredient.ca_status = ingredient.new_status
+            microorganism.ca_species = microorganism.new_species
+            microorganism.ca_genus = microorganism.new_genus
             microorganism.save()
 
         Plant = apps.get_model("data", "Plant")
         for plant in Plant.objects.all():
-            plant.is_obsolete = plant.new_is_obsolete
-            plant.name = plant.new_name
-            plant.private_comments = plant.new_private_comments
-            plant.public_comments = plant.new_public_comments
-            ingredient.status = ingredient.new_status
-            plant.family_by_id = plant.new_family
+            plant.ca_is_obsolete = plant.new_is_obsolete
+            plant.ca_name = plant.new_name
+            plant.ca_private_comments = plant.new_private_comments
+            plant.ca_public_comments = plant.new_public_comments
+            ingredient.ca_status = ingredient.new_status
+            plant.ca_family = plant.new_family
             plant.save()
 
         Part = apps.get_model("data", "Part")
         for part in Part.objects.all():
-            part.is_useful = part.new_is_useful
-            part.must_be_monitored = part.new_must_be_monitored
+            part.ca_is_useful = part.new_is_useful
+            part.ca_must_be_monitored = part.new_must_be_monitored
             part.save()
 
         PlantFamily = apps.get_model("data", "PlantFamily")
         for plantfamily in PlantFamily.objects.all():
-            plantfamily.is_obsolete = plantfamily.new_is_obsolete
-            plantfamily.name = plantfamily.new_name
+            plantfamily.ca_is_obsolete = plantfamily.new_is_obsolete
+            plantfamily.ca_name = plantfamily.new_name
             plantfamily.save()
 
         PlantPart = apps.get_model("data", "PlantPart")
         for plantpart in PlantPart.objects.all():
-            plantpart.is_obsolete = plantpart.new_is_obsolete
-            plantpart.name = plantpart.new_name
+            plantpart.ca_is_obsolete = plantpart.new_is_obsolete
+            plantpart.ca_name = plantpart.new_name
             plantpart.save()
 
         Preparation = apps.get_model("data", "Preparation")
         for preparation in Preparation.objects.all():
-            preparation.is_obsolete = preparation.new_is_obsolete
-            preparation.name = preparation.new_name
+            preparation.ca_is_obsolete = preparation.new_is_obsolete
+            preparation.ca_name = preparation.new_name
             preparation.save()
 
         Substance = apps.get_model("data", "Substance")
         for substance in Substance.objects.all():
-            substance.is_obsolete = substance.new_is_obsolete
-            substance.name = substance.new_name
-            substance.private_comments = substance.new_private_comments
-            substance.public_comments = substance.new_public_comments
-            ingredient.status = ingredient.new_status
-            substance.cas_number = substance.new_cas_number
-            substance.einec_number = substance.new_einec_number
-            substance.must_specify_quantity = substance.new_must_specify_quantity
-            substance.nutritional_reference = substance.new_nutritional_reference
-            substance.source = substance.new_source
+            substance.ca_is_obsolete = substance.new_is_obsolete
+            substance.ca_name = substance.new_name
+            substance.ca_private_comments = substance.new_private_comments
+            substance.ca_public_comments = substance.new_public_comments
+            ingredient.ca_status = ingredient.new_status
+            substance.ca_cas_number = substance.new_cas_number
+            substance.ca_einec_number = substance.new_einec_number
+            substance.ca_must_specify_quantity = substance.new_must_specify_quantity
+            substance.ca_nutritional_reference = substance.new_nutritional_reference
+            substance.ca_source = substance.new_source
             substance.save()
 
         MaxquantityPerPopulationRelation = apps.get_model("data", "MaxquantityPerPopulationRelation")
         for maxquantityperpopulationrelation in MaxquantityPerPopulationRelation.objects.all():
-            maxquantityperpopulationrelation.max_quantity = maxquantityperpopulationrelation.new_max_quantity
+            maxquantityperpopulationrelation.ca_max_quantity = maxquantityperpopulationrelation.new_max_quantity
             maxquantityperpopulationrelation.save()
 
     operations = [

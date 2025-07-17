@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data', '0164_remove_historicalcondition_is_obsolete_and_more'),
+        ('data', '0164_remove_obsolete_ca_and_siccrf_fields'),
     ]
 
     operations = [

@@ -441,7 +441,7 @@ class Migration(migrations.Migration):
             name='new_status',
             field=models.IntegerField(blank=True, choices=[(1, 'autorisé'), (2, 'non autorisé'), (3, 'sans objet')], default=None, null=True, verbose_name="statut de l'ingrédient ou substance"),
         ),
-        # Ces changements permettent que la migration 163 soit réversible
+        # Ces changements permettent que la migration 163 soit réversible (mais doivent être commentés lors du revert de 161)
         migrations.AlterField(
             model_name='substance',
             name='siccrf_name',
