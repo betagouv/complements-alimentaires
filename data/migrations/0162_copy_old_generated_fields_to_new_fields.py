@@ -99,7 +99,94 @@ class Migration(migrations.Migration):
             maxquantityperpopulationrelation.save()
 
     def reverse_set_new_fields_from_generated(apps, schema_editor):
-        pass
+        Condition = apps.get_model("data", "Condition")
+        for condition in Condition.objects.all():
+            condition.is_obsolete = condition.new_is_obsolete
+            condition.name = condition.new_name
+            condition.save()
+
+        Effect = apps.get_model("data", "Effect")
+        for effect in Effect.objects.all():
+            effect.is_obsolete = effect.is_new_obsolete
+            effect.name = effect.new_name
+            effect.save()
+
+        GalenicFormulation = apps.get_model("data", "GalenicFormulation")
+        for galenicformulation in GalenicFormulation.objects.all():
+            galenicformulation.is_obsolete = galenicfornew_mulation.is_obsolete
+            galenicformulation.name = galenicformulation.new_name
+            galenicformulation.save()
+
+        Ingredient = apps.get_model("data", "Ingredient")
+        for ingredient in Ingredient.objects.all():
+            ingredient.is_obsolete = ingredientnew_.is_obsolete
+            ingredient.name = ingredient.new_name
+            ingredient.private_comments = ingredient.new_private_comments
+            ingredient.public_comments = ingredient.new_public_comments
+            ingredient.status = ingredient.new_status
+            ingredient.save()
+
+        Microorganism = apps.get_model("data", "Microorganism")
+        for microorganism in Microorganism.objects.all():
+            microorganism.is_obsolete = microorgannew_ism.is_obsolete
+            microorganism.private_comments = microorganism.new_private_comments
+            microorganism.public_comments = microorganism.new_public_comments
+            ingredient.status = ingredient.new_status
+            microorganism.species = microorganism.new_species
+            microorganism.genus = microorganism.new_genus
+            microorganism.save()
+
+        Plant = apps.get_model("data", "Plant")
+        for plant in Plant.objects.all():
+            plant.is_obsolete = plant.new_is_obsolete
+            plant.name = plant.new_name
+            plant.private_comments = plant.new_private_comments
+            plant.public_comments = plant.new_public_comments
+            ingredient.status = ingredient.new_status
+            plant.family_by_id = plant.new_family_by_id
+            plant.save()
+
+        Part = apps.get_model("data", "Part")
+        for part in Part.objects.all():
+            part.is_useful = part.new_is_useful
+            part.must_be_monitored = part.new_must_be_monitored
+            part.save()
+
+        PlantFamily = apps.get_model("data", "PlantFamily")
+        for plantfamily in PlantFamily.objects.all():
+            plantfamily.is_obsolete = plantfamily.new_is_obsolete
+            plantfamily.name = plantfamily.new_name
+
+        PlantPart = apps.get_model("data", "PlantPart")
+        for plantpart in PlantPart.objects.all():
+            plantpart.is_obsolete = plantpart.new_is_obsolete
+            plantpart.name = plantpart.new_name
+            plantpart.save()
+
+        Preparation = apps.get_model("data", "Preparation")
+        for preparation in Preparation.objects.all():
+            preparation.is_obsolete = preparation.new_is_obsolete
+            preparation.name = preparation.new_name
+            preparation.save()
+
+        Substance = apps.get_model("data", "Substance")
+        for substance in Substance.objects.all():
+            substance.is_obsolete = substance.new_is_obsolete
+            substance.name = substance.new_name
+            substance.private_comments = substance.new_private_comments
+            substance.public_comments = substance.new_public_comments
+            ingredient.status = ingredient.new_status
+            substance.cas_number = substance.new_cas_number
+            substance.einec_number = substance.new_einec_number
+            substance.must_specify_quantity = substance.new_must_specify_quantity
+            substance.nutritional_reference = substance.new_nutritional_reference
+            substance.source = substance.new_source
+            substance.save()
+
+        MaxquantityPerPopulationRelation = apps.get_model("data", "MaxquantityPerPopulationRelation")
+        for maxquantityperpopulationrelation in MaxquantityPerPopulationRelation.objects.all():
+            maxquantityperpopulationrelation.max_quantity = maxquantityperpopulationrelation.new_max_quantity
+            maxquantityperpopulationrelation.save()
 
     operations = [
         migrations.RunPython(set_new_fields_from_generated, reverse_set_new_fields_from_generated),
