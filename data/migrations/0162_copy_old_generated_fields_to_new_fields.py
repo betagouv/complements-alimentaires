@@ -56,6 +56,7 @@ class Migration(migrations.Migration):
         for plantfamily in PlantFamily.objects.all():
             plantfamily.new_is_obsolete = plantfamily.is_obsolete
             plantfamily.new_name = plantfamily.name
+            plantfamily.save()
 
         Plant = apps.get_model("data", "Plant")
         for plant in Plant.objects.all():
@@ -107,19 +108,19 @@ class Migration(migrations.Migration):
 
         Effect = apps.get_model("data", "Effect")
         for effect in Effect.objects.all():
-            effect.is_obsolete = effect.is_new_obsolete
+            effect.is_obsolete = effect.new_is_obsolete
             effect.name = effect.new_name
             effect.save()
 
         GalenicFormulation = apps.get_model("data", "GalenicFormulation")
         for galenicformulation in GalenicFormulation.objects.all():
-            galenicformulation.is_obsolete = galenicfornew_mulation.is_obsolete
+            galenicformulation.is_obsolete = galenicformulation.new_is_obsolete
             galenicformulation.name = galenicformulation.new_name
             galenicformulation.save()
 
         Ingredient = apps.get_model("data", "Ingredient")
         for ingredient in Ingredient.objects.all():
-            ingredient.is_obsolete = ingredientnew_.is_obsolete
+            ingredient.is_obsolete = ingredient.new_is_obsolete
             ingredient.name = ingredient.new_name
             ingredient.private_comments = ingredient.new_private_comments
             ingredient.public_comments = ingredient.new_public_comments
@@ -128,7 +129,7 @@ class Migration(migrations.Migration):
 
         Microorganism = apps.get_model("data", "Microorganism")
         for microorganism in Microorganism.objects.all():
-            microorganism.is_obsolete = microorgannew_ism.is_obsolete
+            microorganism.is_obsolete = microorganism.new_is_obsolete
             microorganism.private_comments = microorganism.new_private_comments
             microorganism.public_comments = microorganism.new_public_comments
             ingredient.status = ingredient.new_status
@@ -156,6 +157,7 @@ class Migration(migrations.Migration):
         for plantfamily in PlantFamily.objects.all():
             plantfamily.is_obsolete = plantfamily.new_is_obsolete
             plantfamily.name = plantfamily.new_name
+            plantfamily.save()
 
         PlantPart = apps.get_model("data", "PlantPart")
         for plantpart in PlantPart.objects.all():
