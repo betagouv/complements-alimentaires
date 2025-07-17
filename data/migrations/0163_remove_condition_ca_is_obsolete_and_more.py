@@ -562,6 +562,10 @@ class Migration(migrations.Migration):
             name='ca_family',
         ),
         migrations.RemoveField(
+            model_name='plant',
+            name='family_by_id',
+        ),
+        migrations.RemoveField(
             model_name='historicalplant',
             name='ca_is_obsolete',
         ),

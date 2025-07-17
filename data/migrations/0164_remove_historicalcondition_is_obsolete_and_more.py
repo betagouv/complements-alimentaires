@@ -148,11 +148,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name='historicalplant',
-            old_name='new_family_by_id',
-            new_name='family_by_id'
-        ),
-        migrations.RenameField(
-            model_name='historicalplant',
             old_name='new_is_obsolete',
             new_name='is_obsolete'
         ),
@@ -333,11 +328,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name='plant',
-            old_name='new_family_by_id',
-            new_name='family_by_id'
-        ),
-        migrations.RenameField(
-            model_name='plant',
             old_name='new_is_obsolete',
             new_name='is_obsolete'
         ),
@@ -440,5 +430,10 @@ class Migration(migrations.Migration):
             model_name='substance',
             old_name='new_status',
             new_name='status'
+        ),
+        migrations.RenameField(
+            model_name='plant',
+            old_name='new_family',
+            new_name='family',
         ),
     ]

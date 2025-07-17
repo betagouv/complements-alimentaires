@@ -140,10 +140,16 @@ class Migration(migrations.Migration):
             name='new_must_be_monitored',
             field=models.BooleanField(default=False, null=True, verbose_name='⚠️ à surveiller ?'),
         ),
+        # la migration permet aussi le remplacement du champ BigInteger family_by_id par un simple champ ForeignKey
         migrations.AddField(
             model_name='historicalplant',
-            name='new_family_by_id',
-            field=models.BigIntegerField(default=None, null=True, verbose_name='famille de plante'),
+            name='new_family',
+            field=models.ForeignKey(
+                null=True,
+                on_delete=models.deletion.SET_NULL,
+                to="data.plantfamily",
+                verbose_name="famille de plante",
+            ),
         ),
         migrations.AddField(
             model_name='historicalplant',
@@ -322,8 +328,13 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='plant',
-            name='new_family_by_id',
-            field=models.BigIntegerField(default=None, null=True, verbose_name='famille de plante'),
+            name='new_family',
+            field=models.ForeignKey(
+                null=True,
+                on_delete=models.deletion.SET_NULL,
+                to="data.plantfamily",
+                verbose_name="famille de plante",
+            ),
         ),
         migrations.AddField(
             model_name='plant',
@@ -430,6 +441,7 @@ class Migration(migrations.Migration):
             name='new_status',
             field=models.IntegerField(blank=True, choices=[(1, 'autorisé'), (2, 'non autorisé'), (3, 'sans objet')], default=None, null=True, verbose_name="statut de l'ingrédient ou substance"),
         ),
+        # Ces changements permettent que la migration 163 soit réversible
         migrations.AlterField(
             model_name='substance',
             name='siccrf_name',

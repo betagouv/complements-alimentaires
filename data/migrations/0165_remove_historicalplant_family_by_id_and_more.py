@@ -22,15 +22,6 @@ class Migration(migrations.Migration):
             old_name='siccrf_description',
             new_name='description',
         ),
-        migrations.RemoveField(
-            model_name='historicalplant',
-            name='family_by_id',
-        ),
-        migrations.AddField(
-            model_name='historicalplant',
-            name='family_by_id',
-            field=models.BigIntegerField(null=True, verbose_name='famille de plante'),
-        ),
         migrations.AddField(
             model_name='microorganism',
             name='name',
@@ -135,11 +126,6 @@ class Migration(migrations.Migration):
             model_name='part',
             name='must_be_monitored',
             field=models.BooleanField(default=False, verbose_name='⚠️ à surveiller ?'),
-        ),
-        migrations.AlterField(
-            model_name='plant',
-            name='family_by_id',
-            field=models.BigIntegerField(null=True, verbose_name='famille de plante'),
         ),
         migrations.AlterField(
             model_name='plant',

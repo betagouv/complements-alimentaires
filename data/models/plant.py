@@ -40,15 +40,8 @@ class Plant(IngredientCommonModel):
     class Meta:
         verbose_name = "plante"
 
-    # TODO: ce champ n'est pas utile en tant que tel, il serait possible de l'éviter en créant un Field custom ForeignGeneratedField(ForeigObject)
-    family_by_id = models.BigIntegerField(verbose_name="famille de plante", null=True)
-    family = models.ForeignObject(
-        PlantFamily,
-        on_delete=models.SET_NULL,
-        from_fields=["family_by_id"],
-        to_fields=["id"],
-        related_name="plant_set",
-        null=True,
+    family = models.ForeignKey(
+        PlantFamily, on_delete=models.SET_NULL, null=True, verbose_name="famille de plante", related_name="plant_set"
     )
 
     plant_parts = models.ManyToManyField(PlantPart, through="Part", verbose_name="partie de plante")

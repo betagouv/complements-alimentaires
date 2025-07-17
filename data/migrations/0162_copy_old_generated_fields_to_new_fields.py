@@ -46,16 +46,6 @@ class Migration(migrations.Migration):
             microorganism.new_genus = microorganism.genus
             microorganism.save()
 
-        Plant = apps.get_model("data", "Plant")
-        for plant in Plant.objects.all():
-            plant.new_is_obsolete = plant.is_obsolete
-            plant.new_name = plant.name
-            plant.new_private_comments = plant.private_comments
-            plant.new_public_comments = plant.public_comments
-            ingredient.new_status = ingredient.status
-            plant.new_family_by_id = plant.family_by_id
-            plant.save()
-
         Part = apps.get_model("data", "Part")
         for part in Part.objects.all():
             part.new_is_useful = part.is_useful
@@ -66,6 +56,16 @@ class Migration(migrations.Migration):
         for plantfamily in PlantFamily.objects.all():
             plantfamily.new_is_obsolete = plantfamily.is_obsolete
             plantfamily.new_name = plantfamily.name
+
+        Plant = apps.get_model("data", "Plant")
+        for plant in Plant.objects.all():
+            plant.new_is_obsolete = plant.is_obsolete
+            plant.new_name = plant.name
+            plant.new_private_comments = plant.private_comments
+            plant.new_public_comments = plant.public_comments
+            ingredient.new_status = ingredient.status
+            plant.new_family = PlantFamily.objects.get(id=plant.family_by_id)
+            plant.save()
 
         PlantPart = apps.get_model("data", "PlantPart")
         for plantpart in PlantPart.objects.all():
@@ -143,7 +143,7 @@ class Migration(migrations.Migration):
             plant.private_comments = plant.new_private_comments
             plant.public_comments = plant.new_public_comments
             ingredient.status = ingredient.new_status
-            plant.family_by_id = plant.new_family_by_id
+            plant.family_by_id = plant.new_family
             plant.save()
 
         Part = apps.get_model("data", "Part")
