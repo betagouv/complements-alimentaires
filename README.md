@@ -71,6 +71,8 @@ avec `git commit -m 'my message' --no-verify`.
 
 ### Installation avec docker (_méthode 2_)
 
+Créez un fichier `.env`. Copiez les variables d'environnement `DB_NAME`, `DB_PORT`, `DB_PASSWORD` dedans. C'est nécessaire car `compose.yaml` [ne permets pas](https://github.com/docker/compose/issues/11755) l'interpolation avec les variables définit dans un fichier indiqué par `env_file`, que `.env`.
+
 ```
 make build
 make run
