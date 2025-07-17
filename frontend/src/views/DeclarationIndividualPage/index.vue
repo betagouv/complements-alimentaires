@@ -114,12 +114,17 @@ onMounted(async () => {
   const fetchMandatedCompany = mandatedCompany ? executeMandatedCompanyFetch : () => Promise.resolve
   const handleMandatedError = mandatedCompany ? () => handleError(mandatedCompanyResponse) : () => Promise.resolve
 
-  await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), fetchMandatedCompany(), executeSnapshotsFetch()])
+  // L'historique n'est visible que lors que la déclaration es refusée ou abandonnée
+  const showHistory = declaration.value.status === "REJECTED" || declaration.value.status === "ABANDONED"
+  const fetchSnapshots = showHistory ? executeSnapshotsFetch : () => Promise.resolve
+  const handleSnapshotsError = showHistory ? () => handleError(snapshotsResponse) : () => Promise.resolve
+
+  await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), fetchMandatedCompany(), fetchSnapshots()])
   await Promise.all([
     handleError(declarantResponse),
     handleError(companyResponse),
     handleMandatedError(),
-    handleError(snapshotsResponse),
+    handleSnapshotsError(),
   ])
 
   if (route.hash) {
