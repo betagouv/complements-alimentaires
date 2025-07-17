@@ -1,13 +1,6 @@
 <template>
   <div class="fr-container mb-10">
-    <!-- TODO : Get breadcrumbs list dynamically from previous route -->
-    <DsfrBreadcrumb
-      :links="[
-        { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { to: previousRoute, text: 'Recherche entreprises' },
-        { text: declaration?.name || 'Complément alimentaire' },
-      ]"
-    />
+    <DsfrBreadcrumb :links="breadcrumbs" />
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
@@ -48,9 +41,17 @@ store.fetchDeclarationFieldsData()
 
 const router = useRouter()
 const route = useRoute()
-const previousRoute = computed(() => {
+
+const breadcrumbs = computed(() => {
+  const routes = [
+    { to: { name: "DashboardPage" }, text: "Tableau de bord" },
+    { text: declaration.value?.name || "Complément alimentaire" },
+  ]
   const previousRoute = router.getPreviousRoute().value
-  return previousRoute?.name === "CompanySearchPage" ? previousRoute : { name: "CompanySearchPage" }
+  if (previousRoute?.name === "CompanyDetails")
+    routes.splice(1, 0, { to: previousRoute, text: company.value?.socialName || previousRoute.meta.title })
+  else if (previousRoute?.name) routes.splice(1, 0, { to: previousRoute, text: previousRoute.meta.title })
+  return routes
 })
 
 const props = defineProps({ declarationId: String })
