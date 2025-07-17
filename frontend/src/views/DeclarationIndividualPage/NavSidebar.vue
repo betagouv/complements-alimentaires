@@ -56,11 +56,6 @@ const menuItems = computed(() => {
           ]
         : null,
     },
-    /* TODO :
-    Historique disponible uniquement pour les décla refusées + celles abandonnées
-    Anonymiser les messages => “Pro” et “DGAL” et “viseur” uniquement
-    “Identité entreprise” renvoie à la fiche entreprise
-    */
     {
       to: historyRoute.value,
       text: "Historique",

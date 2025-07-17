@@ -221,6 +221,24 @@ class TestGetUser(ProjectAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
+class TestGetUserForController(ProjectAPITestCase):
+    viewname = "retrieve_control_user"
+
+    def setUp(self):
+        self.user_data = dict(last_name="Cook", first_name="Tim", email="tim.cook@example.com", username="tcook")
+        self.user = UserFactory(**self.user_data, is_verified=True)
+
+    def test_get_user_as_controller_ok(self):
+        instructor_role = ControlRoleFactory()
+        self.login(instructor_role.user)
+        response = self.get(self.url(pk=self.user.id))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_user_not_authorized_ko(self):
+        response = self.get(self.url(pk=self.user.id))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
 class TestEditUser(ProjectAPITestCase):
     viewname = "user_retrieve_update_destroy"
 
