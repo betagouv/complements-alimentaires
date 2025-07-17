@@ -1,4 +1,5 @@
 import logging
+import random
 
 from django.db.models import (
     CharField,
@@ -119,7 +120,7 @@ def get_update_or_create_related_object(model, id, change_message):
         linked_obj, _ = update_or_create_object(
             model,
             object_definition={"siccrf_id": id},
-            default_extra_fields={"name": ""},
+            default_extra_fields={"name": f"${random.randint(0,100)}"},
             change_message=change_message,
         )
         return linked_obj
