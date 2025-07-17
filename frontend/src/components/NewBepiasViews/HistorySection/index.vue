@@ -25,10 +25,11 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import SnapshotItem from "@/components/SnapshotItem"
 import SectionHeader from "../SectionHeader"
 
-defineProps({ snapshots: Array, hideInstructionDetails: Boolean })
+const props = defineProps({ snapshots: Array, hideInstructionDetails: Boolean })
 
 const showOnRight = (snapshot) => {
   const rightSideStatus = ["OBSERVATION", "AUTHORIZED", "ONGOING_INSTRUCTION", "AWAITING_VISA", "OBJECTION", "REJECTED"]
+  if (props.hideInstructionDetails) rightSideStatus.push("ONGOING_VISA", "TAKE_FOR_VISA", "ACCEPT_VISA", "REFUSE_VISA")
   return rightSideStatus.indexOf(snapshot.status) > -1
 }
 </script>
