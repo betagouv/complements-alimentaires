@@ -8,6 +8,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 
 from django_filters import rest_framework as django_filters
+from django_filters import rest_framework as filters
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
@@ -317,6 +318,14 @@ class CompanyPagination(LimitOffsetPagination):
     max_limit = 50
 
 
+class CompanyActivitiesFilter(filters.FilterSet):
+    activities = filters.BaseInFilter(field_name="activities", lookup_expr="overlap")
+
+    class Meta:
+        model = Company
+        fields = ["activities"]
+
+
 class ControlCompanyListView(ListAPIView):
     model = Company
     serializer_class = ControllerCompanySerializer
@@ -328,6 +337,7 @@ class ControlCompanyListView(ListAPIView):
         CamelCaseOrderingFilter,
         UnaccentSearchFilter,
     ]
+    filterset_class = CompanyActivitiesFilter
     search_fields = ["social_name", "siret", "vat"]
     ordering_fields = ["creation_date", "modification_date", "social_name", "postal_code"]
     queryset = Company.objects.all()

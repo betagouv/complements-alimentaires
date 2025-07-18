@@ -5,6 +5,7 @@ from rest_framework.test import APITestCase
 
 from data.choices import CountryChoices
 from data.factories import CompanyFactory, ControlRoleFactory
+from data.models import ActivityChoices
 
 from .utils import authenticate
 
@@ -56,6 +57,7 @@ class TestCompanyControllers(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         results = response.json()["results"]
+
         self.assertEqual(len(results), 3)
         self.assertEqual(results[0]["id"], wonka.id)
         self.assertEqual(results[1]["id"], dunder_mifflin.id)
@@ -121,12 +123,44 @@ class TestCompanyControllers(APITestCase):
 
         results = response.json()["results"]
         self.assertEqual(len(results), 2)
-        ids = (x["id"] for x in results)
-        self.assertIn(wonka.id, ids)
-        self.assertIn(monsters.id, ids)
+        self.assertCountEqual([r["id"] for r in results], [wonka.id, monsters.id])
 
         # Toutes les entreprises remontent si le filtre est vide
         response = self.client.get(reverse("api:list_control_companies") + "?departments=", format="json")
 
         results = response.json()["results"]
         self.assertEqual(len(results), 4)
+
+    @authenticate
+    def test_filter_by_activity(self):
+        """
+        Il est possible de filtrer par activité de l'entreprise
+        """
+        ControlRoleFactory(user=authenticate.user)
+        acme = CompanyFactory(social_name="Acme", activities=[ActivityChoices.CONSEIL, ActivityChoices.DISTRIBUTEUR])
+        dunder_mifflin = CompanyFactory(social_name="Dunder Mifflin", activities=[ActivityChoices.FABRICANT])
+        wonka = CompanyFactory(social_name="Wonka", activities=[ActivityChoices.FAÇONNIER, ActivityChoices.FABRICANT])
+        monsters = CompanyFactory(social_name="Monsters Inc.", activities=[ActivityChoices.INTRODUCTEUR])
+
+        # Recherche par conseil
+        response = self.client.get(reverse("api:list_control_companies") + "?activities=CONSEIL", format="json")
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], acme.id)
+
+        # Entreprises soit conseil, soit introductrices
+        response = self.client.get(
+            reverse("api:list_control_companies") + "?activities=CONSEIL,INTRODUCTEUR", format="json"
+        )
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+        self.assertCountEqual([r["id"] for r in results], [acme.id, monsters.id])
+
+        # Entreprises fabricantes
+        response = self.client.get(reverse("api:list_control_companies") + "?activities=FABRICANT", format="json")
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+        self.assertCountEqual([r["id"] for r in results], [wonka.id, dunder_mifflin.id])

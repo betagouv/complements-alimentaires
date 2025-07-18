@@ -27,7 +27,15 @@
           :search="true"
         />
       </div>
-      <div class="col-span-4 md:col-span-2 lg:col-span-1">Filter rôle</div>
+      <div class="col-span-4 md:col-span-2 lg:col-span-1">
+        <DsfrMultiselect
+          label="Rôle de l'entreprise"
+          hint="Fabricant, importateur, distributeur, etc."
+          v-model="roles"
+          :options="roleOptions()"
+          :search="true"
+        />
+      </div>
     </div>
 
     <div v-if="isFetching && !data" class="flex justify-center my-10">
@@ -55,6 +63,7 @@ import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import ControlCompanyTable from "./ControlCompanyTable"
 import jsonDepartments from "@/utils/departments.json"
+import { allActivities } from "@/utils/mappings"
 
 const router = useRouter()
 const route = useRoute()
@@ -69,6 +78,7 @@ const showPagination = computed(() => data.value?.count > data.value?.results?.l
 
 const searchTerm = ref(route.query.recherche)
 const departments = ref(route.query.departments?.split(",").filter((x) => !!x) || [])
+const roles = ref(route.query.roles?.split(",").filter((x) => !!x) || [])
 
 const departmentOptions = () => {
   const departments = jsonDepartments.map((x) => `${x.departmentCode} - ${x.departmentName}`)
@@ -76,13 +86,17 @@ const departmentOptions = () => {
   return departments
 }
 
+const roleOptions = () => allActivities.map((x) => x.label)
+
 // Obtention de la donnée via API
 const url = computed(() => {
-  let base = `/api/v1/control/companies/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}`
-  if (searchTerm.value) base += `${base}&search=${searchTerm.value}`
+  let fullUrl = `/api/v1/control/companies/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}`
+  if (searchTerm.value) fullUrl += `${fullUrl}&search=${searchTerm.value}`
   if (departments.value.length)
-    base += `${base}&departments=${departments.value.map((x) => x.split(" - ")[0]).join(",")}`
-  return base
+    fullUrl += `${fullUrl}&departments=${departments.value.map((x) => x.split(" - ")[0]).join(",")}`
+  if (roles.value.length)
+    fullUrl += `${fullUrl}&activities=${roles.value.map((x) => allActivities.find((y) => y.label === x).value).join(",")}`
+  return fullUrl
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 
@@ -101,4 +115,5 @@ const search = () => updateQuery({ recherche: searchTerm.value })
 
 watch(route, fetchSearchResults)
 watch(departments, () => updateQuery({ departments: departments.value.join(",") }))
+watch(roles, () => updateQuery({ roles: roles.value.join(",") }))
 </script>

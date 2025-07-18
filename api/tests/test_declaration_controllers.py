@@ -168,6 +168,7 @@ class TestDeclarationControllers(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         results = response.json()["results"]
+
         self.assertEqual(len(results), 2)
         result_ids = (x["id"] for x in results)
         self.assertIn(ongoing_instruction_1.id, result_ids)
