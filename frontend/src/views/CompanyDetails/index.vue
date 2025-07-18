@@ -61,6 +61,7 @@ const {
 onMounted(async () => {
   await executeCompanyFetch()
   handleError(companyResponse)
+  document.title = `${company.value?.socialName} - Détail de l'entreprise - Compl'Alim`
 })
 
 const identityItems = computed(() => {
