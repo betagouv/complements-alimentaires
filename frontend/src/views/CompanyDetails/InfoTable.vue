@@ -1,7 +1,7 @@
 <template>
   <table>
     <tr v-for="item in items" :key="item.body" class="m-2 p-2">
-      <th>{{ item.title }}</th>
+      <th scope="row">{{ item.title }}</th>
       <th>
         <div v-for="(line, index) in item.body" :key="`infotable${line}${index}`">{{ line }}</div>
       </th>
