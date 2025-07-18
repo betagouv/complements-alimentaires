@@ -16,6 +16,20 @@
         />
       </DsfrFieldset>
     </div>
+
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      <div class="col-span-4 md:col-span-2 lg:col-span-1">
+        <DsfrMultiselect
+          label="Département de l'entreprise"
+          hint="Le département de domiciliation du siège"
+          v-model="departments"
+          :options="departmentOptions()"
+          :search="true"
+        />
+      </div>
+      <div class="col-span-4 md:col-span-2 lg:col-span-1">Filter rôle</div>
+    </div>
+
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
@@ -40,6 +54,7 @@ import { useRoute, useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import ControlCompanyTable from "./ControlCompanyTable"
+import jsonDepartments from "@/utils/departments.json"
 
 const router = useRouter()
 const route = useRoute()
@@ -53,11 +68,20 @@ const limit = computed(() => parseInt(route.query.limit))
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 
 const searchTerm = ref(route.query.recherche)
+const departments = ref(route.query.departments?.split(",").filter((x) => !!x) || [])
+
+const departmentOptions = () => {
+  const departments = jsonDepartments.map((x) => `${x.departmentCode} - ${x.departmentName}`)
+  departments.push("99 - Étranger")
+  return departments
+}
 
 // Obtention de la donnée via API
 const url = computed(() => {
-  const base = `/api/v1/control/companies/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}`
-  if (searchTerm.value) return `${base}&search=${searchTerm.value}`
+  let base = `/api/v1/control/companies/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}`
+  if (searchTerm.value) base += `${base}&search=${searchTerm.value}`
+  if (departments.value.length)
+    base += `${base}&departments=${departments.value.map((x) => x.split(" - ")[0]).join(",")}`
   return base
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
@@ -76,4 +100,5 @@ const updateOrdering = (sortValue) => updateQuery({ triage: sortValue || "-creat
 const search = () => updateQuery({ recherche: searchTerm.value })
 
 watch(route, fetchSearchResults)
+watch(departments, () => updateQuery({ departments: departments.value.join(",") }))
 </script>

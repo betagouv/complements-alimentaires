@@ -3,6 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from data.choices import CountryChoices
 from data.factories import CompanyFactory, ControlRoleFactory
 
 from .utils import authenticate
@@ -87,3 +88,45 @@ class TestCompanyControllers(APITestCase):
         company = CompanyFactory()
         response = self.client.get(reverse("api:retrieve_control_company", kwargs={"pk": company.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @authenticate
+    def test_filter_by_department(self):
+        """
+        Il est possible de filtrer par département
+        """
+        ControlRoleFactory(user=authenticate.user)
+        acme = CompanyFactory(social_name="Acme", postal_code="69003", country=CountryChoices.FRANCE)
+        dunder_mifflin = CompanyFactory(
+            social_name="Dunder Mifflin", postal_code="69003", country=CountryChoices.AUSTRIA
+        )
+        wonka = CompanyFactory(social_name="Wonka", postal_code="98733", country=CountryChoices.FRANCE)
+        monsters = CompanyFactory(social_name="Monsters Inc.", postal_code="20200", country=CountryChoices.FRANCE)
+
+        # Entreprises étrangères
+        response = self.client.get(reverse("api:list_control_companies") + "?departments=99", format="json")
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], dunder_mifflin.id)
+
+        # Entreprises dans le Rhône
+        response = self.client.get(reverse("api:list_control_companies") + "?departments=69", format="json")
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], acme.id)
+
+        # Entreprises en Polynésie Française ou Haute-Corse
+        response = self.client.get(reverse("api:list_control_companies") + "?departments=987,2B", format="json")
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+        ids = (x["id"] for x in results)
+        self.assertIn(wonka.id, ids)
+        self.assertIn(monsters.id, ids)
+
+        # Toutes les entreprises remontent si le filtre est vide
+        response = self.client.get(reverse("api:list_control_companies") + "?departments=", format="json")
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 4)
