@@ -169,9 +169,7 @@ class TestDeclarationControllers(APITestCase):
 
         results = response.json()["results"]
         self.assertEqual(len(results), 2)
-        result_ids = (x["id"] for x in results)
-        self.assertIn(ongoing_instruction_1.id, result_ids)
-        self.assertIn(ongoing_instruction_2.id, result_ids)
+        self.assertCountEqual([x["id"] for x in results], [ongoing_instruction_1.id, ongoing_instruction_2.id])
 
         # Requête pour tous les deux
         response = self.client.get(
