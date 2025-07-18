@@ -17,6 +17,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.utils.filters import CamelCaseOrderingFilter
+from api.utils.search import UnaccentSearchFilter
 from api.utils.urls import get_base_url
 from config import email
 from data.choices import CountryChoices
@@ -321,9 +322,7 @@ class ControlCompanyListView(ListAPIView):
     serializer_class = ControllerCompanySerializer
     permission_classes = [IsController]
     pagination_class = CompanyPagination
-    filter_backends = [
-        django_filters.DjangoFilterBackend,
-        CamelCaseOrderingFilter,
-    ]
+    filter_backends = [django_filters.DjangoFilterBackend, CamelCaseOrderingFilter, UnaccentSearchFilter]
+    search_fields = ["social_name", "siret", "vat"]
     ordering_fields = ["creation_date", "modification_date", "social_name", "postal_code"]
     queryset = Company.objects.all()

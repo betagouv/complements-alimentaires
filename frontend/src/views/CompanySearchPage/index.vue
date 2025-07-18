@@ -4,7 +4,18 @@
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Recherche entreprises' }]"
     />
     <h1 class="fr-h3">Entreprises responsables de la mise sur le marché</h1>
-    <DsfrAlert title="Recherche et filtrage avancé en construction" />
+
+    <div class="md:w-1/3 lg:w-2/5 pt-1">
+      <DsfrFieldset>
+        <DsfrSearchBar
+          v-model="searchTerm"
+          label="Nom de l'entreprise, No. SIRET, ou No. de TVA"
+          placeholder="Nom de l'entreprise, No. SIRET, ou No. de TVA"
+          @search="search"
+          @update:modelValue="(val) => val === '' && search()"
+        />
+      </DsfrFieldset>
+    </div>
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
@@ -23,7 +34,7 @@
 
 <script setup>
 import { useFetch } from "@vueuse/core"
-import { computed, watch } from "vue"
+import { computed, watch, ref } from "vue"
 import { getPagesForPagination } from "@/utils/components"
 import { useRoute, useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
@@ -41,10 +52,14 @@ const ordering = computed(() => route.query.triage)
 const limit = computed(() => parseInt(route.query.limit))
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 
+const searchTerm = ref(route.query.recherche)
+
 // Obtention de la donnée via API
-const url = computed(
-  () => `/api/v1/control/companies/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}`
-)
+const url = computed(() => {
+  const base = `/api/v1/control/companies/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}`
+  if (searchTerm.value) return `${base}&search=${searchTerm.value}`
+  return base
+})
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 
 const fetchSearchResults = async () => {
@@ -58,5 +73,7 @@ const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...{ pa
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 const updateOrdering = (sortValue) => updateQuery({ triage: sortValue || "-creationDate" })
 
-watch([page, limit, ordering], fetchSearchResults)
+const search = () => updateQuery({ recherche: searchTerm.value })
+
+watch(route, fetchSearchResults)
 </script>
