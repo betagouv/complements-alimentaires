@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
             microorganism.new_is_obsolete = microorganism.is_obsolete
             microorganism.new_private_comments = microorganism.private_comments
             microorganism.new_public_comments = microorganism.public_comments
-            ingredient.new_status = ingredient.status
+            microorganism.new_status = microorganism.status
             microorganism.new_species = microorganism.species
             microorganism.new_genus = microorganism.genus
             microorganism.save()
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
             plant.new_name = plant.name
             plant.new_private_comments = plant.private_comments
             plant.new_public_comments = plant.public_comments
-            ingredient.new_status = ingredient.status
+            plant.new_status = plant.status
             plant.new_family = PlantFamily.objects.get(id=plant.family_by_id)
             plant.save()
 
@@ -86,7 +86,7 @@ class Migration(migrations.Migration):
             substance.new_name = substance.name
             substance.new_private_comments = substance.private_comments
             substance.new_public_comments = substance.public_comments
-            ingredient.new_status = ingredient.status
+            substance.new_status = substance.status
             substance.new_cas_number = substance.cas_number
             substance.new_einec_number = substance.einec_number
             substance.new_must_specify_quantity = substance.must_specify_quantity
@@ -132,7 +132,7 @@ class Migration(migrations.Migration):
             microorganism.ca_is_obsolete = microorganism.new_is_obsolete
             microorganism.ca_private_comments = microorganism.new_private_comments
             microorganism.ca_public_comments = microorganism.new_public_comments
-            ingredient.ca_status = ingredient.new_status
+            microorganism.ca_status = microorganism.new_status
             microorganism.ca_species = microorganism.new_species
             microorganism.ca_genus = microorganism.new_genus
             microorganism.save()
@@ -143,7 +143,7 @@ class Migration(migrations.Migration):
             plant.ca_name = plant.new_name
             plant.ca_private_comments = plant.new_private_comments
             plant.ca_public_comments = plant.new_public_comments
-            ingredient.ca_status = ingredient.new_status
+            plant.ca_status = plant.new_status
             plant.ca_family = plant.new_family
             plant.save()
 
@@ -177,7 +177,7 @@ class Migration(migrations.Migration):
             substance.ca_name = substance.new_name
             substance.ca_private_comments = substance.new_private_comments
             substance.ca_public_comments = substance.new_public_comments
-            ingredient.ca_status = ingredient.new_status
+            substance.ca_status = substance.new_status
             substance.ca_cas_number = substance.new_cas_number
             substance.ca_einec_number = substance.new_einec_number
             substance.ca_must_specify_quantity = substance.new_must_specify_quantity
