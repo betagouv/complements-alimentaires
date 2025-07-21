@@ -14,6 +14,7 @@ from rest_framework.generics import (
     GenericAPIView,
     ListAPIView,
     ListCreateAPIView,
+    RetrieveAPIView,
     RetrieveUpdateDestroyAPIView,
 )
 from rest_framework.pagination import LimitOffsetPagination
@@ -370,6 +371,13 @@ class ControllerDeclarationsListView(CommonOngoingDeclarationView):
     def get_queryset(self):
         queryset = super().get_queryset().select_related("company")
         return queryset.annotate(company_name=F("company__social_name"))
+
+
+class ControllerDeclarationRetrieveView(RetrieveAPIView):
+    permission_classes = [IsController]
+    model = Declaration
+    serializer_class = DeclarationSerializer
+    queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT).distinct()
 
 
 class OpenDataDeclarationsListView(GenericDeclarationsListView):

@@ -46,6 +46,10 @@ import StatsPage from "@/views/StatsPage"
 import DeclarationSearchPage from "@/views/DeclarationSearchPage"
 import CompanySearchPage from "@/views/CompanySearchPage"
 import CompanyDetails from "@/views/CompanyDetails"
+import DeclarationIndividualPage from "@/views/DeclarationIndividualPage"
+import ProductControlSection from "@/views/DeclarationIndividualPage/ProductControlSection"
+import HistoryControlSection from "@/views/DeclarationIndividualPage/HistoryControlSection"
+import CompanyControlSection from "@/views/DeclarationIndividualPage/CompanyControlSection"
 import { ref } from "vue"
 
 const routes = [
@@ -557,6 +561,37 @@ const routes = [
         simplifiedStatus: "",
       },
     },
+  },
+  {
+    path: "/complement-alimentaire/:declarationId",
+    props: true,
+    component: DeclarationIndividualPage,
+    meta: {
+      title: "Complément alimentaire",
+      authenticationRequired: true,
+      requiredRoles: ["ControlRole"],
+    },
+    children: [
+      {
+        path: "",
+        redirect: { name: "DeclarationIndividualPage" },
+      },
+      {
+        name: "DeclarationIndividualPage",
+        path: "produit",
+        component: ProductControlSection,
+      },
+      {
+        name: "DeclarationHistoryPage",
+        path: "historique",
+        component: HistoryControlSection,
+      },
+      {
+        name: "DeclarationCompanyPage",
+        path: "entreprise",
+        component: CompanyControlSection,
+      },
+    ],
   },
   {
     path: "/:catchAll(.*)*", // https://stackoverflow.com/a/70343919/2255491

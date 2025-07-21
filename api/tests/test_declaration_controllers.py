@@ -181,3 +181,36 @@ class TestDeclarationControllers(APITestCase):
 
         results = response.json()["results"]
         self.assertEqual(len(results), 3)
+
+    @authenticate
+    def test_single_get_not_allowed(self):
+        """
+        L'endpoint pour une déclaration seule n'est pas accessible sans le rôle de contrôle
+        """
+        declaration = AwaitingInstructionDeclarationFactory()
+        response = self.client.get(
+            reverse("api:retrieve_control_declaration", kwargs={"pk": declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_single_get_unauthenticated(self):
+        """
+        L'endpoint pour une déclaration seule n'est pas accessible sans être identifié·e
+        """
+        declaration = AwaitingInstructionDeclarationFactory()
+        response = self.client.get(
+            reverse("api:retrieve_control_declaration", kwargs={"pk": declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_single_get_as_controller(self):
+        """
+        L'endpoint pour une déclaration seule est diponible pour les personnes ayant le rôle de contrôle
+        """
+        declaration = AwaitingInstructionDeclarationFactory()
+        ControlRoleFactory(user=authenticate.user)
+        response = self.client.get(
+            reverse("api:retrieve_control_declaration", kwargs={"pk": declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
