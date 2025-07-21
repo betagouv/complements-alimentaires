@@ -8,7 +8,6 @@ from web.views import VueAppDisplayView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("ckeditor5/", include("django_ckeditor_5.urls"), name="ck_editor_5_upload_file"),
     path("prose/", include("prose.urls")),
     path("hijack/", include("hijack.urls")),
 ]
