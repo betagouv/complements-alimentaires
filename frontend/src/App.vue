@@ -47,7 +47,7 @@ watch(route, (to) => {
   document.title = to.meta.title ? to.meta.title + " - " + suffix : suffix
 })
 
-const lowContrastMode = computed(() => ["InstructionPage", "IdentitySection", "HistorySection"].includes(route.name))
+const lowContrastMode = computed(() => ["IdentitySection", "HistorySection"].includes(route.name))
 </script>
 
 <style>
