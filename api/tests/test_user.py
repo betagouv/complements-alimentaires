@@ -229,8 +229,8 @@ class TestGetUserForController(ProjectAPITestCase):
         self.user = UserFactory(**self.user_data, is_verified=True)
 
     def test_get_user_as_controller_ok(self):
-        instructor_role = ControlRoleFactory()
-        self.login(instructor_role.user)
+        controller_role = ControlRoleFactory()
+        self.login(controller_role.user)
         response = self.get(self.url(pk=self.user.id))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
