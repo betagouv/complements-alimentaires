@@ -19,7 +19,7 @@
 <script setup>
 import { computed, ref } from "vue"
 import { isoToPrettyDate } from "@/utils/date"
-import { getStatusTagForCell } from "./utils"
+import { getStatusTagForCell } from "@/components/NewBepiasViews/DeclarationsTableSection/utils"
 import { useRoute } from "vue-router"
 import TableHeaders from "@/components/TableHeaders"
 
@@ -100,7 +100,7 @@ const statusModalActions = [
 </script>
 
 <style scoped>
-@reference "../../styles/index.css";
+@reference "../../../styles/index.css";
 
 .fr-table :deep(table) {
   @apply table!;

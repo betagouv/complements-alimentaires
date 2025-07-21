@@ -45,6 +45,7 @@ import AdvancedSearchResult from "@/views/AdvancedSearchResult"
 import StatsPage from "@/views/StatsPage"
 import DeclarationSearchPage from "@/views/DeclarationSearchPage"
 import CompanySearchPage from "@/views/CompanySearchPage"
+import CompanyDetails from "@/views/CompanyDetails"
 import { ref } from "vue"
 
 const routes = [
@@ -537,6 +538,23 @@ const routes = [
         page: 1,
         limit: 10,
         triage: "-creationDate",
+      },
+    },
+  },
+  {
+    path: "/detail-entreprise/:companyId",
+    name: "CompanyDetails",
+    props: true,
+    component: CompanyDetails,
+    meta: {
+      title: "Détail de l'entreprise",
+      requiredRoles: ["ControlRole"],
+      authenticationRequired: true,
+      defaultQueryParams: {
+        page: 1,
+        limit: 10,
+        triage: "-creationDate",
+        simplifiedStatus: "",
       },
     },
   },

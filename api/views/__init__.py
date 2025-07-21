@@ -70,6 +70,7 @@ from .company import (
     AddMandatedCompanyView,
     RemoveMandatedCompanyView,
     ControlCompanyListView,
+    CompanyControlRetrieveView,
 )
 from .solicitation import (
     ProcessCompanyAccessClaim,

@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as django_filters
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
-from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -29,8 +29,9 @@ from ..exception_handling import ProjectAPIException
 from ..permissions import IsController, IsSupervisor, IsSupervisorOrAgent
 from ..serializers import (
     CollaboratorSerializer,
-    CompanySerializer,
     ControllerCompanySerializer,
+    CompanySerializer,
+    ControllerCompanyListSerializer,
     MinimalCompanySerializer,
 )
 
@@ -176,6 +177,13 @@ class CompanyRetrieveUpdateView(RetrieveUpdateAPIView):
             return [IsAuthenticated(), IsSupervisor()]
 
 
+class CompanyControlRetrieveView(RetrieveAPIView):
+    model = Company
+    permission_classes = [IsController]
+    serializer_class = ControllerCompanySerializer
+    queryset = Company.objects.all()
+
+
 class CompanyCollaboratorsListView(ListAPIView):
     """Récupération des utilisateurs ayant au moins un rôle dans cette entreprise"""
 
@@ -310,7 +318,7 @@ class CompanyPagination(LimitOffsetPagination):
 
 class ControlCompanyListView(ListAPIView):
     model = Company
-    serializer_class = ControllerCompanySerializer
+    serializer_class = ControllerCompanyListSerializer
     permission_classes = [IsController]
     pagination_class = CompanyPagination
     filter_backends = [
