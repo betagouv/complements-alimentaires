@@ -42,7 +42,7 @@ const summaryItems = computed(() => {
   const d = props.declaration
   if (!d) return []
   return [
-    { title: "No. de déclartion", body: [d.id || d.siccrfId || d.teleicareDeclarationNumber] },
+    { title: "No. de déclaration", body: [d.id || d.siccrfId || d.teleicareDeclarationNumber] },
     { title: "Statut du produit", body: [d.simplifiedStatus] },
     {
       title: "Date d'application du statut",
