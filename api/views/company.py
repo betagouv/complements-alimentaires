@@ -29,9 +29,9 @@ from ..exception_handling import ProjectAPIException
 from ..permissions import IsController, IsSupervisor, IsSupervisorOrAgent
 from ..serializers import (
     CollaboratorSerializer,
-    CompanyControllerSerializer,
-    CompanySerializer,
     ControllerCompanySerializer,
+    CompanySerializer,
+    ControllerCompanyListSerializer,
     MinimalCompanySerializer,
 )
 
@@ -180,7 +180,7 @@ class CompanyRetrieveUpdateView(RetrieveUpdateAPIView):
 class CompanyControlRetrieveView(RetrieveAPIView):
     model = Company
     permission_classes = [IsController]
-    serializer_class = CompanyControllerSerializer
+    serializer_class = ControllerCompanySerializer
     queryset = Company.objects.all()
 
 
@@ -318,7 +318,7 @@ class CompanyPagination(LimitOffsetPagination):
 
 class ControlCompanyListView(ListAPIView):
     model = Company
-    serializer_class = ControllerCompanySerializer
+    serializer_class = ControllerCompanyListSerializer
     permission_classes = [IsController]
     pagination_class = CompanyPagination
     filter_backends = [
