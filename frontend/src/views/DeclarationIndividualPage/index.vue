@@ -136,5 +136,7 @@ onMounted(async () => {
     const el = document.querySelector(route.hash)
     if (el) el.scrollIntoView({ behavior: "smooth" })
   }
+
+  document.title = `${declaration.value.name} - ${company.value.socialName || "Résultat entreprise"} - Compl'Alim`
 })
 </script>
