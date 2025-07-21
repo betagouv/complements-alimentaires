@@ -43,15 +43,17 @@ const router = useRouter()
 const route = useRoute()
 
 const breadcrumbs = computed(() => {
-  const routes = [
+  return [
     { to: { name: "DashboardPage" }, text: "Tableau de bord" },
+    { to: { name: "CompanySearchPage" }, text: "Recherche entreprises" },
+    company.value
+      ? {
+          to: { name: "CompanyDetails", params: { companyId: company.value.id } },
+          text: company.value.socialName || "Entreprise",
+        }
+      : { text: "Entreprise" },
     { text: declaration.value?.name || "Complément alimentaire" },
   ]
-  const previousRoute = router.getPreviousRoute().value
-  if (previousRoute?.name === "CompanyDetails")
-    routes.splice(1, 0, { to: previousRoute, text: company.value?.socialName || previousRoute.meta.title })
-  else if (previousRoute?.name) routes.splice(1, 0, { to: previousRoute, text: previousRoute.meta.title })
-  return routes
 })
 
 const props = defineProps({ declarationId: String })
