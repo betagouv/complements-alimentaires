@@ -196,6 +196,12 @@ class DeclarantRole(CompanyRole, models.Model):
 
 
 class EtablissementToCompanyRelation(models.Model):
+    """
+    Cette table est utilisée dans 2 cas :
+    * enregistrer plusieurs n°VAT/SIRET pour une Company (suite à un changement)
+    * faire le lien entre une Company et un Etablissment Teleicare via un n°VAT/SIRET
+    """
+
     class Meta:
         verbose_name = "Relation Entreprises Teleicare <-> Entreprises Compl'Alim"
         verbose_name_plural = "Relation Entreprises Teleicare <-> Entreprises Compl'Alim"
@@ -242,13 +248,23 @@ class EtablissementToCompanyRelation(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        if self.old_siret:
-            return f"Relation de {self.etablissement_teleicare} [n°SIRET {self.old_siret}] <-> {self.company}"
-        elif self.old_vat:
-            return f"Relation de {self.etablissement_teleicare}  [n°VAT {self.old_vat}] <-> {self.company}"
+        if self.etablissement_teleicare:
+            if self.old_siret:
+                return f"Relation de {self.etablissement_teleicare} [n°SIRET {self.old_siret}] <-> {self.company}"
+            elif self.old_vat:
+                return f"Relation de {self.etablissement_teleicare} [n°VAT {self.old_vat}] <-> {self.company}"
+        else:
+            if self.old_siret:
+                return f"Ancien n°SIRET {self.old_siret} pour {self.company}"
+            elif self.old_vat:
+                return f"Ancien n°VAT {self.old_vat} pour {self.company}"
         return f"Relation de {self.company}"
 
     @property
     def etablissement_teleicare(self):
+        """
+        Cette property peut être None dans le cas où la relation est utilisée uniquement
+        pour garder une trace des changements de SIRET/VAT sans lien avec Teleicare
+        """
         if self.siccrf_id and IcaEtablissement.objects.filter(etab_ident=self.siccrf_id).exists():
             return IcaEtablissement.objects.get(etab_ident=self.siccrf_id)

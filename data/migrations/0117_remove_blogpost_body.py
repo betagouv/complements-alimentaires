@@ -9,9 +9,6 @@ class Migration(migrations.Migration):
         ('data', '0116_condition_category_condition_max_age_and_more'),
     ]
 
-    operations = [
-        migrations.RemoveField(
-            model_name='blogpost',
-            name='body',
-        ),
-    ]
+    # L'opération précédente (depuis supprimée) concernait django-ckeditor, qui a
+    # depuis été remplacé par django-prose
+    operations = []

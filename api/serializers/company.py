@@ -29,7 +29,7 @@ class SimpleCompanySerializer(serializers.ModelSerializer):
         )
 
 
-class ControllerCompanySerializer(serializers.ModelSerializer):
+class ControllerCompanyListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = (
@@ -83,7 +83,7 @@ class CompanySerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
 
-class CompanyControllerSerializer(serializers.ModelSerializer):
+class ControllerCompanySerializer(serializers.ModelSerializer):
     total_declarations = serializers.SerializerMethodField()
     market_ready_declarations = serializers.SerializerMethodField()
     refused_declarations = serializers.SerializerMethodField()

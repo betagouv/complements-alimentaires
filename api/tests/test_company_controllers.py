@@ -60,8 +60,7 @@ class TestCompanyControllers(APITestCase):
         self.assertEqual(results[1]["id"], dunder_mifflin.id)
         self.assertEqual(results[2]["id"], acme.id)
 
-    authenticate
-
+    @authenticate
     def test_retrieve_not_allowed(self):
         """
         L'endpoint retrieve_control_company n'est pas accessible sans le rôle de contrôle

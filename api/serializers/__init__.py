@@ -37,8 +37,8 @@ from .declaration import (
 from .company import (
     CompanySerializer,
     MinimalCompanySerializer,
+    ControllerCompanyListSerializer,
     ControllerCompanySerializer,
-    CompanyControllerSerializer,
 )
 from .solicitation import CollaborationInvitationSerializer, CompanyAccessClaimSerializer, AddNewCollaboratorSerializer
 from .snapshot import SnapshotSerializer

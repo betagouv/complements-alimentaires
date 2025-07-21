@@ -1,10 +1,10 @@
 <template>
   <table>
     <tr v-for="item in items" :key="item.body" class="m-2 p-2">
-      <th>{{ item.title }}</th>
-      <th>
+      <th scope="row">{{ item.title }}</th>
+      <td class="py-1 px-2">
         <div v-for="(line, index) in item.body" :key="`infotable${line}${index}`">{{ line }}</div>
-      </th>
+      </td>
     </tr>
   </table>
 </template>

@@ -32,7 +32,6 @@ import ProductSection from "@/components/NewBepiasViews/ProductSection"
 import IdentitySection from "@/components/NewBepiasViews/IdentitySection"
 import HistorySection from "@/components/NewBepiasViews/HistorySection"
 import VisaDeclarationsPage from "@/views/VisaDeclarationsPage"
-import VisaPage from "@/views/VisaPage"
 import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
 import A11yPage from "@/views/A11yPage.vue"
 import ContactForm from "@/views/ContactForm"
@@ -401,7 +400,7 @@ const routes = [
     ],
   },
   {
-    path: "/visa-v2/:declarationId",
+    path: "/visa/:declarationId",
     props: true,
     component: NewVisaPage,
     meta: {
@@ -412,10 +411,10 @@ const routes = [
     children: [
       {
         path: "",
-        redirect: { name: "VisaProductSection" },
+        redirect: { name: "VisaPage" },
       },
       {
-        name: "VisaProductSection",
+        name: "VisaPage",
         path: "produit",
         component: ProductSection,
       },
@@ -448,17 +447,6 @@ const routes = [
         article: "",
         limit: "10",
       },
-    },
-  },
-  {
-    path: "/visa/:declarationId",
-    props: true,
-    name: "VisaPage",
-    component: VisaPage,
-    meta: {
-      title: "Visa",
-      requiredRoles: ["VisaRole"],
-      authenticationRequired: true,
     },
   },
   {
