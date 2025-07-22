@@ -4,7 +4,7 @@ from django.dispatch import receiver
 from .user import User
 from .blogpost import BlogPost
 from .webinar import Webinar
-from .company import Company, SupervisorRole, DeclarantRole
+from .company import Company, SupervisorRole, DeclarantRole, ActivityChoices
 
 # Elements specific models
 from .ingredient import Ingredient, IngredientSynonym, IngredientSubstanceRelation

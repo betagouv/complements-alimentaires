@@ -35,11 +35,11 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: complements-alimentaires
-      PGPORT: 3306
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${DB_NAME}
+      PGPORT: ${DB_PORT}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - 3306:3306
+      - ${DB_PORT}:${DB_PORT}
     healthcheck:
       test: [ "CMD", "pg_isready" ]
       interval: 10s

@@ -80,9 +80,9 @@ class TestExpiration(TestCase):
         pas être expirées
         """
         today = timezone.now()
-        observed_declaration = AwaitingInstructionDeclarationFactory()
+        instruction_declaration = AwaitingInstructionDeclarationFactory()
         snapshot = SnapshotFactory(
-            declaration=observed_declaration,
+            declaration=instruction_declaration,
             status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
             expiration_days=5,
         )
@@ -91,5 +91,51 @@ class TestExpiration(TestCase):
         snapshot.save()
         tasks.expire_declarations()
 
+        instruction_declaration.refresh_from_db()
+        self.assertEqual(instruction_declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+    def test_expire_all_ready_declarations(self):
+        """
+        Parmi plusieurs declarations, expirent toutes qui sont possibles,
+        même quand il y a des erreurs avec autres
+        """
+        today = timezone.now()
+        # declaration sans snapshot
+        ObservationDeclarationFactory()
+
+        instruction_declaration = AwaitingInstructionDeclarationFactory()
+        snapshot = SnapshotFactory(
+            declaration=instruction_declaration,
+            status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
+            expiration_days=5,
+        )
+        # On se dit que le snapshot a été créé il y a cinq jours
+        snapshot.creation_date = today - timedelta(days=5, minutes=1)
+        snapshot.save()
+
+        observed_declaration_with_time = ObservationDeclarationFactory()
+        snapshot = SnapshotFactory(
+            declaration=observed_declaration_with_time,
+            status=Declaration.DeclarationStatus.OBSERVATION,
+            expiration_days=5,
+        )
+        # On se dit que le snapshot a été créé il y a un jour
+        snapshot.creation_date = today - timedelta(days=1, minutes=1)
+        snapshot.save()
+
+        observed_declaration = ObservationDeclarationFactory()
+        snapshot = SnapshotFactory(
+            declaration=observed_declaration,
+            status=Declaration.DeclarationStatus.OBSERVATION,
+            expiration_days=5,
+        )
+        # On se dit que le snapshot a été créé il y a cinq jours
+        snapshot.creation_date = today - timedelta(days=5, minutes=1)
+        snapshot.save()
+
+        tasks.expire_declarations()
+
         observed_declaration.refresh_from_db()
-        self.assertEqual(observed_declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        self.assertEqual(observed_declaration.status, Declaration.DeclarationStatus.ABANDONED)
+        observed_declaration_with_time.refresh_from_db()
+        self.assertEqual(observed_declaration_with_time.status, Declaration.DeclarationStatus.OBSERVATION)

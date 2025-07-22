@@ -19,7 +19,7 @@
 <script setup>
 import { computed, ref } from "vue"
 import { isoToPrettyDate } from "@/utils/date"
-import { getStatusTagForCell } from "./utils"
+import { getStatusTagForCell } from "@/components/NewBepiasViews/DeclarationsTableSection/utils"
 import { useRoute } from "vue-router"
 import TableHeaders from "@/components/TableHeaders"
 
@@ -61,7 +61,12 @@ const rows = computed(() =>
   props.data?.results?.map((x) => ({
     rowData: [
       x.id || x.siccrfId || x.teleicareDeclarationNumber,
-      { component: "span", text: x.name, class: "font-bold" },
+      {
+        component: "router-link",
+        text: x.name,
+        class: "font-bold",
+        to: { name: "DeclarationIndividualPage", params: { declarationId: x.id } },
+      },
       x.companyName,
       x.brand,
       getStatusTagForCell(x.simplifiedStatus),
@@ -100,7 +105,7 @@ const statusModalActions = [
 </script>
 
 <style scoped>
-@reference "../../styles/index.css";
+@reference "../../../styles/index.css";
 
 .fr-table :deep(table) {
   @apply table!;

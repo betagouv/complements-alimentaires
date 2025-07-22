@@ -34,7 +34,7 @@
             <BepiasSidebar v-model="declaration" />
           </div>
         </div>
-        <div class="col-span-12 sm:col-span-9">
+        <div class="col-span-12 sm:col-span-9 bg-grey-975!">
           <router-view
             :declaration="declaration"
             :declarant="declarant"

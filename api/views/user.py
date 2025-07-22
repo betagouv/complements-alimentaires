@@ -9,13 +9,13 @@ from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions, status
-from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.exception_handling import ProjectAPIException
-from api.permissions import CanAccessUser
+from api.permissions import CanAccessUser, IsController
 from api.serializers import (
     ChangePasswordSerializer,
     CreateUserSerializer,
@@ -103,6 +103,12 @@ class UserRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[settings.CONTACT_EMAIL],
         )
+
+
+class UserRetrieveControlView(RetrieveAPIView):
+    permission_classes = [IsController]
+    serializer_class = UserSerializer
+    queryset = get_user_model().objects.active()
 
 
 class ChangePasswordView(APIView):

@@ -1,11 +1,14 @@
 import re
 
+from django.db.models import Q
+
 import django_filters
 from djangorestframework_camel_case.settings import api_settings
 from djangorestframework_camel_case.util import camel_to_underscore, camelize_re, underscore_to_camel
 from rest_framework.filters import BaseFilterBackend, OrderingFilter
 
 from api.utils.simplified_status import SimplifiedStatusHelper
+from data.choices import CountryChoices
 
 
 class BaseNumberInFilter(django_filters.BaseInFilter, django_filters.NumberFilter):
@@ -51,3 +54,56 @@ class SimplifiedStatusFilter(BaseFilterBackend):
         status_values = simplified_status.split(",")
         conditions = SimplifiedStatusHelper.get_filter_conditions(status_values)
         return queryset.filter(conditions)
+
+
+class DepartmentFilterBackend(BaseFilterBackend):
+    """
+    Ce filtre permet d'obtenir le département (ou l'étranger avec "99") à partir du
+    code postale
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        departments = request.query_params.get("departments", None)
+        if not departments:
+            return queryset
+
+        departments_list = [d.strip() for d in departments.split(",")]
+
+        queries = Q()
+        include_foreign_objects = "99" in departments_list
+
+        # Héxagone
+        mainland_deps = [d for d in departments_list if d != "99" and len(d) == 2 and d not in ["2A", "2B"]]
+        if mainland_deps:
+            queries |= Q(
+                country=CountryChoices.FRANCE,
+                postal_code__regex=r"^(?!97|98|20)(" + "|".join(mainland_deps) + r")\d{3}",
+            )
+
+        # La Corse (2A, 2B)
+        corse_deps = [d for d in departments_list if d in ["2A", "2B"]]
+        if corse_deps:
+            corsica_queries = Q()
+            if "2A" in corse_deps:
+                corsica_queries |= Q(country=CountryChoices.FRANCE, postal_code__startswith="200") | Q(
+                    country=CountryChoices.FRANCE, postal_code__startswith="201"
+                )
+            if "2B" in corse_deps:
+                corsica_queries |= Q(country=CountryChoices.FRANCE, postal_code__startswith="202") | Q(
+                    country=CountryChoices.FRANCE, postal_code__startswith="206"
+                )
+            queries |= corsica_queries
+
+        # DOM-TOMs (97, 98)
+        overseas_deps = [d for d in departments_list if len(d) == 3 and d.startswith(("97", "98"))]
+        if overseas_deps:
+            overseas_query = Q()
+            for dep in overseas_deps:
+                overseas_query |= Q(country=CountryChoices.FRANCE, postal_code__startswith=dep)
+            queries |= overseas_query
+
+        # Étranger (99)
+        if include_foreign_objects:
+            queries |= ~Q(country=CountryChoices.FRANCE)
+
+        return queryset.filter(queries).distinct()
