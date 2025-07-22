@@ -98,8 +98,12 @@ class ExpirationDeclarationFlow:
 
 @app.task
 def expire_declarations():
-    declarations = Declaration.objects.filter(status__in=allowed_statuses)
     brevo_template_id = 9
+    declarations = Declaration.objects.filter(status__in=allowed_statuses)
+
+    success_count = 0
+    error_count = 0
+    logger.info(f"Starting the automatic expiration of {declarations.count()} declarations.")
     for declaration in declarations:
         flow = ExpirationDeclarationFlow(declaration)
         try:
@@ -111,10 +115,17 @@ def expire_declarations():
                     declaration.author.email,
                     declaration.author.get_full_name(),
                 )
+            success_count += 1
         except EarlyExpirationError as _:
+            error_count += 1
             break
         except Exception as _:
+            error_count += 1
             logger.exception(f"Could not expire declaration f{declaration.id}")
+
+    logger.info(f"{success_count} declarations were automatically expired.")
+    if error_count:
+        logger.error(f"{error_count} declarations failed automatic expiration.")
 
 
 def send_automatic_validation_email(declaration):
