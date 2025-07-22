@@ -103,6 +103,7 @@ def expire_declarations():
 
     success_count = 0
     error_count = 0
+    early_count = 0
     logger.info(f"Starting the automatic expiration of {declarations.count()} declarations.")
     for declaration in declarations:
         flow = ExpirationDeclarationFlow(declaration)
@@ -117,13 +118,13 @@ def expire_declarations():
                 )
             success_count += 1
         except EarlyExpirationError as _:
-            error_count += 1
-            break
+            early_count += 1
         except Exception as _:
             error_count += 1
-            logger.exception(f"Could not expire declaration f{declaration.id}")
+            logger.exception(f"Could not expire declaration {declaration.id}")
 
     logger.info(f"{success_count} declarations were automatically expired.")
+    logger.info(f"{early_count} declarations were not automatically expired, expiration_date has not passed.")
     if error_count:
         logger.error(f"{error_count} declarations failed automatic expiration.")
 
