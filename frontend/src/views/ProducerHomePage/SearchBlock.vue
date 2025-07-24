@@ -4,12 +4,15 @@
     <img class="hidden md:block absolute scale-75 top-5 right-1" src="/static/images/cloud-right.png" alt="" />
     <img class="hidden md:block absolute bottom-0 right-20" src="/static/images/plants.png" alt="" />
     <div class="fr-container relative p-6 py-6 sm:py-10 md:py-14 grid grid-cols-12">
-      <div class="col-span-12 md:col-span-8 lg:col-span-5">
+      <div class="col-span-12 md:col-span-8 lg:col-span-6">
         <h1>Tester ma composition de compléments alimentaires</h1>
         <p>Vérifier la conformité de vos ingrédients en amont de vos développements produits.</p>
+        <DsfrAlert small class="mb-4">
+          <b>Non exhaustivité des données</b>
+          : Cette base est en amélioration continue, nous faisons notre possible pour la mettre à jour régulièrement.
+        </DsfrAlert>
         <ElementAutocomplete
           autocomplete="nothing"
-          class="max-w-md grow"
           label="Cherchez un ingrédient"
           hint="Tapez au moins trois caractères pour démarrer la recherche"
           @selected="goToSelectedOption"
