@@ -1,6 +1,10 @@
 <template>
   <div class="bg-blue-france-925 py-8">
     <div class="fr-container">
+      <DsfrAlert small>
+        <b>Non exhaustivité des données</b>
+        : Cette base est en amélioration continue, nous faisons notre possible pour la mettre à jour régulièrement.
+      </DsfrAlert>
       <ElementAutocomplete
         v-model="searchTerm"
         label="Cherchez un ingrédient"
@@ -21,11 +25,11 @@
     </div>
     <div v-else-if="data.count === 0">
       <h1 class="fr-h3">Nous n'avons pas trouvé de résultats pour « {{ currentSearch }} »</h1>
-      <DsfrAlert :title="calloutTitle" :description="calloutContent" type="info"></DsfrAlert>
+      <DsfrAlert small :description="calloutContent" type="warning"></DsfrAlert>
     </div>
     <div v-else class="mb-4">
       <h1 class="fr-h3">Résultats de recherche</h1>
-      <DsfrAlert :title="calloutTitle" :description="calloutContent" type="info" class="mb-5"></DsfrAlert>
+      <DsfrAlert small :description="calloutContent" type="warning" class="mb-5"></DsfrAlert>
 
       <div v-if="data.results" class="grid grid-cols-12 gap-4">
         <ResultCard
@@ -64,9 +68,8 @@ const route = useRoute()
 const searchTerm = ref(route.query.q || "")
 const currentSearch = ref(route.query.q || "")
 const calloutTitle = "Risque de non exhaustivité des données"
-const calloutContent = `La base de données des ingrédients et substances constitue un guide sur lequel les opérateurs désireux de commercialiser des compléments alimentaires peuvent s’appuyer.
-Cette base est en amélioration continue, l'équipe du BEPIAS et Compl'Alim font leur possible pour mettre à jour régulièrement et suivre la législation au plus proche.
-Cependant et même si nous avons vocation à l'exhaustivité, il s’agit d’un outil administratif qui n'a pas force de loi.`
+const calloutContent =
+  "La base de données des ingrédients et substances constitue un guide sur lequel les opérateurs désireux de commercialiser des compléments alimentaires peuvent s’appuyer qui n'a pas force de loi. En particulier, s'agissant du statut des ingrédients mis en œuvre au regard de la réglementation relative aux nouveaux aliments, les opérateurs doivent être en mesure de prouver que les ingrédients disposant d'un historique de consommation dans l'Union européenne avant le 15 mai 1997 ou, à défaut, qu'ils ont été autorisés au titre du règlement (UE) n°2015/2283."
 
 // Search
 const search = (newTerm) => {
