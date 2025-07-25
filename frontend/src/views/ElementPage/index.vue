@@ -23,14 +23,7 @@
         {{ element.name }}
         <DsfrBadge v-if="novelFood" label="Novel Food" small type="new" />
       </h1>
-      <DsfrAlert type="warning" small class="mt-4">
-        La base de données des ingrédients et substances constitue un guide sur lequel les opérateurs désireux de
-        commercialiser des compléments alimentaires peuvent s’appuyer qui n'a pas force de loi. En particulier,
-        s'agissant du statut des ingrédients mis en œuvre au regard de la réglementation relative aux nouveaux aliments,
-        les opérateurs doivent être en mesure de prouver que les ingrédients disposant d'un historique de consommation
-        dans l'Union européenne avant le 15 mai 1997 ou, à défaut, qu'ils ont été autorisés au titre du règlement (UE)
-        n°2015/2283
-      </DsfrAlert>
+      <RegulatoryWarning class="mt-4" />
 
       <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-1 sm:gap-x-20 mb-8">
         <ElementColumn title="Type">
@@ -144,6 +137,7 @@ import ElementTextSection from "./ElementTextSection.vue"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
 import ElementDoses from "@/components/ElementDoses.vue"
+import RegulatoryWarning from "@/components/RegulatoryWarning.vue"
 
 const store = useRootStore()
 const route = useRoute()
