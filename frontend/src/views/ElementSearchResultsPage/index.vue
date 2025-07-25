@@ -1,10 +1,6 @@
 <template>
   <div class="bg-blue-france-925 py-8">
     <div class="fr-container">
-      <DsfrAlert small>
-        <b>Non exhaustivité des données</b>
-        : Cette base est en amélioration continue, nous faisons notre possible pour la mettre à jour régulièrement.
-      </DsfrAlert>
       <ElementAutocomplete
         v-model="searchTerm"
         label="Cherchez un ingrédient"
