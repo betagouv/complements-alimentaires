@@ -92,7 +92,7 @@ pypdf==5.8.0
 pytest==8.4.1
 python-bidi==0.6.6
 python-dateutil==2.9.0.post0
-pytz==2024.2
+pytz==2025.2
 PyYAML==6.0.2
 qrcode==8.2
 redis==6.2.0
