@@ -22,6 +22,7 @@ import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "@/components/NewBepiasViews/DeclarationsTableSection/utils"
 import { useRoute } from "vue-router"
 import TableHeaders from "@/components/TableHeaders"
+import NameCell from "./NameCell"
 
 const route = useRoute()
 const emit = defineEmits(["sort", "filter"])
@@ -62,10 +63,8 @@ const rows = computed(() =>
     rowData: [
       x.id || x.siccrfId || x.teleicareDeclarationNumber,
       {
-        component: "router-link",
-        text: x.name,
-        class: "font-bold",
-        to: { name: "DeclarationIndividualPage", params: { declarationId: x.id } },
+        component: NameCell,
+        declaration: x,
       },
       x.companyName,
       x.brand,

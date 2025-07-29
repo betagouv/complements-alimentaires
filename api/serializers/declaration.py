@@ -278,6 +278,7 @@ class ControllerDeclarationSerializer(serializers.ModelSerializer):
         model = Declaration
         fields = (
             "id",
+            "article",
             "teleicare_declaration_number",
             "siccrf_id",
             "name",

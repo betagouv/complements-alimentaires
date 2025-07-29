@@ -190,6 +190,42 @@ class TestDeclarationControllers(APITestCase):
         self.assertEqual(len(results), 3)
 
     @authenticate
+    def test_filter_by_surveillance_only(self):
+        """
+        Il est possible de filtrer par déclarations en statuts à surveiller
+        """
+        ControlRoleFactory(user=authenticate.user)
+
+        # Déclarations à surveiller
+        art_16 = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_16)
+        art_15_high_risk = AwaitingInstructionDeclarationFactory(
+            overridden_article=Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
+        )
+        art_15_warning = AwaitingInstructionDeclarationFactory(
+            overridden_article=Declaration.Article.ARTICLE_15_WARNING
+        )
+
+        # Déclarations sans risque
+        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
+        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_18)
+
+        # Requête pour toutes les déclarations
+        response = self.client.get(reverse("api:list_control_declarations") + "?surveillanceOnly=false", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 5)
+
+        # Requête pour surveillanceOnly
+        response = self.client.get(reverse("api:list_control_declarations") + "?surveillanceOnly=true", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.json()["results"]
+
+        self.assertEqual(len(results), 3)
+        self.assertCountEqual([x["id"] for x in results], [art_15_high_risk.id, art_15_warning.id, art_16.id])
+
+    @authenticate
     def test_single_get_not_allowed(self):
         """
         L'endpoint pour une déclaration seule n'est pas accessible sans le rôle de contrôle

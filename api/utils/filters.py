@@ -9,6 +9,7 @@ from rest_framework.filters import BaseFilterBackend, OrderingFilter
 
 from api.utils.simplified_status import SimplifiedStatusHelper
 from data.choices import CountryChoices
+from data.models import Declaration
 
 
 class BaseNumberInFilter(django_filters.BaseInFilter, django_filters.NumberFilter):
@@ -107,3 +108,18 @@ class DepartmentFilterBackend(BaseFilterBackend):
             queries |= ~Q(country=CountryChoices.FRANCE)
 
         return queryset.filter(queries).distinct()
+
+
+class SurveillanceOnlyFilter(BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        surveillance_only = request.query_params.get("surveillanceOnly", "")
+
+        if surveillance_only == "true":
+            surveillance_articles = [
+                Declaration.Article.ARTICLE_15_WARNING,
+                Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION,
+                Declaration.Article.ARTICLE_16,
+            ]
+            return queryset.filter(article__in=surveillance_articles)
+
+        return queryset

@@ -527,6 +527,7 @@ const routes = [
         limit: 10,
         triage: "-creationDate",
         simplifiedStatus: "",
+        surveillanceOnly: "false",
       },
     },
   },
