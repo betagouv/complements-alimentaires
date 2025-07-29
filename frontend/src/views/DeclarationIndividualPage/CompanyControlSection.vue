@@ -16,5 +16,5 @@ import SectionHeader from "@/components/NewBepiasViews/SectionHeader"
 import DeclarantIdentity from "@/components/DeclarantIdentity"
 import CompanyIdentity from "@/components/CompanyIdentity"
 
-const props = defineProps({ declarant: Object, company: Object, mandatedCompany: Object })
+defineProps({ declarant: Object, company: Object, mandatedCompany: Object })
 </script>

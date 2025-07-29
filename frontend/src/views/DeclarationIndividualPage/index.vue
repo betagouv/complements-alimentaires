@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { useRouter, useRoute } from "vue-router"
+import { useRoute } from "vue-router"
 import { computed, onMounted } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
@@ -39,7 +39,6 @@ import { useRootStore } from "@/stores/root"
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
 
-const router = useRouter()
 const route = useRoute()
 
 const breadcrumbs = computed(() => {
