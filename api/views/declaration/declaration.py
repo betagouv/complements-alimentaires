@@ -285,7 +285,7 @@ class DeclarationHyperlinkXLSXRenderer(XLSXRenderer):
         # Ajouter le lien vers le résultat de la recherche dans le nom du produit
         for sheet in workbook.worksheets:
             for row in sheet.iter_rows(min_row=2):  # L'index commence à 1, et on veux éviter l'entête, donc 2
-                name_cell = row[0]
+                name_cell = row[2]
                 hyperlink_data = data[name_cell.row - 2]["url_field"]
                 name_cell.value = hyperlink_data.display
                 name_cell.hyperlink = hyperlink_data.ref
@@ -314,6 +314,8 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
     # Format de l'entête du fichier Excel
     column_header = {
         "titles": [
+            "No. Compl'Alim",
+            "No. Téléicare",
             "Nom du produit",
             "Marque",
             "Article",
@@ -323,7 +325,7 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
             "No. TVA",
             "No. de département",
         ],
-        "column_width": [30, 20, 30, 25, 30, 15, 15, 15],
+        "column_width": [12, 12, 30, 20, 30, 25, 30, 15, 15, 15],
         "height": 30,
         "style": {
             "fill": {
