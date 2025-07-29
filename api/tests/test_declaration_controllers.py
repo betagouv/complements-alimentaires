@@ -3,8 +3,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from data.factories import AwaitingInstructionDeclarationFactory, CompanyFactory, ControlRoleFactory
-from data.models import Declaration
+from data.factories import AwaitingInstructionDeclarationFactory, CompanyFactory, ControlRoleFactory, SnapshotFactory
+from data.models import Declaration, Snapshot
 
 from .utils import authenticate
 
@@ -102,9 +102,14 @@ class TestDeclarationControllers(APITestCase):
         """
         ControlRoleFactory(user=authenticate.user)
 
-        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
-        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION)
-        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15_WARNING)
+        d1 = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
+        SnapshotFactory(declaration=d1, action=Snapshot.SnapshotActions.SUBMIT)
+        d2 = AwaitingInstructionDeclarationFactory(
+            overridden_article=Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
+        )
+        SnapshotFactory(declaration=d2, action=Snapshot.SnapshotActions.SUBMIT)
+        d3 = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15_WARNING)
+        SnapshotFactory(declaration=d3, action=Snapshot.SnapshotActions.SUBMIT)
 
         response = self.client.get(reverse("api:list_control_declarations"), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -114,6 +119,7 @@ class TestDeclarationControllers(APITestCase):
 
         for result in results:
             self.assertEqual(result["simplifiedStatus"], "Commercialisation possible")
+            self.assertIsNotNone(result["simplifiedStatusDate"])
 
     @authenticate
     def test_simplified_status_other_articles(self):
