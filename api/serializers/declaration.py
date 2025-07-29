@@ -353,6 +353,8 @@ class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Declaration
         fields = (
+            "id",
+            "teleicare_declaration_number",
             "name",
             "brand",
             "article",
