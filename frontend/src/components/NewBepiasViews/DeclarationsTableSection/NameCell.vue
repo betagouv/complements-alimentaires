@@ -20,7 +20,7 @@ import { computed } from "vue"
 const warningText = computed(() => {
   if (props.declaration.article === "ART_15_WARNING") return "À surveiller"
   if (props.declaration.article === "ART_15_HIGH_RISK_POPULATION") return "Population à risque"
-  if (props.declaration.article === "ART_16") return "Nouvel ingrédient ajouté"
+  if (props.declaration.article === "ART_16") return "Nouvel ingrédient demandé"
   return null
 })
 </script>
