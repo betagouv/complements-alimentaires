@@ -830,6 +830,11 @@ class Migration(migrations.Migration):
             new_name='status'
         ),
         migrations.RenameField(
+            model_name='historicalplant',
+            old_name='new_family',
+            new_name='family',
+        ),
+        migrations.RenameField(
             model_name='historicalplantfamily',
             old_name='new_is_obsolete',
             new_name='is_obsolete'

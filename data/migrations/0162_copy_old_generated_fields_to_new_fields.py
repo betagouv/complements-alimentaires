@@ -149,6 +149,11 @@ class Migration(migrations.Migration):
                 objects_to_save.append(obj)
             HistoricalPlantFamily.objects.bulk_update(objects_to_save, ["new_is_obsolete", "new_name"])
 
+        # Afin de ne pas solliciter un objet PlantFamily pour chaque Plant et chaque item d'historique,
+        # et étant donné que nous avons peu de familles dans la base de données (< 300), nous allons charger
+        # toutes les familles en mémoire
+        all_families = PlantFamily.objects.in_bulk()
+
         Plant = apps.get_model("data", "Plant")
         for plant in Plant.objects.all():
             plant.new_is_obsolete = plant.is_obsolete
@@ -156,7 +161,7 @@ class Migration(migrations.Migration):
             plant.new_private_comments = plant.private_comments
             plant.new_public_comments = plant.public_comments
             plant.new_status = plant.status
-            plant.new_family = PlantFamily.objects.get(id=plant.family_by_id)
+            plant.new_family = all_families.get(plant.family_by_id) if plant.family_by_id else None
             plant.save()
 
         HistoricalPlant = apps.get_model("data", "HistoricalPlant")
@@ -171,7 +176,7 @@ class Migration(migrations.Migration):
                 obj.new_private_comments = obj.ca_private_comments or obj.siccrf_private_comments
                 obj.new_public_comments = obj.ca_public_comments or obj.siccrf_public_comments
                 obj.new_status = obj.ca_status # pas de siccrf_status dans l'historique avec excluded_fields
-                # TODO family
+                obj.new_family = obj.ca_family or obj.siccrf_family
                 objects_to_save.append(obj)
             HistoricalPlant.objects.bulk_update(objects_to_save, ["new_is_obsolete", "new_name", "new_private_comments", "new_public_comments", "new_status", "new_family"])
 

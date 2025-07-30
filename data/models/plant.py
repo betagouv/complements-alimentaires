@@ -51,9 +51,6 @@ class Plant(IngredientCommonModel):
             PublicReasonHistoricalModel,
         ],
         inherit=True,
-        excluded_fields=[
-            "family",
-        ],
     )
 
 
