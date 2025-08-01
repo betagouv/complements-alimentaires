@@ -98,16 +98,19 @@ const limit = computed(() => parseInt(route.query.limit))
 const simplifiedStatus = computed(() => route.query.simplifiedStatus)
 const surveillanceOnly = computed(() => route.query.surveillanceOnly === "true")
 
-const population = computed(() => route.query.population)
-const condition = computed(() => route.query.condition)
-const galenicFormulation = computed(() => route.query.galenicFormulation)
+const population = computed(() => (route.query.population ? parseInt(route.query.population) : ""))
+const condition = computed(() => (route.query.condition ? parseInt(route.query.condition) : ""))
+const galenicFormulation = computed(() => (route.query.formeGalenique ? parseInt(route.query.formeGalenique) : ""))
 
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 
 // Obtention de la donnée via API
 const url = computed(() => {
-  const apiUrl = `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&simplifiedStatus=${simplifiedStatus.value}&surveillanceOnly=${surveillanceOnly.value}`
-  if (props.companyId) return `${apiUrl}&company=${props.companyId}`
+  let apiUrl = `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&simplifiedStatus=${simplifiedStatus.value}&surveillanceOnly=${surveillanceOnly.value}&`
+  if (props.companyId) apiUrl += `${apiUrl}&company=${props.companyId}`
+  if (population.value) apiUrl += `&population=${population.value}`
+  if (condition.value) apiUrl += `&condition=${condition.value}`
+  if (galenicFormulation.value) apiUrl += `&galenic_formulation=${galenicFormulation.value}`
   return apiUrl
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
@@ -131,7 +134,10 @@ const updatePopulation = (newValue) => updateQuery({ population: newValue })
 const updateCondition = (newValue) => updateQuery({ condition: newValue })
 const updateGalenicFormulation = (newValue) => updateQuery({ formeGalenique: newValue })
 
-watch([page, limit, ordering, simplifiedStatus, surveillanceOnly], fetchSearchResults)
+watch(
+  [page, limit, ordering, simplifiedStatus, surveillanceOnly, population, condition, galenicFormulation],
+  fetchSearchResults
+)
 
 // Filter options
 
