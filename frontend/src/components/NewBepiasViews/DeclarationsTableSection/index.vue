@@ -2,13 +2,49 @@
   <div>
     <DsfrAccordionsGroup v-model="activeAccordion" class="mb-8">
       <DsfrAccordion title="Filtrer les déclarations">
-        <div class="grid grid-cols-3">
-          <div class="col-span-1 sm:col-span-2 md:col-span-3">
+        <div class="grid grid-cols-4 gap-4">
+          <div class="col-span-4 sm:col-span-2 md:col-span-1">
             <DsfrToggleSwitch
               label="Afficher les déclarations à surveiller uniquement"
               :modelValue="surveillanceOnly"
               @update:modelValue="updateSurveillanceOnly"
             />
+          </div>
+          <div class="col-span-4 sm:col-span-2 md:col-span-1">
+            <DsfrInputGroup>
+              <DsfrSelect
+                label="Population cible"
+                defaultUnselectedText=""
+                :modelValue="population"
+                @update:modelValue="updatePopulation"
+                :options="populationOptions"
+                class="text-sm!"
+              />
+            </DsfrInputGroup>
+          </div>
+          <div class="col-span-4 sm:col-span-2 md:col-span-1">
+            <DsfrInputGroup>
+              <DsfrSelect
+                label="Population à risque"
+                defaultUnselectedText=""
+                :modelValue="condition"
+                @update:modelValue="updateCondition"
+                :options="conditionOptions"
+                class="text-sm!"
+              />
+            </DsfrInputGroup>
+          </div>
+          <div class="col-span-4 sm:col-span-2 md:col-span-1">
+            <DsfrInputGroup>
+              <DsfrSelect
+                label="Forme galénique"
+                defaultUnselectedText=""
+                :modelValue="galenicFormulation"
+                @update:modelValue="updateGalenicFormulation"
+                :options="galenicFormulationOptions"
+                class="text-sm!"
+              />
+            </DsfrInputGroup>
           </div>
         </div>
       </DsfrAccordion>
@@ -38,6 +74,13 @@ import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import ControlDeclarationsTable from "./ControlDeclarationsTable"
 import { ref } from "vue"
+import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
+import { toOptions } from "@/utils/forms.js"
+
+const store = useRootStore()
+store.fetchDeclarationFieldsData()
+const { populations, conditions, galenicFormulations } = storeToRefs(store)
 
 const activeAccordion = ref()
 
@@ -54,6 +97,10 @@ const ordering = computed(() => route.query.triage)
 const limit = computed(() => parseInt(route.query.limit))
 const simplifiedStatus = computed(() => route.query.simplifiedStatus)
 const surveillanceOnly = computed(() => route.query.surveillanceOnly === "true")
+
+const population = computed(() => route.query.population)
+const condition = computed(() => route.query.condition)
+const galenicFormulation = computed(() => route.query.galenicFormulation)
 
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 
@@ -80,6 +127,15 @@ const updateFiltering = (filterKey, filterValue) => {
   filterQuery[filterKey] = filterValue
   updateQuery(filterQuery)
 }
+const updatePopulation = (newValue) => updateQuery({ population: newValue })
+const updateCondition = (newValue) => updateQuery({ condition: newValue })
+const updateGalenicFormulation = (newValue) => updateQuery({ formeGalenique: newValue })
 
 watch([page, limit, ordering, simplifiedStatus, surveillanceOnly], fetchSearchResults)
+
+// Filter options
+
+const populationOptions = computed(() => toOptions(populations.value))
+const conditionOptions = computed(() => toOptions(conditions.value))
+const galenicFormulationOptions = computed(() => toOptions(galenicFormulations.value))
 </script>
