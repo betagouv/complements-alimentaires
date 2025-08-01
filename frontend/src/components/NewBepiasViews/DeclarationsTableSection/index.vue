@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DsfrAccordionsGroup v-model="activeAccordion" class="mb-8">
+    <DsfrAccordionsGroup v-model="activeAccordion">
       <DsfrAccordion title="Filtrer les déclarations">
         <div class="grid grid-cols-4 gap-4">
           <div class="col-span-4 sm:col-span-2 md:col-span-1">
@@ -49,6 +49,19 @@
         </div>
       </DsfrAccordion>
     </DsfrAccordionsGroup>
+
+    <!-- Zone des filtres actifs -->
+    <div class="my-4">
+      <DsfrTag
+        v-for="(item, idx) in activeFilters"
+        :key="`active-filters-${idx}`"
+        :label="item.text"
+        tagName="button"
+        @click="item.callback"
+        :aria-label="`Retirer le filtre « ${item.text} »`"
+        class="mx-1 fr-tag--dismiss"
+      ></DsfrTag>
+    </div>
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
@@ -144,4 +157,31 @@ watch(
 const populationOptions = computed(() => toOptions(populations.value))
 const conditionOptions = computed(() => toOptions(conditions.value))
 const galenicFormulationOptions = computed(() => toOptions(galenicFormulations.value))
+
+// Filter tags
+
+const activeFilters = computed(() => {
+  const filters = []
+  if (surveillanceOnly.value)
+    filters.push({
+      text: "Déclarations à surveiller",
+      callback: () => updateSurveillanceOnly(false),
+    })
+  if (population.value)
+    filters.push({
+      text: `Pop. cible : ${populationOptions.value?.find((x) => x.value === population.value)?.text || ""}`,
+      callback: () => updatePopulation(""),
+    })
+  if (condition.value)
+    filters.push({
+      text: `Pop. à risque : ${conditionOptions.value?.find((x) => x.value === condition.value)?.text || ""}`,
+      callback: () => updateCondition(""),
+    })
+  if (galenicFormulation.value)
+    filters.push({
+      text: `Forme : ${galenicFormulationOptions.value?.find((x) => x.value === galenicFormulation.value)?.text || ""}`,
+      callback: () => updateGalenicFormulation(""),
+    })
+  return filters
+})
 </script>
