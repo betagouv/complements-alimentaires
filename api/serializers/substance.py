@@ -63,6 +63,7 @@ class SubstanceSerializer(CommonIngredientReadSerializer):
             "nutritional_reference",
             "unit",
             "unit_id",
+            "substance_types",
         )
         read_only_fields = fields
 
@@ -130,6 +131,7 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer):
                 "nutritional_reference",
                 "unit",
                 "must_specify_quantity",
+                "substance_types",
             )
         )
         read_only = COMMON_READ_ONLY_FIELDS
