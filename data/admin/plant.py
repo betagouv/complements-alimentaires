@@ -26,8 +26,7 @@ class PartInlineAdmin(admin.TabularInline):
     model = Plant.plant_parts.through
     extra = 1
 
-    fields = ("plantpart", "siccrf_is_useful", "ca_is_useful")
-    readonly_fields = ("siccrf_is_useful",)
+    fields = ("plantpart", "is_useful")
 
 
 class SubstanceInlineAdmin(admin.TabularInline):
@@ -58,15 +57,11 @@ class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonA
             None,  # Pas d'entête
             {
                 "fields": [
-                    "siccrf_name",
-                    "ca_name",
                     "name",
                     "is_obsolete",
                     "is_risky",
                     "novel_food",
-                    "siccrf_status",
-                    "ca_status",
-                    "ca_is_obsolete",
+                    "status",
                 ],
             },
         ),
@@ -74,10 +69,8 @@ class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonA
             "Commentaires",
             {
                 "fields": [
-                    "siccrf_public_comments",
-                    "siccrf_private_comments",
-                    "ca_public_comments",
-                    "ca_private_comments",
+                    "public_comments",
+                    "private_comments",
                     "to_be_entered_in_next_decree",
                 ],
             },
@@ -85,7 +78,7 @@ class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonA
         (
             "Famille",
             {
-                "fields": ["siccrf_family", "ca_family"],
+                "fields": ["family"],
             },
         ),
     ]
@@ -98,13 +91,4 @@ class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonA
     list_display = ("name", "is_obsolete", "family", "status", "is_risky", "novel_food")
     list_filter = ("is_obsolete", "family", "status", "is_risky", "novel_food")
     show_facets = admin.ShowFacets.NEVER
-    readonly_fields = (
-        "siccrf_name",
-        "name",
-        "is_obsolete",
-        "siccrf_status",
-        "siccrf_public_comments",
-        "siccrf_private_comments",
-        "siccrf_family",
-    )
     search_fields = ["id", "name"]

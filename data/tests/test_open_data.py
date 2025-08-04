@@ -65,12 +65,12 @@ class IngredientTestCase(TestCase):
         DeclaredPlantFactory(
             declaration=declaration_1,
             plant=PlantFactory(name="Ortie"),
-            used_part=PlantPartFactory(ca_name="Parties aériennes"),
+            used_part=PlantPartFactory(name="Parties aériennes"),
             quantity=5.0,
             unit=unit_mg,
         )
         declaration_2 = AuthorizedDeclarationFactory(declared_substances=[])
-        substance = SubstanceFactory(ca_name="Vitamine C")
+        substance = SubstanceFactory(name="Vitamine C")
         DeclaredSubstanceFactory(
             declaration=declaration_2,
             substance=substance,
@@ -82,7 +82,7 @@ class IngredientTestCase(TestCase):
         )
         DeclaredMicroorganismFactory(
             declaration=declaration_teleicare,
-            microorganism=MicroorganismFactory(ca_genus="Lactobasine", ca_species="en bois"),
+            microorganism=MicroorganismFactory(genus="Lactobasine", species="en bois"),
             quantity=5.0,
         )
 

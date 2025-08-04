@@ -38,9 +38,7 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
                     "is_obsolete",
                     "is_risky",
                     "novel_food",
-                    "siccrf_status",
-                    "ca_status",
-                    "ca_is_obsolete",
+                    "status",
                 ],
             },
         ),
@@ -48,10 +46,8 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
             "Genre et espèce",
             {
                 "fields": [
-                    "siccrf_genus",
-                    "ca_genus",
-                    "siccrf_species",
-                    "ca_species",
+                    "genus",
+                    "species",
                 ],
             },
         ),
@@ -59,10 +55,8 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
             "Commentaires",
             {
                 "fields": [
-                    "siccrf_public_comments",
-                    "ca_public_comments",
-                    "siccrf_private_comments",
-                    "ca_private_comments",
+                    "public_comments",
+                    "private_comments",
                     "to_be_entered_in_next_decree",
                 ],
             },
@@ -72,13 +66,5 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
     list_display = ("name", "is_obsolete", "status", "is_risky", "novel_food")
     list_filter = ("is_obsolete", "status", "is_risky", "novel_food")
     show_facets = admin.ShowFacets.NEVER
-    readonly_fields = (
-        "name",
-        "is_obsolete",
-        "siccrf_status",
-        "siccrf_public_comments",
-        "siccrf_private_comments",
-        "siccrf_genus",
-        "siccrf_species",
-    )
+    readonly_fields = ("name",)
     search_fields = ["id", "name"]

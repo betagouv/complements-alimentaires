@@ -11,8 +11,8 @@ class TestConditionApi(APITestCase):
         """
         The API should return all non obsolete conditions that are not missing data
         """
-        complete_conditions = [ConditionFactory.create(ca_is_obsolete=False) for i in range(3)]
-        obsolete_conditions = [ConditionFactory.create(ca_is_obsolete=True) for i in range(3)]
+        complete_conditions = [ConditionFactory.create(is_obsolete=False) for i in range(3)]
+        obsolete_conditions = [ConditionFactory.create(is_obsolete=True) for i in range(3)]
         response = self.client.get(reverse("api:condition_list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()

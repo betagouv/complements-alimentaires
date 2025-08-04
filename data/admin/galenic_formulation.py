@@ -11,7 +11,7 @@ from .abstract_admin import ChangeReasonAdminMixin
 class GalenicFormulationForm(forms.ModelForm):
     class Meta:
         widgets = {
-            "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "change_reason": forms.TextInput(attrs={"size": "100"}),
         }
 
@@ -29,19 +29,15 @@ class GalenicFormulationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     fields = [
         "change_reason",
         "name",
-        "ca_name",
         "siccrf_name_en",
         "is_liquid",
         "is_risky",
         "is_obsolete",
-        "ca_is_obsolete",
         "creation_date",
         "modification_date",
     ]
     readonly_fields = [
-        "name",
         "siccrf_name_en",
-        "is_obsolete",
         "creation_date",
         "modification_date",
     ]
