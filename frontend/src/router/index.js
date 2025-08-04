@@ -528,6 +528,7 @@ const routes = [
         triage: "-creationDate",
         simplifiedStatus: "",
         surveillanceOnly: "false",
+        recherche: "",
         population: "",
         condition: "",
         formeGalenique: "",

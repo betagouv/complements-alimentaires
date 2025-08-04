@@ -1,5 +1,33 @@
 <template>
   <div>
+    <!-- Zone de recherche -->
+    <div>
+      <DsfrFieldset class="mb-0! max-w-2xl">
+        <!-- <DsfrSearchBar
+          v-model="searchTerm"
+          label="Rechercher par produit, marque, entreprise ou ingrédient"
+          placeholder="Rechercher par produit, marque, entreprise ou ingrédient"
+          @search="search"
+          @update:modelValue="(val) => val === '' && search()"
+        /> -->
+        <ElementAutocomplete
+          v-model="searchTerm"
+          label="Rechercher par produit, marque, entreprise ou ingrédient"
+          label-visible
+          class="max-w-2xl"
+          @selected="addIngredient"
+          :hideSearchButton="true"
+          :chooseFirstAsDefault="false"
+          :searchAll="true"
+          :extendedSearch="true"
+          @searchProduct="(v) => console.log(`Product : ${v}`)"
+          @searchBrand="(v) => console.log(`Brand : ${v}`)"
+          @searchCompany="(v) => console.log(`Company : ${v}`)"
+          :required="false"
+        />
+      </DsfrFieldset>
+    </div>
+
     <DsfrAccordionsGroup v-model="activeAccordion">
       <DsfrAccordion title="Filtrer les déclarations">
         <div class="grid grid-cols-4 gap-0 sm:gap-2 md:gap-4">
@@ -62,6 +90,7 @@
         class="mx-1 fr-tag--dismiss"
       ></DsfrTag>
     </div>
+
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
@@ -90,6 +119,7 @@ import { ref } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { toOptions } from "@/utils/forms.js"
+import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -105,6 +135,8 @@ const route = useRoute()
 const offset = computed(() => (page.value - 1) * limit.value)
 const pages = computed(() => getPagesForPagination(data.value?.count, limit.value, route.path))
 
+const searchTerm = ref(route.query.recherche || "")
+
 const page = computed(() => parseInt(route.query.page))
 const ordering = computed(() => route.query.triage)
 const limit = computed(() => parseInt(route.query.limit))
@@ -119,7 +151,7 @@ const showPagination = computed(() => data.value?.count > data.value?.results?.l
 
 // Obtention de la donnée via API
 const url = computed(() => {
-  let apiUrl = `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&simplifiedStatus=${simplifiedStatus.value}&surveillanceOnly=${surveillanceOnly.value}&`
+  let apiUrl = `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&simplifiedStatus=${simplifiedStatus.value}&surveillanceOnly=${surveillanceOnly.value}&search=${searchTerm.value}&`
   if (props.companyId) apiUrl += `${apiUrl}&company=${props.companyId}`
   if (population.value) apiUrl += `&population=${population.value}`
   if (condition.value) apiUrl += `&condition=${condition.value}`
@@ -184,6 +216,23 @@ const activeFilters = computed(() => {
     })
   return filters
 })
+
+// Search
+
+const addIngredient = async (ingredient) => {
+  // selectedIngredient.value = ingredient
+  // if (!ingredientIsPlant.value) selectedPart.value = null
+  // if (ingredientIsSubstance.value) selectedUnit.value = selectedIngredient.value.unit
+  // if (
+  //   selectedIngredient.value?.objectType === "form_of_supply" ||
+  //   selectedIngredient.value?.objectType === "active_ingredient"
+  // ) {
+  //   const url = `/api/v1/${getApiType(selectedIngredient.value?.objectType)}s/${selectedIngredient.value.id}`
+  //   const { data } = await useFetch(url, { immediate: true }).get().json()
+  //   selectedIngredient.value.substances = data.value?.substances
+  // }
+  console.log(ingredient)
+}
 </script>
 
 <style scoped>

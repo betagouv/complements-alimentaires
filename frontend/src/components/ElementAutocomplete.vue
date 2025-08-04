@@ -32,11 +32,44 @@
         'z-10': true,
       }"
     >
+      <!-- Recherche par entreprise, nom de produit ou marque (lorsque extendedOptionsVisible est à true) -->
+      <template v-if="extendedOptionsVisible">
+        <li
+          class="list-item pt-1 border-b"
+          :class="{ 'active-option': activeOption === 0 }"
+          @mousedown="$emit('searchProduct', searchTerm)"
+        >
+          <div class="p-2 pl-4 text-left flex">
+            <div class="self-center"><v-icon scale="0.85" class="mr-2" name="ri-capsule-fill" /></div>
+            <div>Chercher par produit contenant « {{ searchTerm }} »</div>
+          </div>
+        </li>
+        <li
+          class="list-item pt-1 border-b"
+          :class="{ 'active-option': activeOption === 1 }"
+          @mousedown="$emit('searchBrand', searchTerm)"
+        >
+          <div class="p-2 pl-4 text-left flex">
+            <div class="self-center"><v-icon scale="0.85" class="mr-2" name="ri-price-tag-3-line" /></div>
+            <div>Chercher par marque contenant « {{ searchTerm }} »</div>
+          </div>
+        </li>
+        <li
+          class="list-item pt-1 border-b"
+          :class="{ 'active-option': activeOption === 2 }"
+          @mousedown="$emit('searchCompany', searchTerm)"
+        >
+          <div class="p-2 pl-4 text-left flex">
+            <div class="self-center"><v-icon scale="0.85" class="mr-2" name="ri-building-4-line" /></div>
+            <div>Chercher par entreprise contenant « {{ searchTerm }} »</div>
+          </div>
+        </li>
+      </template>
       <li
         v-for="(option, i) of autocompleteResults"
         :key="option"
         class="list-item"
-        :class="{ 'active-option': activeOption === i }"
+        :class="{ 'active-option': activeOption === (extendedOptionsVisible ? i + 3 : i) }"
         @mousedown="selectOption(option)"
       >
         <div class="p-2 pl-4 text-left flex">
@@ -102,9 +135,15 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+
+  // Si true, la recherche par marque, produit et entreprise sera affichée
+  extendedSearch: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-const emit = defineEmits(["selected", "search"])
+const emit = defineEmits(["selected", "search", "searchProduct", "searchBrand", "searchCompany"])
 const hasFocus = ref(false)
 const displayOptions = computed(() => hasFocus.value && !!autocompleteResults.value.length)
 
@@ -149,22 +188,29 @@ const isVisible = function (ele, container) {
 }
 
 function checkIfActiveOptionIsVisible() {
-  const activeLi = optionsList.value.querySelectorAll("li")[activeOption.value]
+  const liElements = optionsList.value.querySelectorAll("li")
+  const activeLi = liElements[activeOption.value]
+
+  if (!activeLi) return
+
   const isLiVisible = isVisible(activeLi, optionsList.value)
-  if (!isLiVisible) {
-    // Scroll to activeLi
-    activeLi.scrollIntoView({ behavior: "smooth" })
-  }
+  if (!isLiVisible) activeLi.scrollIntoView({ behavior: "smooth" })
 }
+
+const extendedOptionsVisible = computed(() => props.extendedSearch && searchTerm.value.trim().length >= 3)
+
+const optionCount = computed(() =>
+  extendedOptionsVisible.value ? autocompleteResults.value.length + 3 : autocompleteResults.value.length
+)
 
 function moveToPreviousOption() {
   const isFirst = activeOption.value <= 0
-  activeOption.value = isFirst ? autocompleteResults.value.length - 1 : activeOption.value - 1
+  activeOption.value = isFirst ? optionCount.value - 1 : activeOption.value - 1
   nextTick().then(checkIfActiveOptionIsVisible)
 }
 
 function moveToNextOption() {
-  const isLast = activeOption.value >= autocompleteResults.value.length - 1
+  const isLast = activeOption.value >= optionCount.value - 1
   activeOption.value = isLast ? 0 : activeOption.value + 1
   nextTick().then(checkIfActiveOptionIsVisible)
 }
@@ -172,13 +218,21 @@ function moveToNextOption() {
 function checkKeyboardNav($event) {
   if (["ArrowUp", "ArrowDown", "Enter"].includes($event.key)) {
     $event.preventDefault()
-    if (!autocompleteResults.value.length) return
+    if (!autocompleteResults.value.length && !extendedOptionsVisible.value) return
   }
   if ($event.key === "Enter") {
     // Prendre le premier élément si on n'a pas explicitement sélectionné un autre
     const option = props.chooseFirstAsDefault && activeOption.value < 0 ? 0 : activeOption.value
-    if (option > -1) selectOption(autocompleteResults.value[option])
-    else search()
+    if (option > -1) {
+      if (extendedOptionsVisible.value) {
+        if (option === 0) emit("searchProduct", searchTerm.value)
+        else if (option === 1) emit("searchBrand", searchTerm.value)
+        else if (option === 2) emit("searchCompany", searchTerm.value)
+        else selectOption(autocompleteResults.value[option - 3])
+      } else {
+        selectOption(autocompleteResults.value[option])
+      }
+    } else search()
     clear()
   } else if ($event.key === "ArrowUp") {
     moveToPreviousOption()

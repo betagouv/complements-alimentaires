@@ -362,6 +362,7 @@ class ControllerDeclarationsListView(CommonOngoingDeclarationView):
     permission_classes = [IsController]
     pagination_class = DeclarationPagination
     ordering_fields = ["name", "company_name"]
+    search_fields = ["name", "id", "company__social_name", "brand"]
     serializer_class = ControllerDeclarationSerializer
     filter_backends = [
         SurveillanceOnlyFilter,
