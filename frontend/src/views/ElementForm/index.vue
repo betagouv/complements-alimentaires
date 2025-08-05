@@ -40,12 +40,13 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
 import { useRoute } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import FormFields from "./FormFields"
+import { setDocumentTitle } from "@/utils/document"
 
 const props = defineProps({ urlComponent: String })
 
@@ -63,14 +64,20 @@ const typeName = computed(() => getTypeInFrench(type.value))
 const url = computed(() => `/api/v1/${apiType.value}s/${elementId.value}?history=true`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
+const pageTitle = computed(() => (isNewIngredient.value ? "Nouvel ingrédient" : "Modification ingrédient"))
+
 const getElementFromApi = async () => {
-  if (!type.value || !elementId.value) return // create new ingredient
+  const titleParts = [pageTitle.value]
+  if (!type.value || !elementId.value) {
+    setDocumentTitle(titleParts)
+    return // create new ingredient
+  }
   await execute()
   await handleError(response)
+  if (element.value?.name) titleParts.push(element.value.name)
+  setDocumentTitle(titleParts)
 }
 getElementFromApi()
-
-const pageTitle = computed(() => (isNewIngredient.value ? "Nouvel ingrédient" : "Modification ingrédient"))
 
 const breadcrumbLinks = computed(() => {
   const links = []

@@ -59,6 +59,7 @@ import { handleError } from "@/utils/error-handling"
 import { slugifyType } from "@/utils/mappings"
 import { getPagesForPagination } from "@/utils/components"
 import RegulatoryWarning from "@/components/RegulatoryWarning"
+import { setDocumentTitle } from "@/utils/document"
 
 const router = useRouter()
 const route = useRoute()
@@ -92,6 +93,7 @@ const { data, response, isFetching, execute } = useFetch(
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
+  setDocumentTitle([currentSearch.value, "Résultats de recherche"])
 }
 
 const goToSelectedOption = (option) => {

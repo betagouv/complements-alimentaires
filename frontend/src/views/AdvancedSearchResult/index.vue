@@ -58,6 +58,7 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import { statusProps } from "@/utils/mappings"
 
 import DeclarationSummary from "@/components/DeclarationSummary"
+import { setDocumentTitle } from "@/utils/document"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -89,5 +90,6 @@ const {
 onMounted(async () => {
   await executeDeclarationFetch()
   handleError(declarationResponse)
+  setDocumentTitle([declaration.value.name, "Résultat de recherche"])
 })
 </script>

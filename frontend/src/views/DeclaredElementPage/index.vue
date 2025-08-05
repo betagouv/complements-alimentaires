@@ -89,7 +89,7 @@ const getElementFromApi = async () => {
 
 getElementFromApi()
 watch(element, (newElement) => {
-  setDocumentTitle([newElement?.newName || newElement?.element?.name])
+  setDocumentTitle([newElement?.newName || newElement?.element?.name, "Nouvel ingrédient"])
   additionalFields.value = JSON.parse(JSON.stringify(element.value))
   additionalFields.value.new = false
 })

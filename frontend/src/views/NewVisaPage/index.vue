@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue"
+import { computed, onMounted, watch } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import { useRootStore } from "@/stores/root"
@@ -65,6 +65,7 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import BepiasSidebar from "@/components/NewBepiasViews/BepiasSidebar"
 import DeclarationSummary from "@/components/DeclarationSummary"
 import DeclarationAlert from "@/components/DeclarationAlert"
+import { setDocumentTitle } from "@/utils/document"
 
 const props = defineProps({ declarationId: String })
 const route = useRoute()
@@ -180,5 +181,16 @@ onMounted(async () => {
     const el = document.querySelector(route.hash)
     if (el) el.scrollIntoView({ behavior: "smooth" })
   }
+
+  setDocumentTitleFromRoute()
 })
+
+const setDocumentTitleFromRoute = () => {
+  if (route.name.includes("History")) setDocumentTitle(["Historique", declaration.value.name, "Visa"])
+  else if (route.name.includes("Identity"))
+    setDocumentTitle(["Identité produit et entreprise", declaration.value.name, "Visa"])
+  else setDocumentTitle([declaration.value.name, "Visa"])
+}
+
+watch(route, setDocumentTitleFromRoute)
 </script>

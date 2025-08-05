@@ -39,6 +39,7 @@ import useToaster from "@/composables/use-toaster"
 import SectionTitle from "@/components/SectionTitle"
 import CompanyForm from "@/components/CompanyForm"
 import TabularDataDisplayer from "@/components/TabularDataDisplayer"
+import { setDocumentTitle } from "@/utils/document"
 
 const route = useRoute()
 const rootStore = useRootStore()
@@ -102,6 +103,7 @@ const {
 onMounted(async () => {
   await execute()
   await handleError(response)
+  setDocumentTitle([company.value.socialName, "Mon entreprise"])
 })
 
 // Gère la réponse du component enfant
