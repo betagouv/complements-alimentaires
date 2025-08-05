@@ -1,18 +1,67 @@
 <template>
   <div>
-    <DsfrAccordionsGroup v-model="activeAccordion" class="mb-8">
+    <DsfrAccordionsGroup v-model="activeAccordion">
       <DsfrAccordion title="Filtrer les déclarations">
-        <div class="grid grid-cols-3">
-          <div class="col-span-1 sm:col-span-2 md:col-span-3">
+        <div class="grid grid-cols-4 gap-0 sm:gap-2 md:gap-4">
+          <div class="col-span-4 sm:col-span-2 md:col-span-1">
             <DsfrToggleSwitch
               label="Afficher les déclarations à surveiller uniquement"
               :modelValue="surveillanceOnly"
               @update:modelValue="updateSurveillanceOnly"
             />
           </div>
+          <div class="col-span-4 sm:col-span-2 md:col-span-1">
+            <DsfrInputGroup>
+              <DsfrSelect
+                label="Population cible"
+                defaultUnselectedText=""
+                :modelValue="population"
+                @update:modelValue="updatePopulation"
+                :options="populationOptions"
+                class="text-sm!"
+              />
+            </DsfrInputGroup>
+          </div>
+          <div class="col-span-4 sm:col-span-2 md:col-span-1">
+            <DsfrInputGroup>
+              <DsfrSelect
+                label="Population à risque"
+                defaultUnselectedText=""
+                :modelValue="condition"
+                @update:modelValue="updateCondition"
+                :options="conditionOptions"
+                class="text-sm!"
+              />
+            </DsfrInputGroup>
+          </div>
+          <div class="col-span-4 sm:col-span-2 md:col-span-1">
+            <DsfrInputGroup>
+              <DsfrSelect
+                label="Forme galénique"
+                defaultUnselectedText=""
+                :modelValue="galenicFormulation"
+                @update:modelValue="updateGalenicFormulation"
+                :options="galenicFormulationOptions"
+                class="text-sm!"
+              />
+            </DsfrInputGroup>
+          </div>
         </div>
       </DsfrAccordion>
     </DsfrAccordionsGroup>
+
+    <!-- Zone des filtres actifs -->
+    <div class="my-4">
+      <DsfrTag
+        v-for="(item, idx) in activeFilters"
+        :key="`active-filters-${idx}`"
+        :label="item.text"
+        tagName="button"
+        @click="item.callback"
+        :aria-label="`Retirer le filtre « ${item.text} »`"
+        class="mx-1 fr-tag--dismiss"
+      ></DsfrTag>
+    </div>
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
@@ -38,6 +87,13 @@ import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import ControlDeclarationsTable from "./ControlDeclarationsTable"
 import { ref } from "vue"
+import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
+import { toOptions } from "@/utils/forms.js"
+
+const store = useRootStore()
+store.fetchDeclarationFieldsData()
+const { populations, conditions, galenicFormulations } = storeToRefs(store)
 
 const activeAccordion = ref()
 
@@ -55,12 +111,19 @@ const limit = computed(() => parseInt(route.query.limit))
 const simplifiedStatus = computed(() => route.query.simplifiedStatus)
 const surveillanceOnly = computed(() => route.query.surveillanceOnly === "true")
 
+const population = computed(() => (route.query.population ? parseInt(route.query.population) : ""))
+const condition = computed(() => (route.query.condition ? parseInt(route.query.condition) : ""))
+const galenicFormulation = computed(() => (route.query.formeGalenique ? parseInt(route.query.formeGalenique) : ""))
+
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 
 // Obtention de la donnée via API
 const url = computed(() => {
-  const apiUrl = `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&simplifiedStatus=${simplifiedStatus.value}&surveillanceOnly=${surveillanceOnly.value}`
-  if (props.companyId) return `${apiUrl}&company=${props.companyId}`
+  let apiUrl = `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&simplifiedStatus=${simplifiedStatus.value}&surveillanceOnly=${surveillanceOnly.value}&`
+  if (props.companyId) apiUrl += `${apiUrl}&company=${props.companyId}`
+  if (population.value) apiUrl += `&population=${population.value}`
+  if (condition.value) apiUrl += `&condition=${condition.value}`
+  if (galenicFormulation.value) apiUrl += `&galenic_formulation=${galenicFormulation.value}`
   return apiUrl
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
@@ -80,6 +143,53 @@ const updateFiltering = (filterKey, filterValue) => {
   filterQuery[filterKey] = filterValue
   updateQuery(filterQuery)
 }
+const updatePopulation = (newValue) => updateQuery({ population: newValue })
+const updateCondition = (newValue) => updateQuery({ condition: newValue })
+const updateGalenicFormulation = (newValue) => updateQuery({ formeGalenique: newValue })
 
-watch([page, limit, ordering, simplifiedStatus, surveillanceOnly], fetchSearchResults)
+watch(
+  [page, limit, ordering, simplifiedStatus, surveillanceOnly, population, condition, galenicFormulation],
+  fetchSearchResults
+)
+
+// Filter options
+
+const populationOptions = computed(() => toOptions(populations.value))
+const conditionOptions = computed(() => toOptions(conditions.value))
+const galenicFormulationOptions = computed(() => toOptions(galenicFormulations.value))
+
+// Filter tags
+
+const activeFilters = computed(() => {
+  const filters = []
+  if (surveillanceOnly.value)
+    filters.push({
+      text: "Déclarations à surveiller",
+      callback: () => updateSurveillanceOnly(false),
+    })
+  if (population.value)
+    filters.push({
+      text: `Pop. cible : ${populationOptions.value?.find((x) => x.value === population.value)?.text || ""}`,
+      callback: () => updatePopulation(""),
+    })
+  if (condition.value)
+    filters.push({
+      text: `Pop. à risque : ${conditionOptions.value?.find((x) => x.value === condition.value)?.text || ""}`,
+      callback: () => updateCondition(""),
+    })
+  if (galenicFormulation.value)
+    filters.push({
+      text: `Forme : ${galenicFormulationOptions.value?.find((x) => x.value === galenicFormulation.value)?.text || ""}`,
+      callback: () => updateGalenicFormulation(""),
+    })
+  return filters
+})
 </script>
+
+<style scoped>
+@reference "../../../styles/index.css";
+div :deep(.fr-select-group) {
+  @apply mb-0;
+  @apply sm:mb-2;
+}
+</style>

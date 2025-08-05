@@ -222,6 +222,7 @@ import { getTypeIcon, getTypeInFrench, typesMapping } from "@/utils/mappings"
 import CountryField from "@/components/fields/CountryField"
 import DoseFilterModal from "./DoseFilterModal"
 import DateFilterField from "./DateFilterField"
+import { toOptions } from "@/utils/forms.js"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -376,15 +377,6 @@ watch(route, async () => {
 // Remplissage d'options dans les champs select
 
 const { populations, conditions, galenicFormulations } = storeToRefs(store)
-const toOptions = (list) => {
-  const options =
-    (list || [])
-      .map((x) => ({ value: x.id, text: x.name.split(" (à préciser)")[0] })) // Transforme la réponse API en options pour les champs select
-      .sort((a, b) => a.text.localeCompare(b.text)) || [] // Triage alphabétique
-  options.unshift({ disabled: true, text: "---------" })
-  options.unshift({ value: "", text: "Tout afficher" })
-  return options
-}
 
 const articleSelectOptions = [
   ...[
