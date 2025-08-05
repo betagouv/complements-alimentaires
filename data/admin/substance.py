@@ -111,6 +111,7 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
                     "is_risky",
                     "novel_food",
                     "substance_types",
+                    "requires_analysis_report",
                 ],
             },
         ),

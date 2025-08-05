@@ -3,8 +3,6 @@ from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.test import TestCase
 
-# from data.factories import MicroorganismFactory, PlantFactory, PlantFamilyFactory, SubstanceFactory
-
 
 class TestMigrations(TestCase):
     @property
@@ -41,15 +39,19 @@ class TestMigrations(TestCase):
 #     migrate_from = "0149_alter_declaration_teleicare_id_and_more"
 #     migrate_to = "0150_alter_historicalingredient_to_be_entered_in_next_decree_and_more"
 
-#     def setUpBeforeMigration(self, apps):
-#         self.teleicare_ingredient = IngredientFactory.create(siccrf_id=1, to_be_entered_in_next_decree=False)
-#         self.ca_ingredient = IngredientFactory.create(siccrf_id=None, to_be_entered_in_next_decree=False)
-#         self.teleicare_microorganism = MicroorganismFactory.create(siccrf_id=2, to_be_entered_in_next_decree=False)
-#         self.ca_microorganism = MicroorganismFactory.create(siccrf_id=None, to_be_entered_in_next_decree=False)
-#         self.teleicare_plant = PlantFactory.create(siccrf_id=3, to_be_entered_in_next_decree=False)
-#         self.ca_plant = PlantFactory.create(siccrf_id=None, to_be_entered_in_next_decree=False)
-#         self.teleicare_substance = SubstanceFactory.create(siccrf_id=4, to_be_entered_in_next_decree=False)
-#         self.ca_substance = SubstanceFactory.create(siccrf_id=None, to_be_entered_in_next_decree=False)
+# def setUpBeforeMigration(self, apps):
+#     OldIngredient = apps.get_model("data", "Ingredient")
+#     self.teleicare_ingredient = OldIngredient.objects.create(siccrf_id=1, to_be_entered_in_next_decree=False)
+#     self.ca_ingredient = OldIngredient.objects.create(siccrf_id=None, to_be_entered_in_next_decree=False)
+#     OldMicroorganism = apps.get_model("data", "Microorganism")
+#     self.teleicare_microorganism = OldMicroorganism.objects.create(siccrf_id=2, to_be_entered_in_next_decree=False)
+#     self.ca_microorganism = OldMicroorganism.objects.create(siccrf_id=None, to_be_entered_in_next_decree=False)
+#     OldPlant = apps.get_model("data", "Plant")
+#     self.teleicare_plant = OldPlant.objects.create(siccrf_id=3, to_be_entered_in_next_decree=False)
+#     self.ca_plant = OldPlant.objects.create(siccrf_id=None, to_be_entered_in_next_decree=False)
+#     OldSubstance = apps.get_model("data", "Substance")
+#     self.teleicare_substance = OldSubstance.objects.create(siccrf_id=4, to_be_entered_in_next_decree=False)
+#     self.ca_substance = OldSubstance.objects.create(siccrf_id=None, to_be_entered_in_next_decree=False)
 
 #     def test_migration_0150(self):
 #         """

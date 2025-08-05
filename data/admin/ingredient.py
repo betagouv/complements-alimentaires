@@ -58,6 +58,7 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
                     "is_risky",
                     "novel_food",
                     "status",
+                    "requires_analysis_report",
                 ],
             },
         ),

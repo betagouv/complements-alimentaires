@@ -67,6 +67,14 @@
           label-left
           class="self-center mt-4 col-span-2 sm:col-span-2"
         />
+        <DsfrToggleSwitch
+          v-model="state.requiresAnalysisReport"
+          label="Nécessite un bulletin d'analyse ?"
+          activeText="Oui"
+          inactiveText="Non"
+          label-left
+          class="self-center mt-4 col-span-2 sm:col-span-2"
+        />
         <div class="col-span-full mt-4 -mb-6" v-if="formForType.substanceTypes">
           <DsfrCheckboxSet
             v-model="state.substanceTypes"

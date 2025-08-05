@@ -62,6 +62,7 @@ class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonA
                     "is_risky",
                     "novel_food",
                     "status",
+                    "requires_analysis_report",
                 ],
             },
         ),
