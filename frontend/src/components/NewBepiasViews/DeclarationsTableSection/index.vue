@@ -2,7 +2,7 @@
   <div>
     <DsfrAccordionsGroup v-model="activeAccordion">
       <DsfrAccordion title="Filtrer les déclarations">
-        <div class="grid grid-cols-4 gap-4">
+        <div class="grid grid-cols-4 gap-0 sm:gap-2 md:gap-4">
           <div class="col-span-4 sm:col-span-2 md:col-span-1">
             <DsfrToggleSwitch
               label="Afficher les déclarations à surveiller uniquement"
@@ -185,3 +185,11 @@ const activeFilters = computed(() => {
   return filters
 })
 </script>
+
+<style scoped>
+@reference "../../../styles/index.css";
+div :deep(.fr-select-group) {
+  @apply mb-0;
+  @apply sm:mb-2;
+}
+</style>
