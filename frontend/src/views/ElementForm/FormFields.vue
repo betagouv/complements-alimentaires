@@ -52,7 +52,7 @@
         </DsfrInputGroup>
         <DsfrToggleSwitch
           v-if="!state.ingredientType || state.ingredientType != aromaId"
-          v-model="state.novelFood"
+          v-model="state.isNovelFood"
           label="Novel food"
           activeText="Oui"
           inactiveText="Non"
@@ -348,7 +348,7 @@ const saveElement = async () => {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
-  if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
+  if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.isNovelFood
   if (formForType.value.plantParts) {
     const authorisedParts = payload.authorisedPlantParts
     const forbiddenParts = payload.forbiddenPlantParts
@@ -397,7 +397,7 @@ const formQuestions = {
     family: true,
     function: true,
     // status: true for every type
-    // novelFood is true for every type
+    // isNovelFood is true for every type
     // synonymes are true for every type
     plantParts: true,
     substances: true,

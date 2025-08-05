@@ -2,7 +2,7 @@
   <DsfrCard class="capitalize" :link="route" :title="result.name">
     <template #start-details>
       <div class="flex gap-x-2">
-        <DsfrBadge v-if="result.novelFood" label="Novel Food" small type="new" />
+        <DsfrBadge v-if="result.isNovelFood" label="Novel Food" small type="new" />
         <ElementStatusBadge v-if="result.status" :text="result.status" />
       </div>
       <div class="mt-2 flex gap-x-1">
