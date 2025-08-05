@@ -1,4 +1,3 @@
-import copy
 import logging
 
 from django.db import transaction
@@ -55,14 +54,7 @@ class WithSubstances(serializers.ModelSerializer):
     substances = serializers.PrimaryKeyRelatedField(many=True, queryset=Substance.objects.all(), required=False)
 
 
-class WithName(serializers.ModelSerializer):
-    name = serializers.CharField(source="ca_name")
-
-
 class CommonIngredientModificationSerializer(serializers.ModelSerializer):
-    public_comments = serializers.CharField(source="ca_public_comments", required=False, allow_blank=True)
-    private_comments = serializers.CharField(source="ca_private_comments", required=False, allow_blank=True)
-    status = serializers.IntegerField(source="ca_status", required=False)
     change_reason = serializers.CharField(required=False, allow_blank=True)
     public_change_reason = serializers.CharField(required=False, allow_blank=True)
 
@@ -85,21 +77,6 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
         change_reason = validated_data.pop("change_reason", "Modification via Compl'Alim")
         public_change_reason = validated_data.pop("public_change_reason", "")
-        data_items = copy.deepcopy(validated_data).items()
-        for key, value in data_items:
-            if key.startswith("ca_"):
-                siccrf_key = key.replace("ca_", "siccrf_")
-                siccrf_value = getattr(instance, siccrf_key, None)
-                ca_value = getattr(instance, key, None)
-                if not value and value is not False and (siccrf_value or ca_value):
-                    validated_data[siccrf_key] = value  # mettre comme None ou "" selon la requête
-                    logger.info(
-                        f"SICCRF champ supprimé : le champ '{siccrf_key}' a été supprimé sur l'ingrédient type '{instance.object_type}', id '{instance.id}'"
-                    )
-                elif value == siccrf_value and (ca_value is None or ca_value == "" or value == ca_value):
-                    # si la valeur siccrf n'a pas été surpassée par une valeur CA, et la valeur donnée est la même que l'existante, pas besoin de la sauvegarder
-                    validated_data.pop(key, None)
-
         super().update(instance, validated_data)
         self.update_change_reason(instance, change_reason, public_change_reason)
 
@@ -144,18 +121,18 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     def update_declaration_articles(self, instance, validated_data):
         irrelevant_changes = [
             # synonyms, change_reason and public_change_reason ont été popped avant
-            "ca_public_comments",
-            "ca_private_comments",
+            "public_comments",
+            "private_comments",
             "novel_food",
             "to_be_entered_in_next_decree",
-            "ca_family",  # plante
+            "family",  # plante
             # substance
-            "ca_cas_number",
-            "ca_einec_number",
-            "ca_must_specify_quantity",
+            "cas_number",
+            "einec_number",
+            "must_specify_quantity",
             # microorganism
-            "ca_genus",
-            "ca_species",
+            "genus",
+            "species",
         ]
         if len(set(validated_data.keys()) - set(irrelevant_changes)) > 0:
             ids_using_ingredient = []

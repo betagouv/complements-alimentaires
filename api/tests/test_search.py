@@ -1,14 +1,16 @@
 from django.urls import reverse
-from rest_framework.test import APITestCase
+
 from rest_framework import status
+from rest_framework.test import APITestCase
+
 from data.factories import (
-    PlantFactory,
     IngredientFactory,
     IngredientSynonymFactory,
-    SubstanceFactory,
-    SubstanceSynonymFactory,
     MicroorganismFactory,
     MicroorganismSynonymFactory,
+    PlantFactory,
+    SubstanceFactory,
+    SubstanceSynonymFactory,
 )
 
 
@@ -38,9 +40,9 @@ class TestSearch(APITestCase):
         """
         Simple single-class name test
         """
-        eucalyptus_1 = PlantFactory.create(ca_name="eucalyptus")
-        eucalyptus_2 = PlantFactory.create(ca_name="eucalyptus")
-        vanille = PlantFactory.create(ca_name="vanille")
+        eucalyptus_1 = PlantFactory.create(name="eucalyptus")
+        eucalyptus_2 = PlantFactory.create(name="eucalyptus")
+        vanille = PlantFactory.create(name="vanille")
 
         search_term = "eucalyptus"
         response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
@@ -55,7 +57,7 @@ class TestSearch(APITestCase):
 
     def test_search_synonym(self):
         """Simple synonym test"""
-        IngredientSynonymFactory(name="matcha", standard_name=IngredientFactory(ca_name="other"))
+        IngredientSynonymFactory(name="matcha", standard_name=IngredientFactory(name="other"))
         search_term = "matcha"
         response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
         results = response.json().get("results", [])
@@ -65,10 +67,10 @@ class TestSearch(APITestCase):
         """
         Multiple-class name test
         """
-        plant = PlantFactory.create(ca_name="matcha latte")
-        ingredient = IngredientFactory.create(ca_name="matcha powder")
-        substance = SubstanceFactory.create(ca_name="cafe latte")
-        microorganism = MicroorganismFactory.create(ca_genus="cafe", ca_species="powder")
+        plant = PlantFactory.create(name="matcha latte")
+        ingredient = IngredientFactory.create(name="matcha powder")
+        substance = SubstanceFactory.create(name="cafe latte")
+        microorganism = MicroorganismFactory.create(genus="cafe", species="powder")
 
         search_term = "matcha"
         response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
@@ -101,7 +103,7 @@ class TestSearch(APITestCase):
         """The search_term might be found in several fields,
         in this case, the object should appear only once in search results
         """
-        moorg = MicroorganismFactory(ca_genus="matcha")
+        moorg = MicroorganismFactory(genus="matcha")
         MicroorganismSynonymFactory(name="matcha latte", standard_name=moorg)
         MicroorganismSynonymFactory(name="boisson matcha", standard_name=moorg)
 
@@ -115,7 +117,7 @@ class TestSearch(APITestCase):
         """The search_term might be found in several fields,
         in this case, the object should appear only once in search results
         """
-        substance = SubstanceFactory(ca_name="matcha")
+        substance = SubstanceFactory(name="matcha")
         SubstanceSynonymFactory(name="matcha latte", standard_name=substance)
         SubstanceSynonymFactory(name="boisson matcha", standard_name=substance)
 
@@ -130,7 +132,7 @@ class TestSearch(APITestCase):
         Pagination is controlled by parameters `limit` and `offset`
         """
         for i in range(9):
-            PlantFactory.create(ca_name="matcha")
+            PlantFactory.create(name="matcha")
 
         search_term = "matcha"
 

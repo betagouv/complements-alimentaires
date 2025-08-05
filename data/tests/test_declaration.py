@@ -20,7 +20,7 @@ from data.factories import (
     SnapshotFactory,
     SubstanceFactory,
 )
-from data.models import Declaration, Snapshot, SubstanceType, Part
+from data.models import Declaration, Part, Snapshot, SubstanceType
 from data.models.ingredient_status import IngredientStatus
 
 
@@ -276,7 +276,7 @@ class DeclarationTestCase(TestCase):
             declared_ingredients=[],
             computed_substances=[],
         )
-        plant_not_autorized = PlantFactory(ca_status=IngredientStatus.NOT_AUTHORIZED)
+        plant_not_autorized = PlantFactory(status=IngredientStatus.NOT_AUTHORIZED)
         DeclaredPlantFactory(plant=plant_not_autorized, declaration=declaration_not_autorized)
 
         declaration_not_autorized.assign_calculated_article()
@@ -294,9 +294,9 @@ class DeclarationTestCase(TestCase):
             declared_ingredients=[],
             computed_substances=[],
         )
-        plant_with_part_not_authorized = PlantFactory(ca_status=IngredientStatus.AUTHORIZED)
+        plant_with_part_not_authorized = PlantFactory(status=IngredientStatus.AUTHORIZED)
         plant_part = PlantPartFactory()
-        Part.objects.create(plant=plant_with_part_not_authorized, plantpart=plant_part, ca_is_useful=False)
+        Part.objects.create(plant=plant_with_part_not_authorized, plantpart=plant_part, is_useful=False)
 
         DeclaredPlantFactory(
             plant=plant_with_part_not_authorized, used_part=plant_part, declaration=declaration_part_not_authorized
@@ -317,7 +317,7 @@ class DeclarationTestCase(TestCase):
             declared_ingredients=[],
             computed_substances=[],
         )
-        plant_with_part_unknown = PlantFactory(ca_status=IngredientStatus.AUTHORIZED)
+        plant_with_part_unknown = PlantFactory(status=IngredientStatus.AUTHORIZED)
         plant_part = PlantPartFactory()
 
         DeclaredPlantFactory(plant=plant_with_part_unknown, used_part=plant_part, declaration=declaration_part_unknown)
@@ -348,7 +348,7 @@ class DeclarationTestCase(TestCase):
             MaxQuantityPerPopulationRelationFactory(
                 substance=substance,
                 population=self.general_pop,
-                ca_max_quantity=SUBSTANCE_MAX_QUANTITY,
+                max_quantity=SUBSTANCE_MAX_QUANTITY,
             )
             ComputedSubstanceFactory(
                 substance=substance,
@@ -423,7 +423,7 @@ class DeclarationTestCase(TestCase):
             MaxQuantityPerPopulationRelationFactory(
                 substance=substance,
                 population=self.general_pop,
-                ca_max_quantity=SUBSTANCE_MAX_QUANTITY,
+                max_quantity=SUBSTANCE_MAX_QUANTITY,
             )
             ComputedSubstanceFactory(
                 substance=substance,
@@ -507,17 +507,17 @@ class DeclarationTestCase(TestCase):
             MaxQuantityPerPopulationRelationFactory(
                 substance=substance,
                 population=self.general_pop,
-                ca_max_quantity=2,
+                max_quantity=2,
             )
             MaxQuantityPerPopulationRelationFactory(
                 substance=substance,
                 population=pop_smallest_quantity,
-                ca_max_quantity=1,
+                max_quantity=1,
             )
             MaxQuantityPerPopulationRelationFactory(
                 substance=substance,
                 population=pop_biggest_quantity,
-                ca_max_quantity=10,
+                max_quantity=10,
             )
             declaration_max_quantity_for_general_pop_not_exceeded = InstructionReadyDeclarationFactory(
                 computed_substances=[],

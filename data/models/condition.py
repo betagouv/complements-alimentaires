@@ -19,7 +19,7 @@ class Condition(CommonModel):
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais selon la base SICCRF")
     min_age = models.FloatField(blank=True, null=True, default=None)
     max_age = models.FloatField(blank=True, null=True, default=None)
-    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete"])
+    history = HistoricalRecords(inherit=True)
     category = models.CharField(
         max_length=50,
         choices=ConditionCategory.choices,

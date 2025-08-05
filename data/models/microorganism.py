@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models import F, Value
-from django.db.models.functions import Coalesce, NullIf
 
 from simple_history.models import HistoricalRecords
 
@@ -25,34 +24,19 @@ class Microorganism(IngredientCommonModel):
     class Meta:
         verbose_name = "micro-organisme"
 
-    # réécriture des champs provenant de la mixin WithDefaultFields
-    # le champ name n'existe pas dans la base SICCRF il est calculé à partir du genre et de l'espèce
-    siccrf_name = None
-    ca_name = None
     name = models.GeneratedField(
         expression=ConcatOp(
-            Coalesce(NullIf(F("ca_genus"), Value("")), F("siccrf_genus")),
+            F("genus"),
             Value(" "),
-            Coalesce(NullIf(F("ca_species"), Value("")), F("siccrf_species")),
+            F("species"),
         ),
         output_field=models.TextField(verbose_name="nom"),
         db_persist=True,
     )
 
-    siccrf_genus = models.TextField(verbose_name="genre de micro-organisme (selon la base SICCRF)")
-    ca_genus = models.TextField(verbose_name="genre de micro-organisme")
-    genus = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_genus"), Value("")), F("siccrf_genus")),
-        output_field=models.TextField(verbose_name="genre de micro-organisme"),
-        db_persist=True,
-    )
-    siccrf_species = models.TextField(verbose_name="espèce de micro-organisme (selon la base SICCRF)")
-    ca_species = models.TextField(verbose_name="espèce de micro-organisme")
-    species = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_species"), Value("")), F("siccrf_species")),
-        output_field=models.TextField(verbose_name="espèce de micro-organisme"),
-        db_persist=True,
-    )
+    genus = models.TextField(verbose_name="genre de micro-organisme", null=True)
+
+    species = models.TextField(verbose_name="espèce de micro-organisme", null=True)
 
     substances = models.ManyToManyField(Substance, through="MicroorganismSubstanceRelation")
     history = HistoricalRecords(
@@ -62,13 +46,6 @@ class Microorganism(IngredientCommonModel):
         inherit=True,
         excluded_fields=[
             "name",
-            "is_obsolete",
-            "private_comments",
-            "public_comments",
-            "genus",
-            "species",
-            "status",
-            "siccrf_status",
         ],
     )
 
@@ -76,10 +53,6 @@ class Microorganism(IngredientCommonModel):
 class MicroorganismSubstanceRelation(TimeStampable, Historisable):
     microorganism = models.ForeignKey(Microorganism, on_delete=models.CASCADE)
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
-    siccrf_is_related = models.BooleanField(
-        default=False, verbose_name="substance associée au micro-organisme (selon la base SICCRF)"
-    )
-    ca_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée au micro-organisme")
 
 
 class MicroorganismSynonym(TimeStampable, Historisable):

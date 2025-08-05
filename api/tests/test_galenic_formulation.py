@@ -13,12 +13,8 @@ class TestGalenicFormulationApi(ProjectAPITestCase):
         The API should return all non obsolete galenicFormulation that are not missing data
         """
 
-        complete_formulations = [
-            GalenicFormulationFactory.create(siccrf_is_obsolete=False, ca_is_obsolete=False) for i in range(3)
-        ]
-        obsolete_formulations = [
-            GalenicFormulationFactory.create(siccrf_is_obsolete=True, ca_is_obsolete=True) for i in range(3)
-        ]
+        complete_formulations = [GalenicFormulationFactory.create(is_obsolete=False) for i in range(3)]
+        obsolete_formulations = [GalenicFormulationFactory.create(is_obsolete=True) for i in range(3)]
         response = self.get(self.url())
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()

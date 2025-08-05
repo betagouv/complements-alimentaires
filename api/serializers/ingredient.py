@@ -2,17 +2,16 @@ from rest_framework import serializers
 
 from data.models import Ingredient, IngredientSynonym
 
-from .substance import SubstanceShortSerializer
 from .common_ingredient import (
+    COMMON_FETCH_FIELDS,
     COMMON_FIELDS,
     COMMON_NAME_FIELDS,
     COMMON_READ_ONLY_FIELDS,
-    COMMON_FETCH_FIELDS,
     CommonIngredientModificationSerializer,
     CommonIngredientReadSerializer,
     WithSubstances,
-    WithName,
 )
+from .substance import SubstanceShortSerializer
 
 
 class IngredientSynonymSerializer(serializers.ModelSerializer):
@@ -45,7 +44,7 @@ class IngredientSynonymModificationSerializer(serializers.ModelSerializer):
         fields = ("name",)
 
 
-class IngredientModificationSerializer(CommonIngredientModificationSerializer, WithSubstances, WithName):
+class IngredientModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
     synonyms = IngredientSynonymModificationSerializer(many=True, source="ingredientsynonym_set", required=False)
 
     synonym_model = IngredientSynonym

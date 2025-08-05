@@ -11,7 +11,7 @@ from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 class ConditionForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
-            "ca_name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
+            "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
         }
 
 
@@ -21,20 +21,16 @@ class ConditionAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     fields = [
         "change_reason",
         "name",
-        "ca_name",
         "category",
         "siccrf_name_en",
         "is_obsolete",
-        "ca_is_obsolete",
         "min_age",
         "max_age",
         "creation_date",
         "modification_date",
     ]
     readonly_fields = [
-        "name",
         "siccrf_name_en",
-        "is_obsolete",
         "creation_date",
         "modification_date",
     ]

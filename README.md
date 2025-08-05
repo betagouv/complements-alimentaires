@@ -191,12 +191,6 @@ Vous pouvez aussi créer votre propre compte administrateur avec la commande :
 python manage.py createsuperuser
 ```
 
-Vous pouvez aussi charger des éléments (ingrédients, substances, etc.) dans la base avec la commande suivante. Demander à un membre de l'équipe pour le `zip` avec les données.
-
-```
-python manage.py load_ingredients YYYY-MM-dd -d=<path vers le dossier avec les données>
-```
-
 Pour créer autres objets rapidement, vous pouvez rentrer dans un shell `python manage.py shell` et créer des objets avec les modèles dans `data.factories`.
 
 ## Envoi des données au bucket s3 pour récupération par les serveurs
