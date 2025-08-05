@@ -35,6 +35,7 @@ import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import NavSidebar from "./NavSidebar"
 import { useRootStore } from "@/stores/root"
+import { setDocumentTitle } from "@/utils/document"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -136,6 +137,6 @@ onMounted(async () => {
     if (el) el.scrollIntoView({ behavior: "smooth" })
   }
 
-  document.title = `${declaration.value.name} - ${company.value.socialName || "Résultat entreprise"} - Compl'Alim`
+  setDocumentTitle([declaration.value.name, company.value.socialName || "Résultat entreprise"])
 })
 </script>

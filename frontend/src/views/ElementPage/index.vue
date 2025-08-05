@@ -143,6 +143,7 @@ import ElementAutocomplete from "@/components/ElementAutocomplete"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
 import ElementDoses from "@/components/ElementDoses.vue"
 import RegulatoryWarning from "@/components/RegulatoryWarning.vue"
+import { setDocumentTitle } from "@/utils/document"
 
 const store = useRootStore()
 const route = useRoute()
@@ -233,7 +234,7 @@ if (router.options.history.state.back && router.options.history.state.back.index
 getElementFromApi()
 
 watch(element, (newElement) => {
-  if (newElement) document.title = `${newElement.name} - Compl'Alim`
+  if (newElement) setDocumentTitle([newElement.name])
 })
 
 watch(route, getElementFromApi)
