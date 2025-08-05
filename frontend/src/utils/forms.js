@@ -75,3 +75,13 @@ export const transformArrayByColumn = (arr, numberOfColumns) => {
 }
 
 export const checkboxColumnNumbers = { sm: 1, md: 2, lg: 2, xl: 3 }
+
+export const toOptions = (list) => {
+  const options =
+    (list || [])
+      .map((x) => ({ value: x.id, text: x.name.split(" (à préciser)")[0] })) // Transforme la réponse API en options pour les champs select
+      .sort((a, b) => a.text.localeCompare(b.text)) || [] // Triage alphabétique
+  options.unshift({ disabled: true, text: "---------" })
+  options.unshift({ value: "", text: "Tout afficher" })
+  return options
+}

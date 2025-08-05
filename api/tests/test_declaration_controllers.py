@@ -3,8 +3,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from data.factories import AwaitingInstructionDeclarationFactory, CompanyFactory, ControlRoleFactory
-from data.models import Declaration
+from data.factories import AwaitingInstructionDeclarationFactory, CompanyFactory, ControlRoleFactory, SnapshotFactory
+from data.models import Declaration, Snapshot
 
 from .utils import authenticate
 
@@ -102,9 +102,14 @@ class TestDeclarationControllers(APITestCase):
         """
         ControlRoleFactory(user=authenticate.user)
 
-        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
-        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION)
-        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15_WARNING)
+        d1 = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
+        SnapshotFactory(declaration=d1, action=Snapshot.SnapshotActions.SUBMIT)
+        d2 = AwaitingInstructionDeclarationFactory(
+            overridden_article=Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
+        )
+        SnapshotFactory(declaration=d2, action=Snapshot.SnapshotActions.SUBMIT)
+        d3 = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15_WARNING)
+        SnapshotFactory(declaration=d3, action=Snapshot.SnapshotActions.SUBMIT)
 
         response = self.client.get(reverse("api:list_control_declarations"), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -114,6 +119,7 @@ class TestDeclarationControllers(APITestCase):
 
         for result in results:
             self.assertEqual(result["simplifiedStatus"], "Commercialisation possible")
+            self.assertIsNotNone(result["simplifiedStatusDate"])
 
     @authenticate
     def test_simplified_status_other_articles(self):
@@ -168,10 +174,9 @@ class TestDeclarationControllers(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         results = response.json()["results"]
+
         self.assertEqual(len(results), 2)
-        result_ids = (x["id"] for x in results)
-        self.assertIn(ongoing_instruction_1.id, result_ids)
-        self.assertIn(ongoing_instruction_2.id, result_ids)
+        self.assertCountEqual([x["id"] for x in results], [ongoing_instruction_1.id, ongoing_instruction_2.id])
 
         # Requête pour tous les deux
         response = self.client.get(
@@ -183,3 +188,72 @@ class TestDeclarationControllers(APITestCase):
 
         results = response.json()["results"]
         self.assertEqual(len(results), 3)
+
+    @authenticate
+    def test_filter_by_surveillance_only(self):
+        """
+        Il est possible de filtrer par déclarations en statuts à surveiller
+        """
+        ControlRoleFactory(user=authenticate.user)
+
+        # Déclarations à surveiller
+        art_16 = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_16)
+        art_15_high_risk = AwaitingInstructionDeclarationFactory(
+            overridden_article=Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
+        )
+        art_15_warning = AwaitingInstructionDeclarationFactory(
+            overridden_article=Declaration.Article.ARTICLE_15_WARNING
+        )
+
+        # Déclarations sans risque
+        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15)
+        AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_18)
+
+        # Requête pour toutes les déclarations
+        response = self.client.get(reverse("api:list_control_declarations") + "?surveillanceOnly=false", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 5)
+
+        # Requête pour surveillanceOnly
+        response = self.client.get(reverse("api:list_control_declarations") + "?surveillanceOnly=true", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        results = response.json()["results"]
+
+        self.assertEqual(len(results), 3)
+        self.assertCountEqual([x["id"] for x in results], [art_15_high_risk.id, art_15_warning.id, art_16.id])
+
+    @authenticate
+    def test_single_get_not_allowed(self):
+        """
+        L'endpoint pour une déclaration seule n'est pas accessible sans le rôle de contrôle
+        """
+        declaration = AwaitingInstructionDeclarationFactory()
+        response = self.client.get(
+            reverse("api:retrieve_control_declaration", kwargs={"pk": declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_single_get_unauthenticated(self):
+        """
+        L'endpoint pour une déclaration seule n'est pas accessible sans être identifié·e
+        """
+        declaration = AwaitingInstructionDeclarationFactory()
+        response = self.client.get(
+            reverse("api:retrieve_control_declaration", kwargs={"pk": declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_single_get_as_controller(self):
+        """
+        L'endpoint pour une déclaration seule est diponible pour les personnes ayant le rôle de contrôle
+        """
+        declaration = AwaitingInstructionDeclarationFactory()
+        ControlRoleFactory(user=authenticate.user)
+        response = self.client.get(
+            reverse("api:retrieve_control_declaration", kwargs={"pk": declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

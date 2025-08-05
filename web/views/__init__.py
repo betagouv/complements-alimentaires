@@ -1,6 +1,5 @@
 from django.views.generic import TemplateView
 from .user import RegisterUserView
-from .file_upload import FileUploadView
 from .certificate import CertificateView
 from .summary import SummaryView
 

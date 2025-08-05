@@ -1,58 +1,62 @@
 <template>
   <div>
-    <div class="mb-6">
-      <h3>Proposition à viser / signer</h3>
-      <div class="border p-2">
-        <VisaInfoLine title="Instructeur·ice" :text="instructorName" icon="ri-account-circle-line" />
-        <VisaInfoLine
-          title="Décision"
-          icon="ri-focus-2-fill"
-          :strikethroughText="hasOverriddenOriginalDecision ? declarationProposal : ''"
-          :text="hasOverriddenOriginalDecision ? overriddenProposal : declarationProposal"
-        />
-        <VisaInfoLine
-          v-if="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
-          title="Raisons de la décision"
-          icon="ri-edit-line"
-          :strikethroughText="hasOverriddenOriginalDecision ? declarationReasons : ''"
-          :text="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
-        />
-        <VisaInfoLine
-          title="Message au déclarant·e"
-          icon="ri-chat-3-line"
-          :strikethroughText="hasOverriddenOriginalDecision ? declarationComment : ''"
-          :text="hasOverriddenOriginalDecision ? overriddenComment : declarationComment"
-        />
-        <VisaInfoLine
-          v-if="showExpirationDays"
-          title="Délai de réponse"
-          icon="ri-time-fill"
-          :strikethroughText="hasOverriddenOriginalDecision ? declarationExpirationDays : ''"
-          :text="hasOverriddenOriginalDecision ? overriddenExpirationDays : declarationExpirationDays"
-        />
-        <div class="px-4 py-2 border bg-gray-50">
-          <DecisionModificationModal v-model="overriddenDecision" />
+    <div v-if="readonly">
+      <p>Cette déclaration est actuellement en état « {{ statusProps[declaration.status].label }} ».</p>
+    </div>
+    <div v-else>
+      <div class="mb-6">
+        <div class="border p-2">
+          <VisaInfoLine title="Instructeur·ice" :text="instructorName" icon="ri-account-circle-line" />
+          <VisaInfoLine
+            title="Décision"
+            icon="ri-focus-2-fill"
+            :strikethroughText="hasOverriddenOriginalDecision ? declarationProposal : ''"
+            :text="hasOverriddenOriginalDecision ? overriddenProposal : declarationProposal"
+          />
+          <VisaInfoLine
+            v-if="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
+            title="Raisons de la décision"
+            icon="ri-edit-line"
+            :strikethroughText="hasOverriddenOriginalDecision ? declarationReasons : ''"
+            :text="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
+          />
+          <VisaInfoLine
+            title="Message au déclarant·e"
+            icon="ri-chat-3-line"
+            :strikethroughText="hasOverriddenOriginalDecision ? declarationComment : ''"
+            :text="hasOverriddenOriginalDecision ? overriddenComment : declarationComment"
+          />
+          <VisaInfoLine
+            v-if="showExpirationDays"
+            title="Délai de réponse"
+            icon="ri-time-fill"
+            :strikethroughText="hasOverriddenOriginalDecision ? declarationExpirationDays : ''"
+            :text="hasOverriddenOriginalDecision ? overriddenExpirationDays : declarationExpirationDays"
+          />
+          <div class="px-4 py-2 border bg-gray-50">
+            <DecisionModificationModal v-model="overriddenDecision" />
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="grid grid-cols-2 gap-10">
-      <div class="border p-4 flex flex-col" v-for="decision in decisionCategories" :key="decision.title">
-        <h6 class="font-bold">
-          <v-icon :color="decision.iconColor" :name="decision.icon" scale="1.2" aria-hidden class="mr-1" />
-          {{ decision.title }}
-        </h6>
-        <p class="fr-text--sm grow">
-          {{ decision.description }}
-        </p>
-        <ArticleInfoRow class="mb-2" v-if="decision.blockedByAnses" v-model="declaration" />
-        <div v-else class="text-right">
-          <DsfrButton
-            :label="decision.buttonText"
-            @click="decision.buttonHandler"
-            secondary
-            :disabled="refuseIsFetching || acceptIsFetching || decision.blockedByAnses"
-          />
+      <div class="grid grid-cols-2 gap-10">
+        <div class="border p-4 flex flex-col" v-for="decision in decisionCategories" :key="decision.title">
+          <h6 class="font-bold">
+            <v-icon :color="decision.iconColor" :name="decision.icon" scale="1.2" aria-hidden class="mr-1" />
+            {{ decision.title }}
+          </h6>
+          <p class="fr-text--sm grow">
+            {{ decision.description }}
+          </p>
+          <ArticleInfoRow class="mb-2" v-if="decision.blockedByAnses" v-model="declaration" />
+          <div v-else class="text-right">
+            <DsfrButton
+              :label="decision.buttonText"
+              @click="decision.buttonHandler"
+              secondary
+              :disabled="refuseIsFetching || acceptIsFetching || decision.blockedByAnses"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -73,6 +77,7 @@ import DecisionModificationModal from "./DecisionModificationModal"
 const $externalResults = ref({})
 const emit = defineEmits(["decision-done"])
 const declaration = defineModel()
+defineProps({ readonly: Boolean })
 
 const overriddenDecision = ref()
 const hasOverriddenOriginalDecision = computed(

@@ -1,20 +1,20 @@
 from django.db import transaction
+
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 
 from data.models import Part, Plant, PlantFamily, PlantPart, PlantSynonym
 
-from .substance import SubstanceShortSerializer
 from .common_ingredient import (
+    COMMON_FETCH_FIELDS,
     COMMON_FIELDS,
     COMMON_NAME_FIELDS,
     COMMON_READ_ONLY_FIELDS,
-    COMMON_FETCH_FIELDS,
     CommonIngredientModificationSerializer,
     CommonIngredientReadSerializer,
     WithSubstances,
-    WithName,
 )
+from .substance import SubstanceShortSerializer
 
 
 class PlantFamilySerializer(serializers.ModelSerializer):
@@ -94,10 +94,9 @@ class PlantPartModificationSerializer(serializers.ModelSerializer):
         )
 
 
-class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSubstances, WithName):
+class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
     synonyms = PlantSynonymModificationSerializer(many=True, source="plantsynonym_set", required=False)
     plant_parts = PlantPartModificationSerializer(source="part_set", many=True)
-    family = serializers.PrimaryKeyRelatedField(queryset=PlantFamily.objects.all(), source="ca_family")
 
     synonym_model = PlantSynonym
     synonym_set_field_name = "plantsynonym_set"
@@ -127,7 +126,7 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
         PlantModificationSerializer._check_part_unicity(parts)
 
         for part in parts:
-            Part.objects.create(plant=plant, plantpart=part["plantpart"], ca_is_useful=part["is_useful"])
+            Part.objects.create(plant=plant, plantpart=part["plantpart"], is_useful=part["is_useful"])
 
         return plant
 
@@ -143,10 +142,10 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
             existing_part = instance.part_set.filter(plantpart=part["plantpart"])
             if existing_part.exists():
                 existing_part = existing_part.first()
-                existing_part.ca_is_useful = part["is_useful"]
+                existing_part.is_useful = part["is_useful"]
                 existing_part.save()
             else:
-                Part.objects.create(plant=instance, plantpart=part["plantpart"], ca_is_useful=part["is_useful"])
+                Part.objects.create(plant=instance, plantpart=part["plantpart"], is_useful=part["is_useful"])
 
         return instance
 

@@ -1,7 +1,5 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import F, Value
-from django.db.models.functions import Coalesce, NullIf
 
 from simple_history.models import HistoricalRecords
 
@@ -50,66 +48,24 @@ class Substance(IngredientCommonModel):
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     # cas_number
-    siccrf_cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS (selon la base SICCRF)")
-    ca_cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS")
-    cas_number = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_cas_number"), Value("")), F("siccrf_cas_number")),
-        output_field=models.CharField(max_length=10, blank=True, verbose_name="numéro CAS"),
-        db_persist=True,
-    )
-
+    cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS")
     # einec_number
-    siccrf_einec_number = models.CharField(
-        max_length=7,
-        blank=True,
-        verbose_name="numéro EINECS (selon la base SICCRF)",
-    )
-    ca_einec_number = models.CharField(
+    einec_number = models.CharField(
         max_length=7,
         blank=True,
         verbose_name="numéro EINECS",
     )
-    einec_number = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_einec_number"), Value("")), F("siccrf_einec_number")),
-        output_field=models.CharField(max_length=7, blank=True, verbose_name="numéro EINECS"),
-        db_persist=True,
-    )
-
     # source
-    siccrf_source = models.TextField(blank=True)
-    ca_source = models.TextField(blank=True)
-    source = models.GeneratedField(
-        expression=Coalesce(NullIf(F("ca_source"), Value("")), F("siccrf_source")),
-        output_field=models.TextField(),
-        db_persist=True,
-    )
+    source = models.TextField(blank=True)
 
     # must_specify_quantity
-    siccrf_must_specify_quantity = models.BooleanField(
-        default=False, verbose_name="spécification de quantité obligatoire (selon la base SICCRF)"
-    )
-    ca_must_specify_quantity = models.BooleanField(
-        null=True, default=None, verbose_name="spécification de quantité obligatoire"
-    )
-    must_specify_quantity = models.GeneratedField(
-        expression=Coalesce(F("ca_must_specify_quantity"), F("siccrf_must_specify_quantity")),
-        output_field=models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire"),
-        db_persist=True,
-    )
+    must_specify_quantity = models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire")
 
     # max_quantity
     max_quantities = models.ManyToManyField(Population, through="MaxQuantityPerPopulationRelation")
 
     # nutritional_reference
-    siccrf_nutritional_reference = models.FloatField(
-        null=True, blank=True, verbose_name="apport nutritionnel conseillé"
-    )
-    ca_nutritional_reference = models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé")
-    nutritional_reference = models.GeneratedField(
-        expression=Coalesce("ca_nutritional_reference", "siccrf_nutritional_reference"),
-        output_field=models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé"),
-        db_persist=True,
-    )
+    nutritional_reference = models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé")
     unit = models.ForeignKey(
         SubstanceUnit,
         default=None,
@@ -128,20 +84,6 @@ class Substance(IngredientCommonModel):
             PublicReasonHistoricalModel,
         ],
         inherit=True,
-        excluded_fields=[
-            "name",
-            "is_obsolete",
-            "private_comments",
-            "public_comments",
-            "cas_number",
-            "einec_number",
-            "source",
-            "must_specify_quantity",
-            "nutritional_reference",
-            "status",
-            "siccrf_status",
-            "substance_types",
-        ],
     )
 
     @property
@@ -213,18 +155,8 @@ class MaxQuantityPerPopulationRelation(Historisable):
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
     population = models.ForeignKey(Population, on_delete=models.CASCADE)
 
-    siccrf_max_quantity = models.FloatField(
-        null=True,
-        blank=True,
-        verbose_name="quantité maximale autorisée pour la population cible (selon la base SICCRF)",
-    )
-    ca_max_quantity = models.FloatField(
+    max_quantity = models.FloatField(
         null=True,
         blank=True,
         verbose_name="quantité maximale autorisée pour la population cible",
-    )
-    max_quantity = models.GeneratedField(
-        expression=Coalesce(F("ca_max_quantity"), F("siccrf_max_quantity")),
-        output_field=models.FloatField(null=True, blank=True, verbose_name="quantité maximale autorisée"),
-        db_persist=True,
     )

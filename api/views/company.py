@@ -7,13 +7,18 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
+from django_filters import rest_framework as django_filters
+from django_filters import rest_framework as filters
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
-from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.utils.filters import CamelCaseOrderingFilter, DepartmentFilterBackend
+from api.utils.search import UnaccentSearchFilter
 from api.utils.urls import get_base_url
 from config import email
 from data.choices import CountryChoices
@@ -23,8 +28,14 @@ from data.utils.external_utils import SiretData
 from data.validators import validate_siret, validate_vat  # noqa
 
 from ..exception_handling import ProjectAPIException
-from ..permissions import IsSupervisor, IsSupervisorOrAgent
-from ..serializers import CollaboratorSerializer, CompanySerializer, MinimalCompanySerializer
+from ..permissions import IsController, IsSupervisor, IsSupervisorOrAgent
+from ..serializers import (
+    CollaboratorSerializer,
+    ControllerCompanySerializer,
+    CompanySerializer,
+    ControllerCompanyListSerializer,
+    MinimalCompanySerializer,
+)
 
 User = get_user_model()
 
@@ -168,6 +179,13 @@ class CompanyRetrieveUpdateView(RetrieveUpdateAPIView):
             return [IsAuthenticated(), IsSupervisor()]
 
 
+class CompanyControlRetrieveView(RetrieveAPIView):
+    model = Company
+    permission_classes = [IsController]
+    serializer_class = ControllerCompanySerializer
+    queryset = Company.objects.all()
+
+
 class CompanyCollaboratorsListView(ListAPIView):
     """Récupération des utilisateurs ayant au moins un rôle dans cette entreprise"""
 
@@ -293,3 +311,33 @@ class RemoveMandatedCompanyView(GenericAPIView):
 
         serializer = self.get_serializer(company)
         return Response(serializer.data)
+
+
+class CompanyPagination(LimitOffsetPagination):
+    default_limit = 10
+    max_limit = 50
+
+
+class CompanyActivitiesFilter(filters.FilterSet):
+    activities = filters.BaseInFilter(field_name="activities", lookup_expr="overlap")
+
+    class Meta:
+        model = Company
+        fields = ["activities"]
+
+
+class ControlCompanyListView(ListAPIView):
+    model = Company
+    serializer_class = ControllerCompanyListSerializer
+    permission_classes = [IsController]
+    pagination_class = CompanyPagination
+    filter_backends = [
+        DepartmentFilterBackend,
+        django_filters.DjangoFilterBackend,
+        CamelCaseOrderingFilter,
+        UnaccentSearchFilter,
+    ]
+    filterset_class = CompanyActivitiesFilter
+    search_fields = ["social_name", "siret", "vat"]
+    ordering_fields = ["creation_date", "modification_date", "social_name", "postal_code"]
+    queryset = Company.objects.all()

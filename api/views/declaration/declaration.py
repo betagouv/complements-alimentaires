@@ -14,6 +14,7 @@ from rest_framework.generics import (
     GenericAPIView,
     ListAPIView,
     ListCreateAPIView,
+    RetrieveAPIView,
     RetrieveUpdateDestroyAPIView,
 )
 from rest_framework.pagination import LimitOffsetPagination
@@ -43,7 +44,7 @@ from api.serializers import (
     SimpleUserSerializer,
     SimpleVisorSerializer,
 )
-from api.utils.filters import CamelCaseOrderingFilter, SimplifiedStatusFilter
+from api.utils.filters import CamelCaseOrderingFilter, SimplifiedStatusFilter, SurveillanceOnlyFilter
 from api.utils.search import UnaccentSearchFilter
 from api.views.declaration.declaration_filter_set import DeclarationFilterSet
 from api.views.declaration.declaration_flow import DeclarationFlow
@@ -284,7 +285,7 @@ class DeclarationHyperlinkXLSXRenderer(XLSXRenderer):
         # Ajouter le lien vers le résultat de la recherche dans le nom du produit
         for sheet in workbook.worksheets:
             for row in sheet.iter_rows(min_row=2):  # L'index commence à 1, et on veux éviter l'entête, donc 2
-                name_cell = row[0]
+                name_cell = row[2]
                 hyperlink_data = data[name_cell.row - 2]["url_field"]
                 name_cell.value = hyperlink_data.display
                 name_cell.hyperlink = hyperlink_data.ref
@@ -313,6 +314,8 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
     # Format de l'entête du fichier Excel
     column_header = {
         "titles": [
+            "No. Compl'Alim",
+            "No. Téléicare",
             "Nom du produit",
             "Marque",
             "Article",
@@ -322,7 +325,7 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
             "No. TVA",
             "No. de département",
         ],
-        "column_width": [30, 20, 30, 25, 30, 15, 15, 15],
+        "column_width": [12, 12, 30, 20, 30, 25, 30, 15, 15, 15],
         "height": 30,
         "style": {
             "fill": {
@@ -361,6 +364,7 @@ class ControllerDeclarationsListView(CommonOngoingDeclarationView):
     ordering_fields = ["name", "company_name"]
     serializer_class = ControllerDeclarationSerializer
     filter_backends = [
+        SurveillanceOnlyFilter,
         SimplifiedStatusFilter,
         django_filters.DjangoFilterBackend,
         CamelCaseOrderingFilter,
@@ -370,6 +374,13 @@ class ControllerDeclarationsListView(CommonOngoingDeclarationView):
     def get_queryset(self):
         queryset = super().get_queryset().select_related("company")
         return queryset.annotate(company_name=F("company__social_name"))
+
+
+class ControllerDeclarationRetrieveView(RetrieveAPIView):
+    permission_classes = [IsController]
+    model = Declaration
+    serializer_class = DeclarationSerializer
+    queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT).distinct()
 
 
 class OpenDataDeclarationsListView(GenericDeclarationsListView):

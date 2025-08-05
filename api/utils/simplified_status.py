@@ -98,8 +98,4 @@ class SimplifiedStatusHelper:
         else:
             return None
 
-        try:
-            return queryset.latest("creation_date").creation_date
-        except Snapshot.DoesNotExist as e:
-            logger.error(f"Declaration with ID {instance.id} was unable to obtain a simplified_status_date. {e}")
-            return None
+        return queryset.latest("creation_date").creation_date if queryset.exists() else None

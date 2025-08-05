@@ -23,6 +23,7 @@
         {{ element.name }}
         <DsfrBadge v-if="novelFood" label="Novel Food" small type="new" />
       </h1>
+      <RegulatoryWarning class="mt-4" />
 
       <div class="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-1 sm:gap-x-20 mb-8">
         <ElementColumn title="Type">
@@ -141,6 +142,7 @@ import ElementTextSection from "./ElementTextSection.vue"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
 import ElementDoses from "@/components/ElementDoses.vue"
+import RegulatoryWarning from "@/components/RegulatoryWarning.vue"
 
 const store = useRootStore()
 const route = useRoute()

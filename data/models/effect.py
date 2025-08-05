@@ -10,7 +10,7 @@ class Effect(CommonModel):
         verbose_name_plural = "Objectifs et effets des compléments alimentaires"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais selon la base SICCRF")
-    history = HistoricalRecords(inherit=True, excluded_fields=["name", "is_obsolete"])
+    history = HistoricalRecords(inherit=True)
 
     @property
     def name_en(self):

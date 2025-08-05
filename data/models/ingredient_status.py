@@ -1,6 +1,4 @@
 from django.db import models
-from django.db.models import F
-from django.db.models.functions import Coalesce
 
 
 class IngredientStatus(models.IntegerChoices):
@@ -29,27 +27,14 @@ class WithStatus(models.Model):
     class Meta:
         abstract = True
 
-    siccrf_status = models.IntegerField(
+    status = models.IntegerField(
         choices=IngredientStatus.choices,
         blank=True,
         default=None,  # un ingrédient n'a pas de status par défaut
         null=True,
-        verbose_name="statut de l'ingrédient ou substance selon TeleIcare",
+        verbose_name="statut de l'ingrédient ou substance",
     )
-    ca_status = models.IntegerField(
-        choices=IngredientStatus.choices,
-        blank=True,
-        default=None,  # un ingrédient n'a pas de status par défaut
-        null=True,
-        verbose_name="statut de l'ingrédient ou substance selon Compl'Alim",
-    )
-    status = models.GeneratedField(
-        expression=Coalesce(F("ca_status"), F("siccrf_status")),
-        output_field=models.IntegerField(
-            choices=IngredientStatus.choices, null=True, verbose_name="statut de l'ingrédient ou substance"
-        ),
-        db_persist=True,
-    )
+
     to_be_entered_in_next_decree = models.BooleanField(
         default=False, verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"
     )

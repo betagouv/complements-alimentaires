@@ -16,7 +16,7 @@ class Ingredient(IngredientCommonModel):
         verbose_name_plural = "autres ingrédients"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
-    siccrf_description = models.TextField(blank=True)
+    description = models.TextField(blank=True)
     ingredient_type = models.IntegerField(
         choices=IngredientType.choices,
         null=True,
@@ -28,23 +28,11 @@ class Ingredient(IngredientCommonModel):
             PublicReasonHistoricalModel,
         ],
         inherit=True,
-        excluded_fields=[
-            "name",
-            "is_obsolete",
-            "private_comments",
-            "public_comments",
-            "status",
-            "siccrf_status",
-        ],
     )
 
     @property
     def name_en(self):
         return self.siccrf_name_en
-
-    @property
-    def description(self):
-        return self.siccrf_description
 
     @property
     def object_type(self):
@@ -60,10 +48,6 @@ class Ingredient(IngredientCommonModel):
 class IngredientSubstanceRelation(TimeStampable, Historisable):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
-    siccrf_is_related = models.BooleanField(
-        default=False, verbose_name="substance associée à l'ingrédient (selon la base SICCRF)"
-    )
-    ca_is_related = models.BooleanField(null=True, default=None, verbose_name="substance associée à l'ingrédient")
 
 
 class IngredientSynonym(TimeStampable, Historisable):

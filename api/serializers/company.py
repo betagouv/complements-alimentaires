@@ -1,6 +1,7 @@
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 
+from api.utils.simplified_status import SimplifiedStatusHelper
 from data.models import Company, DeclarantRole, SupervisorRole
 
 
@@ -21,11 +22,23 @@ class SimpleCompanySerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "social_name",
-            "address",
-            "additional_details",
             "postal_code",
             "city",
             "cedex",
+            "country",
+        )
+
+
+class ControllerCompanyListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = (
+            "id",
+            "social_name",
+            "address",
+            "additional_details",
+            "postal_code",
+            "activities",
             "country",
         )
 
@@ -68,6 +81,64 @@ class CompanySerializer(serializers.ModelSerializer):
         # permet de définir dynamiquement la bonne région pour le numéro de téléphone entré
         self.fields["phone_number"] = PhoneNumberField(region=data["country"])
         return super().to_internal_value(data)
+
+
+class ControllerCompanySerializer(serializers.ModelSerializer):
+    total_declarations = serializers.SerializerMethodField()
+    market_ready_declarations = serializers.SerializerMethodField()
+    refused_declarations = serializers.SerializerMethodField()
+    ongoing_declarations = serializers.SerializerMethodField()
+    withdrawn_declarations = serializers.SerializerMethodField()
+    interrupted_declarations = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Company
+
+        fields = (
+            "id",
+            "social_name",
+            "commercial_name",
+            "total_declarations",
+            "market_ready_declarations",
+            "refused_declarations",
+            "ongoing_declarations",
+            "withdrawn_declarations",
+            "interrupted_declarations",
+            "siret",
+            "vat",
+            "address",
+            "additional_details",
+            "postal_code",
+            "city",
+            "cedex",
+            "country",
+            "activities",
+            "phone_number",
+            "email",
+            "website",
+        )
+        read_only_fields = fields
+
+    def get_total_declarations(self, obj):
+        return obj.declarations.count()
+
+    def get_market_ready_declarations(self, obj):
+        return self._count_for_simplified_status(obj, SimplifiedStatusHelper.MARKET_READY)
+
+    def get_refused_declarations(self, obj):
+        return self._count_for_simplified_status(obj, SimplifiedStatusHelper.REFUSED)
+
+    def get_ongoing_declarations(self, obj):
+        return self._count_for_simplified_status(obj, SimplifiedStatusHelper.ONGOING)
+
+    def get_withdrawn_declarations(self, obj):
+        return self._count_for_simplified_status(obj, SimplifiedStatusHelper.WITHDRAWN)
+
+    def get_interrupted_declarations(self, obj):
+        return self._count_for_simplified_status(obj, SimplifiedStatusHelper.INTERRUPTED)
+
+    def _count_for_simplified_status(self, obj, status):
+        return obj.declarations.filter(SimplifiedStatusHelper.get_filter_conditions([status])).count()
 
 
 class BaseRoleSerializer(serializers.ModelSerializer):

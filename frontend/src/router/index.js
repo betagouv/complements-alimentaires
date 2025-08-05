@@ -26,12 +26,12 @@ import DeclarationsHomePage from "@/views/DeclarationsHomePage"
 import CollaboratorsPage from "@/views/CollaboratorsPage"
 import InstructionDeclarationsPage from "@/views/InstructionDeclarationsPage"
 import NewElementsPage from "@/views/NewElementsPage"
+import NewVisaPage from "@/views/NewVisaPage"
 import NewInstructionPage from "@/views/NewInstructionPage"
-import InstructionSection from "@/views/NewInstructionPage/InstructionSection"
-import IdentitySection from "@/views/NewInstructionPage/IdentitySection"
-import HistorySection from "@/views/NewInstructionPage/HistorySection"
+import ProductSection from "@/components/NewBepiasViews/ProductSection"
+import IdentitySection from "@/components/NewBepiasViews/IdentitySection"
+import HistorySection from "@/components/NewBepiasViews/HistorySection"
 import VisaDeclarationsPage from "@/views/VisaDeclarationsPage"
-import VisaPage from "@/views/VisaPage"
 import CompanyDeclarationsPage from "@/views/CompanyDeclarationsPage"
 import A11yPage from "@/views/A11yPage.vue"
 import ContactForm from "@/views/ContactForm"
@@ -45,6 +45,11 @@ import AdvancedSearchResult from "@/views/AdvancedSearchResult"
 import StatsPage from "@/views/StatsPage"
 import DeclarationSearchPage from "@/views/DeclarationSearchPage"
 import CompanySearchPage from "@/views/CompanySearchPage"
+import CompanyDetails from "@/views/CompanyDetails"
+import DeclarationIndividualPage from "@/views/DeclarationIndividualPage"
+import ProductControlSection from "@/views/DeclarationIndividualPage/ProductControlSection"
+import HistoryControlSection from "@/views/DeclarationIndividualPage/HistoryControlSection"
+import CompanyControlSection from "@/views/DeclarationIndividualPage/CompanyControlSection"
 import { ref } from "vue"
 
 const routes = [
@@ -380,7 +385,7 @@ const routes = [
       {
         name: "InstructionPage",
         path: "instruction",
-        component: InstructionSection,
+        component: ProductSection,
       },
       {
         name: "IdentitySection",
@@ -389,6 +394,37 @@ const routes = [
       },
       {
         name: "HistorySection",
+        path: "historique",
+        component: HistorySection,
+      },
+    ],
+  },
+  {
+    path: "/visa/:declarationId",
+    props: true,
+    component: NewVisaPage,
+    meta: {
+      title: "Visa",
+      requiredRoles: ["VisaRole"],
+      authenticationRequired: true,
+    },
+    children: [
+      {
+        path: "",
+        redirect: { name: "VisaPage" },
+      },
+      {
+        name: "VisaPage",
+        path: "produit",
+        component: ProductSection,
+      },
+      {
+        name: "VisaIdentitySection",
+        path: "identite",
+        component: IdentitySection,
+      },
+      {
+        name: "VisaHistorySection",
         path: "historique",
         component: HistorySection,
       },
@@ -411,17 +447,6 @@ const routes = [
         article: "",
         limit: "10",
       },
-    },
-  },
-  {
-    path: "/visa/:declarationId",
-    props: true,
-    name: "VisaPage",
-    component: VisaPage,
-    meta: {
-      title: "Visa",
-      requiredRoles: ["VisaRole"],
-      authenticationRequired: true,
     },
   },
   {
@@ -502,6 +527,10 @@ const routes = [
         limit: 10,
         triage: "-creationDate",
         simplifiedStatus: "",
+        surveillanceOnly: "false",
+        population: "",
+        condition: "",
+        formeGalenique: "",
       },
     },
   },
@@ -513,7 +542,60 @@ const routes = [
       title: "Les entreprises",
       requiredRoles: ["ControlRole"],
       authenticationRequired: true,
+      defaultQueryParams: {
+        page: 1,
+        limit: 10,
+        triage: "-creationDate",
+      },
     },
+  },
+  {
+    path: "/detail-entreprise/:companyId",
+    name: "CompanyDetails",
+    props: true,
+    component: CompanyDetails,
+    meta: {
+      title: "Détail de l'entreprise",
+      requiredRoles: ["ControlRole"],
+      authenticationRequired: true,
+      defaultQueryParams: {
+        page: 1,
+        limit: 10,
+        triage: "-creationDate",
+        simplifiedStatus: "",
+      },
+    },
+  },
+  {
+    path: "/complement-alimentaire/:declarationId",
+    props: true,
+    component: DeclarationIndividualPage,
+    meta: {
+      title: "Complément alimentaire",
+      authenticationRequired: true,
+      requiredRoles: ["ControlRole"],
+    },
+    children: [
+      {
+        path: "",
+        redirect: { name: "DeclarationIndividualPage" },
+      },
+      {
+        name: "DeclarationIndividualPage",
+        path: "produit",
+        component: ProductControlSection,
+      },
+      {
+        name: "DeclarationHistoryPage",
+        path: "historique",
+        component: HistoryControlSection,
+      },
+      {
+        name: "DeclarationCompanyPage",
+        path: "entreprise",
+        component: CompanyControlSection,
+      },
+    ],
   },
   {
     path: "/:catchAll(.*)*", // https://stackoverflow.com/a/70343919/2255491

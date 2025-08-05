@@ -9,6 +9,7 @@ from .declaration.declaration import (
     OngoingDeclarationsExcelView,
     OngoingDeclarationsListView,
     ControllerDeclarationsListView,
+    ControllerDeclarationRetrieveView,
     CompanyDeclarationsListView,
     DeclarationTakeForInstructionView,
     DeclarationTakeForVisaView,
@@ -53,6 +54,7 @@ from .user import (
     SendNewSignupVerificationEmailView,
     UserCreateView,
     UserRetrieveUpdateDestroyView,
+    UserRetrieveControlView,
     VerifyEmailView,
 )
 from .webinar import WebinarView
@@ -69,6 +71,8 @@ from .company import (
     RemoveCompanyRoleView,
     AddMandatedCompanyView,
     RemoveMandatedCompanyView,
+    ControlCompanyListView,
+    CompanyControlRetrieveView,
 )
 from .solicitation import (
     ProcessCompanyAccessClaim,

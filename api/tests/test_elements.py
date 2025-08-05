@@ -1,16 +1,19 @@
+from unittest.mock import patch
+
 from django.urls import reverse
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from unittest.mock import patch
-
 from data.choices import IngredientActivity
 from data.factories import (
+    ComputedSubstanceFactory,
+    DeclaredSubstanceFactory,
     IngredientFactory,
     InstructionRoleFactory,
     MaxQuantityPerPopulationRelationFactory,
     MicroorganismFactory,
+    OngoingInstructionDeclarationFactory,
     PlantFactory,
     PlantFamilyFactory,
     PlantPartFactory,
@@ -19,9 +22,6 @@ from data.factories import (
     SubstanceFactory,
     SubstanceSynonymFactory,
     SubstanceUnitFactory,
-    OngoingInstructionDeclarationFactory,
-    DeclaredSubstanceFactory,
-    ComputedSubstanceFactory,
 )
 from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Part, Plant, Population
 from data.models.substance import MaxQuantityPerPopulationRelation, Substance
@@ -59,15 +59,15 @@ class TestElementsFetchApi(APITestCase):
     @authenticate
     def test_get_single_plant_history_instructor(self):
         plant = PlantFactory.create()
-        plant.ca_name = "Test change"
+        plant.name = "Test change"
         plant.save()
-        self.assertEqual(plant.ca_name, "Test change")
+        self.assertEqual(plant.name, "Test change")
         InstructionRoleFactory(user=authenticate.user)
         response = self.client.get(f"{reverse('api:single_plant', kwargs={'pk': plant.id})}?history=true")
         body = response.json()
 
         self.assertIn("user", body["history"][0])
-        self.assertEqual(body["history"][0]["changedFields"], ["nom CA"])
+        self.assertEqual(body["history"][0]["changedFields"], ["nom"])
         self.assertIn("historyType", body["history"][0])
         self.assertIn("historyDate", body["history"][0])
         self.assertIn("user", body["history"][0])
@@ -248,7 +248,7 @@ class TestElementsFetchApi(APITestCase):
         et non pas que le champ ca_X
         J'ajoute un test en supposant qu'on réutilise la même logique entre les 4 types.
         """
-        plant = PlantFactory.create(ca_name="", siccrf_name="SICCRF name")
+        plant = PlantFactory.create(name="SICCRF name")
         response = self.client.get(reverse("api:single_plant", kwargs={"pk": plant.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         body = response.json()
@@ -293,8 +293,8 @@ class TestElementsCreateApi(APITestCase):
 
         self.assertIn("id", body)
         plant = Plant.objects.get(id=body["id"])
-        self.assertEqual(plant.ca_name, "My new plant")
-        self.assertEqual(plant.ca_family, family)
+        self.assertEqual(plant.name, "My new plant")
+        self.assertEqual(plant.family, family)
         self.assertEqual(plant.plantsynonym_set.count(), 2)  # deduplication of synonym
         self.assertTrue(plant.plantsynonym_set.filter(name="A latin name").exists())
         self.assertTrue(plant.plantsynonym_set.filter(name="A second one").exists())
@@ -302,9 +302,9 @@ class TestElementsCreateApi(APITestCase):
         self.assertTrue(plant.part_set.get(plantpart=part_1.id).is_useful)
         self.assertFalse(plant.part_set.get(plantpart=part_2.id).is_useful)
         self.assertEqual(plant.substances.count(), 1)
-        self.assertEqual(plant.ca_public_comments, "Test")
-        self.assertEqual(plant.ca_private_comments, "Test private")
-        self.assertEqual(plant.ca_status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(plant.public_comments, "Test")
+        self.assertEqual(plant.private_comments, "Test private")
+        self.assertEqual(plant.status, IngredientStatus.AUTHORIZED)
         self.assertTrue(plant.novel_food)
 
     @authenticate
@@ -339,15 +339,15 @@ class TestElementsCreateApi(APITestCase):
 
         self.assertIn("id", body)
         microorganism = Microorganism.objects.get(id=body["id"])
-        self.assertEqual(microorganism.ca_genus, "My new microorganism")
-        self.assertEqual(microorganism.ca_species, "A species")
+        self.assertEqual(microorganism.genus, "My new microorganism")
+        self.assertEqual(microorganism.species, "A species")
         self.assertEqual(microorganism.microorganismsynonym_set.count(), 2)  # deduplication of synonym
         self.assertTrue(microorganism.microorganismsynonym_set.filter(name="A latin name").exists())
         self.assertTrue(microorganism.microorganismsynonym_set.filter(name="A second one").exists())
         self.assertEqual(microorganism.substances.count(), 0)
-        self.assertEqual(microorganism.ca_public_comments, "Test")
-        self.assertEqual(microorganism.ca_private_comments, "Test private")
-        self.assertEqual(microorganism.ca_status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(microorganism.public_comments, "Test")
+        self.assertEqual(microorganism.private_comments, "Test private")
+        self.assertEqual(microorganism.status, IngredientStatus.AUTHORIZED)
         self.assertTrue(microorganism.novel_food)
 
     @authenticate
@@ -384,10 +384,10 @@ class TestElementsCreateApi(APITestCase):
 
         self.assertIn("id", body)
         substance = Substance.objects.get(id=body["id"])
-        self.assertEqual(substance.ca_name, "My new substance")
-        self.assertEqual(substance.ca_status, IngredientStatus.AUTHORIZED)
-        self.assertEqual(substance.ca_cas_number, "1234")
-        self.assertEqual(substance.ca_einec_number, "5678")
+        self.assertEqual(substance.name, "My new substance")
+        self.assertEqual(substance.status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(substance.cas_number, "1234")
+        self.assertEqual(substance.einec_number, "5678")
         self.assertEqual(substance.max_quantity, 3.4)
         self.assertEqual(
             substance.maxquantityperpopulationrelation_set.get(
@@ -401,7 +401,7 @@ class TestElementsCreateApi(APITestCase):
             ).max_quantity,
             4.5,
         )
-        self.assertEqual(substance.ca_nutritional_reference, 1.2)
+        self.assertEqual(substance.nutritional_reference, 1.2)
         self.assertEqual(substance.unit, unit)
 
     @authenticate
@@ -431,8 +431,8 @@ class TestElementsCreateApi(APITestCase):
 
         self.assertIn("id", body)
         ingredient = Ingredient.objects.get(id=body["id"])
-        self.assertEqual(ingredient.ca_name, "My new ingredient")
-        self.assertEqual(ingredient.ca_status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(ingredient.name, "My new ingredient")
+        self.assertEqual(ingredient.status, IngredientStatus.AUTHORIZED)
         self.assertEqual(ingredient.ingredient_type, IngredientType.ACTIVE_INGREDIENT)
         self.assertEqual(ingredient.activity, IngredientActivity.ACTIVE)
         self.assertEqual(ingredient.substances.count(), 1)
@@ -463,7 +463,7 @@ class TestElementsModifyApi(APITestCase):
         self.general_pop = PopulationFactory.create(name="Population générale")
 
     def test_cannot_modify_ingredient_not_authenticated(self):
-        substance = SubstanceFactory.create(siccrf_name="original name", ca_name="")
+        substance = SubstanceFactory.create(name="original name")
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}), {"name": "test"}, format="json"
         )
@@ -472,7 +472,7 @@ class TestElementsModifyApi(APITestCase):
 
     @authenticate
     def test_cannot_modify_ingredient_not_instructor(self):
-        substance = SubstanceFactory.create(siccrf_name="original name", ca_name="")
+        substance = SubstanceFactory.create(name="original name")
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}), {"name": "test"}, format="json"
         )
@@ -480,24 +480,21 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(substance.name, "original name")
 
     @authenticate
-    def test_can_modify_ingredient_ca_fields(self):
+    def test_can_modify_ingredient_fields(self):
         """
         Les instructrices peuvent modifier un ingrédient, et un mapping est fait entre le nom du champ sans prefix -> ca_
         """
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
-            siccrf_name="original name",
-            ca_name="",
+            name="original name",
             unit=SubstanceUnitFactory.create(),
-            siccrf_status=IngredientStatus.NO_STATUS,
-            ca_status=IngredientStatus.AUTHORIZED,
-            siccrf_must_specify_quantity=True,
-            ca_must_specify_quantity=None,
+            status=IngredientStatus.AUTHORIZED,
+            must_specify_quantity=True,
         )
         MaxQuantityPerPopulationRelationFactory(
             substance=substance,
             population=self.general_pop,
-            ca_max_quantity=3.4,
+            max_quantity=3.4,
         )
 
         new_unit = SubstanceUnitFactory.create()
@@ -505,7 +502,7 @@ class TestElementsModifyApi(APITestCase):
             substance.max_quantity, 3.4, "La quantité max pour la population générale est la bonne avant modification"
         )
         self.assertTrue(
-            substance.siccrf_must_specify_quantity, "Le champ siccrf est vrai, comme donné dans le factory"
+            substance.must_specify_quantity, "Le champ must_specify_quantity est vrai, comme donné dans le factory"
         )
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
@@ -521,8 +518,7 @@ class TestElementsModifyApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         substance.refresh_from_db()
-        self.assertEqual(substance.siccrf_name, "original name")
-        self.assertEqual(substance.ca_name, "test")
+        self.assertEqual(substance.name, "test")
         self.assertEqual(substance.unit, new_unit, "Les champs sans ca_ équivelant sont aussi sauvegardés")
         self.assertEqual(
             substance.max_quantity, 35, "La quantité max pour la population générale est aussi sauvegardée"
@@ -530,9 +526,7 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(
             substance.status, IngredientStatus.NO_STATUS, "C'est possible de remettre la valeur originelle"
         )
-        self.assertFalse(substance.must_specify_quantity, "Le champ calculé prend la nouvelle valeur de ca_")
-        self.assertFalse(substance.ca_must_specify_quantity, "Le champ ca_ est donné une valeur")
-        self.assertTrue(substance.siccrf_must_specify_quantity, "Le champ siccrf n'est pas changé")
+        self.assertFalse(substance.must_specify_quantity, "Le champ must_specify_quantity est changé")
         self.assertEqual(
             substance.history.first().history_change_reason,
             "Test change",
@@ -564,11 +558,9 @@ class TestElementsModifyApi(APITestCase):
         """
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
-            siccrf_name="original name",
-            ca_name="",
+            name="original name",
             unit=SubstanceUnitFactory.create(),
-            siccrf_status=IngredientStatus.NO_STATUS,
-            ca_status=IngredientStatus.AUTHORIZED,
+            status=IngredientStatus.AUTHORIZED,
         )
         self.assertEqual(
             substance.max_quantity, None, "La quantité max pour la population générale n'est pas encore définie"
@@ -643,13 +635,11 @@ class TestElementsModifyApi(APITestCase):
         """
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
-            siccrf_name="original name",
-            ca_name="",
+            name="original name",
             unit=SubstanceUnitFactory.create(),
-            siccrf_status=IngredientStatus.NO_STATUS,
-            ca_status=IngredientStatus.AUTHORIZED,
+            status=IngredientStatus.AUTHORIZED,
         )
-        MaxQuantityPerPopulationRelationFactory(substance=substance, population=self.general_pop, ca_max_quantity=24)
+        MaxQuantityPerPopulationRelationFactory(substance=substance, population=self.general_pop, max_quantity=24)
         new_unit = SubstanceUnitFactory.create()
         self.assertEqual(substance.max_quantity, 24, "La quantité max pour la population générale est définie")
         response = self.client.patch(
@@ -680,8 +670,8 @@ class TestElementsModifyApi(APITestCase):
         questionable_part = PlantPartFactory.create()
         new_dangerous_part = PlantPartFactory.create()
         plant = PlantFactory.create()
-        Part.objects.create(plant=plant, plantpart=old_part, ca_is_useful=True)
-        Part.objects.create(plant=plant, plantpart=questionable_part, ca_is_useful=False)
+        Part.objects.create(plant=plant, plantpart=old_part, is_useful=True)
+        Part.objects.create(plant=plant, plantpart=questionable_part, is_useful=False)
 
         self.assertTrue(plant.part_set.get(plantpart=old_part.id).is_useful)
         self.assertFalse(plant.part_set.get(plantpart=questionable_part.id).is_useful)
@@ -742,12 +732,10 @@ class TestElementsModifyApi(APITestCase):
         """
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
-            siccrf_name="original name",
+            name="original name",
             unit=SubstanceUnitFactory.create(),
         )
-        MaxQuantityPerPopulationRelationFactory(
-            substance=substance, population=self.general_pop, siccrf_max_quantity=24, ca_max_quantity=None
-        )
+        MaxQuantityPerPopulationRelationFactory(substance=substance, population=self.general_pop, max_quantity=24)
         self.assertEqual(substance.max_quantity, 24, "La quantité max pour la population générale est définie")
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
@@ -769,16 +757,6 @@ class TestElementsModifyApi(APITestCase):
             666,
             "La dose max pour la pop générale est MAJ",
         )
-        self.assertEqual(
-            general_pop_max.ca_max_quantity,
-            666,
-            "La nouvelle dose est dans le champ ca_",
-        )
-        self.assertEqual(
-            general_pop_max.siccrf_max_quantity,
-            24,
-            "L'ancienne dose est tjs dans le champ siccrf",
-        )
 
     @authenticate
     def test_max_quantities_errors(self):
@@ -787,7 +765,7 @@ class TestElementsModifyApi(APITestCase):
         Ça test que la MAJ, mais on devrait avoir les mêmes règles sur la création
         """
         InstructionRoleFactory(user=authenticate.user)
-        substance = SubstanceFactory.create(siccrf_name="original name")
+        substance = SubstanceFactory.create(name="original name")
 
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
@@ -825,18 +803,14 @@ class TestElementsModifyApi(APITestCase):
         """
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
-            siccrf_public_comments="SICCRF comment",
-            ca_public_comments="CA comment",
-            siccrf_private_comments="private comment",
-            ca_private_comments="",
-            siccrf_cas_number="",
-            ca_cas_number="CA number",
+            public_comments="CA comment",
+            private_comments="private comment",
+            cas_number="CA number",
         )
         MaxQuantityPerPopulationRelationFactory(
             substance=substance,
             population=self.general_pop,
-            ca_max_quantity=3.4,
-            siccrf_max_quantity=1.2,
+            max_quantity=3.4,
         )
 
         SubstanceSynonymFactory.create(name="To delete", standard_name=substance)
@@ -848,12 +822,9 @@ class TestElementsModifyApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         substance.refresh_from_db()
-        self.assertEqual(substance.siccrf_public_comments, "")
-        self.assertEqual(substance.ca_public_comments, "")
-        self.assertEqual(substance.siccrf_private_comments, "")
-        self.assertEqual(substance.ca_private_comments, "")
-        self.assertEqual(substance.siccrf_cas_number, "")
-        self.assertEqual(substance.ca_cas_number, "")
+        self.assertEqual(substance.public_comments, "")
+        self.assertEqual(substance.private_comments, "")
+        self.assertEqual(substance.cas_number, "")
 
         self.assertFalse(
             substance.maxquantityperpopulationrelation_set.filter(population__name="Population générale").exists()
@@ -868,7 +839,7 @@ class TestElementsModifyApi(APITestCase):
         la valeur n'est pas copiée dans le champ ca_
         """
         InstructionRoleFactory(user=authenticate.user)
-        microorganism = MicroorganismFactory.create(siccrf_genus="siccrf genus", ca_genus="")
+        microorganism = MicroorganismFactory.create(genus="siccrf genus")
         response = self.client.patch(
             reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
             {"genus": "siccrf genus"},
@@ -876,8 +847,7 @@ class TestElementsModifyApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         microorganism.refresh_from_db()
-        self.assertEqual(microorganism.ca_genus, "")
-        self.assertEqual(microorganism.siccrf_genus, "siccrf genus")
+        self.assertEqual(microorganism.genus, "siccrf genus")
 
     @authenticate
     def test_can_modify_add_delete_synonyms(self):

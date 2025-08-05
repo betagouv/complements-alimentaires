@@ -137,24 +137,6 @@
               Le jeu de données data.gouv.fr publié par Compl'Alim
             </a>
           </p>
-          <h4 v-if="declarationVisitChartInfo">Consultations au jeu de données de Teleicare</h4>
-          <bar-chart
-            v-if="siccrfDeclarationVisitChartInfo"
-            :x="siccrfDeclarationVisitChartInfo.x"
-            :y="siccrfDeclarationVisitChartInfo.y"
-            name='[" "]'
-            unit-tooltip="téléchargements"
-            selected-palette="default"
-          ></bar-chart>
-          <p>
-            <a
-              href="https://www.data.gouv.fr/fr/datasets/liste-des-complements-alimentaires-declares"
-              rel="noreferrer noopener"
-              target="_blank"
-            >
-              Le jeu de données data.gouv.fr publié par Teleicare
-            </a>
-          </p>
         </DsfrAccordion>
       </DsfrAccordionsGroup>
     </div>
@@ -186,11 +168,6 @@ const elementVisitChartInfo = computed(() => {
 const declarationVisitChartInfo = computed(() => {
   if (!data?.value?.declarationVisitStats?.reportData) return null
   return formatReportData(data.value.declarationVisitStats.reportData, "downloads")
-})
-
-const siccrfDeclarationVisitChartInfo = computed(() => {
-  if (!data?.value?.siccrfDeclarationVisitStats?.reportData) return null
-  return formatReportData(data.value.siccrfDeclarationVisitStats.reportData, "downloads")
 })
 
 const formatMonthLabel = (apiLabel) => {
