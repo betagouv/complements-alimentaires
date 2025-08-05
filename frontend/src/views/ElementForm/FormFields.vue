@@ -67,6 +67,13 @@
           label-left
           class="self-center mt-4 col-span-2 sm:col-span-2"
         />
+        <div class="col-span-full mt-4 -mb-6" v-if="formForType.substanceTypes">
+          <DsfrCheckboxSet
+            v-model="state.substanceTypes"
+            :options="substanceTypeOptions"
+            legend="Types de la substance"
+          />
+        </div>
       </div>
       <div class="grid md:grid-cols-2 mt-4">
         <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg pb-0! mb-2! mt-4!">
@@ -310,6 +317,7 @@ const state = ref({
   synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
   maxQuantities: [],
   toBeEnteredInNextDecree: true, // vrai pour les nouveaux ingrédients
+  substanceTypes: [],
 })
 
 watch(
@@ -413,6 +421,7 @@ const formQuestions = {
     nutritionalReference: true,
     maxQuantity: true,
     unit: true,
+    substanceTypes: true,
   },
   microorganism: {
     species: true,
@@ -515,6 +524,26 @@ const validateMaxQuantities = () => {
 const maxQuantitiesHeaders = computed(() => {
   return ["Population", `Quantité max (en ${unitString.value})`, ""]
 })
+
+const substanceTypeOptions = [
+  {
+    label: "Vitamine",
+    value: 1,
+  },
+  {
+    label: "Minéral",
+    value: 2,
+  },
+  {
+    label: "Substance active à but nutritionnel ou physiologique",
+    value: 4,
+  },
+  {
+    label: "Métabolite secondaire de plante (automatiquement assigné)",
+    value: 3,
+    disabled: true,
+  },
+]
 </script>
 
 <style scoped>

@@ -84,7 +84,6 @@ class Substance(IngredientCommonModel):
             PublicReasonHistoricalModel,
         ],
         inherit=True,
-        excluded_fields=["substance_types"],
     )
 
     @property
