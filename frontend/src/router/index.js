@@ -626,6 +626,9 @@ export const routes = [
     path: "/sitemap",
     component: SiteMap,
     name: "SiteMap",
+    meta: {
+      title: "Plan du site",
+    },
   },
   {
     path: "/:catchAll(.*)*", // https://stackoverflow.com/a/70343919/2255491
