@@ -15,7 +15,7 @@ from data.factories import (
 )
 from data.factories.user import UserFactory
 
-from .utils import ProjectAPITestCase
+from .utils import ProjectAPITestCase, authenticate
 
 User = get_user_model()
 
@@ -46,6 +46,17 @@ class TestGetLoggedUser(ProjectAPITestCase):
         self.assertEqual(response.data.get("last_name"), user.last_name)
         self.assertEqual(response.data.get("companies"), [])
         self.assertIn("id", response.data)
+
+    @authenticate
+    def test_user_companies_address(self):
+        company = CompanyFactory(address="1 rue de la Paix", postal_code="75002", city="Paris")
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+
+        response = self.get(self.url()).data
+        self.assertEqual(len(response.get("companies")), 1)
+        self.assertEqual(response.get("companies")[0]["address"], "1 rue de la Paix")
+        self.assertEqual(response.get("companies")[0]["postal_code"], "75002")
+        self.assertEqual(response.get("companies")[0]["city"], "Paris")
 
     def test_authenticated_logged_user_call_with_roles(self):
         """Ensure that roles are added to the JSON representation of the user"""
