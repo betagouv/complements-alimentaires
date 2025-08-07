@@ -1,5 +1,26 @@
 <template>
   <div>
+    <!-- Zone de recherche -->
+    <div>
+      <DsfrFieldset class="mb-0! max-w-2xl">
+        <ElementAutocomplete
+          v-model="searchTerm"
+          label="Rechercher par produit, marque, entreprise ou ingrédient"
+          label-visible
+          class="max-w-2xl"
+          @selected="addIngredient"
+          :hideSearchButton="true"
+          :chooseFirstAsDefault="false"
+          :searchAll="true"
+          :extendedSearch="true"
+          @searchProduct="searchByProduct"
+          @searchBrand="searchByBrand"
+          @searchCompany="searchByCompany"
+          :required="false"
+        />
+      </DsfrFieldset>
+    </div>
+
     <DsfrAccordionsGroup v-model="activeAccordion">
       <DsfrAccordion title="Filtrer les déclarations">
         <div class="grid grid-cols-4 gap-0 sm:gap-2 md:gap-4">
@@ -62,6 +83,7 @@
         class="mx-1 fr-tag--dismiss"
       ></DsfrTag>
     </div>
+
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
@@ -90,6 +112,7 @@ import { ref } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { toOptions } from "@/utils/forms.js"
+import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -105,6 +128,8 @@ const route = useRoute()
 const offset = computed(() => (page.value - 1) * limit.value)
 const pages = computed(() => getPagesForPagination(data.value?.count, limit.value, route.path))
 
+const searchTerm = ref(route.query.recherche || "")
+
 const page = computed(() => parseInt(route.query.page))
 const ordering = computed(() => route.query.triage)
 const limit = computed(() => parseInt(route.query.limit))
@@ -115,15 +140,22 @@ const population = computed(() => (route.query.population ? parseInt(route.query
 const condition = computed(() => (route.query.condition ? parseInt(route.query.condition) : ""))
 const galenicFormulation = computed(() => (route.query.formeGalenique ? parseInt(route.query.formeGalenique) : ""))
 
+const searchTermProduct = computed(() => route.query.rechercheProduit || "")
+const searchTermBrand = computed(() => route.query.rechercheMarque || "")
+const searchTermCompany = computed(() => route.query.rechercheEntreprise || "")
+
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 
 // Obtention de la donnée via API
 const url = computed(() => {
-  let apiUrl = `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&simplifiedStatus=${simplifiedStatus.value}&surveillanceOnly=${surveillanceOnly.value}&`
+  let apiUrl = `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&simplifiedStatus=${simplifiedStatus.value}&surveillanceOnly=${surveillanceOnly.value}&search=${searchTerm.value}&`
   if (props.companyId) apiUrl += `${apiUrl}&company=${props.companyId}`
   if (population.value) apiUrl += `&population=${population.value}`
   if (condition.value) apiUrl += `&condition=${condition.value}`
   if (galenicFormulation.value) apiUrl += `&galenic_formulation=${galenicFormulation.value}`
+  if (searchTermProduct.value) apiUrl += `&search_name=${searchTermProduct.value}`
+  if (searchTermBrand.value) apiUrl += `&search_brand=${searchTermBrand.value}`
+  if (searchTermCompany.value) apiUrl += `&search_company=${searchTermCompany.value}`
   return apiUrl
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
@@ -147,8 +179,24 @@ const updatePopulation = (newValue) => updateQuery({ population: newValue })
 const updateCondition = (newValue) => updateQuery({ condition: newValue })
 const updateGalenicFormulation = (newValue) => updateQuery({ formeGalenique: newValue })
 
+const searchByProduct = (term) => updateQuery({ rechercheProduit: term })
+const searchByBrand = (term) => updateQuery({ rechercheMarque: term })
+const searchByCompany = (term) => updateQuery({ rechercheEntreprise: term })
+
 watch(
-  [page, limit, ordering, simplifiedStatus, surveillanceOnly, population, condition, galenicFormulation],
+  [
+    page,
+    limit,
+    ordering,
+    simplifiedStatus,
+    surveillanceOnly,
+    population,
+    condition,
+    galenicFormulation,
+    searchTermProduct,
+    searchTermBrand,
+    searchTermCompany,
+  ],
   fetchSearchResults
 )
 
@@ -182,8 +230,40 @@ const activeFilters = computed(() => {
       text: `Forme : ${galenicFormulationOptions.value?.find((x) => x.value === galenicFormulation.value)?.text || ""}`,
       callback: () => updateGalenicFormulation(""),
     })
+  if (searchTermProduct.value)
+    filters.push({
+      text: `Produit : ${searchTermProduct.value}`,
+      callback: () => searchByProduct(""),
+    })
+  if (searchTermBrand.value)
+    filters.push({
+      text: `Marque : ${searchTermBrand.value}`,
+      callback: () => searchByBrand(""),
+    })
+  if (searchTermCompany.value)
+    filters.push({
+      text: `Enterprise : ${searchTermCompany.value}`,
+      callback: () => searchByCompany(""),
+    })
   return filters
 })
+
+// Search
+
+const addIngredient = async (ingredient) => {
+  // selectedIngredient.value = ingredient
+  // if (!ingredientIsPlant.value) selectedPart.value = null
+  // if (ingredientIsSubstance.value) selectedUnit.value = selectedIngredient.value.unit
+  // if (
+  //   selectedIngredient.value?.objectType === "form_of_supply" ||
+  //   selectedIngredient.value?.objectType === "active_ingredient"
+  // ) {
+  //   const url = `/api/v1/${getApiType(selectedIngredient.value?.objectType)}s/${selectedIngredient.value.id}`
+  //   const { data } = await useFetch(url, { immediate: true }).get().json()
+  //   selectedIngredient.value.substances = data.value?.substances
+  // }
+  console.log(ingredient)
+}
 </script>
 
 <style scoped>
