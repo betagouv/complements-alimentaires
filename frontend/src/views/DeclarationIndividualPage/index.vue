@@ -29,12 +29,13 @@
 
 <script setup>
 import { useRoute } from "vue-router"
-import { computed, onMounted } from "vue"
+import { computed, onMounted, watch } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import NavSidebar from "./NavSidebar"
 import { useRootStore } from "@/stores/root"
+import { setDocumentTitle } from "@/utils/document"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -136,6 +137,16 @@ onMounted(async () => {
     if (el) el.scrollIntoView({ behavior: "smooth" })
   }
 
-  document.title = `${declaration.value.name} - ${company.value.socialName || "Résultat entreprise"} - Compl'Alim`
+  setDocumentTitleFromRoute()
 })
+
+const setDocumentTitleFromRoute = () => {
+  const companyName = company.value.socialName || "Résultat entreprise"
+  if (route.name.includes("History")) setDocumentTitle(["Historique", declaration.value.name, companyName])
+  else if (route.name.includes("Identity"))
+    setDocumentTitle(["Identité produit et entreprise", declaration.value.name, companyName])
+  else setDocumentTitle([declaration.value.name, companyName])
+}
+
+watch(route, setDocumentTitleFromRoute)
 </script>

@@ -23,6 +23,7 @@
 import { computed, watch } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
+import { setDocumentTitle } from "@/utils/document"
 
 const props = defineProps({
   id: String,
@@ -51,7 +52,7 @@ const author = computed(() => {
 fetchBlogPost()
 
 watch(blogPost, (post) => {
-  if (post) document.title = `${post.title} - Compl'Alim`
+  if (post) setDocumentTitle([post.title])
 })
 </script>
 

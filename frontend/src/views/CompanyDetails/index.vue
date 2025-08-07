@@ -40,6 +40,7 @@ import { getCompanyActivitiesString } from "@/utils/mappings"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import InfoTable from "@/components/InfoTable.vue"
 import DeclarationsTableSection from "@/components/NewBepiasViews/DeclarationsTableSection"
+import { setDocumentTitle } from "@/utils/document"
 
 const router = useRouter()
 const previousRoute = computed(() => {
@@ -61,7 +62,7 @@ const {
 onMounted(async () => {
   await executeCompanyFetch()
   handleError(companyResponse)
-  document.title = `${company.value?.socialName} - Détail de l'entreprise - Compl'Alim`
+  setDocumentTitle([company.value?.socialName, "Détail de l'entreprise"])
 })
 
 const identityItems = computed(() => {

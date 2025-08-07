@@ -50,6 +50,7 @@ import ElementAlert from "./ElementAlert"
 import ReplacementSearch from "./ReplacementSearch"
 import ElementCard from "@/components/ElementCard"
 import ElementSynonyms from "./ElementSynonyms"
+import { setDocumentTitle } from "@/utils/document"
 
 const props = defineProps({ type: String, id: String })
 const store = useRootStore()
@@ -88,7 +89,7 @@ const getElementFromApi = async () => {
 
 getElementFromApi()
 watch(element, (newElement) => {
-  document.title = `${newElement?.newName || newElement?.element?.name} - Compl'Alim`
+  setDocumentTitle([newElement?.newName || newElement?.element?.name, "Nouvel ingrédient"])
   additionalFields.value = JSON.parse(JSON.stringify(element.value))
   additionalFields.value.new = false
 })

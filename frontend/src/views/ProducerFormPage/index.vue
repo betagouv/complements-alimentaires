@@ -115,6 +115,7 @@ import FormWrapper from "@/components/FormWrapper"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { tabTitles } from "@/utils/mappings"
+import { setDocumentTitle } from "@/utils/document"
 
 // Il y a deux refs qui stockent des erreurs. $externalResults sert
 // lors qu'on sauvegarde la déclaration (POST ou PUT) mais qu'on ne change
@@ -198,6 +199,7 @@ watch(data, () => {
     const successMessage = "Votre déclaration a été dupliquée. Merci de renseigner les pièces jointes."
     savePayload({ successMessage })
   } else payload.value = data.value
+  setDocumentTitleForTab(selectedTabIndex.value, data)
 })
 
 const hasNewElements = computed(() => {
@@ -351,9 +353,17 @@ const takeDeclaration = async () => {
 
 const onWithdrawal = () => router.replace({ name: "DeclarationsHomePage", query: { status: "WITHDRAWN,AUTHORIZED" } })
 
+const setDocumentTitleForTab = (tabIdx, fromData) => {
+  const declarationTitle = isNewDeclaration.value ? "Nouvelle démarche" : `Déclaration « ${fromData.value.name} »`
+  setDocumentTitle([titles.value[tabIdx].title, declarationTitle])
+}
+
 watch(
   () => route.query.tab,
-  (tab) => (selectedTabIndex.value = parseInt(tab))
+  (tab) => {
+    selectedTabIndex.value = parseInt(tab)
+    setDocumentTitleForTab(selectedTabIndex.value, payload)
+  }
 )
 
 const performDuplication = (originalDeclaration) => {
