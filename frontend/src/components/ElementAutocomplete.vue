@@ -145,7 +145,10 @@ const props = defineProps({
 
 const emit = defineEmits(["selected", "search", "searchProduct", "searchBrand", "searchCompany"])
 const hasFocus = ref(false)
-const displayOptions = computed(() => hasFocus.value && !!autocompleteResults.value.length)
+const extendedOptionsVisible = computed(() => props.extendedSearch && searchTerm.value.trim().length >= 3)
+const displayOptions = computed(
+  () => extendedOptionsVisible.value || (hasFocus.value && !!autocompleteResults.value.length)
+)
 
 function convertRemToPixels(rem) {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
@@ -196,8 +199,6 @@ function checkIfActiveOptionIsVisible() {
   const isLiVisible = isVisible(activeLi, optionsList.value)
   if (!isLiVisible) activeLi.scrollIntoView({ behavior: "smooth" })
 }
-
-const extendedOptionsVisible = computed(() => props.extendedSearch && searchTerm.value.trim().length >= 3)
 
 const optionCount = computed(() =>
   extendedOptionsVisible.value ? autocompleteResults.value.length + 3 : autocompleteResults.value.length

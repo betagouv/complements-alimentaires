@@ -3,13 +3,6 @@
     <!-- Zone de recherche -->
     <div>
       <DsfrFieldset class="mb-0! max-w-2xl">
-        <!-- <DsfrSearchBar
-          v-model="searchTerm"
-          label="Rechercher par produit, marque, entreprise ou ingrédient"
-          placeholder="Rechercher par produit, marque, entreprise ou ingrédient"
-          @search="search"
-          @update:modelValue="(val) => val === '' && search()"
-        /> -->
         <ElementAutocomplete
           v-model="searchTerm"
           label="Rechercher par produit, marque, entreprise ou ingrédient"
@@ -20,9 +13,9 @@
           :chooseFirstAsDefault="false"
           :searchAll="true"
           :extendedSearch="true"
-          @searchProduct="(v) => console.log(`Product : ${v}`)"
-          @searchBrand="(v) => console.log(`Brand : ${v}`)"
-          @searchCompany="(v) => console.log(`Company : ${v}`)"
+          @searchProduct="searchByProduct"
+          @searchBrand="searchByBrand"
+          @searchCompany="searchByCompany"
           :required="false"
         />
       </DsfrFieldset>
@@ -147,6 +140,10 @@ const population = computed(() => (route.query.population ? parseInt(route.query
 const condition = computed(() => (route.query.condition ? parseInt(route.query.condition) : ""))
 const galenicFormulation = computed(() => (route.query.formeGalenique ? parseInt(route.query.formeGalenique) : ""))
 
+const searchTermProduct = computed(() => route.query.rechercheProduit || "")
+const searchTermBrand = computed(() => route.query.rechercheMarque || "")
+const searchTermCompany = computed(() => route.query.rechercheEntreprise || "")
+
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 
 // Obtention de la donnée via API
@@ -156,6 +153,9 @@ const url = computed(() => {
   if (population.value) apiUrl += `&population=${population.value}`
   if (condition.value) apiUrl += `&condition=${condition.value}`
   if (galenicFormulation.value) apiUrl += `&galenic_formulation=${galenicFormulation.value}`
+  if (searchTermProduct.value) apiUrl += `&search_name=${searchTermProduct.value}`
+  if (searchTermBrand.value) apiUrl += `&search_brand=${searchTermBrand.value}`
+  if (searchTermCompany.value) apiUrl += `&search_company=${searchTermCompany.value}`
   return apiUrl
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
@@ -179,8 +179,24 @@ const updatePopulation = (newValue) => updateQuery({ population: newValue })
 const updateCondition = (newValue) => updateQuery({ condition: newValue })
 const updateGalenicFormulation = (newValue) => updateQuery({ formeGalenique: newValue })
 
+const searchByProduct = (term) => updateQuery({ rechercheProduit: term })
+const searchByBrand = (term) => updateQuery({ rechercheMarque: term })
+const searchByCompany = (term) => updateQuery({ rechercheEntreprise: term })
+
 watch(
-  [page, limit, ordering, simplifiedStatus, surveillanceOnly, population, condition, galenicFormulation],
+  [
+    page,
+    limit,
+    ordering,
+    simplifiedStatus,
+    surveillanceOnly,
+    population,
+    condition,
+    galenicFormulation,
+    searchTermProduct,
+    searchTermBrand,
+    searchTermCompany,
+  ],
   fetchSearchResults
 )
 
@@ -213,6 +229,21 @@ const activeFilters = computed(() => {
     filters.push({
       text: `Forme : ${galenicFormulationOptions.value?.find((x) => x.value === galenicFormulation.value)?.text || ""}`,
       callback: () => updateGalenicFormulation(""),
+    })
+  if (searchTermProduct.value)
+    filters.push({
+      text: `Produit : ${searchTermProduct.value}`,
+      callback: () => searchByProduct(""),
+    })
+  if (searchTermBrand.value)
+    filters.push({
+      text: `Marque : ${searchTermBrand.value}`,
+      callback: () => searchByBrand(""),
+    })
+  if (searchTermCompany.value)
+    filters.push({
+      text: `Enterprise : ${searchTermCompany.value}`,
+      callback: () => searchByCompany(""),
     })
   return filters
 })
