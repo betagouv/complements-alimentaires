@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue"
+import { computed, ref } from "vue"
 import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
 import { useRoute } from "vue-router"
 import { useFetch } from "@vueuse/core"
