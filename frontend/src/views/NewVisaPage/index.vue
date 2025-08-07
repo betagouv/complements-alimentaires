@@ -1,13 +1,6 @@
 <template>
   <div class="fr-container mb-10">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[
-        { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { to: { name: 'VisaDeclarations' }, text: 'Déclarations pour visa' },
-        { text: 'Visa' },
-      ]"
-    />
+    <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
@@ -59,7 +52,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { headers } from "@/utils/data-fetching"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import BepiasSidebar from "@/components/NewBepiasViews/BepiasSidebar"
@@ -69,6 +62,15 @@ import { setDocumentTitle } from "@/utils/document"
 
 const props = defineProps({ declarationId: String })
 const route = useRoute()
+const router = useRouter()
+
+const filterQueryParams =
+  router.getPreviousRoute().value?.name === "VisaDeclarations" ? router.getPreviousRoute().value.query : {}
+const breadcrumbLinks = [
+  { to: { name: "DashboardPage" }, text: "Tableau de bord" },
+  { to: { name: "VisaDeclarations", query: filterQueryParams }, text: "Déclarations pour visa" },
+  { text: "Instruction" },
+]
 
 const isFetching = computed(() =>
   [
