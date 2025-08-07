@@ -110,6 +110,7 @@
           label="Partie(s) autorisée(s)"
           search
           labelKey="name"
+          :filteringKeys="['name']"
         />
         <div class="md:ml-4 md:my-8 md:col-span-2">
           <DsfrTag
@@ -128,6 +129,7 @@
           label="Partie(s) non-autorisée(s)"
           search
           labelKey="name"
+          :filteringKeys="['name']"
         />
         <div class="md:ml-4 md:my-8 md:col-span-2">
           <DsfrTag
