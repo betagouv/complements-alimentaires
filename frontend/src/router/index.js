@@ -50,9 +50,10 @@ import DeclarationIndividualPage from "@/views/DeclarationIndividualPage"
 import ProductControlSection from "@/views/DeclarationIndividualPage/ProductControlSection"
 import HistoryControlSection from "@/views/DeclarationIndividualPage/HistoryControlSection"
 import CompanyControlSection from "@/views/DeclarationIndividualPage/CompanyControlSection"
+import SiteMap from "@/views/SiteMap"
 import { ref } from "vue"
 
-const routes = [
+export const routes = [
   {
     path: "/",
     name: "Root",
@@ -64,6 +65,10 @@ const routes = [
     path: "/accueil",
     name: "LandingPage",
     component: LandingPage,
+    meta: {
+      title: "Accueil",
+      sitemap: true,
+    },
   },
   {
     path: "/entreprises",
@@ -71,12 +76,17 @@ const routes = [
     component: ProducerHomePage,
     meta: {
       title: "Recherche ingrédients",
+      sitemap: true,
     },
   },
   {
     path: "/contactez-nous",
     name: "ContactForm",
     component: ContactForm,
+    meta: {
+      title: "Contactez-nous",
+      sitemap: true,
+    },
   },
   {
     path: "/blog",
@@ -84,6 +94,7 @@ const routes = [
     component: BlogHomePage,
     meta: {
       title: "Articles de blog",
+      sitemap: true,
     },
   },
   {
@@ -148,6 +159,7 @@ const routes = [
     component: LegalNoticesPage,
     meta: {
       title: "Mentions légales",
+      sitemap: true,
     },
   },
   {
@@ -156,6 +168,7 @@ const routes = [
     component: CGUPage,
     meta: {
       title: "Conditions générales d'utilisation",
+      sitemap: true,
     },
   },
   {
@@ -164,6 +177,7 @@ const routes = [
     component: PrivacyPolicyPage,
     meta: {
       title: "Politique de confidentialité",
+      sitemap: true,
     },
   },
   {
@@ -172,6 +186,7 @@ const routes = [
     component: CookiesInfoPage,
     meta: {
       title: "Cookies",
+      sitemap: true,
     },
   },
   {
@@ -180,6 +195,7 @@ const routes = [
     component: A11yPage,
     meta: {
       title: "Accessibilité",
+      sitemap: true,
     },
   },
   {
@@ -189,6 +205,7 @@ const routes = [
     meta: {
       title: "Se connecter",
       omitIfLoggedIn: true,
+      sitemap: true,
     },
   },
   {
@@ -198,6 +215,7 @@ const routes = [
     meta: {
       title: "S'enregistrer",
       omitIfLoggedIn: true,
+      sitemap: true,
     },
   },
   {
@@ -220,7 +238,11 @@ const routes = [
     path: "/tableau-de-bord",
     name: "DashboardPage",
     component: DashboardPage,
-    meta: { title: "Tableau de bord", authenticationRequired: true },
+    meta: {
+      title: "Tableau de bord",
+      authenticationRequired: true,
+      sitemap: true,
+    },
   },
   {
     path: "/nouvelle-demarche",
@@ -456,6 +478,7 @@ const routes = [
     component: CompliancePage,
     meta: {
       title: "Conformité au droit alimentaire",
+      sitemap: true,
     },
   },
   {
@@ -464,6 +487,7 @@ const routes = [
     component: FaqPage,
     meta: {
       title: "Foire aux questions",
+      sitemap: true,
     },
   },
   {
@@ -472,6 +496,7 @@ const routes = [
     component: StatsPage,
     meta: {
       title: "Mesures d'impact",
+      sitemap: true,
     },
   },
   {
@@ -596,6 +621,11 @@ const routes = [
         component: CompanyControlSection,
       },
     ],
+  },
+  {
+    path: "/sitemap",
+    component: SiteMap,
+    name: "SiteMap",
   },
   {
     path: "/:catchAll(.*)*", // https://stackoverflow.com/a/70343919/2255491
