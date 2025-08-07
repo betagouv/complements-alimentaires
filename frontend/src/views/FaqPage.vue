@@ -160,8 +160,9 @@
           </ol>
           <p>Les champs obligatoires à remplir sont indiqués par une astérix *.</p>
           <p>
-            💡 Vous pouvez naviguer librement entre ces onglets sans avoir à remplir tous les champs d'un onglet avant
-            de passer au suivant.
+            <span aria-hidden="true">💡</span>
+            Vous pouvez naviguer librement entre ces onglets sans avoir à remplir tous les champs d'un onglet avant de
+            passer au suivant.
           </p>
         </DsfrAccordion>
         <DsfrAccordion title="Comment enregistrer mon brouillon ?">
@@ -202,7 +203,8 @@
               <strong>Population cible</strong>
               : populations pour lesquelles le complément alimentaire est spécifiquement conçu. L'option "population
               générale" indique que le produit est destiné à l'ensemble de la population, y compris les nourrissons et
-              les enfants. Si vous sélectionnez cette option, il n'est pas nécessaire de cocher les autres cases. 🚀
+              les enfants. Si vous sélectionnez cette option, il n'est pas nécessaire de cocher les autres cases.
+              <span aria-hidden="true">🚀</span>
               Nous travaillons actuellement à simplifier cette liste et vous tiendrons informés dès que cette mise à
               jour sera effectuée.
             </li>
@@ -234,9 +236,10 @@
             correspondant dans la liste déroulante qui s’affiche.
           </p>
           <p>
-            💡 Dans la section "Ingrédients", vous avez désormais la possibilité de préciser si l’ingrédient ajouté joue
-            un rôle actif ou non actif dans le produit, afin d'éviter la création de doublons dans la base de données et
-            de mieux structurer les informations déclarées.
+            <span aria-hidden="true">💡</span>
+            Dans la section "Ingrédients", vous avez désormais la possibilité de préciser si l’ingrédient ajouté joue un
+            rôle actif ou non actif dans le produit, afin d'éviter la création de doublons dans la base de données et de
+            mieux structurer les informations déclarées.
           </p>
           <p>
             <strong>
@@ -257,12 +260,14 @@
             </strong>
           </p>
           <p>
-            💡 L'icône "commentaire" en couleur bleue vous permet d'accéder aux informations disponibles sur chaque
+            <span aria-hidden="true">💡</span>
+            L'icône "commentaire" en couleur bleue vous permet d'accéder aux informations disponibles sur chaque
             substance, telles que la quantité maximale autorisée ou les recommandations spécifiques pour certaines
             populations.
           </p>
           <p>
-            🚀 Dans les prochains mois, nous allons enrichir nos bases de données afin de vous fournir encore plus
+            <span aria-hidden="true">🚀</span>
+            Dans les prochains mois, nous allons enrichir nos bases de données afin de vous fournir encore plus
             d’informations, pour mieux vous accompagner dans la déclaration de vos produits.
           </p>
         </DsfrAccordion>
@@ -327,8 +332,9 @@
             .
           </p>
           <p>
-            💡 Le filtre "Types de déclaration affichés" vous permet de sélectionner les dossiers que vous souhaitez
-            voir à l’écran, en choisissant les types de déclarations qui vous intéressent : Brouillon, Instruction,
+            <span aria-hidden="true">💡</span>
+            Le filtre "Types de déclaration affichés" vous permet de sélectionner les dossiers que vous souhaitez voir à
+            l’écran, en choisissant les types de déclarations qui vous intéressent : Brouillon, Instruction,
             Observation, Objection, Abandon, Déclaration finalisée, Refus, Retiré du marché.
           </p>
         </DsfrAccordion>

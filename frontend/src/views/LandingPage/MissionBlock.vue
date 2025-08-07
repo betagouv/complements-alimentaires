@@ -9,7 +9,7 @@
       <h3 class="fr-h6">Concrètement, notre service a vocation :</h3>
       <ul class="list-none">
         <li class="flex" v-for="point in bulletPoints" :key="point.text">
-          <div class="mr-3 text-xl">{{ point.icon }}</div>
+          <div class="mr-3 text-xl" aria-hidden="true">{{ point.icon }}</div>
           <p class="mb-2!">{{ point.text }}</p>
         </li>
       </ul>
