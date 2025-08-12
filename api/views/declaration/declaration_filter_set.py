@@ -168,7 +168,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
     BETWEEN = "≬"
 
     def filter_by_dose(self, queryset, name, value):
-        dose_filters = self.data.getlist("dose")  # Gets all dose parameters
+        dose_filters = self.data.getlist("dose")
 
         if not dose_filters:
             return queryset.none()

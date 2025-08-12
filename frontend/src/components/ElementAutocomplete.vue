@@ -104,7 +104,6 @@ const searchTerm = defineModel({
 const container = ref(undefined)
 const optionsList = ref(undefined)
 const autocompleteResults = ref([])
-// const searchTerm = ref(modelValue.value)
 const debounceDelay = 350
 
 const props = defineProps({
