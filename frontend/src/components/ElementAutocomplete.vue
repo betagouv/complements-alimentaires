@@ -96,7 +96,7 @@ import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
 import { useFetch, useDebounceFn } from "@vueuse/core"
 import useToaster from "@/composables/use-toaster"
 
-const modelValue = defineModel({
+const searchTerm = defineModel({
   type: String,
   default: "",
 })
@@ -104,7 +104,7 @@ const modelValue = defineModel({
 const container = ref(undefined)
 const optionsList = ref(undefined)
 const autocompleteResults = ref([])
-const searchTerm = ref(modelValue.value)
+// const searchTerm = ref(modelValue.value)
 const debounceDelay = 350
 
 const props = defineProps({

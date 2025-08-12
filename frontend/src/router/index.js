@@ -532,6 +532,7 @@ const routes = [
         population: "",
         condition: "",
         formeGalenique: "",
+        dose: "",
       },
     },
   },

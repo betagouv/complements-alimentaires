@@ -113,6 +113,7 @@ import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { toOptions } from "@/utils/forms.js"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
+import { typesMapping } from "@/utils/mappings"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -146,6 +147,8 @@ const searchTermCompany = computed(() => route.query.rechercheEntreprise || "")
 
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 
+const doses = computed(() => (route.query.doses ? JSON.parse(decodeURIComponent(route.query.doses)) : []))
+
 // Obtention de la donnée via API
 const url = computed(() => {
   let apiUrl = `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&simplifiedStatus=${simplifiedStatus.value}&surveillanceOnly=${surveillanceOnly.value}&search=${searchTerm.value}&`
@@ -156,6 +159,8 @@ const url = computed(() => {
   if (searchTermProduct.value) apiUrl += `&search_name=${searchTermProduct.value}`
   if (searchTermBrand.value) apiUrl += `&search_brand=${searchTermBrand.value}`
   if (searchTermCompany.value) apiUrl += `&search_company=${searchTermCompany.value}`
+  if (doses.value) for (let i = 0; i < doses.value.length; i++) apiUrl += `&dose=${doses.value[i]}`
+
   return apiUrl
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
@@ -179,9 +184,13 @@ const updatePopulation = (newValue) => updateQuery({ population: newValue })
 const updateCondition = (newValue) => updateQuery({ condition: newValue })
 const updateGalenicFormulation = (newValue) => updateQuery({ formeGalenique: newValue })
 
-const searchByProduct = (term) => updateQuery({ rechercheProduit: term })
-const searchByBrand = (term) => updateQuery({ rechercheMarque: term })
-const searchByCompany = (term) => updateQuery({ rechercheEntreprise: term })
+const searchByProduct = (term) => updateQuery({ rechercheProduit: term }) && clearSearch()
+const searchByBrand = (term) => updateQuery({ rechercheMarque: term }) && clearSearch()
+const searchByCompany = (term) => updateQuery({ rechercheEntreprise: term }) && clearSearch()
+
+const updateDoses = (newValue) => updateQuery({ doses: encodeURIComponent(JSON.stringify(newValue)) })
+
+const clearSearch = () => (searchTerm.value = "")
 
 watch(
   [
@@ -196,6 +205,7 @@ watch(
     searchTermProduct,
     searchTermBrand,
     searchTermCompany,
+    doses,
   ],
   fetchSearchResults
 )
@@ -232,37 +242,51 @@ const activeFilters = computed(() => {
     })
   if (searchTermProduct.value)
     filters.push({
-      text: `Produit : ${searchTermProduct.value}`,
+      text: `Produit contenant « ${searchTermProduct.value} »`,
       callback: () => searchByProduct(""),
     })
   if (searchTermBrand.value)
     filters.push({
-      text: `Marque : ${searchTermBrand.value}`,
+      text: `Marque contenant « ${searchTermBrand.value} »`,
       callback: () => searchByBrand(""),
     })
   if (searchTermCompany.value)
     filters.push({
-      text: `Enterprise : ${searchTermCompany.value}`,
+      text: `Enterprise contenant « ${searchTermCompany.value} »`,
       callback: () => searchByCompany(""),
     })
+  if (doses.value.length > 0) {
+    for (let i = 0; i < doses.value.length; i++) {
+      const dose = doses.value[i]
+      const parts = dose.split("||")
+      const type = typesMapping[parts[0]] || "Ingrédient"
+      const name = parts[1] || "Inconnu"
+      const doseText = `${type} : ${name}`
+      filters.push({
+        text: doseText,
+        callback: () => removeIngredient(dose),
+      })
+    }
+  }
   return filters
 })
 
-// Search
-
 const addIngredient = async (ingredient) => {
-  // selectedIngredient.value = ingredient
-  // if (!ingredientIsPlant.value) selectedPart.value = null
-  // if (ingredientIsSubstance.value) selectedUnit.value = selectedIngredient.value.unit
-  // if (
-  //   selectedIngredient.value?.objectType === "form_of_supply" ||
-  //   selectedIngredient.value?.objectType === "active_ingredient"
-  // ) {
-  //   const url = `/api/v1/${getApiType(selectedIngredient.value?.objectType)}s/${selectedIngredient.value.id}`
-  //   const { data } = await useFetch(url, { immediate: true }).get().json()
-  //   selectedIngredient.value.substances = data.value?.substances
-  // }
-  console.log(ingredient)
+  // Temporairement on traite les ajouts d'ingrédients comme ayant une dose supérieure à 0
+  // Par la suite on pourra spécifier également la dose précise recherchée et la partie de
+  // plante
+  let newFilterString = `${ingredient.objectType}||${ingredient.name}||${ingredient.id}`
+
+  if (ingredient.objectType === "plant") newFilterString += "|-|Toutes les parties"
+
+  newFilterString += "||>||0||"
+
+  clearSearch()
+  updateDoses([...doses.value, newFilterString])
+}
+const removeIngredient = (ingredient) => {
+  const newDoses = doses.value.filter((x) => x !== ingredient)
+  updateDoses(newDoses)
 }
 </script>
 
