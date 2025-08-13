@@ -20,6 +20,18 @@
         />
       </DsfrFieldset>
     </div>
+    <!-- Zone des filtres actifs -->
+    <div class="mb-4">
+      <DsfrTag
+        v-for="(item, idx) in activeFilters"
+        :key="`active-filters-${idx}`"
+        :label="item.text"
+        tagName="button"
+        @click="item.callback"
+        :aria-label="`Retirer le filtre « ${item.text} »`"
+        class="mx-1 fr-tag--dismiss"
+      ></DsfrTag>
+    </div>
 
     <DsfrAccordionsGroup v-model="activeAccordion">
       <DsfrAccordion title="Filtrer les déclarations">
@@ -71,18 +83,9 @@
       </DsfrAccordion>
     </DsfrAccordionsGroup>
 
-    <!-- Zone des filtres actifs -->
-    <div class="my-4">
-      <DsfrTag
-        v-for="(item, idx) in activeFilters"
-        :key="`active-filters-${idx}`"
-        :label="item.text"
-        tagName="button"
-        @click="item.callback"
-        :aria-label="`Retirer le filtre « ${item.text} »`"
-        class="mx-1 fr-tag--dismiss"
-      ></DsfrTag>
-    </div>
+    <hr class="mt-6 mb-0" />
+
+    <IngredientFilterAccordeon v-for="dose in doses" :key="dose" :modelValue="dose" @remove="removeIngredient" />
 
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
@@ -114,6 +117,7 @@ import { storeToRefs } from "pinia"
 import { toOptions } from "@/utils/forms.js"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import { typesMapping } from "@/utils/mappings"
+import IngredientFilterAccordeon from "./IngredientFilterAccordeon"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
