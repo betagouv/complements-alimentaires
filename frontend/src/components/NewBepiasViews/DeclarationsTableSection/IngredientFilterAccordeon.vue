@@ -7,8 +7,6 @@
           {{ name }}
         </p>
       </template>
-      <p>{{ modelValue }}</p>
-      <p>Selected part : {{ selectedPart }}</p>
 
       <!-- Champs lors qu'il n'y a pas de dose spécifiée -->
       <div class="flex gap-4 items-end" v-if="!hasDoseFilter">
@@ -60,25 +58,40 @@ const emit = defineEmits(["update:modelValue"])
 const { units, plantParts } = storeToRefs(useRootStore())
 const activeIngredientAccordion = ref(0)
 
-// Je dois remplir ces parts depuis le modèle (string)
-const selectedPart = ref("")
-const operation = ref(">")
-const quantityA = ref(0)
-const quantityB = ref()
-const unit = ref()
+const objectType = computed(() => modelValue.value.split("||")[0])
+const isPlant = computed(() => objectType?.value === "plant")
+const isMicroorganism = computed(() => objectType?.value === "microorganism")
+const isSubstance = computed(() => objectType?.value === "substance")
+
+// Valeurs initiales
+const selectedPart = ref((isPlant.value && modelValue.value?.split("||")[2].split("|")[1]) || "")
+const operation = ref(modelValue.value?.split("||")[3] || OPERATION.GT)
+
+const extractQuantityA = () => {
+  const rawValue = modelValue.value?.split?.("||")?.[4]?.split?.("|")[0]
+  return rawValue ? parseInt(rawValue) : 0
+}
+const quantityA = ref(extractQuantityA())
+
+const extractQuantityB = () => {
+  const rawValues = modelValue.value?.split?.("||")?.[4]?.split?.("|")
+  return rawValues.length > 0 ? parseInt(rawValues[1]) : 1
+}
+const quantityB = ref(extractQuantityB())
+
+const extractUnit = () => {
+  const segments = modelValue.value?.split("||")
+  if (!segments || segments.length < 6) return null
+  return segments[5]
+}
+const unit = ref(extractUnit())
 
 // Parsing du modèle (qui est un String de filtre dose) et autres utils
-const objectType = computed(() => modelValue.value.split("||")[0])
+
 const ingredientName = computed(() => modelValue.value.split("||")[1])
 const ingredientId = computed(() => modelValue.value.split("||")[2].split("|")[0])
-const plantPartId = computed(() => isPlant.value && modelValue.value.split("||")[2].split("|")[1])
-const plantPartName = computed(() => isPlant.value && modelValue.value.split("||")[2].split("|")[2])
 const icon = computed(() => getTypeIcon(objectType.value))
 const name = computed(() => `${typesMapping[objectType] || "Ingrédient"} : ${ingredientName.value || "Inconnu"}`)
-
-const isPlant = computed(() => objectType.value === "plant")
-const isMicroorganism = computed(() => objectType.value === "microorganism")
-const isSubstance = computed(() => objectType.value === "substance")
 
 // Utils du formulaire
 const makeQuantityLabel = (suffix) => {
@@ -125,7 +138,7 @@ const updateFilterString = () => {
   const midSection = isPlant.value
     ? `|${selectedPart.value || "-"}|${plantParts.value.find((x) => x.id.toString() === selectedPart.value)?.name || "Toutes les parties"}`
     : ""
-  const endSection = `||${operation.value}||${quantityA.value}||${unit.value || ""}`
+  const endSection = `||${operation.value}||${quantityA.value}${showDoubleQuantity.value ? "|" + quantityB.value : ""}||${unit.value || ""}`
   emit("update:modelValue", `${commonInitialSection}${midSection}${endSection}`)
 }
 watch([selectedPart, quantityA, quantityB, unit, operation], updateFilterString)

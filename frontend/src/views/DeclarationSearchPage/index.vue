@@ -7,7 +7,7 @@
       ]"
     />
     <h1 class="fr-h3">Tableau des compléments alimentaires</h1>
-    <DeclarationsTableSection />
+    <DeclarationsTableSection v-if="store.initialDataLoaded" />
   </div>
 </template>
 
@@ -15,5 +15,6 @@
 import DeclarationsTableSection from "@/components/NewBepiasViews/DeclarationsTableSection"
 import { useRootStore } from "@/stores/root"
 
-useRootStore().fetchDeclarationFieldsData()
+const store = useRootStore()
+store.fetchDeclarationFieldsData()
 </script>

@@ -126,7 +126,6 @@ import { typesMapping } from "@/utils/mappings"
 import IngredientFilterAccordeon from "./IngredientFilterAccordeon"
 
 const store = useRootStore()
-store.fetchDeclarationFieldsData()
 const { populations, conditions, galenicFormulations } = storeToRefs(store)
 
 const activeAccordion = ref()
