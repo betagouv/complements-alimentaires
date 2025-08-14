@@ -20,6 +20,7 @@
       :afterMandatoryLinks="[
         { label: 'Conditions générales d’utilisation', to: { name: 'CGUPage' } },
         { label: 'Mesures d\'impact', to: { name: 'StatsPage' } },
+        { label: 'Plan du site', to: { name: 'SiteMap' } },
       ]"
       id="footer"
     >
