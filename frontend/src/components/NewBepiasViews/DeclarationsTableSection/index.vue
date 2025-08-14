@@ -85,7 +85,13 @@
 
     <hr class="mt-6 mb-0" />
 
-    <IngredientFilterAccordeon v-for="dose in doses" :key="dose" :modelValue="dose" @remove="removeIngredient" />
+    <IngredientFilterAccordeon
+      v-for="(dose, idx) in doses"
+      @update:modelValue="updateDoseStrings(idx, $event)"
+      :key="`dose-accordeon-${idx}`"
+      :modelValue="doses[idx]"
+      @remove="removeIngredient"
+    />
 
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
@@ -290,6 +296,12 @@ const addIngredient = async (ingredient) => {
 }
 const removeIngredient = (ingredient) => {
   const newDoses = doses.value.filter((x) => x !== ingredient)
+  updateDoses(newDoses)
+}
+
+const updateDoseStrings = (index, newValue) => {
+  const newDoses = [...doses.value]
+  newDoses[index] = newValue
   updateDoses(newDoses)
 }
 </script>

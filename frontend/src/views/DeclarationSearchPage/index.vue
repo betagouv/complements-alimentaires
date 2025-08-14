@@ -13,4 +13,7 @@
 
 <script setup>
 import DeclarationsTableSection from "@/components/NewBepiasViews/DeclarationsTableSection"
+import { useRootStore } from "@/stores/root"
+
+useRootStore().fetchDeclarationFieldsData()
 </script>

@@ -41,7 +41,9 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import InfoTable from "@/components/InfoTable.vue"
 import DeclarationsTableSection from "@/components/NewBepiasViews/DeclarationsTableSection"
 import { setDocumentTitle } from "@/utils/document"
+import { useRootStore } from "@/stores/root"
 
+useRootStore().fetchDeclarationFieldsData()
 const router = useRouter()
 const previousRoute = computed(() => {
   const previousRoute = router.getPreviousRoute().value
