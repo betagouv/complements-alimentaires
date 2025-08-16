@@ -11,31 +11,36 @@
       <!-- Champs lors qu'il n'y a pas de dose spécifiée -->
       <div class="flex gap-4 items-end" v-if="!hasDoseFilter">
         <DsfrSelect v-if="isPlant" label="Partie de plante" v-model="selectedPart" :options="plantPartOptions" />
-        <div>
+        <div class="mb-2">
           <DsfrButton @click="enableDoseFilter" label="Ajouter une dose" icon="ri-add-line" tertiary />
         </div>
       </div>
 
       <!-- Champs lors qu'on veut spécifier une dose -->
-      <div v-else class="grid grid-cols-12 gap-4 items-center">
-        <div class="col-span-12 md:col-span-3">
-          <DsfrSelect v-if="isPlant" label="Partie de plante" v-model="selectedPart" :options="plantPartOptions" />
+      <div v-else>
+        <div class="grid grid-cols-12 gap-4 items-center">
+          <div class="col-span-12 md:col-span-3" v-if="isPlant">
+            <DsfrSelect label="Partie de plante" v-model="selectedPart" :options="plantPartOptions" />
+          </div>
+          <div class="col-span-12 md:col-span-3">
+            <DsfrSelect label="Opération" v-model="operation" :options="operationOptions" />
+          </div>
+          <div class="col-span-12 md:col-span-2">
+            <DsfrInputGroup :error-message="firstErrorMsg(v$, 'quantityA')">
+              <NumberField :label="quantityALabel" v-model="quantityA" label-visible :required="true" />
+            </DsfrInputGroup>
+          </div>
+          <div class="col-span-12 md:col-span-2" v-if="showDoubleQuantity">
+            <DsfrInputGroup :error-message="firstErrorMsg(v$, 'quantityB')">
+              <NumberField :label="quantityBLabel" v-model="quantityB" label-visible :required="true" />
+            </DsfrInputGroup>
+          </div>
+          <div class="col-span-12 md:col-span-2" v-if="!isMicroorganism && !isSubstance">
+            <DsfrSelect v-model="unit" :options="unitOptions" label="Unité de mesure" />
+          </div>
         </div>
-        <div class="col-span-12 md:col-span-3">
-          <DsfrSelect label="Opération" v-model="operation" :options="operationOptions" />
-        </div>
-        <div class="col-span-12 md:col-span-2">
-          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'quantityA')">
-            <NumberField :label="quantityALabel" v-model="quantityA" label-visible :required="true" />
-          </DsfrInputGroup>
-        </div>
-        <div class="col-span-12 md:col-span-2" v-if="showDoubleQuantity">
-          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'quantityB')">
-            <NumberField :label="quantityBLabel" v-model="quantityB" label-visible :required="true" />
-          </DsfrInputGroup>
-        </div>
-        <div class="col-span-12 md:col-span-2">
-          <DsfrSelect v-model="unit" :options="unitOptions" label="Unité de mesure" />
+        <div class="mt-2">
+          <DsfrButton @click="removeDoseFilter" label="Enlever la dose" icon="ri-close-line" tertiary />
         </div>
       </div>
     </DsfrAccordion>
@@ -54,6 +59,7 @@ import { required, helpers } from "@vuelidate/validators"
 import { OPERATION, operationOptions } from "@/utils/mappings.js"
 
 const modelValue = defineModel()
+
 const emit = defineEmits(["update:modelValue"])
 const { units, plantParts } = storeToRefs(useRootStore())
 const activeIngredientAccordion = ref(0)
@@ -80,18 +86,23 @@ const extractQuantityB = () => {
 const quantityB = ref(extractQuantityB())
 
 const extractUnit = () => {
-  const segments = modelValue.value?.split("||")
+  const segments = modelValue.value?.split("****")[0].split("||")
   if (!segments || segments.length < 6) return null
   return segments[5]
 }
 const unit = ref(extractUnit())
+
+const extractEnforcedUnit = () => {
+  return modelValue.value?.includes("****") ? modelValue.value.split("****")[1] : null
+}
+const enforcedUnit = ref(extractEnforcedUnit())
 
 // Parsing du modèle (qui est un String de filtre dose) et autres utils
 
 const ingredientName = computed(() => modelValue.value.split("||")[1])
 const ingredientId = computed(() => modelValue.value.split("||")[2].split("|")[0])
 const icon = computed(() => getTypeIcon(objectType.value))
-const name = computed(() => `${typesMapping[objectType] || "Ingrédient"} : ${ingredientName.value || "Inconnu"}`)
+const name = computed(() => `${typesMapping[objectType.value] || "Ingrédient"} : ${ingredientName.value || "Inconnu"}`)
 
 // Utils du formulaire
 const makeQuantityLabel = (suffix) => {
@@ -138,14 +149,16 @@ const updateFilterString = () => {
   const midSection = isPlant.value
     ? `|${selectedPart.value || "-"}|${plantParts.value.find((x) => x.id.toString() === selectedPart.value)?.name || "Toutes les parties"}`
     : ""
-  const endSection = `||${operation.value}||${quantityA.value}${showDoubleQuantity.value ? "|" + quantityB.value : ""}||${unit.value || ""}`
+  let endSection = `||${operation.value}||${quantityA.value}${showDoubleQuantity.value ? "|" + quantityB.value : ""}||${unit.value || ""}`
+  if (enforcedUnit.value) endSection += `****${enforcedUnit.value}`
   emit("update:modelValue", `${commonInitialSection}${midSection}${endSection}`)
 }
 watch([selectedPart, quantityA, quantityB, unit, operation], updateFilterString)
 
 // À noter : on considère que s'il y a une unité le filtre dose est actif
 const hasDoseFilter = computed(() => operation.value && unit.value)
-const enableDoseFilter = () => (unit.value = unitOptions.value?.[0]?.value || "")
+const enableDoseFilter = () => (unit.value = enforcedUnit.value || unitOptions.value?.[0]?.value || "")
+const removeDoseFilter = () => (unit.value = null)
 </script>
 
 <style scoped>

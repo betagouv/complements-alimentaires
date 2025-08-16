@@ -168,7 +168,7 @@ const url = computed(() => {
   if (searchTermProduct.value) apiUrl += `&search_name=${searchTermProduct.value}`
   if (searchTermBrand.value) apiUrl += `&search_brand=${searchTermBrand.value}`
   if (searchTermCompany.value) apiUrl += `&search_company=${searchTermCompany.value}`
-  if (doses.value) for (let i = 0; i < doses.value.length; i++) apiUrl += `&dose=${doses.value[i]}`
+  if (doses.value) for (let i = 0; i < doses.value.length; i++) apiUrl += `&dose=${doses.value[i].split("****")[0]}`
 
   return apiUrl
 })
@@ -284,11 +284,25 @@ const addIngredient = async (ingredient) => {
   // Temporairement on traite les ajouts d'ingrédients comme ayant une dose supérieure à 0
   // Par la suite on pourra spécifier également la dose précise recherchée et la partie de
   // plante
+  const ingredientTypes = [
+    "form_of_supply",
+    "aroma",
+    "additive",
+    "active_ingredient",
+    "non_active_ingredient",
+    "ingredient",
+    "other_ingredient",
+  ]
+  const doseType = ingredientTypes.includes(ingredient.objectType) ? "ingredient" : ingredient.objectType
   let newFilterString = `${ingredient.objectType}||${ingredient.name}||${ingredient.id}`
 
   if (ingredient.objectType === "plant") newFilterString += "|-|Toutes les parties"
 
   newFilterString += "||>||0||"
+
+  // Si on a besoin de restreindre l'unité à une unité spécifique, on peut le faire en la
+  // mettant après ****
+  if (ingredient.objectType === "substance") newFilterString += `****${ingredient.unit}`
 
   clearSearch()
   updateDoses([...doses.value, newFilterString])
