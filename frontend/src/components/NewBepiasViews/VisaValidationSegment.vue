@@ -73,13 +73,25 @@ import useToaster from "@/composables/use-toaster"
 import VisaInfoLine from "./VisaInfoLine.vue"
 import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
 import DecisionModificationModal from "./DecisionModificationModal"
+import { useStorage } from "@vueuse/core"
+
+const getLocalStorageKey = (key) => `visa-${declaration.value?.id}-${key}`
+const clearLocalStorage = () => {
+  const keys = ["overriddenDecision"]
+  for (const key of keys) localStorage.removeItem(getLocalStorageKey(key))
+}
 
 const $externalResults = ref({})
 const emit = defineEmits(["decision-done"])
 const declaration = defineModel()
 defineProps({ readonly: Boolean })
 
-const overriddenDecision = ref()
+const overriddenDecision = useStorage(getLocalStorageKey("overriddenDecision"), null, undefined, {
+  serializer: {
+    read: (v) => (v ? JSON.parse(v) : null),
+    write: (v) => JSON.stringify(v),
+  },
+})
 const hasOverriddenOriginalDecision = computed(
   () => overriddenDecision.value && Object.keys(overriddenDecision.value).length > 0
 )
@@ -126,6 +138,7 @@ const acceptVisa = async () => {
 
 const notifySuccess = () => {
   useToaster().addSuccessMessage("Votre décision a été prise en compte")
+  clearLocalStorage()
   emit("decision-done")
 }
 
