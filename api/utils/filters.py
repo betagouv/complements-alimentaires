@@ -123,3 +123,21 @@ class SurveillanceOnlyFilter(BaseFilterBackend):
             return queryset.filter(article__in=surveillance_articles)
 
         return queryset
+
+
+class MultiFieldSearchFilter(BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        name = request.query_params.get("search_name")
+        brand = request.query_params.get("search_brand")
+        company = request.query_params.get("search_company")
+
+        if name:
+            queryset = queryset.filter(name__unaccent__icontains=name)
+
+        if brand:
+            queryset = queryset.filter(brand__unaccent__icontains=brand)
+
+        if company:
+            queryset = queryset.filter(company__social_name__unaccent__icontains=company)
+
+        return queryset
