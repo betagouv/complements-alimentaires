@@ -105,13 +105,11 @@ import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
 import { blockingReasons } from "@/utils/mappings"
 import { statusProps } from "@/utils/mappings"
 import { useRouter } from "vue-router"
+import { useStorage } from "@vueuse/core"
 
 const router = useRouter()
 const previousQueryParams =
   router.getPreviousRoute().value.name === "InstructionDeclarations" ? router.getPreviousRoute().value.query : {}
-
-const decisionCategory = ref(null)
-watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "autorisation" : null))
 
 const rules = computed(() => {
   if (decisionCategory.value !== "modify") return {}
@@ -124,10 +122,22 @@ const rules = computed(() => {
 })
 const declaration = defineModel()
 defineProps({ readonly: Boolean })
-const proposal = ref(null)
-const delayDays = ref()
-const comment = ref(declaration.value?.lastAdministrationComment || "")
-const reasons = ref([])
+
+const getLocalStorageKey = (key) => `instruction-${declaration.value?.id}-${key}`
+
+const clearLocalStorage = () => {
+  const keys = ["proposal", "delayDays", "comment", "reasons", "decisionCategory", "needsVisa"]
+  for (const key of keys) localStorage.removeItem(getLocalStorageKey(key))
+}
+
+const proposal = useStorage(getLocalStorageKey("proposal"), null)
+const delayDays = useStorage(getLocalStorageKey("delayDays"), null)
+const comment = useStorage(getLocalStorageKey("comment"), declaration.value?.lastAdministrationComment || "")
+const reasons = useStorage(getLocalStorageKey("reasons"), [])
+const decisionCategory = useStorage(getLocalStorageKey("decisionCategory"), null)
+const needsVisa = useStorage(getLocalStorageKey("needsVisa"), false)
+
+watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "autorisation" : null))
 
 const $externalResults = ref({})
 const v$ = useVuelidate(rules, { comment, proposal, reasons, delayDays }, { $externalResults })
@@ -147,7 +157,6 @@ const decisionCategories = [
   },
 ]
 
-const needsVisa = ref(false)
 const mandatoryVisaProposals = ["objection", "rejection"]
 const disableVisaCheckbox = computed(() => !proposal.value || mandatoryVisaProposals.indexOf(proposal.value) > -1)
 const disableDelayDays = computed(() => proposal.value === "rejection")
@@ -194,6 +203,7 @@ const submitDecision = async () => {
 
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre décision a été prise en compte")
+    clearLocalStorage()
     router.push({ name: "InstructionDeclarations", query: previousQueryParams })
   }
 }
