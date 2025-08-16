@@ -148,8 +148,8 @@ import { useVuelidate } from "@vuelidate/core"
 import { required, helpers } from "@vuelidate/validators"
 import { firstErrorMsg, errorNumeric } from "@/utils/forms"
 import { useFetch } from "@vueuse/core"
+import { OPERATION, operationOptions } from "@/utils/mappings.js"
 
-const OPERATION = { GT: ">", GTE: "≥", LT: "<", LTE: "≤", EQ: "=", BT: "≬" }
 const { units, plantParts } = storeToRefs(useRootStore())
 
 const filterString = defineModel()
@@ -203,14 +203,6 @@ const plantPartOptions = computed(() => {
   return options
 })
 const unitOptions = computed(() => units.value?.map((x) => ({ text: x.name, value: x.id.toString() })))
-const operationOptions = [
-  { text: "Dose supérieure à (>)", value: OPERATION.GT },
-  { text: "Dose supérieure ou égale à (≥)", value: OPERATION.GTE },
-  { text: "Dose inférieure à (<)", value: OPERATION.LT },
-  { text: "Dose inférieure ou égale à (≤)", value: OPERATION.LTE },
-  { text: "Dose égale à (=)", value: OPERATION.EQ },
-  { text: "Dose entre deux valeurs", value: OPERATION.BT },
-]
 
 // Gestion du filtre
 

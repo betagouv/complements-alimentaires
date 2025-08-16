@@ -374,3 +374,14 @@ export const getCompanyActivitiesString = (activities) =>
     .map((x) => allActivities.find((y) => y.value === x).label)
     .sort((a, b) => a.localeCompare(b))
     .join(", ")
+
+export const OPERATION = { GT: ">", GTE: "≥", LT: "<", LTE: "≤", EQ: "=", BT: "≬" }
+
+export const operationOptions = [
+  { text: "Dose supérieure à (>)", value: OPERATION.GT },
+  { text: "Dose supérieure ou égale à (≥)", value: OPERATION.GTE },
+  { text: "Dose inférieure à (<)", value: OPERATION.LT },
+  { text: "Dose inférieure ou égale à (≤)", value: OPERATION.LTE },
+  { text: "Dose égale à (=)", value: OPERATION.EQ },
+  { text: "Dose entre deux valeurs", value: OPERATION.BT },
+]

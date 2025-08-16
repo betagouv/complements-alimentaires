@@ -20,6 +20,18 @@
         />
       </DsfrFieldset>
     </div>
+    <!-- Zone des filtres actifs -->
+    <div class="mb-4">
+      <DsfrTag
+        v-for="(item, idx) in activeFilters"
+        :key="`active-filters-${idx}`"
+        :label="item.text"
+        tagName="button"
+        @click="item.callback"
+        :aria-label="`Retirer le filtre « ${item.text} »`"
+        class="mx-1 fr-tag--dismiss"
+      ></DsfrTag>
+    </div>
 
     <DsfrAccordionsGroup v-model="activeAccordion">
       <DsfrAccordion title="Filtrer les déclarations">
@@ -71,18 +83,15 @@
       </DsfrAccordion>
     </DsfrAccordionsGroup>
 
-    <!-- Zone des filtres actifs -->
-    <div class="my-4">
-      <DsfrTag
-        v-for="(item, idx) in activeFilters"
-        :key="`active-filters-${idx}`"
-        :label="item.text"
-        tagName="button"
-        @click="item.callback"
-        :aria-label="`Retirer le filtre « ${item.text} »`"
-        class="mx-1 fr-tag--dismiss"
-      ></DsfrTag>
-    </div>
+    <hr class="mt-6 mb-0" />
+
+    <IngredientFilterAccordeon
+      v-for="(dose, idx) in doses"
+      @update:modelValue="updateDoseStrings(idx, $event)"
+      :key="`dose-accordeon-${idx}`"
+      :modelValue="doses[idx]"
+      @remove="removeIngredient"
+    />
 
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
@@ -114,9 +123,9 @@ import { storeToRefs } from "pinia"
 import { toOptions } from "@/utils/forms.js"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import { typesMapping } from "@/utils/mappings"
+import IngredientFilterAccordeon from "./IngredientFilterAccordeon"
 
 const store = useRootStore()
-store.fetchDeclarationFieldsData()
 const { populations, conditions, galenicFormulations } = storeToRefs(store)
 
 const activeAccordion = ref()
@@ -159,7 +168,7 @@ const url = computed(() => {
   if (searchTermProduct.value) apiUrl += `&search_name=${searchTermProduct.value}`
   if (searchTermBrand.value) apiUrl += `&search_brand=${searchTermBrand.value}`
   if (searchTermCompany.value) apiUrl += `&search_company=${searchTermCompany.value}`
-  if (doses.value) for (let i = 0; i < doses.value.length; i++) apiUrl += `&dose=${doses.value[i]}`
+  if (doses.value) for (let i = 0; i < doses.value.length; i++) apiUrl += `&dose=${doses.value[i].split("****")[0]}`
 
   return apiUrl
 })
@@ -275,17 +284,37 @@ const addIngredient = async (ingredient) => {
   // Temporairement on traite les ajouts d'ingrédients comme ayant une dose supérieure à 0
   // Par la suite on pourra spécifier également la dose précise recherchée et la partie de
   // plante
+  const ingredientTypes = [
+    "form_of_supply",
+    "aroma",
+    "additive",
+    "active_ingredient",
+    "non_active_ingredient",
+    "ingredient",
+    "other_ingredient",
+  ]
+  const doseType = ingredientTypes.includes(ingredient.objectType) ? "ingredient" : ingredient.objectType
   let newFilterString = `${ingredient.objectType}||${ingredient.name}||${ingredient.id}`
 
   if (ingredient.objectType === "plant") newFilterString += "|-|Toutes les parties"
 
   newFilterString += "||>||0||"
 
+  // Si on a besoin de restreindre l'unité à une unité spécifique, on peut le faire en la
+  // mettant après ****
+  if (ingredient.objectType === "substance") newFilterString += `****${ingredient.unit}`
+
   clearSearch()
   updateDoses([...doses.value, newFilterString])
 }
 const removeIngredient = (ingredient) => {
   const newDoses = doses.value.filter((x) => x !== ingredient)
+  updateDoses(newDoses)
+}
+
+const updateDoseStrings = (index, newValue) => {
+  const newDoses = [...doses.value]
+  newDoses[index] = newValue
   updateDoses(newDoses)
 }
 </script>

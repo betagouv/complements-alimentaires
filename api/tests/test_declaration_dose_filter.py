@@ -246,3 +246,24 @@ class DeclarationDoseFilterTests(APITestCase):
         results = self.make_request(dose)
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
+    def test_multiple_dses(self):
+        """Filtrage par plus d'une dose"""
+
+        InstructionRoleFactory(user=authenticate.user)
+        dose_1 = f"dose=plant||Camomille||{self.camomille.id}|{self.branch.id}|Branch||>||4||{self.unit_mg.id}"
+        dose_2 = f"dose=substance||Caffeine||{self.caffeine.id}||≬||10|15||{self.unit_mg.id}"
+
+        declaration = AuthorizedDeclarationFactory()
+        DeclaredPlantFactory(
+            declaration=declaration, plant=self.camomille, used_part=self.branch, quantity=5.0, unit=self.unit_mg
+        )
+        ComputedSubstanceFactory(declaration=declaration, substance=self.caffeine, quantity=12.5, unit=self.unit_mg)
+
+        url = f"{reverse('api:list_all_declarations')}?{dose_1}&{dose_2}"
+        response = self.client.get(url, format="json")
+        results = response.json()["results"]
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration.id)
