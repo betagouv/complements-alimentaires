@@ -40,10 +40,13 @@ const saveVisaComment = async () => saveComment({ privateNotesVisa: privateNotes
 
 const saveComment = useDebounceFn(async (payload) => {
   const url = `/api/v1/declarations/${declaration.value?.id}`
-  const { response } = await useFetch(() => url, { headers: headers() })
+  const { response, data } = await useFetch(() => url, { headers: headers() })
     .patch(payload)
     .json()
-  handleError(response)
+  if (response.value.ok) {
+    declaration.value.privateNotesInstruction = data.value.privateNotesInstruction
+    declaration.value.privateNotesVisa = data.value.privateNotesVisa
+  } else handleError(response)
 }, 600)
 </script>
 
