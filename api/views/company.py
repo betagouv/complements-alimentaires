@@ -349,19 +349,16 @@ class ControlCompanyListView(CommonControlCompanyView):
     serializer_class = ControllerCompanyListSerializer
 
 
+class CompanyExcelPagination(LimitOffsetPagination):
+    default_limit = 2000
+    max_limit = 2000
+
+
 class ControlCompanyExcelView(XLSXFileMixin, CommonControlCompanyView):
     serializer_class = ControlCompanyExcelSerializer
     renderer_classes = [XLSXRenderer]
     filename = "entreprises-resultats.xlsx"
-
-    max_rows = 2000
-
-    def filter_queryset(self, queryset):
-        """
-        Permet de retourner un maximum de max_rows déclarations
-        """
-        queryset = super().filter_queryset(queryset)
-        return queryset[: self.max_rows]
+    pagination_class = CompanyExcelPagination
 
     # Format de l'entête du fichier Excel (À mettre ailleurs)
     column_header = {
@@ -372,7 +369,7 @@ class ControlCompanyExcelView(XLSXFileMixin, CommonControlCompanyView):
             "No. de TVA",
             "No. de département",
         ],
-        "column_width": [12, 30, 20, 15],
+        "column_width": [12, 30, 20, 25],
         "height": 30,
         "style": {
             "fill": {

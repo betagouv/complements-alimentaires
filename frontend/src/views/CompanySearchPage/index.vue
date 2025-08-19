@@ -17,10 +17,33 @@
           />
         </DsfrFieldset>
       </div>
-      <div class="mb-4 md:mb-0">
-        <DsfrButton secondary size="sm" icon="ri-file-excel-2-fill">
-          <a :href="excelUrl" download>Télécharger</a>
-        </DsfrButton>
+      <div class="mb-4 md:mb-0" v-if="data?.results?.length && data?.results?.length <= MAX_EXPORT_RESULTS">
+        <a :href="excelUrl" download class="bg-none">
+          <DsfrButton label="Télécharger" secondary size="sm" icon="ri-file-excel-2-fill"></DsfrButton>
+        </a>
+      </div>
+      <div class="mb-4 md:mb-0" v-if="data?.results?.length && data?.results?.length > MAX_EXPORT_RESULTS">
+        <DsfrButton
+          secondary
+          size="sm"
+          icon="ri-file-excel-2-fill"
+          label="Télécharger"
+          @click="exportModalOpened = true"
+        />
+        <DsfrModal title="Exporter votre recherche" :opened="exportModalOpened" @close="exportModalOpened = false">
+          <p>
+            Votre recherche dépasse le seuil des {{ MAX_EXPORT_RESULTS }} lignes. Vous pouvez télécharger la totalité de
+            votre recherche en fichiers séparés.
+          </p>
+          <ul>
+            <li v-for="(link, index) in paginatedExcelLinks" :key="`download-links-${index}`">
+              {{ link.label }}
+              <a :href="link.url" download class="bg-none ml-2">
+                <DsfrButton label="Télécharger" tertiary no-outline size="sm" icon="ri-file-excel-2-fill"></DsfrButton>
+              </a>
+            </li>
+          </ul>
+        </DsfrModal>
       </div>
     </div>
 
@@ -75,6 +98,10 @@ import ControlCompanyTable from "./ControlCompanyTable"
 import jsonDepartments from "@/utils/departments.json"
 import { allActivities } from "@/utils/mappings"
 
+const MAX_EXPORT_RESULTS = 2000
+
+const exportModalOpened = ref(false)
+
 const router = useRouter()
 const route = useRoute()
 
@@ -120,6 +147,32 @@ const fetchSearchResults = async () => {
 // Export Excel
 
 const excelUrl = computed(() => `/api/v1/control/companies-export.xlsx?${commonApiParams.value}`)
+
+const paginatedExcelLinks = computed(() => {
+  const totalResults = data.value.results.length
+  if (!totalResults) return []
+
+  const links = []
+  const numFiles = Math.ceil(totalResults / MAX_EXPORT_RESULTS)
+
+  for (let i = 0; i < numFiles; i++) {
+    const offset = i * MAX_EXPORT_RESULTS
+    const limit = MAX_EXPORT_RESULTS
+    const pageNumber = i + 1
+    const startRange = offset + 1
+    const endRange = Math.min(offset + MAX_EXPORT_RESULTS, totalResults)
+
+    // Create the URL with pagination parameters
+    const url = `${excelUrl.value}&limit=${limit}&offset=${offset}`
+
+    links.push({
+      url: url,
+      label: `Lignes ${startRange} à ${endRange} (${pageNumber}/${numFiles})`,
+    })
+  }
+
+  return links
+})
 
 // Mise à jour des paramètres
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } })
