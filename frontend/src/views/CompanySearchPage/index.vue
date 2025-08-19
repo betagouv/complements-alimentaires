@@ -5,16 +5,23 @@
     />
     <h1 class="fr-h3">Entreprises responsables de la mise sur le marché</h1>
 
-    <div class="md:w-1/3 lg:w-2/5 pt-1">
-      <DsfrFieldset>
-        <DsfrSearchBar
-          v-model="searchTerm"
-          label="Nom de l'entreprise, No. SIRET, ou No. de TVA"
-          placeholder="Nom de l'entreprise, No. SIRET, ou No. de TVA"
-          @search="search"
-          @update:modelValue="(val) => val === '' && search()"
-        />
-      </DsfrFieldset>
+    <div class="md:flex justify-between">
+      <div class="md:w-1/3 lg:w-2/5 pt-1">
+        <DsfrFieldset>
+          <DsfrSearchBar
+            v-model="searchTerm"
+            label="Nom de l'entreprise, No. SIRET, ou No. de TVA"
+            placeholder="Nom de l'entreprise, No. SIRET, ou No. de TVA"
+            @search="search"
+            @update:modelValue="(val) => val === '' && search()"
+          />
+        </DsfrFieldset>
+      </div>
+      <div class="mb-4 md:mb-0">
+        <DsfrButton secondary size="sm" icon="ri-file-excel-2-fill">
+          <a :href="excelUrl" download>Télécharger</a>
+        </DsfrButton>
+      </div>
     </div>
 
     <div class="grid grid-cols-4 gap-4 mb-6">
@@ -92,21 +99,27 @@ const departmentOptions = () => {
 const roleOptions = () => allActivities.map((x) => x.label)
 
 // Obtention de la donnée via API
-const url = computed(() => {
-  let fullUrl = `/api/v1/control/companies/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}`
-  if (searchTerm.value) fullUrl += `${fullUrl}&search=${searchTerm.value}`
-  if (departments.value.length)
-    fullUrl += `${fullUrl}&departments=${departments.value.map((x) => x.split(" - ")[0]).join(",")}`
+const commonApiParams = computed(() => {
+  let apiParams = `ordering=${ordering.value}`
+  if (searchTerm.value) apiParams += `&search=${searchTerm.value}`
+  if (departments.value.length) apiParams += `&departments=${departments.value.map((x) => x.split(" - ")[0]).join(",")}`
   if (roles.value.length)
-    fullUrl += `${fullUrl}&activities=${roles.value.map((x) => allActivities.find((y) => y.label === x).value).join(",")}`
-  return fullUrl
+    apiParams += `&activities=${roles.value.map((x) => allActivities.find((y) => y.label === x).value).join(",")}`
+  return apiParams
 })
+const url = computed(
+  () => `/api/v1/control/companies/?limit=${limit.value}&offset=${offset.value}&${commonApiParams.value}`
+)
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
 }
+
+// Export Excel
+
+const excelUrl = computed(() => `/api/v1/control/companies-export.xlsx?${commonApiParams.value}`)
 
 // Mise à jour des paramètres
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } })

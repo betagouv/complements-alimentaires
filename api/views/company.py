@@ -9,6 +9,8 @@ from django.shortcuts import get_object_or_404
 
 from django_filters import rest_framework as django_filters
 from django_filters import rest_framework as filters
+from drf_excel.mixins import XLSXFileMixin
+from drf_excel.renderers import XLSXRenderer
 from rest_framework import permissions
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
@@ -31,9 +33,10 @@ from ..exception_handling import ProjectAPIException
 from ..permissions import IsController, IsSupervisor, IsSupervisorOrAgent
 from ..serializers import (
     CollaboratorSerializer,
-    ControllerCompanySerializer,
     CompanySerializer,
+    ControlCompanyExcelSerializer,
     ControllerCompanyListSerializer,
+    ControllerCompanySerializer,
     MinimalCompanySerializer,
 )
 
@@ -326,9 +329,8 @@ class CompanyActivitiesFilter(filters.FilterSet):
         fields = ["activities"]
 
 
-class ControlCompanyListView(ListAPIView):
+class CommonControlCompanyView(ListAPIView):
     model = Company
-    serializer_class = ControllerCompanyListSerializer
     permission_classes = [IsController]
     pagination_class = CompanyPagination
     filter_backends = [
@@ -341,3 +343,58 @@ class ControlCompanyListView(ListAPIView):
     search_fields = ["social_name", "siret", "vat"]
     ordering_fields = ["creation_date", "modification_date", "social_name", "postal_code"]
     queryset = Company.objects.all()
+
+
+class ControlCompanyListView(CommonControlCompanyView):
+    serializer_class = ControllerCompanyListSerializer
+
+
+class ControlCompanyExcelView(XLSXFileMixin, CommonControlCompanyView):
+    serializer_class = ControlCompanyExcelSerializer
+    renderer_classes = [XLSXRenderer]
+    filename = "entreprises-resultats.xlsx"
+
+    max_rows = 2000
+
+    def filter_queryset(self, queryset):
+        """
+        Permet de retourner un maximum de max_rows déclarations
+        """
+        queryset = super().filter_queryset(queryset)
+        return queryset[: self.max_rows]
+
+    # Format de l'entête du fichier Excel (À mettre ailleurs)
+    column_header = {
+        "titles": [
+            "Id. Compl'Alim",
+            "Nom de l'entreprise",
+            "No. SIRET",
+            "No. de TVA",
+            "No. de département",
+        ],
+        "column_width": [12, 30, 20, 15],
+        "height": 30,
+        "style": {
+            "fill": {
+                "fill_type": "solid",
+                "start_color": "FF000091",
+            },
+            "alignment": {
+                "horizontal": "center",
+                "vertical": "center",
+                "wrapText": True,
+                "shrink_to_fit": True,
+            },
+            "border_side": {
+                "border_style": "thin",
+                "color": "FF6A6AF4",
+            },
+            "font": {
+                "name": "Arial",
+                "size": 12,
+                "bold": True,
+                "color": "FFFFFFFF",
+            },
+        },
+    }
+    body = {"height": 20}

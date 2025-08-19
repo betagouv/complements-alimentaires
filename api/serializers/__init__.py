@@ -39,6 +39,7 @@ from .company import (
     MinimalCompanySerializer,
     ControllerCompanyListSerializer,
     ControllerCompanySerializer,
+    ControlCompanyExcelSerializer,
 )
 from .solicitation import CollaborationInvitationSerializer, CompanyAccessClaimSerializer, AddNewCollaboratorSerializer
 from .snapshot import SnapshotSerializer
