@@ -96,8 +96,8 @@
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
-    <div v-else>
-      <ControlDeclarationsTable :data="data" v-if="data" @sort="updateOrdering" @filter="updateFiltering" />
+    <div v-else-if="data?.results?.length">
+      <ControlDeclarationsTable :data="data" @sort="updateOrdering" @filter="updateFiltering" />
       <DsfrPagination
         v-if="showPagination"
         @update:currentPage="updatePage"
@@ -105,6 +105,9 @@
         :current-page="page - 1"
         :truncLimit="5"
       />
+    </div>
+    <div v-else class="border p-4 rounded mb-4 bg-gray-50">
+      <p class="mb-0">Aucune déclaration trouvée avec les paramètres spécifiés</p>
     </div>
   </div>
 </template>
