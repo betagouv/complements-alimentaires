@@ -257,3 +257,85 @@ class TestDeclarationControllers(APITestCase):
             reverse("api:retrieve_control_declaration", kwargs={"pk": declaration.id}), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @authenticate
+    def test_search_by_product_name(self):
+        """
+        Il est possible de rechercher par nom de produit
+        """
+        ControlRoleFactory(user=authenticate.user)
+        shampoo = AwaitingInstructionDeclarationFactory(name="Super Shampoo")
+        conditioner = AwaitingInstructionDeclarationFactory(name="Hair Conditioner")
+        AwaitingInstructionDeclarationFactory(name="Hand Soap")
+
+        # Match exact
+        response = self.client.get(reverse("api:list_control_declarations") + "?search_name=Shampoo", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], shampoo.id)
+
+        # Recherche partielle
+        response = self.client.get(reverse("api:list_control_declarations") + "?search_name=Hair", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], conditioner.id)
+
+        # Pas de résultat
+        response = self.client.get(reverse("api:list_control_declarations") + "?search_name=Toothpaste", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()["results"]), 0)
+
+    @authenticate
+    def test_search_by_brand(self):
+        """
+        Il est possible de rechercher par marque
+        """
+        ControlRoleFactory(user=authenticate.user)
+        loreal = AwaitingInstructionDeclarationFactory(brand="L'Oréal")
+        garnier = AwaitingInstructionDeclarationFactory(brand="Garnier")
+        AwaitingInstructionDeclarationFactory(brand="Dove")
+
+        # Match exact
+        response = self.client.get(reverse("api:list_control_declarations") + "?search_brand=Garnier", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], garnier.id)
+
+        # Recherche partielle (case insensitive) - Au passage les accents ne sont pas
+        # spécifiées, pourtant on obtient bien une réponse
+        response = self.client.get(reverse("api:list_control_declarations") + "?search_brand=ore", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], loreal.id)
+
+    @authenticate
+    def test_search_by_company(self):
+        """
+        Il est possible de rechercher par entreprise
+        """
+        ControlRoleFactory(user=authenticate.user)
+        company1 = CompanyFactory(social_name="Beauty Corp")
+        company2 = CompanyFactory(social_name="Cosmetic Ltd")
+
+        decl1 = AwaitingInstructionDeclarationFactory(company=company1)
+        decl2 = AwaitingInstructionDeclarationFactory(company=company2)
+
+        # Match exact
+        response = self.client.get(
+            reverse("api:list_control_declarations") + "?search_company=Cosmetic", format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], decl2.id)
+
+        # Recherche partielle
+        response = self.client.get(reverse("api:list_control_declarations") + "?search_company=corp", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], decl1.id)
