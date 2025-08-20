@@ -27,6 +27,7 @@ from .declaration.declaration import (
     DeclarationTakeAuthorshipView,
     DeclarationAssignInstruction,
     ArticleChangeView,
+    ControlDeclataionExcelView,
 )
 from .declaration.declared_element import (
     DeclaredElementsView,
