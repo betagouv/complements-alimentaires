@@ -163,3 +163,29 @@ class DeclarantRoleSerializer(BaseRoleSerializer):
     class Meta:
         model = DeclarantRole
         fields = BaseRoleSerializer.Meta.fields
+
+
+class ControlCompanyExcelSerializer(serializers.ModelSerializer):
+    siret = serializers.CharField(read_only=True, source="company.siret")
+    vat = serializers.CharField(read_only=True, source="company.vat")
+
+    # Champ spécial utilisé par drf-excel documenté ici : https://github.com/django-commons/drf-excel
+    row_color = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Company
+        fields = (
+            "id",
+            "social_name",
+            "siret",
+            "vat",
+            "department",
+            "row_color",  # Champ utilisé en interne par drf-excel
+        )
+        read_only_fields = fields
+
+    def get_row_color(self, instance):
+        """
+        Permet d'alterner les couleurs des files dans le ficher Excel
+        """
+        return ["FFFFFFFF", "FFECECFE"][(*self.instance,).index(instance) % 2]

@@ -146,6 +146,7 @@ urlpatterns = {
         name="retrieve_control_declaration",
     ),
     path("control/companies/", views.ControlCompanyListView.as_view(), name="list_control_companies"),
+    path("control/companies-export/", views.ControlCompanyExcelView.as_view(), name="export_excel_companies_control"),
     path("control/companies/<int:pk>", views.CompanyControlRetrieveView.as_view(), name="retrieve_control_company"),
     path("control/users/<int:pk>", views.UserRetrieveControlView.as_view(), name="retrieve_control_user"),
     path("declarations-export/", views.OngoingDeclarationsExcelView.as_view(), name="export_excel_declarations"),
