@@ -151,7 +151,7 @@ import { typesMapping } from "@/utils/mappings"
 import IngredientFilterAccordeon from "./IngredientFilterAccordeon"
 import PaginatedExcelDownload from "@/components/PaginatedExcelDownload"
 
-const MAX_EXPORT_RESULTS = 3
+const MAX_EXPORT_RESULTS = 2000
 const exportModalOpened = ref(false)
 
 const store = useRootStore()
