@@ -365,7 +365,7 @@ class ControlCompanyExcelView(XLSXFileMixin, CommonControlCompanyView):
             "No. de TVA",
             "No. de département",
         ],
-        "column_width": [12, 30, 20, 25],
+        "column_width": [12, 30, 20, 25, 25],
         "height": 30,
         "style": common_excel_styles,
     }
