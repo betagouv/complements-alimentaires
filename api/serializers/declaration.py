@@ -393,6 +393,46 @@ class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
         return data
 
 
+class ExcelControlDeclarationSerializer(serializers.ModelSerializer):
+    company_name = serializers.CharField(read_only=True, source="company.social_name")
+    siret = serializers.CharField(read_only=True, source="company.siret")
+    vat = serializers.CharField(read_only=True, source="company.vat")
+    department = serializers.CharField(read_only=True, source="company.department")
+    simplified_status = serializers.SerializerMethodField(read_only=True)
+    simplified_status_date = serializers.SerializerMethodField(read_only=True)
+
+    # Champ spécial utilisé par drf-excel documenté ici : https://github.com/django-commons/drf-excel
+    row_color = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Declaration
+        fields = (
+            "id",
+            "name",
+            "company_name",
+            "brand",
+            "simplified_status",
+            "simplified_status_date",
+            "siret",
+            "vat",
+            "department",
+            "row_color",  # Champ utilisé en interne par drf-excel
+        )
+        read_only_fields = fields
+
+    def get_simplified_status(self, instance):
+        return SimplifiedStatusHelper.get_simplified_status(instance)
+
+    def get_simplified_status_date(self, instance):
+        return SimplifiedStatusHelper.get_simplified_status_date(instance)
+
+    def get_row_color(self, instance):
+        """
+        Permet d'alterner les couleurs des files dans le ficher Excel
+        """
+        return ["FFFFFFFF", "FFECECFE"][(*self.instance,).index(instance) % 2]
+
+
 def add_enum_or_personnalized_value(item, custom_value):
     if item:
         if "(à préciser)" not in str(item).lower():

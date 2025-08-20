@@ -22,6 +22,7 @@ from rest_framework.views import APIView
 from api.utils.filters import CamelCaseOrderingFilter, DepartmentFilterBackend
 from api.utils.search import UnaccentSearchFilter
 from api.utils.urls import get_base_url
+from api.views.utils import ControlExcelPagination, common_excel_styles
 from config import email
 from data.choices import CountryChoices
 from data.models import Company, DeclarantRole, SupervisorRole
@@ -349,16 +350,11 @@ class ControlCompanyListView(CommonControlCompanyView):
     serializer_class = ControllerCompanyListSerializer
 
 
-class CompanyExcelPagination(LimitOffsetPagination):
-    default_limit = 2000
-    max_limit = 2000
-
-
 class ControlCompanyExcelView(XLSXFileMixin, CommonControlCompanyView):
     serializer_class = ControlCompanyExcelSerializer
     renderer_classes = [XLSXRenderer]
     filename = "entreprises-resultats.xlsx"
-    pagination_class = CompanyExcelPagination
+    pagination_class = ControlExcelPagination
 
     # Format de l'entête du fichier Excel (À mettre ailleurs)
     column_header = {
@@ -369,29 +365,8 @@ class ControlCompanyExcelView(XLSXFileMixin, CommonControlCompanyView):
             "No. de TVA",
             "No. de département",
         ],
-        "column_width": [12, 30, 20, 25],
+        "column_width": [12, 30, 20, 25, 25],
         "height": 30,
-        "style": {
-            "fill": {
-                "fill_type": "solid",
-                "start_color": "FF000091",
-            },
-            "alignment": {
-                "horizontal": "center",
-                "vertical": "center",
-                "wrapText": True,
-                "shrink_to_fit": True,
-            },
-            "border_side": {
-                "border_style": "thin",
-                "color": "FF6A6AF4",
-            },
-            "font": {
-                "name": "Arial",
-                "size": 12,
-                "bold": True,
-                "color": "FFFFFFFF",
-            },
-        },
+        "style": common_excel_styles,
     }
     body = {"height": 20}

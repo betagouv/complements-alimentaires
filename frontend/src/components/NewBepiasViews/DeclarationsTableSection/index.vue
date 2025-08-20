@@ -1,24 +1,46 @@
 <template>
   <div>
     <!-- Zone de recherche -->
-    <div>
-      <DsfrFieldset class="mb-0! max-w-2xl">
-        <ElementAutocomplete
-          v-model="searchTerm"
-          label="Rechercher par produit, marque, entreprise ou ingrédient"
-          label-visible
-          class="max-w-2xl"
-          @selected="addIngredient"
-          :hideSearchButton="true"
-          :chooseFirstAsDefault="false"
-          :searchAll="true"
-          :extendedSearch="true"
-          @searchProduct="searchByProduct"
-          @searchBrand="searchByBrand"
-          @searchCompany="searchByCompany"
-          :required="false"
+    <div class="md:flex justify-between">
+      <div class="md:w-1/3 lg:w-2/5 pt-1">
+        <DsfrFieldset class="mb-0! max-w-2xl">
+          <ElementAutocomplete
+            v-model="searchTerm"
+            label="Rechercher par produit, marque, entreprise ou ingrédient"
+            label-visible
+            class="max-w-2xl"
+            @selected="addIngredient"
+            :hideSearchButton="true"
+            :chooseFirstAsDefault="false"
+            :searchAll="true"
+            :extendedSearch="true"
+            @searchProduct="searchByProduct"
+            @searchBrand="searchByBrand"
+            @searchCompany="searchByCompany"
+            :required="false"
+          />
+        </DsfrFieldset>
+      </div>
+      <div class="mb-4 md:mb-0" v-if="data?.results?.length && data?.results?.length <= MAX_EXPORT_RESULTS">
+        <a :href="excelUrl" download class="bg-none">
+          <DsfrButton label="Télécharger" secondary size="sm" icon="ri-file-excel-2-fill"></DsfrButton>
+        </a>
+      </div>
+      <div class="mb-4 md:mb-0" v-if="data?.results?.length && data?.results?.length > MAX_EXPORT_RESULTS">
+        <DsfrButton
+          secondary
+          size="sm"
+          icon="ri-file-excel-2-fill"
+          label="Télécharger"
+          @click="exportModalOpened = true"
         />
-      </DsfrFieldset>
+        <PaginatedExcelDownload
+          v-model="exportModalOpened"
+          :baseUrl="excelUrl"
+          :maxLines="MAX_EXPORT_RESULTS"
+          :totalLines="data.count"
+        />
+      </div>
     </div>
     <!-- Zone des filtres actifs -->
     <div class="mb-4">
@@ -127,6 +149,10 @@ import { toOptions } from "@/utils/forms.js"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import { typesMapping } from "@/utils/mappings"
 import IngredientFilterAccordeon from "./IngredientFilterAccordeon"
+import PaginatedExcelDownload from "@/components/PaginatedExcelDownload"
+
+const MAX_EXPORT_RESULTS = 2000
+const exportModalOpened = ref(false)
 
 const store = useRootStore()
 const { populations, conditions, galenicFormulations } = storeToRefs(store)
@@ -162,19 +188,25 @@ const showPagination = computed(() => data.value?.count > data.value?.results?.l
 const doses = computed(() => (route.query.doses ? JSON.parse(decodeURIComponent(route.query.doses)) : []))
 
 // Obtention de la donnée via API
-const url = computed(() => {
-  let apiUrl = `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}&simplifiedStatus=${simplifiedStatus.value}&surveillanceOnly=${surveillanceOnly.value}&search=${searchTerm.value}&`
-  if (props.companyId) apiUrl += `${apiUrl}&company=${props.companyId}`
-  if (population.value) apiUrl += `&population=${population.value}`
-  if (condition.value) apiUrl += `&condition=${condition.value}`
-  if (galenicFormulation.value) apiUrl += `&galenic_formulation=${galenicFormulation.value}`
-  if (searchTermProduct.value) apiUrl += `&search_name=${searchTermProduct.value}`
-  if (searchTermBrand.value) apiUrl += `&search_brand=${searchTermBrand.value}`
-  if (searchTermCompany.value) apiUrl += `&search_company=${searchTermCompany.value}`
-  if (doses.value) for (let i = 0; i < doses.value.length; i++) apiUrl += `&dose=${doses.value[i].split("****")[0]}`
-
-  return apiUrl
+const commonApiParams = computed(() => {
+  let apiParams = `ordering=${ordering.value}`
+  if (ordering.value) apiParams += `&ordering=${ordering.value}`
+  if (simplifiedStatus.value) apiParams += `&simplifiedStatus=${simplifiedStatus.value}`
+  if (surveillanceOnly.value) apiParams += `&surveillanceOnly=${surveillanceOnly.value}`
+  if (searchTerm.value) apiParams += `&search=${searchTerm.value}`
+  if (props.companyId) apiParams += `&company=${props.companyId}`
+  if (population.value) apiParams += `&population=${population.value}`
+  if (condition.value) apiParams += `&condition=${condition.value}`
+  if (galenicFormulation.value) apiParams += `&galenic_formulation=${galenicFormulation.value}`
+  if (searchTermProduct.value) apiParams += `&search_name=${searchTermProduct.value}`
+  if (searchTermBrand.value) apiParams += `&search_brand=${searchTermBrand.value}`
+  if (searchTermCompany.value) apiParams += `&search_company=${searchTermCompany.value}`
+  if (doses.value) for (let i = 0; i < doses.value.length; i++) apiParams += `&dose=${doses.value[i].split("****")[0]}`
+  return apiParams
 })
+const url = computed(
+  () => `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&${commonApiParams.value}`
+)
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 
 const fetchSearchResults = async () => {
@@ -310,6 +342,10 @@ const updateDoseStrings = (index, newValue) => {
   newDoses[index] = newValue
   updateDoses(newDoses)
 }
+
+// Export Excel
+
+const excelUrl = computed(() => `/api/v1/control/declarations-export.xlsx?${commonApiParams.value}`)
 </script>
 
 <style scoped>

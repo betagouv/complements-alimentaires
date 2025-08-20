@@ -37,6 +37,7 @@ from api.serializers import (
     ControllerDeclarationSerializer,
     DeclarationSerializer,
     DeclarationShortSerializer,
+    ExcelControlDeclarationSerializer,
     ExcelExportDeclarationSerializer,
     OpenDataDeclarationSerializer,
     SimpleDeclarationSerializer,
@@ -53,6 +54,7 @@ from api.utils.filters import (
 from api.utils.search import UnaccentSearchFilter
 from api.views.declaration.declaration_filter_set import DeclarationFilterSet
 from api.views.declaration.declaration_flow import DeclarationFlow
+from api.views.utils import ControlExcelPagination, common_excel_styles
 from config import email
 from data.models import Company, Declaration, InstructionRole, Snapshot, User, VisaRole
 
@@ -332,28 +334,7 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
         ],
         "column_width": [12, 12, 30, 20, 30, 25, 30, 15, 15, 15],
         "height": 30,
-        "style": {
-            "fill": {
-                "fill_type": "solid",
-                "start_color": "FF000091",
-            },
-            "alignment": {
-                "horizontal": "center",
-                "vertical": "center",
-                "wrapText": True,
-                "shrink_to_fit": True,
-            },
-            "border_side": {
-                "border_style": "thin",
-                "color": "FF6A6AF4",
-            },
-            "font": {
-                "name": "Arial",
-                "size": 12,
-                "bold": True,
-                "color": "FFFFFFFF",
-            },
-        },
+        "style": common_excel_styles,
     }
     body = {"height": 20}
 
@@ -363,12 +344,10 @@ class OngoingDeclarationsListView(CommonOngoingDeclarationView):
     serializer_class = SimpleDeclarationSerializer
 
 
-class ControllerDeclarationsListView(CommonOngoingDeclarationView):
+class CommonControlDeclarationView(CommonOngoingDeclarationView):
     permission_classes = [IsController]
-    pagination_class = DeclarationPagination
     ordering_fields = ["name", "company_name"]
     search_fields = ["name", "id", "company__social_name", "brand"]
-    serializer_class = ControllerDeclarationSerializer
     filter_backends = [
         SurveillanceOnlyFilter,
         SimplifiedStatusFilter,
@@ -381,6 +360,37 @@ class ControllerDeclarationsListView(CommonOngoingDeclarationView):
     def get_queryset(self):
         queryset = super().get_queryset().select_related("company")
         return queryset.annotate(company_name=F("company__social_name"))
+
+
+class ControllerDeclarationsListView(CommonControlDeclarationView):
+    pagination_class = DeclarationPagination
+    serializer_class = ControllerDeclarationSerializer
+
+
+class ControlDeclataionExcelView(XLSXFileMixin, CommonControlDeclarationView):
+    serializer_class = ExcelControlDeclarationSerializer
+    renderer_classes = [XLSXRenderer]
+    filename = "declarations-resultats.xlsx"
+    pagination_class = ControlExcelPagination
+
+    # Format de l'entête du fichier Excel (À mettre ailleurs)
+    column_header = {
+        "titles": [
+            "Id. Compl'Alim",
+            "Nom du produit",
+            "Entreprise",
+            "Marque",
+            "Statut",
+            "Date d'application du statut",
+            "SIRET de l'entreprise",
+            "No. TVA de l'entreprise",
+            "No. de département",
+        ],
+        "column_width": [12, 30, 30, 30, 25, 25, 20, 20, 20],
+        "height": 30,
+        "style": common_excel_styles,
+    }
+    body = {"height": 20}
 
 
 class ControllerDeclarationRetrieveView(RetrieveAPIView):
