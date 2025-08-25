@@ -15,7 +15,7 @@
     "@vueuse/core": "^13.6.0",
     "core-js": "^3.45.0",
     "pinia": "^3.0.3",
-    "vue": "^3.5.18",
+    "vue": "^3.5.19",
     "vue-matomo": "^4.2.0",
     "vue-router": "^4.5.1",
     "webpack-bundle-tracker": "^3.2.1"
