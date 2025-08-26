@@ -187,7 +187,6 @@ onMounted(() => {
   if (savedQuery.value.page) {
     searchTerm.value = savedQuery.value.recherche
     nextTick().then(() => router.replace({ query: { ...savedQuery.value } }))
-    // TODO: display message to identfy the route as taken from last search?
   }
 })
 
