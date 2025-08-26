@@ -176,12 +176,6 @@ watch(
   fetchSearchResults
 )
 
-// TODO: fix display of search term
-// watch(
-//   () => route.query?.recherche,
-//   () => (searchTerm.value = route.query.recherche)
-// )
-
 const search = () => {
   updateQuery({ recherche: searchTerm.value })
   fetchSearchResults()
@@ -190,8 +184,8 @@ const search = () => {
 const savedQuery = useStorage("InstructionDeclarationsPage", {})
 
 onMounted(() => {
-  // TODO: don't replace route if saved query matches defaults
   if (savedQuery.value.page) {
+    searchTerm.value = savedQuery.value.recherche
     nextTick().then(() => router.replace({ query: { ...savedQuery.value } }))
     // TODO: display message to identfy the route as taken from last search?
   }
