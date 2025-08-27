@@ -17,14 +17,7 @@
 
     <SectionTitle title="Autres" class="mt-10!" sizeTag="h6" icon="ri-attachment-2" />
 
-    <DsfrAlert v-if="ingredientsRequiringAnalysisReport.length" small>
-      <p>Un bulletin d'analyse est nécessaire pour l'utilisation des ingrédients suivants :</p>
-      <ul class="mb-0">
-        <li v-for="ingredient in ingredientsRequiringAnalysisReport" :key="`${ingredient.type}-${ingredient.id}`">
-          {{ ingredient.element.name }}
-        </li>
-      </ul>
-    </DsfrAlert>
+    <RequiresAnalysisReportNotice :declaration="payload" />
 
     <DsfrInputGroup>
       <DsfrFileUpload
@@ -45,6 +38,7 @@
 import { ref, computed } from "vue"
 import FileGrid from "./FileGrid"
 import SectionTitle from "@/components/SectionTitle"
+import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNotice"
 
 const acceptedTypes = ["image/jpeg", "image/gif", "image/png", "application/pdf"]
 const props = defineProps(["externalResults"])
@@ -126,15 +120,4 @@ const toBase64 = (file) => {
     reader.onerror = reject
   })
 }
-
-const ingredientsRequiringAnalysisReport = computed(() => {
-  return []
-    .concat(
-      payload.value.declaredPlants,
-      payload.value.declaredMicroorganisms,
-      payload.value.declaredIngredients,
-      payload.value.declaredSubstances
-    )
-    .filter((x) => x.element.requiresAnalysisReport)
-})
 </script>
