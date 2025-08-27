@@ -101,6 +101,35 @@
           />
         </DsfrFieldset>
       </div>
+      <div class="grid md:grid-cols-2 mt-4">
+        <DsfrFieldset
+          legend="Ressources reglementaires"
+          hint="Les URLs devraient commencer par https ou http"
+          legendClass="fr-text--lg pb-0! mb-2! mt-4!"
+        >
+          <DsfrInputGroup :errorMessage="regulatoryResourceLinksError" wrapperClass="mt-0 mb-0">
+            <DsfrInput
+              v-for="(_, idx) in state.regulatoryResourceLinks"
+              :key="`synonym-${idx}`"
+              v-model="state.regulatoryResourceLinks[idx]"
+              class="mb-4"
+            />
+          </DsfrInputGroup>
+          <DsfrButton
+            label="Ajouter un lien"
+            @click="
+              () =>
+                state.regulatoryResourceLinks
+                  ? state.regulatoryResourceLinks.push('')
+                  : (state.regulatoryResourceLinks = [''])
+            "
+            icon="ri-add-line"
+            size="sm"
+            :class="regulatoryResourceLinksError ? 'mt-6' : 'mt-2'"
+            secondary
+          />
+        </DsfrFieldset>
+      </div>
     </DsfrFieldset>
     <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 mb-0! pb-2!">
       <div v-if="formForType.plantParts" class="grid md:grid-cols-3 items-end my-4 md:my-2">
@@ -366,6 +395,7 @@ const saveElement = async () => {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
+  payload.regulatoryResourceLinks = payload.regulatoryResourceLinks.filter((l) => !!l)
   if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
   if (formForType.value.plantParts) {
     const authorisedParts = payload.authorisedPlantParts
@@ -395,6 +425,9 @@ const saveElement = async () => {
     if (fieldErrors && Object.keys(fieldErrors).length > 0) {
       if ($externalResults.value?.fieldErrors?.maxQuantities) {
         maxQuantitiesError.value = $externalResults.value.fieldErrors.maxQuantities[0]
+      }
+      if ($externalResults.value?.fieldErrors?.regulatoryResourceLinks) {
+        regulatoryResourceLinksError.value = "Merci de vérifier que tous les liens commencent par http:// ou https://"
       }
       useToaster().addErrorMessage(
         "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis"
@@ -534,6 +567,8 @@ const validateMaxQuantities = () => {
 const maxQuantitiesHeaders = computed(() => {
   return ["Population", `Quantité max (en ${unitString.value})`, ""]
 })
+
+const regulatoryResourceLinksError = ref()
 
 const substanceTypeOptions = [
   {
