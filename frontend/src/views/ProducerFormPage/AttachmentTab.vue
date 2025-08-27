@@ -17,9 +17,9 @@
 
     <SectionTitle title="Autres" class="mt-10!" sizeTag="h6" icon="ri-attachment-2" />
 
-    <DsfrAlert v-if="ingredientsRequiringAnalysisReport.length">
+    <DsfrAlert v-if="ingredientsRequiringAnalysisReport.length" small>
       <p>Un bulletin d'analyse est nécessaire pour l'utilisation des ingrédients suivants :</p>
-      <ul>
+      <ul class="mb-0">
         <li v-for="ingredient in ingredientsRequiringAnalysisReport" :key="`${ingredient.type}-${ingredient.id}`">
           {{ ingredient.element.name }}
         </li>

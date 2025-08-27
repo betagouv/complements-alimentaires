@@ -14,6 +14,7 @@
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
       </h3>
       <CompactAttachmentGrid :attachments="payload.attachments" />
+      <!-- TODO: show notice? -->
     </div>
     <h3 class="fr-h6">
       Informations sur le produit
@@ -45,6 +46,14 @@
           Pièces jointes
           <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
         </h3>
+        <DsfrAlert v-if="ingredientsRequiringAnalysisReport.length" small class="mb-4">
+          <p>Un bulletin d'analyse est nécessaire pour l'utilisation des ingrédients suivants :</p>
+          <ul class="mb-0">
+            <li v-for="ingredient in ingredientsRequiringAnalysisReport" :key="`${ingredient.type}-${ingredient.id}`">
+              {{ ingredient.element.name }}
+            </li>
+          </ul>
+        </DsfrAlert>
         <div class="grid grid-cols-12 gap-3 mb-8">
           <FilePreview
             class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
@@ -64,6 +73,7 @@ export default { name: "DeclarationSummary" }
 </script>
 
 <script setup>
+import { computed } from "vue"
 import AddressLine from "@/components/AddressLine"
 import ProductInfoSegment from "@/components/ProductInfoSegment"
 import ArticleInfoRow from "./ArticleInfoRow"
@@ -87,6 +97,17 @@ defineProps({
 })
 
 const editLink = (tab) => ({ query: { tab } })
+
+const ingredientsRequiringAnalysisReport = computed(() => {
+  return []
+    .concat(
+      payload.value.declaredPlants,
+      payload.value.declaredMicroorganisms,
+      payload.value.declaredIngredients,
+      payload.value.declaredSubstances
+    )
+    .filter((x) => x.element.requiresAnalysisReport)
+})
 </script>
 
 <style scoped>
