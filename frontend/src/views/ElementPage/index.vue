@@ -93,6 +93,14 @@
       />
       <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
+      <ul v-if="element.regulatoryResourceLinks?.length" class="list-none -ml-4 mb-6">
+        <li v-for="resourceLink in element.regulatoryResourceLinks" :key="resourceLink">
+          Ressource reglementaire :
+          <a :href="`${resourceLink}`" target="_blank" ref="noopener noreferrer">
+            {{ resourceLink }}
+          </a>
+        </li>
+      </ul>
       <!-- Date de dernière mise à jour de la donnée -->
       <DsfrAccordion title="Historique de l'ingrédient" id="accordion-history">
         <DsfrTable :headers="historyHeaders" :rows="historyDataDedup"></DsfrTable>
