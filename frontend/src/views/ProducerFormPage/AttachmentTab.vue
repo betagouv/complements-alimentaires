@@ -17,6 +17,15 @@
 
     <SectionTitle title="Autres" class="mt-10!" sizeTag="h6" icon="ri-attachment-2" />
 
+    <DsfrAlert v-if="ingredientsRequiringAnalysisReport.length">
+      <p>Un bulletin d'analyse est nécessaire pour l'utilisation des ingrédients suivants :</p>
+      <ul>
+        <li v-for="ingredient in ingredientsRequiringAnalysisReport" :key="`${ingredient.type}-${ingredient.id}`">
+          {{ ingredient.element.name }}
+        </li>
+      </ul>
+    </DsfrAlert>
+
     <DsfrInputGroup>
       <DsfrFileUpload
         :label="otherAttachmentsLabel"
@@ -117,4 +126,15 @@ const toBase64 = (file) => {
     reader.onerror = reject
   })
 }
+
+const ingredientsRequiringAnalysisReport = computed(() => {
+  return []
+    .concat(
+      payload.value.declaredPlants,
+      payload.value.declaredMicroorganisms,
+      payload.value.declaredIngredients,
+      payload.value.declaredSubstances
+    )
+    .filter((x) => x.element.requiresAnalysisReport)
+})
 </script>
