@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from data.behaviours import TimeStampable
@@ -52,6 +53,10 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
 
     requires_analysis_report = models.BooleanField(
         default=False, verbose_name="L'utilisation de cet ingrédient nécessite un bulletin d'analyse"
+    )
+
+    regulatory_resource_links = ArrayField(
+        base_field=models.URLField(), blank=True, null=True, verbose_name="Lien(s) vers les ressources reglementaires"
     )
 
     @property

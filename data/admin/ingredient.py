@@ -59,6 +59,7 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
                     "novel_food",
                     "status",
                     "requires_analysis_report",
+                    "regulatory_resource_links",
                 ],
             },
         ),

@@ -29,6 +29,7 @@ COMMON_FIELDS = (
     "public_change_reason",
     "to_be_entered_in_next_decree",
     "requires_analysis_report",
+    "regulatory_resource_links",
 )
 
 COMMON_READ_ONLY_FIELDS = ("id",)
@@ -45,6 +46,7 @@ COMMON_FETCH_FIELDS = (
     "history",
     "object_type",
     "requires_analysis_report",
+    "regulatory_resource_links",
     # Les suivants sont cachés si l'utilisateur.ice ne fait pas partie de l'administration
     "private_comments",
     "origin_declaration",
