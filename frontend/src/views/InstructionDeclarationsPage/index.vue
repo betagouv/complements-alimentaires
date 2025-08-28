@@ -108,7 +108,7 @@
 
 <script setup>
 import { useFetch } from "@vueuse/core"
-import { computed, watch, ref, onMounted, nextTick } from "vue"
+import { computed, watch, ref } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import InstructionDeclarationsTable from "./InstructionDeclarationsTable"
@@ -117,8 +117,7 @@ import { getPagesForPagination } from "@/utils/components"
 import StatusFilter from "@/components/StatusFilter.vue"
 import { orderingOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
-import { useStorage } from "@vueuse/core"
-import { onBeforeRouteLeave } from "vue-router"
+import { useQueryStorage } from "@/utils/storage"
 
 const router = useRouter()
 const route = useRoute()
@@ -181,18 +180,7 @@ const search = () => {
   fetchSearchResults()
 }
 
-const savedQuery = useStorage("InstructionDeclarationsPage", {})
-
-onMounted(() => {
-  if (savedQuery.value.page) {
-    searchTerm.value = savedQuery.value.recherche
-    nextTick().then(() => router.replace({ query: { ...savedQuery.value } }))
-  }
-})
-
-onBeforeRouteLeave(() => {
-  savedQuery.value = route.query
-})
+useQueryStorage("InstructionDeclarationsPage", (savedQuery) => (searchTerm.value = savedQuery.value.recherche))
 </script>
 
 <style scoped>
