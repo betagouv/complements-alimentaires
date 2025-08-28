@@ -104,7 +104,7 @@
       <div class="grid md:grid-cols-2 mt-4">
         <DsfrFieldset
           legend="Ressources reglementaires"
-          hint="Les URLs devraient commencer par https ou http"
+          hint="Les URLs doivent commencer par « https:// » ou « http:// »"
           legendClass="fr-text--lg pb-0! mb-2! mt-4!"
         >
           <DsfrInputGroup :errorMessage="regulatoryResourceLinksError" wrapperClass="mt-0 mb-0">
