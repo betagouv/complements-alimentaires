@@ -577,7 +577,6 @@ class Declaration(Historisable, TimeStampable):
                 any(self.declared_plants.filter(plant__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_microorganisms.filter(microorganism__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
-                or any(self.computed_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
                 or any(self.declared_ingredients.filter(ingredient__status=IngredientStatus.NOT_AUTHORIZED))
             )
 
