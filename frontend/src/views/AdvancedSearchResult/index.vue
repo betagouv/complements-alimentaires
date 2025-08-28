@@ -3,7 +3,7 @@
     <DsfrBreadcrumb
       :links="[
         { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { to: previousRoute, text: 'Recherche avancée' },
+        { to: { name: 'AdvancedSearchPage' }, text: 'Recherche avancée' },
         { text: declaration?.name || 'Résultat' },
       ]"
     />
@@ -70,10 +70,6 @@ const isInstructor = computed(() => loggedUser.value?.globalRoles?.some((x) => x
 const isVisor = computed(() => loggedUser.value?.globalRoles?.some((x) => x.name === "VisaRole"))
 
 const router = useRouter()
-const previousRoute = computed(() => {
-  const previousRoute = router.getPreviousRoute().value
-  return previousRoute?.name === "AdvancedSearchPage" ? previousRoute : { name: "AdvancedSearchPage" }
-})
 
 const props = defineProps({
   declarationId: String,

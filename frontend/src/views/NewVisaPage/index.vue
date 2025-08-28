@@ -64,11 +64,9 @@ const props = defineProps({ declarationId: String })
 const route = useRoute()
 const router = useRouter()
 
-const filterQueryParams =
-  router.getPreviousRoute().value?.name === "VisaDeclarations" ? router.getPreviousRoute().value.query : {}
 const breadcrumbLinks = [
   { to: { name: "DashboardPage" }, text: "Tableau de bord" },
-  { to: { name: "VisaDeclarations", query: filterQueryParams }, text: "Déclarations pour visa" },
+  { to: { name: "VisaDeclarations" }, text: "Déclarations pour visa" },
   { text: "Instruction" },
 ]
 
