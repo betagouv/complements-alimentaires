@@ -47,7 +47,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { useRoute, useRouter } from "vue-router"
+import { useRoute } from "vue-router"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import ProgressSpinner from "@/components/ProgressSpinner"
@@ -58,13 +58,10 @@ import { setDocumentTitle } from "@/utils/document"
 
 const props = defineProps({ declarationId: String })
 const route = useRoute()
-const router = useRouter()
 
-const filterQueryParams =
-  router.getPreviousRoute().value?.name === "InstructionDeclarations" ? router.getPreviousRoute().value.query : {}
 const breadcrumbLinks = [
   { to: { name: "DashboardPage" }, text: "Tableau de bord" },
-  { to: { name: "InstructionDeclarations", query: filterQueryParams }, text: "Déclarations pour instruction" },
+  { to: { name: "InstructionDeclarations" }, text: "Déclarations pour instruction" },
   { text: "Instruction" },
 ]
 
