@@ -68,6 +68,7 @@ import { getPagesForPagination } from "@/utils/components"
 import StatusFilter from "@/components/StatusFilter"
 import { orderingOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
+import { useQueryStorage } from "@/utils/storage"
 
 const router = useRouter()
 const route = useRoute()
@@ -107,6 +108,8 @@ const fetchSearchResults = async () => {
 }
 
 watch([page, filteredStatus, ordering, article, limit], fetchSearchResults)
+
+useQueryStorage("VisaDeclarationsPage")
 </script>
 
 <style scoped>
