@@ -4,6 +4,7 @@
       <ArticleInfoRow :modelValue="declaration" :allowChange="true" class="mb-4" />
 
       <SectionHeader id="pieces-jointes" icon="ri-attachment-fill" text="Pièces jointes" />
+      <RequiresAnalysisReportNotice :declaration="declaration" />
       <CompactAttachmentGrid :attachments="declaration.attachments" />
 
       <SectionHeader id="dernier-commentaire" icon="ri-chat-2-fill" text="Dernier commentaire" />
@@ -51,6 +52,7 @@ import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
 import VisaValidationSegment from "../VisaValidationSegment"
 import { computed } from "vue"
 import { useRouter } from "vue-router"
+import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNotice"
 
 const router = useRouter()
 const previousVisaQueryParams =

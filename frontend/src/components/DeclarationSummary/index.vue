@@ -8,13 +8,6 @@
       v-if="allowArticleChange || payload.article"
       class="mb-2"
     />
-    <div v-if="useCompactAttachmentView">
-      <h3 class="fr-h6 mt-8!">
-        Pièces jointes
-        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
-      </h3>
-      <CompactAttachmentGrid :attachments="payload.attachments" />
-    </div>
     <h3 class="fr-h6">
       Informations sur le produit
       <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />
@@ -40,20 +33,19 @@
         <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
       </h3>
       <AddressLine :payload="payload" />
-      <div v-if="!useCompactAttachmentView">
-        <h3 class="fr-h6 mt-8!">
-          Pièces jointes
-          <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
-        </h3>
-        <div class="grid grid-cols-12 gap-3 mb-8">
-          <FilePreview
-            class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
-            v-for="(file, index) in payload.attachments"
-            :key="`file-${index}`"
-            :file="file"
-            readonly
-          />
-        </div>
+      <h3 class="fr-h6 mt-8!">
+        Pièces jointes
+        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
+      </h3>
+      <RequiresAnalysisReportNotice :declaration="payload" class="mb-4" />
+      <div class="grid grid-cols-12 gap-3 mb-8">
+        <FilePreview
+          class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
+          v-for="(file, index) in payload.attachments"
+          :key="`file-${index}`"
+          :file="file"
+          readonly
+        />
       </div>
     </div>
   </div>
@@ -73,7 +65,7 @@ import FilePreview from "@/components/FilePreview"
 import { useRouter } from "vue-router"
 import SummaryModificationButton from "./SummaryModificationButton"
 import HistoryBadge from "../History/HistoryBadge.vue"
-import CompactAttachmentGrid from "@/components/CompactAttachmentGrid"
+import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNotice"
 
 const router = useRouter()
 
@@ -83,7 +75,6 @@ defineProps({
   allowArticleChange: Boolean,
   useAccordions: Boolean,
   showElementAuthorization: Boolean,
-  useCompactAttachmentView: Boolean,
 })
 
 const editLink = (tab) => ({ query: { tab } })

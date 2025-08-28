@@ -17,6 +17,8 @@
 
     <SectionTitle title="Autres" class="mt-10!" sizeTag="h6" icon="ri-attachment-2" />
 
+    <RequiresAnalysisReportNotice :declaration="payload" />
+
     <DsfrInputGroup>
       <DsfrFileUpload
         :label="otherAttachmentsLabel"
@@ -36,6 +38,7 @@
 import { ref, computed } from "vue"
 import FileGrid from "./FileGrid"
 import SectionTitle from "@/components/SectionTitle"
+import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNotice"
 
 const acceptedTypes = ["image/jpeg", "image/gif", "image/png", "application/pdf"]
 const props = defineProps(["externalResults"])
