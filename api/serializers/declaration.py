@@ -164,6 +164,7 @@ class DeclaredPlantSerializer(DeclaredIngredientCommonSerializer):
             "preparation",
             "is_part_request",
         )
+        read_only_fields = ("is_part_request",)
 
 
 class DeclaredMicroorganismSerializer(DeclaredIngredientCommonSerializer):
