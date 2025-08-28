@@ -22,6 +22,6 @@ const ingredientsRequiringAnalysisReport = computed(() => {
       props.declaration.declaredIngredients,
       props.declaration.declaredSubstances
     )
-    .filter((x) => x.element.requiresAnalysisReport)
+    .filter((x) => x.element?.requiresAnalysisReport)
 })
 </script>
