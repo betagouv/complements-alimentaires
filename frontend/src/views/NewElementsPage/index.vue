@@ -79,6 +79,7 @@ import { useRoute, useRouter } from "vue-router"
 import { getPagesForPagination } from "@/utils/components"
 import { statusProps } from "@/utils/mappings"
 import MultiselectFilter from "@/components/MultiselectFilter"
+import { useQueryStorage } from "@/utils/storage"
 
 const router = useRouter()
 const route = useRoute()
@@ -157,4 +158,6 @@ const orderingOptions = [
     text: "Date limite de réponse (descendant)",
   },
 ]
+
+useQueryStorage("NewElementsPage")
 </script>

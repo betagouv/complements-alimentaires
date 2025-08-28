@@ -55,8 +55,6 @@ import { useRouter } from "vue-router"
 import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNotice"
 
 const router = useRouter()
-const previousVisaQueryParams =
-  router.getPreviousRoute().value.name === "VisaDeclarations" ? router.getPreviousRoute().value.query : {}
 
 const props = defineProps({ declaration: Object, snapshots: Array, role: { type: String, default: "instruction" } })
 
@@ -71,7 +69,7 @@ const showComputedSubstances = computed(() => {
     .some((x) => x.requestStatus === "REPLACED" && x.element?.substances?.length)
 })
 
-const redirectToVisa = () => router.push({ name: "VisaDeclarations", query: previousVisaQueryParams })
+const redirectToVisa = () => router.push({ name: "VisaDeclarations" })
 
 const canInstruct = computed(() => props.declaration?.status === "ONGOING_INSTRUCTION")
 const canVisa = computed(() => props.declaration?.status === "ONGOING_VISA")

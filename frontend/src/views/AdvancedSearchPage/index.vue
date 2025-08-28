@@ -223,6 +223,7 @@ import CountryField from "@/components/fields/CountryField"
 import DoseFilterModal from "./DoseFilterModal"
 import DateFilterField from "./DateFilterField"
 import { toOptions } from "@/utils/forms.js"
+import { useQueryStorage } from "@/utils/storage"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -405,6 +406,8 @@ const galenicFormulationOptions = computed(() => toOptions(galenicFormulations.v
 const seeOverflow = ref(false)
 watch(activeAccordion, (x) => setTimeout(() => (seeOverflow.value = x === 0), 500))
 ///////////
+
+useQueryStorage("AdvancedSearchPage", (savedQuery) => (searchTerm.value = savedQuery.value?.recherche))
 </script>
 
 <style scoped>

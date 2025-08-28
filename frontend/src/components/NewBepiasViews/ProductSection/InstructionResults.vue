@@ -108,8 +108,6 @@ import { useRouter } from "vue-router"
 import { useStorage } from "@vueuse/core"
 
 const router = useRouter()
-const previousQueryParams =
-  router.getPreviousRoute().value.name === "InstructionDeclarations" ? router.getPreviousRoute().value.query : {}
 
 const rules = computed(() => {
   if (decisionCategory.value !== "modify") return {}
@@ -204,7 +202,7 @@ const submitDecision = async () => {
   if (response.value.ok) {
     useToaster().addSuccessMessage("Votre décision a été prise en compte")
     clearLocalStorage()
-    router.push({ name: "InstructionDeclarations", query: previousQueryParams })
+    router.push({ name: "InstructionDeclarations" })
   }
 }
 </script>
