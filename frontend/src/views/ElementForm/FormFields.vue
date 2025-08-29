@@ -395,7 +395,7 @@ const saveElement = async () => {
     payload.substances = payload.substances.map((substance) => substance.id)
   }
   payload.synonyms = payload.synonyms.filter((s) => !!s.name)
-  payload.regulatoryResourceLinks = payload.regulatoryResourceLinks.filter((l) => !!l)
+  payload.regulatoryResourceLinks = payload.regulatoryResourceLinks?.filter((l) => !!l)
   if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
   if (formForType.value.plantParts) {
     const authorisedParts = payload.authorisedPlantParts
