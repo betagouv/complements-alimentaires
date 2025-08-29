@@ -143,7 +143,7 @@ const textForType = computed(() => {
       euHint:
         "Cette partie de plante n'est pas autorisée en France mais l'est dans un autre pays de l'UE ou EEE (déclaré au titre de l'article 16 du décret 2006-352)",
       traditionalHint:
-        "Partie de plante bénéficiante d'un historique de consommation selon le catalogue Novel Food ou dont l'utilisation en alimentation humaine est bien établie (directive 2004/24/CE)",
+        "Partie de plante bénéficiante d'un historique de consommation selon le catalogue Novel Food ou dont l'utilisation en alimentation humaine est bien établie",
       novelHint:
         "La partie de plante figure sur la liste de l'Union des nouveaux aliments conformément au règlement (UE) 2017/2470",
       missingHint: "La partie de plante est autorisée en France mais ne figure pas dans la base de données",
@@ -154,7 +154,7 @@ const textForType = computed(() => {
     euHint:
       "Cet ingrédient n'est pas autorisé en France mais l'est dans un autre pays de l'UE ou EEE (déclaré au titre de l'article 16 du décret 2006-352)",
     traditionalHint:
-      "Ingrédient bénéficiant d'un historique de consommation selon le catalogue Novel Food ou dont l'utilisation en alimentation humaine est bien établie (directive 2004/24/CE)",
+      "Ingrédient bénéficiant d'un historique de consommation selon le catalogue Novel Food ou dont l'utilisation en alimentation humaine est bien établie",
     novelHint:
       "L'ingrédient figure sur la liste de l'Union des nouveaux aliments conformément au règlement (UE) 2017/2470",
     missingHint: "L'ingrédient est autorisé en France mais ne figure pas dans la base de données",

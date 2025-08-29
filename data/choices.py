@@ -43,7 +43,7 @@ class CountryChoices(models.TextChoices):
 class FrAuthorizationReasons(models.TextChoices):
     TRADITIONAL_USAGE = (
         "TRADITIONAL_USAGE",
-        "Ingrédient bénéficiant d'un historique de consommation selon le catalogue Novel Food ou dont l'utilisation en alimentation humaine est bien établie (directive 2004/24/CE)",
+        "Ingrédient bénéficiant d'un historique de consommation selon le catalogue Novel Food ou dont l'utilisation en alimentation humaine est bien établie",
     )
     NOVEL_FOOD = (
         "NOVEL_FOOD",
