@@ -52,7 +52,7 @@ import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { useRoute, useRouter } from "vue-router"
+import { useRoute } from "vue-router"
 import { headers } from "@/utils/data-fetching"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import BepiasSidebar from "@/components/NewBepiasViews/BepiasSidebar"
@@ -62,7 +62,6 @@ import { setDocumentTitle } from "@/utils/document"
 
 const props = defineProps({ declarationId: String })
 const route = useRoute()
-const router = useRouter()
 
 const breadcrumbLinks = [
   { to: { name: "DashboardPage" }, text: "Tableau de bord" },
