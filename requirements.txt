@@ -73,7 +73,7 @@ pandas==2.3.1
 parso==0.8.5
 pathspec==0.12.1
 pexpect==4.9.0
-phonenumbers==9.0.12
+phonenumbers==9.0.13
 pillow==11.3.0
 pipdeptree==2.28.0
 platformdirs==4.3.8
