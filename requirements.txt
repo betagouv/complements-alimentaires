@@ -75,7 +75,7 @@ pathspec==0.12.1
 pexpect==4.9.0
 phonenumbers==9.0.12
 pillow==11.3.0
-pipdeptree==2.25.1
+pipdeptree==2.28.0
 platformdirs==4.3.8
 pluggy==1.6.0
 pre_commit==4.3.0
