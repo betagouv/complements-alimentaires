@@ -7,7 +7,10 @@
       :class="header.active || currentSort === header.sortParam ? 'active' : ''"
     >
       <div class="flex items-baseline">
-        <span class="grow">{{ header.text }}</span>
+        <div class="grow">
+          <span>{{ header.text }}</span>
+          <DsfrTooltip v-if="header.tooltipContent" :content="header.tooltipContent" />
+        </div>
         <div class="flex-none">
           <DsfrButton
             v-if="header.sortParam"
