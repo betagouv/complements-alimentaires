@@ -262,7 +262,7 @@ def update_market_ready_counts():
             if not objects_to_save:
                 continue
             Company.objects.bulk_update(objects_to_save, ["market_ready_count_cache", "market_ready_count_updated_at"])
-            logger.info(f"Updated {len(objects_to_save)} companies ({page_num} of {paginator.page_range.stop})")
+            logger.info(f"Updated {len(objects_to_save)} companies ({page_num} of {paginator.page_range.stop - 1})")
 
         except Exception as e:
             logger.exception(e)
