@@ -13,27 +13,27 @@ from data.models import Declaration
 class TestUpdateMarketReadyCountsTask(TestCase):
     def test_update_market_ready_counts_task(self):
         """
-        Test que la tâche met à jour correctement le cache des counts market-ready
+        Test que la tâche met à jour correctement le cache des counts commercialisables
         """
         company1 = CompanyFactory()
         company2 = CompanyFactory()
         company3 = CompanyFactory()
 
-        # Company1: 2 déclarations market-ready
+        # Company1: 2 déclarations commercialisables
         AwaitingInstructionDeclarationFactory(company=company1, overridden_article=Declaration.Article.ARTICLE_15)
         AwaitingInstructionDeclarationFactory(
             company=company1, overridden_article=Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
         )
 
-        # Company2: 1 déclaration market-ready, 1 non market-ready
+        # Company2: 1 déclaration commercialisables, 1 non commercialisable
         AuthorizedDeclarationFactory(company=company2)
         AwaitingInstructionDeclarationFactory(
             company=company2,
-            overridden_article=Declaration.Article.ARTICLE_16,  # Non market-ready
+            overridden_article=Declaration.Article.ARTICLE_16,  # Non commercialisable
         )
 
-        # Company3: 0 déclarations market-ready
-        RejectedDeclarationFactory(company=company3)  # Non market-ready
+        # Company3: 0 déclarations commercialisables
+        RejectedDeclarationFactory(company=company3)  # Non commercialisable
 
         update_market_ready_counts()
         company1.refresh_from_db()

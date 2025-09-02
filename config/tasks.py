@@ -233,6 +233,7 @@ def update_market_ready_counts():
     """
     Cette tâche met à jour le nombre de déclarations commecialisables pour les entreprises
     """
+    logger.info("Starting the cache update for market-ready declarations")
     batch_size = 500
     market_ready_condition = SimplifiedStatusHelper.get_filter_conditions(
         [SimplifiedStatusHelper.MARKET_READY], "declarations__"
@@ -244,18 +245,26 @@ def update_market_ready_counts():
     paginator = Paginator(company_ids, batch_size)
 
     for page_num in paginator.page_range:
-        batch_ids = list(paginator.page(page_num).object_list)
+        try:
+            batch_ids = list(paginator.page(page_num).object_list)
 
-        # Avec une seule requête on obtient les counts des declarations commercialisables
-        companies_with_counts = Company.objects.filter(id__in=batch_ids).annotate(
-            market_ready_count=Count("declarations", filter=market_ready_condition, distinct=True)
-        )
+            # Avec une seule requête on obtient les counts des declarations commercialisables
+            companies_with_counts = Company.objects.filter(id__in=batch_ids).annotate(
+                market_ready_count=Count("declarations", filter=market_ready_condition, distinct=True)
+            )
 
-        objects_to_save = []
-        for company in companies_with_counts:
-            company.market_ready_count_cache = company.market_ready_count
-            company.market_ready_count_updated_at = timezone.now()
-            objects_to_save.append(company)
+            objects_to_save = []
+            for company in companies_with_counts:
+                company.market_ready_count_cache = company.market_ready_count
+                company.market_ready_count_updated_at = timezone.now()
+                objects_to_save.append(company)
 
-        if objects_to_save:
+            if not objects_to_save:
+                continue
             Company.objects.bulk_update(objects_to_save, ["market_ready_count_cache", "market_ready_count_updated_at"])
+            logger.info(f"Updated {len(objects_to_save)} companies ({page_num} of {paginator.page_range.stop})")
+
+        except Exception as e:
+            logger.exception(e)
+
+    logger.info("Cache update done!")
