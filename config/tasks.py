@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, time
 
 from django.conf import settings
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, F, Max, Q
 from django.utils import timezone
@@ -10,9 +11,10 @@ from dateutil.relativedelta import relativedelta
 from simple_history.utils import update_change_reason
 from viewflow import fsm
 
+from api.utils.simplified_status import SimplifiedStatusHelper
 from config import email
 from data.etl.transformer_loader import ETL_OPEN_DATA_DECLARATIONS
-from data.models import Declaration, Snapshot
+from data.models import Company, Declaration, Snapshot
 
 from .celery import app
 
@@ -224,3 +226,36 @@ def recalculate_article_for_ongoing_declarations(declarations, change_reason):
                 change_reason = change_reason[:100]
             update_change_reason(declaration, change_reason)
             logger.info(f"Declaration {declaration.id} article recalculated.")
+
+
+@app.task
+def update_market_ready_counts():
+    """
+    Cette tâche met à jour le nombre de déclarations commecialisables pour les entreprises
+    """
+    batch_size = 500
+    market_ready_condition = SimplifiedStatusHelper.get_filter_conditions(
+        [SimplifiedStatusHelper.MARKET_READY], "declarations__"
+    )
+
+    # Obtention de tous les IDs (requête rapide). Le triage par ID est important pour ne pas
+    # avoir des résultats inconsistents dans la pagination.
+    company_ids = Company.objects.order_by("id").values_list("id", flat=True)
+    paginator = Paginator(company_ids, batch_size)
+
+    for page_num in paginator.page_range:
+        batch_ids = list(paginator.page(page_num).object_list)
+
+        # Avec une seule requête on obtient les counts des declarations commercialisables
+        companies_with_counts = Company.objects.filter(id__in=batch_ids).annotate(
+            market_ready_count=Count("declarations", filter=market_ready_condition, distinct=True)
+        )
+
+        objects_to_save = []
+        for company in companies_with_counts:
+            company.market_ready_count_cache = company.market_ready_count
+            company.market_ready_count_updated_at = timezone.now()
+            objects_to_save.append(company)
+
+        if objects_to_save:
+            Company.objects.bulk_update(objects_to_save, ["market_ready_count_cache", "market_ready_count_updated_at"])
