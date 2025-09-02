@@ -197,6 +197,8 @@ class TestCreateCompany(ProjectAPITestCase):
             "id",
             "vat",
             "siccrf_id",
+            "market_ready_count_cache",
+            "market_ready_count_updated_at",
         ]:  # retire les champs à ne pas fournir dans le payload
             company.__dict__.pop(key, None)
         response = self.post(self.url(), company.__dict__)
@@ -215,6 +217,8 @@ class TestCreateCompany(ProjectAPITestCase):
             "id",
             "siret",
             "siccrf_id",
+            "market_ready_count_cache",
+            "market_ready_count_updated_at",
         ]:  # retire les champs à ne pas fournir dans le payload
             company.__dict__.pop(key, None)
         response = self.post(self.url(), company.__dict__)
