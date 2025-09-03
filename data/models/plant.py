@@ -1,6 +1,7 @@
 from django.db import models
 
 from simple_history.models import HistoricalRecords
+from simple_history.utils import update_change_reason
 
 from data.behaviours import Historisable, TimeStampable
 
@@ -67,6 +68,37 @@ class Part(TimeStampable):
 
     is_useful = models.BooleanField(default=False, verbose_name="🍵 utile ?")
     history = HistoricalRecords(inherit=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.is_useful:
+            from data.models.declaration import DeclaredPlant, Declaration, Addable
+
+            ds = Declaration.DeclarationStatus
+            ongoing_statuses = [
+                ds.DRAFT,
+                ds.AWAITING_INSTRUCTION,
+                ds.ONGOING_INSTRUCTION,
+                ds.AWAITING_VISA,
+                ds.ONGOING_VISA,
+                ds.OBJECTION,
+                ds.OBSERVATION,
+            ]
+
+            declared_plants = DeclaredPlant.objects.select_related("declaration").filter(
+                plant=self.plant, used_part=self.plantpart, declaration__status__in=ongoing_statuses
+            )
+            declared_plants.update(request_status=Addable.AddableStatus.REPLACED)
+            for declared_plant in declared_plants:
+                declaration = declared_plant.declaration
+                previous_article = declaration.calculated_article
+                declaration.assign_calculated_article()
+                if previous_article != declaration.calculated_article:
+                    declaration.save()
+                    declaration.refresh_from_db()
+                    update_change_reason(
+                        declaration, "Autorisation de la partie '{self.plantpart.id}' de plante '{self.plant.id}'"
+                    )
 
 
 class PlantSubstanceRelation(TimeStampable, Historisable):
