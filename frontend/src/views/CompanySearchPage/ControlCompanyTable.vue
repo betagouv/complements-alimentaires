@@ -35,8 +35,9 @@ const headers = computed(() => [
   {
     text: "Nb. de produits commercialisables",
     sortParam: "marketReadyCountCache",
+    ariaLabel: "Trier par nombre de produits commercialisables",
     tooltipContent:
-      "Ce chiffre est une approximation et peut varier légèrement du nombre réel de déclarations commercialisables",
+      "Cette colonne est mise à jour quotidiennement et peut donc varier du nombre réel de déclarations commercialisables",
     sortCallback: (value) => emit("sort", value),
   },
 ])
