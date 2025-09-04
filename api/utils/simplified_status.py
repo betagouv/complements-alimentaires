@@ -51,25 +51,34 @@ class SimplifiedStatusHelper:
         return None
 
     @classmethod
-    def get_filter_conditions(cls, simplified_status_values):
+    def get_filter_conditions(cls, simplified_status_values, query_prefix=""):
+        """
+        Retourne un objet Q utilisé pour filtrer les déclarations avec un des status simplifiés.
+        Le query_prefix (optionnel) permet d'utiliser cet objet dans des relations, par exemple,
+        si on fait le filtre depuis un objet Company, le query_prefix serait "declarations__"
+        """
         conditions = Q()
         passthrough_articles = cls.get_passthrough_articles()
         ongoing_instruction = cls.get_ongoing_instruction_statuses()
 
+        status_key = query_prefix + "status"
+        status_in_key = query_prefix + "status__in"
+        article_in_key = query_prefix + "article__in"
+
         for status_value in simplified_status_values:
             if status_value == cls.MARKET_READY:
                 conditions |= Q(
-                    Q(status=Declaration.DeclarationStatus.AUTHORIZED)
-                    | Q(status__in=ongoing_instruction, article__in=passthrough_articles)
+                    Q(**{status_key: Declaration.DeclarationStatus.AUTHORIZED})
+                    | Q(**{status_in_key: ongoing_instruction, article_in_key: passthrough_articles})
                 )
             elif status_value == cls.ONGOING:
-                conditions |= Q(status__in=ongoing_instruction) & ~Q(article__in=passthrough_articles)
+                conditions |= Q(**{status_in_key: ongoing_instruction}) & ~Q(**{article_in_key: passthrough_articles})
             elif status_value == cls.REFUSED:
-                conditions |= Q(status=Declaration.DeclarationStatus.REJECTED)
+                conditions |= Q(**{status_in_key: Declaration.DeclarationStatus.REJECTED})
             elif status_value == cls.WITHDRAWN:
-                conditions |= Q(status=Declaration.DeclarationStatus.WITHDRAWN)
+                conditions |= Q(**{status_in_key: Declaration.DeclarationStatus.WITHDRAWN})
             elif status_value == cls.INTERRUPTED:
-                conditions |= Q(status=Declaration.DeclarationStatus.ABANDONED)
+                conditions |= Q(**{status_in_key: Declaration.DeclarationStatus.ABANDONED})
 
         return conditions
 

@@ -123,6 +123,14 @@ class Company(AutoValidable, Address, CompanyContact, TimeStampable, Historisabl
         symmetrical=False,
     )
 
+    # Champs mis en cache et alimentés depuis Celery
+    market_ready_count_cache = models.IntegerField(
+        null=True, blank=True, verbose_name="cache du nombre de déclarations prêtes pour la commercialisation"
+    )
+    market_ready_count_updated_at = models.DateTimeField(
+        null=True, blank=True, verbose_name="dernière mise à jour du cache"
+    )
+
     def clean(self):
         # SIRET ou VAT ou les deux
         if not (self.siret or self.vat):

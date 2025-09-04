@@ -42,6 +42,7 @@ class ControllerCompanyListSerializer(serializers.ModelSerializer):
             "postal_code",
             "activities",
             "country",
+            "market_ready_count_cache",
         )
 
 

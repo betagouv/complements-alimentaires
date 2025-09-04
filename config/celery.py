@@ -28,6 +28,7 @@ app.worker_hijack_root_logger = False
 
 mornings = crontab(hour=10, minute=0, day_of_week="*")
 midnights = crontab(hour=0, minute=0, day_of_week="*")
+nightly = crontab(hour=2, minute=0, day_of_week="*")
 daily_workweek = crontab(hour=7, minute=0, day_of_week="1-5")
 
 every_minute = crontab(minute="*/1")  # Pour tester en local
@@ -44,6 +45,10 @@ app.conf.beat_schedule = {
     "approve_declarations": {
         "task": "config.tasks.approve_declarations",
         "schedule": daily_workweek,
+    },
+    "update_market_ready_counts": {
+        "task": "config.tasks.update_market_ready_counts",
+        "schedule": nightly,
     },
     # "export_datasets_to_data_gouv": {
     #     "task": "config.tasks.export_datasets_to_data_gouv",
