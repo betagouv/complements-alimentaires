@@ -217,6 +217,7 @@ const commonApiParams = computed(() => {
   if (searchTermProduct.value) apiParams += `&search_name=${searchTermProduct.value}`
   if (searchTermBrand.value) apiParams += `&search_brand=${searchTermBrand.value}`
   if (searchTermCompany.value) apiParams += `&search_company=${searchTermCompany.value}`
+  if (submissionDateAfter.value) apiParams += `&submission_date_after=${submissionDateAfter.value}`
   if (doses.value) for (let i = 0; i < doses.value.length; i++) apiParams += `&dose=${doses.value[i].split("****")[0]}`
   return apiParams
 })
