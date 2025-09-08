@@ -1,10 +1,8 @@
 import csv
-from datetime import datetime
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 import json
 import logging
-import os
 import pandas as pd
 
 from . import datagouv
@@ -26,10 +24,11 @@ class OpenDataDeclarationsETL:
         self.queryset = Declaration.objects.filter(status=Declaration.DeclarationStatus.AUTHORIZED).order_by(
             "-modification_date"
         )
-        today = datetime.now().strftime(
-            "%Y%m%d%H%M"
-        )  # inclure le temps si jamais la commande est faite plusieurs fois dans une journée
-        self.today_filename = f"{self.dataset_name}_{today}.csv"
+        self.filename = f"{self.dataset_name}.csv"
+
+        # supprimer l'ancien fichier pour preparer l'action d'append du load_dataframe
+        if default_storage.exists(self.filename):
+            default_storage.delete(self.filename)
 
     def export(self, batch_size):
         # TODO: try/except at each stage in the process? For fine grained debugging
@@ -71,8 +70,8 @@ class OpenDataDeclarationsETL:
 
     # sauvegarder le dataframe dans le fichier pour l'export
     def load_dataframe(self, dataframe):
-        file_exists = os.path.exists(default_storage.path(self.today_filename))
-        with default_storage.open(self.today_filename, "a") as csv_file:
+        file_exists = default_storage.exists(self.filename)
+        with default_storage.open(self.filename, "a") as csv_file:
             dataframe.to_csv(
                 csv_file,
                 header=not file_exists,
@@ -86,5 +85,4 @@ class OpenDataDeclarationsETL:
             )
 
     def publish(self):
-        # TODO: check how the URL sent to open data matches the self.today_filename
         datagouv.update_resources(self.dataset_name)
