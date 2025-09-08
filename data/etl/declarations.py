@@ -18,7 +18,6 @@ class OpenDataDeclarationsETL:
         super().__init__()
         self.dataset_name = "declarations"
         self.schema = json.load(open("data/schemas/schema_declarations.json"))
-        # self.schema_url = "https://raw.githubusercontent.com/betagouv/complements-alimentaires/refs/heads/main/data/schemas/schema_declarations.json"
         self.columns = [i["name"] for i in self.schema["fields"]]
         self.serializer = OpenDataDeclarationSerializer
         self.queryset = Declaration.objects.filter(status=Declaration.DeclarationStatus.AUTHORIZED).order_by(
