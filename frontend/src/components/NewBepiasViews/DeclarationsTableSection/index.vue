@@ -2,11 +2,12 @@
   <div>
     <!-- Zone de recherche -->
     <div class="md:flex justify-between">
-      <div class="md:w-1/3 lg:w-2/5 pt-1">
-        <DsfrFieldset class="mb-0! max-w-2xl">
+      <div class="md:w-4/5 lg:w-3/5 pt-1 md:flex gap-0 sm:gap-4 md:gap-8">
+        <DsfrFieldset class="mb-0! grow">
           <ElementAutocomplete
             v-model="searchTerm"
-            label="Rechercher par produit, marque, entreprise ou ingrédient"
+            label="Recherche"
+            hint="Par produit, marque, entreprise ou ingrédient"
             label-visible
             class="max-w-2xl"
             @selected="addIngredient"
@@ -20,8 +21,20 @@
             :required="false"
           />
         </DsfrFieldset>
+        <div class="md:max-w-sm">
+          <DsfrInput
+            type="date"
+            label="Produits ayant été déclarés à partir de"
+            label-visible
+            hint="Peu importe l'aboutissement de l'instruction"
+            :modelValue="submissionDateAfter"
+            @update:modelValue="updateSubmissionDateAfter"
+            class="text-sm!"
+          />
+        </div>
       </div>
-      <div class="mb-4 md:mb-0" v-if="data?.results?.length && data?.results?.length <= MAX_EXPORT_RESULTS">
+
+      <div class="my-4 md:my-0" v-if="data?.results?.length && data?.results?.length <= MAX_EXPORT_RESULTS">
         <a :href="excelUrl" download class="bg-none">
           <DsfrButton label="Télécharger" secondary size="sm" icon="ri-file-excel-2-fill"></DsfrButton>
         </a>
@@ -56,7 +69,7 @@
     </div>
 
     <DsfrAccordionsGroup v-model="activeAccordion">
-      <DsfrAccordion title="Filtrer les déclarations">
+      <DsfrAccordion title="Filtres avancés">
         <div class="grid grid-cols-4 gap-0 sm:gap-2 md:gap-4">
           <div class="col-span-4 sm:col-span-2 md:col-span-1">
             <DsfrToggleSwitch
@@ -150,6 +163,7 @@ import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
 import { typesMapping } from "@/utils/mappings"
 import IngredientFilterAccordeon from "./IngredientFilterAccordeon"
 import PaginatedExcelDownload from "@/components/PaginatedExcelDownload"
+import { isoToPrettyDate } from "@/utils/date"
 
 const MAX_EXPORT_RESULTS = 2000
 const exportModalOpened = ref(false)
@@ -187,6 +201,8 @@ const showPagination = computed(() => data.value?.count > data.value?.results?.l
 
 const doses = computed(() => (route.query.doses ? JSON.parse(decodeURIComponent(route.query.doses)) : []))
 
+const submissionDateAfter = computed(() => route.query.aPartirDe || null)
+
 // Obtention de la donnée via API
 const commonApiParams = computed(() => {
   let apiParams = `ordering=${ordering.value}`
@@ -201,6 +217,7 @@ const commonApiParams = computed(() => {
   if (searchTermProduct.value) apiParams += `&search_name=${searchTermProduct.value}`
   if (searchTermBrand.value) apiParams += `&search_brand=${searchTermBrand.value}`
   if (searchTermCompany.value) apiParams += `&search_company=${searchTermCompany.value}`
+  if (submissionDateAfter.value) apiParams += `&submission_date_after=${submissionDateAfter.value}`
   if (doses.value) for (let i = 0; i < doses.value.length; i++) apiParams += `&dose=${doses.value[i].split("****")[0]}`
   return apiParams
 })
@@ -233,6 +250,8 @@ const searchByBrand = (term) => updateQuery({ rechercheMarque: term }) && clearS
 const searchByCompany = (term) => updateQuery({ rechercheEntreprise: term }) && clearSearch()
 
 const updateDoses = (newValue) => updateQuery({ doses: encodeURIComponent(JSON.stringify(newValue)) })
+
+const updateSubmissionDateAfter = (newDate) => updateQuery({ aPartirDe: newDate })
 
 const clearSearch = () => (searchTerm.value = "")
 
@@ -298,6 +317,11 @@ const activeFilters = computed(() => {
     filters.push({
       text: `Enterprise contenant « ${searchTermCompany.value} »`,
       callback: () => searchByCompany(""),
+    })
+  if (submissionDateAfter.value)
+    filters.push({
+      text: `Déclarés à partir du ${isoToPrettyDate(submissionDateAfter.value)}`,
+      callback: () => updateSubmissionDateAfter(null),
     })
   if (doses.value.length > 0) {
     for (let i = 0; i < doses.value.length; i++) {
