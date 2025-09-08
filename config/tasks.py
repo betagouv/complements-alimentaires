@@ -196,10 +196,14 @@ def approve_declarations():
 
 @app.task
 def export_datasets_to_data_gouv(publish=True, batch_size=50000):
-    etl = OpenDataDeclarationsETL()
-    etl.export(batch_size)
-    if publish:
-        etl.publish()
+    try:
+        etl = OpenDataDeclarationsETL()
+        etl.export(batch_size)
+        if publish:
+            etl.publish()
+    except Exception as e:
+        logger.error("Task failed: export_datasets_to_data_gouv")
+        logger.exception(e)
 
 
 @app.task

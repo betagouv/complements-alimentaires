@@ -30,14 +30,13 @@ class OpenDataDeclarationsETL:
             default_storage.delete(self.filename)
 
     def export(self, batch_size):
-        # TODO: try/except at each stage in the process? For fine grained debugging
-        # alternatively, try/except within processes, raising errors with extra info on what step we're at
+        logger.info("OpenDataDeclarationsETL: Starting export")
         paginated_queryset = self.extract_paginated_queryset(batch_size)
         for page_num in paginated_queryset.page_range:
             page_queryset = paginated_queryset.page(page_num).object_list
             batched_df = self.transform_queryset(page_queryset)
             self.load_dataframe(batched_df)
-        # TODO: log?
+        logger.info("OpenDataDeclarationsETL: Export completed")
 
     def extract_paginated_queryset(self, batch_size):
         return Paginator(self.queryset, batch_size)
