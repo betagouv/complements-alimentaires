@@ -614,7 +614,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
                 "unite": declared_substance.unit.name,
             }
             if declared_substance.substance and declared_substance.quantity and declared_substance.unit
-            else {}
+            else {}  # TODO: this results in a list of empty objects sometimes, maybe better to filter or return partial objects?
             for declared_substance in obj.declared_substances.all()
         ]
 

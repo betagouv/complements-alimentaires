@@ -400,8 +400,10 @@ class ControllerDeclarationRetrieveView(RetrieveAPIView):
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT).distinct()
 
 
+# TODO: I think this entire view is an unnecessary step - this is for API endpoint responses.
 class OpenDataDeclarationsListView(GenericDeclarationsListView):
     serializer_class = OpenDataDeclarationSerializer
+    # TODO: can filter and ordering be removed? I doubt they are used
     filter_backends = [django_filters.DjangoFilterBackend]
     ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
 
