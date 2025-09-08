@@ -49,14 +49,8 @@ class OpenDataDeclarationsETL:
         serialized_queryset = self.serializer(queryset, many=True).data
 
         dataframe = pd.DataFrame(serialized_queryset)
-        # Code temporaire en attendant d'avoir tous les champs du schéma
-        # Le code gère l'ordre de colonnes aussi
-        columns_to_keep = []
-        for col in self.columns:
-            if col in dataframe.columns:
-                columns_to_keep.append(col)
-        dataframe = dataframe[columns_to_keep]
-        # ---------------------------------------------------
+        # spécifier l'ordre de colonnes
+        dataframe = dataframe[self.columns]
         dataframe = dataframe.replace({"\n": " ", "\r": " "}, regex=True)
 
         # transforme les objects en json strings pour éviter de créer un csv avec des json string
