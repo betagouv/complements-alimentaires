@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { computed, onMounted, watch } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
@@ -41,19 +41,27 @@ const store = useRootStore()
 store.fetchDeclarationFieldsData()
 
 const route = useRoute()
+const router = useRouter()
 
 const breadcrumbs = computed(() => {
-  return [
-    { to: { name: "DashboardPage" }, text: "Tableau de bord" },
-    { to: { name: "CompanySearchPage" }, text: "Recherche entreprises" },
-    company.value
-      ? {
-          to: { name: "CompanyDetails", params: { companyId: company.value.id } },
-          text: company.value.socialName || "Entreprise",
-        }
-      : { text: "Entreprise" },
-    { text: declaration.value?.name || "Complément alimentaire" },
-  ]
+  const routes = [{ to: { name: "DashboardPage" }, text: "Tableau de bord" }]
+  if (router.getPreviousRoute().value?.name === "CompanyDetails") {
+    routes.push({ to: { name: "CompanySearchPage" }, text: "Recherche entreprises" })
+    routes.push(
+      company.value
+        ? {
+            to: { name: "CompanyDetails", params: { companyId: company.value.id } },
+            text: company.value.socialName || "Entreprise",
+          }
+        : { text: "Entreprise" }
+    )
+  } else {
+    routes.push({ to: { name: "DeclarationSearchPage" }, text: "Recherche compléments alimentaires" })
+  }
+
+  routes.push({ text: declaration.value?.name || "Complément alimentaire" })
+
+  return routes
 })
 
 const props = defineProps({ declarationId: String })

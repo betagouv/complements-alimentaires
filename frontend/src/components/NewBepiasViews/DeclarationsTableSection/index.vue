@@ -118,8 +118,6 @@
       </DsfrAccordion>
     </DsfrAccordionsGroup>
 
-    <hr class="mt-6 mb-0" />
-
     <IngredientFilterAccordeon
       v-for="(dose, idx) in doses"
       @update:modelValue="updateDoseStrings(idx, $event)"
