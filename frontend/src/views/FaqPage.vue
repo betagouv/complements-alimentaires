@@ -261,9 +261,12 @@
           </p>
           <p>
             <span aria-hidden="true">💡</span>
-            L'icône "commentaire" en couleur bleue vous permet d'accéder aux informations disponibles sur chaque
-            substance, telles que la quantité maximale autorisée ou les recommandations spécifiques pour certaines
-            populations.
+            L'icône d'une bulle de texte en couleur bleue,
+            <v-icon name="ri-chat-4-line" color="rgb(0, 0, 145)"></v-icon>
+            , vous permet d'accéder aux informations disponibles sur chaque substance, telles que la quantité maximale
+            autorisée ou les recommandations spécifiques pour certaines populations. Quand l'icône est gris et barrée,
+            <v-icon name="ri-chat-off-line" color="#AAA"></v-icon>
+            , il n'y a pas des informations supplementaires à afficher.
           </p>
           <p>
             <span aria-hidden="true">🚀</span>
