@@ -8,8 +8,8 @@
       ]"
     />
 
-    <div class="border p-4 mb-2 sm:flex gap-8 items-baseline filters">
-      <div class="pr-4 border-r md:min-w-lg">
+    <div class="border p-4 mb-2 md:flex gap-4 items-baseline filters">
+      <div class="md:min-w-lg">
         <DsfrFieldset class="mb-0!">
           <DsfrSearchBar
             v-model="searchTerm"
@@ -19,7 +19,7 @@
             @update:modelValue="(val) => val === '' && search()"
           />
         </DsfrFieldset>
-        <div class="sm:flex gap-8 items-baseline">
+        <div class="md:flex gap-4 items-baseline">
           <DsfrFieldset class="mb-0!">
             <div>
               <DsfrInputGroup>
@@ -35,7 +35,7 @@
             </div>
           </DsfrFieldset>
           <DsfrFieldset class="mb-0!">
-            <div class="md:border-l md:pl-4">
+            <div>
               <DsfrInputGroup>
                 <DsfrSelect
                   label="Personne assignée"
@@ -48,9 +48,19 @@
               </DsfrInputGroup>
             </div>
           </DsfrFieldset>
+          <div>
+            <DsfrSelect
+              label="Trier par"
+              defaultUnselectedText=""
+              :modelValue="ordering"
+              @update:modelValue="updateOrdering"
+              :options="orderingOptions"
+              class="text-sm!"
+            />
+          </div>
         </div>
       </div>
-      <div class="pb-4">
+      <div class="pb-4 max-w-sm mt-4 md:mt-0 md:border-l md:pl-4">
         <StatusFilter
           :exclude="['DRAFT']"
           @updateFilter="updateStatusFilter"
@@ -119,18 +129,20 @@ const page = computed(() => parseInt(route.query.page))
 const filteredStatus = computed(() => route.query.status)
 const company = computed(() => (route.query.company ? parseInt(route.query.company) : ""))
 const author = computed(() => (route.query.author ? parseInt(route.query.author) : ""))
+const ordering = computed(() => route.query.triage)
 
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 const updateStatusFilter = (status) => updateQuery({ status })
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 const updateCompany = (newValue) => updateQuery({ company: newValue })
 const updateAuthor = (newValue) => updateQuery({ author: newValue })
+const updateOrdering = (newValue) => updateQuery({ triage: newValue })
 
 const url = computed(() => {
   let statusQuery = filteredStatus.value
   if (filteredStatus.value?.indexOf("INSTRUCTION") > -1)
     statusQuery += `${statusQuery.length ? "," : ""}AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA`
-  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate&company=${company.value}&author=${author.value}&search=${searchTerm.value}`
+  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate&company=${company.value}&author=${author.value}&search=${searchTerm.value}&ordering=${ordering.value}`
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -143,7 +155,16 @@ const search = () => {
   fetchSearchResults()
 }
 
-watch([page, filteredStatus, company, author], fetchSearchResults)
+const orderingOptions = [
+  { value: "name", text: "Nom du produit" },
+  { value: "-name", text: "Nom du produit (descendant)" },
+  { value: "modificationDate", text: "Date de modification" },
+  { value: "-modificationDate", text: "Date de modification (descendant)" },
+  { value: "creationDate", text: "Date de création" },
+  { value: "-creationDate", text: "Date de création (descendant)" },
+]
+
+watch([page, filteredStatus, company, author, ordering], fetchSearchResults)
 </script>
 
 <style scoped>
