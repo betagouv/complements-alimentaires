@@ -24,14 +24,12 @@
         </ul>
       </div>
     </DsfrModal>
-    <DsfrTooltip ref="tooltip" :onHover="true" :content="tooltipContent" class="tooltip-comments">
-      <button @click="infoModalOpened = true" :disabled="!hasInformationToShow">
-        <v-icon
-          :name="hasInformationToShow ? 'ri-chat-4-line' : 'ri-chat-off-line'"
-          :color="hasInformationToShow ? 'rgb(0, 0, 145)' : '#AAA'"
-        ></v-icon>
-      </button>
-    </DsfrTooltip>
+    <button @click="infoModalOpened = true" :disabled="!hasInformationToShow" :title="moreInfoButtonTitle">
+      <v-icon
+        :name="hasInformationToShow ? 'ri-chat-4-line' : 'ri-chat-off-line'"
+        :color="hasInformationToShow ? 'rgb(0, 0, 145)' : '#AAA'"
+      ></v-icon>
+    </button>
   </div>
 </template>
 
@@ -66,16 +64,16 @@ const maxQuantitiesString = computed(() => stringifyMaxQuantities(maxQuantities.
 
 const constitutingSubstances = computed(() => element.value?.substances)
 
-const tooltipContent = computed(() => {
-  let content = ""
+const moreInfoButtonTitle = computed(() => {
+  if (!hasInformationToShow.value) return "Pas d'informations supplementaires sur l'ingrédient " + elementName.value
+  let content = "Cliquez pour voir plus d'informations sur l'ingrédient " + elementName.value + ". "
   if (hasMaxQuantities.value) content += `Quantités maximales : ${maxQuantitiesString.value}. `
   if (element.value?.publicComments) content += `Commentaires : ${element.value?.publicComments}. `
   if (element.value?.privateComments && !props.hidePrivateComments)
     content += `Commentaires privés : ${element.value?.privateComments}. `
-  content = content || "Pas de commentaires. "
 
   if (constitutingSubstances.value && constitutingSubstances.value.length)
-    content += "Cliquez pour plus d'informations sur les substances contenues."
+    content += "Cet ingrédient contient des substances."
 
   return content
 })
@@ -89,15 +87,3 @@ const hasInformationToShow = computed(
     constitutingSubstances.value?.length
 )
 </script>
-
-<style scoped>
-@reference "../styles/index.css";
-
-/* Il est nécessaire de surcharger certains styles di DSFRTooltip car un element a[href] est ajouté */
-div :deep(.tooltip-comments) {
-  @apply bg-none!;
-  @apply flex!;
-  @apply w-full!;
-  @apply justify-center!;
-}
-</style>
