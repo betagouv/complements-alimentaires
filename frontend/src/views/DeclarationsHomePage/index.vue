@@ -27,7 +27,7 @@
           />
         </DsfrFieldset>
 
-        <div class="sm:flex gap-4 items-baseline">
+        <div class="sm:flex gap-4 items-baseline mb-4">
           <DsfrFieldset class="mb-0!">
             <div>
               <DsfrInputGroup>
@@ -60,14 +60,16 @@
             <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
           </div>
           <div>
-            <DsfrSelect
-              label="Trier par"
-              defaultUnselectedText=""
-              :modelValue="ordering"
-              @update:modelValue="updateOrdering"
-              :options="orderingOptionsPro"
-              class="text-sm!"
-            />
+            <DsfrInputGroup>
+              <DsfrSelect
+                label="Trier par"
+                defaultUnselectedText=""
+                :modelValue="ordering"
+                @update:modelValue="updateOrdering"
+                :options="orderingOptionsPro"
+                class="text-sm!"
+              />
+            </DsfrInputGroup>
           </div>
         </div>
       </div>
@@ -181,6 +183,9 @@ watch([page, filteredStatus, company, author, limit, ordering], fetchSearchResul
 @reference "../../styles/index.css";
 
 .filters :deep(.fr-fieldset__element) {
+  @apply mb-0!;
+}
+.filters :deep(.fr-select-group) {
   @apply mb-0!;
 }
 </style>

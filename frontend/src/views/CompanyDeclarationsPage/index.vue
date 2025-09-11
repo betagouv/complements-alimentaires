@@ -8,7 +8,7 @@
       ]"
     />
 
-    <div class="border p-4 mb-2 md:flex gap-4 items-baseline filters">
+    <div class="border px-4 pt-4 mb-2 md:flex gap-4 items-baseline filters">
       <div class="md:min-w-lg">
         <DsfrFieldset class="mb-0!">
           <DsfrSearchBar
@@ -49,14 +49,16 @@
             </div>
           </DsfrFieldset>
           <div>
-            <DsfrSelect
-              label="Trier par"
-              defaultUnselectedText=""
-              :modelValue="ordering"
-              @update:modelValue="updateOrdering"
-              :options="orderingOptionsPro"
-              class="text-sm!"
-            />
+            <DsfrInputGroup>
+              <DsfrSelect
+                label="Trier par"
+                defaultUnselectedText=""
+                :modelValue="ordering"
+                @update:modelValue="updateOrdering"
+                :options="orderingOptionsPro"
+                class="text-sm!"
+              />
+            </DsfrInputGroup>
           </div>
         </div>
       </div>
