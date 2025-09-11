@@ -50,7 +50,7 @@ const isController = computed(() => loggedUser.value?.globalRoles.some((x) => x.
 const emptyRoles = computed(() => !isSupervisor.value && !isDeclarant.value && !isInstructor.value)
 
 const isSupervisorForActiveCompany = computed(() =>
-  companies?.value.some((c) => +c.id === +route.query.company && c?.roles?.some((x) => x.name === "SupervisorRole"))
+  companies?.value.some((c) => +c.id === +route.query.company && c.roles?.some((x) => x.name === "SupervisorRole"))
 )
 
 // Si on voulait lier le bloc délcarant.e à l'entreprise active, on pourrait utiliser cette
