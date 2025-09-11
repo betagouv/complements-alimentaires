@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <table role="presentation" class="w-full">
     <SummaryInfoSegment
       v-if="!!payload.teleicareDeclarationNumber"
       label="Identifiant Teleicare"
@@ -20,7 +20,7 @@
     <SummaryInfoSegment label="Conditionnement" :value="payload.conditioning" />
     <SummaryInfoSegment label="Durabilité minimale / DLUO (en mois)" :value="payload.minimumDuration" />
     <SummaryInfoSegment label="Objectifs / effets" :value="effectsNames" />
-  </div>
+  </table>
 </template>
 
 <script setup>
