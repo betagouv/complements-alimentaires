@@ -228,6 +228,16 @@ export const orderingOptions = [
   { value: "-responseLimitDate", text: "Date limite de réponse (descendant)" },
 ]
 
+export const orderingOptionsPro = [
+  { value: "", text: "Triage par défaut" },
+  { value: "name", text: "Nom du produit" },
+  { value: "-name", text: "Nom du produit (descendant)" },
+  { value: "modificationDate", text: "Date de modification" },
+  { value: "-modificationDate", text: "Date de modification (descendant)" },
+  { value: "creationDate", text: "Date de création" },
+  { value: "-creationDate", text: "Date de création (descendant)" },
+]
+
 export const articleOptionsWith15Subtypes = [
   { value: "ART_15", text: "Article 15", shortText: "15" },
   { value: "ART_15_WARNING", text: "Article 15 vigilance", shortText: "15 vig." },
