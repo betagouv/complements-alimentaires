@@ -49,7 +49,9 @@ const isVisor = computed(() => loggedUser.value?.globalRoles.some((x) => x.name 
 const isController = computed(() => loggedUser.value?.globalRoles.some((x) => x.name === "ControlRole"))
 const emptyRoles = computed(() => !isSupervisor.value && !isDeclarant.value && !isInstructor.value)
 
-const isSupervisorForActiveCompany = computed(() => company.value?.roles?.some((x) => x.name === "SupervisorRole"))
+const isSupervisorForActiveCompany = computed(() =>
+  companies?.value.some((c) => +c.id === +route.query.company && c.roles?.some((x) => x.name === "SupervisorRole"))
+)
 
 // Si on voulait lier le bloc délcarant.e à l'entreprise active, on pourrait utiliser cette
 // computed var dans le v-if de ce bloc
