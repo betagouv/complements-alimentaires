@@ -271,7 +271,7 @@ class DeclarationForm(ChangeReasonFormMixin):
 class DeclarationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
     form = DeclarationForm
     list_display = ("id", "name", "status", "company", "author")
-    list_filter = ("status", "company", "author")
+    list_filter = ("status",)
     list_select_related = ["author", "company"]
     readonly_fields = ("declared_in_teleicare", "teleicare_declaration_number")
 
