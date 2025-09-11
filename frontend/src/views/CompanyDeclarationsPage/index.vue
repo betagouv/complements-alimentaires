@@ -164,10 +164,10 @@ watch([page, filteredStatus, company, author, ordering], fetchSearchResults)
 <style scoped>
 @reference "../../styles/index.css";
 
-.filters :deep(.fr-select-group) {
-  @apply mb-0!;
+.filters :deep(.fr-input-group) {
+  @apply mb-0 mt-2;
 }
-.filters :deep(.fr-fieldset__element) {
-  @apply mb-0!;
+.filters :deep(.fr-select-group) {
+  @apply mb-2;
 }
 </style>
