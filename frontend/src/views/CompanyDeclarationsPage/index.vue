@@ -54,7 +54,7 @@
               defaultUnselectedText=""
               :modelValue="ordering"
               @update:modelValue="updateOrdering"
-              :options="orderingOptions"
+              :options="orderingOptionsPro"
               class="text-sm!"
             />
           </div>
@@ -97,6 +97,7 @@ import { getPagesForPagination } from "@/utils/components"
 import CompanyDeclarationsTable from "./CompanyDeclarationsTable"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import StatusFilter from "@/components/StatusFilter.vue"
+import { orderingOptionsPro } from "@/utils/mappings"
 
 const route = useRoute()
 const store = useRootStore()
@@ -154,15 +155,6 @@ const search = () => {
   updateQuery({ recherche: searchTerm.value })
   fetchSearchResults()
 }
-
-const orderingOptions = [
-  { value: "name", text: "Nom du produit" },
-  { value: "-name", text: "Nom du produit (descendant)" },
-  { value: "modificationDate", text: "Date de modification" },
-  { value: "-modificationDate", text: "Date de modification (descendant)" },
-  { value: "creationDate", text: "Date de création" },
-  { value: "-creationDate", text: "Date de création (descendant)" },
-]
 
 watch([page, filteredStatus, company, author, ordering], fetchSearchResults)
 </script>

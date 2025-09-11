@@ -65,7 +65,7 @@
               defaultUnselectedText=""
               :modelValue="ordering"
               @update:modelValue="updateOrdering"
-              :options="orderingOptions"
+              :options="orderingOptionsPro"
               class="text-sm!"
             />
           </div>
@@ -106,6 +106,7 @@ import { useFetch } from "@vueuse/core"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { getPagesForPagination } from "@/utils/components"
+import { orderingOptionsPro } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import StatusFilter from "@/components/StatusFilter"
 
@@ -172,15 +173,6 @@ const search = () => {
   updateQuery({ recherche: searchTerm.value })
   fetchSearchResults()
 }
-
-const orderingOptions = [
-  { value: "name", text: "Nom du produit" },
-  { value: "-name", text: "Nom du produit (descendant)" },
-  { value: "modificationDate", text: "Date de modification" },
-  { value: "-modificationDate", text: "Date de modification (descendant)" },
-  { value: "creationDate", text: "Date de création" },
-  { value: "-creationDate", text: "Date de création (descendant)" },
-]
 
 watch([page, filteredStatus, company, author, limit, ordering], fetchSearchResults)
 </script>
