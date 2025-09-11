@@ -8,7 +8,7 @@ from django.test import TestCase
 
 import pandas as pd
 
-from data.etl.transformer_loader import ETL_OPEN_DATA_DECLARATIONS
+from data.etl.declarations import OpenDataDeclarationsETL
 from data.factories import (
     AuthorizedDeclarationFactory,
     AwaitingInstructionDeclarationFactory,
@@ -32,8 +32,13 @@ class IngredientTestCase(TestCase):
     def setUp(self):
         # default_storage est FileSystemStorage dans l'environnement de test
 
-        self.etl_test = ETL_OPEN_DATA_DECLARATIONS()
+        self.etl_test = OpenDataDeclarationsETL()
         self.etl_test.dataset_name = "test_declarations"
+
+    def tearDown(self):
+        # supprime le fichier qui vient d'être créé
+        if default_storage.exists(self.etl_test.filename):
+            default_storage.delete(self.etl_test.filename)
 
     def test_declaration_jdd_contains_only_authorized_declarations(self):
         AuthorizedDeclarationFactory()
@@ -45,13 +50,10 @@ class IngredientTestCase(TestCase):
 
         self.assertEqual(Declaration.objects.all().count(), 6)
 
-        self.etl_test.extract_dataset()
-        self.etl_test.transform_dataset()
-        self.etl_test.load_dataset()
+        # tester l'export avec un taille de batch d'une déclaration
+        self.etl_test.export(1)
 
-        open_data_jdd = pd.read_csv(
-            os.path.join(settings.MEDIA_ROOT, self.etl_test.dataset_name + ".csv"), delimiter=";"
-        )
+        open_data_jdd = pd.read_csv(os.path.join(settings.MEDIA_ROOT, self.etl_test.filename), delimiter=";")
         self.assertEqual(len(open_data_jdd), 1)
 
     @mock.patch("data.etl.datagouv.update_resources")
@@ -86,13 +88,10 @@ class IngredientTestCase(TestCase):
             quantity=5.0,
         )
 
-        self.etl_test.extract_dataset()
-        self.etl_test.transform_dataset()
-        self.etl_test.load_dataset()
+        # tester l'export avec un taille de batch d'une déclaration
+        self.etl_test.export(1)
 
-        open_data_jdd = pd.read_csv(
-            os.path.join(settings.MEDIA_ROOT, self.etl_test.dataset_name + ".csv"), delimiter=";"
-        )
+        open_data_jdd = pd.read_csv(os.path.join(settings.MEDIA_ROOT, self.etl_test.filename), delimiter=";")
         self.assertEqual(len(open_data_jdd), 3)
 
         def is_vitamin_c(substance):
@@ -102,6 +101,3 @@ class IngredientTestCase(TestCase):
         substance_loaded = json.loads(next(x for x in open_data_jdd["substances"] if is_vitamin_c(x)))
         self.assertEqual(substance_loaded[0]["quantité_par_djr"], 10)
         self.assertEqual(substance_loaded[0]["unite"], "mg")
-
-        # supprime le fichier qui vient d'être créé
-        default_storage.delete(self.etl_test.dataset_name + ".csv")

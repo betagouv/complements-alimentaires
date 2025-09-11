@@ -13,7 +13,7 @@ from viewflow import fsm
 
 from api.utils.simplified_status import SimplifiedStatusHelper
 from config import email
-from data.etl.transformer_loader import ETL_OPEN_DATA_DECLARATIONS
+from data.etl.declarations import OpenDataDeclarationsETL
 from data.models import Company, Declaration, Snapshot
 
 from .celery import app
@@ -195,11 +195,15 @@ def approve_declarations():
 
 
 @app.task
-def export_datasets_to_data_gouv():
-    etl = ETL_OPEN_DATA_DECLARATIONS()
-    etl.extract_dataset()
-    etl.transform_dataset()
-    etl.load_dataset()
+def export_datasets_to_data_gouv(publish=True, batch_size=50000):
+    try:
+        etl = OpenDataDeclarationsETL()
+        etl.export(batch_size)
+        if publish:
+            etl.publish()
+    except Exception as e:
+        logger.error("Task failed: export_datasets_to_data_gouv")
+        logger.exception(e)
 
 
 @app.task
