@@ -27,7 +27,7 @@
           />
         </DsfrFieldset>
 
-        <div class="sm:flex gap-4 items-baseline mb-4">
+        <div class="sm:flex gap-4 items-baseline">
           <DsfrFieldset class="mb-0!">
             <div>
               <DsfrInputGroup>
@@ -182,10 +182,10 @@ watch([page, filteredStatus, company, author, limit, ordering], fetchSearchResul
 <style scoped>
 @reference "../../styles/index.css";
 
-.filters :deep(.fr-fieldset__element) {
-  @apply mb-0!;
+.filters :deep(.fr-input-group) {
+  @apply mb-0 mt-2;
 }
 .filters :deep(.fr-select-group) {
-  @apply mb-0!;
+  @apply mb-2;
 }
 </style>

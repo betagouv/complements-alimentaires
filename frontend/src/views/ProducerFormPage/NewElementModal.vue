@@ -1,5 +1,12 @@
 <template>
-  <DsfrButton label="Créer un nouvel ingrédient" secondary size="sm" @click="opened = true" ref="modalOrigin" />
+  <DsfrButton
+    label="Créer un nouvel ingrédient"
+    secondary
+    size="sm"
+    @click="opened = true"
+    ref="modalOrigin"
+    class="mr-2"
+  />
   <DsfrTooltip class="whitespace-pre-wrap" :content="simpleDescription" />
   <DsfrModal :actions="actions" ref="modal" @close="close" :opened="opened" title="Nouvel ingrédient">
     <DsfrAlert
