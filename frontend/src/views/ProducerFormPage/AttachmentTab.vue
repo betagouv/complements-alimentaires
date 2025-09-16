@@ -2,6 +2,17 @@
   <div>
     <DsfrAlert class="mb-4" small type="error" v-if="validationError">{{ validationError }}</DsfrAlert>
     <SectionTitle title="Étiquetage" sizeTag="h6" icon="ri-price-tag-2-fill" />
+    <DsfrAlert
+      v-if="containsAlcohol"
+      class="mb-4"
+      title="Votre complément alimentaire contient de l'alcool en tant qu'ingrédient"
+      type="warning"
+    >
+      <p>
+        Avez-vous bien pensé à porter l'avertissement "déconseillé aux enfants de moins de 12 ans, femmes enceintes et
+        allaitantes" sur votre étiquetage ?
+      </p>
+    </DsfrAlert>
     <DsfrInputGroup>
       <DsfrFileUpload
         label="Veuillez nous transmettre l'étiquetage de votre produit (format PDF ou image)"
@@ -36,6 +47,8 @@
 
 <script setup>
 import { ref, computed } from "vue"
+import { useRootStore } from "@/stores/root"
+import { storeToRefs } from "pinia"
 import FileGrid from "./FileGrid"
 import SectionTitle from "@/components/SectionTitle"
 import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNotice"
@@ -43,6 +56,8 @@ import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNot
 const acceptedTypes = ["image/jpeg", "image/gif", "image/png", "application/pdf"]
 const props = defineProps(["externalResults"])
 const payload = defineModel()
+
+const { preparations } = storeToRefs(useRootStore())
 
 const needsEuProof = computed(() => {
   return []
@@ -120,4 +135,10 @@ const toBase64 = (file) => {
     reader.onerror = reject
   })
 }
+
+const containsAlcohol = computed(() => {
+  const plantPreparationsUsed = payload.value.declaredPlants.map((plant) => plant.preparation)
+  const preparationsInfo = preparations.value.filter((p) => plantPreparationsUsed.includes(p.id))
+  return preparationsInfo.some((p) => p.containsAlcohol)
+})
 </script>
