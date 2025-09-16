@@ -229,4 +229,4 @@ Pour tester la création du fichier de déclarations autorisées qui est envoyé
 
 Remplacer `<BATCH_SIZE>` avec un chiffre du taille de batch voulu.
 
-Le fichier sera sauvegarder dans `default_storage.path("declarations_X")` où `X` est le jour et heure du lancement de la tâche. En Docker en local c'est `/app/media/declarations_X.csv`
+Le fichier sera sauvegardé dans `default_storage.path("declarations_X")` où `X` est le jour et heure du lancement de la tâche. Avec Docker en local c'est `/app/media/declarations_X.csv`
