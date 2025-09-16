@@ -50,10 +50,10 @@ app.conf.beat_schedule = {
         "task": "config.tasks.update_market_ready_counts",
         "schedule": nightly,
     },
-    # "export_datasets_to_data_gouv": {
-    #     "task": "config.tasks.export_datasets_to_data_gouv",
-    #     "schedule": midnights,
-    # },
+    "export_datasets_to_data_gouv": {
+        "task": "config.tasks.export_datasets_to_data_gouv",
+        "schedule": midnights,
+    },
 }
 
 app.conf.timezone = "Europe/Paris"
