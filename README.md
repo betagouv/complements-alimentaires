@@ -220,3 +220,13 @@ Starting cache update...
 2025-09-02 13:47:57,143 config.tasks INFO     Cache update done!
 Synchronous cache refresh completed!
 ```
+
+## Test création fichier déclarations open data
+
+Pour tester la création du fichier de déclarations autorisées qui est envoyé à OpenData, il y a la commande
+
+`python manage.py etl <BATCH_SIZE>`
+
+Remplacer `<BATCH_SIZE>` avec un chiffre du taille de batch voulu.
+
+Le fichier sera sauvegardé dans `default_storage.path("declarations_X")` où `X` est le jour et heure du lancement de la tâche. Avec Docker en local c'est `/app/media/declarations_X.csv`
