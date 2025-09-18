@@ -195,10 +195,10 @@ def approve_declarations():
 
 
 @app.task
-def export_datasets_to_data_gouv(publish=True, batch_size=50000):
+def export_datasets_to_data_gouv(publish=True):
     try:
         etl = OpenDataDeclarationsETL()
-        etl.export(batch_size)
+        etl.export()
         if publish:
             etl.publish()
     except Exception as e:

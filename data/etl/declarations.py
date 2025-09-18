@@ -1,4 +1,5 @@
 import csv
+from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
 import json
@@ -29,16 +30,21 @@ class OpenDataDeclarationsETL:
         if default_storage.exists(self.filename):
             default_storage.delete(self.filename)
 
-    def export(self, batch_size):
+    def export(self):
         logger.info("OpenDataDeclarationsETL: Starting export")
-        paginated_queryset = self.extract_paginated_queryset(batch_size)
+        paginated_queryset = self.extract_paginated_queryset()
+        logger.info(f"OpenDataDeclarationsETL: {paginated_queryset.num_pages} batches to process")
         for page_num in paginated_queryset.page_range:
             page_queryset = paginated_queryset.page(page_num).object_list
             batched_df = self.transform_queryset(page_queryset)
             self.load_dataframe(batched_df)
+            logger.info(f"OpenDataDeclarationsETL: batch {page_num} complete")
         logger.info("OpenDataDeclarationsETL: Export completed")
 
-    def extract_paginated_queryset(self, batch_size):
+    def extract_paginated_queryset(self):
+        batch_size = settings.DECLARATIONS_EXPORT_BATCH_SIZE
+        if not batch_size:
+            raise Exception("DECLARATIONS_EXPORT_BATCH_SIZE must be defined as an environment variable")
         return Paginator(self.queryset, batch_size)
 
     # cette méthode prend un queryset et redonne un pandas dataframe
