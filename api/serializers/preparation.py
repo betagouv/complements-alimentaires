@@ -11,6 +11,5 @@ class PreparationSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "name_en",
-            "contains_alcohol",
         ]
         read_only_fields = fields

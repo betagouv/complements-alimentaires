@@ -137,8 +137,6 @@ const toBase64 = (file) => {
 }
 
 const containsAlcohol = computed(() => {
-  const plantPreparationsUsed = payload.value.declaredPlants.map((plant) => plant.preparation)
-  const preparationsInfo = preparations.value.filter((p) => plantPreparationsUsed.includes(p.id))
-  return preparationsInfo.some((p) => p.containsAlcohol)
+  return payload.value.declaredIngredients.some((ing) => ["Alcool", "éthanol", "Cognac"].includes(ing.element?.name))
 })
 </script>
