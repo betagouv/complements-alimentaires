@@ -5,6 +5,7 @@ from unittest import mock
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.test import TestCase
+from django.test.utils import override_settings
 
 import pandas as pd
 
@@ -40,6 +41,7 @@ class IngredientTestCase(TestCase):
         if default_storage.exists(self.etl_test.filename):
             default_storage.delete(self.etl_test.filename)
 
+    @override_settings(DECLARATIONS_EXPORT_BATCH_SIZE=1)
     def test_declaration_jdd_contains_only_authorized_declarations(self):
         AuthorizedDeclarationFactory()
         AwaitingInstructionDeclarationFactory()
@@ -51,11 +53,12 @@ class IngredientTestCase(TestCase):
         self.assertEqual(Declaration.objects.all().count(), 6)
 
         # tester l'export avec un taille de batch d'une déclaration
-        self.etl_test.export(1)
+        self.etl_test.export()
 
         open_data_jdd = pd.read_csv(os.path.join(settings.MEDIA_ROOT, self.etl_test.filename), delimiter=";")
         self.assertEqual(len(open_data_jdd), 1)
 
+    @override_settings(DECLARATIONS_EXPORT_BATCH_SIZE=1)
     @mock.patch("data.etl.datagouv.update_resources")
     def test_created_csv_is_json_compliant(self, mocked_update_resources):
         """
@@ -89,7 +92,7 @@ class IngredientTestCase(TestCase):
         )
 
         # tester l'export avec un taille de batch d'une déclaration
-        self.etl_test.export(1)
+        self.etl_test.export()
 
         open_data_jdd = pd.read_csv(os.path.join(settings.MEDIA_ROOT, self.etl_test.filename), delimiter=";")
         self.assertEqual(len(open_data_jdd), 3)
