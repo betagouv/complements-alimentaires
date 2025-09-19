@@ -17,13 +17,15 @@
         </li>
       </ul>
     </DsfrAlert>
-    <SubstancesTable v-model="payload" readonly />
+    <SubstancesTable v-model="payload" readonly :title="tableTitle" :noCaption="false" />
   </div>
 </template>
 
 <script setup>
 import { computed } from "vue"
 import SubstancesTable from "@/components/SubstancesTable"
+
+defineProps(["tableTitle"])
 
 const payload = defineModel()
 
