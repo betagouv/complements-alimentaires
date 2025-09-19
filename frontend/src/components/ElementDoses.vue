@@ -1,7 +1,11 @@
 <template>
   <div>
-    <h2 class="fr-h6 mb-1!">Quantités maximales autorisées par population</h2>
-    <DsfrTable :headers="maxQuantityHeaders" :rows="maxQuantityRows" />
+    <!-- <h2 class="fr-h6 mb-1!">Quantités maximales autorisées par population</h2> -->
+    <DsfrTable
+      :headers="maxQuantityHeaders"
+      :rows="maxQuantityRows"
+      title="Quantités maximales autorisées par population"
+    />
   </div>
 </template>
 
@@ -31,3 +35,12 @@ const quantityCell = (row) => {
     : row.maxQuantity?.toLocaleString("fr-FR") + " " + props.unit
 }
 </script>
+
+<style scoped>
+@reference "../styles/index.css";
+
+.fr-table :deep(.caption) {
+  @apply w-full;
+  font-size: 1.25rem;
+}
+</style>
