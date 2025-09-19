@@ -130,4 +130,8 @@ watch(
 .fr-table :deep(td:nth-child(4)) {
   @apply max-w-48;
 }
+/* par defaut DSFR rend .caption 1.5rem */
+.fr-table :deep(.caption) {
+  font-size: 1rem;
+}
 </style>
