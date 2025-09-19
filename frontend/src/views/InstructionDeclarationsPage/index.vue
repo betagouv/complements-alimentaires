@@ -118,6 +118,7 @@ import StatusFilter from "@/components/StatusFilter.vue"
 import { orderingOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import { useQueryStorage } from "@/utils/storage"
+import { setDocumentTitle } from "@/utils/document"
 
 const router = useRouter()
 const route = useRoute()
@@ -168,6 +169,11 @@ const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
+  setDocumentTitle(["Instruction"], {
+    number: page.value,
+    total: pages.value.length,
+    term: "page",
+  })
 }
 
 watch(

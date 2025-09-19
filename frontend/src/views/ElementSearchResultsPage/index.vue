@@ -93,7 +93,11 @@ const { data, response, isFetching, execute } = useFetch(
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
-  setDocumentTitle([currentSearch.value, "Résultats de recherche"])
+  setDocumentTitle([currentSearch.value, "Résultats de recherche"], {
+    number: page.value,
+    total: pages.value.length,
+    term: "page",
+  })
 }
 
 const goToSelectedOption = (option) => {

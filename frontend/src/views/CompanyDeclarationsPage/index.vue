@@ -100,6 +100,7 @@ import CompanyDeclarationsTable from "./CompanyDeclarationsTable"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import StatusFilter from "@/components/StatusFilter.vue"
 import { orderingOptionsPro } from "@/utils/mappings"
+import { setDocumentTitle } from "@/utils/document"
 
 const route = useRoute()
 const store = useRootStore()
@@ -151,6 +152,11 @@ const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
+  setDocumentTitle(["Les déclarations de mon entreprise"], {
+    number: page.value,
+    total: pages.value.length,
+    term: "page",
+  })
 }
 
 const search = () => {

@@ -41,6 +41,7 @@ import BlogCard from "@/components/BlogCard"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import { getPagesForPagination } from "@/utils/components"
+import { setDocumentTitle } from "@/utils/document"
 
 const route = useRoute()
 const router = useRouter()
@@ -66,6 +67,11 @@ const { data, response, execute, isFetching } = useFetch(url, { immediate: false
 const fetchCurrentPage = async () => {
   await execute()
   await handleError(response)
+  setDocumentTitle(["Articles de blog"], {
+    number: page.value,
+    total: pages.value.length,
+    term: "page",
+  })
 }
 
 // Route management

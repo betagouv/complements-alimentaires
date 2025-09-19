@@ -224,6 +224,7 @@ import DoseFilterModal from "./DoseFilterModal"
 import DateFilterField from "./DateFilterField"
 import { toOptions } from "@/utils/forms.js"
 import { useQueryStorage } from "@/utils/storage"
+import { setDocumentTitle } from "@/utils/document"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()
@@ -373,6 +374,11 @@ const { response, data, isFetching, execute } = useFetch(apiUrl, { headers: { Ac
 watch(route, async () => {
   await execute()
   if (response?.value) await handleError(response) // Utile pour éviter des traiter les NS_BINDING_ABORTED de Firefox
+  setDocumentTitle(["Recherche avancée"], {
+    number: page.value,
+    total: pages.value.length,
+    term: "page",
+  })
 })
 
 // Remplissage d'options dans les champs select

@@ -103,6 +103,7 @@ import ControlCompanyTable from "./ControlCompanyTable"
 import jsonDepartments from "@/utils/departments.json"
 import { allActivities } from "@/utils/mappings"
 import PaginatedExcelDownload from "@/components/PaginatedExcelDownload"
+import { setDocumentTitle } from "@/utils/document"
 
 const MAX_EXPORT_RESULTS = 2000
 
@@ -148,6 +149,11 @@ const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
+  setDocumentTitle(["Les entreprises"], {
+    number: page.value,
+    total: pages.value.length,
+    term: "page",
+  })
 }
 
 // Export Excel

@@ -35,6 +35,7 @@ import { storeToRefs } from "pinia"
 import ActionGrid from "./ActionGrid"
 import RoleBarBlock from "./RoleBarBlock"
 import { useRoute, useRouter } from "vue-router"
+import { setDocumentTitle } from "@/utils/document"
 
 const store = useRootStore()
 const router = useRouter()
@@ -69,6 +70,10 @@ onMounted(redirectIfInvalidCompany)
 watch(route, redirectIfInvalidCompany)
 
 const onChangeCompany = (id) => router.push({ query: { company: id } })
+
+watch(company, () => {
+  setDocumentTitle(["Tableau de bord", company.value.socialName])
+})
 
 const supervisorActions = computed(() => [
   {
