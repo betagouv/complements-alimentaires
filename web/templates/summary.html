@@ -1,5 +1,5 @@
 {% load static %}
-<html>
+<html lang="fr">
     <head>
         <style>
             @font-face {
@@ -90,268 +90,271 @@
                 margin-bottom: 10pt;
             }
         </style>
+        <title>Votre déclaration « {{ declaration.name }} »</title>
     </head>
-    <body style="font-family: 'Marianne', sans-serif;">
-        <div id="footer_content">Page <pdf:pagenumber>
-            de <pdf:pagecount>
-        </div>
-        <table>
-            <tr>
-                <td>
-                    <img width="100" src="{% static 'images/certificate/masa.png' %}" alt="Ministère de l’Agriculture et de la Souveraineté Alimentaire">
-                </td>
-                <td align="right">
-                    <img width="120" src="{% static 'images/logo.png' %}" alt="Compl'Alim">
-                </td>
-            </tr>
-        </table>
-        <div style="margin-top: 20px;">
-            <!-- Environnement si différent à prod -->
-            {% if environment %}
-            <p class="bold-marianne">Environnement : {{ environment }}</p>
-            {% endif %}
-
-            <h1>Votre déclaration « {{ declaration.name }} »</h1>
-
-            <!-- Date de la déclaration -->
-
-            {% if submission_date %}
-            <p>Soumise le {{ submission_date|date:"l j F Y" }}</p>
-            {% endif %}
-
-            <!-- Information produit -->
-            <table class="data-formatting">
-                <caption><h2 class="bold-marianne">Produit</h2></caption>
-                <tbody>
-                    {% for row in product_table_rows %}
-                    <tr>
-                        <th scope="row">
-                            {{ row.0 }}
-                        </th>
-                        <td class="{{ row.2 }}">{{ row.1 }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
+    <body>
+        <main>
+            <div id="footer_content">Page <pdf:pagenumber>
+                de <pdf:pagecount>
+            </div>
+            <table role="presentation">
+                <tr>
+                    <td>
+                        <img width="100" src="{% static 'images/certificate/masa.png' %}" alt="Ministère de l’Agriculture et de la Souveraineté Alimentaire">
+                    </td>
+                    <td align="right">
+                        <img width="120" src="{% static 'images/logo.png' %}" alt="Compl'Alim">
+                    </td>
+                </tr>
             </table>
+            <div style="margin-top: 20px;">
+                <!-- Environnement si différent à prod -->
+                {% if environment %}
+                <p class="bold-marianne">Environnement : {{ environment }}</p>
+                {% endif %}
 
-            <!-- Composition -->
-            <hr class="keep-with-next" />
-            <h2 class="bold-marianne keep-with-next">Composition</h2>
+                <h1>Votre déclaration « {{ declaration.name }} »</h1>
 
-            <!-- Plantes -->
-            {% if declared_plants %}
-            <div class="composition-section">
-                <h3 class="bold-marianne keep-with-next">Plantes</h3>
-                {% for declared_plant in declared_plants %}
-                    {% if not declared_plant.active %}
-                    <p class="bold-marianne keep-with-next">
-                        {% firstof declared_plant.plant.name declared_plant.new_name %}
-                        {% if declared_plant.new %}
-                            (nouvel ajout)
+                <!-- Date de la déclaration -->
+
+                {% if submission_date %}
+                <p>Soumise le {{ submission_date|date:"l j F Y" }}</p>
+                {% endif %}
+
+                <!-- Information produit -->
+                <table class="data-formatting" role="presentation">
+                    <caption><h2 class="bold-marianne">Produit</h2></caption>
+                    <tbody>
+                        {% for row in product_table_rows %}
+                        <tr>
+                            <th scope="row">
+                                {{ row.0 }}
+                            </th>
+                            <td class="{{ row.2 }}">{{ row.1 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Composition -->
+                <hr class="keep-with-next" />
+                <h2 class="bold-marianne keep-with-next">Composition</h2>
+
+                <!-- Plantes -->
+                {% if declared_plants %}
+                <div class="composition-section">
+                    <h3 class="bold-marianne keep-with-next">Plantes</h3>
+                    {% for declared_plant in declared_plants %}
+                        {% if not declared_plant.active %}
+                        <p class="bold-marianne keep-with-next">
+                            {% firstof declared_plant.plant.name declared_plant.new_name %}
+                            {% if declared_plant.new %}
+                                (nouvel ajout)
+                            {% endif %}
+                        </p>
                         {% endif %}
-                    </p>
-                    {% endif %}
 
-                    {% if declared_plant.active %}
+                        {% if declared_plant.active %}
+                        <table class="data-formatting">
+                            <caption>
+                                <p class="bold-marianne keep-with-next">
+                                    {% firstof declared_plant.plant.name declared_plant.new_name %}
+                                    {% if declared_plant.new %}
+                                        (nouvel ajout)
+                                    {% endif %}
+                                </p>
+                            </caption>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Partie utilisée</td>
+                                    <td>{% firstof declared_plant.used_part.name "Non spécifiée" %}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Qté par DJR</td>
+                                    {% if declared_plant.quantity %}
+                                    <td>{{ declared_plant.quantity }}
+                                        <span class="unit-font">
+                                            {% firstof declared_plant.unit.name "(unité non spécifiée)" %}
+                                        </span>
+                                    </td>
+                                    {% else %}
+                                    <td>Non spécifiée</td>
+                                    {% endif %}
+                                </tr>
+                                <tr>
+                                    <th scope="row">Préparation</td>
+                                    <td>{% firstof declared_plant.preparation.name 'Non spécifiée' %}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Micro-organismes -->
+                {% if declared_microorganisms %}
+                <div class="composition-section">
+                    <h3 class="bold-marianne keep-with-next">Micro-organismes</h3>
+                    {% for declared_microorganism in declared_microorganisms %}
                     <table class="data-formatting">
                         <caption>
                             <p class="bold-marianne keep-with-next">
-                                {% firstof declared_plant.plant.name declared_plant.new_name %}
-                                {% if declared_plant.new %}
-                                    (nouvel ajout)
+                                {% firstof declared_microorganism.microorganism.name declared_microorganism.new_name %}
+                                {% if declared_microorganism.new %}
+                                (nouvel ajout)
                                 {% endif %}
                             </p>
                         </caption>
                         <tbody>
                             <tr>
-                                <th scope="row">Partie utilisée</td>
-                                <td>{% firstof declared_plant.used_part.name "Non spécifiée" %}</td>
+                                <th scope="row">Souche</td>
+                                <td>{% firstof declared_microorganism.strain 'Non spécifiée' %}</td>
                             </tr>
                             <tr>
+                                <th scope="row">Qté par DJR (en UFC)</td>
+                                <td>{% firstof declared_microorganism.quantity 'Non spécifiée' %}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Substances -->
+                {% if declared_substances %}
+                <div class="composition-section">
+                    <h3 class="bold-marianne keep-with-next">Substances</h3>
+                    {% for declared_substance in declared_substances %}
+                    <table class="data-formatting">
+                        <caption>
+                            <p class="bold-marianne keep-with-next">
+                                {% firstof declared_substance.substance.name declared_substance.new_name %}
+                                {% if declared_substance.new %}
+                                (nouvel ajout)
+                                {% endif %}
+                            </p>
+                        </caption>
+                        <tbody>
+                            <tr>
                                 <th scope="row">Qté par DJR</td>
-                                {% if declared_plant.quantity %}
-                                <td>{{ declared_plant.quantity }}
+                                {% if declared_substance.quantity %}
+                                <td>
+                                    {{ declared_substance.quantity }}
                                     <span class="unit-font">
-                                        {% firstof declared_plant.unit.name "(unité non spécifiée)" %}
+                                        {% firstof declared_substance.unit.name declared_substance.substance.unit.name "(unité non spécifiée)" %}
                                     </span>
                                 </td>
                                 {% else %}
                                 <td>Non spécifiée</td>
                                 {% endif %}
                             </tr>
+                        </tbody>
+                    </table>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Autres ingrédients -->
+                {% if declared_ingredients %}
+                <div class="composition-section">
+                    <h3 class="bold-marianne keep-with-next">Autres ingredients</h3>
+                    {% for declared_ingredient in declared_ingredients %}
+                    <table class="data-formatting">
+                        <caption>
+                            <p class="bold-marianne keep-with-next">
+                                {% firstof declared_ingredient.ingredient.name declared_ingredient.new_name %}
+                                {% if declared_ingredient.new %}
+                                (nouvel ajout)
+                                {% endif %}
+                            </p>
+                        </caption>
+                        <tbody>
                             <tr>
-                                <th scope="row">Préparation</td>
-                                <td>{% firstof declared_plant.preparation.name 'Non spécifiée' %}</td>
+                                <th scope="row">Qté par DJR</td>
+                                {% if declared_ingredient.quantity %}
+                                <td>{{ declared_ingredient.quantity }}
+                                    <span class="unit-font">
+                                        {% firstof declared_ingredient.unit.name "(unité non spécifiée)" %}
+                                    </span>
+                                </td>
+                                {% else %}
+                                <td>Non spécifiée</td>
+                                {% endif %}
                             </tr>
                         </tbody>
                     </table>
-                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Substances calculées -->
+                {% if computed_substances %}
+                <div class="composition-section">
+                    <h3 class="bold-marianne keep-with-next">Substances contenues dans la composition</h3>
+                    {% for computed_substance in computed_substances %}
+                    <table class="data-formatting">
+                        <caption>
+                            <p class="bold-marianne keep-with-next">
+                                {{ computed_substance.substance.name }}
+                            </p>
+                        </caption>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Qté par DJR</td>
+                                {% if computed_substance.quantity %}
+                                <td>{{ computed_substance.quantity }}
+                                    <span class="unit-font">
+                                        {% firstof computed_substance.unit.name computed_substance.substance.unit.name "(unité non spécifiée)" %}
+                                    </span>
+                                </td>
+                                {% else %}
+                                <td>Non spécifiée</td>
+                                {% endif %}
+                            </tr>
+                        </tbody>
+                    </table>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Adresse sur l'étiquetage -->
+                <hr class="keep-with-next" />
+                <h2 class="bold-marianne keep-with-next">Adresse sur l'étiquetage</h2>
+                <address>
+                    {% if declaration.address %}{{ declaration.address }}<br />{% endif %}
+                    {% if declaration.additional_details %}{{ declaration.additional_details }}<br />{% endif %}
+                    {% if declaration.postal_code %}{{ declaration.postal_code }}<br />{% endif %}
+                    {% if declaration.city %}{{ declaration.city }}<br />{% endif %}
+                    {% if declaration.cedex %}{{ declaration.cedex }}<br />{% endif %}
+                    {% if declaration.country %}{{ declaration.country }}<br />{% endif %}
+                </address>
+                <!-- Pièces jointes -->
+                {% if attachments %}
+                <hr class="keep-with-next" />
+                <h2 class="bold-marianne keep-with-next">Pièces jointes</h2>
+                <div>
+                {% for attachment in attachments %}
+                <div class="composition-section">
+                    <figure>
+                        {% if attachment.has_pdf_extension %}
+                        <img class="keep-with-next" width="70" src="{% static 'images/pdf-file.png' %}" alt="">
+                        {% else %}
+                        <img class="keep-with-next" width="220" src="{{ attachment.file.url }}" alt="">
+                        {% endif %}
+                        <figcaption class="bold-marianne" style="display: block;">
+                            {{ attachment.type_display }} ({{ attachment.name }})
+                        </figcaption>
+                    </figure>
+                </div>
                 {% endfor %}
             </div>
-            {% endif %}
 
-            <!-- Micro-organismes -->
-            {% if declared_microorganisms %}
-            <div class="composition-section">
-                <h3 class="bold-marianne keep-with-next">Micro-organismes</h3>
-                {% for declared_microorganism in declared_microorganisms %}
-                <table class="data-formatting">
-                    <caption>
-                        <p class="bold-marianne keep-with-next">
-                            {% firstof declared_microorganism.microorganism.name declared_microorganism.new_name %}
-                            {% if declared_microorganism.new %}
-                            (nouvel ajout)
-                            {% endif %}
-                        </p>
-                    </caption>
-                    <tbody>
-                        <tr>
-                            <th scope="row">Souche</td>
-                            <td>{% firstof declared_microorganism.strain 'Non spécifiée' %}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Qté par DJR (en UFC)</td>
-                            <td>{% firstof declared_microorganism.quantity 'Non spécifiée' %}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                {% endfor %}
+                {% endif %}
             </div>
+            {% if now %}
+            <p>Imprimée le {{ now|date:"l j F Y H:m" }}</p>
             {% endif %}
-
-            <!-- Substances -->
-            {% if declared_substances %}
-            <div class="composition-section">
-                <h3 class="bold-marianne keep-with-next">Substances</h3>
-                {% for declared_substance in declared_substances %}
-                <table class="data-formatting">
-                    <caption>
-                        <p class="bold-marianne keep-with-next">
-                            {% firstof declared_substance.substance.name declared_substance.new_name %}
-                            {% if declared_substance.new %}
-                            (nouvel ajout)
-                            {% endif %}
-                        </p>
-                    </caption>
-                    <tbody>
-                        <tr>
-                            <th scope="row">Qté par DJR</td>
-                            {% if declared_substance.quantity %}
-                            <td>
-                                {{ declared_substance.quantity }}
-                                <span class="unit-font">
-                                    {% firstof declared_substance.unit.name declared_substance.substance.unit.name "(unité non spécifiée)" %}
-                                </span>
-                            </td>
-                            {% else %}
-                            <td>Non spécifiée</td>
-                            {% endif %}
-                        </tr>
-                    </tbody>
-                </table>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <!-- Autres ingrédients -->
-            {% if declared_ingredients %}
-            <div class="composition-section">
-                <h3 class="bold-marianne keep-with-next">Autres ingredients</h3>
-                {% for declared_ingredient in declared_ingredients %}
-                <table class="data-formatting">
-                    <caption>
-                        <p class="bold-marianne keep-with-next">
-                            {% firstof declared_ingredient.ingredient.name declared_ingredient.new_name %}
-                            {% if declared_ingredient.new %}
-                            (nouvel ajout)
-                            {% endif %}
-                        </p>
-                    </caption>
-                    <tbody>
-                        <tr>
-                            <th scope="row">Qté par DJR</td>
-                            {% if declared_ingredient.quantity %}
-                            <td>{{ declared_ingredient.quantity }}
-                                <span class="unit-font">
-                                    {% firstof declared_ingredient.unit.name "(unité non spécifiée)" %}
-                                </span>
-                            </td>
-                            {% else %}
-                            <td>Non spécifiée</td>
-                            {% endif %}
-                        </tr>
-                    </tbody>
-                </table>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <!-- Substances calculées -->
-            {% if computed_substances %}
-            <div class="composition-section">
-                <h3 class="bold-marianne keep-with-next">Substances contenues dans la composition</h3>
-                {% for computed_substance in computed_substances %}
-                <table class="data-formatting">
-                    <caption>
-                        <p class="bold-marianne keep-with-next">
-                            {{ computed_substance.substance.name }}
-                        </p>
-                    </caption>
-                    <tbody>
-                        <tr>
-                            <th scope="row">Qté par DJR</td>
-                            {% if computed_substance.quantity %}
-                            <td>{{ computed_substance.quantity }}
-                                <span class="unit-font">
-                                    {% firstof computed_substance.unit.name computed_substance.substance.unit.name "(unité non spécifiée)" %}
-                                </span>
-                            </td>
-                            {% else %}
-                            <td>Non spécifiée</td>
-                            {% endif %}
-                        </tr>
-                    </tbody>
-                </table>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <!-- Adresse sur l'étiquetage -->
-            <hr class="keep-with-next" />
-            <h2 class="bold-marianne keep-with-next">Adresse sur l'étiquetage</h2>
-            <address>
-                {% if declaration.address %}{{ declaration.address }}<br />{% endif %}
-                {% if declaration.additional_details %}{{ declaration.additional_details }}<br />{% endif %}
-                {% if declaration.postal_code %}{{ declaration.postal_code }}<br />{% endif %}
-                {% if declaration.city %}{{ declaration.city }}<br />{% endif %}
-                {% if declaration.cedex %}{{ declaration.cedex }}<br />{% endif %}
-                {% if declaration.country %}{{ declaration.country }}<br />{% endif %}
-            </address>
-            <!-- Pièces jointes -->
-            {% if attachments %}
-            <hr class="keep-with-next" />
-            <h2 class="bold-marianne keep-with-next">Pièces jointes</h2>
-            <div>
-            {% for attachment in attachments %}
-            <div class="composition-section">
-                <figure>
-                    {% if attachment.has_pdf_extension %}
-                    <img class="keep-with-next" width="70" src="{% static 'images/pdf-file.png' %}" alt="">
-                    {% else %}
-                    <img class="keep-with-next" width="220" src="{{ attachment.file.url }}" alt="">
-                    {% endif %}
-                    <figcaption class="bold-marianne" style="display: block;">
-                        {{ attachment.type_display }} ({{ attachment.name }})
-                    </figcaption>
-                </figure>
-            </div>
-            {% endfor %}
-        </div>
-
-            {% endif %}
-        </div>
-        {% if now %}
-        <p>Imprimée le {{ now|date:"l j F Y H:m" }}</p>
-        {% endif %}
+        </main>
     </body>
 </html>

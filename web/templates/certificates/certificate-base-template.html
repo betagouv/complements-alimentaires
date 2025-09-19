@@ -1,18 +1,18 @@
 {% load static %}
-<html>
+<html lang="fr">
     <head>
         <style>
             @font-face {
             font-family: 'Marianne';
-            src: url({% static '../../static/fonts/Marianne-Regular.ttf' %}) format('truetype');
+            src: url({% static 'fonts/Marianne-Regular.ttf' %}) format('truetype');
             }
             @font-face {
                 font-family: 'Marianne-Bold';
-                src:  url({% static '../../static/fonts/Marianne-Bold.ttf' %}) format('truetype');
+                src:  url({% static 'fonts/Marianne-Bold.ttf' %}) format('truetype');
             }
             @font-face {
                 font-family: 'Marianne-ExtraBold';
-                src: url({% static '../../static/fonts/Marianne-ExtraBold.ttf' %}) format('truetype');
+                src: url({% static 'fonts/Marianne-ExtraBold.ttf' %}) format('truetype');
             }
             body {
                 font-family: 'Marianne', Arial, Helvetica, sans-serif;
@@ -29,54 +29,60 @@
                 }
             }
         </style>
+        <title>
+            {% block 'title' %}
+            {% endblock %}
+        </title>
     </head>
     <body>
-        <table class="bg-marianne">
-            <tr>
-                <td>
-                    {% if declaration.teleicare_declaration_number %}
-                    <img width="160" src="{% static '../../static/images/certificate/republique-francaise-logo.png' %}" alt="République Française">
-                    {% else %}
-                    <img width="160" src="{% static '../../static/images/certificate/masa.png' %}" alt="Ministère de l'Agriculture et de la Souveraineté Alimentaire">
-                    {% endif %}
-                </td>
-                <td align="right" style="font-weight: bold; font-size: 1.7em; font-family: 'Marianne-Bold'">
-                    Direction générale<br />{{direction}}
-                </td>
-            </tr>
+        <main>
+            <table class="bg-marianne" role="presentation">
+                <tr>
+                    <td>
+                        {% if declaration.teleicare_declaration_number %}
+                        <img width="160" src="{% static 'images/certificate/republique-francaise-logo.png' %}" alt="République Française">
+                        {% else %}
+                        <img width="160" src="{% static 'images/certificate/masa.png' %}" alt="Ministère de l'Agriculture et de la Souveraineté Alimentaire">
+                        {% endif %}
+                    </td>
+                    <td align="right" style="font-weight: bold; font-size: 1.7em; font-family: 'Marianne-Bold'">
+                        Direction générale<br />{{direction}}
+                    </td>
+                </tr>
 
-            <tr style="padding-top: 20px;">
-                <td>
-                    <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
-                    Direction générale {{ direction }}<br />
-                    {{ address_street }}<br />
-                    {{ address_cedex }}<br />
-                    </span>
-                        {{ bureau }}
-                        <br />
-                        Mél : <a href="mailto:{{mail}}">{{ mail }}</a><br />
-                </td>
-                <td align="right" style="font-size: 1.2em;">
-                    Paris, le {{ date|date:"l j F Y" }}
-                </td>
-            </tr>
-            {% if include_recipient_address %}
-            <tr>
-                <td></td>
-                <td align="right" style="font-size: 1em;">
-                    {% for line in recipient_lines %}
-                    {{line}}<br />
-                    {% endfor %}
-                </td>
-            </tr>
-            {% endif %}
-        </table>
-        <div style="margin-top: 20px;">
-            {% block 'body' %}
-            {% endblock %}
-        </div>
-        <div id="background_image_content">
-            <img width="250" src="{% static '../../static/images/certificate/marianne.png' %}" alt="">
-        </div>
+                <tr style="padding-top: 20px;">
+                    <td>
+                        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+                        Direction générale {{ direction }}<br />
+                        {{ address_street }}<br />
+                        {{ address_cedex }}<br />
+                        </span>
+                            {{ bureau }}
+                            <br />
+                            Mél : <a href="mailto:{{mail}}">{{ mail }}</a><br />
+                    </td>
+                    <td align="right" style="font-size: 1.2em;">
+                        Paris, le {{ date|date:"l j F Y" }}
+                    </td>
+                </tr>
+                {% if include_recipient_address %}
+                <tr>
+                    <td></td>
+                    <td align="right" style="font-size: 1em;">
+                        {% for line in recipient_lines %}
+                        {{line}}<br />
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endif %}
+            </table>
+            <div style="margin-top: 20px;">
+                {% block 'body' %}
+                {% endblock %}
+            </div>
+            <div id="background_image_content">
+                <img width="250" src="{% static 'images/certificate/marianne.png' %}" alt="">
+            </div>
+        </main>
     </body>
 </html>
