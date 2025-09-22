@@ -1,4 +1,7 @@
 {% extends 'certificates/certificate-base-template.html' %}
+{% block 'title' %}
+Réf. : Dossier n° {{ declaration.id }}
+{% endblock %}
 {% block 'body' %}
 <h1 style="font-family: 'Marianne-Bold'; font-weight: bold;">
     Réf. : Dossier {% if declaration.teleicare_declaration_number %}
