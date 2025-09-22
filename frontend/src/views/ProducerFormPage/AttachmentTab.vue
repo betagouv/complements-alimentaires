@@ -133,6 +133,8 @@ const toBase64 = (file) => {
 }
 
 const containsAlcohol = computed(() => {
-  return payload.value.declaredIngredients.some((ing) => ["Alcool", "éthanol", "Cognac"].includes(ing.element?.name))
+  return payload.value.declaredIngredients.some((ing) =>
+    ["alcool", "éthanol", "cognac"].includes(ing.element?.name?.toLowerCase())
+  )
 })
 </script>
