@@ -1,10 +1,12 @@
 from django.test import TestCase
+from unittest.mock import patch
 
 from data.factories import (
     DeclaredPlantFactory,
     IngredientFactory,
     MicroorganismFactory,
     OngoingInstructionDeclarationFactory,
+    AuthorizedDeclarationFactory,
     PlantFactory,
     PlantPartFactory,
     SubstanceFactory,
@@ -12,6 +14,11 @@ from data.factories import (
 from data.models.ingredient_type import IngredientType
 from data.models.plant import Part
 from data.models.substance import SubstanceType
+from data.models.declaration import Declaration, Addable
+
+
+def set_article_15(self):
+    self.calculated_article = Declaration.Article.ARTICLE_15
 
 
 class IngredientTestCase(TestCase):
@@ -83,3 +90,92 @@ class IngredientTestCase(TestCase):
         )
         declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=unassociated_part)
         self.assertTrue(declared_plant.is_part_request)
+
+    @patch.object(Declaration, "assign_calculated_article", set_article_15)
+    def test_added_part_recalculates_ongoing_declaration_article(self):
+        """
+        Si une partie de plante est demandée, et après elle est ajoutée en dehors du parcours
+        primaire, recalculer les articles de déclarations concernées en cours de traitement
+        """
+        plant = PlantFactory()
+        unassociated_part = PlantPartFactory()
+        # créer deux déclarations qui devraient être MAJ
+        ongoing_declaration_1 = OngoingInstructionDeclarationFactory()
+        declared_plant_1 = DeclaredPlantFactory(
+            declaration=ongoing_declaration_1, plant=plant, used_part=unassociated_part
+        )
+        ongoing_declaration_2 = OngoingInstructionDeclarationFactory()
+        declared_plant_2 = DeclaredPlantFactory(
+            declaration=ongoing_declaration_2, plant=plant, used_part=unassociated_part
+        )
+        # créer deux déclarations qui ne devraient pas être MAJ
+        finished_declaration = AuthorizedDeclarationFactory()
+        declared_plant_3 = DeclaredPlantFactory(
+            declaration=finished_declaration, plant=plant, used_part=unassociated_part
+        )
+        no_part_request_declaration = OngoingInstructionDeclarationFactory()
+
+        Part.objects.create(plant=plant, plantpart=unassociated_part, is_useful=True)
+
+        ongoing_declaration_1.refresh_from_db()
+        ongoing_declaration_2.refresh_from_db()
+        finished_declaration.refresh_from_db()
+        no_part_request_declaration.refresh_from_db()
+
+        self.assertEqual(ongoing_declaration_1.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(ongoing_declaration_2.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertNotEqual(finished_declaration.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertNotEqual(no_part_request_declaration.calculated_article, Declaration.Article.ARTICLE_15)
+
+        declared_plant_1.refresh_from_db()
+        declared_plant_2.refresh_from_db()
+        declared_plant_3.refresh_from_db()
+
+        self.assertEqual(declared_plant_1.request_status, Addable.AddableStatus.REPLACED)
+        self.assertEqual(declared_plant_2.request_status, Addable.AddableStatus.REPLACED)
+        self.assertEqual(declared_plant_3.request_status, Addable.AddableStatus.REQUESTED)
+
+    def test_authorised_part_recalculates_ongoing_declaration_article(self):
+        """
+        Si une partie de plante est demandée, et après elle est autorisée en dehors du parcours
+        primare, recalculer les articles de déclarations concernées en cours de traitement
+        """
+        plant = PlantFactory()
+        unauthorised_part = PlantPartFactory()
+        part_relation = Part.objects.create(plant=plant, plantpart=unauthorised_part, is_useful=False)
+        # créer deux déclarations qui devraient être MAJ
+        ongoing_declaration_1 = OngoingInstructionDeclarationFactory()
+        declared_plant_1 = DeclaredPlantFactory(
+            declaration=ongoing_declaration_1, plant=plant, used_part=unauthorised_part
+        )
+        ongoing_declaration_2 = OngoingInstructionDeclarationFactory()
+        declared_plant_2 = DeclaredPlantFactory(
+            declaration=ongoing_declaration_2, plant=plant, used_part=unauthorised_part
+        )
+        # créer deux déclarations qui ne devraient pas être MAJ
+        finished_declaration = AuthorizedDeclarationFactory()
+        declared_plant_3 = DeclaredPlantFactory(
+            declaration=finished_declaration, plant=plant, used_part=unauthorised_part
+        )
+        no_part_request_declaration = OngoingInstructionDeclarationFactory()
+
+        part_relation.is_useful = True
+        part_relation.save()
+
+        ongoing_declaration_1.refresh_from_db()
+        ongoing_declaration_2.refresh_from_db()
+        finished_declaration.refresh_from_db()
+        no_part_request_declaration.refresh_from_db()
+
+        self.assertEqual(ongoing_declaration_1.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(ongoing_declaration_2.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertNotEqual(finished_declaration.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertNotEqual(no_part_request_declaration.calculated_article, Declaration.Article.ARTICLE_15)
+
+        declared_plant_1.refresh_from_db()
+        declared_plant_2.refresh_from_db()
+        declared_plant_3.refresh_from_db()
+
+        self.assertEqual(declared_plant_1.request_status, Addable.AddableStatus.REPLACED)
+        self.assertEqual(declared_plant_2.request_status, Addable.AddableStatus.REPLACED)
+        self.assertEqual(declared_plant_3.request_status, Addable.AddableStatus.REQUESTED)
