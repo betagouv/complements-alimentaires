@@ -39,6 +39,19 @@
       </div>
     </div>
 
+    <!-- Zone des filtres actifs -->
+    <div class="mb-4">
+      <DsfrTag
+        v-for="(item, idx) in activeFilters"
+        :key="`active-filters-${idx}`"
+        :label="item.text"
+        tagName="button"
+        @click="item.callback"
+        :aria-label="`Retirer le filtre « ${item.text} »`"
+        class="mx-1 fr-tag--dismiss"
+      ></DsfrTag>
+    </div>
+
     <div class="grid grid-cols-4 gap-4 mb-6">
       <div class="col-span-4 md:col-span-2 lg:col-span-1">
         <DsfrMultiselect
@@ -152,4 +165,28 @@ const search = () => updateQuery({ recherche: searchTerm.value })
 watch(route, fetchSearchResults)
 watch(departments, () => updateQuery({ departments: departments.value.join(",") }))
 watch(roles, () => updateQuery({ roles: roles.value.join(",") }))
+
+// Filter tags
+
+const activeFilters = computed(() => {
+  const filters = []
+  if (departments.value?.length)
+    for (let i = 0; i < departments.value.length; i++) {
+      const department = departments.value[i]
+      filters.push({
+        text: department,
+        callback: () => (departments.value = departments.value.filter((x) => x !== department)),
+      })
+    }
+
+  if (roles.value?.length)
+    for (let i = 0; i < roles.value.length; i++) {
+      const role = roles.value[i]
+      filters.push({
+        text: role,
+        callback: () => (roles.value = roles.value.filter((x) => x !== role)),
+      })
+    }
+  return filters
+})
 </script>

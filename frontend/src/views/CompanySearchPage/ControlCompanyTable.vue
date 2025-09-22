@@ -32,15 +32,14 @@ const headers = computed(() => [
   {
     text: "Rôles",
   },
-  // {
-  //   text: "Nb. de produits commercialisables",
-  // },
-  // {
-  //   text: "Nb. de produits avec restrictions",
-  // },
-  // {
-  //   text: "Date de la dernière déclaration",
-  // },
+  {
+    text: "Nb. de produits commercialisables",
+    sortParam: "marketReadyCountCache",
+    ariaLabel: "Trier par nombre de produits commercialisables",
+    tooltipContent:
+      "Cette colonne est mise à jour quotidiennement et peut donc varier du nombre réel de déclarations commercialisables",
+    sortCallback: (value) => emit("sort", value),
+  },
 ])
 
 // Construction des files de la table
@@ -55,9 +54,7 @@ const rows = computed(() =>
       },
       x.postalCode,
       getCompanyActivitiesString(x.activities || []),
-      // "",
-      // "",
-      // "",
+      x.marketReadyCountCache,
     ],
   }))
 )

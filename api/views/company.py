@@ -342,7 +342,7 @@ class CommonControlCompanyView(ListAPIView):
     ]
     filterset_class = CompanyActivitiesFilter
     search_fields = ["social_name", "siret", "vat"]
-    ordering_fields = ["creation_date", "modification_date", "social_name", "postal_code"]
+    ordering_fields = ["creation_date", "modification_date", "social_name", "postal_code", "market_ready_count_cache"]
     queryset = Company.objects.all()
 
 

@@ -39,7 +39,6 @@ from api.serializers import (
     DeclarationShortSerializer,
     ExcelControlDeclarationSerializer,
     ExcelExportDeclarationSerializer,
-    OpenDataDeclarationSerializer,
     SimpleDeclarationSerializer,
     SimpleInstructorSerializer,
     SimpleUserSerializer,
@@ -96,6 +95,7 @@ class UserDeclarationsListCreateApiView(ListCreateAPIView):
     model = Declaration
     permission_classes = [CanAccessUserDeclatarions]
     search_fields = ["name", "id", "company__social_name", "teleicare_declaration_number"]
+    ordering_fields = ["modification_date", "name", "creation_date"]
     pagination_class = UserDeclarationPagination
     filter_backends = [
         django_filters.DjangoFilterBackend,
@@ -398,17 +398,6 @@ class ControllerDeclarationRetrieveView(RetrieveAPIView):
     model = Declaration
     serializer_class = DeclarationSerializer
     queryset = Declaration.objects.exclude(status=Declaration.DeclarationStatus.DRAFT).distinct()
-
-
-class OpenDataDeclarationsListView(GenericDeclarationsListView):
-    serializer_class = OpenDataDeclarationSerializer
-    filter_backends = [django_filters.DjangoFilterBackend]
-    ordering_fields = ["creation_date", "modification_date", "name", "response_limit_date"]
-
-    def get_queryset(self):
-        queryset = Declaration.objects.filter(status=Declaration.DeclarationStatus.AUTHORIZED)
-        queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
 
 
 class CompanyDeclarationsListView(GenericDeclarationsListView):

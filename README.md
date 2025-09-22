@@ -121,6 +121,7 @@ INSEE_API_KEY= La clé de l'API pour l'application "API-Siren" (https://portail-
 DATAGOUV_API_KEY=VALUE_TO_GET_FROM_DATAGOUV_ADMIN
 DATAGOUV_DECLARATIONS_ID=XXXXX (can be found via data.gouv.fr's API. Other datasets can be updated. in that case you need to add DATAGOUV_<DATASET_NAME>_ID)
 OBSERVATION_DAYS (optionnel)= Le nombre de jours proposé pour une période d'observation. Par défaut c'est 15.
+DECLARATIONS_EXPORT_BATCH_SIZE (optionnel)= Le nombre de déclarations par batch pour l'export vers open data
 ```
 
 #### Créer les différents modèles Django dans la base de données
@@ -203,3 +204,30 @@ s3cmd setpolicy ./clevercloud/deny_policy.json s3://csv-data
 ```
 
 Les serveurs d'env prod/staging/demo utilisent le script clevercloud/post_build_hook.sh pour la récupération des données
+
+## Remplissage des champs de cache
+
+Le modèle `Company` contient deux champs qui sont remplis via une tâche Celery :
+- `market_ready_count_cache`, et
+- `market_ready_count_updated_at`
+
+Pour les remplir en local il suffit de lancer la commande `python manage.py refresh_company_cache` :
+
+```bash
+» python manage.py refresh_company_cache
+Starting cache update...
+2025-09-02 13:47:57,108 config.tasks INFO     Starting the cache update for market-ready declarations
+2025-09-02 13:47:57,143 config.tasks INFO     Updated 7 companies (1 of 1)
+2025-09-02 13:47:57,143 config.tasks INFO     Cache update done!
+Synchronous cache refresh completed!
+```
+
+## Test création fichier déclarations open data
+
+Pour tester la création du fichier de déclarations autorisées qui est envoyé à OpenData, il y a la commande
+
+`python manage.py etl`
+
+Il faut definir le variable d'environnement `DECLARATIONS_EXPORT_BATCH_SIZE` avant de lancer la commande.
+
+Le fichier sera sauvegardé dans `default_storage.path("declarations.csv")`. Avec Docker en local c'est `/app/media/declarations.csv`

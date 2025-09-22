@@ -8,7 +8,7 @@
             <div class="shrink-0 fr-notice__title text-blue-france-sun-113">Bienvenue, {{ name }}</div>
           </div>
           <div v-if="activeCompany" class="flex gap-x-1.5">
-            <RoleTag v-for="role in activeCompany.roles" :key="role.name" :role="role" />
+            <RoleTag v-for="role in roles" :key="role" :role="role" />
           </div>
         </div>
         <CompanyTag v-if="activeCompany && companies.length === 1" :name="activeCompany.socialName" />
@@ -37,6 +37,13 @@ const props = defineProps({ name: String, activeCompany: Object, companies: Arra
 const companiesSelectOptions = computed(() =>
   props.companies?.filter((c) => !c.representedBy).map((c) => ({ text: c.socialName, value: c.id }))
 )
+
+const roles = computed(() => {
+  const activeCompanyEntries = props.companies?.filter((c) => c.id === props.activeCompany.id)
+  const roles = activeCompanyEntries.flatMap((c) => c.roles).map((r) => r.name)
+
+  return [...new Set(roles)]
+})
 </script>
 
 <style>

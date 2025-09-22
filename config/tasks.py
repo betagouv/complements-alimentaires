@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, time
 
 from django.conf import settings
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, F, Max, Q
 from django.utils import timezone
@@ -10,9 +11,10 @@ from dateutil.relativedelta import relativedelta
 from simple_history.utils import update_change_reason
 from viewflow import fsm
 
+from api.utils.simplified_status import SimplifiedStatusHelper
 from config import email
-from data.etl.transformer_loader import ETL_OPEN_DATA_DECLARATIONS
-from data.models import Declaration, Snapshot
+from data.etl.declarations import OpenDataDeclarationsETL
+from data.models import Company, Declaration, Snapshot
 
 from .celery import app
 
@@ -193,11 +195,15 @@ def approve_declarations():
 
 
 @app.task
-def export_datasets_to_data_gouv():
-    etl = ETL_OPEN_DATA_DECLARATIONS()
-    etl.extract_dataset()
-    etl.transform_dataset()
-    etl.load_dataset()
+def export_datasets_to_data_gouv(publish=True):
+    try:
+        etl = OpenDataDeclarationsETL()
+        etl.export()
+        if publish:
+            etl.publish()
+    except Exception as e:
+        logger.error("Task failed: export_datasets_to_data_gouv")
+        logger.exception(e)
 
 
 @app.task
@@ -224,3 +230,45 @@ def recalculate_article_for_ongoing_declarations(declarations, change_reason):
                 change_reason = change_reason[:100]
             update_change_reason(declaration, change_reason)
             logger.info(f"Declaration {declaration.id} article recalculated.")
+
+
+@app.task
+def update_market_ready_counts():
+    """
+    Cette tâche met à jour le nombre de déclarations commecialisables pour les entreprises
+    """
+    logger.info("Starting the cache update for market-ready declarations")
+    batch_size = 500
+    market_ready_condition = SimplifiedStatusHelper.get_filter_conditions(
+        [SimplifiedStatusHelper.MARKET_READY], "declarations__"
+    )
+
+    # Obtention de tous les IDs (requête rapide). Le triage par ID est important pour ne pas
+    # avoir des résultats inconsistents dans la pagination.
+    company_ids = Company.objects.order_by("id").values_list("id", flat=True)
+    paginator = Paginator(company_ids, batch_size)
+
+    for page_num in paginator.page_range:
+        try:
+            batch_ids = list(paginator.page(page_num).object_list)
+
+            # Avec une seule requête on obtient les counts des declarations commercialisables
+            companies_with_counts = Company.objects.filter(id__in=batch_ids).annotate(
+                market_ready_count=Count("declarations", filter=market_ready_condition, distinct=True)
+            )
+
+            objects_to_save = []
+            for company in companies_with_counts:
+                company.market_ready_count_cache = company.market_ready_count
+                company.market_ready_count_updated_at = timezone.now()
+                objects_to_save.append(company)
+
+            if not objects_to_save:
+                continue
+            Company.objects.bulk_update(objects_to_save, ["market_ready_count_cache", "market_ready_count_updated_at"])
+            logger.info(f"Updated {len(objects_to_save)} companies ({page_num} of {paginator.page_range.stop - 1})")
+
+        except Exception as e:
+            logger.exception(e)
+
+    logger.info("Cache update done!")

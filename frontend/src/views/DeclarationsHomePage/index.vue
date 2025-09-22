@@ -14,19 +14,20 @@
       />
     </div>
 
-    <div class="border px-4 mb-2 md:flex gap-8 items-baseline filters">
-      <div class="md:border-r pt-4 md:pr-4">
+    <div class="border px-4 mb-2 lg:flex gap-4 items-baseline filters">
+      <div class="lg:border-r pt-4 md:pr-4">
         <DsfrFieldset class="mb-0!">
           <DsfrSearchBar
             v-model="searchTerm"
             label="Nom, ID ou entreprise"
             placeholder="Nom, ID ou entreprise"
+            class="max-w-sm"
             @search="search"
             @update:modelValue="(val) => val === '' && search()"
           />
         </DsfrFieldset>
 
-        <div class="sm:flex gap-8 items-baseline">
+        <div class="sm:flex gap-4 items-baseline">
           <DsfrFieldset class="mb-0!">
             <div>
               <DsfrInputGroup>
@@ -42,7 +43,7 @@
             </div>
           </DsfrFieldset>
           <DsfrFieldset class="mb-0!">
-            <div class="md:border-x md:px-4 min-w-44">
+            <div class="min-w-44">
               <DsfrInputGroup>
                 <DsfrSelect
                   label="Personne assignée"
@@ -58,10 +59,22 @@
           <div class="min-w-48">
             <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
           </div>
+          <div>
+            <DsfrInputGroup>
+              <DsfrSelect
+                label="Trier par"
+                defaultUnselectedText=""
+                :modelValue="ordering"
+                @update:modelValue="updateOrdering"
+                :options="orderingOptionsPro"
+                class="text-sm!"
+              />
+            </DsfrInputGroup>
+          </div>
         </div>
       </div>
       <StatusFilter
-        class="max-w-lg pb-2"
+        class="lg:max-w-2xs xl:max-w-md pb-2 md:mt-0 mt-4"
         @updateFilter="updateStatusFilter"
         :statusString="filteredStatus"
         :groupInstruction="true"
@@ -95,6 +108,7 @@ import { useFetch } from "@vueuse/core"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { getPagesForPagination } from "@/utils/components"
+import { orderingOptionsPro } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import StatusFilter from "@/components/StatusFilter"
 
@@ -105,6 +119,7 @@ const route = useRoute()
 const company = computed(() => (route.query.company ? parseInt(route.query.company) : ""))
 const author = computed(() => (route.query.author ? parseInt(route.query.author) : ""))
 const searchTerm = ref(route.query.recherche)
+const ordering = computed(() => route.query.triage)
 
 const hasDeclarations = computed(() => !!data.value?.results?.length)
 const showPagination = computed(() => data.value?.count > data.value?.results?.length)
@@ -142,12 +157,13 @@ const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 const updateCompany = (newValue) => updateQuery({ company: newValue })
 const updateAuthor = (newValue) => updateQuery({ author: newValue })
 const updateLimit = (newValue) => updateQuery({ limit: newValue, page: 1 })
+const updateOrdering = (newValue) => updateQuery({ triage: newValue })
 
 const url = computed(() => {
   let statusQuery = filteredStatus.value
   if (filteredStatus.value?.indexOf("INSTRUCTION") > -1)
     statusQuery += `${statusQuery.length ? "," : ""}AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA`
-  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit.value}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate&company=${company.value}&author=${author.value}&search=${searchTerm.value}`
+  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit.value}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate&company=${company.value}&author=${author.value}&search=${searchTerm.value}&ordering=${ordering.value}`
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
@@ -160,13 +176,16 @@ const search = () => {
   fetchSearchResults()
 }
 
-watch([page, filteredStatus, company, author, limit], fetchSearchResults)
+watch([page, filteredStatus, company, author, limit, ordering], fetchSearchResults)
 </script>
 
 <style scoped>
 @reference "../../styles/index.css";
 
-.filters :deep(.fr-fieldset__element) {
-  @apply mb-0!;
+.filters :deep(.fr-input-group) {
+  @apply mb-0 mt-2;
+}
+.filters :deep(.fr-select-group) {
+  @apply mb-2;
 }
 </style>
