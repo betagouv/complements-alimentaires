@@ -47,8 +47,6 @@
 
 <script setup>
 import { ref, computed } from "vue"
-import { useRootStore } from "@/stores/root"
-import { storeToRefs } from "pinia"
 import FileGrid from "./FileGrid"
 import SectionTitle from "@/components/SectionTitle"
 import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNotice"
@@ -56,8 +54,6 @@ import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNot
 const acceptedTypes = ["image/jpeg", "image/gif", "image/png", "application/pdf"]
 const props = defineProps(["externalResults"])
 const payload = defineModel()
-
-const { preparations } = storeToRefs(useRootStore())
 
 const needsEuProof = computed(() => {
   return []
