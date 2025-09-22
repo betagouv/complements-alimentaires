@@ -63,6 +63,8 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
         blank=True, verbose_name="mentions d'avertissement devant figurer sur l'étiquette"
     )
 
+    description = models.TextField(blank=True)
+
     @property
     def object_type(self):
         """

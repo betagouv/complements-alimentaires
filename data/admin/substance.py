@@ -33,7 +33,7 @@ class SubstanceForm(ChangeReasonFormMixin):
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "source": forms.Textarea(attrs={"cols": 60, "rows": 4}),
+            "description": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
         }
@@ -104,10 +104,10 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             {
                 "fields": [
                     "name",
+                    "description",
                     "siccrf_name_en",
                     "is_obsolete",
                     "status",
-                    "source",
                     "is_risky",
                     "novel_food",
                     "substance_types",

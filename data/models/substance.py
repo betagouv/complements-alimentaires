@@ -55,8 +55,6 @@ class Substance(IngredientCommonModel):
         blank=True,
         verbose_name="numéro EINECS",
     )
-    # description
-    description = models.TextField(blank=True)
 
     # must_specify_quantity
     must_specify_quantity = models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire")

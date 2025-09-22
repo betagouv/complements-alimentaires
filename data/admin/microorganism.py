@@ -35,6 +35,7 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
             {
                 "fields": [
                     "name",
+                    "description",
                     "is_obsolete",
                     "is_risky",
                     "novel_food",
