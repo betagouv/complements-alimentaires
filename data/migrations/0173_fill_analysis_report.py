@@ -15,22 +15,34 @@ class Migration(migrations.Migration):
         Microorganism = apps.get_model("data", "Microorganism")
         Substance = apps.get_model("data", "Substance")
         for ingredient in Ingredient.objects.exclude(siccrf_id=None).filter(
-            Q(public_comments__icontains="bulletin") | Q(private_comments__icontains="bulletin")
+            Q(public_comments__icontains="bulletin")
+            | Q(private_comments__icontains="bulletin")
+            | Q(public_comments__icontains="rapports d'analyse")
+            | Q(private_comments__icontains="rapports d'analyse")
         ):
             ingredient.requires_analysis_report = True
             ingredient.save()
         for plant in Plant.objects.exclude(siccrf_id=None).filter(
-            Q(public_comments__icontains="bulletin") | Q(private_comments__icontains="bulletin")
+            Q(public_comments__icontains="bulletin")
+            | Q(private_comments__icontains="bulletin")
+            | Q(public_comments__icontains="rapports d'analyse")
+            | Q(private_comments__icontains="rapports d'analyse")
         ):
             plant.requires_analysis_report = True
             plant.save()
         for microorganism in Microorganism.objects.exclude(siccrf_id=None).filter(
-            Q(public_comments__icontains="bulletin") | Q(private_comments__icontains="bulletin")
+            Q(public_comments__icontains="bulletin")
+            | Q(private_comments__icontains="bulletin")
+            | Q(public_comments__icontains="rapports d'analyse")
+            | Q(private_comments__icontains="rapports d'analyse")
         ):
             microorganism.requires_analysis_report = True
             microorganism.save()
         for substance in Substance.objects.exclude(siccrf_id=None).filter(
-            Q(public_comments__icontains="bulletin") | Q(private_comments__icontains="bulletin")
+            Q(public_comments__icontains="bulletin")
+            | Q(private_comments__icontains="bulletin")
+            | Q(public_comments__icontains="rapports d'analyse")
+            | Q(private_comments__icontains="rapports d'analyse")
         ):
             substance.requires_analysis_report = True
             substance.save()
