@@ -60,4 +60,24 @@ class Migration(migrations.Migration):
             name='warning_on_label',
             field=models.TextField(blank=True, verbose_name="mentions d'avertissement devant figurer sur l'étiquette"),
         ),
+        migrations.AddField(
+            model_name='historicalmicroorganism',
+            name='description',
+            field=models.TextField(blank=True),
+        ),
+        migrations.AddField(
+            model_name='historicalplant',
+            name='description',
+            field=models.TextField(blank=True),
+        ),
+        migrations.AddField(
+            model_name='microorganism',
+            name='description',
+            field=models.TextField(blank=True),
+        ),
+        migrations.AddField(
+            model_name='plant',
+            name='description',
+            field=models.TextField(blank=True),
+        ),
     ]

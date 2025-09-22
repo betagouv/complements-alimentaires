@@ -57,6 +57,7 @@ class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonA
             {
                 "fields": [
                     "name",
+                    "description",
                     "is_obsolete",
                     "is_risky",
                     "novel_food",
