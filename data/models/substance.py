@@ -4,6 +4,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 from data.behaviours import Historisable, TimeStampable
+from data.validators import validate_cas
 
 from .abstract_models import IngredientCommonModel
 from .mixins import PublicReasonHistoricalModel
@@ -48,7 +49,12 @@ class Substance(IngredientCommonModel):
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     # cas_number
-    cas_number = models.CharField(max_length=10, blank=True, verbose_name="numéro CAS")
+    cas_number = models.CharField(
+        unique=True,
+        blank=True,
+        verbose_name="n° CAS",
+        validators=[validate_cas],
+    )
     # einec_number
     einec_number = models.CharField(
         max_length=7,
