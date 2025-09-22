@@ -55,7 +55,7 @@ class SubstanceSerializer(CommonIngredientReadSerializer):
         fields = COMMON_FETCH_FIELDS + (
             "cas_number",
             "einec_number",
-            "source",
+            "description",
             "must_specify_quantity",
             "max_quantity",
             "max_quantities",
