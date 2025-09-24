@@ -80,6 +80,7 @@ import { getPagesForPagination } from "@/utils/components"
 import { statusProps } from "@/utils/mappings"
 import MultiselectFilter from "@/components/MultiselectFilter"
 import { useQueryStorage } from "@/utils/storage"
+import { setDocumentTitle } from "@/utils/document"
 
 const router = useRouter()
 const route = useRoute()
@@ -113,6 +114,11 @@ const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
+  setDocumentTitle(["Nouveaux ingrédients"], {
+    number: page.value,
+    total: pages.value.length,
+    term: "page",
+  })
 }
 
 watch([page, statusFilter, typeFilter, declarationStatusFilter, limit, ordering], fetchSearchResults)
