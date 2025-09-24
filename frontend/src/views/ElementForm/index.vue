@@ -24,8 +24,13 @@
         </DsfrTabContent>
 
         <DsfrTabContent panel-id="history-content" tab-id="history">
-          <div class="-my-8 mb-4">
-            <DsfrTable :headers="headers" :rows="historyDataDedup" />
+          <div class="-my-4 mb-4">
+            <DsfrTable
+              :headers="headers"
+              :rows="historyDataDedup"
+              title="Historique de l'ingrédient"
+              :no-caption="true"
+            />
           </div>
           <p v-if="element && element.originDeclaration">
             <router-link :to="{ name: 'InstructionPage', params: { declarationId: element.originDeclaration } }">
