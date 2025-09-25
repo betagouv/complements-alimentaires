@@ -17,13 +17,18 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         dry_run = options["dry_run"]
 
-        emails_in_list = ControlRoleEmail.objects.all().values_list("email", flat=True)
-        emails_to_persist = ControlRole.objects.filter(always_persist=True, is_active=True).values_list(
-            "user__email", flat=True
-        )
+        emails_in_list = {email.lower() for email in ControlRoleEmail.objects.all().values_list("email", flat=True)}
+        emails_to_persist = {
+            email.lower()
+            for email in ControlRole.objects.filter(always_persist=True, is_active=True).values_list(
+                "user__email", flat=True
+            )
+        }
 
         authorized_emails = emails_in_list.union(emails_to_persist)
-        current_controllers = ControlRole.objects.filter(is_active=True).values_list("user__email", flat=True)
+        current_controllers = {
+            email.lower() for email in ControlRole.objects.filter(is_active=True).values_list("user__email", flat=True)
+        }
 
         emails_to_add = authorized_emails - current_controllers
         emails_to_remove = current_controllers - authorized_emails
@@ -39,11 +44,11 @@ class Command(BaseCommand):
         added_count = 0
         for email in emails_to_add:
             try:
-                user = get_user_model.objects.get(email=email, is_active=True)
+                user = get_user_model().objects.get(email__iexact=email, is_active=True)
                 ControlRole.objects.get_or_create(user=user)
                 added_count += 1
                 self.stdout.write(f"✓ Added control role to {email}")
-            except get_user_model.DoesNotExist:
+            except get_user_model().DoesNotExist:
                 # INFO : Éventuellement on pourrait envoyer des emails pour inviter ces usagers à créer un compte
                 self.stdout.write(f"⚠ User not found for control role assignment: {email}")
 
@@ -51,7 +56,7 @@ class Command(BaseCommand):
         removed_count = 0
         for email in emails_to_remove:
             try:
-                control_role = ControlRole.objects.get(user__email=email, is_active=True)
+                control_role = ControlRole.objects.get(user__email__iexact=email, is_active=True)
                 control_role.delete()
                 removed_count += 1
                 self.stdout.write(f"✗ Removed control role from {email}")
