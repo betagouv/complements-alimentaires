@@ -69,7 +69,7 @@ class OpenDataDeclarationsETL:
     # sauvegarder le dataframe dans le fichier pour l'export
     def load_dataframe(self, dataframe):
         file_exists = default_storage.exists(self.filename)
-        with default_storage.open(self.filename, "a") as csv_file:
+        with default_storage.open(self.filename, "a" if file_exists else "w") as csv_file:
             dataframe.to_csv(
                 csv_file,
                 header=not file_exists,
