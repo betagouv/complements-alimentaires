@@ -50,8 +50,9 @@ class Substance(IngredientCommonModel):
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     # cas_number
     cas_number = models.CharField(
-        unique=True,
+        # unique=True,
         blank=True,
+        null=True,
         verbose_name="n° CAS",
         validators=[validate_cas],
     )
@@ -119,6 +120,9 @@ class Substance(IngredientCommonModel):
             Substance.objects.filter(pk=self.pk).update(substance_types=self.substance_types)
 
     def save(self, *args, **kwargs):
+        # Les string vides rompent la contrainte d'unicité
+        if not self.cas_number:
+            self.cas_number = None
         super().save(*args, **kwargs)
         self.update_metabolite_type()
 
