@@ -50,7 +50,7 @@ class Substance(IngredientCommonModel):
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     # cas_number
     cas_number = models.CharField(
-        # unique=True,
+        unique=True,
         blank=True,
         null=True,
         verbose_name="n° CAS",
