@@ -79,7 +79,8 @@
           <DsfrCheckboxSet
             v-model="state.substanceTypes"
             :options="substanceTypeOptions"
-            legend="Types de la substance"
+            legend="Type(s) de la substance"
+            required
           />
         </div>
       </div>
