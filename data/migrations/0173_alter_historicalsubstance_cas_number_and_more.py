@@ -18,7 +18,11 @@ class Migration(migrations.Migration):
                 substance.save()
 
     def reverse_massage_old_cas_number(apps, schema_editor):
-        pass
+        Substance = apps.get_model("data", "Substance")
+        for substance in Substance.objects.all():
+            if not substance.cas_number:
+                substance.cas_number = ''
+                substance.save()
 
     operations = [
         migrations.AlterField(
