@@ -87,4 +87,7 @@ class OpenDataDeclarationsETL:
             )
 
     def publish(self):
-        datagouv.update_resources(self.dataset_name)
+        if self.dataset_name == "declarations":
+            datagouv.update_resources(self.dataset_name)
+        # si le nom n'est pas "declarations", c'est pour debugger l'export
+        # et alors on ne veut pas publier les résultats
