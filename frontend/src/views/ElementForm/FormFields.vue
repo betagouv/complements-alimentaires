@@ -264,10 +264,33 @@
     <DsfrFieldset legend="Commentaires" legendClass="fr-h4 mb-0!" class="mb-0">
       <div class="grid md:grid-cols-2 md:gap-4">
         <div class="mb-4">
-          <DsfrInput label="Commentaire public" v-model="state.publicComments" :isTextarea="true" label-visible />
+          <DsfrInput
+            label="Description"
+            v-model="state.description"
+            :isTextarea="true"
+            label-visible
+            hint="La description permet de mieux comprendre la source de l'ingrédient, son processus de fabrication, sa forme moléculaire, etc"
+          />
+        </div>
+      </div>
+      <div class="grid md:grid-cols-2 md:gap-4">
+        <div class="mb-4">
+          <DsfrInput
+            label="Commentaire public"
+            v-model="state.publicComments"
+            :isTextarea="true"
+            label-visible
+            hint="Les indications de quantités max par population et d'avertissements spécifiques sont à renseigner plus haut"
+          />
         </div>
         <div class="mb-4">
-          <DsfrInput label="Commentaire privé" v-model="state.privateComments" :isTextarea="true" label-visible />
+          <DsfrInput
+            label="Commentaire privé"
+            v-model="state.privateComments"
+            :isTextarea="true"
+            label-visible
+            hint="Les liens vers des sources règlementaires sont à renseigner plus haut"
+          />
         </div>
       </div>
       <div v-if="!isNewIngredient" class="grid md:grid-cols-2 md:gap-4">
