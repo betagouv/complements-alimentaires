@@ -111,6 +111,7 @@ import { getPagesForPagination } from "@/utils/components"
 import { orderingOptionsPro } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import StatusFilter from "@/components/StatusFilter"
+import { setDocumentTitle } from "@/utils/document"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -169,6 +170,11 @@ const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
+  setDocumentTitle(["Mes déclarations"], {
+    number: page.value,
+    total: pages.value.length,
+    term: "page",
+  })
 }
 
 const search = () => {

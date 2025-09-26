@@ -2,6 +2,17 @@
   <div>
     <DsfrAlert class="mb-4" small type="error" v-if="validationError">{{ validationError }}</DsfrAlert>
     <SectionTitle title="Étiquetage" sizeTag="h6" icon="ri-price-tag-2-fill" />
+    <DsfrAlert
+      v-if="containsAlcohol"
+      class="mb-4"
+      title="Votre complément alimentaire contient de l'alcool en tant qu'ingrédient"
+      type="warning"
+    >
+      <p>
+        Avez-vous bien pensé à porter l'avertissement "déconseillé aux enfants de moins de 12 ans, femmes enceintes et
+        allaitantes" sur votre étiquetage ?
+      </p>
+    </DsfrAlert>
     <DsfrInputGroup>
       <DsfrFileUpload
         label="Veuillez nous transmettre l'étiquetage de votre produit (format PDF ou image)"
@@ -120,4 +131,10 @@ const toBase64 = (file) => {
     reader.onerror = reject
   })
 }
+
+const containsAlcohol = computed(() => {
+  return payload.value.declaredIngredients.some((ing) =>
+    ["alcool", "éthanol", "cognac"].includes(ing.element?.name?.toLowerCase())
+  )
+})
 </script>

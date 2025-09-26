@@ -5,11 +5,21 @@
       <v-icon name="ri-error-warning-line"></v-icon>
       Sans retour de votre part, ce dossier expirera le {{ isoToPrettyDate(displayData.expirationDate) }}.
     </p>
-    <DsfrButton v-if="displayData.canDownloadCertificate" icon="ri-file-text-line" class="mt-2" secondary>
-      <a :href="`/declarations/${declaration.id}/certificate`" target="_blank" rel="noopener noreferrer">
-        {{ displayData.downloadButtonText || "Télécharger l'attestation" }}
+    <div v-if="displayData.canDownloadCertificate">
+      <DsfrButton icon="ri-file-text-line" class="mt-2" secondary>
+        <a :href="`/declarations/${declaration.id}/certificate`" target="_blank" rel="noopener noreferrer">
+          {{ displayData.downloadButtonText || "Télécharger l'attestation" }}
+        </a>
+      </DsfrButton>
+      <a
+        :href="`/declarations/${declaration.id}/certificate.html`"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="ml-4"
+      >
+        {{ displayData.downloadButtonText || "L'attestation" }} (vérsion HTML)
       </a>
-    </DsfrButton>
+    </div>
   </DsfrAlert>
 </template>
 
