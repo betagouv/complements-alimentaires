@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class OpenDataDeclarationsETL:
     def __init__(self):
         super().__init__()
-        self.dataset_name = "declarations"
+        self.dataset_name = settings.DECLARATIONS_EXPORT_DATASET_NAME
         self.schema = json.load(open("data/schemas/schema_declarations.json"))
         self.columns = [i["name"] for i in self.schema["fields"]]
         self.serializer = OpenDataDeclarationSerializer
@@ -34,11 +34,16 @@ class OpenDataDeclarationsETL:
         logger.info("OpenDataDeclarationsETL: Starting export")
         paginated_queryset = self.extract_paginated_queryset()
         logger.info(f"OpenDataDeclarationsETL: {paginated_queryset.num_pages} batches to process")
+        all_dfs = []
         for page_num in paginated_queryset.page_range:
             page_queryset = paginated_queryset.page(page_num).object_list
-            batched_df = self.transform_queryset(page_queryset)
-            self.load_dataframe(batched_df)
-            logger.info(f"OpenDataDeclarationsETL: batch {page_num} complete")
+            all_dfs.append(self.transform_queryset(page_queryset))
+            logger.info(f"OpenDataDeclarationsETL: batch {page_num} transformed")
+        logger.info("OpenDataDeclarationsETL: Starting write to CSV")
+        # faire la concatenation à la fin pour le rendement
+        # https://stackoverflow.com/a/39815686/3845770
+        complete_df = pd.concat(all_dfs)
+        self.load_dataframe(complete_df)
         logger.info("OpenDataDeclarationsETL: Export completed")
 
     def extract_paginated_queryset(self):
@@ -68,11 +73,10 @@ class OpenDataDeclarationsETL:
 
     # sauvegarder le dataframe dans le fichier pour l'export
     def load_dataframe(self, dataframe):
-        file_exists = default_storage.exists(self.filename)
-        with default_storage.open(self.filename, "a" if file_exists else "w") as csv_file:
+        with default_storage.open(self.filename, "w") as csv_file:
             dataframe.to_csv(
                 csv_file,
-                header=not file_exists,
+                header=True,
                 sep=";",
                 index=False,
                 na_rep="",
