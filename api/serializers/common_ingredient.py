@@ -20,6 +20,7 @@ COMMON_NAME_FIELDS = ("name",)
 COMMON_FIELDS = (
     "id",
     "synonyms",
+    "description",
     "public_comments",
     "private_comments",
     "status",
@@ -38,6 +39,7 @@ COMMON_FETCH_FIELDS = (
     "id",
     "name",
     "synonyms",
+    "description",
     "public_comments",
     "activity",
     "status",
