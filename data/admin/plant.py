@@ -90,7 +90,22 @@ class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonA
         SubstanceInlineAdmin,
         PlantSynonymInline,
     )
-    list_display = ("name", "is_obsolete", "family", "status", "is_risky", "novel_food")
-    list_filter = ("is_obsolete", "family", "status", "is_risky", "novel_food")
+    list_display = (
+        "name",
+        "is_obsolete",
+        "family",
+        "status",
+        "is_risky",
+        "requires_analysis_report",
+        "novel_food",
+    )
+    list_filter = (
+        "is_obsolete",
+        "family",
+        "status",
+        "is_risky",
+        "requires_analysis_report",
+        "novel_food",
+    )
     show_facets = admin.ShowFacets.NEVER
     search_fields = ["id", "name"]
