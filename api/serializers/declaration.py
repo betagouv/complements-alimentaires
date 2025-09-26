@@ -593,7 +593,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def get_plantes(self, obj):
         return self.serialize_plants(obj, True)
 
-    def get_micro_organismes(self, obj):
+    def serialize_micro_organismes(self, obj, active):
         return [
             {
                 "genre": declared_microorganism.microorganism.genus if declared_microorganism.microorganism else None,
@@ -606,8 +606,11 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
                 "quantité_par_djr": declared_microorganism.quantity if declared_microorganism.activated else None,
                 "inactive": not declared_microorganism.activated,
             }
-            for declared_microorganism in obj.declared_microorganisms.all()
+            for declared_microorganism in obj.declared_microorganisms.filter(active=active)
         ]
+
+    def get_micro_organismes(self, obj):
+        return self.serialize_micro_organismes(obj, True)
 
     def get_substances(self, obj):
         return [
@@ -641,11 +644,13 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     def get_ingredients_inactifs(self, obj):
         plants = self.serialize_plants(obj, False)
+        # c'est que possible d'avoir des micro organismes inactives dans les déclarations historiques
+        micro_organisms = self.serialize_micro_organismes(obj, False)
         other_ingredients = [
             str(declared_ingredient.ingredient.name)
             for declared_ingredient in obj.declared_ingredients.filter(ingredient__ingredient_type=5)
         ]
-        return plants + other_ingredients
+        return plants + micro_organisms + other_ingredients
 
 
 class DeclarationSerializer(serializers.ModelSerializer):
