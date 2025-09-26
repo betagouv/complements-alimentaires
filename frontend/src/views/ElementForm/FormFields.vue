@@ -43,6 +43,14 @@
             />
           </DsfrInputGroup>
         </div>
+        <div class="col-span-full mt-4 -mb-6" v-if="formForType.substanceTypes">
+          <DsfrCheckboxSet
+            v-model="state.substanceTypes"
+            :options="substanceTypeOptions"
+            legend="Type(s) de la substance"
+            required
+          />
+        </div>
 
         <DsfrInputGroup v-if="formForType.einecNumber">
           <DsfrInput v-model="state.einecNumber" label="Numéro EINECS" labelVisible />
@@ -64,29 +72,17 @@
           label-left
           class="self-center mt-4 col-span-2 sm:col-span-1"
         />
-        <DsfrToggleSwitch
-          v-model="state.isRisky"
-          label="Nécessite une instruction manuelle et vigilante ?"
-          activeText="Oui"
-          inactiveText="Non"
-          label-left
-          class="self-center mt-4 col-span-2 sm:col-span-2"
-        />
-        <DsfrToggleSwitch
-          v-model="state.requiresAnalysisReport"
-          label="Nécessite un bulletin d'analyse ?"
-          activeText="Oui"
-          inactiveText="Non"
-          label-left
-          class="self-center mt-4 col-span-2 sm:col-span-2"
-        />
-        <div class="col-span-full mt-4 -mb-6" v-if="formForType.substanceTypes">
-          <DsfrCheckboxSet
-            v-model="state.substanceTypes"
-            :options="substanceTypeOptions"
-            legend="Type(s) de la substance"
-            required
-          />
+      </div>
+      <div class="grid md:grid-cols-2 md:gap-4">
+        <div class="mb-4">
+          <DsfrFieldset legend="Description" legendClass="fr-text--lg pb-0! mb-2! mt-4!">
+            <DsfrInput
+              v-model="state.description"
+              :isTextarea="true"
+              label-visible
+              hint="Donne de l'information sur la source de l'ingrédient, son processus de fabrication, sa forme moléculaire, etc"
+            />
+          </DsfrFieldset>
         </div>
       </div>
       <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg pb-0! mb-2! mt-4!">
@@ -263,18 +259,39 @@
         />
       </div>
     </DsfrFieldset>
-    <DsfrFieldset legend="Commentaires" legendClass="fr-h4 mb-0!" class="mb-0">
+    <DsfrFieldset legend="Avertissement" legendClass="fr-h4 mb-0!" class="mb-0">
       <div class="grid md:grid-cols-2 md:gap-4">
         <div class="mb-4">
           <DsfrInput
-            label="Description"
-            v-model="state.description"
+            label="Avertissement(s)"
+            v-model="state.warningOnLabel"
             :isTextarea="true"
             label-visible
-            hint="La description permet de mieux comprendre la source de l'ingrédient, son processus de fabrication, sa forme moléculaire, etc"
+            hint="Mentions d'avertissement devant figurer sur l'étiquette"
           />
         </div>
       </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
+        <DsfrToggleSwitch
+          v-model="state.isRisky"
+          label="Nécessite une instruction manuelle et vigilante ?"
+          activeText="Oui"
+          inactiveText="Non"
+          label-left
+          class="self-center mt-4 col-span-2 sm:col-span-2"
+        />
+        <DsfrToggleSwitch
+          v-model="state.requiresAnalysisReport"
+          label="Nécessite un bulletin d'analyse ?"
+          activeText="Oui"
+          inactiveText="Non"
+          label-left
+          class="self-center mt-4 col-span-2 sm:col-span-2"
+        />
+      </div>
+    </DsfrFieldset>
+
+    <DsfrFieldset legend="Commentaires" legendClass="fr-h4 mb-0!" class="mb-0">
       <div class="grid md:grid-cols-2 md:gap-4">
         <div class="mb-4">
           <DsfrInput
