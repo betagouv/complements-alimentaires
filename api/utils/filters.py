@@ -1,4 +1,5 @@
 import re
+from urllib.parse import unquote
 
 from django.db.models import Q
 
@@ -132,12 +133,12 @@ class MultiFieldSearchFilter(BaseFilterBackend):
         company = request.query_params.get("search_company")
 
         if name:
-            queryset = queryset.filter(name__unaccent__icontains=name)
+            queryset = queryset.filter(name__unaccent__icontains=unquote(name))
 
         if brand:
-            queryset = queryset.filter(brand__unaccent__icontains=brand)
+            queryset = queryset.filter(brand__unaccent__icontains=unquote(brand))
 
         if company:
-            queryset = queryset.filter(company__social_name__unaccent__icontains=company)
+            queryset = queryset.filter(company__social_name__unaccent__icontains=unquote(company))
 
         return queryset

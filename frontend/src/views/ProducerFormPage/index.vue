@@ -99,7 +99,7 @@ import StatusChangeErrorDisplay from "./StatusChangeErrorDisplay"
 import TabStepper from "@/components/TabStepper"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { ref, computed, watch } from "vue"
+import { ref, computed, watch, onMounted } from "vue"
 import ProductTab from "./ProductTab"
 import CompositionTab from "./CompositionTab"
 import SummaryTab from "./SummaryTab"
@@ -354,8 +354,18 @@ const takeDeclaration = async () => {
 const onWithdrawal = () => router.replace({ name: "DeclarationsHomePage", query: { status: "WITHDRAWN,AUTHORIZED" } })
 
 const setDocumentTitleForTab = (tabIdx, fromData) => {
-  const declarationTitle = isNewDeclaration.value ? "Nouvelle démarche" : `Déclaration « ${fromData.value.name} »`
-  setDocumentTitle([titles.value[tabIdx].title, declarationTitle])
+  let declarationTitle = isNewDeclaration.value ? "Nouvelle démarche" : `Déclaration « ${fromData.value.name} »`
+  if (readonly.value) declarationTitle = `Détails de ma déclaration « ${fromData.value.name} »`
+  setDocumentTitle(
+    [titles.value[tabIdx].title, declarationTitle],
+    readonly.value
+      ? undefined
+      : {
+          number: tabIdx + 1,
+          total: titles.value.length,
+          term: "étape",
+        }
+  )
 }
 
 watch(
@@ -365,6 +375,8 @@ watch(
     setDocumentTitleForTab(selectedTabIndex.value, payload)
   }
 )
+
+onMounted(() => setDocumentTitleForTab(selectedTabIndex.value, payload))
 
 const performDuplication = (originalDeclaration) => {
   // Prendre uniquement les champs pertinents. C'est préférable d'utiliser une

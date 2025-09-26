@@ -69,6 +69,7 @@ import StatusFilter from "@/components/StatusFilter"
 import { orderingOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import { useQueryStorage } from "@/utils/storage"
+import { setDocumentTitle } from "@/utils/document"
 
 const router = useRouter()
 const route = useRoute()
@@ -105,6 +106,11 @@ const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
+  setDocumentTitle(["Visa"], {
+    number: page.value,
+    total: pages.value.length,
+    term: "page",
+  })
 }
 
 watch([page, filteredStatus, ordering, article, limit], fetchSearchResults)
