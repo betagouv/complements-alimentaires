@@ -49,50 +49,27 @@
     </ul>
     <h2>Contenus non accessibles</h2>
     <p>Les contenus listés ci-dessous ne sont pas accessibles pour les raisons suivantes :</p>
-    <h3>Non-conformité</h3>
-    <h4>Thématique 1 : images</h4>
     <ul>
       <li>
         Critère 1.2 : Certaines images de décoration ne sont pas correctement ignorées par les technologies d'assistance
         ;
       </li>
-    </ul>
-    <h4>Thématique 3 : Couleurs</h4>
-    <ul>
       <li>Critère 3.1 : Certaines informations sont données uniquement par la couleur ;</li>
-    </ul>
-    <h4>Thématique 5 : Tableaux</h4>
-    <ul>
       <li>Critère 5.3 : Pour chaque tableau de mise en forme, le contenu linéarisé ne reste pas compréhensible ;</li>
       <li>Critère 5.4 : Des titres ne sont pas correctement associés au tableau de données ;</li>
       <li>
         Critère 5.6 : Des en-têtes de colonnes ou des en-têtes de lignes de tableau ne sont pas correctement déclarés ;
       </li>
       <li>Critère 5.7 : Les cellules d’en-têtes ne sont pas associées aux cellules correspondantes ;</li>
-    </ul>
-    <h4>Thématique 6 : Liens</h4>
-    <ul>
       <li>Critère 6.1 : Certains liens ne sont pas explicites ;</li>
-    </ul>
-    <h4>Thématique 7 : Scripts</h4>
-    <ul>
       <li>Critère 7.1 : Certains scripts sont incompatibles avec les technologies d’assistance ;</li>
       <li>Critère 7.3 : Certains scripts ne sont pas contrôlables par le clavier ;</li>
       <li>Critère 7.4 : Les utilisateurs ne sont pas avertis des changements de contexte ;</li>
-    </ul>
-    <h4>Thématique 8 : Éléments obligatoires</h4>
-    <ul>
       <li>Critère 8.5 : Certaines pages n’ont pas de titre de page ;</li>
       <li>Critère 8.9 : Certaines balises sont utilisées uniquement à des fins de présentation ;</li>
-    </ul>
-    <h4>Thématique 9 : Structuration de l’information</h4>
-    <ul>
       <li>Critère 9.1 : La hiérarchie des titres n’est pas appropriée ;</li>
       <li>Critère 9.2 : La structure de certaines pages n’est pas cohérente ;</li>
       <li>Critère 9.3 : Certaines listes sont incorrectement structurées dans le code ;</li>
-    </ul>
-    <h4>Thématique 10 : Présentation de l’information</h4>
-    <ul>
       <li>
         Critère 10.1 : Des éléments de présentation sont présents dans le code au lieu d’être sur des feuilles de style
         ;
@@ -115,9 +92,6 @@
         Critère 10.13 : Certains contenus additionnels ne peuvent pas être masqués par l’utilisateur après leur
         apparition ;
       </li>
-    </ul>
-    <h4>Thématique 11 : Formulaires</h4>
-    <ul>
       <li>Critère 11.1 : Certains champs de formulaire n’ont pas d’étiquette ;</li>
       <li>Critère 11.2 : Certaines étiquettes associées à des champs de formulaire ne sont pas pertinentes ;</li>
       <li>
@@ -142,13 +116,7 @@
         Critère 11.13 : La finalité de certains champs de saisie ne peut pas être déduite pour faciliter le remplissage
         automatique des champs avec les données de l'utilisateur ;
       </li>
-    </ul>
-    <h4>Thématique 12 : Navigation</h4>
-    <ul>
       <li>Critère 12.8 : Dans chaque page web, l'ordre de tabulation dans le contenu est parfois incohérent ;</li>
-    </ul>
-    <h4>Thématique 13 : Consultation</h4>
-    <ul>
       <li>Critère 13.3 : Certains documents bureautiques ne sont pas accessibles ;</li>
     </ul>
     <h3>Dérogations pour charge disproportionnée</h3>
