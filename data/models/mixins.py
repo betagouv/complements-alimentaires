@@ -54,7 +54,11 @@ class WithIsRiskyBoolean(models.Model):
 
 class WithNovelFoodBoolean(models.Model):
     """
-    Les tables ingrédients (plantes, micro-organismes, substances et ingrédients de la SICCRF) peuvent être considérés comme 'Novel Food'
+    Les ingrédients (plantes, micro-organismes, substances et ingrédients de la SICCRF) peuvent être considérés comme 'Novel Food'
+    Un Novel Food désigne tout aliment ou ingrédient alimentaire qui n'a pas été consommé de manière significative
+    au sein de l'Union Européenne avant le 15 mai 1997.
+    La catégorie englobe également des aliments traditionnellement consommés dans des pays hors UE mais qui restaient
+    inconnus des consommateurs européens jusqu'à récemment.
     """
 
     class Meta:
