@@ -47,6 +47,21 @@ class VisaRole(BaseGlobalRole):
 
 
 class ControlRole(BaseGlobalRole):
+    always_persist = models.BooleanField(
+        default=False,
+        verbose_name="toujours maintenir le rôle",
+        help_text="Ce rôle ne sera pas retiré lors des synchronisations automatiques avec Grist",
+    )
+
     class Meta:
         verbose_name = "rôle de contrôle"
         verbose_name_plural = "rôles de contrôle"
+
+
+class ControlRoleEmail(models.Model):
+    """
+    Cette liste contient les emails des personnes qui doivent avoir le rôle ControlRole.
+    """
+
+    email = models.EmailField(unique=True, verbose_name="email autorisé")
+    created_at = models.DateTimeField(auto_now_add=True)
