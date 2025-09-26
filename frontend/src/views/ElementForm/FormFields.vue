@@ -48,7 +48,12 @@
           <DsfrInput v-model="state.einecNumber" label="Numéro EINECS" labelVisible />
         </DsfrInputGroup>
         <DsfrInputGroup v-if="formForType.casNumber">
-          <DsfrInput v-model="state.casNumber" label="Numéro CAS" labelVisible />
+          <DsfrInput
+            v-model="state.casNumber"
+            label="Numéro CAS"
+            labelVisible
+            hint="Le format de n°CAS doit suivre XXXXXXX-XX-X"
+          />
         </DsfrInputGroup>
         <DsfrToggleSwitch
           v-if="!state.ingredientType || state.ingredientType != aromaId"
