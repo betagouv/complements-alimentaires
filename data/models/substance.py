@@ -6,7 +6,7 @@ from simple_history.models import HistoricalRecords
 from data.behaviours import Historisable, TimeStampable
 from data.validators import validate_cas
 
-from .abstract_models import IngredientCommonModel
+from .abstract_models import IngredientCommonModel, SynonymType
 from .mixins import PublicReasonHistoricalModel
 from .population import Population
 from .unit import SubstanceUnit
@@ -141,6 +141,9 @@ class SubstanceSynonym(TimeStampable, Historisable):
     )
     standard_name = models.ForeignKey(Substance, on_delete=models.CASCADE, verbose_name="nom de référence")
     name = models.TextField(verbose_name="nom")
+    synonym_type = models.CharField(
+        choices=SynonymType.choices, default=SynonymType.FRENCH, verbose_name="type de synonyme"
+    )
 
     def __str__(self):
         return self.name

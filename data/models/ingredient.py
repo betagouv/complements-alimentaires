@@ -4,7 +4,7 @@ from simple_history.models import HistoricalRecords
 
 from data.behaviours import Historisable, TimeStampable
 
-from .abstract_models import IngredientCommonModel
+from .abstract_models import IngredientCommonModel, SynonymType
 from .ingredient_type import IngredientType
 from .mixins import PublicReasonHistoricalModel
 from .substance import Substance
@@ -64,7 +64,9 @@ class IngredientSynonym(TimeStampable, Historisable):
     )
     standard_name = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     name = models.TextField(verbose_name="nom")
-    # synonym_type = TSYNSBSTA_IDENT en ForeignKeys
+    synonym_type = models.CharField(
+        choices=SynonymType.choices, default=SynonymType.FRENCH, verbose_name="type de synonyme"
+    )
 
     def __str__(self):
         return self.name

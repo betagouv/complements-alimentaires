@@ -12,7 +12,6 @@ class SubstanceFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ("siccrf_id",)
 
     name = factory.Faker("text", max_nb_chars=20)
-    siccrf_name_en = factory.Faker("text", max_nb_chars=20)
     siccrf_id = factory.Sequence(lambda n: n + 1)
     must_specify_quantity = factory.Faker("boolean")
     nutritional_reference = factory.Faker("random_int", min=0, max=20)
