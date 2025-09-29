@@ -25,8 +25,7 @@
         :showElementAuthorization="showElementAuthorization"
       />
 
-      <p class="font-bold mt-8" v-if="payload.computedSubstances.length">Substances contenues dans la composition :</p>
-      <ComputedSubstancesInfo v-model="payload" />
+      <ComputedSubstancesInfo v-model="payload" tableTitle="Substances contenues dans la composition" class="mt-8" />
 
       <h3 class="fr-h6 mt-8!">
         Adresse sur l'étiquetage
