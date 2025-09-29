@@ -369,7 +369,7 @@ class TestElementsCreateApi(APITestCase):
         payload = {
             "name": "My new substance",
             "status": IngredientStatus.AUTHORIZED,
-            "casNumber": "1234",
+            "casNumber": "1234-11-2",
             "einecNumber": "5678",
             "maxQuantities": [
                 {"population": self.general_pop.id, "maxQuantity": 3.4},
@@ -386,7 +386,7 @@ class TestElementsCreateApi(APITestCase):
         substance = Substance.objects.get(id=body["id"])
         self.assertEqual(substance.name, "My new substance")
         self.assertEqual(substance.status, IngredientStatus.AUTHORIZED)
-        self.assertEqual(substance.cas_number, "1234")
+        self.assertEqual(substance.cas_number, "1234-11-2")
         self.assertEqual(substance.einec_number, "5678")
         self.assertEqual(substance.max_quantity, 3.4)
         self.assertEqual(
@@ -805,7 +805,7 @@ class TestElementsModifyApi(APITestCase):
         substance = SubstanceFactory.create(
             public_comments="CA comment",
             private_comments="private comment",
-            cas_number="CA number",
+            cas_number="1234567-89-1",
         )
         MaxQuantityPerPopulationRelationFactory(
             substance=substance,
@@ -824,7 +824,7 @@ class TestElementsModifyApi(APITestCase):
         substance.refresh_from_db()
         self.assertEqual(substance.public_comments, "")
         self.assertEqual(substance.private_comments, "")
-        self.assertEqual(substance.cas_number, "")
+        self.assertEqual(substance.cas_number, None)
 
         self.assertFalse(
             substance.maxquantityperpopulationrelation_set.filter(population__name="Population générale").exists()

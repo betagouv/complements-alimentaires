@@ -170,9 +170,17 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         "get_ingredients",
         "status",
         "is_risky",
+        "requires_analysis_report",
         "novel_food",
     )
-    list_filter = ("is_obsolete", "status", "is_risky", "novel_food", SubstanceTypeListFilter)
+    list_filter = (
+        "is_obsolete",
+        "status",
+        "is_risky",
+        "requires_analysis_report",
+        "novel_food",
+        SubstanceTypeListFilter,
+    )
     show_facets = admin.ShowFacets.NEVER
     search_fields = ["id", "name"]
 

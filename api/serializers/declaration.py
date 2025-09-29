@@ -576,7 +576,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def get_populations_cibles(self, obj):
         return [population.name for population in obj.populations.all()]
 
-    def get_plantes(self, obj):
+    def serialize_plants(self, obj, active):
         return [
             {
                 "nom": declared_plant.plant.name if declared_plant.plant else None,
@@ -587,8 +587,11 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             }
             if declared_plant.unit
             else {}
-            for declared_plant in obj.declared_plants.filter(active=True)
+            for declared_plant in obj.declared_plants.filter(active=active)
         ]
+
+    def get_plantes(self, obj):
+        return self.serialize_plants(obj, True)
 
     def get_micro_organismes(self, obj):
         return [
@@ -637,10 +640,12 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         ]
 
     def get_ingredients_inactifs(self, obj):
-        return [
+        plants = self.serialize_plants(obj, False)
+        other_ingredients = [
             str(declared_ingredient.ingredient.name)
             for declared_ingredient in obj.declared_ingredients.filter(ingredient__ingredient_type=5)
         ]
+        return plants + other_ingredients
 
 
 class DeclarationSerializer(serializers.ModelSerializer):

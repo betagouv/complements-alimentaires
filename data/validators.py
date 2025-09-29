@@ -27,3 +27,11 @@ def validate_vat(value):
         raise ValidationError(
             "Un numéro de TVA valide doit commencer par minimum 2 lettres suivies de 2 à 12 chiffres."
         )
+
+
+def validate_cas(value):
+    """Validateur pour les numéros CAS de substance"""
+    if not re.match(r"^[0-9]{2,7}-[0-9]{2}-[0-9]{1}$", value):
+        raise ValidationError(
+            "Un numéro CAS valide doit se conformer au modèle XXXXXXX-YY-Z, chaque lettre représentant un chiffre. La première partie contient minimum 2 chiffres et maximum 7."
+        )

@@ -1,4 +1,5 @@
 from django.urls import reverse
+from django.utils.http import urlencode
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -339,3 +340,29 @@ class TestDeclarationControllers(APITestCase):
         results = response.json()["results"]
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["id"], decl1.id)
+
+    @authenticate
+    def test_search_containing_special_char(self):
+        """
+        Des caractères comme « + » sont inclus dans la recherche
+        """
+        ControlRoleFactory(user=authenticate.user)
+        zma = AwaitingInstructionDeclarationFactory(name="ZMA+")
+        AwaitingInstructionDeclarationFactory(name="ZMA 2")
+        AwaitingInstructionDeclarationFactory(name="AZMAT 3")
+        AwaitingInstructionDeclarationFactory(name="Hand Soap")
+
+        # Recherche complète (zma+)
+        params = urlencode({"search_name": "zma+"})
+        response = self.client.get(reverse("api:list_control_declarations") + "?" + params, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+
+        self.assertEqual(results[0]["id"], zma.id)
+
+        # Recherche contenant tous les zma
+        response = self.client.get(reverse("api:list_control_declarations") + "?search_name=zma", format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 3)

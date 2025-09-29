@@ -207,14 +207,14 @@ const commonApiParams = computed(() => {
   if (ordering.value) apiParams += `&ordering=${ordering.value}`
   if (simplifiedStatus.value) apiParams += `&simplifiedStatus=${simplifiedStatus.value}`
   if (surveillanceOnly.value) apiParams += `&surveillanceOnly=${surveillanceOnly.value}`
-  if (searchTerm.value) apiParams += `&search=${searchTerm.value}`
+  if (searchTerm.value) apiParams += `&search=${encodeURIComponent(searchTerm.value)}`
   if (props.companyId) apiParams += `&company=${props.companyId}`
   if (population.value) apiParams += `&population=${population.value}`
   if (condition.value) apiParams += `&condition=${condition.value}`
   if (galenicFormulation.value) apiParams += `&galenic_formulation=${galenicFormulation.value}`
-  if (searchTermProduct.value) apiParams += `&search_name=${searchTermProduct.value}`
-  if (searchTermBrand.value) apiParams += `&search_brand=${searchTermBrand.value}`
-  if (searchTermCompany.value) apiParams += `&search_company=${searchTermCompany.value}`
+  if (searchTermProduct.value) apiParams += `&search_name=${encodeURIComponent(searchTermProduct.value)}`
+  if (searchTermBrand.value) apiParams += `&search_brand=${encodeURIComponent(searchTermBrand.value)}`
+  if (searchTermCompany.value) apiParams += `&search_company=${encodeURIComponent(searchTermCompany.value)}`
   if (submissionDateAfter.value) apiParams += `&submission_date_after=${submissionDateAfter.value}`
   if (doses.value) for (let i = 0; i < doses.value.length; i++) apiParams += `&dose=${doses.value[i].split("****")[0]}`
   return apiParams
