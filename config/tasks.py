@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, time
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, F, Max, Q
@@ -285,7 +286,9 @@ def import_control_emails():
         logger.exception(e)
         return
 
-    unique_emails = list(set(emails))
+    user_model = get_user_model()
+    normalized_emails = [user_model.objects.normalize_email(e) for e in emails]
+    unique_emails = list(set(normalized_emails))
 
     # delete old emails
     deleted_objs = ControlRoleEmail.objects.exclude(email__in=unique_emails).delete()

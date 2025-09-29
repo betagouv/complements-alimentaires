@@ -19,9 +19,9 @@ class TestControlEmailImport(TestCase):
         mock_response.status_code = 200
         mock_response.json.return_value = {
             "records": [
-                {"fields": {"mail": "new@example.org"}},
-                {"fields": {"mail": "keep@example.org"}},
-                {"fields": {"mail": "keep@example.org"}},  # duplicate devrait être ignoré
+                {"fields": {"mail": "new@Example.org"}},
+                {"fields": {"mail": "keep@Example.org"}},  # test normalisation
+                {"fields": {"mail": "new@example.org"}},  # duplicate devrait être ignoré
                 {"fields": {"mail": ""}},  # adresse vide devrait être ignoré
             ]
         }
