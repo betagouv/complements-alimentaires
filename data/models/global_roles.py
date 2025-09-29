@@ -50,7 +50,7 @@ class ControlRole(BaseGlobalRole):
     always_persist = models.BooleanField(
         default=False,
         verbose_name="toujours maintenir le rôle",
-        help_text="Ce rôle ne sera pas retiré lors des synchronisations automatiques avec Grist",
+        help_text="Ce rôle ne sera pas retiré lors des synchronisations automatiques",
     )
 
     class Meta:

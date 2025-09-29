@@ -61,6 +61,6 @@ class Command(BaseCommand):
                 removed_count += 1
                 self.stdout.write(f"✗ Removed control role from {email}")
             except ControlRole.DoesNotExist:
-                pass
+                self.stdout.write(f"⚠ Control role for {email} does not exist")
 
         self.stdout.write(self.style.SUCCESS(f"Successfully processed: {added_count} added, {removed_count} removed"))

@@ -49,7 +49,6 @@ class TestAssignControlRolesCommand(TestCase):
         # user1 reste, user2 ne devrait plus avoir le rôle
         self.assertTrue(ControlRole.objects.filter(user=self.user1).exists())
         self.assertFalse(ControlRole.objects.filter(user=self.user2).exists())
-        self.assertFalse(ControlRole.objects.filter(user=self.user2).exists())
 
     def test_always_persist_roles_are_preserved(self):
         """Les rôles de contrôle avec le paramètre `always_persist` doivent rester"""
