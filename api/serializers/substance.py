@@ -53,7 +53,6 @@ class SubstanceSerializer(CommonIngredientReadSerializer):
     class Meta:
         model = Substance
         fields = COMMON_FETCH_FIELDS + (
-            "name_en",
             "cas_number",
             "einec_number",
             "source",
@@ -80,7 +79,6 @@ class SubstanceShortSerializer(PrivateFieldsSerializer):
         fields = (
             "id",
             "name",
-            "name_en",
             "cas_number",
             "einec_number",
             "unit",

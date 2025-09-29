@@ -38,8 +38,6 @@ class SubstanceType(models.IntegerChoices):
 
 class Substance(IngredientCommonModel):
     """
-    siccrf_min_quantity présente dans les tables SICCRF n'est strictement jamais remplie, donc pas transformée en champ du modèle
-    siccrf_source_en présente dans les tables SICCRF est très peu remplie, donc pas transformée en champ du modèle
     TODO: à terme cette table de substance ne devrait contenir que les substances à but nutritionnel ou physiologique (pas les enzymes, etc)
     """
 
@@ -47,7 +45,6 @@ class Substance(IngredientCommonModel):
         verbose_name = "substance active"
         verbose_name_plural = "substances actives"
 
-    siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     # cas_number
     cas_number = models.CharField(
         unique=True,
@@ -92,10 +89,6 @@ class Substance(IngredientCommonModel):
         ],
         inherit=True,
     )
-
-    @property
-    def name_en(self):
-        return self.siccrf_name_en
 
     @property
     def max_quantity(self):

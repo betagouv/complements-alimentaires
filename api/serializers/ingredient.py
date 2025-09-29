@@ -31,7 +31,6 @@ class IngredientSerializer(CommonIngredientReadSerializer):
     class Meta:
         model = Ingredient
         fields = COMMON_FETCH_FIELDS + (
-            "name_en",
             "description",
             "substances",
         )
