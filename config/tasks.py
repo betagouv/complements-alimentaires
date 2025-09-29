@@ -291,10 +291,12 @@ def import_control_emails():
     deleted_objs = ControlRoleEmail.objects.exclude(email__in=unique_emails).delete()
     logger.info(f"Task import_control_emails: {deleted_objs[0]} emails deleted")
 
-    # create new objects
+    existing_emails = set(ControlRoleEmail.objects.all().values_list("email", flat=True))
+    emails_to_add = set(unique_emails) - existing_emails
+
     objs_to_create = []
-    for email_address in unique_emails:
-        if email_address and not ControlRoleEmail.objects.filter(email=email_address).exists():
+    for email_address in emails_to_add:
+        if email_address:  # ne pas ajouter des mails vides
             objs_to_create.append(ControlRoleEmail(email=email_address))
 
     objs = ControlRoleEmail.objects.bulk_create(objs_to_create)
