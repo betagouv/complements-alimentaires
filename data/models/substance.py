@@ -141,12 +141,6 @@ class SubstanceSynonym(TimeStampable, Historisable):
     )
     standard_name = models.ForeignKey(Substance, on_delete=models.CASCADE, verbose_name="nom de référence")
     name = models.TextField(verbose_name="nom")
-    siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
-    # TODO importer aussi les synonym_type = TSYNSBSTA_IDENT en ForeignKeys
-
-    @property
-    def is_obsolete(self):
-        return self.siccrf_is_obsolete
 
     def __str__(self):
         return self.name

@@ -69,11 +69,6 @@ class MicroorganismSynonym(TimeStampable, Historisable):
     )
     standard_name = models.ForeignKey(Microorganism, on_delete=models.CASCADE)
     name = models.TextField(verbose_name="nom")
-    siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
-
-    @property
-    def is_obsolete(self):
-        return self.siccrf_is_obsolete
 
     def __str__(self):
         return self.name

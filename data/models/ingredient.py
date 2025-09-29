@@ -64,12 +64,7 @@ class IngredientSynonym(TimeStampable, Historisable):
     )
     standard_name = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     name = models.TextField(verbose_name="nom")
-    siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
-    # TODO importer aussi les synonym_type = TSYNSBSTA_IDENT en ForeignKeys
-
-    @property
-    def is_obsolete(self):
-        return self.siccrf_is_obsolete
+    # synonym_type = TSYNSBSTA_IDENT en ForeignKeys
 
     def __str__(self):
         return self.name
