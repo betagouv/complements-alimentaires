@@ -14,7 +14,9 @@ from viewflow import fsm
 from api.utils.simplified_status import SimplifiedStatusHelper
 from config import email
 from data.etl.declarations import OpenDataDeclarationsETL
-from data.models import Company, Declaration, Snapshot
+from data.models import Company, Declaration, Snapshot, ControlRoleEmail
+
+from .grist_api import fetch_control_emails_from_grist
 
 from .celery import app
 
@@ -272,3 +274,28 @@ def update_market_ready_counts():
             logger.exception(e)
 
     logger.info("Cache update done!")
+
+
+@app.task
+def import_control_emails():
+    try:
+        emails = fetch_control_emails_from_grist()
+    except Exception as e:
+        logger.error("Task failed: import_control_emails. Could not fetch emails from grist")
+        logger.exception(e)
+        return
+
+    unique_emails = list(set(emails))
+
+    # delete old emails
+    deleted_objs = ControlRoleEmail.objects.exclude(email__in=unique_emails).delete()
+    logger.info(f"Task import_control_emails: {deleted_objs[0]} emails deleted")
+
+    # create new objects
+    objs_to_create = []
+    for email_address in unique_emails:
+        if email_address and not ControlRoleEmail.objects.filter(email=email_address).exists():
+            objs_to_create.append(ControlRoleEmail(email=email_address))
+
+    objs = ControlRoleEmail.objects.bulk_create(objs_to_create)
+    logger.info(f"Task import_control_emails: {len(objs)} emails imported")

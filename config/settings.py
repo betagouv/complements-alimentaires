@@ -354,3 +354,5 @@ DECLARATIONS_EXPORT_BATCH_SIZE = env("DECLARATIONS_EXPORT_BATCH_SIZE", default=N
 # un variable d'environnement utilisé pour le debuggage de l'export sans modifier les données
 # actuellement publiées
 DECLARATIONS_EXPORT_DATASET_NAME = env("DECLARATIONS_EXPORT_DATASET_NAME", default="declarations")
+
+GRIST_API_KEY = env("GRIST_API_KEY", default=None)
