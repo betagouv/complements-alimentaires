@@ -24,7 +24,6 @@ class PlantFamilySerializer(serializers.ModelSerializer):
             "id",
             "name",
             "is_obsolete",
-            "name_en",
             "siccrf_id",
         )
         read_only_fields = fields
@@ -54,7 +53,6 @@ class PlantSynonymSerializer(serializers.ModelSerializer):
         model = PlantSynonym
         fields = (
             "name",
-            "is_obsolete",
             "standard_name",
         )
         read_only_fields = fields
