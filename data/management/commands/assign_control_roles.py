@@ -50,7 +50,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"✓ Added control role to {email}")
             except get_user_model().DoesNotExist:
                 # INFO : Éventuellement on pourrait envoyer des emails pour inviter ces usagers à créer un compte
-                self.stdout.write(f"⚠ User not found for control role assignment: {email}")
+                self.stdout.write(f"⚠ Active user not found for control role assignment: {email}")
 
         # Suppression des rôles de controle existants
         removed_count = 0
