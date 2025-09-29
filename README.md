@@ -123,6 +123,8 @@ DATAGOUV_DECLARATIONS_ID=XXXXX (can be found via data.gouv.fr's API. Other datas
 OBSERVATION_DAYS (optionnel)= Le nombre de jours proposé pour une période d'observation. Par défaut c'est 15.
 DECLARATIONS_EXPORT_BATCH_SIZE (optionnel)= Le nombre de déclarations par batch pour l'export vers open data
 GRIST_API_KEY (optionnel)= La clé de l'API pour grist
+GRIST_CONTROL_DOC_ID (optionnel)= L'identifiant du document utilisé pour recuperer les mails du role contrôle. Retrouvable depuis settings -> API console de grist
+GRIST_CONTROL_TABLE_ID (optionnel)= L'identifiant du tableau utilisé dans GRIST_CONTROL_DOC_ID. Retrouvable depuis settings -> API console de grist
 ```
 
 #### Créer les différents modèles Django dans la base de données

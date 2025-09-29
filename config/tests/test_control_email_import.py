@@ -8,6 +8,8 @@ from data.models import ControlRoleEmail
 
 class TestControlEmailImport(TestCase):
     @override_settings(GRIST_API_KEY="something")
+    @override_settings(GRIST_CONTROL_DOC_ID="something")
+    @override_settings(GRIST_CONTROL_TABLE_ID="something")
     @patch("config.grist_api.requests")
     def test_import_control_emails_task(self, mock_requests):
         """
