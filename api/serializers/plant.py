@@ -24,6 +24,7 @@ class PlantFamilySerializer(serializers.ModelSerializer):
             "id",
             "name",
             "is_obsolete",
+            "name_en",
             "siccrf_id",
         )
         read_only_fields = fields

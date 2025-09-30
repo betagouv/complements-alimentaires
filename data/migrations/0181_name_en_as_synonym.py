@@ -24,13 +24,14 @@ class Migration(migrations.Migration):
 
         for ingredient in Ingredient.objects.all():
             if ingredient.siccrf_name_en:
-                IngredientSynonym.objects.create(
+
+                IngredientSynonym.objects.get_or_create(
                     name=ingredient.siccrf_name_en, standard_name=ingredient, synonym_type=SynonymType.ENGLISH
                 )
 
         for substance in Substance.objects.all():
             if substance.siccrf_name_en:
-                SubstanceSynonym.objects.create(
+                SubstanceSynonym.objects.get_or_create(
                     name=substance.siccrf_name_en, standard_name=substance, synonym_type=SynonymType.ENGLISH
                 )
 
