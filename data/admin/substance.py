@@ -108,11 +108,19 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
                     "siccrf_name_en",
                     "is_obsolete",
                     "status",
-                    "is_risky",
                     "novel_food",
                     "substance_types",
-                    "requires_analysis_report",
                     "regulatory_resource_links",
+                ],
+            },
+        ),
+        (
+            "Avertissements",
+            {
+                "fields": [
+                    "warning_on_label",
+                    "is_risky",
+                    "requires_analysis_report",
                 ],
             },
         ),

@@ -38,10 +38,8 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
                     "name",
                     "description",
                     "is_obsolete",
-                    "is_risky",
                     "novel_food",
                     "status",
-                    "requires_analysis_report",
                     "regulatory_resource_links",
                 ],
             },
@@ -52,6 +50,16 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
                 "fields": [
                     "genus",
                     "species",
+                ],
+            },
+        ),
+        (
+            "Avertissements",
+            {
+                "fields": [
+                    "warning_on_label",
+                    "is_risky",
+                    "requires_analysis_report",
                 ],
             },
         ),
