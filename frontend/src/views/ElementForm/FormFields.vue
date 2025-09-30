@@ -75,14 +75,13 @@
       </div>
       <div class="grid md:grid-cols-2 md:gap-4">
         <div class="mb-4">
-          <DsfrFieldset legend="Description" legendClass="fr-text--lg pb-0! mb-2! mt-4!">
-            <DsfrInput
-              v-model="state.description"
-              :isTextarea="true"
-              label-visible
-              hint="Donne de l'information sur la source de l'ingrédient, son processus de fabrication, sa forme moléculaire, etc"
-            />
-          </DsfrFieldset>
+          <DsfrInput
+            label="Description"
+            v-model="state.description"
+            :isTextarea="true"
+            label-visible
+            hint="Donne de l'information sur la source de l'ingrédient, son processus de fabrication, sa forme moléculaire, etc"
+          />
         </div>
       </div>
       <div class="grid md:grid-cols-2 mt-4">
