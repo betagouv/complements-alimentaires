@@ -8,8 +8,8 @@ autopep8==2.3.2
 beautifulsoup4==4.13.5
 billiard==4.2.1
 bleach==6.2.0
-boto3==1.40.21
-botocore==1.40.21
+boto3==1.40.40
+botocore==1.40.40
 bs4==0.0.2
 celery==5.5.3
 certifi==2025.8.3
@@ -101,7 +101,7 @@ reportlab==4.4.4
 requests==2.32.4
 requests-mock==1.12.1
 ruff==0.12.10
-s3transfer==0.13.1
+s3transfer==0.14.0
 sentry-sdk==2.38.0
 sib-api-v3-sdk==7.6.0
 six==1.17.0
