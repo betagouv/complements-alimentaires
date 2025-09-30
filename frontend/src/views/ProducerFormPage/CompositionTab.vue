@@ -65,7 +65,7 @@
         title="Dosage total des substances actives"
         content="Ce tableau présente les substances actives identifiées dans les ingrédients que vous avez sélectionnés. Une même substance pouvant être introduite par plusieurs sources, la quantité totale par dose journalière recommandée (DJR) est demandée pour certaines substances faisant l'objet d'une règlementation spécifique ou impliquant un risque."
       />
-      <SubstancesTable :hidePrivateComments="true" v-model="payload" />
+      <SubstancesTable :hidePrivateComments="true" v-model="payload" title="Substances actives" />
     </div>
   </div>
 </template>

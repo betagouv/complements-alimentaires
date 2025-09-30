@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, time
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, F, Max, Q
@@ -14,7 +15,9 @@ from viewflow import fsm
 from api.utils.simplified_status import SimplifiedStatusHelper
 from config import email
 from data.etl.declarations import OpenDataDeclarationsETL
-from data.models import Company, Declaration, Snapshot
+from data.models import Company, Declaration, Snapshot, ControlRoleEmail
+
+from .grist_api import fetch_control_emails_from_grist
 
 from .celery import app
 
@@ -272,3 +275,32 @@ def update_market_ready_counts():
             logger.exception(e)
 
     logger.info("Cache update done!")
+
+
+@app.task
+def import_control_emails():
+    try:
+        emails = fetch_control_emails_from_grist()
+    except Exception as e:
+        logger.error("Task failed: import_control_emails. Could not fetch emails from grist")
+        logger.exception(e)
+        return
+
+    user_model = get_user_model()
+    normalized_emails = [user_model.objects.normalize_email(e) for e in emails]
+    unique_emails = list(set(normalized_emails))
+
+    # delete old emails
+    deleted_objs = ControlRoleEmail.objects.exclude(email__in=unique_emails).delete()
+    logger.info(f"Task import_control_emails: {deleted_objs[0]} emails deleted")
+
+    existing_emails = set(ControlRoleEmail.objects.all().values_list("email", flat=True))
+    emails_to_add = set(unique_emails) - existing_emails
+
+    objs_to_create = []
+    for email_address in emails_to_add:
+        if email_address:  # ne pas ajouter des mails vides
+            objs_to_create.append(ControlRoleEmail(email=email_address))
+
+    objs = ControlRoleEmail.objects.bulk_create(objs_to_create)
+    logger.info(f"Task import_control_emails: {len(objs)} emails imported")

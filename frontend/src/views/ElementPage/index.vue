@@ -107,7 +107,12 @@
       </ul>
       <!-- Date de dernière mise à jour de la donnée -->
       <DsfrAccordion title="Historique de l'ingrédient" id="accordion-history">
-        <DsfrTable :headers="historyHeaders" :rows="historyDataDedup"></DsfrTable>
+        <DsfrTable
+          :headers="historyHeaders"
+          :rows="historyDataDedup"
+          title="Historique de l'ingrédient"
+          :no-caption="true"
+        ></DsfrTable>
       </DsfrAccordion>
 
       <div v-if="isInstructor" class="text-right mt-4">
