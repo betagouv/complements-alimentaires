@@ -40,11 +40,8 @@ class RecomputeDeclarationArticleAtIngredientSaveMixin:
 
 
 class HasCommentListFilter(admin.SimpleListFilter):
-    # Titre lisible par l'homme qui sera affiché dans le
-    # Barre latérale d'administration droite juste au-dessus des options de filtre.
     title = "Avec commentaire"
 
-    # Paramètre du filtre qui sera utilisé dans la requête URL.
     parameter_name = "has_comment"
 
     def lookups(self, request, model_admin):
@@ -60,11 +57,9 @@ class HasCommentListFilter(admin.SimpleListFilter):
         provided in the query string and retrievable via
         `self.value()`.
         """
-        # Comparez la valeur demandée (soit '80s' ou '90s')
-        # pour décider comment filtrer l'ensemble de requêtes.
         if self.value() == "public":
-            return queryset.exclude(public_comments=None)
+            return queryset.exclude(public_comments="")
         if self.value() == "private":
-            return queryset.exclude(private_comments=None)
+            return queryset.exclude(private_comments="")
         if self.value() == "none":
-            return queryset.filter(public_comments=None, private_comments=None)
+            return queryset.filter(public_comments="", private_comments="")
