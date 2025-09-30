@@ -40,7 +40,10 @@ class MicroorganismSerializer(CommonIngredientReadSerializer):
 class MicroorganismSynonymModificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = MicroorganismSynonym
-        fields = ("name",)
+        fields = (
+            "name",
+            "synonym_type",
+        )
 
 
 class MicroorganismModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):

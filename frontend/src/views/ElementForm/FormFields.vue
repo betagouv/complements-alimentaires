@@ -84,24 +84,20 @@
           />
         </div>
       </div>
-      <div class="grid md:grid-cols-2 mt-4">
-        <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg pb-0! mb-2! mt-4!">
-          <DsfrInput
-            v-for="(_, idx) in state.synonyms"
-            :key="`synonym-${idx}`"
-            v-model="state.synonyms[idx].name"
-            class="mb-4"
-          />
-          <DsfrButton
-            label="Ajouter un synonyme"
-            @click="addNewSynonym"
-            icon="ri-add-line"
-            size="sm"
-            class="mt-2"
-            secondary
-          />
-        </DsfrFieldset>
-      </div>
+      <DsfrFieldset legend="Synonymes" legendClass="fr-text--lg pb-0! mb-2! mt-4!">
+        <div class="grid md:grid-cols-4" v-for="(q, idx) in state.synonyms" :key="`synoym-row-${idx}`">
+          <DsfrInput class="col-span-2" v-model="q.name" />
+          <DsfrSelect class="!ml-2" v-model="q.synonymType" :options="synonymTypes" />
+        </div>
+        <DsfrButton
+          label="Ajouter un synonyme"
+          @click="addNewSynonym"
+          icon="ri-add-line"
+          size="sm"
+          class="mt-2"
+          secondary
+        />
+      </DsfrFieldset>
       <div class="grid md:grid-cols-2 mt-4">
         <DsfrFieldset
           legend="Ressources reglementaires"
@@ -392,7 +388,7 @@ const elementId = computed(() => props.element?.id)
 const apiType = computed(() => props.type && getApiType(props.type))
 const router = useRouter()
 
-const createEmptySynonym = () => ({ name: "" })
+const createEmptySynonym = () => ({ name: "", type: "" })
 
 const state = ref({
   authorisedPlantParts: [],
@@ -558,6 +554,11 @@ const orderedPlantParts = computed(() => {
   ordered?.sort((a, b) => a.name.localeCompare(b.name))
   return ordered
 })
+const synonymTypes = [
+  { value: 1, text: "Nom scientifique", apiValue: "scientific_name" },
+  { value: 1, text: "Nom en français", apiValue: "french_name" },
+  { value: 1, text: "Nom en anglais", apiValue: "english_name" },
+]
 
 const ingredientTypes = [
   { value: 1, text: "Nutriment (Forme d'apport)", apiValue: "form_of_supply" },

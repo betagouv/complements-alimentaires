@@ -40,7 +40,10 @@ class IngredientSerializer(CommonIngredientReadSerializer):
 class IngredientSynonymModificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientSynonym
-        fields = ("name",)
+        fields = (
+            "name",
+            "synonym_type",
+        )
 
 
 class IngredientModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
