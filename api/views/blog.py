@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class UnaccentSearchFilter(filters.SearchFilter):
-    def construct_search(self, field_name):
+    def construct_search(self, field_name, _):
         lookup = self.lookup_prefixes.get(field_name[0])
         if lookup:
             field_name = field_name[1:]
@@ -37,7 +37,7 @@ class BlogPostsView(ListAPIView):
     queryset = BlogPost.objects.filter(published=True)
     pagination_class = BlogPostsPagination
     filter_backends = [django_filters.DjangoFilterBackend, UnaccentSearchFilter]
-    search_fields = ["title", "tagline", "body"]
+    search_fields = ["title", "tagline", "content"]
 
 
 class BlogPostView(RetrieveAPIView):
