@@ -5,6 +5,7 @@ from collections import OrderedDict
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import ParseError
 
 from api.exception_handling import ProjectAPIException
 from api.serializers import SearchResultSerializer
@@ -24,7 +25,10 @@ class SearchView(APIView):
     min_query_length = 3
 
     def post(self, request, *args, **kwargs):
-        query = request.data.get("search")
+        try:
+            query = request.data.get("search")
+        except AttributeError:
+            raise ParseError("JSON objet attendu")
         if not query or len(query) < self.min_query_length:
             raise ProjectAPIException(
                 global_error=f"Le terme de recherche doit être supérieur ou égal à {self.min_query_length} caractères"
