@@ -388,7 +388,7 @@ const elementId = computed(() => props.element?.id)
 const apiType = computed(() => props.type && getApiType(props.type))
 const router = useRouter()
 
-const createEmptySynonym = () => ({ name: "", type: "" })
+const createEmptySynonym = () => ({ name: "", synonymType: "" })
 
 const state = ref({
   authorisedPlantParts: [],
@@ -555,9 +555,9 @@ const orderedPlantParts = computed(() => {
   return ordered
 })
 const synonymTypes = [
-  { value: 1, text: "Nom scientifique", apiValue: "scientific_name" },
-  { value: 1, text: "Nom en français", apiValue: "french_name" },
-  { value: 1, text: "Nom en anglais", apiValue: "english_name" },
+  { value: "SCIENTIFIC_NAME", text: "Nom scientifique" },
+  { value: "FRENCH_NAME", text: "Nom en français" },
+  { value: "ENGLISH_NAME", text: "Nom en anglais" },
 ]
 
 const ingredientTypes = [

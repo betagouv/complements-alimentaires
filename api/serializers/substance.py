@@ -22,6 +22,7 @@ class SubstanceSynonymSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
+            "synonym_type",
         )
         read_only_fields = fields
 
