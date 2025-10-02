@@ -26,10 +26,6 @@ class OpenDataDeclarationsETL:
         )
         self.filename = f"{self.dataset_name}.csv"
 
-        # supprimer l'ancien fichier pour preparer l'action d'append du load_dataframe
-        if default_storage.exists(self.filename):
-            default_storage.delete(self.filename)
-
     def export(self):
         logger.info("OpenDataDeclarationsETL: Starting export")
         paginated_queryset = self.extract_paginated_queryset()
