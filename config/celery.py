@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import environ
+from django.conf import settings
 from celery import Celery
 from celery.schedules import crontab
 from celery.signals import setup_logging
@@ -30,6 +31,7 @@ mornings = crontab(hour=10, minute=0, day_of_week="*")
 midnights = crontab(hour=0, minute=0, day_of_week="*")
 nightly = crontab(hour=2, minute=0, day_of_week="*")
 daily_workweek = crontab(hour=7, minute=0, day_of_week="1-5")
+export_time = crontab(hour=settings.DECLARATIONS_EXPORT_HOUR, minute=0, day_of_week="*")
 
 every_minute = crontab(minute="*/1")  # Pour tester en local
 
@@ -52,7 +54,7 @@ app.conf.beat_schedule = {
     },
     "export_datasets_to_data_gouv": {
         "task": "config.tasks.export_datasets_to_data_gouv",
-        "schedule": midnights,
+        "schedule": export_time,
     },
 }
 

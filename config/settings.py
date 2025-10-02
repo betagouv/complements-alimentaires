@@ -351,6 +351,7 @@ FIXTURE_MODELS = [
 ENABLE_AUTO_VALIDATION = env("ENABLE_AUTO_VALIDATION", cast=bool, default=False)
 
 DECLARATIONS_EXPORT_BATCH_SIZE = env("DECLARATIONS_EXPORT_BATCH_SIZE", default=None)
+DECLARATIONS_EXPORT_HOUR = env("DECLARATIONS_EXPORT_HOUR", default=1)
 # un variable d'environnement utilisé pour le debuggage de l'export sans modifier les données
 # actuellement publiées
 DECLARATIONS_EXPORT_DATASET_NAME = env("DECLARATIONS_EXPORT_DATASET_NAME", default="declarations")
