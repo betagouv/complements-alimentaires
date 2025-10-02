@@ -5,6 +5,7 @@ from collections import OrderedDict
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import ParseError
 
 from api.exception_handling import ProjectAPIException
 from api.serializers import SearchResultSerializer
@@ -24,12 +25,21 @@ class SearchView(APIView):
     min_query_length = 3
 
     def post(self, request, *args, **kwargs):
-        query = request.data.get("search")
+        try:
+            query = request.data.get("search")
+        except AttributeError:
+            raise ParseError("JSON objet attendu")
         if not query or len(query) < self.min_query_length:
             raise ProjectAPIException(
                 global_error=f"Le terme de recherche doit être supérieur ou égal à {self.min_query_length} caractères"
             )
-        if int(self.request.data.get("limit", 0)) > self.max_pagination_limit:
+
+        try:
+            limit = int(self.request.data.get("limit", 0))
+        except ValueError:
+            raise ParseError("Limit devrait être un chiffre entier")
+
+        if limit > self.max_pagination_limit:
             raise ProjectAPIException(global_error=f"La limite de pagination excède {self.max_pagination_limit}")
 
         results = search_elements({"term": query}, deduplicate=True)
@@ -43,10 +53,13 @@ class SearchView(APIView):
         return json.loads(camelized.decode("utf-8"))
 
     def paginate_results(self, results, view=None):
-        self.limit = int(self.request.data.get("limit", self.default_pagination_limit))
-        self.count = len(results)
-        self.offset = int(self.request.data.get("offset", 0))
+        try:
+            self.limit = int(self.request.data.get("limit", self.default_pagination_limit))
+            self.offset = int(self.request.data.get("offset", 0))
+        except TypeError:
+            raise ParseError("Limit et offset devront être des chiffres entiers")
 
+        self.count = len(results)
         if self.count == 0 or self.offset > self.count:
             return []
 
