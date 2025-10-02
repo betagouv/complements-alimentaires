@@ -108,8 +108,9 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     def add_synonym(self, instance, synonym):
         try:
             name = synonym["name"]
+            synonym_type = synonym["synonym_type"]
             if name and name != instance.name and not self.synonym_model.objects.filter(name=name).exists():
-                self.synonym_model.objects.create(standard_name=instance, name=name)
+                self.synonym_model.objects.create(standard_name=instance, name=name, synonym_type=synonym_type)
         except KeyError:
             raise ParseError(detail="Must provide 'name' to create new synonym")
 

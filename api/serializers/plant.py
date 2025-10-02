@@ -55,6 +55,7 @@ class PlantSynonymSerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "standard_name",
+            "synonym_type",
         )
         read_only_fields = fields
 
