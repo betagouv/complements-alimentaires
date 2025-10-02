@@ -32,7 +32,6 @@ class SubstanceForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "description": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
@@ -105,7 +104,6 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
                 "fields": [
                     "name",
                     "description",
-                    "siccrf_name_en",
                     "is_obsolete",
                     "status",
                     "novel_food",
@@ -165,7 +163,6 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         SubstanceSynonymInline,
     )
     readonly_fields = [
-        "siccrf_name_en",
         "get_plants",
         "get_microorganisms",
         "get_ingredients",

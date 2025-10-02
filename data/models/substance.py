@@ -6,7 +6,7 @@ from simple_history.models import HistoricalRecords
 from data.behaviours import Historisable, TimeStampable
 from data.validators import validate_cas
 
-from .abstract_models import IngredientCommonModel
+from .abstract_models import IngredientCommonModel, SynonymType
 from .mixins import PublicReasonHistoricalModel
 from .population import Population
 from .unit import SubstanceUnit
@@ -38,8 +38,6 @@ class SubstanceType(models.IntegerChoices):
 
 class Substance(IngredientCommonModel):
     """
-    siccrf_min_quantity présente dans les tables SICCRF n'est strictement jamais remplie, donc pas transformée en champ du modèle
-    siccrf_source_en présente dans les tables SICCRF est très peu remplie, donc pas transformée en champ du modèle
     TODO: à terme cette table de substance ne devrait contenir que les substances à but nutritionnel ou physiologique (pas les enzymes, etc)
     """
 
@@ -47,7 +45,6 @@ class Substance(IngredientCommonModel):
         verbose_name = "substance active"
         verbose_name_plural = "substances actives"
 
-    siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     # cas_number
     cas_number = models.CharField(
         unique=True,
@@ -90,10 +87,6 @@ class Substance(IngredientCommonModel):
         ],
         inherit=True,
     )
-
-    @property
-    def name_en(self):
-        return self.siccrf_name_en
 
     @property
     def max_quantity(self):
@@ -139,12 +132,9 @@ class SubstanceSynonym(TimeStampable, Historisable):
     )
     standard_name = models.ForeignKey(Substance, on_delete=models.CASCADE, verbose_name="nom de référence")
     name = models.TextField(verbose_name="nom")
-    siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
-    # TODO importer aussi les synonym_type = TSYNSBSTA_IDENT en ForeignKeys
-
-    @property
-    def is_obsolete(self):
-        return self.siccrf_is_obsolete
+    synonym_type = models.CharField(
+        choices=SynonymType.choices, default=SynonymType.FRENCH, verbose_name="type de synonyme"
+    )
 
     def __str__(self):
         return self.name

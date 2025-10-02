@@ -54,7 +54,6 @@ class PlantSynonymSerializer(serializers.ModelSerializer):
         model = PlantSynonym
         fields = (
             "name",
-            "is_obsolete",
             "standard_name",
         )
         read_only_fields = fields

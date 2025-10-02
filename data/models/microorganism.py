@@ -5,7 +5,7 @@ from simple_history.models import HistoricalRecords
 
 from data.behaviours import Historisable, TimeStampable
 
-from .abstract_models import IngredientCommonModel
+from .abstract_models import IngredientCommonModel, SynonymType
 from .mixins import PublicReasonHistoricalModel
 from .substance import Substance
 
@@ -69,11 +69,9 @@ class MicroorganismSynonym(TimeStampable, Historisable):
     )
     standard_name = models.ForeignKey(Microorganism, on_delete=models.CASCADE)
     name = models.TextField(verbose_name="nom")
-    siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
-
-    @property
-    def is_obsolete(self):
-        return self.siccrf_is_obsolete
+    synonym_type = models.CharField(
+        choices=SynonymType.choices, default=SynonymType.FRENCH, verbose_name="type de synonyme"
+    )
 
     def __str__(self):
         return self.name

@@ -13,7 +13,6 @@ class IngredientFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ("siccrf_id",)
 
     name = factory.Faker("text", max_nb_chars=15)
-    siccrf_name_en = factory.Faker("text", max_nb_chars=15)
     siccrf_id = factory.Sequence(lambda n: n + 1)
     description = factory.Faker("text", max_nb_chars=160)
     status = IngredientStatus.AUTHORIZED

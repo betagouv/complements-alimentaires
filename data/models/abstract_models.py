@@ -8,6 +8,12 @@ from .ingredient_status import WithStatus
 from .mixins import WithComments, WithDefaultFields, WithIsRiskyBoolean, WithNovelFoodBoolean
 
 
+class SynonymType(models.TextChoices):
+    SCIENTIFIC = "SCIENTIFIC_NAME", "Nom scientifique"  # TSYN[SBSTA,MO,AO]_IDENT=1 dans TeleIcare
+    FRENCH = "FRENCH_NAME", "Nom en français"  # TSYN[SBSTA,MO,AO]_IDENT=2 dans TeleIcare
+    ENGLISH = "ENGLISH_NAME", "Nom en anglais"  # TSYN[SBSTA,MO,AO]_IDENT=3 dans TeleIcare
+
+
 # Remplace le manager par défaut pour filtrer tous les modèles ayant un champ `is_obsolete`
 class CommonModelManager(models.Manager):
     def __init__(self, *args, **kwargs):

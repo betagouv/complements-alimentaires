@@ -4,7 +4,7 @@ from simple_history.models import HistoricalRecords
 
 from data.behaviours import Historisable, TimeStampable
 
-from .abstract_models import IngredientCommonModel
+from .abstract_models import IngredientCommonModel, SynonymType
 from .ingredient_type import IngredientType
 from .mixins import PublicReasonHistoricalModel
 from .substance import Substance
@@ -15,7 +15,6 @@ class Ingredient(IngredientCommonModel):
         verbose_name = "autre ingrédient"
         verbose_name_plural = "autres ingrédients"
 
-    siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
     ingredient_type = models.IntegerField(
         choices=IngredientType.choices,
         null=True,
@@ -28,10 +27,6 @@ class Ingredient(IngredientCommonModel):
         ],
         inherit=True,
     )
-
-    @property
-    def name_en(self):
-        return self.siccrf_name_en
 
     @property
     def object_type(self):
@@ -63,12 +58,9 @@ class IngredientSynonym(TimeStampable, Historisable):
     )
     standard_name = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     name = models.TextField(verbose_name="nom")
-    siccrf_is_obsolete = models.BooleanField(verbose_name="objet obsolète selon SICCRF", default=False)
-    # TODO importer aussi les synonym_type = TSYNSBSTA_IDENT en ForeignKeys
-
-    @property
-    def is_obsolete(self):
-        return self.siccrf_is_obsolete
+    synonym_type = models.CharField(
+        choices=SynonymType.choices, default=SynonymType.FRENCH, verbose_name="type de synonyme"
+    )
 
     def __str__(self):
         return self.name

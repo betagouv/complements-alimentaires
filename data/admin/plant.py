@@ -39,7 +39,6 @@ class PlantForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
         }

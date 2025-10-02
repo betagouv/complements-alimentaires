@@ -32,7 +32,6 @@ class IngredientForm(ChangeReasonFormMixin):
     class Meta:
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
         }
@@ -52,7 +51,6 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
             {
                 "fields": [
                     "name",
-                    "siccrf_name_en",
                     "description",
                     "ingredient_type",
                     "is_obsolete",
@@ -106,7 +104,6 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
         HasCommentListFilter,
     )
     show_facets = admin.ShowFacets.NEVER
-    readonly_fields = ("siccrf_name_en",)
     search_fields = ["id", "name"]
 
     def has_linked_substances(self, obj):
