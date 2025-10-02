@@ -77,6 +77,10 @@ class PlantSubstanceRelation(TimeStampable, Historisable):
 class PlantSynonym(TimeStampable, Historisable):
     class Meta:
         verbose_name = "synonyme de plante"
+        unique_together = (
+            "standard_name",
+            "name",
+        )
 
     siccrf_id = models.IntegerField(
         blank=True,

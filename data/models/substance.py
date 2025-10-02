@@ -121,6 +121,10 @@ class Substance(IngredientCommonModel):
 class SubstanceSynonym(TimeStampable, Historisable):
     class Meta:
         verbose_name = "synonyme substance active"
+        unique_together = (
+            "standard_name",
+            "name",
+        )
 
     siccrf_id = models.IntegerField(
         blank=True,

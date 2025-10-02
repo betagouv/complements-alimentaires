@@ -47,6 +47,10 @@ class IngredientSubstanceRelation(TimeStampable, Historisable):
 class IngredientSynonym(TimeStampable, Historisable):
     class Meta:
         verbose_name = "synonyme d'ingrédient"
+        unique_together = (
+            "standard_name",
+            "name",
+        )
 
     siccrf_id = models.IntegerField(
         blank=True,
