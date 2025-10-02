@@ -16,7 +16,6 @@ class Ingredient(IngredientCommonModel):
         verbose_name_plural = "autres ingrédients"
 
     siccrf_name_en = models.TextField(blank=True, verbose_name="nom en anglais")
-    description = models.TextField(blank=True)
     ingredient_type = models.IntegerField(
         choices=IngredientType.choices,
         null=True,

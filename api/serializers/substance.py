@@ -56,7 +56,6 @@ class SubstanceSerializer(CommonIngredientReadSerializer):
             "name_en",
             "cas_number",
             "einec_number",
-            "source",
             "must_specify_quantity",
             "max_quantity",
             "max_quantities",

@@ -9,6 +9,7 @@ from data.models import Ingredient, IngredientSynonym
 from .abstract_admin import (
     ChangeReasonAdminMixin,
     ChangeReasonFormMixin,
+    HasCommentListFilter,
     RecomputeDeclarationArticleAtIngredientSaveMixin,
 )
 
@@ -55,11 +56,19 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
                     "description",
                     "ingredient_type",
                     "is_obsolete",
-                    "is_risky",
                     "novel_food",
                     "status",
-                    "requires_analysis_report",
                     "regulatory_resource_links",
+                ],
+            },
+        ),
+        (
+            "Avertissements",
+            {
+                "fields": [
+                    "warning_on_label",
+                    "is_risky",
+                    "requires_analysis_report",
                 ],
             },
         ),
@@ -94,6 +103,7 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
         "requires_analysis_report",
         "novel_food",
         "ingredient_type",
+        HasCommentListFilter,
     )
     show_facets = admin.ShowFacets.NEVER
     readonly_fields = ("siccrf_name_en",)

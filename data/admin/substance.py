@@ -11,7 +11,7 @@ from config import tasks
 from data.models.declaration import Declaration
 from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym, SubstanceType
 
-from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
+from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin, HasCommentListFilter
 
 
 class SubstanceTypesForm(forms.MultipleChoiceField):
@@ -33,7 +33,7 @@ class SubstanceForm(ChangeReasonFormMixin):
         widgets = {
             "name": forms.Textarea(attrs={"cols": 60, "rows": 1}),
             "siccrf_name_en": forms.Textarea(attrs={"cols": 60, "rows": 1}),
-            "source": forms.Textarea(attrs={"cols": 60, "rows": 4}),
+            "description": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
         }
@@ -104,15 +104,23 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             {
                 "fields": [
                     "name",
+                    "description",
                     "siccrf_name_en",
                     "is_obsolete",
                     "status",
-                    "source",
-                    "is_risky",
                     "novel_food",
                     "substance_types",
-                    "requires_analysis_report",
                     "regulatory_resource_links",
+                ],
+            },
+        ),
+        (
+            "Avertissements",
+            {
+                "fields": [
+                    "warning_on_label",
+                    "is_risky",
+                    "requires_analysis_report",
                 ],
             },
         ),
@@ -180,6 +188,7 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         "requires_analysis_report",
         "novel_food",
         SubstanceTypeListFilter,
+        HasCommentListFilter,
     )
     show_facets = admin.ShowFacets.NEVER
     search_fields = ["id", "name"]

@@ -9,6 +9,7 @@ from data.models import Plant, PlantSynonym
 from .abstract_admin import (
     ChangeReasonAdminMixin,
     ChangeReasonFormMixin,
+    HasCommentListFilter,
     RecomputeDeclarationArticleAtIngredientSaveMixin,
 )
 
@@ -58,12 +59,21 @@ class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonA
             {
                 "fields": [
                     "name",
+                    "description",
                     "is_obsolete",
-                    "is_risky",
                     "novel_food",
                     "status",
-                    "requires_analysis_report",
                     "regulatory_resource_links",
+                ],
+            },
+        ),
+        (
+            "Avertissements",
+            {
+                "fields": [
+                    "warning_on_label",
+                    "is_risky",
+                    "requires_analysis_report",
                 ],
             },
         ),
@@ -106,6 +116,7 @@ class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonA
         "is_risky",
         "requires_analysis_report",
         "novel_food",
+        HasCommentListFilter,
     )
     show_facets = admin.ShowFacets.NEVER
     search_fields = ["id", "name"]
