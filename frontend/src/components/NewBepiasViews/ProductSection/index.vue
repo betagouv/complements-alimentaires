@@ -13,8 +13,11 @@
       <SectionHeader id="composition-produit" icon="ri-capsule-fill" text="Composition produit" />
       <CompositionInfo :useAccordions="true" :showElementAuthorization="true" :model-value="declaration" />
       <div v-if="showComputedSubstances">
-        <p class="font-bold mt-8">Substances contenues dans la composition :</p>
-        <ComputedSubstancesInfo :model-value="declaration" />
+        <ComputedSubstancesInfo
+          :model-value="declaration"
+          tableTitle="Substances contenues dans la composition"
+          class="mt-8"
+        />
       </div>
       <p class="font-bold mt-8" v-else>Pas de substances calculées à partir de la composition</p>
 

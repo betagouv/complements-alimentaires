@@ -81,17 +81,21 @@
           <ElementText :text="nutritionalReference" :lowercase="true" />
         </ElementColumn>
       </div>
+      <ElementTextSection title="Description" :text="description" />
+
       <ElementDoses
         v-if="element.maxQuantities && element.maxQuantities.length"
         :maxQuantities="element.maxQuantities"
         :unit="element.unit"
       ></ElementDoses>
+      <ElementTextSection title="Avertissement à faire figurer sur l'étiquetage" :text="warningOnLabel" />
+      <!-- Utiliser DsfrCallout avec une couleur particulière pour les avertissements quand cela sera possible https://github.com/dnum-mi/vue-dsfr/issues/1126 -->
+
       <ElementTextSection
         v-if="element.requiresAnalysisReport"
         title="Point d'attention"
         text="Un bulletin d'analyse vous sera demandé."
       />
-      <ElementTextSection title="Description" :text="description" />
       <ElementTextSection title="Commentaires" :text="publicComments" />
       <ul v-if="element.regulatoryResourceLinks?.length" class="list-none -ml-4 mb-6">
         <li v-for="resourceLink in element.regulatoryResourceLinks" :key="resourceLink">
@@ -103,7 +107,12 @@
       </ul>
       <!-- Date de dernière mise à jour de la donnée -->
       <DsfrAccordion title="Historique de l'ingrédient" id="accordion-history">
-        <DsfrTable :headers="historyHeaders" :rows="historyDataDedup"></DsfrTable>
+        <DsfrTable
+          :headers="historyHeaders"
+          :rows="historyDataDedup"
+          title="Historique de l'ingrédient"
+          :no-caption="true"
+        ></DsfrTable>
       </DsfrAccordion>
 
       <div v-if="isInstructor" class="text-right mt-4">
@@ -197,6 +206,7 @@ const nutritionalReference = computed(() => {
 })
 
 const description = computed(() => element.value?.description)
+const warningOnLabel = computed(() => element.value?.warningOnLabel)
 const publicComments = computed(() => element.value?.publicComments)
 
 const historyData = computed(() =>

@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib import admin
 
 from config import tasks
 from data.models import Declaration
@@ -36,3 +37,29 @@ class RecomputeDeclarationArticleAtIngredientSaveMixin:
                 Declaration.objects.filter(id__in=ids_using_ingredient),
                 f"Article recalculé après modification via l'admin de {obj.object_type} id {obj.id} : {obj.name}",
             )
+
+
+class HasCommentListFilter(admin.SimpleListFilter):
+    title = "Avec commentaire"
+
+    parameter_name = "has_comment"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("public", "Public"),
+            ("private", "Privé"),
+            ("none", "Aucun"),
+        ]
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        if self.value() == "public":
+            return queryset.exclude(public_comments="")
+        if self.value() == "private":
+            return queryset.exclude(private_comments="")
+        if self.value() == "none":
+            return queryset.filter(public_comments="", private_comments="")

@@ -43,12 +43,25 @@
             />
           </DsfrInputGroup>
         </div>
+        <div class="col-span-full mt-4 -mb-6" v-if="formForType.substanceTypes">
+          <DsfrCheckboxSet
+            v-model="state.substanceTypes"
+            :options="substanceTypeOptions"
+            legend="Type(s) de la substance"
+            required
+          />
+        </div>
 
         <DsfrInputGroup v-if="formForType.einecNumber">
           <DsfrInput v-model="state.einecNumber" label="Numéro EINECS" labelVisible />
         </DsfrInputGroup>
         <DsfrInputGroup v-if="formForType.casNumber">
-          <DsfrInput v-model="state.casNumber" label="Numéro CAS" labelVisible />
+          <DsfrInput
+            v-model="state.casNumber"
+            label="Numéro CAS"
+            labelVisible
+            hint="Le format de n°CAS doit suivre XXXXXXX-XX-X"
+          />
         </DsfrInputGroup>
         <DsfrToggleSwitch
           v-if="!state.ingredientType || state.ingredientType != aromaId"
@@ -59,28 +72,15 @@
           label-left
           class="self-center mt-4 col-span-2 sm:col-span-1"
         />
-        <DsfrToggleSwitch
-          v-model="state.isRisky"
-          label="Nécessite une instruction manuelle et vigilante ?"
-          activeText="Oui"
-          inactiveText="Non"
-          label-left
-          class="self-center mt-4 col-span-2 sm:col-span-2"
-        />
-        <DsfrToggleSwitch
-          v-model="state.requiresAnalysisReport"
-          label="Nécessite un bulletin d'analyse ?"
-          activeText="Oui"
-          inactiveText="Non"
-          label-left
-          class="self-center mt-4 col-span-2 sm:col-span-2"
-        />
-        <div class="col-span-full mt-4 -mb-6" v-if="formForType.substanceTypes">
-          <DsfrCheckboxSet
-            v-model="state.substanceTypes"
-            :options="substanceTypeOptions"
-            legend="Type(s) de la substance"
-            required
+      </div>
+      <div class="grid md:grid-cols-2 md:gap-4">
+        <div class="mb-4">
+          <DsfrInput
+            label="Description"
+            v-model="state.description"
+            :isTextarea="true"
+            label-visible
+            hint="Donne de l'information sur la source de l'ingrédient, son processus de fabrication, sa forme moléculaire, etc"
           />
         </div>
       </div>
@@ -262,13 +262,57 @@
         />
       </div>
     </DsfrFieldset>
+    <DsfrFieldset legend="Avertissement" legendClass="fr-h4 mb-0!" class="mb-0">
+      <div class="grid md:grid-cols-2 md:gap-4">
+        <div class="mb-4">
+          <DsfrInput
+            label="Avertissement(s)"
+            v-model="state.warningOnLabel"
+            :isTextarea="true"
+            label-visible
+            hint="Mentions d'avertissement devant figurer sur l'étiquette"
+          />
+        </div>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
+        <DsfrToggleSwitch
+          v-model="state.isRisky"
+          label="Nécessite une instruction manuelle et vigilante ?"
+          activeText="Oui"
+          inactiveText="Non"
+          label-left
+          class="self-center mt-4 col-span-2 sm:col-span-2"
+        />
+        <DsfrToggleSwitch
+          v-model="state.requiresAnalysisReport"
+          label="Nécessite un bulletin d'analyse ?"
+          activeText="Oui"
+          inactiveText="Non"
+          label-left
+          class="self-center mt-4 col-span-2 sm:col-span-2"
+        />
+      </div>
+    </DsfrFieldset>
+
     <DsfrFieldset legend="Commentaires" legendClass="fr-h4 mb-0!" class="mb-0">
       <div class="grid md:grid-cols-2 md:gap-4">
         <div class="mb-4">
-          <DsfrInput label="Commentaire public" v-model="state.publicComments" :isTextarea="true" label-visible />
+          <DsfrInput
+            label="Commentaire public"
+            v-model="state.publicComments"
+            :isTextarea="true"
+            label-visible
+            hint="Les indications de quantités max par population et d'avertissements spécifiques sont à renseigner plus haut"
+          />
         </div>
         <div class="mb-4">
-          <DsfrInput label="Commentaire privé" v-model="state.privateComments" :isTextarea="true" label-visible />
+          <DsfrInput
+            label="Commentaire privé"
+            v-model="state.privateComments"
+            :isTextarea="true"
+            label-visible
+            hint="Les liens vers des sources règlementaires sont à renseigner plus haut"
+          />
         </div>
       </div>
       <div v-if="!isNewIngredient" class="grid md:grid-cols-2 md:gap-4">

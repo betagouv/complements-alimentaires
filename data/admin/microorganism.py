@@ -8,6 +8,7 @@ from data.models import Microorganism
 from .abstract_admin import (
     ChangeReasonAdminMixin,
     ChangeReasonFormMixin,
+    HasCommentListFilter,
     RecomputeDeclarationArticleAtIngredientSaveMixin,
 )
 
@@ -35,11 +36,10 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
             {
                 "fields": [
                     "name",
+                    "description",
                     "is_obsolete",
-                    "is_risky",
                     "novel_food",
                     "status",
-                    "requires_analysis_report",
                     "regulatory_resource_links",
                 ],
             },
@@ -50,6 +50,16 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
                 "fields": [
                     "genus",
                     "species",
+                ],
+            },
+        ),
+        (
+            "Avertissements",
+            {
+                "fields": [
+                    "warning_on_label",
+                    "is_risky",
+                    "requires_analysis_report",
                 ],
             },
         ),
@@ -73,13 +83,7 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
         "requires_analysis_report",
         "novel_food",
     )
-    list_filter = (
-        "is_obsolete",
-        "status",
-        "is_risky",
-        "requires_analysis_report",
-        "novel_food",
-    )
+    list_filter = ("is_obsolete", "status", "is_risky", "requires_analysis_report", "novel_food", HasCommentListFilter)
     show_facets = admin.ShowFacets.NEVER
     readonly_fields = ("name",)
     search_fields = ["id", "name"]
