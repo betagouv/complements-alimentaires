@@ -357,7 +357,7 @@ const setDocumentTitleForTab = (tabIdx, fromData) => {
   let declarationTitle = isNewDeclaration.value ? "Nouvelle démarche" : `Déclaration « ${fromData.value.name} »`
   if (readonly.value) declarationTitle = `Détails de ma déclaration « ${fromData.value.name} »`
   setDocumentTitle(
-    [titles.value[tabIdx].title, declarationTitle],
+    [titles.value[tabIdx]?.title, declarationTitle],
     readonly.value
       ? undefined
       : {
