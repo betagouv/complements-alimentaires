@@ -46,10 +46,7 @@ class IngredientSerializer(CommonIngredientReadSerializer):
 
     class Meta:
         model = Ingredient
-        fields = COMMON_FETCH_FIELDS + (
-            "description",
-            "substances",
-        )
+        fields = COMMON_FETCH_FIELDS + ("substances",)
         read_only_fields = fields
 
 
@@ -66,7 +63,7 @@ class IngredientModificationSerializer(CommonIngredientModificationSerializer, W
     synonym_set_field_name = "ingredientsynonym_set"
     max_quantities_model = IngredientMaxQuantityPerPopulationRelation
     max_quantities_set_field_name = "ingredientmaxquantityperpopulationrelation_set"
-
+    ingredient_name_field = "ingredient"
     max_quantities = IngredientMaxQuantitySerializer(
         many=True, source="ingredientmaxquantityperpopulationrelation_set", required=False
     )

@@ -793,7 +793,7 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
             response.json()["fieldErrors"]["maxQuantities"][0],
-            "Veuillez donner qu'une quantité maximale par population",
+            "Veuillez ne donner qu'une quantité maximale par population",
         )
 
         response = self.client.patch(
