@@ -11,7 +11,6 @@ from data.factories import (
     DeclaredSubstanceFactory,
     IngredientFactory,
     InstructionRoleFactory,
-    MaxQuantityPerPopulationRelationFactory,
     MicroorganismFactory,
     OngoingInstructionDeclarationFactory,
     PlantFactory,
@@ -20,6 +19,7 @@ from data.factories import (
     PlantSynonymFactory,
     PopulationFactory,
     SubstanceFactory,
+    SubstanceMaxQuantityPerPopulationRelationFactory,
     SubstanceSynonymFactory,
     SubstanceUnitFactory,
 )
@@ -491,7 +491,7 @@ class TestElementsModifyApi(APITestCase):
             status=IngredientStatus.AUTHORIZED,
             must_specify_quantity=True,
         )
-        MaxQuantityPerPopulationRelationFactory(
+        SubstanceMaxQuantityPerPopulationRelationFactory(
             substance=substance,
             population=self.general_pop,
             max_quantity=3.4,
@@ -645,7 +645,9 @@ class TestElementsModifyApi(APITestCase):
             unit=SubstanceUnitFactory.create(),
             status=IngredientStatus.AUTHORIZED,
         )
-        MaxQuantityPerPopulationRelationFactory(substance=substance, population=self.general_pop, max_quantity=24)
+        SubstanceMaxQuantityPerPopulationRelationFactory(
+            substance=substance, population=self.general_pop, max_quantity=24
+        )
         new_unit = SubstanceUnitFactory.create()
         self.assertEqual(substance.max_quantity, 24, "La quantité max pour la population générale est définie")
         response = self.client.patch(
@@ -743,7 +745,9 @@ class TestElementsModifyApi(APITestCase):
             name="original name",
             unit=SubstanceUnitFactory.create(),
         )
-        MaxQuantityPerPopulationRelationFactory(substance=substance, population=self.general_pop, max_quantity=24)
+        SubstanceMaxQuantityPerPopulationRelationFactory(
+            substance=substance, population=self.general_pop, max_quantity=24
+        )
         self.assertEqual(substance.max_quantity, 24, "La quantité max pour la population générale est définie")
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
@@ -815,7 +819,7 @@ class TestElementsModifyApi(APITestCase):
             private_comments="private comment",
             cas_number="1234567-89-1",
         )
-        MaxQuantityPerPopulationRelationFactory(
+        SubstanceMaxQuantityPerPopulationRelationFactory(
             substance=substance,
             population=self.general_pop,
             max_quantity=3.4,
