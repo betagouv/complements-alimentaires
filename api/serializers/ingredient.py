@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from data.models import Ingredient, IngredientSynonym
+from data.models import Ingredient, IngredientMaxQuantityPerPopulationRelation, IngredientSynonym
 
 from .common_ingredient import (
     COMMON_FETCH_FIELDS,
@@ -11,6 +11,7 @@ from .common_ingredient import (
     CommonIngredientReadSerializer,
     WithSubstances,
 )
+from .population import SimplePopulationSerializer
 from .substance import SubstanceShortSerializer
 
 
@@ -24,9 +25,24 @@ class IngredientSynonymSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class IngredientMaxQuantitySerializer(serializers.ModelSerializer):
+    population = SimplePopulationSerializer()
+
+    class Meta:
+        model = IngredientMaxQuantityPerPopulationRelation
+        fields = ("max_quantity", "population")
+        read_only_fields = fields
+
+
 class IngredientSerializer(CommonIngredientReadSerializer):
     synonyms = IngredientSynonymSerializer(many=True, read_only=True, source="ingredientsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
+    unit = serializers.CharField(read_only=True, source="unit.name")
+    unit_id = serializers.IntegerField(read_only=True, source="unit.id")
+
+    max_quantities = IngredientMaxQuantitySerializer(
+        many=True, source="ingredientmaxquantityperpopulationrelation_set", required=False
+    )
 
     class Meta:
         model = Ingredient
@@ -48,7 +64,12 @@ class IngredientModificationSerializer(CommonIngredientModificationSerializer, W
 
     synonym_model = IngredientSynonym
     synonym_set_field_name = "ingredientsynonym_set"
+    max_quantities_model = IngredientMaxQuantityPerPopulationRelation
+    max_quantities_set_field_name = "ingredientmaxquantityperpopulationrelation_set"
 
+    max_quantities = IngredientMaxQuantitySerializer(
+        many=True, source="ingredientmaxquantityperpopulationrelation_set", required=False
+    )
     declaredingredient_set_field_names = ["declaredingredient_set"]
 
     class Meta:

@@ -3,7 +3,14 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 
-from data.models import Part, Plant, PlantFamily, PlantPart, PlantSynonym
+from data.models import (
+    Part,
+    Plant,
+    PlantFamily,
+    PlantMaxQuantityPerPopulationRelation,
+    PlantPart,
+    PlantSynonym,
+)
 
 from .common_ingredient import (
     COMMON_FETCH_FIELDS,
@@ -14,6 +21,7 @@ from .common_ingredient import (
     CommonIngredientReadSerializer,
     WithSubstances,
 )
+from .population import SimplePopulationSerializer
 from .substance import SubstanceShortSerializer
 
 
@@ -59,11 +67,23 @@ class PlantSynonymSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class PlantMaxQuantitySerializer(serializers.ModelSerializer):
+    population = SimplePopulationSerializer()
+
+    class Meta:
+        model = PlantMaxQuantityPerPopulationRelation
+        fields = ("max_quantity", "population")
+        read_only_fields = fields
+
+
 class PlantSerializer(CommonIngredientReadSerializer):
     family = PlantFamilySerializer(read_only=True)
     plant_parts = PartRelationSerializer(source="part_set", many=True, read_only=True)
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
+    max_quantities = PlantMaxQuantitySerializer(
+        many=True, source="plantmaxquantityperpopulationrelation_set", required=False
+    )
 
     class Meta:
         model = Plant
@@ -95,10 +115,15 @@ class PlantPartModificationSerializer(serializers.ModelSerializer):
 
 class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
     synonyms = PlantSynonymModificationSerializer(many=True, source="plantsynonym_set", required=False)
+    max_quantities = PlantMaxQuantitySerializer(
+        many=True, source="plantmaxquantityperpopulationrelation_set", required=False
+    )
     plant_parts = PlantPartModificationSerializer(source="part_set", many=True)
 
     synonym_model = PlantSynonym
     synonym_set_field_name = "plantsynonym_set"
+    max_quantities_model = PlantMaxQuantityPerPopulationRelation
+    max_quantities_set_field_name = "plantmaxquantityperpopulationrelation_set"
 
     declaredingredient_set_field_names = ["declaredplant_set"]
 

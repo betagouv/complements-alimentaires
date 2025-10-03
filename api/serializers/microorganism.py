@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from data.models import Microorganism, MicroorganismSynonym
+from data.models import Microorganism, MicroorganismMaxQuantityPerPopulationRelation, MicroorganismSynonym
 
 from .common_ingredient import (
     COMMON_FETCH_FIELDS,
@@ -10,6 +10,7 @@ from .common_ingredient import (
     CommonIngredientReadSerializer,
     WithSubstances,
 )
+from .population import SimplePopulationSerializer
 from .substance import SubstanceShortSerializer
 
 
@@ -23,9 +24,21 @@ class MicroorganismSynonymSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class MicroorganismMaxQuantitySerializer(serializers.ModelSerializer):
+    population = SimplePopulationSerializer()
+
+    class Meta:
+        model = MicroorganismMaxQuantityPerPopulationRelation
+        fields = ("max_quantity", "population")
+        read_only_fields = fields
+
+
 class MicroorganismSerializer(CommonIngredientReadSerializer):
     synonyms = MicroorganismSynonymSerializer(many=True, read_only=True, source="microorganismsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
+    max_quantities = MicroorganismMaxQuantitySerializer(
+        many=True, source="microorganismmaxquantityperpopulationrelation_set", required=False
+    )
 
     class Meta:
         model = Microorganism
@@ -48,7 +61,12 @@ class MicroorganismModificationSerializer(CommonIngredientModificationSerializer
 
     synonym_model = MicroorganismSynonym
     synonym_set_field_name = "microorganismsynonym_set"
+    max_quantities_model = MicroorganismMaxQuantityPerPopulationRelation
+    max_quantities_set_field_name = "microorganismmaxquantityperpopulationrelation_set"
 
+    max_quantities = MicroorganismMaxQuantitySerializer(
+        many=True, source="microorganismmaxquantityperpopulationrelation_set", required=False
+    )
     declaredingredient_set_field_names = ["declaredmicroorganism_set"]
 
     class Meta:

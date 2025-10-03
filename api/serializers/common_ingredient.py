@@ -23,6 +23,8 @@ COMMON_FIELDS = (
     "description",
     "warning_on_label",
     "public_comments",
+    "max_quantities",
+    "unit",
     "private_comments",
     "status",
     "novel_food",
@@ -43,6 +45,7 @@ COMMON_FETCH_FIELDS = (
     "description",
     "warning_on_label",
     "public_comments",
+    "max_quantities",
     "activity",
     "status",
     "novel_food",
@@ -66,26 +69,38 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
     change_reason = serializers.CharField(required=False, allow_blank=True)
     public_change_reason = serializers.CharField(required=False, allow_blank=True)
 
+    def validate_max_quantities(self, value):
+        population_ids = [v["population"].id for v in value]
+        unique_pop_ids = list(set(population_ids))
+        if len(population_ids) != len(unique_pop_ids):
+            raise serializers.ValidationError("Veuillez ne donner qu'une quantité maximale par population")
+        return value
+
     # DRF ne gère pas automatiquement la création des nested-fields :
     # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations
     @transaction.atomic
     def create(self, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
+        max_quantities = validated_data.pop(self.max_quantities_set_field_name, [])
         change_reason = validated_data.pop("change_reason", "Création via Compl'Alim")
-        ingredient = super().create(validated_data)
-        self.update_change_reason(ingredient, change_reason, "")
 
+        ingredient = super().create(validated_data)
         for synonym in synonyms:
             self.add_synonym(ingredient, synonym)
+        for max_quantity in max_quantities:
+            self.add_max_quantity(ingredient, max_quantity)
+
+        self.update_change_reason(ingredient, change_reason, "")
 
         return ingredient
 
     @transaction.atomic
     def update(self, instance, validated_data):
         synonyms = validated_data.pop(self.synonym_set_field_name, [])
+        max_quantities = validated_data.pop(self.max_quantities_set_field_name, [])
         change_reason = validated_data.pop("change_reason", "Modification via Compl'Alim")
         public_change_reason = validated_data.pop("public_change_reason", "")
-        super().update(instance, validated_data)
+        ingredient = super().update(instance, validated_data)
         self.update_change_reason(instance, change_reason, public_change_reason)
 
         try:
@@ -102,8 +117,27 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             if not existing_synonyms.filter(name=synonym["name"]).exists():
                 self.add_synonym(instance, synonym)
 
+        populations_to_keep = [q["population"] for q in max_quantities]
+        getattr(ingredient, self.max_quantities_set_field_name).exclude(population__in=populations_to_keep).delete()
+
+        for max_quantity in max_quantities:
+            existing_q = getattr(ingredient, self.max_quantities_set_field_name).filter(
+                population=max_quantity["population"].id
+            )
+            if existing_q.exists():
+                existing_q = existing_q.first()
+                existing_q.max_quantity = max_quantity["max_quantity"]
+                existing_q.save()
+            else:
+                self.add_max_quantity(ingredient, max_quantity)
+
         self.update_declaration_articles(instance, validated_data)
         return instance
+
+    def add_max_quantity(self, ingredient, max_quantity):
+        self.max_quantities_model.objects.create(
+            ingredient=ingredient, population=max_quantity["population"], max_quantity=max_quantity["max_quantity"]
+        )
 
     def add_synonym(self, instance, synonym):
         try:
