@@ -12,13 +12,13 @@ from data.factories import (
     DeclaredSubstanceFactory,
     GalenicFormulationFactory,
     InstructionReadyDeclarationFactory,
-    MaxQuantityPerPopulationRelationFactory,
     PlantFactory,
     PlantPartFactory,
     PopulationFactory,
     PreparationFactory,
     SnapshotFactory,
     SubstanceFactory,
+    SubstanceMaxQuantityPerPopulationRelationFactory,
 )
 from data.models import Declaration, Part, Snapshot, SubstanceType
 from data.models.ingredient_status import IngredientStatus
@@ -345,7 +345,7 @@ class DeclarationTestCase(TestCase):
             )
 
             substance = SubstanceFactory(substance_types=type)
-            MaxQuantityPerPopulationRelationFactory(
+            SubstanceMaxQuantityPerPopulationRelationFactory(
                 substance=substance,
                 population=self.general_pop,
                 max_quantity=SUBSTANCE_MAX_QUANTITY,
@@ -420,7 +420,7 @@ class DeclarationTestCase(TestCase):
                 computed_substances=[], populations=[self.general_pop]
             )
             substance = SubstanceFactory(substance_types=type)
-            MaxQuantityPerPopulationRelationFactory(
+            SubstanceMaxQuantityPerPopulationRelationFactory(
                 substance=substance,
                 population=self.general_pop,
                 max_quantity=SUBSTANCE_MAX_QUANTITY,
@@ -504,17 +504,17 @@ class DeclarationTestCase(TestCase):
             other_substance_type,
         ]:
             substance = SubstanceFactory(substance_types=substance_type)
-            MaxQuantityPerPopulationRelationFactory(
+            SubstanceMaxQuantityPerPopulationRelationFactory(
                 substance=substance,
                 population=self.general_pop,
                 max_quantity=2,
             )
-            MaxQuantityPerPopulationRelationFactory(
+            SubstanceMaxQuantityPerPopulationRelationFactory(
                 substance=substance,
                 population=pop_smallest_quantity,
                 max_quantity=1,
             )
-            MaxQuantityPerPopulationRelationFactory(
+            SubstanceMaxQuantityPerPopulationRelationFactory(
                 substance=substance,
                 population=pop_biggest_quantity,
                 max_quantity=10,

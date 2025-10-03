@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-from data.models.abstract_models import SynonymType
+from data.models.abstract_ingredient_models import SynonymType
 
 
 class Migration(migrations.Migration):

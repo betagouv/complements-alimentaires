@@ -4,7 +4,7 @@ from django.db import models
 
 from simple_history.admin import SimpleHistoryAdmin
 
-from data.models import Ingredient, IngredientSynonym
+from data.models import Ingredient, IngredientMaxQuantityPerPopulationRelation, IngredientSynonym
 
 from .abstract_admin import (
     ChangeReasonAdminMixin,
@@ -17,6 +17,15 @@ from .abstract_admin import (
 class IngredientSynonymInline(admin.TabularInline):
     model = IngredientSynonym
     extra = 0
+
+    formfield_overrides = {
+        models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
+    }
+
+
+class IngredientMaxQuantitiesInline(admin.TabularInline):
+    model = IngredientMaxQuantityPerPopulationRelation
+    extra = 1
 
     formfield_overrides = {
         models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
@@ -80,8 +89,17 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
                 ],
             },
         ),
+        (
+            "Quantités",
+            {
+                "fields": [
+                    "unit",
+                ],
+            },
+        ),
     ]
     inlines = (
+        IngredientMaxQuantitiesInline,
         SubstanceInlineAdmin,
         IngredientSynonymInline,
     )

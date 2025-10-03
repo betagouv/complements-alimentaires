@@ -34,7 +34,7 @@ from data.models import (
     VisaRole,
 )
 from data.models.ingredient_status import IngredientStatus
-from data.models.substance import MaxQuantityPerPopulationRelation
+from data.models.substance import SubstanceMaxQuantityPerPopulationRelation
 
 logger = logging.getLogger(__name__)
 
@@ -422,7 +422,7 @@ class Declaration(Historisable, TimeStampable):
         return self.teleicare_declaration_number is not None
 
     def _has_max_quantity_exceeded(self, substance):
-        max_for_target_populations = MaxQuantityPerPopulationRelation.objects.filter(
+        max_for_target_populations = SubstanceMaxQuantityPerPopulationRelation.objects.filter(
             population__in=self.populations.all(), substance=substance.substance
         )
         max_for_general_pop = substance.substance.max_quantity

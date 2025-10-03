@@ -1,6 +1,6 @@
 from .user import UserFactory
 from .blogpost import BlogPostFactory
-from .substance import SubstanceFactory, SubstanceSynonymFactory, MaxQuantityPerPopulationRelationFactory
+from .substance import SubstanceFactory, SubstanceSynonymFactory, SubstanceMaxQuantityPerPopulationRelationFactory
 from .ingredient import IngredientFactory, IngredientSynonymFactory
 from .microorganism import MicroorganismFactory, MicroorganismSynonymFactory
 from .plant import PlantFactory, PlantPartFactory, PlantSynonymFactory, PlantFamilyFactory
