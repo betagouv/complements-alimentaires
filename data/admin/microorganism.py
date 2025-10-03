@@ -1,9 +1,10 @@
 from django import forms
 from django.contrib import admin
+from django.db import models
 
 from simple_history.admin import SimpleHistoryAdmin
 
-from data.models import Microorganism
+from data.models import Microorganism, MicroorganismMaxQuantityPerPopulationRelation, MicroorganismSynonym
 
 from .abstract_admin import (
     ChangeReasonAdminMixin,
@@ -20,6 +21,24 @@ class MicroorganismForm(ChangeReasonFormMixin):
             "public_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
             "private_comments": forms.Textarea(attrs={"cols": 60, "rows": 4}),
         }
+
+
+class MicroorganismSynonymInline(admin.TabularInline):
+    model = MicroorganismSynonym
+    extra = 1
+
+    formfield_overrides = {
+        models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
+    }
+
+
+class MicroorganismMaxQuantitiesInline(admin.TabularInline):
+    model = MicroorganismMaxQuantityPerPopulationRelation
+    extra = 1
+
+    formfield_overrides = {
+        models.TextField: {"widget": forms.Textarea(attrs={"cols": 60, "rows": 1})},
+    }
 
 
 @admin.register(Microorganism)
@@ -73,7 +92,19 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
                 ],
             },
         ),
+        (
+            "Quantités",
+            {
+                "fields": [
+                    "unit",
+                ],
+            },
+        ),
     ]
+    inlines = (
+        MicroorganismMaxQuantitiesInline,
+        MicroorganismSynonymInline,
+    )
 
     list_display = (
         "name",
