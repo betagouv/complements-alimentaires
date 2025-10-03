@@ -124,6 +124,12 @@ class Substance(IngredientCommonModel):
 class SubstanceSynonym(SynonymCommonModel):
     class Meta:
         verbose_name = "synonyme substance active"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["standard_name", "name"],
+                name="unicity_substance_synonym",
+            )
+        ]
 
     standard_name = models.ForeignKey(Substance, on_delete=models.CASCADE, verbose_name="nom de référence")
 
