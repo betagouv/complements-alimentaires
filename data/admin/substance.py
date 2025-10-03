@@ -9,7 +9,7 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from config import tasks
 from data.models.declaration import Declaration
-from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym, SubstanceType
+from data.models.substance import Substance, SubstanceMaxQuantityPerPopulationRelation, SubstanceSynonym, SubstanceType
 
 from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin, HasCommentListFilter
 
@@ -48,7 +48,7 @@ class SubstanceSynonymInline(admin.TabularInline):
 
 
 class SubstanceMaxQuantitiesInline(admin.TabularInline):
-    model = MaxQuantityPerPopulationRelation
+    model = SubstanceMaxQuantityPerPopulationRelation
     extra = 1
 
     formfield_overrides = {

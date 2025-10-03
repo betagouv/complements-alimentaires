@@ -24,7 +24,7 @@ from data.factories import (
     SubstanceUnitFactory,
 )
 from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Part, Plant, Population
-from data.models.substance import MaxQuantityPerPopulationRelation, Substance
+from data.models.substance import Substance, SubstanceMaxQuantityPerPopulationRelation
 
 from .utils import authenticate
 
@@ -390,13 +390,13 @@ class TestElementsCreateApi(APITestCase):
         self.assertEqual(substance.einec_number, "5678")
         self.assertEqual(substance.max_quantity, 3.4)
         self.assertEqual(
-            substance.maxquantityperpopulationrelation_set.get(
+            substance.substancemaxquantityperpopulationrelation_set.get(
                 population=Population.objects.get(name="Population générale")
             ).max_quantity,
             3.4,
         )
         self.assertEqual(
-            substance.maxquantityperpopulationrelation_set.get(
+            substance.substancemaxquantityperpopulationrelation_set.get(
                 population=Population.objects.get(name="Autre population")
             ).max_quantity,
             4.5,
@@ -577,7 +577,9 @@ class TestElementsModifyApi(APITestCase):
         substance.refresh_from_db()
         self.assertEqual(substance.max_quantity, 666, "La quantité max pour la population générale est créée")
         self.assertTrue(
-            MaxQuantityPerPopulationRelation.objects.filter(substance=substance, population=self.general_pop).exists()
+            SubstanceMaxQuantityPerPopulationRelation.objects.filter(
+                substance=substance, population=self.general_pop
+            ).exists()
         )
         other_pop = PopulationFactory.create(name="pop non-autorisée")
         response = self.client.patch(
@@ -594,14 +596,14 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         substance.refresh_from_db()
         self.assertEqual(
-            MaxQuantityPerPopulationRelation.objects.get(
+            SubstanceMaxQuantityPerPopulationRelation.objects.get(
                 substance=substance, population=self.general_pop
             ).max_quantity,
             666,
             "La dose max pour la pop générale n'a pas été modifiée",
         )
         self.assertEqual(
-            MaxQuantityPerPopulationRelation.objects.get(
+            SubstanceMaxQuantityPerPopulationRelation.objects.get(
                 substance=substance, population=Population.objects.get(name="pop non-autorisée")
             ).max_quantity,
             0,
@@ -619,11 +621,15 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         substance.refresh_from_db()
         self.assertFalse(
-            MaxQuantityPerPopulationRelation.objects.filter(substance=substance, population=self.general_pop).exists(),
+            SubstanceMaxQuantityPerPopulationRelation.objects.filter(
+                substance=substance, population=self.general_pop
+            ).exists(),
             "La dose max pour la pop générale a été supprimée",
         )
         self.assertEqual(
-            MaxQuantityPerPopulationRelation.objects.get(substance=substance, population=other_pop).max_quantity,
+            SubstanceMaxQuantityPerPopulationRelation.objects.get(
+                substance=substance, population=other_pop
+            ).max_quantity,
             45,
             "La dose max pour l'autre population a été modifiée",
         )
@@ -656,7 +662,9 @@ class TestElementsModifyApi(APITestCase):
         substance.refresh_from_db()
         self.assertEqual(substance.max_quantity, 24, "La quantité max pour la population générale n'est pas modifiée")
         self.assertTrue(
-            MaxQuantityPerPopulationRelation.objects.filter(substance=substance, population=self.general_pop).exists()
+            SubstanceMaxQuantityPerPopulationRelation.objects.filter(
+                substance=substance, population=self.general_pop
+            ).exists()
         )
 
     @authenticate
@@ -749,7 +757,7 @@ class TestElementsModifyApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         substance.refresh_from_db()
-        general_pop_max = MaxQuantityPerPopulationRelation.objects.get(
+        general_pop_max = SubstanceMaxQuantityPerPopulationRelation.objects.get(
             substance=substance, population=self.general_pop
         )
         self.assertEqual(
@@ -827,7 +835,9 @@ class TestElementsModifyApi(APITestCase):
         self.assertEqual(substance.cas_number, None)
 
         self.assertFalse(
-            substance.maxquantityperpopulationrelation_set.filter(population__name="Population générale").exists()
+            substance.substancemaxquantityperpopulationrelation_set.filter(
+                population__name="Population générale"
+            ).exists()
         )
         self.assertIsNone(substance.max_quantity)
         self.assertEqual(substance.substancesynonym_set.count(), 0)

@@ -3,7 +3,7 @@ import factory
 from data.factories.population import PopulationFactory
 from data.factories.unit import SubstanceUnitFactory
 from data.models.ingredient_status import IngredientStatus
-from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym
+from data.models.substance import Substance, SubstanceMaxQuantityPerPopulationRelation, SubstanceSynonym
 
 
 class SubstanceFactory(factory.django.DjangoModelFactory):
@@ -21,9 +21,9 @@ class SubstanceFactory(factory.django.DjangoModelFactory):
     is_obsolete = False
 
 
-class MaxQuantityPerPopulationRelationFactory(factory.django.DjangoModelFactory):
+class SubstanceMaxQuantityPerPopulationRelationFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = MaxQuantityPerPopulationRelation
+        model = SubstanceMaxQuantityPerPopulationRelation
 
     population = factory.SubFactory(PopulationFactory)
     substance = factory.SubFactory(SubstanceFactory)

@@ -3,7 +3,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from data.models import Population
-from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym
+from data.models.substance import Substance, SubstanceMaxQuantityPerPopulationRelation, SubstanceSynonym
 
 from .common_ingredient import (
     COMMON_FETCH_FIELDS,
@@ -37,7 +37,7 @@ class SubstanceMaxQuantitySerializer(serializers.ModelSerializer):
     population = PopulationSerializer()
 
     class Meta:
-        model = MaxQuantityPerPopulationRelation
+        model = SubstanceMaxQuantityPerPopulationRelation
         fields = ("max_quantity", "population")
         read_only_fields = fields
 
@@ -47,7 +47,7 @@ class SubstanceSerializer(CommonIngredientReadSerializer):
     unit = serializers.CharField(read_only=True, source="unit.name")
     unit_id = serializers.IntegerField(read_only=True, source="unit.id")
     max_quantities = SubstanceMaxQuantitySerializer(
-        many=True, source="maxquantityperpopulationrelation_set", required=False
+        many=True, source="substancemaxquantityperpopulationrelation_set", required=False
     )
 
     class Meta:
@@ -70,7 +70,7 @@ class SubstanceShortSerializer(PrivateFieldsSerializer):
     unit = serializers.CharField(read_only=True, source="unit.name")
     unit_id = serializers.IntegerField(read_only=True, source="unit.id")
     max_quantities = SubstanceMaxQuantitySerializer(
-        many=True, source="maxquantityperpopulationrelation_set", required=False
+        many=True, source="substancemaxquantityperpopulationrelation_set", required=False
     )
 
     class Meta:
@@ -100,14 +100,14 @@ class SubstanceMaxQuantityModificationSerializer(serializers.ModelSerializer):
     population = serializers.PrimaryKeyRelatedField(queryset=Population.objects.all())
 
     class Meta:
-        model = MaxQuantityPerPopulationRelation
+        model = SubstanceMaxQuantityPerPopulationRelation
         fields = ("max_quantity", "population")
 
 
 class SubstanceModificationSerializer(CommonIngredientModificationSerializer):
     synonyms = SubstanceSynonymModificationSerializer(many=True, source="substancesynonym_set", required=False)
     max_quantities = SubstanceMaxQuantityModificationSerializer(
-        many=True, source="maxquantityperpopulationrelation_set", required=False
+        many=True, source="substancemaxquantityperpopulationrelation_set", required=False
     )
 
     synonym_model = SubstanceSynonym
@@ -142,7 +142,7 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        max_quantities = validated_data.pop("maxquantityperpopulationrelation_set", None)
+        max_quantities = validated_data.pop("substancemaxquantityperpopulationrelation_set", None)
         substance = super().create(validated_data)
         if max_quantities is None:
             return substance
@@ -154,16 +154,16 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        max_quantities = validated_data.pop("maxquantityperpopulationrelation_set", None)
+        max_quantities = validated_data.pop("substancemaxquantityperpopulationrelation_set", None)
         substance = super().update(instance, validated_data)
         if max_quantities is None:
             return substance
 
         populations_to_keep = [q["population"] for q in max_quantities]
-        substance.maxquantityperpopulationrelation_set.exclude(population__in=populations_to_keep).delete()
+        substance.substancemaxquantityperpopulationrelation_set.exclude(population__in=populations_to_keep).delete()
 
         for max_quantity in max_quantities:
-            existing_q = substance.maxquantityperpopulationrelation_set.filter(
+            existing_q = substance.substancemaxquantityperpopulationrelation_set.filter(
                 population=max_quantity["population"].id
             )
             if existing_q.exists():
@@ -176,6 +176,6 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer):
         return substance
 
     def add_max_quantity(self, substance, max_quantity):
-        MaxQuantityPerPopulationRelation.objects.create(
+        SubstanceMaxQuantityPerPopulationRelation.objects.create(
             substance=substance, population=max_quantity["population"], max_quantity=max_quantity["max_quantity"]
         )

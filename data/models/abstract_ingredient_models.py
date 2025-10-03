@@ -1,12 +1,11 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
-from data.behaviours import Historisable, TimeStampable
+from data.behaviours import TimeStampable
 from data.choices import IngredientActivity
 
 from .ingredient_status import WithStatus
 from .mixins import WithComments, WithDefaultFields, WithIsRiskyBoolean, WithNovelFoodBoolean
-from .population import Population
 
 
 class SynonymType(models.TextChoices):
@@ -103,46 +102,3 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
             "additive": IngredientActivity.NOT_ACTIVE,
         }
         return TYPE_ACTIVITY_MAPPING[self.object_type]
-
-
-class SynonymCommonModel(TimeStampable, Historisable):
-    """
-    Les modèles synonymes de tous les ingrédients héritent de ce modèle
-    """
-
-    class Meta:
-        abstract = True
-
-    siccrf_id = models.IntegerField(
-        blank=True,
-        null=True,
-        editable=False,
-        db_index=True,
-        unique=True,
-        verbose_name="id dans les tables et tables relationnelles SICCRF",
-    )
-    standard_name = None  # ce champ est défini dans les classes filles
-    name = models.TextField(verbose_name="nom")
-    synonym_type = models.CharField(
-        choices=SynonymType.choices, default=SynonymType.FRENCH, verbose_name="type de synonyme"
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class MaxQuantityPerPopulationRelationCommonModel(Historisable):
-    """
-    Les modèles MaxQuantityPerPopulationRelation de tous les ingrédients héritent de ce modèle
-    """
-
-    class Meta:
-        abstract = True
-
-    population = models.ForeignKey(Population, on_delete=models.CASCADE)
-
-    max_quantity = models.FloatField(
-        null=True,
-        blank=True,
-        verbose_name="quantité maximale autorisée pour la population cible",
-    )
