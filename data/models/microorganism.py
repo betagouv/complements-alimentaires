@@ -58,6 +58,12 @@ class MicroorganismSubstanceRelation(TimeStampable, Historisable):
 class MicroorganismSynonym(TimeStampable, Historisable):
     class Meta:
         verbose_name = "synonyme de micro-organisme"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["standard_name", "name"],
+                name="unicity_microorganism_synonym",
+            )
+        ]
 
     siccrf_id = models.IntegerField(
         blank=True,
