@@ -94,13 +94,18 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             raise ParseError(detail="Must provide 'name' to create new synonym")
         existing_synonyms = getattr(instance, self.synonym_set_field_name)
 
-        # TODO: is it important to update, rather delete and recreate, 'new' synonyms ?
+        # si le nom du synonym à changé il est recréé
         synonyms_to_delete = existing_synonyms.exclude(name__in=new_synonym_list)
         synonyms_to_delete.delete()
 
         for synonym in synonyms:
             if not existing_synonyms.filter(name=synonym["name"]).exists():
                 self.add_synonym(instance, synonym)
+            # si le type de synonyme à changé, il est mis à jour
+            else:
+                to_update = existing_synonyms.get(name=synonym["name"])
+                to_update.synonym_type = synonym["synonym_type"]
+                to_update.save()
 
         self.update_declaration_articles(instance, validated_data)
         return instance
