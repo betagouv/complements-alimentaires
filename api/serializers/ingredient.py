@@ -20,6 +20,7 @@ class IngredientSynonymSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
+            "synonym_type",
         )
         read_only_fields = fields
 
@@ -40,7 +41,10 @@ class IngredientSerializer(CommonIngredientReadSerializer):
 class IngredientSynonymModificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientSynonym
-        fields = ("name",)
+        fields = (
+            "name",
+            "synonym_type",
+        )
 
 
 class IngredientModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):

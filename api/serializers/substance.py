@@ -22,6 +22,7 @@ class SubstanceSynonymSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
+            "synonym_type",
         )
         read_only_fields = fields
 
@@ -93,7 +94,10 @@ class SubstanceShortSerializer(PrivateFieldsSerializer):
 class SubstanceSynonymModificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubstanceSynonym
-        fields = ("name",)
+        fields = (
+            "name",
+            "synonym_type",
+        )
 
 
 class SubstanceMaxQuantityModificationSerializer(serializers.ModelSerializer):
