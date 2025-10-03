@@ -7,10 +7,28 @@ from .webinar import Webinar
 from .company import Company, SupervisorRole, DeclarantRole, ActivityChoices
 
 # Elements specific models
-from .ingredient import Ingredient, IngredientSynonym, IngredientSubstanceRelation
+from .ingredient import (
+    Ingredient,
+    IngredientSynonym,
+    IngredientSubstanceRelation,
+    IngredientMaxQuantityPerPopulationRelation,
+)
 from .ingredient_type import IngredientType
-from .microorganism import Microorganism, MicroorganismSynonym
-from .plant import Plant, PlantSynonym, PlantPart, PlantFamily, Part, PlantSubstanceRelation
+from .microorganism import (
+    Microorganism,
+    MicroorganismSynonym,
+    MicroorganismMaxQuantityPerPopulationRelation,
+    MicroorganismSubstanceRelation,
+)
+from .plant import (
+    Plant,
+    PlantSynonym,
+    PlantPart,
+    PlantFamily,
+    Part,
+    PlantSubstanceRelation,
+    PlantMaxQuantityPerPopulationRelation,
+)
 from .substance import Substance, SubstanceSynonym, SubstanceType
 from .population import Population
 from .condition import Condition
