@@ -94,7 +94,7 @@ const submit = async () => {
   // ⛔️ TODO: change this dirty hack: we use error message until having appropriate error codes in responses
   if ($externalResults.value?.nonFieldErrors?.[0]?.includes("vérifié")) {
     showSendNewConfirmationMail.value = true
-    userIdForNewConfirmationMail.value = $externalResults.value.extra.id
+    userIdForNewConfirmationMail.value = `${$externalResults.value.extra.userId}`
   }
 
   if (response.value.ok) {
