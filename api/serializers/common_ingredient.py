@@ -46,6 +46,8 @@ COMMON_FETCH_FIELDS = (
     "warning_on_label",
     "public_comments",
     "max_quantities",
+    "unit",
+    "unit_id",
     "activity",
     "status",
     "novel_food",
@@ -135,8 +137,13 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
         return instance
 
     def add_max_quantity(self, ingredient, max_quantity):
+        kwargs = {
+            self.ingredient_name_field: ingredient,
+        }
         self.max_quantities_model.objects.create(
-            ingredient=ingredient, population=max_quantity["population"], max_quantity=max_quantity["max_quantity"]
+            population=max_quantity["population"],
+            max_quantity=max_quantity["max_quantity"],
+            **kwargs,
         )
 
     def add_synonym(self, instance, synonym):

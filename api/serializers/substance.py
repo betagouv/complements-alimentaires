@@ -49,10 +49,7 @@ class SubstanceSerializer(CommonIngredientReadSerializer):
             "einec_number",
             "must_specify_quantity",
             "max_quantity",
-            "max_quantities",
             "nutritional_reference",
-            "unit",
-            "unit_id",
             "substance_types",
         )
         read_only_fields = fields
@@ -106,7 +103,7 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer):
     synonym_set_field_name = "substancesynonym_set"
     max_quantities_model = SubstanceMaxQuantityPerPopulationRelation
     max_quantities_set_field_name = "substancemaxquantityperpopulationrelation_set"
-
+    ingredient_name_field = "substance"
     declaredingredient_set_field_names = ["declaredsubstance_set", "computedsubstance_set"]
 
     class Meta:

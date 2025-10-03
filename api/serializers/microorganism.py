@@ -36,6 +36,9 @@ class MicroorganismMaxQuantitySerializer(serializers.ModelSerializer):
 class MicroorganismSerializer(CommonIngredientReadSerializer):
     synonyms = MicroorganismSynonymSerializer(many=True, read_only=True, source="microorganismsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
+    unit = serializers.CharField(read_only=True, source="unit.name")
+    unit_id = serializers.IntegerField(read_only=True, source="unit.id")
+
     max_quantities = MicroorganismMaxQuantitySerializer(
         many=True, source="microorganismmaxquantityperpopulationrelation_set", required=False
     )
@@ -63,7 +66,7 @@ class MicroorganismModificationSerializer(CommonIngredientModificationSerializer
     synonym_set_field_name = "microorganismsynonym_set"
     max_quantities_model = MicroorganismMaxQuantityPerPopulationRelation
     max_quantities_set_field_name = "microorganismmaxquantityperpopulationrelation_set"
-
+    ingredient_name_field = "microorganism"
     max_quantities = MicroorganismMaxQuantitySerializer(
         many=True, source="microorganismmaxquantityperpopulationrelation_set", required=False
     )
