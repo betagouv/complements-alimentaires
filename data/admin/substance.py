@@ -11,7 +11,12 @@ from config import tasks
 from data.models.declaration import Declaration
 from data.models.substance import MaxQuantityPerPopulationRelation, Substance, SubstanceSynonym, SubstanceType
 
-from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin, HasCommentListFilter
+from .abstract_admin import (
+    ChangeReasonAdminMixin,
+    ChangeReasonFormMixin,
+    HasMaxCommentListFilter,
+    HasWarningCommentListFilter,
+)
 
 
 class SubstanceTypesForm(forms.MultipleChoiceField):
@@ -185,7 +190,8 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
         "requires_analysis_report",
         "novel_food",
         SubstanceTypeListFilter,
-        HasCommentListFilter,
+        HasMaxCommentListFilter,
+        HasWarningCommentListFilter,
     )
     show_facets = admin.ShowFacets.NEVER
     search_fields = ["id", "name"]
