@@ -9,7 +9,8 @@ from data.models import Plant, PlantMaxQuantityPerPopulationRelation, PlantSynon
 from .abstract_admin import (
     ChangeReasonAdminMixin,
     ChangeReasonFormMixin,
-    HasCommentListFilter,
+    HasMaxCommentListFilter,
+    HasWarningCommentListFilter,
     RecomputeDeclarationArticleAtIngredientSaveMixin,
 )
 
@@ -133,7 +134,8 @@ class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonA
         "is_risky",
         "requires_analysis_report",
         "novel_food",
-        HasCommentListFilter,
+        HasMaxCommentListFilter,
+        HasWarningCommentListFilter,
     )
     show_facets = admin.ShowFacets.NEVER
     search_fields = ["id", "name"]

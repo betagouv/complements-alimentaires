@@ -9,7 +9,8 @@ from data.models import Ingredient, IngredientMaxQuantityPerPopulationRelation, 
 from .abstract_admin import (
     ChangeReasonAdminMixin,
     ChangeReasonFormMixin,
-    HasCommentListFilter,
+    HasMaxCommentListFilter,
+    HasWarningCommentListFilter,
     RecomputeDeclarationArticleAtIngredientSaveMixin,
 )
 
@@ -119,7 +120,8 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
         "requires_analysis_report",
         "novel_food",
         "ingredient_type",
-        HasCommentListFilter,
+        HasMaxCommentListFilter,
+        HasWarningCommentListFilter,
     )
     show_facets = admin.ShowFacets.NEVER
     search_fields = ["id", "name"]

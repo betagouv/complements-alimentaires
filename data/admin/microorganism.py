@@ -9,7 +9,8 @@ from data.models import Microorganism, MicroorganismMaxQuantityPerPopulationRela
 from .abstract_admin import (
     ChangeReasonAdminMixin,
     ChangeReasonFormMixin,
-    HasCommentListFilter,
+    HasMaxCommentListFilter,
+    HasWarningCommentListFilter,
     RecomputeDeclarationArticleAtIngredientSaveMixin,
 )
 
@@ -114,7 +115,15 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
         "requires_analysis_report",
         "novel_food",
     )
-    list_filter = ("is_obsolete", "status", "is_risky", "requires_analysis_report", "novel_food", HasCommentListFilter)
+    list_filter = (
+        "is_obsolete",
+        "status",
+        "is_risky",
+        "requires_analysis_report",
+        "novel_food",
+        HasMaxCommentListFilter,
+        HasWarningCommentListFilter,
+    )
     show_facets = admin.ShowFacets.NEVER
     readonly_fields = ("name",)
     search_fields = ["id", "name"]

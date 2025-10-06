@@ -39,16 +39,15 @@ class RecomputeDeclarationArticleAtIngredientSaveMixin:
             )
 
 
-class HasCommentListFilter(admin.SimpleListFilter):
-    title = "Avec commentaire"
+class HasMaxCommentListFilter(admin.SimpleListFilter):
+    title = "Avec maximum dans commentaire"
 
-    parameter_name = "has_comment"
+    parameter_name = "has_max_comment"
 
     def lookups(self, request, model_admin):
         return [
             ("public", "Public"),
             ("private", "Privé"),
-            ("none", "Aucun"),
         ]
 
     def queryset(self, request, queryset):
@@ -58,8 +57,29 @@ class HasCommentListFilter(admin.SimpleListFilter):
         `self.value()`.
         """
         if self.value() == "public":
-            return queryset.exclude(public_comments="")
+            return queryset.filter(public_comments__icontains="max")
         if self.value() == "private":
-            return queryset.exclude(private_comments="")
-        if self.value() == "none":
-            return queryset.filter(public_comments="", private_comments="")
+            return queryset.filter(private_comments__icontains="max")
+
+
+class HasWarningCommentListFilter(admin.SimpleListFilter):
+    title = "Avec avertissement dans commentaire"
+
+    parameter_name = "has_warning_comment"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("public", "Public"),
+            ("private", "Privé"),
+        ]
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        if self.value() == "public":
+            return queryset.filter(public_comments__icontains="avertissement")
+        if self.value() == "private":
+            return queryset.filter(private_comments__icontains="avertissement")
