@@ -119,9 +119,11 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             if not existing_synonyms.filter(name=synonym["name"]).exists():
                 self.add_synonym(instance, synonym)
 
-        if max_quantities:
-            # cette condition est importante pour ne pas modifier les max_quantities
-            # quand un autre champ de l'ingrédient est modifié
+        if max_quantities is not None:
+            # cette condition est importante pour
+            # * si max_quantities = None, rien n'est modifié sur les max_quantities
+            # * si max_quantities = [], alors suppression
+            # * sinon modification
             populations_to_keep = [q["population"] for q in max_quantities]
             getattr(ingredient, self.max_quantities_set_field_name).exclude(
                 population__in=populations_to_keep
