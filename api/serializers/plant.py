@@ -63,6 +63,7 @@ class PlantSynonymSerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "standard_name",
+            "synonym_type",
         )
         read_only_fields = fields
 
@@ -100,7 +101,10 @@ class PlantSerializer(CommonIngredientReadSerializer):
 class PlantSynonymModificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlantSynonym
-        fields = ("name",)
+        fields = (
+            "name",
+            "synonym_type",
+        )
 
 
 class PlantPartModificationSerializer(serializers.ModelSerializer):

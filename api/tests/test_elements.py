@@ -276,10 +276,10 @@ class TestElementsCreateApi(APITestCase):
             "family": family.id,
             "status": IngredientStatus.AUTHORIZED,
             "synonyms": [
-                {"name": "A latin name"},
-                {"name": "A latin name"},
-                {"name": "A second one"},
-                {"name": "My new plant"},
+                {"name": "A latin name", "synonym_type": "SCIENTIFIC_NAME"},
+                {"name": "A latin name", "synonym_type": "FRENCH_NAME"},
+                {"name": "A second one", "synonym_type": "FRENCH_NAME"},
+                {"name": "My new plant", "synonym_type": "ENGLISH_NAME"},
             ],
             "plantParts": [{"plantpart": part_1.id, "isUseful": True}, {"plantpart": part_2.id, "isUseful": False}],
             "substances": [substance.id],
@@ -326,8 +326,8 @@ class TestElementsCreateApi(APITestCase):
             "species": "A species",
             "status": IngredientStatus.AUTHORIZED,
             "synonyms": [
-                {"name": "A latin name"},
-                {"name": "A second one"},
+                {"name": "A latin name", "synonym_type": "SCIENTIFIC_NAME"},
+                {"name": "A second one", "synonym_type": "FRENCH_NAME"},
             ],
             "publicComments": "Test",
             "privateComments": "Test private",
@@ -878,10 +878,10 @@ class TestElementsModifyApi(APITestCase):
             reverse("api:single_plant", kwargs={"pk": plant.id}),
             {
                 "synonyms": [
-                    {"name": "New synonyme"},
-                    {"name": "New name"},
-                    {"name": synonym_2.name},
-                    {"name": synonym_2.name},
+                    {"name": "New synonyme", "synonym_type": "ENGLISH_NAME"},
+                    {"name": "New name", "synonym_type": "ENGLISH_NAME"},
+                    {"name": synonym_2.name, "synonym_type": "FRENCH_NAME"},
+                    {"name": synonym_2.name, "synonym_type": "FRENCH_NAME"},
                 ]
             },
             format="json",
