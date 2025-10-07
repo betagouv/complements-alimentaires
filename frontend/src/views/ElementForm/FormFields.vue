@@ -43,14 +43,18 @@
             />
           </DsfrInputGroup>
         </div>
-        <div class="col-span-full mt-4 -mb-6" v-if="formForType.substanceTypes">
+        <DsfrInputGroup
+          class="col-span-full mt-4 -mb-6"
+          v-if="formForType.substanceTypes"
+          :error-message="firstErrorMsg(v$, 'substanceTypes')"
+        >
           <DsfrCheckboxSet
             v-model="state.substanceTypes"
             :options="substanceTypeOptions"
             legend="Type(s) de la substance"
             required
           />
-        </div>
+        </DsfrInputGroup>
 
         <DsfrInputGroup v-if="formForType.einecNumber">
           <DsfrInput v-model="state.einecNumber" label="Numéro EINECS" labelVisible />
@@ -532,6 +536,7 @@ const rules = computed(() => {
     species: form?.species ? errorRequiredField : {},
     genus: form?.genus ? errorRequiredField : {},
     ingredientType: form?.ingredientType ? errorRequiredField : {},
+    substanceTypes: form?.substanceTypes ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
     unit: form?.nutritionalReference && !props.element ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
