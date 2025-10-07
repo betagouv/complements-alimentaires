@@ -472,7 +472,8 @@ class Declaration(Historisable, TimeStampable):
     @property
     def has_max_quantity_exceeded(self):
         """
-        Les doses max sont aujourd'hui définies pour les substances seulement.
+        Les doses max sont définies pour tous les ingrédients mais le calcul d'article
+        dépend aujourd'hui seulement des doses max pour les substances.
         """
         return (
             self.computed_substances_with_max_quantity_exceeded.exists()
