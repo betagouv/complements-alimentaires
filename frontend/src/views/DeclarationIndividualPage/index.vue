@@ -5,7 +5,17 @@
       <ProgressSpinner />
     </div>
     <div v-else-if="declaration">
-      <h1 class="mb-0">{{ declaration.name }}</h1>
+      <div class="flex gap-10 items-center">
+        <h1 class="mb-0">{{ declaration.name }}</h1>
+        <div>
+          <DsfrBadge type="warning" label="Article inconnu" v-if="!declaration.article" />
+          <DsfrBadge
+            no-icon
+            v-else
+            :label="articleOptionsWith15Subtypes.find((x) => x.value === declaration.article)?.text"
+          />
+        </div>
+      </div>
 
       <div class="sm:grid sm:grid-cols-12">
         <div class="hidden sm:block col-span-3">
@@ -29,6 +39,7 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router"
+import { articleOptionsWith15Subtypes } from "@/utils/mappings"
 import { computed, onMounted, watch } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
