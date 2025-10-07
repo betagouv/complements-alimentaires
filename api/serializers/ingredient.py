@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from data.models import Ingredient, IngredientMaxQuantityPerPopulationRelation, IngredientSynonym
+from data.models import Ingredient, IngredientMaxQuantityPerPopulationRelation, IngredientSynonym, Population
 
 from .common_ingredient import (
     COMMON_FETCH_FIELDS,
@@ -60,17 +60,26 @@ class IngredientSynonymModificationSerializer(serializers.ModelSerializer):
         )
 
 
+class IngredientMaxQuantityModificationSerializer(serializers.ModelSerializer):
+    population = serializers.PrimaryKeyRelatedField(queryset=Population.objects.all())
+
+    class Meta:
+        model = IngredientMaxQuantityPerPopulationRelation
+        fields = ("max_quantity", "population")
+
+
 class IngredientModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
     synonyms = IngredientSynonymModificationSerializer(many=True, source="ingredientsynonym_set", required=False)
+    max_quantities = IngredientMaxQuantityModificationSerializer(
+        many=True, source="ingredientmaxquantityperpopulationrelation_set", required=False
+    )
 
     synonym_model = IngredientSynonym
     synonym_set_field_name = "ingredientsynonym_set"
     max_quantities_model = IngredientMaxQuantityPerPopulationRelation
     max_quantities_set_field_name = "ingredientmaxquantityperpopulationrelation_set"
     ingredient_name_field = "ingredient"
-    max_quantities = IngredientMaxQuantitySerializer(
-        many=True, source="ingredientmaxquantityperpopulationrelation_set", required=False
-    )
+
     declaredingredient_set_field_names = ["declaredingredient_set"]
 
     class Meta:

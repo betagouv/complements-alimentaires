@@ -10,6 +10,7 @@ from data.models import (
     PlantMaxQuantityPerPopulationRelation,
     PlantPart,
     PlantSynonym,
+    Population,
 )
 
 from .common_ingredient import (
@@ -119,9 +120,17 @@ class PlantPartModificationSerializer(serializers.ModelSerializer):
         )
 
 
+class PlantMaxQuantityModificationSerializer(serializers.ModelSerializer):
+    population = serializers.PrimaryKeyRelatedField(queryset=Population.objects.all())
+
+    class Meta:
+        model = PlantMaxQuantityPerPopulationRelation
+        fields = ("max_quantity", "population")
+
+
 class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSubstances):
     synonyms = PlantSynonymModificationSerializer(many=True, source="plantsynonym_set", required=False)
-    max_quantities = PlantMaxQuantitySerializer(
+    max_quantities = PlantMaxQuantityModificationSerializer(
         many=True, source="plantmaxquantityperpopulationrelation_set", required=False
     )
     plant_parts = PlantPartModificationSerializer(source="part_set", many=True)
