@@ -43,18 +43,16 @@
             />
           </DsfrInputGroup>
         </div>
-        <DsfrInputGroup
-          class="col-span-full mt-4 -mb-6"
-          v-if="formForType.substanceTypes"
-          :error-message="firstErrorMsg(v$, 'substanceTypes')"
-        >
-          <DsfrCheckboxSet
-            v-model="state.substanceTypes"
-            :options="substanceTypeOptions"
-            legend="Type(s) de la substance"
-            required
-          />
-        </DsfrInputGroup>
+        <div class="col-span-full mt-4" v-if="formForType.substanceTypes">
+          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'substanceTypes')">
+            <DsfrCheckboxSet
+              v-model="state.substanceTypes"
+              :options="substanceTypeOptions"
+              legend="Type(s) de la substance"
+              required
+            />
+          </DsfrInputGroup>
+        </div>
 
         <DsfrInputGroup v-if="formForType.einecNumber">
           <DsfrInput v-model="state.einecNumber" label="Numéro EINECS" labelVisible />
@@ -344,6 +342,12 @@
         class="self-center mt-4 col-span-2 sm:col-span-1"
       />
     </div>
+    <DsfrAlert v-if="substanceAttachReminder" class="mb-8">
+      <p>
+        Vous avez indiquez que cette substance est apportée par un ou plusieurs ingrédients. N'oubliez pas la rattacher
+        en modifiant l'ingrédient après avoir créé cette substance.
+      </p>
+    </DsfrAlert>
     <DsfrAlert v-if="element" class="mb-8">
       <p>Des modifications pourrait impacter les déclarations en cours qui utilisent cet ingrédient.</p>
       <p>
@@ -623,23 +627,31 @@ const regulatoryResourceLinksError = ref()
 
 const substanceTypeOptions = computed(() => [
   {
+    label: "Substance active à but nutritionnel ou physiologique",
+    hint: "Cette substance peut être ajoutée directement comme ingrédient d'une déclaration",
+    value: 4,
+  },
+  {
     label: "Vitamine",
+    hint: "Cette substance est apportée par une forme d'apport",
     value: 1,
   },
   {
     label: "Minéral",
+    hint: "Cette substance est apportée par une forme d'apport",
     value: 2,
   },
   {
-    label: "Substance active à but nutritionnel ou physiologique",
-    value: 4,
-  },
-  {
     label: "Métabolite secondaire de plante" + (isNewIngredient.value ? "" : " (automatiquement assigné)"),
+    hint: "Cette substance est apportée par une plante",
     value: 3,
     disabled: !isNewIngredient.value,
   },
 ])
+
+const substanceAttachReminder = computed(() => {
+  return isNewIngredient.value && state.value.substanceTypes?.some((st) => [1, 2, 3].includes(st))
+})
 </script>
 
 <style scoped>
