@@ -616,7 +616,7 @@ const maxQuantitiesHeaders = computed(() => {
 
 const regulatoryResourceLinksError = ref()
 
-const substanceTypeOptions = [
+const substanceTypeOptions = computed(() => [
   {
     label: "Vitamine",
     value: 1,
@@ -630,11 +630,11 @@ const substanceTypeOptions = [
     value: 4,
   },
   {
-    label: "Métabolite secondaire de plante (automatiquement assigné)",
+    label: "Métabolite secondaire de plante" + (isNewIngredient.value ? "" : " (automatiquement assigné)"),
     value: 3,
-    disabled: true,
+    disabled: !isNewIngredient.value,
   },
-]
+])
 </script>
 
 <style scoped>
