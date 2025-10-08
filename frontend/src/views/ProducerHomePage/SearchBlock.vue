@@ -18,6 +18,7 @@
           @selected="goToSelectedOption"
           @search="search"
           :chooseFirstAsDefault="false"
+          :searchAll="true"
         />
         <p class="mt-6">
           Exemples :

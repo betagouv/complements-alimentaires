@@ -9,6 +9,7 @@
         @selected="goToSelectedOption"
         @search="search"
         :chooseFirstAsDefault="false"
+        :searchAll="true"
       />
     </div>
   </div>
