@@ -22,6 +22,7 @@
       <h1 class="fr-h4 mb-1! capitalize">
         {{ element.name }}
         <DsfrBadge v-if="novelFood" label="Novel Food" small type="new" />
+        <DsfrBadge v-if="element.isObsolete" label="Obsolète" small type="error" />
       </h1>
       <RegulatoryWarning class="mt-4" />
 

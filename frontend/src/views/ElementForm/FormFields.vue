@@ -359,6 +359,29 @@
     </DsfrAlert>
     <div class="flex gap-x-2 mt-4">
       <DsfrButton label="Enregistrer ingrédient" @click="saveElement" />
+      <DsfrButton
+        v-if="!isNewIngredient"
+        tertiary
+        size="small"
+        icon="ri-delete-bin-line"
+        label="Supprimer l'ingrédient"
+        @click="deleteModalOpened = true"
+      />
+      <DsfrModal
+        v-if="!isNewIngredient"
+        :opened="deleteModalOpened"
+        @close="deleteModalOpened = false"
+        :title="`Supprimer ${element.name}`"
+        :actions="deleteActions"
+      >
+        <template #default>
+          <p>Voulez-vous supprimer l'ingrédient {{ element.name }} ?</p>
+          <p>
+            Cette action va marquer l'ingrédient comme obsolète et l'ingrédient sera toujours lié aux déclarations
+            historiques.
+          </p>
+        </template>
+      </DsfrModal>
     </div>
   </FormWrapper>
 </template>
@@ -633,6 +656,37 @@ const substanceTypeOptions = [
     label: "Métabolite secondaire de plante (automatiquement assigné)",
     value: 3,
     disabled: true,
+  },
+]
+
+const deleteModalOpened = ref(false)
+
+const deleteActions = [
+  {
+    label: "Supprimer l'ingrédient",
+    onClick: async () => {
+      const url = `/api/v1/${apiType.value}s/`
+      const { response } = await useFetch(url + elementId.value, { headers: headers() })
+        .patch({ isObsolete: true })
+        .json()
+      $externalResults.value = await handleError(response)
+
+      if (response.value.ok) {
+        useToaster().addMessage({
+          type: "success",
+          id: "element-deletion-success",
+          description: "L'ingrédient a été supprimé",
+        })
+        router.push({ name: "ElementPage", params: { urlComponent: props.urlComponent } })
+      }
+    },
+  },
+  {
+    label: "Garder l'ingredient",
+    onClick: () => {
+      deleteModalOpened.value = false
+    },
+    secondary: true,
   },
 ]
 </script>
