@@ -23,6 +23,7 @@ import { getStatusTagForCell } from "@/components/NewBepiasViews/DeclarationsTab
 import { useRoute } from "vue-router"
 import TableHeaders from "@/components/TableHeaders"
 import NameCell from "./NameCell"
+import { articleOptions } from "@/utils/mappings"
 
 const route = useRoute()
 const emit = defineEmits(["sort", "filter"])
@@ -42,7 +43,6 @@ const headers = computed(() => [
     sortCallback: (value) => emit("sort", value),
     ariaLabel: "Trier par nom de l'entreprise",
   },
-
   { text: "Marque" },
   {
     text: "Statut du produit",
@@ -52,6 +52,7 @@ const headers = computed(() => [
     ariaLabel: "Filtrer par statut du produit",
   },
   { text: "Date d'application du statut" },
+  { text: "Article" },
 ])
 
 // Gestion du filtrage
@@ -70,6 +71,7 @@ const rows = computed(() =>
       x.brand,
       getStatusTagForCell(x.simplifiedStatus),
       x.simplifiedStatusDate ? isoToPrettyDate(x.simplifiedStatusDate) : "",
+      x.article ? articleOptions.find((y) => y.value === x.article)?.shortText : "",
     ],
   }))
 )
