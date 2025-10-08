@@ -23,7 +23,16 @@ from data.factories import (
     SubstanceSynonymFactory,
     SubstanceUnitFactory,
 )
-from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Part, Plant, Population
+from data.models import (
+    Ingredient,
+    IngredientStatus,
+    IngredientType,
+    Microorganism,
+    Part,
+    Plant,
+    Population,
+    SubstanceType,
+)
 from data.models.substance import MaxQuantityPerPopulationRelation, Substance
 
 from .utils import authenticate
@@ -403,6 +412,26 @@ class TestElementsCreateApi(APITestCase):
         )
         self.assertEqual(substance.nutritional_reference, 1.2)
         self.assertEqual(substance.unit, unit)
+
+    @authenticate
+    def test_create_single_substance_secondary_metabolite(self):
+        """
+        Une instructrice peut créer une substance avec le type métabolite secondaire
+        mais derrière le rideau on supprime le type jusqu'au moment qu'elle est reliée
+        à une plante. Ça permets la création de substances de ce type avec un contraint
+        sur le front de donner un type avec le moins de changement de la fonctionnalité
+        actuelle.
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        payload = {
+            "substance_types": [SubstanceType.SECONDARY_METABOLITE],
+        }
+        response = self.client.post(reverse("api:substance_create"), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        body = response.json()
+
+        substance = Substance.objects.get(id=body["id"])
+        self.assertEqual(len(substance.substance_types), 0)
 
     @authenticate
     def test_cannot_create_single_substance_not_authorized(self):
