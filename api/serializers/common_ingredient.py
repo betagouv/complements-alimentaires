@@ -129,7 +129,10 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             # * si max_quantities = None, rien n'est modifié sur les max_quantities
             # * si max_quantities = [], alors suppression
             # * sinon modification
-            populations_to_keep = [q["population"] for q in max_quantities]
+            try:
+                populations_to_keep = [q["population"] for q in max_quantities]
+            except KeyError:
+                raise ParseError(detail="Must provide 'population' to create new max_quantity")
             getattr(ingredient, self.max_quantities_set_field_name).exclude(
                 population__in=populations_to_keep
             ).delete()
@@ -152,11 +155,14 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
         kwargs = {
             self.ingredient_name_field: ingredient,
         }
-        self.max_quantities_model.objects.create(
-            population=max_quantity["population"],
-            max_quantity=max_quantity["max_quantity"],
-            **kwargs,
-        )
+        try:
+            self.max_quantities_model.objects.create(
+                population=max_quantity["population"],
+                max_quantity=max_quantity["max_quantity"],
+                **kwargs,
+            )
+        except KeyError:
+            raise ParseError(detail="Must provide 'population' and 'max_quantity' to create new max_quantities")
 
     def add_synonym(self, instance, synonym):
         try:
@@ -165,7 +171,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
             if name and name != instance.name and not self.synonym_model.objects.filter(name=name).exists():
                 self.synonym_model.objects.create(standard_name=instance, name=name, synonym_type=synonym_type)
         except KeyError:
-            raise ParseError(detail="Must provide 'name' to create new synonym")
+            raise ParseError(detail="Must provide 'name' and 'synonym_type' to create new synonym")
 
     # inspiré par https://github.com/jazzband/django-simple-history/blob/626ece4082c4a7f87d14566e7a3c568043233ac5/simple_history/utils.py#L8
     def update_change_reason(self, instance, private_change_reason, public_change_reason):
