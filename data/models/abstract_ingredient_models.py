@@ -65,9 +65,6 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
         base_field=models.URLField(), blank=True, null=True, verbose_name="Lien(s) vers les ressources reglementaires"
     )
 
-    warning_on_label = models.TextField(
-        blank=True, verbose_name="mentions d'avertissement devant figurer sur l'étiquette"
-    )
     warnings_on_label = ArrayField(
         models.TextField(),
         blank=True,
