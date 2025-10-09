@@ -210,7 +210,7 @@
         </DsfrInputGroup>
       </div>
       <div class="max-w-32">
-        <DsfrInputGroup v-if="isNewIngredient || unitString == '-'" :error-message="firstErrorMsg(v$, 'unit')">
+        <DsfrInputGroup v-if="isNewIngredient || !state.unit" :error-message="firstErrorMsg(v$, 'unit')">
           <DsfrSelect
             label="Unité"
             label-visible
