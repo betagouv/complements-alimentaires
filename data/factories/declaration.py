@@ -22,7 +22,7 @@ from .plant import PlantFactory, PlantPartFactory
 from .population import PopulationFactory
 from .preparation import PreparationFactory
 from .substance import SubstanceFactory
-from .unit import SubstanceUnitFactory
+from .unit import UnitFactory
 from .user import UserFactory
 
 
@@ -47,7 +47,7 @@ class DeclaredPlantFactory(factory.django.DjangoModelFactory):
 
     plant = factory.SubFactory(PlantFactory)
     quantity = factory.Faker("pyfloat")
-    unit = factory.SubFactory(SubstanceUnitFactory)
+    unit = factory.SubFactory(UnitFactory)
     preparation = factory.SubFactory(PreparationFactory)
 
     @classmethod
@@ -95,7 +95,7 @@ class ComputedSubstanceFactory(factory.django.DjangoModelFactory):
 
     substance = factory.SubFactory(SubstanceFactory)
     quantity = factory.Faker("pyfloat")
-    unit = factory.SubFactory(SubstanceUnitFactory)
+    unit = factory.SubFactory(UnitFactory)
 
 
 class AttachmentFactory(factory.django.DjangoModelFactory):
@@ -113,7 +113,7 @@ class CompleteDeclarationFactory(DeclarationFactory):
     daily_recommended_dose = factory.Faker("text", max_nb_chars=20)
     minimum_duration = factory.Faker("text", max_nb_chars=20)
     unit_quantity = factory.Faker("pyfloat")
-    unit_measurement = factory.SubFactory(SubstanceUnitFactory)
+    unit_measurement = factory.SubFactory(UnitFactory)
     galenic_formulation = factory.SubFactory(GalenicFormulationFactory)
     address = factory.Faker("street_address", locale="FR")
     postal_code = factory.Faker("postcode", locale="FR")

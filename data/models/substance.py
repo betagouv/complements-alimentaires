@@ -12,7 +12,7 @@ from .abstract_ingredient_relation_models import (
 )
 from .mixins import PublicReasonHistoricalModel
 from .population import Population
-from .unit import SubstanceUnit
+from .unit import Unit
 
 
 class SubstanceType(models.IntegerChoices):
@@ -72,7 +72,7 @@ class Substance(IngredientCommonModel):
     # nutritional_reference
     nutritional_reference = models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé")
     unit = models.ForeignKey(
-        SubstanceUnit,
+        Unit,
         default=None,
         null=True,
         on_delete=models.CASCADE,

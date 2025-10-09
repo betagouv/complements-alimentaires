@@ -12,7 +12,7 @@ from .abstract_ingredient_relation_models import (
 from .mixins import PublicReasonHistoricalModel
 from .population import Population
 from .substance import Substance
-from .unit import SubstanceUnit
+from .unit import Unit
 
 
 class PlantFamily(CommonModel):
@@ -54,7 +54,7 @@ class Plant(IngredientCommonModel):
     substances = models.ManyToManyField(Substance, through="PlantSubstanceRelation")
     max_quantities = models.ManyToManyField(Population, through="PlantMaxQuantityPerPopulationRelation")
     unit = models.ForeignKey(
-        SubstanceUnit,
+        Unit,
         default=None,
         null=True,
         on_delete=models.CASCADE,

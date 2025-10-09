@@ -35,7 +35,7 @@ from .condition import Condition
 from .effect import Effect
 from .galenic_formulation import GalenicFormulation
 from .preparation import Preparation
-from .unit import SubstanceUnit
+from .unit import Unit
 from .ingredient_status import IngredientStatus
 from .global_roles import InstructionRole, VisaRole, ControlRole, ControlRoleEmail
 from .declaration import (
@@ -69,7 +69,7 @@ ELEMENT_MODELS = [
     Substance,
     SubstanceSynonym,
     IngredientStatus,
-    SubstanceUnit,
+    Unit,
 ]
 
 DECLARATION_MODELS = [Condition, Effect, GalenicFormulation, Population, Preparation]

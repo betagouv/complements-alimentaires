@@ -14,7 +14,7 @@ from data.factories import (
     PlantFactory,
     PlantPartFactory,
     SubstanceFactory,
-    SubstanceUnitFactory,
+    UnitFactory,
 )
 from data.models import IngredientType
 
@@ -27,8 +27,8 @@ class DeclarationDoseFilterTests(APITestCase):
         # Utilisé au lieu de setUp car on ne modifie pas la donnée, donc c'est mieux si ces
         # objets sont créés seulement une fois.
 
-        cls.unit_mg = SubstanceUnitFactory(name="mg")
-        cls.unit_g = SubstanceUnitFactory(name="g")
+        cls.unit_mg = UnitFactory(name="mg")
+        cls.unit_g = UnitFactory(name="g")
 
         cls.camomille = PlantFactory(name="Camomille")
         cls.mint = PlantFactory(name="Mint")
@@ -164,7 +164,7 @@ class DeclarationDoseFilterTests(APITestCase):
         """Si les unités ne peuvent pas être converties, le filtre marche quand même"""
         InstructionRoleFactory(user=authenticate.user)
         # Cette unité n'est pas supportée pour la conversion
-        unit_iu = SubstanceUnitFactory(name="IU", long_name="International Units")
+        unit_iu = UnitFactory(name="IU", long_name="International Units")
 
         # Il y a un fallback a un filtrage sans conversion
         dose = f"dose=ingredient||Ginger Root||{self.ginger.id}||≥||5||{unit_iu.id}"

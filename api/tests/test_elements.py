@@ -21,7 +21,7 @@ from data.factories import (
     SubstanceFactory,
     SubstanceMaxQuantityPerPopulationRelationFactory,
     SubstanceSynonymFactory,
-    SubstanceUnitFactory,
+    UnitFactory,
 )
 from data.models import Ingredient, IngredientStatus, IngredientType, Microorganism, Part, Plant, Population
 from data.models.substance import Substance, SubstanceMaxQuantityPerPopulationRelation
@@ -364,7 +364,7 @@ class TestElementsCreateApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
         other_pop = PopulationFactory(name="Autre population")
 
-        unit = SubstanceUnitFactory.create()
+        unit = UnitFactory.create()
         self.assertEqual(Substance.objects.count(), 0)
         payload = {
             "name": "My new substance",
@@ -487,7 +487,7 @@ class TestElementsModifyApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
             name="original name",
-            unit=SubstanceUnitFactory.create(),
+            unit=UnitFactory.create(),
             status=IngredientStatus.AUTHORIZED,
             must_specify_quantity=True,
         )
@@ -497,7 +497,7 @@ class TestElementsModifyApi(APITestCase):
             max_quantity=3.4,
         )
 
-        new_unit = SubstanceUnitFactory.create()
+        new_unit = UnitFactory.create()
         self.assertEqual(
             substance.max_quantity, 3.4, "La quantité max pour la population générale est la bonne avant modification"
         )
@@ -559,7 +559,7 @@ class TestElementsModifyApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
             name="original name",
-            unit=SubstanceUnitFactory.create(),
+            unit=UnitFactory.create(),
             status=IngredientStatus.AUTHORIZED,
         )
         self.assertEqual(
@@ -642,13 +642,13 @@ class TestElementsModifyApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
             name="original name",
-            unit=SubstanceUnitFactory.create(),
+            unit=UnitFactory.create(),
             status=IngredientStatus.AUTHORIZED,
         )
         SubstanceMaxQuantityPerPopulationRelationFactory(
             substance=substance, population=self.general_pop, max_quantity=24
         )
-        new_unit = SubstanceUnitFactory.create()
+        new_unit = UnitFactory.create()
         self.assertEqual(substance.max_quantity, 24, "La quantité max pour la population générale est définie")
         response = self.client.patch(
             reverse("api:single_substance", kwargs={"pk": substance.id}),
@@ -743,7 +743,7 @@ class TestElementsModifyApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
         substance = SubstanceFactory.create(
             name="original name",
-            unit=SubstanceUnitFactory.create(),
+            unit=UnitFactory.create(),
         )
         SubstanceMaxQuantityPerPopulationRelationFactory(
             substance=substance, population=self.general_pop, max_quantity=24

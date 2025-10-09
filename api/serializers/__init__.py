@@ -18,7 +18,7 @@ from .condition import ConditionSerializer
 from .effect import EffectSerializer
 from .galenic_formulation import GalenicFormulationSerializer
 from .preparation import PreparationSerializer
-from .unit import SubstanceUnitSerializer
+from .unit import UnitSerializer
 from .autocomplete_item import AutocompleteItemSerializer
 from .declaration import (
     OpenDataDeclarationSerializer,

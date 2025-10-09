@@ -1,7 +1,7 @@
 import factory
 
 from data.factories.population import PopulationFactory
-from data.factories.unit import SubstanceUnitFactory
+from data.factories.unit import UnitFactory
 from data.models.ingredient_status import IngredientStatus
 from data.models.substance import Substance, SubstanceMaxQuantityPerPopulationRelation, SubstanceSynonym
 
@@ -15,7 +15,7 @@ class SubstanceFactory(factory.django.DjangoModelFactory):
     siccrf_id = factory.Sequence(lambda n: n + 1)
     must_specify_quantity = factory.Faker("boolean")
     nutritional_reference = factory.Faker("random_int", min=0, max=20)
-    unit = factory.SubFactory(SubstanceUnitFactory)
+    unit = factory.SubFactory(UnitFactory)
     status = IngredientStatus.AUTHORIZED
     to_be_entered_in_next_decree = False
     is_obsolete = False

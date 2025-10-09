@@ -1,9 +1,10 @@
 from rest_framework.generics import ListAPIView
-from data.models import SubstanceUnit
-from api.serializers import SubstanceUnitSerializer
+
+from api.serializers import UnitSerializer
+from data.models import Unit
 
 
 class UnitListView(ListAPIView):
-    model = SubstanceUnit
-    serializer_class = SubstanceUnitSerializer
-    queryset = SubstanceUnit.objects.all()
+    model = Unit
+    serializer_class = UnitSerializer
+    queryset = Unit.objects.all()

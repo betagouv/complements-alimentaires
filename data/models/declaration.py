@@ -30,7 +30,7 @@ from data.models import (
     Preparation,
     Substance,
     SubstanceType,
-    SubstanceUnit,
+    Unit,
     VisaRole,
 )
 from data.models.ingredient_status import IngredientStatus
@@ -159,7 +159,7 @@ class Declaration(Historisable, TimeStampable):
         null=True, blank=True, verbose_name="poids ou volume d'une unité de consommation"
     )
     unit_measurement = models.ForeignKey(
-        SubstanceUnit,
+        Unit,
         null=True,
         blank=True,
         on_delete=models.RESTRICT,
@@ -689,7 +689,7 @@ class DeclaredPlant(Historisable, Addable):
         PlantPart, null=True, blank=True, verbose_name="partie utilisée", on_delete=models.RESTRICT
     )
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
-    unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
+    unit = models.ForeignKey(Unit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
     preparation = models.ForeignKey(
         Preparation, null=True, blank=True, verbose_name="préparation", on_delete=models.RESTRICT
     )
@@ -771,7 +771,7 @@ class DeclaredIngredient(Historisable, Addable):
     new_name = models.TextField(blank=True, verbose_name="libellé")
     new_type = models.TextField(blank=True, verbose_name="type de l'ingrédient")
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
-    unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
+    unit = models.ForeignKey(Unit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
     def __str__(self):
         if self.new:
@@ -801,7 +801,7 @@ class DeclaredSubstance(Historisable, Addable):
     active = models.BooleanField("ayant une activité physiologique ou nutritionnelle", default=True)
     new_name = models.TextField(blank=True, verbose_name="libellé")
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
-    unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
+    unit = models.ForeignKey(Unit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
     def __str__(self):
         if self.new:
@@ -834,7 +834,7 @@ class ComputedSubstance(Historisable):
         on_delete=models.RESTRICT,
     )
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
-    unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
+    unit = models.ForeignKey(Unit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
     def __str__(self):
         return self.substance.name
