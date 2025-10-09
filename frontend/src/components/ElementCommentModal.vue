@@ -12,6 +12,14 @@
       <div v-if="hasMaxQuantities">
         <ElementDoses :maxQuantities="maxQuantities" :unit="element?.unit" />
       </div>
+      <div v-if="warningsOnLabel && warningsOnLabel.length">
+        <h2 class="fr-h6 mb-2!">Avertissements</h2>
+        <ul>
+          <li v-for="(_, idx) in warningsOnLabel" :key="`warning-${idx}`">
+            <p class="mb-2">{{ warningsOnLabel[idx] }}</p>
+          </li>
+        </ul>
+      </div>
       <div v-if="constitutingSubstances && constitutingSubstances.length">
         <h2 class="fr-h6 mb-2!">Substances</h2>
         <ul>
@@ -62,12 +70,15 @@ const stringifyMaxQuantities = (maxQuantities, unit) =>
   maxQuantities.map((q) => `${q.population?.name} : ${q.maxQuantity?.toLocaleString("fr-FR")} ${unit}`).join(", ")
 const maxQuantitiesString = computed(() => stringifyMaxQuantities(maxQuantities.value, element.value?.unit))
 
+const warningsOnLabel = computed(() => element.value?.warningsOnLabel)
+
 const constitutingSubstances = computed(() => element.value?.substances)
 
 const moreInfoButtonTitle = computed(() => {
   if (!hasInformationToShow.value) return "Pas d'informations supplementaires sur l'ingrédient " + elementName.value
   let content = "Cliquez pour voir plus d'informations sur l'ingrédient " + elementName.value + ". "
   if (hasMaxQuantities.value) content += `Quantités maximales : ${maxQuantitiesString.value}. `
+  if (warningsOnLabel.value && warningsOnLabel.value.length) content += "Cet ingrédient contient des avertissements. "
   if (element.value?.publicComments) content += `Commentaires : ${element.value?.publicComments}. `
   if (element.value?.privateComments && !props.hidePrivateComments)
     content += `Commentaires privés : ${element.value?.privateComments}. `
