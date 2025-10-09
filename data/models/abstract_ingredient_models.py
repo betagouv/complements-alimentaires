@@ -68,7 +68,12 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
     warning_on_label = models.TextField(
         blank=True, verbose_name="mentions d'avertissement devant figurer sur l'étiquette"
     )
-
+    warnings_on_label = ArrayField(
+        models.TextField(),
+        blank=True,
+        null=True,
+        verbose_name="mention(s) d'avertissement devant figurer sur l'étiquette",
+    )
     description = models.TextField(blank=True)
 
     @property

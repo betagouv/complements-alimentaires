@@ -263,7 +263,7 @@
         <div class="mb-4">
           <DsfrInput
             label="Avertissement(s)"
-            v-model="state.warningOnLabel"
+            v-model="state.warningsOnLabel"
             :isTextarea="true"
             label-visible
             hint="Mentions d'avertissement devant figurer sur l'étiquette"
