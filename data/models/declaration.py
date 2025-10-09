@@ -30,11 +30,11 @@ from data.models import (
     Preparation,
     Substance,
     SubstanceType,
-    SubstanceUnit,
+    Unit,
     VisaRole,
 )
 from data.models.ingredient_status import IngredientStatus
-from data.models.substance import MaxQuantityPerPopulationRelation
+from data.models.substance import SubstanceMaxQuantityPerPopulationRelation
 
 logger = logging.getLogger(__name__)
 
@@ -159,7 +159,7 @@ class Declaration(Historisable, TimeStampable):
         null=True, blank=True, verbose_name="poids ou volume d'une unité de consommation"
     )
     unit_measurement = models.ForeignKey(
-        SubstanceUnit,
+        Unit,
         null=True,
         blank=True,
         on_delete=models.RESTRICT,
@@ -422,7 +422,7 @@ class Declaration(Historisable, TimeStampable):
         return self.teleicare_declaration_number is not None
 
     def _has_max_quantity_exceeded(self, substance):
-        max_for_target_populations = MaxQuantityPerPopulationRelation.objects.filter(
+        max_for_target_populations = SubstanceMaxQuantityPerPopulationRelation.objects.filter(
             population__in=self.populations.all(), substance=substance.substance
         )
         max_for_general_pop = substance.substance.max_quantity
@@ -472,7 +472,8 @@ class Declaration(Historisable, TimeStampable):
     @property
     def has_max_quantity_exceeded(self):
         """
-        Les doses max sont aujourd'hui définies pour les substances seulement.
+        Les doses max sont définies pour tous les ingrédients mais le calcul d'article
+        dépend aujourd'hui seulement des doses max pour les substances.
         """
         return (
             self.computed_substances_with_max_quantity_exceeded.exists()
@@ -688,7 +689,7 @@ class DeclaredPlant(Historisable, Addable):
         PlantPart, null=True, blank=True, verbose_name="partie utilisée", on_delete=models.RESTRICT
     )
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
-    unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
+    unit = models.ForeignKey(Unit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
     preparation = models.ForeignKey(
         Preparation, null=True, blank=True, verbose_name="préparation", on_delete=models.RESTRICT
     )
@@ -770,7 +771,7 @@ class DeclaredIngredient(Historisable, Addable):
     new_name = models.TextField(blank=True, verbose_name="libellé")
     new_type = models.TextField(blank=True, verbose_name="type de l'ingrédient")
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
-    unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
+    unit = models.ForeignKey(Unit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
     def __str__(self):
         if self.new:
@@ -800,7 +801,7 @@ class DeclaredSubstance(Historisable, Addable):
     active = models.BooleanField("ayant une activité physiologique ou nutritionnelle", default=True)
     new_name = models.TextField(blank=True, verbose_name="libellé")
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
-    unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
+    unit = models.ForeignKey(Unit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
     def __str__(self):
         if self.new:
@@ -833,7 +834,7 @@ class ComputedSubstance(Historisable):
         on_delete=models.RESTRICT,
     )
     quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
-    unit = models.ForeignKey(SubstanceUnit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
+    unit = models.ForeignKey(Unit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
 
     def __str__(self):
         return self.substance.name

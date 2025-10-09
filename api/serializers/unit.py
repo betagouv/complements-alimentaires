@@ -1,10 +1,11 @@
 from rest_framework import serializers
-from data.models import SubstanceUnit
+
+from data.models import Unit
 
 
-class SubstanceUnitSerializer(serializers.ModelSerializer):
+class UnitSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubstanceUnit
+        model = Unit
         fields = [
             "id",
             "name",

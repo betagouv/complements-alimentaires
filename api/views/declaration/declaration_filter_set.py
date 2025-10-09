@@ -11,7 +11,7 @@ from unidecode import unidecode
 
 from api.exceptions import ProjectAPIException
 from api.utils.filters import BaseNumberInFilter
-from data.models import Condition, Declaration, Ingredient, Population, Snapshot, SubstanceUnit
+from data.models import Condition, Declaration, Ingredient, Population, Snapshot, Unit
 
 logger = logging.getLogger(__name__)
 
@@ -210,7 +210,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
             quantity_max = float(quantity_parts[1]) if operation == self.BETWEEN else None
 
             # Prendre l'unité si elle est spécifiée (pour les microorganismes ce n'est pas le cas)
-            unit = SubstanceUnit.objects.get(pk=unit_id) if unit_id else None
+            unit = Unit.objects.get(pk=unit_id) if unit_id else None
 
             # Faire le filtre basé sur le type d'ingrédient
             if element_type == "plant":
@@ -236,7 +236,7 @@ class DeclarationFilterSet(django_filters.FilterSet):
                 f"Declaration filter by dose error : {element_type} not supported (needs plant, substance, microorganism or ingredient)"
             )
             return queryset.none()
-        except (ValueError, IndexError, SubstanceUnit.DoesNotExist, Ingredient.DoesNotExist) as e:
+        except (ValueError, IndexError, Unit.DoesNotExist, Ingredient.DoesNotExist) as e:
             logger.exception(e)
             return queryset.none()
 
@@ -357,12 +357,12 @@ class DeclarationFilterSet(django_filters.FilterSet):
             try:
                 equivalences.append(
                     (
-                        SubstanceUnit.objects.get(name=unit_name),
+                        Unit.objects.get(name=unit_name),
                         base_quantity / multiplier,
                         (base_quantity_max / multiplier if base_quantity_max else None),
                     )
                 )
-            except SubstanceUnit.DoesNotExist:
+            except Unit.DoesNotExist:
                 continue
 
         return equivalences

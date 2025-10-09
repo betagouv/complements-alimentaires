@@ -25,7 +25,7 @@ from data.models import (
     PlantPart,
     Population,
     Substance,
-    SubstanceUnit,
+    Unit,
 )
 
 from .company import MinimalCompanySerializer, SimpleCompanySerializer
@@ -144,7 +144,7 @@ class DeclaredIngredientCommonSerializer(DeclaredElementNestedField, PrivateFiel
 
 class DeclaredPlantSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughPlantSerializer(required=False, source="plant", allow_null=True)
-    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
+    unit = serializers.PrimaryKeyRelatedField(queryset=Unit.objects.all(), required=False, allow_null=True)
     used_part = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all(), required=False, allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -191,7 +191,7 @@ class DeclaredMicroorganismSerializer(DeclaredIngredientCommonSerializer):
 
 class DeclaredIngredientSerializer(DeclaredIngredientCommonSerializer):
     element = PassthroughIngredientSerializer(required=False, source="ingredient", allow_null=True)
-    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
+    unit = serializers.PrimaryKeyRelatedField(queryset=Unit.objects.all(), required=False, allow_null=True)
     declaration = serializers.PrimaryKeyRelatedField(read_only=True)
 
     nested_field_name = "ingredient"
@@ -231,7 +231,7 @@ class DeclaredSubstanceSerializer(DeclaredIngredientCommonSerializer):
 
 class ComputedSubstanceSerializer(DeclaredElementNestedField, serializers.ModelSerializer):
     substance = PassthroughSubstanceSerializer()
-    unit = serializers.PrimaryKeyRelatedField(queryset=SubstanceUnit.objects.all(), required=False, allow_null=True)
+    unit = serializers.PrimaryKeyRelatedField(queryset=Unit.objects.all(), required=False, allow_null=True)
 
     nested_field_name = "substance"
     nested_model = Substance
@@ -309,9 +309,7 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
     author = SimpleUserSerializer(read_only=True)
     company = SimpleCompanySerializer(read_only=True)
     mandated_company = SimpleCompanySerializer(read_only=True)
-    unit_measurement = serializers.PrimaryKeyRelatedField(
-        queryset=SubstanceUnit.objects.all(), required=False, allow_null=True
-    )
+    unit_measurement = serializers.PrimaryKeyRelatedField(queryset=Unit.objects.all(), required=False, allow_null=True)
 
     class Meta:
         model = Declaration
@@ -684,9 +682,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
     mandated_company = serializers.PrimaryKeyRelatedField(
         queryset=Company.objects.all(), allow_null=True, required=False
     )
-    unit_measurement = serializers.PrimaryKeyRelatedField(
-        queryset=SubstanceUnit.objects.all(), required=False, allow_null=True
-    )
+    unit_measurement = serializers.PrimaryKeyRelatedField(queryset=Unit.objects.all(), required=False, allow_null=True)
     conditions_not_recommended = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Condition.objects.all(), required=False, allow_null=True
     )

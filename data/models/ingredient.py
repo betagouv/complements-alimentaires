@@ -4,10 +4,16 @@ from simple_history.models import HistoricalRecords
 
 from data.behaviours import Historisable, TimeStampable
 
-from .abstract_models import IngredientCommonModel, SynonymType
+from .abstract_ingredient_models import IngredientCommonModel
+from .abstract_ingredient_relation_models import (
+    MaxQuantityPerPopulationRelationCommonModel,
+    SynonymCommonModel,
+)
 from .ingredient_type import IngredientType
 from .mixins import PublicReasonHistoricalModel
+from .population import Population
 from .substance import Substance
+from .unit import Unit
 
 
 class Ingredient(IngredientCommonModel):
@@ -21,6 +27,15 @@ class Ingredient(IngredientCommonModel):
         verbose_name="type de l'ingrédient",
     )
     substances = models.ManyToManyField(Substance, through="IngredientSubstanceRelation")
+    max_quantities = models.ManyToManyField(Population, through="IngredientMaxQuantityPerPopulationRelation")
+    unit = models.ForeignKey(
+        Unit,
+        default=None,
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name="unité des quantités spécifiées (quantité max, apport de référence)",
+    )
+
     history = HistoricalRecords(
         bases=[
             PublicReasonHistoricalModel,
@@ -44,7 +59,7 @@ class IngredientSubstanceRelation(TimeStampable, Historisable):
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
 
 
-class IngredientSynonym(TimeStampable, Historisable):
+class IngredientSynonym(SynonymCommonModel):
     class Meta:
         verbose_name = "synonyme d'ingrédient"
         constraints = [
@@ -54,19 +69,17 @@ class IngredientSynonym(TimeStampable, Historisable):
             )
         ]
 
-    siccrf_id = models.IntegerField(
-        blank=True,
-        null=True,
-        editable=False,
-        db_index=True,
-        unique=True,
-        verbose_name="id dans les tables et tables relationnelles SICCRF",
-    )
     standard_name = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    name = models.TextField(verbose_name="nom")
-    synonym_type = models.CharField(
-        choices=SynonymType.choices, default=SynonymType.FRENCH, verbose_name="type de synonyme"
-    )
 
-    def __str__(self):
-        return self.name
+
+class IngredientMaxQuantityPerPopulationRelation(MaxQuantityPerPopulationRelationCommonModel):
+    class Meta:
+        verbose_name = "quantité maximum de ingredient autorisée pour une population cible"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["ingredient", "population"],
+                name="unique_ingredient_max_quantity_per_population",
+            )
+        ]
+
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)

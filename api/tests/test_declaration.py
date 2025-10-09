@@ -35,8 +35,8 @@ from data.factories import (
     PreparationFactory,
     SnapshotFactory,
     SubstanceFactory,
-    SubstanceUnitFactory,
     SupervisorRoleFactory,
+    UnitFactory,
     VisaRoleFactory,
 )
 from data.models import (
@@ -116,7 +116,7 @@ class TestDeclarationApi(APITestCase):
         effect1 = EffectFactory(name="Artères et cholestérol")
         effect2 = EffectFactory(name="Autre (à préciser)")
         populations = [PopulationFactory() for _ in range(3)]
-        unit = SubstanceUnitFactory()
+        unit = UnitFactory()
         galenic_formulation = GalenicFormulationFactory()
 
         payload = {
@@ -206,7 +206,7 @@ class TestDeclarationApi(APITestCase):
         plant = PlantFactory()
         plant_part = PlantPartFactory()
         plant.plant_parts.add(plant_part)
-        unit = SubstanceUnitFactory()
+        unit = UnitFactory()
         preparation_teinture = PreparationFactory(name="Teinture")
         preparation_autre = PreparationFactory(name="Autre macérât")
 
@@ -278,7 +278,7 @@ class TestDeclarationApi(APITestCase):
         plant = PlantFactory()
         plant_part = PlantPartFactory()
         plant.plant_parts.add(plant_part)
-        unit = SubstanceUnitFactory()
+        unit = UnitFactory()
         preparation_autre = PreparationFactory(name="Autre macérât")
 
         payload = {
@@ -626,7 +626,7 @@ class TestDeclarationApi(APITestCase):
         company = declarant_role.company
 
         substance = SubstanceFactory()
-        unit = SubstanceUnitFactory()
+        unit = UnitFactory()
 
         payload = {
             "name": "Name",
@@ -2432,7 +2432,7 @@ class TestSingleDeclaredElementApi(APITestCase):
         )
         self.assertNotEqual(declared_ingredient.request_status, DeclaredPlant.AddableStatus.REPLACED)
         active_ingredient = IngredientFactory(ingredient_type=IngredientType.ACTIVE_INGREDIENT)
-        unit = SubstanceUnitFactory()
+        unit = UnitFactory()
 
         response = self.client.post(
             reverse("api:declared_element_replace", kwargs={"pk": declared_ingredient.id, "type": "other-ingredient"}),
@@ -2520,7 +2520,7 @@ class TestSingleDeclaredElementApi(APITestCase):
         self.assertEqual(declared_microorganism.request_status, DeclaredMicroorganism.AddableStatus.REQUESTED)
         plant = PlantFactory()
         used_part = PlantPartFactory()
-        unit = SubstanceUnitFactory()
+        unit = UnitFactory()
 
         response = self.client.post(
             reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
@@ -2563,7 +2563,7 @@ class TestSingleDeclaredElementApi(APITestCase):
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
-        unit = SubstanceUnitFactory()
+        unit = UnitFactory()
         declared_substance = DeclaredSubstanceFactory(
             declaration=declaration, new_description="Test description", new=True, unit=unit
         )
@@ -2818,7 +2818,7 @@ class TestSingleDeclaredElementApi(APITestCase):
         declared_microorganism = DeclaredMicroorganismFactory(id=66, declaration=declaration, new_species="test")
         self.assertEqual(declared_microorganism.id, 66)
         plant = PlantFactory()
-        unit = SubstanceUnitFactory()
+        unit = UnitFactory()
 
         response = self.client.post(
             reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),

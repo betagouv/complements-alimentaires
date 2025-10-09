@@ -1,7 +1,8 @@
 from django.db import models
+
 from simple_history.models import HistoricalRecords
 
-from .abstract_models import CommonModel
+from .abstract_ingredient_models import CommonModel
 
 
 class Effect(CommonModel):

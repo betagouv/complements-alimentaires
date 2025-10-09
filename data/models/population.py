@@ -4,7 +4,7 @@ from simple_history.models import HistoricalRecords
 
 from data.behaviours import TimeStampable
 
-from .abstract_models import CommonModelManager
+from .abstract_ingredient_models import CommonModelManager
 
 
 class Population(TimeStampable):

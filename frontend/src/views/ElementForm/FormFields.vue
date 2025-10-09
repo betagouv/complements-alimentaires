@@ -198,22 +198,6 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
           <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
         </DsfrInputGroup>
-        <div class="max-w-32">
-          <DsfrInputGroup v-if="isNewIngredient" :error-message="firstErrorMsg(v$, 'unit')">
-            <DsfrSelect
-              label="Unité"
-              label-visible
-              :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
-              v-model="state.unit"
-              defaultUnselectedText="Unité"
-              required
-            />
-          </DsfrInputGroup>
-          <div v-else class="pt-4">
-            <p class="mb-2">Unité</p>
-            <p class="mb-0">{{ unitString }}</p>
-          </div>
-        </div>
         <DsfrInputGroup>
           <DsfrToggleSwitch
             v-model="state.mustSpecifyQuantity"
@@ -225,7 +209,23 @@
           />
         </DsfrInputGroup>
       </div>
-      <div v-if="formForType.maxQuantity" class="mt-8 sm:mt-0">
+      <div class="max-w-32">
+        <DsfrInputGroup v-if="isNewIngredient || !state.unit" :error-message="firstErrorMsg(v$, 'unit')">
+          <DsfrSelect
+            label="Unité"
+            label-visible
+            :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
+            v-model="state.unit"
+            defaultUnselectedText="Unité"
+            required
+          />
+        </DsfrInputGroup>
+        <div v-else class="pt-4">
+          <p class="mb-2">Unité</p>
+          <p class="mb-0">{{ unitString }}</p>
+        </div>
+      </div>
+      <div class="mt-8 sm:mt-0">
         <DsfrTable
           v-if="state.maxQuantities.length"
           title="Quantités maximales par population"
@@ -503,8 +503,6 @@ const formQuestions = {
     einecNumber: true,
     casNumber: true,
     nutritionalReference: true,
-    maxQuantity: true,
-    unit: true,
     substanceTypes: true,
   },
   microorganism: {
@@ -533,7 +531,7 @@ const rules = computed(() => {
     genus: form?.genus ? errorRequiredField : {},
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
-    unit: form?.nutritionalReference && !props.element ? errorRequiredField : {},
+    unit: !props.element ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
     publicChangeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),

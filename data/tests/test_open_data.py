@@ -24,7 +24,7 @@ from data.factories import (
     PlantFactory,
     PlantPartFactory,
     SubstanceFactory,
-    SubstanceUnitFactory,
+    UnitFactory,
 )
 from data.models import Declaration
 
@@ -65,7 +65,7 @@ class IngredientTestCase(TestCase):
         Le fichier csv créé à la sortie du process d'extraction du JDD Open Data contient des colonnes de données complexes qui sont en json bien formé
         """
         # Création de declarations dont déclarations provenant de TeleIcare
-        unit_mg = SubstanceUnitFactory(name="mg")
+        unit_mg = UnitFactory(name="mg")
         declaration_1 = AuthorizedDeclarationFactory()
         DeclaredPlantFactory(
             declaration=declaration_1,
