@@ -107,7 +107,7 @@
           <DsfrInputGroup :errorMessage="regulatoryResourceLinksError" wrapperClass="mt-0 mb-0">
             <DsfrInput
               v-for="(_, idx) in state.regulatoryResourceLinks"
-              :key="`synonym-${idx}`"
+              :key="`link-${idx}`"
               v-model="state.regulatoryResourceLinks[idx]"
               class="mb-4"
             />
@@ -258,18 +258,28 @@
         />
       </div>
     </DsfrFieldset>
-    <DsfrFieldset legend="Avertissement" legendClass="fr-h4 mb-0!" class="mb-0">
-      <div class="grid md:grid-cols-2 md:gap-4">
-        <div class="mb-4">
-          <DsfrInput
-            label="Avertissement(s)"
-            v-model="state.warningsOnLabel"
-            :isTextarea="true"
-            label-visible
-            hint="Mentions d'avertissement devant figurer sur l'étiquette"
-          />
-        </div>
-      </div>
+    <DsfrFieldset
+      legend="Avertissement"
+      hint="Mentions d'avertissement devant figurer sur l'étiquette"
+      legendClass="fr-h4 mb-0!"
+      class="mb-0"
+    >
+      <DsfrInputGroup wrapperClass="mt-0 mb-0">
+        <DsfrInput
+          v-for="(_, idx) in state.warningsOnLabel"
+          :key="`warning-${idx}`"
+          v-model="state.warningsOnLabel[idx]"
+          class="mb-4"
+        />
+      </DsfrInputGroup>
+      <DsfrButton
+        label="Ajouter un avertissement"
+        @click="() => (state.warningsOnLabel ? state.warningsOnLabel.push('') : (state.warningsOnLabel = ['']))"
+        icon="ri-add-line"
+        size="sm"
+        class="mt-2"
+        secondary
+      />
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
         <DsfrToggleSwitch
           v-model="state.isRisky"
