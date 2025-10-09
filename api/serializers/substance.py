@@ -37,8 +37,6 @@ class SubstanceMaxQuantitySerializer(serializers.ModelSerializer):
 
 class SubstanceSerializer(CommonIngredientReadSerializer):
     synonyms = SubstanceSynonymSerializer(many=True, read_only=True, source="substancesynonym_set")
-    unit = serializers.CharField(read_only=True, source="unit.name")
-    unit_id = serializers.IntegerField(read_only=True, source="unit.id")
     max_quantities = SubstanceMaxQuantitySerializer(
         many=True, source="substancemaxquantityperpopulationrelation_set", required=False
     )

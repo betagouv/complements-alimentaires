@@ -83,8 +83,6 @@ class PlantSerializer(CommonIngredientReadSerializer):
     plant_parts = PartRelationSerializer(source="part_set", many=True, read_only=True)
     synonyms = PlantSynonymSerializer(many=True, read_only=True, source="plantsynonym_set")
     substances = SubstanceShortSerializer(many=True, read_only=True)
-    unit = serializers.CharField(read_only=True, source="unit.name")
-    unit_id = serializers.IntegerField(read_only=True, source="unit.id")
     max_quantities = PlantMaxQuantitySerializer(
         many=True, source="plantmaxquantityperpopulationrelation_set", required=False
     )

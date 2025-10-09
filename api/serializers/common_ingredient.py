@@ -208,6 +208,9 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
 
 class CommonIngredientReadSerializer(HistoricalModelSerializer, PrivateFieldsSerializer):
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
+    unit = serializers.CharField(read_only=True, source="unit.name")
+    unit_id = serializers.IntegerField(read_only=True, source="unit.id")
+
     history = HistoricalRecordField(read_only=True)
 
     private_fields = ("private_comments", "origin_declaration", "to_be_entered_in_next_decree")
