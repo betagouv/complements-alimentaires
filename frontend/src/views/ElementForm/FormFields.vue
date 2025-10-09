@@ -503,8 +503,6 @@ const formQuestions = {
     einecNumber: true,
     casNumber: true,
     nutritionalReference: true,
-    // maxQuantity: true,
-    // unit: true,
     substanceTypes: true,
   },
   microorganism: {

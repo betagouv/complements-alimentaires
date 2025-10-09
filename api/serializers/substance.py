@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from data.models import Population
-from data.models.substance import Substance, SubstanceMaxQuantityPerPopulationRelation, SubstanceSynonym
+from data.models import Population, Substance, SubstanceMaxQuantityPerPopulationRelation, SubstanceSynonym
 
 from .common_ingredient import (
     COMMON_FETCH_FIELDS,

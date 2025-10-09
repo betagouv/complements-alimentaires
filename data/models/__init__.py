@@ -29,7 +29,7 @@ from .plant import (
     PlantSubstanceRelation,
     PlantMaxQuantityPerPopulationRelation,
 )
-from .substance import Substance, SubstanceSynonym, SubstanceType
+from .substance import Substance, SubstanceSynonym, SubstanceType, SubstanceMaxQuantityPerPopulationRelation
 from .population import Population
 from .condition import Condition
 from .effect import Effect
