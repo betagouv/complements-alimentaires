@@ -121,7 +121,7 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             "Avertissements",
             {
                 "fields": [
-                    "warning_on_label",
+                    "warnings_on_label",
                     "is_risky",
                     "requires_analysis_report",
                 ],
