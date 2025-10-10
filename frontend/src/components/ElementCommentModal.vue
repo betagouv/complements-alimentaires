@@ -95,6 +95,7 @@ const hasInformationToShow = computed(
     element.value?.publicComments ||
     (element.value?.privateComments && !props.hidePrivateComments) ||
     hasMaxQuantities.value ||
+    warningsOnLabel.value ||
     constitutingSubstances.value?.length
 )
 </script>
