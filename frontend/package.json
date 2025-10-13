@@ -13,7 +13,7 @@
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
     "@vueuse/core": "^13.9.0",
-    "core-js": "^3.45.1",
+    "core-js": "^3.46.0",
     "pinia": "^3.0.3",
     "vue": "^3.5.22",
     "vue-matomo": "^4.2.0",
