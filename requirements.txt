@@ -13,7 +13,7 @@ botocore==1.40.40
 bs4==0.0.2
 celery==5.5.3
 certifi==2025.8.3
-cffi==1.17.1
+cffi==2.0.0
 cfgv==3.4.0
 chardet==5.2.0
 charset-normalizer==3.4.3
@@ -22,7 +22,7 @@ click-didyoumean==0.3.1
 click-plugins==1.1.1.2
 click-repl==0.3.0
 colorama==0.4.6
-cryptography==45.0.6
+cryptography==46.0.2
 cssselect2==0.8.0
 decorator==5.2.1
 diff_cover==9.7.1
