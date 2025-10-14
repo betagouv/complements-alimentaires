@@ -20,7 +20,7 @@ from data.models import (
     Preparation,
     Snapshot,
     Substance,
-    SubstanceUnit,
+    Unit,
 )
 from data.models.company import ActivityChoices, Company, EtablissementToCompanyRelation
 from data.models.declaration import (
@@ -322,7 +322,7 @@ def compute_declaration_attributes(ica_complement_alimentaire, latest_ica_declar
         "other_galenic_formulation": ica_complement_alimentaire.cplalim_forme_galenique_autre or "",
         # extraction d'un nombre depuis une chaîne de caractères
         "unit_quantity": latest_ica_version_declaration.vrsdecl_poids_uc,
-        "unit_measurement": SubstanceUnit.objects.get(siccrf_id=latest_ica_version_declaration.unt_ident),
+        "unit_measurement": Unit.objects.get(siccrf_id=latest_ica_version_declaration.unt_ident),
         "conditioning": latest_ica_version_declaration.vrsdecl_conditionnement or "",
         "daily_recommended_dose": latest_ica_version_declaration.vrsdecl_djr,
         "minimum_duration": latest_ica_version_declaration.vrsdecl_durabilite,
@@ -349,7 +349,7 @@ def create_declared_plant(declaration, teleIcare_plant, active):
             plant=Plant.objects.get(siccrf_id=teleIcare_plant.plte_ident),
             active=active,
             quantity=teleIcare_plant.prepa_qte if active else None,
-            unit=SubstanceUnit.objects.get(siccrf_id=teleIcare_plant.unt_ident) if active else None,
+            unit=Unit.objects.get(siccrf_id=teleIcare_plant.unt_ident) if active else None,
             preparation=Preparation.objects.get(siccrf_id=teleIcare_plant.typprep_ident) if active else None,
             used_part=PlantPart.objects.get(siccrf_id=teleIcare_plant.pplan_ident) if active else None,
         )

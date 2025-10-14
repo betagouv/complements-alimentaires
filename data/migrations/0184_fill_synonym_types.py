@@ -4,7 +4,7 @@ from django.db import migrations
 import pandas as pd
 import logging
 
-from data.models.abstract_models import SynonymType
+from data.models.abstract_ingredient_models import SynonymType
 
 logger = logging.getLogger(__name__)
 

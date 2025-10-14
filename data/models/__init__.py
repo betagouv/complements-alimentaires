@@ -7,17 +7,35 @@ from .webinar import Webinar
 from .company import Company, SupervisorRole, DeclarantRole, ActivityChoices
 
 # Elements specific models
-from .ingredient import Ingredient, IngredientSynonym, IngredientSubstanceRelation
+from .ingredient import (
+    Ingredient,
+    IngredientSynonym,
+    IngredientSubstanceRelation,
+    IngredientMaxQuantityPerPopulationRelation,
+)
 from .ingredient_type import IngredientType
-from .microorganism import Microorganism, MicroorganismSynonym
-from .plant import Plant, PlantSynonym, PlantPart, PlantFamily, Part, PlantSubstanceRelation
-from .substance import Substance, SubstanceSynonym, SubstanceType
+from .microorganism import (
+    Microorganism,
+    MicroorganismSynonym,
+    MicroorganismMaxQuantityPerPopulationRelation,
+    MicroorganismSubstanceRelation,
+)
+from .plant import (
+    Plant,
+    PlantSynonym,
+    PlantPart,
+    PlantFamily,
+    Part,
+    PlantSubstanceRelation,
+    PlantMaxQuantityPerPopulationRelation,
+)
+from .substance import Substance, SubstanceSynonym, SubstanceType, SubstanceMaxQuantityPerPopulationRelation
 from .population import Population
 from .condition import Condition
 from .effect import Effect
 from .galenic_formulation import GalenicFormulation
 from .preparation import Preparation
-from .unit import SubstanceUnit
+from .unit import Unit
 from .ingredient_status import IngredientStatus
 from .global_roles import InstructionRole, VisaRole, ControlRole, ControlRoleEmail
 from .declaration import (
@@ -51,7 +69,7 @@ ELEMENT_MODELS = [
     Substance,
     SubstanceSynonym,
     IngredientStatus,
-    SubstanceUnit,
+    Unit,
 ]
 
 DECLARATION_MODELS = [Condition, Effect, GalenicFormulation, Population, Preparation]

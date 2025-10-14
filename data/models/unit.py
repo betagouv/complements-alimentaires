@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class SubstanceUnit(models.Model):
+class Unit(models.Model):
     class Meta:
         verbose_name = "unité"
 

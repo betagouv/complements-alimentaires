@@ -107,7 +107,7 @@
           <DsfrInputGroup :errorMessage="regulatoryResourceLinksError" wrapperClass="mt-0 mb-0">
             <DsfrInput
               v-for="(_, idx) in state.regulatoryResourceLinks"
-              :key="`synonym-${idx}`"
+              :key="`link-${idx}`"
               v-model="state.regulatoryResourceLinks[idx]"
               class="mb-4"
             />
@@ -198,22 +198,6 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
           <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
         </DsfrInputGroup>
-        <div class="max-w-32">
-          <DsfrInputGroup v-if="isNewIngredient" :error-message="firstErrorMsg(v$, 'unit')">
-            <DsfrSelect
-              label="Unité"
-              label-visible
-              :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
-              v-model="state.unit"
-              defaultUnselectedText="Unité"
-              required
-            />
-          </DsfrInputGroup>
-          <div v-else class="pt-4">
-            <p class="mb-2">Unité</p>
-            <p class="mb-0">{{ unitString }}</p>
-          </div>
-        </div>
         <DsfrInputGroup>
           <DsfrToggleSwitch
             v-model="state.mustSpecifyQuantity"
@@ -225,7 +209,23 @@
           />
         </DsfrInputGroup>
       </div>
-      <div v-if="formForType.maxQuantity" class="mt-8 sm:mt-0">
+      <div class="max-w-32">
+        <DsfrInputGroup v-if="isNewIngredient || !state.unit" :error-message="firstErrorMsg(v$, 'unit')">
+          <DsfrSelect
+            label="Unité"
+            label-visible
+            :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
+            v-model="state.unit"
+            defaultUnselectedText="Unité"
+            required
+          />
+        </DsfrInputGroup>
+        <div v-else class="pt-4">
+          <p class="mb-2">Unité</p>
+          <p class="mb-0">{{ unitString }}</p>
+        </div>
+      </div>
+      <div class="mt-8 sm:mt-0">
         <DsfrTable
           v-if="state.maxQuantities.length"
           title="Quantités maximales par population"
@@ -258,18 +258,28 @@
         />
       </div>
     </DsfrFieldset>
-    <DsfrFieldset legend="Avertissement" legendClass="fr-h4 mb-0!" class="mb-0">
-      <div class="grid md:grid-cols-2 md:gap-4">
-        <div class="mb-4">
-          <DsfrInput
-            label="Avertissement(s)"
-            v-model="state.warningOnLabel"
-            :isTextarea="true"
-            label-visible
-            hint="Mentions d'avertissement devant figurer sur l'étiquette"
-          />
-        </div>
-      </div>
+    <DsfrFieldset
+      legend="Avertissement"
+      hint="Mentions d'avertissement devant figurer sur l'étiquette"
+      legendClass="fr-h4 mb-0!"
+      class="mb-0"
+    >
+      <DsfrInputGroup wrapperClass="mt-0 mb-0">
+        <DsfrInput
+          v-for="(_, idx) in state.warningsOnLabel"
+          :key="`warning-${idx}`"
+          v-model="state.warningsOnLabel[idx]"
+          class="mb-4"
+        />
+      </DsfrInputGroup>
+      <DsfrButton
+        label="Ajouter un avertissement"
+        @click="() => (state.warningsOnLabel ? state.warningsOnLabel.push('') : (state.warningsOnLabel = ['']))"
+        icon="ri-add-line"
+        size="sm"
+        class="mt-2"
+        secondary
+      />
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
         <DsfrToggleSwitch
           v-model="state.isRisky"
@@ -503,8 +513,6 @@ const formQuestions = {
     einecNumber: true,
     casNumber: true,
     nutritionalReference: true,
-    maxQuantity: true,
-    unit: true,
     substanceTypes: true,
   },
   microorganism: {
@@ -533,7 +541,7 @@ const rules = computed(() => {
     genus: form?.genus ? errorRequiredField : {},
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
-    unit: form?.nutritionalReference && !props.element ? errorRequiredField : {},
+    unit: !props.element ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
     publicChangeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),

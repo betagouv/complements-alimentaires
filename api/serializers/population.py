@@ -15,3 +15,10 @@ class PopulationSerializer(serializers.ModelSerializer):
             "category",
         ]
         read_only_fields = fields
+
+
+class SimplePopulationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Population
+        fields = ("id", "name")
+        read_only_fields = fields

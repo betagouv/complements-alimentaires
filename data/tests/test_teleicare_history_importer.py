@@ -22,7 +22,7 @@ from data.factories.teleicare_history import (
     IcaPopulationCibleDeclareeFactory,
     VersionDeclarationFactory,
 )
-from data.factories.unit import SubstanceUnitFactory
+from data.factories.unit import UnitFactory
 from data.models.company import EtablissementToCompanyRelation
 from data.models.declaration import (
     Declaration,
@@ -59,7 +59,7 @@ class TeleicareHistoryImporterTestCase(TestCase):
         self.galenic_formulation_id = 1
         self.galenic_formulation = GalenicFormulationFactory(siccrf_id=self.galenic_formulation_id)
         self.unit_id = 1
-        self.unit = SubstanceUnitFactory(siccrf_id=self.unit_id)
+        self.unit = UnitFactory(siccrf_id=self.unit_id)
         for table in [
             IcaEtablissement,
             IcaComplementAlimentaire,
