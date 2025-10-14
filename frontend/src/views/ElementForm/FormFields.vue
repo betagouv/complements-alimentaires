@@ -411,7 +411,7 @@ const state = ref({
   authorisedPlantParts: [],
   forbiddenPlantParts: [],
   substances: [],
-  synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
+  synonyms: [createEmptySynonym()],
   maxQuantities: [],
   toBeEnteredInNextDecree: true, // vrai pour les nouveaux ingrédients
   substanceTypes: [],
