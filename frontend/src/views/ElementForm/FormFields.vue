@@ -634,8 +634,8 @@ const ingredientTypes = [
 ]
 
 const statuses = [
-  { value: 1, text: "Autorisé", apiValue: "autorisé" },
-  { value: 2, text: "Non autorisé", apiValue: "non autorisé" },
+  { value: 1, text: "✅ Autorisé", apiValue: "autorisé" },
+  { value: 2, text: "🛑 Non autorisé", apiValue: "non autorisé" },
   { value: 3, text: "Sans objet", apiValue: "sans objet" },
 ]
 
