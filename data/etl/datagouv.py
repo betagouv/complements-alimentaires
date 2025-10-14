@@ -34,7 +34,7 @@ def update_resources(dataset_name: str):
         for resource in resources:
             if resource["format"] in ["csv"]:
                 today = date.today()
-                updated_url = resource["url"].split("?v=")[0] + "?v=" + today.strftime("%Y%m%d")
+                updated_url = resource["url"].split("?")[0] + "?v=" + today.strftime("%Y%m%d")
                 response = requests.put(
                     f'https://www.data.gouv.fr/api/1/datasets/{dataset_id}/resources/{resource["id"]}',
                     headers=header,
