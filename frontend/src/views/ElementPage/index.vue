@@ -91,8 +91,8 @@
       <div v-if="element.warningsOnLabel">
         <h2 class="fr-h6 mb-1!">Avertissement à faire figurer sur l'étiquetage</h2>
         <ul>
-          <li v-for="(_, idx) in element.warningsOnLabel" :key="`warning-${idx}`">
-            {{ element.warningsOnLabel[idx] }}
+          <li v-for="(warning, idx) in element.warningsOnLabel" :key="`warning-${idx}`">
+            {{ warning }}
           </li>
         </ul>
       </div>

@@ -15,8 +15,8 @@
       <div v-if="warningsOnLabel && warningsOnLabel.length">
         <h2 class="fr-h6 mb-2!">Avertissements</h2>
         <ul>
-          <li v-for="(_, idx) in warningsOnLabel" :key="`warning-${idx}`">
-            <p class="mb-2">{{ warningsOnLabel[idx] }}</p>
+          <li v-for="(warning, idx) in warningsOnLabel" :key="`warning-${idx}`">
+            <p class="mb-2">{{ warning }}</p>
           </li>
         </ul>
       </div>
