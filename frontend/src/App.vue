@@ -41,7 +41,7 @@ import AppHeader from "@/components/AppHeader.vue"
 
 const route = useRoute()
 const { messages, removeMessage } = useToaster()
-const logoText = ["Ministère", "de l’Agriculture", "et de la Souveraineté", "Alimentaire"]
+const logoText = ["Ministère", "de l'Agriculture,", "de l'Agro-alimentaire", "et de la Souveraineté", "Alimentaire"]
 
 watch(route, (to) => {
   const suffix = "Compl'Alim"
