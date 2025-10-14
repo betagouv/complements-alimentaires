@@ -9,6 +9,7 @@
         @selected="goToSelectedOption"
         @search="search"
         :chooseFirstAsDefault="false"
+        :searchAll="true"
       />
     </div>
   </div>
@@ -22,6 +23,7 @@
       <h1 class="fr-h4 mb-1! capitalize">
         {{ element.name }}
         <DsfrBadge v-if="novelFood" label="Novel Food" small type="new" />
+        <DsfrBadge v-if="element.isObsolete" label="Obsolète" small type="error" />
       </h1>
       <RegulatoryWarning class="mt-4" />
 
@@ -88,7 +90,14 @@
         :maxQuantities="element.maxQuantities"
         :unit="element.unit"
       ></ElementDoses>
-      <ElementTextSection title="Avertissement à faire figurer sur l'étiquetage" :text="warningOnLabel" />
+      <div v-if="element.warningsOnLabel">
+        <h2 class="fr-h6 mb-1!">Avertissement à faire figurer sur l'étiquetage</h2>
+        <ul>
+          <li v-for="(warning, idx) in element.warningsOnLabel" :key="`warning-${idx}`">
+            {{ warning }}
+          </li>
+        </ul>
+      </div>
       <!-- Utiliser DsfrCallout avec une couleur particulière pour les avertissements quand cela sera possible https://github.com/dnum-mi/vue-dsfr/issues/1126 -->
 
       <ElementTextSection

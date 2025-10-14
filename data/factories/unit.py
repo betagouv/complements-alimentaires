@@ -1,11 +1,11 @@
 import factory
 
-from data.models import SubstanceUnit
+from data.models import Unit
 
 
-class SubstanceUnitFactory(factory.django.DjangoModelFactory):
+class UnitFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = SubstanceUnit
+        model = Unit
         django_get_or_create = ("siccrf_id",)
 
     siccrf_id = factory.Sequence(lambda n: n + 1)

@@ -4,13 +4,16 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 from simple_history.utils import update_change_reason
 
-from data.behaviours import Historisable, TimeStampable
 from data.validators import validate_cas
 
-from .abstract_models import IngredientCommonModel, SynonymType
+from .abstract_ingredient_models import IngredientCommonModel
+from .abstract_ingredient_relation_models import (
+    MaxQuantityPerPopulationRelationCommonModel,
+    SynonymCommonModel,
+)
 from .mixins import PublicReasonHistoricalModel
 from .population import Population
-from .unit import SubstanceUnit
+from .unit import Unit
 
 
 class SubstanceType(models.IntegerChoices):
@@ -65,12 +68,12 @@ class Substance(IngredientCommonModel):
     must_specify_quantity = models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire")
 
     # max_quantity
-    max_quantities = models.ManyToManyField(Population, through="MaxQuantityPerPopulationRelation")
+    max_quantities = models.ManyToManyField(Population, through="SubstanceMaxQuantityPerPopulationRelation")
 
     # nutritional_reference
     nutritional_reference = models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé")
     unit = models.ForeignKey(
-        SubstanceUnit,
+        Unit,
         default=None,
         null=True,
         on_delete=models.CASCADE,
@@ -98,7 +101,7 @@ class Substance(IngredientCommonModel):
             return self.max_quantities.through.objects.get(
                 population__name="Population générale", substance=self
             ).max_quantity
-        except MaxQuantityPerPopulationRelation.DoesNotExist:
+        except SubstanceMaxQuantityPerPopulationRelation.DoesNotExist:
             return
 
     def update_metabolite_type(self):
@@ -122,7 +125,7 @@ class Substance(IngredientCommonModel):
             self.update_metabolite_type()
 
 
-class SubstanceSynonym(TimeStampable, Historisable):
+class SubstanceSynonym(SynonymCommonModel):
     class Meta:
         verbose_name = "synonyme substance active"
         constraints = [
@@ -132,39 +135,17 @@ class SubstanceSynonym(TimeStampable, Historisable):
             )
         ]
 
-    siccrf_id = models.IntegerField(
-        blank=True,
-        null=True,
-        editable=False,
-        db_index=True,
-        unique=True,
-        verbose_name="id dans les tables et tables relationnelles SICCRF",
-    )
     standard_name = models.ForeignKey(Substance, on_delete=models.CASCADE, verbose_name="nom de référence")
-    name = models.TextField(verbose_name="nom")
-    synonym_type = models.CharField(
-        choices=SynonymType.choices, default=SynonymType.FRENCH, verbose_name="type de synonyme"
-    )
-
-    def __str__(self):
-        return self.name
 
 
-class MaxQuantityPerPopulationRelation(Historisable):
+class SubstanceMaxQuantityPerPopulationRelation(MaxQuantityPerPopulationRelationCommonModel):
     class Meta:
         verbose_name = "quantité maximum de substance autorisée pour une population cible"
         constraints = [
             models.UniqueConstraint(
                 fields=["substance", "population"],
-                name="unique_max_quantity_per_population",
+                name="unique_substance_max_quantity_per_population",
             )
         ]
 
     substance = models.ForeignKey(Substance, on_delete=models.CASCADE)
-    population = models.ForeignKey(Population, on_delete=models.CASCADE)
-
-    max_quantity = models.FloatField(
-        null=True,
-        blank=True,
-        verbose_name="quantité maximale autorisée pour la population cible",
-    )

@@ -109,7 +109,7 @@
           <DsfrInputGroup :errorMessage="regulatoryResourceLinksError" wrapperClass="mt-0 mb-0">
             <DsfrInput
               v-for="(_, idx) in state.regulatoryResourceLinks"
-              :key="`synonym-${idx}`"
+              :key="`link-${idx}`"
               v-model="state.regulatoryResourceLinks[idx]"
               class="mb-4"
             />
@@ -200,22 +200,6 @@
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
           <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
         </DsfrInputGroup>
-        <div class="max-w-32">
-          <DsfrInputGroup v-if="isNewIngredient" :error-message="firstErrorMsg(v$, 'unit')">
-            <DsfrSelect
-              label="Unité"
-              label-visible
-              :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
-              v-model="state.unit"
-              defaultUnselectedText="Unité"
-              required
-            />
-          </DsfrInputGroup>
-          <div v-else class="pt-4">
-            <p class="mb-2">Unité</p>
-            <p class="mb-0">{{ unitString }}</p>
-          </div>
-        </div>
         <DsfrInputGroup>
           <DsfrToggleSwitch
             v-model="state.mustSpecifyQuantity"
@@ -227,7 +211,23 @@
           />
         </DsfrInputGroup>
       </div>
-      <div v-if="formForType.maxQuantity" class="mt-8 sm:mt-0">
+      <div class="max-w-32">
+        <DsfrInputGroup v-if="isNewIngredient || !state.unit" :error-message="firstErrorMsg(v$, 'unit')">
+          <DsfrSelect
+            label="Unité"
+            label-visible
+            :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
+            v-model="state.unit"
+            defaultUnselectedText="Unité"
+            required
+          />
+        </DsfrInputGroup>
+        <div v-else class="pt-4">
+          <p class="mb-2">Unité</p>
+          <p class="mb-0">{{ unitString }}</p>
+        </div>
+      </div>
+      <div class="mt-8 sm:mt-0">
         <DsfrTable
           v-if="state.maxQuantities.length"
           title="Quantités maximales par population"
@@ -260,18 +260,28 @@
         />
       </div>
     </DsfrFieldset>
-    <DsfrFieldset legend="Avertissement" legendClass="fr-h4 mb-0!" class="mb-0">
-      <div class="grid md:grid-cols-2 md:gap-4">
-        <div class="mb-4">
-          <DsfrInput
-            label="Avertissement(s)"
-            v-model="state.warningOnLabel"
-            :isTextarea="true"
-            label-visible
-            hint="Mentions d'avertissement devant figurer sur l'étiquette"
-          />
-        </div>
-      </div>
+    <DsfrFieldset
+      legend="Avertissement"
+      hint="Mentions d'avertissement devant figurer sur l'étiquette"
+      legendClass="fr-h4 mb-0!"
+      class="mb-0"
+    >
+      <DsfrInputGroup wrapperClass="mt-0 mb-0">
+        <DsfrInput
+          v-for="(_, idx) in state.warningsOnLabel"
+          :key="`warning-${idx}`"
+          v-model="state.warningsOnLabel[idx]"
+          class="mb-4"
+        />
+      </DsfrInputGroup>
+      <DsfrButton
+        label="Ajouter un avertissement"
+        @click="() => (state.warningsOnLabel ? state.warningsOnLabel.push('') : (state.warningsOnLabel = ['']))"
+        icon="ri-add-line"
+        size="sm"
+        class="mt-2"
+        secondary
+      />
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
         <DsfrToggleSwitch
           v-model="state.isRisky"
@@ -367,6 +377,29 @@
     </DsfrAlert>
     <div class="flex gap-x-2 mt-4">
       <DsfrButton label="Enregistrer ingrédient" @click="saveElement" />
+      <DsfrButton
+        v-if="!isNewIngredient"
+        tertiary
+        size="small"
+        icon="ri-delete-bin-line"
+        label="Supprimer l'ingrédient"
+        @click="deleteModalOpened = true"
+      />
+      <DsfrModal
+        v-if="!isNewIngredient"
+        :opened="deleteModalOpened"
+        @close="deleteModalOpened = false"
+        :title="`Supprimer ${element.name}`"
+        :actions="deleteActions"
+      >
+        <template #default>
+          <p>Voulez-vous supprimer l'ingrédient {{ element.name }} ?</p>
+          <p>
+            Cette action va marquer l'ingrédient comme obsolète et l'ingrédient sera toujours lié aux déclarations
+            historiques.
+          </p>
+        </template>
+      </DsfrModal>
     </div>
   </FormWrapper>
 </template>
@@ -511,8 +544,6 @@ const formQuestions = {
     einecNumber: true,
     casNumber: true,
     nutritionalReference: true,
-    maxQuantity: true,
-    unit: true,
     substanceTypes: true,
   },
   microorganism: {
@@ -542,7 +573,7 @@ const rules = computed(() => {
     ingredientType: form?.ingredientType ? errorRequiredField : {},
     substanceTypes: form?.substanceTypes ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
-    unit: form?.nutritionalReference && !props.element ? errorRequiredField : {},
+    unit: !props.element ? errorRequiredField : {},
     nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
     publicChangeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
@@ -652,6 +683,37 @@ const substanceTypeOptions = computed(() => [
 const substanceAttachReminder = computed(() => {
   return isNewIngredient.value && state.value.substanceTypes?.some((st) => [1, 2, 3].includes(st))
 })
+
+const deleteModalOpened = ref(false)
+
+const deleteActions = [
+  {
+    label: "Supprimer l'ingrédient",
+    onClick: async () => {
+      const url = `/api/v1/${apiType.value}s/`
+      const { response } = await useFetch(url + elementId.value, { headers: headers() })
+        .patch({ isObsolete: true })
+        .json()
+      $externalResults.value = await handleError(response)
+
+      if (response.value.ok) {
+        useToaster().addMessage({
+          type: "success",
+          id: "element-deletion-success",
+          description: "L'ingrédient a été supprimé",
+        })
+        router.push({ name: "ElementPage", params: { urlComponent: props.urlComponent } })
+      }
+    },
+  },
+  {
+    label: "Garder l'ingredient",
+    onClick: () => {
+      deleteModalOpened.value = false
+    },
+    secondary: true,
+  },
+]
 </script>
 
 <style scoped>

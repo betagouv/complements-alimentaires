@@ -122,6 +122,7 @@
                 :hideSearchButton="true"
                 :required="false"
                 :chooseFirstAsDefault="false"
+                :searchAll="true"
               />
               <div class="mt-2">
                 <DsfrTag
