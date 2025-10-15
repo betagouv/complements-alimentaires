@@ -116,7 +116,7 @@ const declarantDisplayData = computed(() => {
       return {
         type: "info",
         title: "Ce produit a été retiré du marché",
-        canDownloadCertificate: true,
+        canDownloadCertificate: !isPastWithdrawalDate.value,
         body: latestSnapshot.value?.effectiveWithdrawalDate
           ? `Date effective de retrait du marché : ${isoToPrettyDate(latestSnapshot.value.effectiveWithdrawalDate)}`
           : null,
@@ -124,6 +124,11 @@ const declarantDisplayData = computed(() => {
     default:
       return null
   }
+})
+
+const isPastWithdrawalDate = computed(() => {
+  if (!latestSnapshot.value?.effectiveWithdrawalDate) return false
+  return new Date() >= new Date(latestSnapshot.value.effectiveWithdrawalDate)
 })
 
 const instructorDisplayData = computed(() => {
