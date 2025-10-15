@@ -2,6 +2,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from simple_history.models import HistoricalRecords
+from simple_history.utils import update_change_reason
 
 from data.validators import validate_cas
 
@@ -107,18 +108,21 @@ class Substance(IngredientCommonModel):
         # ajoute le type métabolite secondaire s'il n'a pas été indiqué dans les types
         if self.plant_set.count() and SubstanceType.SECONDARY_METABOLITE not in self.substance_types:
             self.substance_types.append(SubstanceType.SECONDARY_METABOLITE)
-            Substance.objects.filter(pk=self.pk).update(substance_types=self.substance_types)
+            self.save(update_substance_types=False)
+            update_change_reason(self, "Cette substance est liée à une plante")
         # supprime le type métabolite secondaire s'il est dans les types mais n'est pas valide
         elif SubstanceType.SECONDARY_METABOLITE in self.substance_types and self.plant_set.count() == 0:
             self.substance_types.remove(SubstanceType.SECONDARY_METABOLITE)
-            Substance.objects.filter(pk=self.pk).update(substance_types=self.substance_types)
+            self.save(update_substance_types=False)
+            update_change_reason(self, "Cette substance n'est pas liée à une plante")
 
-    def save(self, *args, **kwargs):
+    def save(self, update_substance_types=True, *args, **kwargs):
         # Les string vides rompent la contrainte d'unicité
         if not self.cas_number:
             self.cas_number = None
         super().save(*args, **kwargs)
-        self.update_metabolite_type()
+        if update_substance_types:
+            self.update_metabolite_type()
 
 
 class SubstanceSynonym(SynonymCommonModel):
