@@ -226,6 +226,42 @@ class DeclarationTestCase(TestCase):
         )
         self.assertEqual(declaration_with_risky_population.overridden_article, "")
 
+    def test_article_15_historic(self):
+        """
+        Les déclarations historiques doivent conserver leur article historique,
+        même si l'article recalculé aujourd'hui serait différent
+        """
+        SUBSTANCE_MAX_QUANTITY = 1.0
+        substance = SubstanceFactory(substance_types=choice([[SubstanceType.VITAMIN], [SubstanceType.MINERAL]]))
+        SubstanceMaxQuantityPerPopulationRelationFactory(
+            substance=substance,
+            population=self.general_pop,
+            max_quantity=SUBSTANCE_MAX_QUANTITY,
+        )
+
+        declaration = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+            calculated_article=Declaration.Article.ARTICLE_15,
+            siccrf_id=23454,
+        )
+        DeclaredSubstanceFactory(
+            substance=substance,
+            unit=substance.unit,
+            quantity=1.2,  # devrait être un article 18 si ce n'était pas une déclaration historique
+            declaration=declaration,
+        )
+        declaration.assign_calculated_article()
+        declaration.save()
+        declaration.refresh_from_db()
+
+        self.assertEqual(declaration.article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration.overridden_article, "")
+
     def test_article_15_override(self):
         declaration = InstructionReadyDeclarationFactory(
             declared_plants=[],
