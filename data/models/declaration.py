@@ -542,71 +542,74 @@ class Declaration(Historisable, TimeStampable):
         Dans le cas où plusieurs ingrédients impliqueraient plusieurs articles, certains articles prennent la priorité sur d'autres :
         saisine ANSES (ART_17 et ART_18) > ART_16 > ART_15
         """
-        try:
-            composition_ingredients = (
-                self.declared_plants,
-                self.declared_microorganisms,
-                self.declared_substances,
-                self.computed_substances,
-                self.declared_ingredients,
-            )
-            empty_composition = all(not x.exists() for x in composition_ingredients)
-            # cela ne devrait être possible que pour les plantes qui même non autorisées peuvent être ajoutées en infime quantité dans des elixirs
+        # Cette assignation est effective pour les déclarations non historiques seulement
+        # les déclarations historiques ont déjà un article assigné
+        if self.siccrf_id is None:
+            try:
+                composition_ingredients = (
+                    self.declared_plants,
+                    self.declared_microorganisms,
+                    self.declared_substances,
+                    self.computed_substances,
+                    self.declared_ingredients,
+                )
+                empty_composition = all(not x.exists() for x in composition_ingredients)
+                # cela ne devrait être possible que pour les plantes qui même non autorisées peuvent être ajoutées en infime quantité dans des elixirs
 
-            if empty_composition:
-                self.calculated_article = ""
-                return
+                if empty_composition:
+                    self.calculated_article = ""
+                    return
 
-            nutriment_filter = Q(substance__substance_types__contains=[SubstanceType.VITAMIN]) | Q(
-                substance__substance_types__contains=[SubstanceType.MINERAL]
-            )
+                nutriment_filter = Q(substance__substance_types__contains=[SubstanceType.VITAMIN]) | Q(
+                    substance__substance_types__contains=[SubstanceType.MINERAL]
+                )
 
-            has_overdose_nutriments = (
-                self.computed_substances_with_max_quantity_exceeded.filter(nutriment_filter).exists()
-                or self.declared_substances_with_max_quantity_exceeded.filter(nutriment_filter).exists()
-            )
+                has_overdose_nutriments = (
+                    self.computed_substances_with_max_quantity_exceeded.filter(nutriment_filter).exists()
+                    or self.declared_substances_with_max_quantity_exceeded.filter(nutriment_filter).exists()
+                )
 
-            if has_overdose_nutriments:
-                self.calculated_article = Declaration.Article.ARTICLE_18
-                return
+                if has_overdose_nutriments:
+                    self.calculated_article = Declaration.Article.ARTICLE_18
+                    return
 
-            if self.has_max_quantity_exceeded:
-                self.calculated_article = Declaration.Article.ANSES_REFERAL
-                return
+                if self.has_max_quantity_exceeded:
+                    self.calculated_article = Declaration.Article.ANSES_REFERAL
+                    return
 
-            has_unauthorized_ingredients = (
-                any(self.declared_plants.filter(plant__status=IngredientStatus.NOT_AUTHORIZED))
-                or any(self.declared_microorganisms.filter(microorganism__status=IngredientStatus.NOT_AUTHORIZED))
-                or any(self.declared_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
-                or any(self.declared_ingredients.filter(ingredient__status=IngredientStatus.NOT_AUTHORIZED))
-            )
+                has_unauthorized_ingredients = (
+                    any(self.declared_plants.filter(plant__status=IngredientStatus.NOT_AUTHORIZED))
+                    or any(self.declared_microorganisms.filter(microorganism__status=IngredientStatus.NOT_AUTHORIZED))
+                    or any(self.declared_substances.filter(substance__status=IngredientStatus.NOT_AUTHORIZED))
+                    or any(self.declared_ingredients.filter(ingredient__status=IngredientStatus.NOT_AUTHORIZED))
+                )
 
-            if has_unauthorized_ingredients:
-                self.calculated_article = Declaration.Article.ARTICLE_16
-                return
+                if has_unauthorized_ingredients:
+                    self.calculated_article = Declaration.Article.ARTICLE_16
+                    return
 
-            has_new_ingredients = any(
-                x.filter(new=True).exists() for x in composition_ingredients if issubclass(x.model, Addable)
-            )
+                has_new_ingredients = any(
+                    x.filter(new=True).exists() for x in composition_ingredients if issubclass(x.model, Addable)
+                )
 
-            has_new_plant_parts = any(
-                x.filter(is_part_request=True).exclude(request_status=Addable.AddableStatus.REPLACED).exists()
-                for x in composition_ingredients
-                if issubclass(x.model, DeclaredPlant)
-            )
+                has_new_plant_parts = any(
+                    x.filter(is_part_request=True).exclude(request_status=Addable.AddableStatus.REPLACED).exists()
+                    for x in composition_ingredients
+                    if issubclass(x.model, DeclaredPlant)
+                )
 
-            if has_new_ingredients or has_new_plant_parts:
-                self.calculated_article = Declaration.Article.ARTICLE_16
-            elif self.has_risky_ingredients or (self.galenic_formulation and self.galenic_formulation.is_risky):
-                self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
-            elif self.has_risky_target_population:
-                self.calculated_article = Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
-            else:
-                self.calculated_article = Declaration.Article.ARTICLE_15
+                if has_new_ingredients or has_new_plant_parts:
+                    self.calculated_article = Declaration.Article.ARTICLE_16
+                elif self.has_risky_ingredients or (self.galenic_formulation and self.galenic_formulation.is_risky):
+                    self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
+                elif self.has_risky_target_population:
+                    self.calculated_article = Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION
+                else:
+                    self.calculated_article = Declaration.Article.ARTICLE_15
 
-        except Exception as e:
-            logger.error("Error calculating article")
-            logger.exception(e)
+            except Exception as e:
+                logger.error("Error calculating article")
+                logger.exception(e)
 
 
 # Les modèles commençant par `Declared` représentent des éléments ajoutés par l'utilisateur.ice dans sa
