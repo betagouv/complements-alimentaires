@@ -63,10 +63,6 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
         default=False, verbose_name="L'utilisation de cet ingrédient nécessite un bulletin d'analyse"
     )
 
-    regulatory_resource_links = ArrayField(
-        base_field=models.URLField(), blank=True, null=True, verbose_name="Lien(s) vers les ressources reglementaires"
-    )
-
     warnings_on_label = ArrayField(
         models.TextField(),
         blank=True,

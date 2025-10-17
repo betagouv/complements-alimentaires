@@ -9,6 +9,7 @@ from .abstract_ingredient_relation_models import (
     MaxQuantityPerPopulationRelationCommonModel,
     SynonymCommonModel,
 )
+from .ingredient_status import WithStatus
 from .mixins import PublicReasonHistoricalModel
 from .population import Population
 from .substance import Substance
@@ -69,15 +70,11 @@ class Plant(IngredientCommonModel):
     )
 
 
-class Part(TimeStampable):
+class Part(TimeStampable, WithStatus):
     """
     Ce modèle permet d'associer des données supplémentaires à la relation ManyToMany
     plant_parts
     """
-
-    class PartStatus(models.TextChoices):
-        AUTHORIZED = "AUTHORIZED", "Autorisée"
-        NOT_AUTHORIZED = "NOT_AUTHORIZED", "Non-autorisée"
 
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
     plantpart = models.ForeignKey(PlantPart, on_delete=models.CASCADE)
@@ -85,12 +82,6 @@ class Part(TimeStampable):
     must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
     is_useful = models.BooleanField(default=False, verbose_name="🍵 utile ?")
 
-    status = models.CharField(
-        max_length=50,
-        choices=PartStatus.choices,
-        blank=True,
-        verbose_name="statut",
-    )
     history = HistoricalRecords(inherit=True)
 
 

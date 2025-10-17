@@ -37,7 +37,12 @@ class PartInlineAdmin(admin.TabularInline):
     model = Plant.plant_parts.through
     extra = 1
 
-    fields = ("plantpart", "is_useful")
+    fields = (
+        "plantpart",
+        "status",
+        "to_be_entered_in_next_decree",
+        "regulatory_resource_links",
+    )
 
 
 class SubstanceInlineAdmin(admin.TabularInline):
