@@ -3,6 +3,8 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 
+from api.utils.choice_field import GoodReprChoiceField
+
 from data.models import (
     Part,
     Plant,
@@ -11,6 +13,7 @@ from data.models import (
     PlantPart,
     PlantSynonym,
     Population,
+    IngredientStatus,
 )
 
 from .common_ingredient import (
@@ -51,6 +54,7 @@ class PartRelationSerializer(serializers.ModelSerializer):
     is_obsolete = serializers.BooleanField(source="plantpart.is_obsolete")
     siccrf_id = serializers.IntegerField(source="plantpart.siccrf_id")
     id = serializers.IntegerField(source="plantpart.id")
+    status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
 
     class Meta:
         model = Part
