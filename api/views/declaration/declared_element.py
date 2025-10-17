@@ -33,6 +33,7 @@ from data.models import (
     Part,
     PlantSynonym,
     SubstanceSynonym,
+    IngredientStatus,
 )
 
 
@@ -280,11 +281,11 @@ class DeclaredElementAcceptPartView(DeclaredElementActionAbstractView):
     def _update_element(self, element, request):
         try:
             part = Part.objects.get(plant=element.plant, plantpart=element.used_part)
-            part.is_useful = True
+            part.status = IngredientStatus.AUTHORIZED
             part.save()
             update_change_reason(part, f"Autorisée après une demande par la déclaration id : {element.declaration.id}")
         except Part.DoesNotExist:
-            part = Part(plant=element.plant, plantpart=element.used_part, is_useful=True)
+            part = Part(plant=element.plant, plantpart=element.used_part, status=IngredientStatus.AUTHORIZED)
             part.save()
             update_change_reason(part, f"Ajoutée après une demande par la déclaration id : {element.declaration.id}")
 

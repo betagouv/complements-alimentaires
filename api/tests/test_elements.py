@@ -749,9 +749,9 @@ class TestElementsModifyApi(APITestCase):
         payload = {
             "name": "new name",
             "plantParts": [
-                {"plantpart": other_part.id, "isUseful": True},
-                {"plantpart": duplicate_part.id, "isUseful": True},
-                {"plantpart": duplicate_part.id, "isUseful": False},
+                {"plantpart": other_part.id, "status": IngredientStatus.AUTHORIZED},
+                {"plantpart": duplicate_part.id, "status": IngredientStatus.AUTHORIZED},
+                {"plantpart": duplicate_part.id, "status": IngredientStatus.NOT_AUTHORIZED},
             ],
         }
         response = self.client.patch(reverse("api:single_plant", kwargs={"pk": plant.id}), payload, format="json")

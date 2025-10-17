@@ -54,7 +54,7 @@ class PartRelationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Part
-        fields = ("id", "name", "name_en", "is_obsolete", "siccrf_id", "must_be_monitored", "is_useful")
+        fields = ("id", "name", "name_en", "is_obsolete", "siccrf_id", "status")
         read_only_fields = fields
 
 
