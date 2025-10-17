@@ -7,10 +7,10 @@
       <div v-if="objectType === 'plant_part'" class="self-center ml-2">
         {{ plantPartName }}
       </div>
-      <span v-if="plantPartStatus === 'unknown'" class="self-center mt-1 ml-2">
+      <span v-if="plantPartStatus === 'inconnu'" class="self-center mt-1 ml-2">
         <DsfrBadge label="Nouvelle partie de plante" type="info" />
       </span>
-      <span v-else-if="plantPartStatus === 'unauthorized'" class="self-center mt-1 ml-2">
+      <span v-else-if="plantPartStatus === 'non autorisé'" class="self-center mt-1 ml-2">
         <DsfrBadge label="Partie de plante non autorisée" type="warning" />
       </span>
     </div>
@@ -166,12 +166,10 @@ const plantPartName = computed(() => {
   return store.plantParts.find((p) => p.id === model.value.usedPart)?.name
 })
 
-// TODO: update
 const plantPartStatus = computed(() => {
   if (model.value.usedPart && model.value.element?.plantParts?.length) {
     const associatedPart = model.value.element.plantParts.find((p) => p.id === model.value.usedPart)
-    if (!associatedPart) return "unknown"
-    else if (!associatedPart.isUseful) return "unauthorized"
+    return associatedPart?.status || "inconnu"
   }
   return ""
 })

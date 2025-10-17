@@ -107,8 +107,8 @@ const elementProfile = computed(() => {
 const plantPartBadge = computed(() => {
   if (props.element.isPartRequest) {
     const associatedPart = props.element.element.plantParts.find((p) => p.id === props.element.usedPart)
-    if (associatedPart?.status === "AUTHORIZED") return { label: "Autorisée", type: "success", component: "DsfrBadge" }
-    else if (associatedPart?.status === "NOT_AUTHORIZED")
+    if (associatedPart?.status === "autorisé") return { label: "Autorisée", type: "success", component: "DsfrBadge" }
+    else if (associatedPart?.status === "non autorisé")
       return { label: "Non autorisée", type: "warning", component: "DsfrBadge" }
     else return { label: "Non associée", type: "info", component: "DsfrBadge" }
   }
