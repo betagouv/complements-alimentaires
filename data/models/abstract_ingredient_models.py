@@ -1,5 +1,7 @@
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
+
+# cette librairie permets d'avoir un affichage de l'arrayfield plus friendly dans l'admin
+from django_jsonform.models.fields import ArrayField
 
 from data.behaviours import TimeStampable
 from data.choices import IngredientActivity

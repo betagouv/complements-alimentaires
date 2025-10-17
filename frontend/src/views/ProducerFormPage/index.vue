@@ -430,5 +430,6 @@ const performDuplication = (originalDeclaration) => {
 <style scoped>
 .allow-overflow {
   overflow: visible;
+  position: relative;
 }
 </style>

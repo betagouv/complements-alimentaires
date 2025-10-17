@@ -215,7 +215,6 @@ const nutritionalReference = computed(() => {
 })
 
 const description = computed(() => element.value?.description)
-const warningOnLabel = computed(() => element.value?.warningOnLabel)
 const publicComments = computed(() => element.value?.publicComments)
 
 const historyData = computed(() =>
