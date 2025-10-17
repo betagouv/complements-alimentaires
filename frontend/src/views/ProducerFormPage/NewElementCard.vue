@@ -166,6 +166,7 @@ const plantPartName = computed(() => {
   return store.plantParts.find((p) => p.id === model.value.usedPart)?.name
 })
 
+// TODO: update
 const plantPartStatus = computed(() => {
   if (model.value.usedPart && model.value.element?.plantParts?.length) {
     const associatedPart = model.value.element.plantParts.find((p) => p.id === model.value.usedPart)

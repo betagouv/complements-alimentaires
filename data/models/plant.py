@@ -75,12 +75,22 @@ class Part(TimeStampable):
     plant_parts
     """
 
+    class PartStatus(models.TextChoices):
+        AUTHORIZED = "AUTHORIZED", "Autorisée"
+        NOT_AUTHORIZED = "NOT_AUTHORIZED", "Non-autorisée"
+
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
     plantpart = models.ForeignKey(PlantPart, on_delete=models.CASCADE)
 
     must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
-
     is_useful = models.BooleanField(default=False, verbose_name="🍵 utile ?")
+
+    status = models.CharField(
+        max_length=50,
+        choices=PartStatus.choices,
+        blank=True,
+        verbose_name="statut",
+    )
     history = HistoricalRecords(inherit=True)
 
 

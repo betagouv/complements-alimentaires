@@ -12,10 +12,10 @@
           <div v-if="model.new" class="self-center mt-1">
             <DsfrBadge label="Nouvel ingrédient" type="info" />
           </div>
-          <div v-else-if="plantPartStatus === 'unknown'" class="self-center mt-1">
+          <div v-else-if="!plantPartStatus" class="self-center mt-1">
             <DsfrBadge label="Nouvelle partie de plante" type="info" />
           </div>
-          <div v-else-if="plantPartStatus === 'unauthorized'" class="self-center mt-1">
+          <div v-else-if="plantPartStatus === 'NOT_AUTHORIZED'" class="self-center mt-1">
             <DsfrBadge label="Partie de plante non autorisée" type="warning" />
           </div>
         </div>
@@ -142,7 +142,8 @@ const synonyms = computed(() => model.value.element?.synonyms?.map((x) => x.name
 
 const plantParts = computed(() => {
   const elementParts = model.value.element?.plantParts || []
-  const authorizedParts = elementParts.filter((p) => p.isUseful)
+  // is this right?
+  const authorizedParts = elementParts.filter((p) => p.status === "AUTHORIZED")
   let parts = authorizedParts
   if (props.canAddNewPlantPart || !elementParts.length) {
     if (parts.length) {
@@ -180,13 +181,14 @@ watch(
   }
 )
 
+// update this too
 const plantPartStatus = ref("")
 const setPartStatus = (part) => {
   plantPartStatus.value = ""
   if (part && model.value.element?.plantParts?.length) {
     const associatedPart = model.value.element.plantParts.find((p) => p.id === part)
     if (!associatedPart) plantPartStatus.value = "unknown"
-    else if (!associatedPart.isUseful) plantPartStatus.value = "unauthorized"
+    else if (associatedPart.isUseful) plantPartStatus.value = "unauthorized"
   }
 }
 watch(() => model.value.usedPart, setPartStatus)
