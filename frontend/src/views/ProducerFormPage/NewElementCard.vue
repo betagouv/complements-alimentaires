@@ -69,15 +69,18 @@
     <div v-if="model.authorizationMode === 'EU'">
       <hr class="pb-1 -mt-3" />
       <div class="grid grid-cols-12 gap-4">
-        <DsfrInputGroup class="col-span-12 md:col-span-3">
-          <CountryField
-            label="Pays de référence"
-            :exclude="['FR']"
-            defaultUnselectedText=""
-            v-model="model.euReferenceCountry"
-            :required="true"
-          />
-        </DsfrInputGroup>
+        <div class="col-span-12 md:col-span-3">
+          <DsfrInputGroup>
+            <CountryField
+              label="Pays de référence"
+              :exclude="['FR']"
+              defaultUnselectedText=""
+              v-model="model.euReferenceCountry"
+              :required="true"
+            />
+          </DsfrInputGroup>
+        </div>
+
         <div class="col-span-12 md:col-span-9">
           <DsfrInputGroup>
             <DsfrInput
