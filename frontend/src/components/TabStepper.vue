@@ -1,5 +1,5 @@
 <template>
-  <div class="border p-4 bg-gray-50 text-right">
+  <div class="border p-4 bg-gray-50 text-right relative">
     <slot name="content"></slot>
     <DsfrButton secondary v-if="selectedTabIndex > 0" @click="emit('back')" :label="backLabel" />
     <DsfrButton class="ml-4" v-if="selectedTabIndex < titles.length - 1" @click="emit('forward')" :label="fwdLabel" />
