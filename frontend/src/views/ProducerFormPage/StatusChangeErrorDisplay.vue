@@ -104,7 +104,7 @@ const tabSections = {
   ],
   Composition: [],
   "Pièces jointes": ["attachments"],
-  "Nouveaux ingrédients": ["euReferenceCountry", "euLegalSource"],
+  "Nouveaux ingrédients": ["euReferenceCountry", "euLegalSource", "authorizationMode"],
   Autres: [],
 }
 </script>

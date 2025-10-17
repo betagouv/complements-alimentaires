@@ -152,6 +152,37 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.SUBMIT)
 
     @authenticate
+    def test_submit_declaration_no_auth_mode(self):
+        """
+        Passage du DRAFT -> AWAITING_INSTRUCTION
+        En cas de nouvel ingrédient sans `authorization_mode` une erreur sera renvoyée
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        declaration = InstructionReadyDeclarationFactory(author=authenticate.user, company=company)
+        plant = declaration.declared_plants.first()
+        plant.new = True
+        plant.save()
+
+        response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        json_errors = response.json()
+        error_keys = [key for d in json_errors["fieldErrors"] for key in d]
+        self.assertIn("authorizationMode", error_keys)
+
+        # On met les informations manquantes
+        plant.authorization_mode = AuthorizationModes.FR
+        plant.save()
+
+        response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.SUBMIT)
+
+    @authenticate
     def test_submit_declaration_wrong_company(self):
         """
         Passage du DRAFT -> AWAITING_INSTRUCTION

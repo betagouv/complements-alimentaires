@@ -41,7 +41,8 @@ def validate_mandatory_fields(declaration) -> tuple[list, list]:
     substances = list(declaration.declared_substances.all())
 
     all_ingredients = [] + plants + microorganisms + substances + ingredients
-    new_eu_ingredients = [x for x in all_ingredients if x.authorization_mode == AuthorizationModes.EU and x.new]
+    new_ingredients = [x for x in all_ingredients if x.new]
+    new_eu_ingredients = [x for x in new_ingredients if x.authorization_mode == AuthorizationModes.EU]
     if any(new_eu_ingredients) and not declaration.attachments.exclude(type=Attachment.AttachmentType.LABEL).exists():
         field_errors.append(
             {
@@ -49,19 +50,28 @@ def validate_mandatory_fields(declaration) -> tuple[list, list]:
             }
         )
 
-    for new_ingredient in new_eu_ingredients:
-        if not new_ingredient.eu_reference_country:
+    for new_ingredient in new_ingredients:
+        if not new_ingredient.authorization_mode:
             field_errors.append(
                 {
-                    "eu_reference_country": "Merci de renseigner le pays de référence l'ingrédient "
+                    "authorization_mode": "Merci de renseigner le mode d'autorisation de l'ingrédient "
                     + new_ingredient.new_name
                 }
             )
-        if not new_ingredient.eu_legal_source:
+
+    for new_eu_ingredient in new_eu_ingredients:
+        if not new_eu_ingredient.eu_reference_country:
             field_errors.append(
                 {
-                    "eu_legal_source": "Merci de renseigner la source réglementaire l'ingrédient "
-                    + new_ingredient.new_name
+                    "eu_reference_country": "Merci de renseigner le pays de référence de l'ingrédient "
+                    + new_eu_ingredient.new_name
+                }
+            )
+        if not new_eu_ingredient.eu_legal_source:
+            field_errors.append(
+                {
+                    "eu_legal_source": "Merci de renseigner la source réglementaire de l'ingrédient "
+                    + new_eu_ingredient.new_name
                 }
             )
     for declared_plant in plants:
