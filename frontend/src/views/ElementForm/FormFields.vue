@@ -19,7 +19,12 @@
         </div>
         <div class="col-span-2">
           <DsfrInputGroup>
-            <DsfrSelect v-model.number="state.status" label="Autorisation de l’ingrédient" :options="statuses" />
+            <DsfrSelect
+              v-model.number="state.status"
+              label="Autorisation de l’ingrédient"
+              :options="statuses"
+              hint="Une déclaration contenant un ingrédient non autorisé passera en article 16"
+            />
           </DsfrInputGroup>
         </div>
         <div class="col-span-2" v-if="formForType.family && plantFamiliesDisplay">
@@ -290,6 +295,7 @@
           inactiveText="Non"
           label-left
           class="self-center mt-4 col-span-2 sm:col-span-2"
+          hint="Une déclaration contenant cet ingrédient passera en article 15 vigilance"
         />
         <DsfrToggleSwitch
           v-model="state.requiresAnalysisReport"
@@ -298,6 +304,7 @@
           inactiveText="Non"
           label-left
           class="self-center mt-4 col-span-2 sm:col-span-2"
+          hint="Lors d'une déclaration contenant cet ingrédient, un message incitera au dépot d'un bulletin d'analyse comme pièce-jointe"
         />
       </div>
     </DsfrFieldset>
@@ -328,7 +335,7 @@
           <DsfrInput
             v-model="state.publicChangeReason"
             label="Raison de changement (public)"
-            hint="100 caractères max"
+            hint="100 caractères max, sera affiché dans l'historique des ingrédients, dans le moteur de recherche"
             labelVisible
           />
         </DsfrInputGroup>
@@ -435,7 +442,7 @@ const state = ref({
   authorisedPlantParts: [],
   forbiddenPlantParts: [],
   substances: [],
-  synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
+  synonyms: [createEmptySynonym()],
   maxQuantities: [],
   toBeEnteredInNextDecree: true, // vrai pour les nouveaux ingrédients
   substanceTypes: [],
@@ -609,8 +616,8 @@ const ingredientTypes = [
 ]
 
 const statuses = [
-  { value: 1, text: "Autorisé", apiValue: "autorisé" },
-  { value: 2, text: "Non autorisé", apiValue: "non autorisé" },
+  { value: 1, text: "✅ Autorisé", apiValue: "autorisé" },
+  { value: 2, text: "🛑 Non autorisé", apiValue: "non autorisé" },
   { value: 3, text: "Sans objet", apiValue: "sans objet" },
 ]
 
