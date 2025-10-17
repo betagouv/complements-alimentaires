@@ -108,13 +108,12 @@ class PlantSynonymModificationSerializer(serializers.ModelSerializer):
 
 class PlantPartModificationSerializer(serializers.ModelSerializer):
     plantpart = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all())
-    is_useful = serializers.BooleanField()
 
     class Meta:
         model = Part
         fields = (
             "plantpart",
-            "is_useful",
+            "status",
         )
 
 
@@ -163,7 +162,7 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
         PlantModificationSerializer._check_part_unicity(parts)
 
         for part in parts:
-            Part.objects.create(plant=plant, plantpart=part["plantpart"], is_useful=part["is_useful"])
+            Part.objects.create(plant=plant, plantpart=part["plantpart"], status=part["status"])
 
         return plant
 
@@ -179,10 +178,10 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
             existing_part = instance.part_set.filter(plantpart=part["plantpart"])
             if existing_part.exists():
                 existing_part = existing_part.first()
-                existing_part.is_useful = part["is_useful"]
+                existing_part.status = part["status"]
                 existing_part.save()
             else:
-                Part.objects.create(plant=instance, plantpart=part["plantpart"], is_useful=part["is_useful"])
+                Part.objects.create(plant=instance, plantpart=part["plantpart"], status=part["status"])
 
         return instance
 
