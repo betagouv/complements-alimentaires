@@ -714,7 +714,7 @@ class DeclaredPlant(Historisable, Addable):
                 associated_part = self.plant.plant_parts.through.objects.filter(
                     plant=self.plant, plantpart=self.used_part
                 )
-                if not associated_part.exists() or associated_part.first().is_useful is False:
+                if not associated_part.exists() or associated_part.first().status != IngredientStatus.AUTHORIZED:
                     self.is_part_request = True
         super().save(*args, **kwargs)
 
