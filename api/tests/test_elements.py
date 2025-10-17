@@ -291,8 +291,8 @@ class TestElementsCreateApi(APITestCase):
                 {"name": "My new plant", "synonym_type": "ENGLISH_NAME"},
             ],
             "plantParts": [
-                {"plantpart": part_1.id, "status": "AUTHORIZED"},
-                {"plantpart": part_2.id, "status": "NOT_AUTHORIZED"},
+                {"plantpart": part_1.id, "status": IngredientStatus.AUTHORIZED},
+                {"plantpart": part_2.id, "status": IngredientStatus.NOT_AUTHORIZED},
             ],
             "substances": [substance.id],
             "publicComments": "Test",
@@ -721,8 +721,8 @@ class TestElementsModifyApi(APITestCase):
 
         payload = {
             "plantParts": [
-                {"plantpart": questionable_part.id, "status": "AUTHORIZED"},
-                {"plantpart": new_dangerous_part.id, "status": "NOT_AUTHORIZED"},
+                {"plantpart": questionable_part.id, "status": IngredientStatus.AUTHORIZED},
+                {"plantpart": new_dangerous_part.id, "status": IngredientStatus.NOT_AUTHORIZED},
             ],
         }
         response = self.client.patch(reverse("api:single_plant", kwargs={"pk": plant.id}), payload, format="json")
