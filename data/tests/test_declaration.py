@@ -160,6 +160,29 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration.overridden_article, "")
 
+        declaration_authorized_plant_part = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+        )
+        plant_with_part_authorized = PlantFactory(status=IngredientStatus.AUTHORIZED)
+        plant_part = PlantPartFactory()
+        Part.objects.create(plant=plant_with_part_authorized, plantpart=plant_part, status=IngredientStatus.AUTHORIZED)
+
+        DeclaredPlantFactory(
+            plant=plant_with_part_authorized, used_part=plant_part, declaration=declaration_authorized_plant_part
+        )
+
+        declaration_authorized_plant_part.assign_calculated_article()
+        declaration_authorized_plant_part.save()
+        declaration_authorized_plant_part.refresh_from_db()
+
+        self.assertEqual(declaration_authorized_plant_part.article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration_authorized_plant_part.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration_authorized_plant_part.overridden_article, "")
+
     def test_article_15_warning(self):
         """
         Il existe 2 types d'article 15 vigilance :

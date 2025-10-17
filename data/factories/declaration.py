@@ -9,6 +9,7 @@ from data.models import (
     DeclaredPlant,
     DeclaredSubstance,
     Part,
+    IngredientStatus,
 )
 
 from .company import CompanyFactory
@@ -57,7 +58,7 @@ class DeclaredPlantFactory(factory.django.DjangoModelFactory):
             # par défaut, rattacher une partie de plante marqué comme utile
             # pour ne pas avoir une demande d'ajout de partie de plante
             used_part = PlantPartFactory()
-            Part.objects.create(plant=obj.plant, plantpart=used_part, is_useful=True)
+            Part.objects.create(plant=obj.plant, plantpart=used_part, status=IngredientStatus.AUTHORIZED)
             obj.used_part = used_part
         obj.save()
         return obj
