@@ -332,7 +332,9 @@ class DeclarationTestCase(TestCase):
         )
         plant_with_part_not_authorized = PlantFactory(status=IngredientStatus.AUTHORIZED)
         plant_part = PlantPartFactory()
-        Part.objects.create(plant=plant_with_part_not_authorized, plantpart=plant_part, is_useful=False)
+        Part.objects.create(
+            plant=plant_with_part_not_authorized, plantpart=plant_part, status=IngredientStatus.NOT_AUTHORIZED
+        )
 
         DeclaredPlantFactory(
             plant=plant_with_part_not_authorized, used_part=plant_part, declaration=declaration_part_not_authorized
