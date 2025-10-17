@@ -108,7 +108,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed, watch } from "vue"
 import { useRootStore } from "@/stores/root"
 import CountryField from "@/components/fields/CountryField"
 import { getElementName } from "@/utils/elements"
@@ -177,4 +177,13 @@ const plantPartStatus = computed(() => {
   }
   return ""
 })
+
+watch(
+  () => model.value.authorizationMode,
+  () => {
+    if (model.value.authorizationMode === "EU" && model.value.euReferenceCountry === "FR")
+      model.value.euReferenceCountry = ""
+    if (model.value.authorizationMode === "FR") model.value.euReferenceCountry = "FR"
+  }
+)
 </script>

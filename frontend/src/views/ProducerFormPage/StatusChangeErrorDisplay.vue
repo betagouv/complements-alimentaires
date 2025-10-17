@@ -14,7 +14,9 @@
           :title="`${tabSection.tab} (${tabSection.errors.length} erreur${tabSection.errors.length > 1 ? 's' : ''})`"
           :id="tabSection.tab"
         >
-          <router-link :to="routeForTab(tabSection.tab)">Aller dans l'onglet « {{ tabSection.tab }} »</router-link>
+          <router-link :to="routeForTab(tabSection.tab)" v-if="tabSection.tab !== 'Autres'">
+            Aller dans l'onglet « {{ tabSection.tab }} »
+          </router-link>
           <ul>
             <li v-for="error in tabSection.errors" :key="error">
               {{ error }}
@@ -102,6 +104,7 @@ const tabSections = {
   ],
   Composition: [],
   "Pièces jointes": ["attachments"],
+  "Nouveaux ingrédients": ["euReferenceCountry", "euLegalSource"],
   Autres: [],
 }
 </script>

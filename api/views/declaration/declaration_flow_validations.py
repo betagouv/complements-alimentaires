@@ -41,14 +41,29 @@ def validate_mandatory_fields(declaration) -> tuple[list, list]:
     substances = list(declaration.declared_substances.all())
 
     all_ingredients = [] + plants + microorganisms + substances + ingredients
-    needs_eu_proof = any(x.authorization_mode == AuthorizationModes.EU and x.new for x in all_ingredients)
-    if needs_eu_proof and not declaration.attachments.exclude(type=Attachment.AttachmentType.LABEL).exists():
+    new_eu_ingredients = [x for x in all_ingredients if x.authorization_mode == AuthorizationModes.EU and x.new]
+    if any(new_eu_ingredients) and not declaration.attachments.exclude(type=Attachment.AttachmentType.LABEL).exists():
         field_errors.append(
             {
                 "attachments": "La demande doit contenir la pièce jointe du texte qui permette de justifier de l’application du principe de reconnaissance mutuelle"
             }
         )
 
+    for new_ingredient in new_eu_ingredients:
+        if not new_ingredient.eu_reference_country:
+            field_errors.append(
+                {
+                    "eu_reference_country": "Merci de renseigner le pays de référence l'ingrédient "
+                    + new_ingredient.new_name
+                }
+            )
+        if not new_ingredient.eu_legal_source:
+            field_errors.append(
+                {
+                    "eu_legal_source": "Merci de renseigner la source réglementaire l'ingrédient "
+                    + new_ingredient.new_name
+                }
+            )
     for declared_plant in plants:
         if not declared_plant_is_complete(declared_plant):
             non_field_errors += ["Merci de renseigner les informations manquantes des plantes ajoutées"]

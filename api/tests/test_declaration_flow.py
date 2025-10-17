@@ -114,7 +114,8 @@ class TestDeclarationFlow(APITestCase):
         """
         Passage du DRAFT -> AWAITING_INSTRUCTION
         En cas de nouvel ingrédient avec `authorization_mode == "EU"` on a besoin d'une
-        pièce jointe non-étiquetage de plus.
+        pièce jointe non-étiquetage de plus ainsi que des informations sur le pays et
+        la source reglémentaire.
         """
         declarant_role = DeclarantRoleFactory(user=authenticate.user)
         company = declarant_role.company
@@ -123,14 +124,26 @@ class TestDeclarationFlow(APITestCase):
         plant = declaration.declared_plants.first()
         plant.new = True
         plant.authorization_mode = AuthorizationModes.EU
+        plant.eu_reference_country = ""
         plant.save()
 
         response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        # L'ajout d'une pièce jointe non-étiquetage débloque la situation
+        json_errors = response.json()
+        error_keys = [key for d in json_errors["fieldErrors"] for key in d]
+
+        self.assertIn("attachments", error_keys)
+        self.assertIn("euLegalSource", error_keys)
+        self.assertIn("euReferenceCountry", error_keys)
+
+        # On met les informations manquantes
         eu_proof = AttachmentFactory(type=Attachment.AttachmentType.REGULATORY_PROOF, declaration=declaration)
         eu_proof.save()
+
+        plant.eu_reference_country = "DE"
+        plant.eu_legal_source = "https://example.com/source"
+        plant.save()
 
         response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
