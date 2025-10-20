@@ -16,6 +16,11 @@ class VisaRoleAdmin(admin.ModelAdmin):
 @admin.register(ControlRole)
 class ControlRoleAdmin(admin.ModelAdmin):
     list_display = ("user", "persistant")
+    search_fields = (
+        "user__first_name",
+        "user__last_name",
+        "user__email",
+    )
 
     def persistant(self, obj):
         return "🔒 Reste même si absent sur Grist" if obj.always_persist else " "
