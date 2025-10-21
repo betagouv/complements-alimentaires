@@ -3,6 +3,8 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 
+from api.utils.choice_field import GoodReprChoiceField
+
 from data.models import (
     Part,
     Plant,
@@ -11,6 +13,7 @@ from data.models import (
     PlantPart,
     PlantSynonym,
     Population,
+    IngredientStatus,
 )
 
 from .common_ingredient import (
@@ -51,10 +54,11 @@ class PartRelationSerializer(serializers.ModelSerializer):
     is_obsolete = serializers.BooleanField(source="plantpart.is_obsolete")
     siccrf_id = serializers.IntegerField(source="plantpart.siccrf_id")
     id = serializers.IntegerField(source="plantpart.id")
+    status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
 
     class Meta:
         model = Part
-        fields = ("id", "name", "name_en", "is_obsolete", "siccrf_id", "must_be_monitored", "is_useful")
+        fields = ("id", "name", "name_en", "is_obsolete", "siccrf_id", "status")
         read_only_fields = fields
 
 
@@ -108,13 +112,12 @@ class PlantSynonymModificationSerializer(serializers.ModelSerializer):
 
 class PlantPartModificationSerializer(serializers.ModelSerializer):
     plantpart = serializers.PrimaryKeyRelatedField(queryset=PlantPart.objects.all())
-    is_useful = serializers.BooleanField()
 
     class Meta:
         model = Part
         fields = (
             "plantpart",
-            "is_useful",
+            "status",
         )
 
 
@@ -163,7 +166,7 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
         PlantModificationSerializer._check_part_unicity(parts)
 
         for part in parts:
-            Part.objects.create(plant=plant, plantpart=part["plantpart"], is_useful=part["is_useful"])
+            Part.objects.create(plant=plant, plantpart=part["plantpart"], status=part["status"])
 
         return plant
 
@@ -179,10 +182,10 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
             existing_part = instance.part_set.filter(plantpart=part["plantpart"])
             if existing_part.exists():
                 existing_part = existing_part.first()
-                existing_part.is_useful = part["is_useful"]
+                existing_part.status = part["status"]
                 existing_part.save()
             else:
-                Part.objects.create(plant=instance, plantpart=part["plantpart"], is_useful=part["is_useful"])
+                Part.objects.create(plant=instance, plantpart=part["plantpart"], status=part["status"])
 
         return instance
 

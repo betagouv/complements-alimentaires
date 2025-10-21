@@ -9,6 +9,7 @@ from .abstract_ingredient_relation_models import (
     MaxQuantityPerPopulationRelationCommonModel,
     SynonymCommonModel,
 )
+from .ingredient_status import WithStatus
 from .mixins import PublicReasonHistoricalModel
 from .population import Population
 from .substance import Substance
@@ -69,7 +70,7 @@ class Plant(IngredientCommonModel):
     )
 
 
-class Part(TimeStampable):
+class Part(TimeStampable, WithStatus):
     """
     Ce modèle permet d'associer des données supplémentaires à la relation ManyToMany
     plant_parts
@@ -79,8 +80,8 @@ class Part(TimeStampable):
     plantpart = models.ForeignKey(PlantPart, on_delete=models.CASCADE)
 
     must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
-
     is_useful = models.BooleanField(default=False, verbose_name="🍵 utile ?")
+
     history = HistoricalRecords(inherit=True)
 
 

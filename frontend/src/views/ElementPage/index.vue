@@ -59,6 +59,10 @@
           <ElementTag :label="part" v-for="part in plantParts" :key="part" />
         </ElementColumn>
 
+        <ElementColumn title="Parties non-autorisées" v-if="forbiddenPlantParts?.length">
+          <ElementTag :label="part" v-for="part in forbiddenPlantParts" :key="part" />
+        </ElementColumn>
+
         <ElementColumn title="Substances" v-if="substances?.length">
           <ElementTag
             :link="{
@@ -197,7 +201,10 @@ const icon = computed(() => getTypeIcon(type.value))
 const family = computed(() => element.value?.family?.name)
 const genre = computed(() => element.value?.genre)
 const plantParts = computed(() =>
-  element.value?.plantParts?.filter((x) => x.isUseful === true && !!x.name).map((x) => x.name)
+  element.value?.plantParts?.filter((x) => x.status === "autorisé" && !!x.name).map((x) => x.name)
+)
+const forbiddenPlantParts = computed(() =>
+  element.value?.plantParts?.filter((x) => x.status === "non autorisé" && !!x.name).map((x) => x.name)
 )
 const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))

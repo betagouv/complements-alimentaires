@@ -49,6 +49,7 @@ from data.models import (
     IngredientType,
     Part,
     Snapshot,
+    IngredientStatus,
 )
 
 from .utils import authenticate
@@ -2858,7 +2859,7 @@ class TestSingleDeclaredElementApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         plant_part = plant.plant_parts.through.objects.get(plant=plant, plantpart=unknown_part)
-        self.assertTrue(plant_part.is_useful)
+        self.assertEqual(plant_part.status, IngredientStatus.AUTHORIZED)
         self.assertEqual(
             plant_part.history.first().history_change_reason,
             f"Ajoutée après une demande par la déclaration id : {declaration.id}",
@@ -2878,7 +2879,9 @@ class TestSingleDeclaredElementApi(APITestCase):
 
         plant = PlantFactory()
         plant_part = PlantPartFactory()
-        unauthorised_part = Part.objects.create(plant=plant, plantpart=plant_part, is_useful=False)
+        unauthorised_part = Part.objects.create(
+            plant=plant, plantpart=plant_part, status=IngredientStatus.NOT_AUTHORIZED
+        )
 
         declared_plant = DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=plant_part)
 
@@ -2888,7 +2891,7 @@ class TestSingleDeclaredElementApi(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
         unauthorised_part.refresh_from_db()
-        self.assertTrue(unauthorised_part.is_useful)
+        self.assertEqual(unauthorised_part.status, IngredientStatus.AUTHORIZED)
         self.assertEqual(
             unauthorised_part.history.first().history_change_reason,
             f"Autorisée après une demande par la déclaration id : {declaration.id}",

@@ -9,9 +9,7 @@ from data.factories import (
     PlantPartFactory,
     SubstanceFactory,
 )
-from data.models.ingredient_type import IngredientType
-from data.models.plant import Part
-from data.models.substance import SubstanceType
+from data.models import IngredientType, Part, SubstanceType, IngredientStatus
 
 
 class IngredientTestCase(TestCase):
@@ -66,13 +64,13 @@ class IngredientTestCase(TestCase):
         """
         plant = PlantFactory()
         authorised_part = PlantPartFactory()
-        Part.objects.create(plant=plant, plantpart=authorised_part, is_useful=True)
+        Part.objects.create(plant=plant, plantpart=authorised_part, status=IngredientStatus.AUTHORIZED)
         declaration = OngoingInstructionDeclarationFactory()
         declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=authorised_part)
         self.assertFalse(declared_plant.is_part_request)
 
         unauthorised_part = PlantPartFactory()
-        Part.objects.create(plant=plant, plantpart=unauthorised_part, is_useful=False)
+        Part.objects.create(plant=plant, plantpart=unauthorised_part, status=IngredientStatus.NOT_AUTHORIZED)
         declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=unauthorised_part)
         self.assertTrue(declared_plant.is_part_request)
 

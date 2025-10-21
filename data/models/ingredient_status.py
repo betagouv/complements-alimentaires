@@ -1,4 +1,5 @@
 from django.db import models
+from django_jsonform.models.fields import ArrayField
 
 
 class IngredientStatus(models.IntegerChoices):
@@ -37,4 +38,9 @@ class WithStatus(models.Model):
 
     to_be_entered_in_next_decree = models.BooleanField(
         default=False, verbose_name="L'ingrédient doit-il être inscrit dans le prochain décret ?"
+    )
+
+    # ces liens justifient le statut
+    regulatory_resource_links = ArrayField(
+        base_field=models.URLField(), blank=True, null=True, verbose_name="Lien(s) vers les ressources reglementaires"
     )

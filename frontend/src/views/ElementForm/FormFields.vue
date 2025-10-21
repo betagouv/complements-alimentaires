@@ -448,8 +448,10 @@ watch(
     state.value.status = statuses.find((s) => s.apiValue === state.value.status)?.value
     if (state.value.family) state.value.family = state.value.family.id
     if (state.value.plantParts) {
-      state.value.authorisedPlantParts = state.value.plantParts.filter((p) => !!p.isUseful).map((p) => p.id)
-      state.value.forbiddenPlantParts = state.value.plantParts.filter((p) => !p.isUseful).map((p) => p.id)
+      state.value.authorisedPlantParts = state.value.plantParts.filter((p) => p.status === "autorisé").map((p) => p.id)
+      state.value.forbiddenPlantParts = state.value.plantParts
+        .filter((p) => p.status === "non autorisé")
+        .map((p) => p.id)
     }
     if (state.value.objectType && apiType.value === "other-ingredient")
       state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
@@ -483,8 +485,8 @@ const saveElement = async () => {
     const authorisedParts = payload.authorisedPlantParts
     const forbiddenParts = payload.forbiddenPlantParts
     payload.plantParts = authorisedParts
-      .map((p) => ({ plantpart: p, isUseful: true }))
-      .concat(forbiddenParts.map((p) => ({ plantpart: p, isUseful: false })))
+      .map((p) => ({ plantpart: p, status: 1 }))
+      .concat(forbiddenParts.map((p) => ({ plantpart: p, status: 2 })))
   }
 
   const { response } = isNewIngredient.value

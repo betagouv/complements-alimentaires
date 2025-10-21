@@ -12,10 +12,10 @@
           <div v-if="model.new" class="self-center mt-1">
             <DsfrBadge label="Nouvel ingrédient" type="info" />
           </div>
-          <div v-else-if="plantPartStatus === 'unknown'" class="self-center mt-1">
+          <div v-else-if="plantPartStatus === 'inconnu'" class="self-center mt-1">
             <DsfrBadge label="Nouvelle partie de plante" type="info" />
           </div>
-          <div v-else-if="plantPartStatus === 'unauthorized'" class="self-center mt-1">
+          <div v-else-if="plantPartStatus === 'non autorisé'" class="self-center mt-1">
             <DsfrBadge label="Partie de plante non autorisée" type="warning" />
           </div>
         </div>
@@ -142,11 +142,16 @@ const synonyms = computed(() => model.value.element?.synonyms?.map((x) => x.name
 
 const plantParts = computed(() => {
   const elementParts = model.value.element?.plantParts || []
-  const authorizedParts = elementParts.filter((p) => p.isUseful)
+  const authorizedParts = elementParts.filter((p) => p.status === "autorisé")
+  const unauthorizedParts = elementParts.filter((p) => p.status === "non autorisé")
   let parts = authorizedParts
   if (props.canAddNewPlantPart || !elementParts.length) {
     if (parts.length) {
       parts.unshift({ text: "Parties autorisées", disabled: true })
+      if (unauthorizedParts.length) {
+        parts.push({ text: "Parties non autorisées", disabled: true })
+        parts = parts.concat(unauthorizedParts)
+      }
       parts.push({ text: "Toutes les parties", disabled: true })
     }
     parts = parts.concat(store.plantParts || [])
@@ -185,8 +190,7 @@ const setPartStatus = (part) => {
   plantPartStatus.value = ""
   if (part && model.value.element?.plantParts?.length) {
     const associatedPart = model.value.element.plantParts.find((p) => p.id === part)
-    if (!associatedPart) plantPartStatus.value = "unknown"
-    else if (!associatedPart.isUseful) plantPartStatus.value = "unauthorized"
+    plantPartStatus.value = associatedPart?.status || "inconnu"
   }
 }
 watch(() => model.value.usedPart, setPartStatus)
