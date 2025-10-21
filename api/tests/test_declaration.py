@@ -2839,6 +2839,38 @@ class TestSingleDeclaredElementApi(APITestCase):
         self.assertNotEqual(new_declared_plant.id, 99)
 
     @authenticate
+    def test_article_recalculated_on_replace(self):
+        """
+        Vérifier que l'article est recalculé avec un remplacement d'une demande
+        """
+        PopulationFactory(name="Population générale")
+
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration, new_species="test", new=True)
+        declaration.assign_calculated_article()
+        declaration.save()
+
+        # on suppose que, avec les nouveaux ingrédients, la déclaration récoit un article 16
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_16)
+        plant = PlantFactory()
+
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {"element": {"id": plant.id, "type": "plant"}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        declaration.refresh_from_db()
+        self.assertEqual(
+            declaration.calculated_article,
+            Declaration.Article.ARTICLE_15,
+            "L'article passe à 15 maintenant qu'il n'y a plus de nouveaux ingrédients",
+        )
+
+    @authenticate
     def test_part_created_on_accept_part(self):
         """
         Vérifier qu'une partie de plante est créée et autorisée quand on accepte une demande
@@ -2899,3 +2931,37 @@ class TestSingleDeclaredElementApi(APITestCase):
         declared_plant.refresh_from_db()
         self.assertEqual(declared_plant.request_status, Addable.AddableStatus.REPLACED)
         self.assertTrue(declared_plant.is_part_request)
+
+    @authenticate
+    def test_article_recalculated_on_accept_part(self):
+        """
+        Vérifier que l'article est recalculé avec une autorisation de partie de plante
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+        plant = PlantFactory()
+        unknown_part = PlantPartFactory()
+        self.assertFalse(plant.plant_parts.through.objects.filter(plantpart=unknown_part).exists())
+
+        declared_plant = DeclaredPlantFactory(new=False, declaration=declaration, plant=plant, used_part=unknown_part)
+
+        declaration.assign_calculated_article()
+        declaration.save()
+
+        # on suppose que, avec les nouvelles parties de plantes, la déclaration récoit un article 16
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_16)
+
+        response = self.client.post(
+            reverse("api:declared_element_accept_part", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        declaration.refresh_from_db()
+        self.assertEqual(
+            declaration.calculated_article,
+            Declaration.Article.ARTICLE_15,
+            "L'article passe à 15 maintenant qu'il n'y a plus de nouveaux ingrédients",
+        )
