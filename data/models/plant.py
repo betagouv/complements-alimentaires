@@ -79,9 +79,6 @@ class Part(TimeStampable, WithStatus):
     plant = models.ForeignKey(Plant, on_delete=models.CASCADE)
     plantpart = models.ForeignKey(PlantPart, on_delete=models.CASCADE)
 
-    must_be_monitored = models.BooleanField(default=False, verbose_name="⚠️ à surveiller ?")
-    is_useful = models.BooleanField(default=False, verbose_name="🍵 utile ?")
-
     history = HistoricalRecords(inherit=True)
 
 
