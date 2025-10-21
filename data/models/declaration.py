@@ -588,8 +588,26 @@ class Declaration(Historisable, TimeStampable):
                     self.calculated_article = Declaration.Article.ARTICLE_16
                     return
 
-                has_new_ingredients = any(
-                    x.filter(new=True).exists() for x in composition_ingredients if issubclass(x.model, Addable)
+                has_ongoing_new_ingredients = any(
+                    x.filter(new=True).exclude(request_status=Addable.AddableStatus.REPLACED).exists()
+                    for x in composition_ingredients
+                    if issubclass(x.model, Addable)
+                )
+
+                # si un ingrédient a été créé suite à la demande de cette déclaration, article 16
+                has_created_ingredients = (
+                    self.declared_plants.filter(
+                        request_status=Addable.AddableStatus.REPLACED, plant__origin_declaration=self
+                    ).exists()
+                    or self.declared_microorganisms.filter(
+                        request_status=Addable.AddableStatus.REPLACED, microorganism__origin_declaration=self
+                    ).exists()
+                    or self.declared_substances.filter(
+                        request_status=Addable.AddableStatus.REPLACED, substance__origin_declaration=self
+                    ).exists()
+                    or self.declared_ingredients.filter(
+                        request_status=Addable.AddableStatus.REPLACED, ingredient__origin_declaration=self
+                    ).exists()
                 )
 
                 has_new_plant_parts = any(
@@ -598,7 +616,7 @@ class Declaration(Historisable, TimeStampable):
                     if issubclass(x.model, DeclaredPlant)
                 )
 
-                if has_new_ingredients or has_new_plant_parts:
+                if has_ongoing_new_ingredients or has_created_ingredients or has_new_plant_parts:
                     self.calculated_article = Declaration.Article.ARTICLE_16
                 elif self.has_risky_ingredients or (self.galenic_formulation and self.galenic_formulation.is_risky):
                     self.calculated_article = Declaration.Article.ARTICLE_15_WARNING
