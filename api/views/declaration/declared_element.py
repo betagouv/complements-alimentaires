@@ -301,7 +301,3 @@ class DeclaredElementAcceptPartView(DeclaredElementActionAbstractView):
 
         element.request_status = self.type_model.AddableStatus.REPLACED
         return element
-
-    def _post_save_declared_element(self, declared_element):
-        declared_element.declaration.assign_calculated_article()
-        declared_element.declaration.save()
