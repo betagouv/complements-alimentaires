@@ -38,6 +38,7 @@ from data.factories import (
     SupervisorRoleFactory,
     UnitFactory,
     VisaRoleFactory,
+    AuthorizedDeclarationFactory,
 )
 from data.models import (
     Addable,
@@ -2839,12 +2840,11 @@ class TestSingleDeclaredElementApi(APITestCase):
         self.assertNotEqual(new_declared_plant.id, 99)
 
     @authenticate
-    def test_article_recalculated_on_replace(self):
+    def test_keep_article_16_on_replace_new_ingredient(self):
         """
-        Vérifier que l'article est recalculé avec un remplacement d'une demande
+        Vérifier que, avec la première utilisation d'un ingrédient créé, quand on remplace une demande
+        avec cet ingrédient l'article de la déclaration reste en 16
         """
-        PopulationFactory(name="Population générale")
-
         InstructionRoleFactory(user=authenticate.user)
 
         declaration = DeclarationFactory()
@@ -2855,7 +2855,7 @@ class TestSingleDeclaredElementApi(APITestCase):
         # on suppose que, avec les nouveaux ingrédients, la déclaration récoit un article 16
         declaration.refresh_from_db()
         self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_16)
-        plant = PlantFactory()
+        plant = PlantFactory(origin_declaration=None, siccrf_id=None)
 
         response = self.client.post(
             reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
@@ -2866,8 +2866,39 @@ class TestSingleDeclaredElementApi(APITestCase):
         declaration.refresh_from_db()
         self.assertEqual(
             declaration.calculated_article,
+            Declaration.Article.ARTICLE_16,
+            "L'article reste en article 16 quand l'ingrédient a été créé au cause de cette demande",
+        )
+
+    @authenticate
+    def test_get_article_15_on_replace_with_existing_ingredient(self):
+        """
+        Vérifier que l'article est recalculé avec un remplacement d'une demande
+        L'article devrait changer que si la déclaration n'est pas l'origine de l'ingrédient
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        declaration = DeclarationFactory()
+        declared_microorganism = DeclaredMicroorganismFactory(declaration=declaration, new_species="test", new=True)
+        declaration.assign_calculated_article()
+        declaration.save()
+
+        # on suppose que, avec les nouveaux ingrédients, la déclaration récoit un article 16
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.calculated_article, Declaration.Article.ARTICLE_16)
+
+        existing_plant = PlantFactory(siccrf_id=None, origin_declaration=AuthorizedDeclarationFactory())
+        response = self.client.post(
+            reverse("api:declared_element_replace", kwargs={"pk": declared_microorganism.id, "type": "microorganism"}),
+            {"element": {"id": existing_plant.id, "type": "plant"}},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        declaration.refresh_from_db()
+        self.assertEqual(
+            declaration.calculated_article,
             Declaration.Article.ARTICLE_15,
-            "L'article passe à 15 maintenant qu'il n'y a plus de nouveaux ingrédients",
+            "L'article devient article 15 quand l'ingrédient a été créé au cause de une autre demande",
         )
 
     @authenticate
