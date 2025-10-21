@@ -140,7 +140,7 @@
       >
         <tr v-for="(q, idx) in state.plantParts" :key="`max-quantity-row-${idx}`">
           <td><DsfrSelect v-model="q.plantpart" :options="orderedPlantParts" /></td>
-          <td><DsfrSelect v-model.number="q.status" :options="statuses" /></td>
+          <td><DsfrSelect v-model.number="q.status" :options="plantPartStatuses" /></td>
           <td>
             <DsfrButton
               label="Supprimer"
@@ -631,6 +631,8 @@ const statuses = [
   { value: 2, text: "Non autorisé", apiValue: "non autorisé" },
   { value: 3, text: "Sans objet", apiValue: "sans objet" },
 ]
+
+const plantPartStatuses = statuses.filter((s) => s.value !== 3)
 
 const selectOption = async (result) => {
   state.value.substances.push(result)
