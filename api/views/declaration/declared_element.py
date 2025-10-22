@@ -195,10 +195,16 @@ class DeclaredElementActionAbstractView(APIView, ElementMappingMixin):
         element_to_save = self._update_element(element, request)
         element_to_save.save()
 
+        self._post_save_declared_element(element_to_save)
+
         return Response(self.type_serializer(element_to_save, context={"request": request}).data)
 
     @abc.abstractmethod
     def _update_element(self, element, request):
+        pass
+
+    @abc.abstractmethod
+    def _post_save_declared_element(self, element):
         pass
 
 
@@ -275,6 +281,10 @@ class DeclaredElementReplaceView(DeclaredElementActionAbstractView):
             replacement_element.save()
 
         return declared_element
+
+    def _post_save_declared_element(self, declared_element):
+        declared_element.declaration.assign_calculated_article()
+        declared_element.declaration.save()
 
 
 class DeclaredElementAcceptPartView(DeclaredElementActionAbstractView):
