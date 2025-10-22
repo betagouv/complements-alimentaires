@@ -347,7 +347,7 @@
         <DsfrInputGroup :error-message="originDeclarationError">
           <DsfrInput
             v-model.number="state.originDeclaration"
-            label="Id de la déclaration demandeuse"
+            label="ID de la déclaration source"
             hint="Si cet ingrédient a été créé suite à une demande, renseignez l'identifiant de la déclaration pour laisser cette déclaration en article 16"
             labelVisible
           />
