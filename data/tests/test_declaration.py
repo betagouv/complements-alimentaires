@@ -20,7 +20,7 @@ from data.factories import (
     SubstanceFactory,
     SubstanceMaxQuantityPerPopulationRelationFactory,
 )
-from data.models import Declaration, Part, Snapshot, SubstanceType
+from data.models import Declaration, Part, Snapshot, SubstanceType, Addable
 from data.models.ingredient_status import IngredientStatus
 
 
@@ -183,6 +183,25 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration_authorized_plant_part.calculated_article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration_authorized_plant_part.overridden_article, "")
 
+        # pour les déclarations avec un ingrédient remplacé avec un ingrédient déjà en base,
+        # l'article devrait passer à 15
+        declaration_replaced = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+        )
+        DeclaredPlantFactory(new=True, declaration=declaration_replaced, request_status=Addable.AddableStatus.REPLACED)
+        # l'origin_declaration de la plante généré par le factory sera NULL
+        declaration_replaced.assign_calculated_article()
+        declaration_replaced.save()
+        declaration_replaced.refresh_from_db()
+
+        self.assertEqual(declaration_replaced.article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration_replaced.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration_replaced.overridden_article, "")
+
     def test_article_15_warning(self):
         """
         Il existe 2 types d'article 15 vigilance :
@@ -319,7 +338,7 @@ class DeclarationTestCase(TestCase):
             declared_ingredients=[],
             computed_substances=[],
         )
-        DeclaredPlantFactory(new=True, declaration=declaration_new)
+        DeclaredPlantFactory(new=True, declaration=declaration_new, request_status=Addable.AddableStatus.REQUESTED)
         declaration_new.assign_calculated_article()
         declaration_new.save()
         declaration_new.refresh_from_db()
@@ -327,6 +346,28 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration_new.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_new.calculated_article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_new.overridden_article, "")
+
+        # pour les déclarations avec un ingrédient créé suite à la demande d'une déclaration,
+        # l'article devrait rester en 16
+        declaration_replaced = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+        )
+        declared_plant = DeclaredPlantFactory(
+            new=True, declaration=declaration_replaced, request_status=Addable.AddableStatus.REPLACED
+        )
+        declared_plant.plant.origin_declaration = declaration_replaced
+        declared_plant.plant.save()
+        declaration_replaced.assign_calculated_article()
+        declaration_replaced.save()
+        declaration_replaced.refresh_from_db()
+
+        self.assertEqual(declaration_replaced.article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_replaced.calculated_article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_replaced.overridden_article, "")
 
         declaration_not_autorized = InstructionReadyDeclarationFactory(
             declared_plants=[],
