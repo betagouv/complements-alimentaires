@@ -48,6 +48,7 @@ class PlantPartSerializer(serializers.ModelSerializer):
         fields = ("id", "name")
 
 
+# TODO: hide origin declaration from non-instructors
 class PartRelationSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source="plantpart.name")
     name_en = serializers.CharField(source="plantpart.name_en")
@@ -58,7 +59,15 @@ class PartRelationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Part
-        fields = ("id", "name", "name_en", "is_obsolete", "siccrf_id", "status")
+        fields = (
+            "id",
+            "name",
+            "name_en",
+            "is_obsolete",
+            "siccrf_id",
+            "status",
+            "origin_declaration",
+        )
         read_only_fields = fields
 
 
@@ -118,6 +127,7 @@ class PlantPartModificationSerializer(serializers.ModelSerializer):
         fields = (
             "plantpart",
             "status",
+            "origin_declaration",
         )
 
 
@@ -166,7 +176,7 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
         PlantModificationSerializer._check_part_unicity(parts)
 
         for part in parts:
-            Part.objects.create(plant=plant, plantpart=part["plantpart"], status=part["status"])
+            Part.objects.create(plant=plant, plantpart=part["plantpart"], status=part["origin_declaration"])
 
         return plant
 
@@ -183,9 +193,10 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
             if existing_part.exists():
                 existing_part = existing_part.first()
                 existing_part.status = part["status"]
+                existing_part.origin_declaration = part["origin_declaration"]
                 existing_part.save()
             else:
-                Part.objects.create(plant=instance, plantpart=part["plantpart"], status=part["status"])
+                Part.objects.create(plant=instance, plantpart=part["plantpart"], status=part["origin_declaration"])
 
         return instance
 
