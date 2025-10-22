@@ -130,47 +130,39 @@
         </DsfrFieldset>
       </div>
     </DsfrFieldset>
+
+    <div class="my-8 sm:mt-0">
+      <DsfrTable
+        v-if="formForType.plantParts"
+        title="Parties de plante"
+        :headers="plantPartHeaders"
+        class="mb-2! input-table"
+      >
+        <tr v-for="(q, idx) in state.plantParts" :key="`max-quantity-row-${idx}`">
+          <td><DsfrSelect v-model="q.plantpart" :options="orderedPlantParts" /></td>
+          <td><DsfrSelect v-model.number="q.status" :options="plantPartStatuses" /></td>
+          <td>
+            <DsfrButton
+              label="Supprimer"
+              @click="deletePlantPart(idx)"
+              :icon="{ name: 'ri-delete-bin-line' }"
+              icon-only
+              tertiary
+            />
+          </td>
+        </tr>
+      </DsfrTable>
+      <p v-else>Aucune partie de plante n'est spécifiée.</p>
+      <DsfrButton
+        label="Ajouter une partie de plante"
+        @click="addNewPlantPart"
+        icon="ri-add-line"
+        size="sm"
+        class="mt-2"
+        secondary
+      />
+    </div>
     <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 mb-0! pb-2!">
-      <div v-if="formForType.plantParts" class="grid md:grid-cols-3 items-end my-4 md:my-2">
-        <DsfrMultiselect
-          v-model="state.authorisedPlantParts"
-          :options="orderedPlantParts"
-          label="Partie(s) autorisée(s)"
-          search
-          labelKey="name"
-          :filteringKeys="['name']"
-        />
-        <div class="md:ml-4 md:my-8 md:col-span-2">
-          <DsfrTag
-            v-for="(id, idx) in state.authorisedPlantParts"
-            :key="`plant-part-${id}`"
-            :label="optionLabel(plantParts, id)"
-            tagName="button"
-            @click="state.authorisedPlantParts.splice(idx, 1)"
-            :aria-label="`Retirer ${optionLabel(plantParts, id)}`"
-            class="mx-1 fr-tag--dismiss"
-          ></DsfrTag>
-        </div>
-        <DsfrMultiselect
-          v-model="state.forbiddenPlantParts"
-          :options="orderedPlantParts"
-          label="Partie(s) non-autorisée(s)"
-          search
-          labelKey="name"
-          :filteringKeys="['name']"
-        />
-        <div class="md:ml-4 md:my-8 md:col-span-2">
-          <DsfrTag
-            v-for="(id, idx) in state.forbiddenPlantParts"
-            :key="`forbidden-plant-part-${id}`"
-            :label="optionLabel(plantParts, id)"
-            tagName="button"
-            @click="state.forbiddenPlantParts.splice(idx, 1)"
-            :aria-label="`Retirer ${optionLabel(plantParts, id)}`"
-            class="mx-1 fr-tag--dismiss"
-          ></DsfrTag>
-        </div>
-      </div>
       <div v-if="formForType.substances" class="grid md:grid-cols-3 items-end my-4 md:my-2">
         <ElementAutocomplete
           autocomplete="nothing"
@@ -232,7 +224,7 @@
           v-if="state.maxQuantities.length"
           title="Quantités maximales par population"
           :headers="maxQuantitiesHeaders"
-          class="mb-2! quantities-table"
+          class="mb-2! input-table"
         >
           <tr v-for="(q, idx) in state.maxQuantities" :key="`max-quantity-row-${idx}`">
             <td><DsfrSelect v-model="q.population" :options="populationOptions" /></td>
@@ -450,12 +442,12 @@ const apiType = computed(() => props.type && getApiType(props.type))
 const router = useRouter()
 
 const createEmptySynonym = () => ({ name: "", synonymType: "" })
+const createEmptyPlantPart = () => ({ plantpart: "", status: "", originDeclaration: "" })
 
 const state = ref({
-  authorisedPlantParts: [],
-  forbiddenPlantParts: [],
   substances: [],
-  synonyms: [createEmptySynonym(), createEmptySynonym(), createEmptySynonym()],
+  synonyms: [createEmptySynonym()],
+  plantParts: [createEmptyPlantPart()],
   maxQuantities: [],
   toBeEnteredInNextDecree: true, // vrai pour les nouveaux ingrédients
   substanceTypes: [],
@@ -468,10 +460,10 @@ watch(
     state.value.status = statuses.find((s) => s.apiValue === state.value.status)?.value
     if (state.value.family) state.value.family = state.value.family.id
     if (state.value.plantParts) {
-      state.value.authorisedPlantParts = state.value.plantParts.filter((p) => p.status === "autorisé").map((p) => p.id)
-      state.value.forbiddenPlantParts = state.value.plantParts
-        .filter((p) => p.status === "non autorisé")
-        .map((p) => p.id)
+      state.value.plantParts.forEach((p) => {
+        p.plantpart = p.id
+        p.status = statuses.find((s) => s.apiValue === p.status)?.value
+      })
     }
     if (state.value.objectType && apiType.value === "other-ingredient")
       state.value.ingredientType = ingredientTypes.find((t) => t.apiValue === state.value.objectType).value
@@ -502,11 +494,7 @@ const saveElement = async () => {
   payload.regulatoryResourceLinks = payload.regulatoryResourceLinks?.filter((l) => !!l)
   if (payload.ingredientType && payload.ingredientType == aromaId) delete payload.novelFood
   if (formForType.value.plantParts) {
-    const authorisedParts = payload.authorisedPlantParts
-    const forbiddenParts = payload.forbiddenPlantParts
-    payload.plantParts = authorisedParts
-      .map((p) => ({ plantpart: p, status: 1 }))
-      .concat(forbiddenParts.map((p) => ({ plantpart: p, status: 2 })))
+    payload.plantParts = state.value.plantParts.filter((p) => p.plantpart && p.status)
   }
 
   const { response } = isNewIngredient.value
@@ -546,6 +534,10 @@ const saveElement = async () => {
 }
 const addNewSynonym = async () => {
   state.value.synonyms.push(createEmptySynonym())
+}
+
+const addNewPlantPart = () => {
+  state.value.plantParts.push(createEmptyPlantPart())
 }
 
 const formQuestions = {
@@ -616,9 +608,9 @@ store.fetchDeclarationFieldsData()
 store.fetchPlantFamilies()
 
 const orderedPlantParts = computed(() => {
-  const ordered = JSON.parse(JSON.stringify(plantParts.value))
+  const ordered = JSON.parse(JSON.stringify(plantParts.value)) || []
   ordered?.sort((a, b) => a.name.localeCompare(b.name))
-  return ordered
+  return ordered.map((o) => ({ value: o.id, text: o.name }))
 })
 const synonymTypes = [
   { value: "SCIENTIFIC_NAME", text: "Nom scientifique" },
@@ -640,12 +632,10 @@ const statuses = [
   { value: 3, text: "Sans objet", apiValue: "sans objet" },
 ]
 
+const plantPartStatuses = statuses.filter((s) => s.value !== 3)
+
 const selectOption = async (result) => {
   state.value.substances.push(result)
-}
-
-const optionLabel = (options, id) => {
-  return options?.find((o) => o.id === id)?.name || "Inconnu"
 }
 
 const plantFamiliesDisplay = computed(() => {
@@ -669,6 +659,9 @@ const addNewMaxQuantity = () => {
 const deleteMaxQuantity = (idx) => {
   state.value.maxQuantities.splice(idx, 1)
 }
+const deletePlantPart = (idx) => {
+  state.value.plantParts.splice(idx, 1)
+}
 const maxQuantitiesError = ref()
 const validateMaxQuantities = () => {
   const hasMissingData = state.value.maxQuantities?.some(
@@ -678,6 +671,9 @@ const validateMaxQuantities = () => {
 }
 const maxQuantitiesHeaders = computed(() => {
   return ["Population", `Quantité max (en ${unitString.value})`, ""]
+})
+const plantPartHeaders = computed(() => {
+  return ["Partie", "Statut", ""]
 })
 
 const regulatoryResourceLinksError = ref()
@@ -744,7 +740,7 @@ const deleteActions = [
 </script>
 
 <style scoped>
-.quantities-table :deep(caption.caption) {
+.input-table :deep(caption.caption) {
   /* la taille du fr-h5 */
   font-size: 1.375rem;
 }
