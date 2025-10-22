@@ -343,6 +343,26 @@
       </div>
     </DsfrFieldset>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
+      <div>
+        <DsfrInputGroup :error-message="originDeclarationError">
+          <DsfrInput
+            v-model.number="state.originDeclaration"
+            label="ID de la déclaration source"
+            hint="Si cet ingrédient a été créé suite à une demande, renseignez l'identifiant de la déclaration pour laisser cette déclaration en article 16"
+            labelVisible
+          />
+        </DsfrInputGroup>
+        <p v-if="state.originDeclaration" class="mt-4">
+          <router-link
+            :to="{ name: 'InstructionPage', params: { declarationId: state.originDeclaration } }"
+            target="_blank"
+          >
+            Déclaration ayant demandé l'ajout de cet ingrédient
+          </router-link>
+        </p>
+      </div>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
       <DsfrToggleSwitch
         v-model="state.toBeEnteredInNextDecree"
         label="À rentrer dans le prochain décret&nbsp;?"
@@ -513,6 +533,10 @@ const saveElement = async () => {
       if ($externalResults.value?.fieldErrors?.regulatoryResourceLinks) {
         regulatoryResourceLinksError.value = "Merci de vérifier que tous les liens commencent par http:// ou https://"
       }
+      if ($externalResults.value?.fieldErrors?.originDeclaration) {
+        originDeclarationError.value =
+          "Merci de vérifier que l'identifiant renseigné corresponde à une déclaration existante"
+      }
       useToaster().addErrorMessage(
         "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis"
       )
@@ -604,7 +628,7 @@ const synonymTypes = [
 
 const ingredientTypes = [
   { value: 1, text: "Nutriment (Forme d'apport)", apiValue: "form_of_supply" },
-  { value: 2, text: "Additif", apiValue: "additif" },
+  { value: 2, text: "Additif", apiValue: "additive" },
   { value: 3, text: "Arôme", apiValue: "aroma" },
   { value: 4, text: "Autre ingrédient actif", apiValue: "active_ingredient" },
   { value: 5, text: "Autre ingrédient", apiValue: "non_active_ingredient" },
@@ -657,6 +681,7 @@ const maxQuantitiesHeaders = computed(() => {
 })
 
 const regulatoryResourceLinksError = ref()
+const originDeclarationError = ref()
 
 const substanceTypeOptions = computed(() => [
   {

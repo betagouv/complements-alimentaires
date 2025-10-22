@@ -35,6 +35,7 @@ COMMON_FIELDS = (
     "requires_analysis_report",
     "regulatory_resource_links",
     "is_obsolete",
+    "origin_declaration",
 )
 
 COMMON_READ_ONLY_FIELDS = ("id",)
