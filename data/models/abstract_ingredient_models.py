@@ -51,14 +51,6 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
     class Meta:
         abstract = True
 
-    origin_declaration = models.ForeignKey(
-        "data.Declaration",
-        verbose_name="La déclaration qui a demandé la création de cet ingrédient",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-    )
-
     requires_analysis_report = models.BooleanField(
         default=False, verbose_name="L'utilisation de cet ingrédient nécessite un bulletin d'analyse"
     )

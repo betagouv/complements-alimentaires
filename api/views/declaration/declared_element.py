@@ -291,13 +291,26 @@ class DeclaredElementAcceptPartView(DeclaredElementActionAbstractView):
     def _update_element(self, element, request):
         try:
             part = Part.objects.get(plant=element.plant, plantpart=element.used_part)
-            part.status = IngredientStatus.AUTHORIZED
-            part.save()
-            update_change_reason(part, f"Autorisée après une demande par la déclaration id : {element.declaration.id}")
+            if part.status != IngredientStatus.AUTHORIZED:
+                part.status = IngredientStatus.AUTHORIZED
+                part.origin_declaration = element.declaration
+                part.save()
+                update_change_reason(
+                    part, f"Autorisée après une demande par la déclaration id : {element.declaration.id}"
+                )
         except Part.DoesNotExist:
-            part = Part(plant=element.plant, plantpart=element.used_part, status=IngredientStatus.AUTHORIZED)
+            part = Part(
+                plant=element.plant,
+                plantpart=element.used_part,
+                status=IngredientStatus.AUTHORIZED,
+                origin_declaration=element.declaration,
+            )
             part.save()
             update_change_reason(part, f"Ajoutée après une demande par la déclaration id : {element.declaration.id}")
 
         element.request_status = self.type_model.AddableStatus.REPLACED
         return element
+
+    def _post_save_declared_element(self, declared_element):
+        declared_element.declaration.assign_calculated_article()
+        declared_element.declaration.save()

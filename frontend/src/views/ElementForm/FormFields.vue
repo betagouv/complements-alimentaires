@@ -139,8 +139,10 @@
         class="mb-2! input-table"
       >
         <tr v-for="(q, idx) in state.plantParts" :key="`max-quantity-row-${idx}`">
+          <!-- TODO: error handling -->
           <td><DsfrSelect v-model="q.plantpart" :options="orderedPlantParts" /></td>
           <td><DsfrSelect v-model.number="q.status" :options="plantPartStatuses" /></td>
+          <td><DsfrInput v-model.number="q.originDeclaration" /></td>
           <td>
             <DsfrButton
               label="Supprimer"
@@ -673,7 +675,7 @@ const maxQuantitiesHeaders = computed(() => {
   return ["Population", `Quantité max (en ${unitString.value})`, ""]
 })
 const plantPartHeaders = computed(() => {
-  return ["Partie", "Statut", ""]
+  return ["Partie", "Statut", "ID de la déclaration source", ""]
 })
 
 const regulatoryResourceLinksError = ref()
