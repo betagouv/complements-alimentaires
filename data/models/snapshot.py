@@ -32,6 +32,7 @@ class Snapshot(TimeStampable):
         WITHDRAW = "WITHDRAW", "retirer du marché"
         ABANDON = "ABANDON", "mettre en abandon"
         AUTOMATICALLY_AUTHORIZE = "AUTOMATICALLY_AUTHORIZE", "validé automatiquement par le bot"
+        REVOKE_AUTHORIZATION = "REVOKE_AUTHORIZATION", "retirer du marché par l'administration"
         OTHER = "OTHER", "autre"
 
     action = models.CharField(

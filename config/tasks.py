@@ -322,7 +322,9 @@ class RevokeAuthorizationDeclarationFlow:
 
     @status.on_success()
     def _on_transition_success(self, descriptor, source, target):
-        self.declaration.save()
+        with transaction.atomic():
+            self.declaration.save()
+            self.declaration.create_snapshot(action=Snapshot.SnapshotActions.REVOKE_AUTHORIZATION)
 
     @status.transition(source={Status.AUTHORIZED}, target=Status.AUTHORIZATION_REVOKED)
     def revoke_authorization(self):
