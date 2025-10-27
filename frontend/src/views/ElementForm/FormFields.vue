@@ -139,7 +139,6 @@
         class="mb-2! input-table"
       >
         <tr v-for="(q, idx) in state.plantParts" :key="`max-quantity-row-${idx}`">
-          <!-- TODO: error handling -->
           <td><DsfrSelect v-model="q.plantpart" :options="orderedPlantParts" /></td>
           <td><DsfrSelect v-model.number="q.status" :options="plantPartStatuses" /></td>
           <td><DsfrInput v-model.number="q.originDeclaration" /></td>
@@ -155,6 +154,7 @@
         </tr>
       </DsfrTable>
       <p v-else>Aucune partie de plante n'est spécifiée.</p>
+      <p v-if="plantPartsError" class="text-red-marianne-425">{{ plantPartsError }}</p>
       <DsfrButton
         label="Ajouter une partie de plante"
         @click="addNewPlantPart"
@@ -520,6 +520,12 @@ const saveElement = async () => {
       if ($externalResults.value?.fieldErrors?.maxQuantities) {
         maxQuantitiesError.value = $externalResults.value.fieldErrors.maxQuantities[0]
       }
+      if ($externalResults.value?.fieldErrors?.plantParts) {
+        plantPartsError.value = $externalResults.value.fieldErrors.plantParts
+          .filter((p) => !!p.originDeclaration)
+          .map((p) => p.originDeclaration)
+          .join(" ")
+      }
       if ($externalResults.value?.fieldErrors?.regulatoryResourceLinks) {
         regulatoryResourceLinksError.value = "Merci de vérifier que tous les liens commencent par http:// ou https://"
       }
@@ -671,6 +677,7 @@ const validateMaxQuantities = () => {
   )
   maxQuantitiesError.value = hasMissingData && "Veuillez compléter tous les champs ou supprimer les lignes vides"
 }
+const plantPartsError = ref()
 const maxQuantitiesHeaders = computed(() => {
   return ["Population", `Quantité max (en ${unitString.value})`, ""]
 })
