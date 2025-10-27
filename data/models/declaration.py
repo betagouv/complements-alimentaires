@@ -55,6 +55,7 @@ class Declaration(Historisable, TimeStampable):
         AUTHORIZED = "AUTHORIZED", "Autorisée"
         REJECTED = "REJECTED", "Refusée"
         WITHDRAWN = "WITHDRAWN", "Retiré du marché"
+        AUTHORIZATION_REVOKED = "AUTHORIZATION_REVOKED", "Retirée par l'administration"
 
     class RejectionReason(models.TextChoices):
         MISSING_DATA = "MISSING_DATA", "Le dossier manque des données nécessaires"
