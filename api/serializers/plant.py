@@ -220,6 +220,8 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
                 )
                 part_requests.update(request_status=Addable.AddableStatus.REPLACED)
 
+        # il faut appeler ça de nouveau si il y avait de changements d'autorisation des parties
+        self.update_declaration_articles(instance, {"part_set": parts})
         return instance
 
     def _check_part_unicity(parts):
