@@ -341,7 +341,7 @@
         <DsfrInputGroup :error-message="originDeclarationError">
           <DsfrInput
             v-model.number="state.originDeclaration"
-            label="ID de la déclaration source"
+            label="Première déclaration"
             hint="Si cet ingrédient a été créé suite à une demande, renseignez l'identifiant de la déclaration pour laisser cette déclaration en article 16"
             labelVisible
           />
@@ -675,7 +675,7 @@ const maxQuantitiesHeaders = computed(() => {
   return ["Population", `Quantité max (en ${unitString.value})`, ""]
 })
 const plantPartHeaders = computed(() => {
-  return ["Partie", "Statut", "ID de la déclaration source", ""]
+  return ["Partie", "Statut", "Première déclaration", ""]
 })
 
 const regulatoryResourceLinksError = ref()
