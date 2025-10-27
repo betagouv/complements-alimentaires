@@ -1,7 +1,7 @@
 # Général
 
 L'ETL permet d'extraire des données issues de la plateforme vers data.gouv.fr pour l'ouverture en open-data.
-Pour administrer ce(s) jeu(x) de données, il faut demander (au directeur de projet "Données" SNUM/SDSPR/....) un accès à l'organisation du MASA pour publier/administrer des jeux de données.
+Pour administrer ce(s) jeu(x) de données, il faut demander (directeur.ice de projet "Données" SNUM/SDSPR/....) un accès à l'organisation du MASA pour publier/administrer des jeux de données.
 
 Les jeux de données édités et publiés :
 
