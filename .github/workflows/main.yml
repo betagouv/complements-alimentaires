@@ -16,6 +16,11 @@ jobs:
         with:
           python-version: 3.11
 
+      - name: Setup Cairo for svglib 1.6.0
+        run: |
+          sudo apt-get update && \
+          sudo apt-get install -y libcairo2-dev libffi-dev pkg-config libxml2-dev libxslt1-dev libjpeg-dev
+
       - name: Setup PostgreSQL
         uses: Harmon758/postgresql-action@v1.0.0
         with:
