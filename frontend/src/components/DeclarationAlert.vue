@@ -121,6 +121,12 @@ const declarantDisplayData = computed(() => {
           ? `Date effective de retrait du marché : ${isoToPrettyDate(latestSnapshot.value.effectiveWithdrawalDate)}`
           : null,
       }
+    case "AUTHORIZATION_REVOKED":
+      return {
+        type: "info",
+        title: "Ce produit a été retiré du marché par l'administration",
+        canDownloadCertificate: false,
+      }
     default:
       return null
   }
