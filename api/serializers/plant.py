@@ -176,7 +176,12 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
         PlantModificationSerializer._check_part_unicity(parts)
 
         for part in parts:
-            Part.objects.create(plant=plant, plantpart=part["plantpart"], status=part["origin_declaration"])
+            Part.objects.create(
+                plant=plant,
+                plantpart=part["plantpart"],
+                status=part["status"],
+                origin_declaration=part.get("origin_declaration"),
+            )
 
         return plant
 
@@ -193,10 +198,15 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
             if existing_part.exists():
                 existing_part = existing_part.first()
                 existing_part.status = part["status"]
-                existing_part.origin_declaration = part["origin_declaration"]
+                existing_part.origin_declaration = part.get("origin_declaration")
                 existing_part.save()
             else:
-                Part.objects.create(plant=instance, plantpart=part["plantpart"], status=part["origin_declaration"])
+                Part.objects.create(
+                    plant=instance,
+                    plantpart=part["plantpart"],
+                    status=part["status"],
+                    origin_declaration=part.get("origin_declaration"),
+                )
 
         return instance
 
