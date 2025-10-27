@@ -63,6 +63,7 @@ const isAdministrativeAction = computed(() => {
     "TAKE_FOR_VISA",
     "APPROVE_VISA",
     "REFUSE_VISA",
+    "REVOKE_AUTHORIZATION",
   ]
   return instructionActions.indexOf(props.snapshot.action) > -1
 })
@@ -80,7 +81,7 @@ const modalOpened = ref(false)
 const isInValidationState = computed(() => props.snapshot.status === "AWAITING_VISA")
 const fullName = computed(() => {
   if (props.hideInstructionDetails && isAdministrativeAction.value) return "L'administration"
-  if (!props.snapshot.user) return "Une personne"
+  if (!props.snapshot.user) return "Une action automatique"
   return `${props.snapshot.user.firstName} ${props.snapshot.user.lastName}`
 })
 const actionText = computed(() => {
@@ -94,6 +95,7 @@ const actionText = computed(() => {
     APPROVE_VISA: `a mis la déclaration en état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
     REFUSE_VISA: `a refusé le visa pour passer à l'état « ${statusProps[props.snapshot.postValidationStatus]?.label} »`,
     WITHDRAW: getWithdrawalText(props.snapshot),
+    REVOKE_AUTHORIZATION: "a retiré l'autorisation de la déclaration",
   }
   return mapping[props.snapshot.action] ? `${fullName.value} ${mapping[props.snapshot.action]}.` : null
 })
