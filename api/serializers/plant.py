@@ -14,6 +14,8 @@ from data.models import (
     PlantSynonym,
     Population,
     IngredientStatus,
+    Addable,
+    DeclaredPlant,
 )
 
 from .common_ingredient import (
@@ -194,19 +196,29 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
         instance.part_set.exclude(plantpart__id__in=ids_to_keep_or_create).delete()
 
         for part in parts:
-            existing_part = instance.part_set.filter(plantpart=part["plantpart"])
+            plantpart = part["plantpart"]
+            status = part["status"]
+            existing_part = instance.part_set.filter(plantpart=plantpart)
             if existing_part.exists():
                 existing_part = existing_part.first()
-                existing_part.status = part["status"]
+                existing_part.status = status
                 existing_part.origin_declaration = part.get("origin_declaration")
                 existing_part.save()
             else:
                 Part.objects.create(
                     plant=instance,
-                    plantpart=part["plantpart"],
-                    status=part["status"],
+                    plantpart=plantpart,
+                    status=status,
                     origin_declaration=part.get("origin_declaration"),
                 )
+            if status == IngredientStatus.AUTHORIZED:
+                part_requests = DeclaredPlant.objects.filter(
+                    plant=instance,
+                    used_part=plantpart,
+                    is_part_request=True,
+                    request_status=Addable.AddableStatus.REQUESTED,
+                )
+                part_requests.update(request_status=Addable.AddableStatus.REPLACED)
 
         return instance
 
