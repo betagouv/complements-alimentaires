@@ -29,6 +29,7 @@ from .common_ingredient import (
 )
 from .population import SimplePopulationSerializer
 from .substance import SubstanceShortSerializer
+from .utils import PrivateFieldsSerializer
 
 
 class PlantFamilySerializer(serializers.ModelSerializer):
@@ -50,14 +51,15 @@ class PlantPartSerializer(serializers.ModelSerializer):
         fields = ("id", "name")
 
 
-# TODO: hide origin declaration from non-instructors
-class PartRelationSerializer(serializers.ModelSerializer):
+class PartRelationSerializer(PrivateFieldsSerializer):
     name = serializers.CharField(source="plantpart.name")
     name_en = serializers.CharField(source="plantpart.name_en")
     is_obsolete = serializers.BooleanField(source="plantpart.is_obsolete")
     siccrf_id = serializers.IntegerField(source="plantpart.siccrf_id")
     id = serializers.IntegerField(source="plantpart.id")
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
+
+    private_fields = ("siccrf_id", "origin_declaration")
 
     class Meta:
         model = Part
