@@ -6,7 +6,7 @@ asttokens==3.0.0
 async-timeout==5.0.1
 autopep8==2.3.2
 beautifulsoup4==4.13.5
-billiard==4.2.1
+billiard==4.2.2
 bleach==6.2.0
 boto3==1.40.40
 botocore==1.40.40
