@@ -13,6 +13,7 @@ from data.etl.declarations import OpenDataDeclarationsETL
 from data.factories import (
     AuthorizedDeclarationFactory,
     AwaitingInstructionDeclarationFactory,
+    DeclaredIngredientFactory,
     DeclaredMicroorganismFactory,
     DeclaredPlantFactory,
     DeclaredSubstanceFactory,
@@ -57,6 +58,44 @@ class IngredientTestCase(TestCase):
 
         open_data_jdd = pd.read_csv(os.path.join(settings.MEDIA_ROOT, self.etl_test.filename), delimiter=";")
         self.assertEqual(len(open_data_jdd), 1)
+
+    @override_settings(DECLARATIONS_EXPORT_BATCH_SIZE=1)
+    @mock.patch("data.etl.datagouv.update_resources")
+    def test_inactive_ingredient_column_is_well_serialized(self, mocked_update_resources):
+        """
+        La colonne "ingredients_inactifs" du JDD Open Data est un array de string
+        """
+        # Création de declarations dont déclarations provenant de TeleIcare
+        unit_mg = UnitFactory(name="mg")
+        declaration_1 = AuthorizedDeclarationFactory(declared_plants=[])
+        DeclaredPlantFactory(
+            declaration=declaration_1,
+            plant=PlantFactory(name="Ortie"),
+            used_part=PlantPartFactory(name="Parties aériennes"),
+            quantity=5.0,
+            unit=unit_mg,
+            active=False,
+        )
+        DeclaredIngredientFactory(
+            declaration=declaration_1,
+            active=False,
+            quantity=10.0,
+            unit=unit_mg,
+        )
+        DeclaredMicroorganismFactory(
+            declaration=declaration_1,
+            microorganism=MicroorganismFactory(genus="Lactobasine", species="en bois"),
+            quantity=5.0,
+            active=False,
+        )
+
+        # tester l'export avec un taille de batch d'une déclaration
+        self.etl_test.export()
+
+        open_data_jdd = pd.read_csv(os.path.join(settings.MEDIA_ROOT, self.etl_test.filename), delimiter=";")
+        self.assertEqual(len(open_data_jdd), 1)
+        self.assertTrue(isinstance(json.loads(open_data_jdd["ingredients_inactifs"][0]), list))
+        self.assertFalse(isinstance(json.loads(open_data_jdd["ingredients_inactifs"][0])[0], dict))
 
     @override_settings(DECLARATIONS_EXPORT_BATCH_SIZE=1)
     @mock.patch("data.etl.datagouv.update_resources")
