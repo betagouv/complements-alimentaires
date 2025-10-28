@@ -193,14 +193,12 @@
           ></DsfrTag>
         </div>
       </div>
-      <div class="grid sm:grid-cols-3 gap-x-8" v-if="formForType.nutritionalReference">
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
-          <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
-        </DsfrInputGroup>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 mb-6">
         <DsfrInputGroup>
           <DsfrToggleSwitch
             v-model="state.mustSpecifyQuantity"
             label="Spécification de quantité obligatoire ?"
+            hint="La déclaration devra indiquer la quantité de cet ingrédient"
             activeText="Oui"
             inactiveText="Non"
             label-left
@@ -223,6 +221,14 @@
           <p class="mb-2">Unité</p>
           <p class="mb-0">{{ unitString }}</p>
         </div>
+      </div>
+      <div
+        class="grid sm:grid-cols-3 gap-x-8"
+        v-if="formForType.nutritionalReference && [1, 2].some((substType) => state.substanceTypes.includes(substType))"
+      >
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
+          <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
+        </DsfrInputGroup>
       </div>
       <div class="mt-8 sm:mt-0">
         <DsfrTable
