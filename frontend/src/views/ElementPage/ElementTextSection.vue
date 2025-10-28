@@ -1,7 +1,7 @@
 <template>
   <div v-if="text">
     <h2 class="fr-h6 mb-1!">{{ title }}</h2>
-    <p>
+    <p class="whitespace-pre-line">
       <slot>{{ text }}</slot>
     </p>
   </div>

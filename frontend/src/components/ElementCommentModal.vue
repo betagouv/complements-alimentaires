@@ -3,11 +3,11 @@
     <DsfrModal :title="elementName" size="lg" :opened="infoModalOpened" @close="infoModalOpened = false">
       <div v-if="element?.publicComments">
         <h2 class="fr-h6 mb-2!">Commentaires</h2>
-        <p>{{ element?.publicComments }}</p>
+        <p class="whitespace-pre-line">{{ element?.publicComments }}</p>
       </div>
       <div v-if="element?.privateComments && !hidePrivateComments">
         <h2 class="fr-h6 mb-2!">Commentaires privés</h2>
-        <p>{{ element?.privateComments }}</p>
+        <p class="whitespace-pre-line">{{ element?.privateComments }}</p>
       </div>
       <div v-if="hasMaxQuantities">
         <ElementDoses :maxQuantities="maxQuantities" :unit="element?.unit" />
