@@ -14,6 +14,7 @@ from data.factories import (
     InstructionRoleFactory,
     MicroorganismFactory,
     OngoingInstructionDeclarationFactory,
+    AuthorizedDeclarationFactory,
     PlantFactory,
     PlantFamilyFactory,
     PlantPartFactory,
@@ -1175,3 +1176,32 @@ class TestElementsModifyApi(APITestCase):
         microorganism.refresh_from_db()
         self.assertEqual(microorganism.status, IngredientStatus.NOT_AUTHORIZED)
         self.assertEqual(microorganism.revoked_detail, "")
+
+    @authenticate
+    @patch("config.tasks.revoke_authorisation_from_declarations")
+    def test_revoke_authorised_declarations_on_revoke_ingredient(self, mocked_task):
+        """
+        Quand un ingrédient est retiré, retirer l'autorization de déclarations finalisées
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        substance = SubstanceFactory.create(status=IngredientStatus.AUTHORIZED)
+
+        approved_declaration = AuthorizedDeclarationFactory()
+        DeclaredSubstanceFactory(declaration=approved_declaration, substance=substance)
+        ongoing_declaration = OngoingInstructionDeclarationFactory()
+        DeclaredSubstanceFactory(declaration=ongoing_declaration, substance=substance)
+        # créer une autre déclaration autorisée pas liée à l'ingrédient retiré
+        AuthorizedDeclarationFactory()
+
+        self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {"status": IngredientStatus.AUTHORIZATION_REVOKED, "revoked_detail": "Une raison..."},
+            format="json",
+        )
+
+        mocked_task.assert_called_once()
+        arguments = mocked_task.call_args.args
+        queryset_argument = arguments[0]
+        self.assertEqual(queryset_argument.count(), 1)
+        self.assertTrue(queryset_argument.filter(id=approved_declaration.id).exists())
