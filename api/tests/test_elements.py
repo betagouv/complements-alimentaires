@@ -772,7 +772,7 @@ class TestElementsModifyApi(APITestCase):
     @authenticate
     def test_authorising_plant_parts_updates_ongoing_part_requests(self):
         """
-        Si il y a de demandes d'ajoute pour une partie de plante, les marquer comme remplacée
+        Si il y a de demandes d'ajout pour une partie de plante, les marquer comme remplacée
         quand la partie est ajoutée à la plante comme autorisée
         """
         InstructionRoleFactory(user=authenticate.user)
