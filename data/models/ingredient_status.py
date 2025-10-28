@@ -13,6 +13,7 @@ class IngredientStatus(models.IntegerChoices):
     AUTHORIZED = 1, "autorisé"  # contient aussi les status SICCRF "à inscrire" et "sans objet"
     NOT_AUTHORIZED = 2, "non autorisé"
     NO_STATUS = 3, "sans objet"
+    AUTHORIZATION_REVOKED = 99, "retiré par l'administration"  # integer sans équivalent siccrf_id
 
 
 class WithStatus(models.Model):
@@ -52,3 +53,5 @@ class WithStatus(models.Model):
         null=True,
         blank=True,
     )
+
+    revoked_detail = models.TextField(blank=True, verbose_name="information pour les pros du retrait de l'ingrédient")
