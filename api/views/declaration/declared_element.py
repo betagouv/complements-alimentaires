@@ -22,6 +22,7 @@ from api.serializers import (
     DeclaredPlantSerializer,
     DeclaredSubstanceSerializer,
 )
+from config import tasks
 from data.models import (
     Declaration,
     DeclaredIngredient,
@@ -291,13 +292,38 @@ class DeclaredElementAcceptPartView(DeclaredElementActionAbstractView):
     def _update_element(self, element, request):
         try:
             part = Part.objects.get(plant=element.plant, plantpart=element.used_part)
-            part.status = IngredientStatus.AUTHORIZED
-            part.save()
-            update_change_reason(part, f"Autorisée après une demande par la déclaration id : {element.declaration.id}")
+            if part.status != IngredientStatus.AUTHORIZED:
+                part.status = IngredientStatus.AUTHORIZED
+                part.origin_declaration = element.declaration
+                part.save()
+                update_change_reason(
+                    part, f"Autorisée après une demande par la déclaration id : {element.declaration.id}"
+                )
         except Part.DoesNotExist:
-            part = Part(plant=element.plant, plantpart=element.used_part, status=IngredientStatus.AUTHORIZED)
+            part = Part(
+                plant=element.plant,
+                plantpart=element.used_part,
+                status=IngredientStatus.AUTHORIZED,
+                origin_declaration=element.declaration,
+            )
             part.save()
             update_change_reason(part, f"Ajoutée après une demande par la déclaration id : {element.declaration.id}")
 
         element.request_status = self.type_model.AddableStatus.REPLACED
         return element
+
+    def _post_save_declared_element(self, declared_element):
+        declared_element.declaration.assign_calculated_article()
+        declared_element.declaration.save()
+        repeated_requests = DeclaredPlant.objects.filter(
+            plant=declared_element.plant,
+            used_part=declared_element.used_part,
+            request_status=self.type_model.AddableStatus.REQUESTED,
+        )
+        # forcer l'évaluation du queryset en utilisant list(...) pour qu'on puisse faire l'update aussi
+        declaration_ids = list(repeated_requests.values_list("declaration_id", flat=True))
+        repeated_requests.update(request_status=self.type_model.AddableStatus.REPLACED)
+        tasks.recalculate_article_for_ongoing_declarations(
+            Declaration.objects.filter(id__in=declaration_ids),
+            f"Acceptation de la partie {declared_element.used_part} pour la plante {declared_element.plant}",
+        )

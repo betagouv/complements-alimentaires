@@ -141,6 +141,7 @@
         <tr v-for="(q, idx) in state.plantParts" :key="`max-quantity-row-${idx}`">
           <td><DsfrSelect v-model="q.plantpart" :options="orderedPlantParts" /></td>
           <td><DsfrSelect v-model.number="q.status" :options="plantPartStatuses" /></td>
+          <td><DsfrInput v-model.number="q.originDeclaration" /></td>
           <td>
             <DsfrButton
               label="Supprimer"
@@ -153,6 +154,7 @@
         </tr>
       </DsfrTable>
       <p v-else>Aucune partie de plante n'est spécifiée.</p>
+      <p v-if="plantPartsError" class="text-red-marianne-425">{{ plantPartsError }}</p>
       <DsfrButton
         label="Ajouter une partie de plante"
         @click="addNewPlantPart"
@@ -339,7 +341,7 @@
         <DsfrInputGroup :error-message="originDeclarationError">
           <DsfrInput
             v-model.number="state.originDeclaration"
-            label="ID de la déclaration source"
+            label="Première déclaration"
             hint="Si cet ingrédient a été créé suite à une demande, renseignez l'identifiant de la déclaration pour laisser cette déclaration en article 16"
             labelVisible
           />
@@ -518,6 +520,12 @@ const saveElement = async () => {
       if ($externalResults.value?.fieldErrors?.maxQuantities) {
         maxQuantitiesError.value = $externalResults.value.fieldErrors.maxQuantities[0]
       }
+      if ($externalResults.value?.fieldErrors?.plantParts) {
+        plantPartsError.value = $externalResults.value.fieldErrors.plantParts
+          .filter((p) => !!p.originDeclaration)
+          .map((p) => p.originDeclaration)
+          .join(" ")
+      }
       if ($externalResults.value?.fieldErrors?.regulatoryResourceLinks) {
         regulatoryResourceLinksError.value = "Merci de vérifier que tous les liens commencent par http:// ou https://"
       }
@@ -669,11 +677,12 @@ const validateMaxQuantities = () => {
   )
   maxQuantitiesError.value = hasMissingData && "Veuillez compléter tous les champs ou supprimer les lignes vides"
 }
+const plantPartsError = ref()
 const maxQuantitiesHeaders = computed(() => {
   return ["Population", `Quantité max (en ${unitString.value})`, ""]
 })
 const plantPartHeaders = computed(() => {
-  return ["Partie", "Statut", ""]
+  return ["Partie", "Statut", "Première déclaration", ""]
 })
 
 const regulatoryResourceLinksError = ref()

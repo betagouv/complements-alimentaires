@@ -44,3 +44,11 @@ class WithStatus(models.Model):
     regulatory_resource_links = ArrayField(
         base_field=models.URLField(), blank=True, null=True, verbose_name="Lien(s) vers les ressources reglementaires"
     )
+
+    origin_declaration = models.ForeignKey(
+        "data.Declaration",
+        verbose_name="La déclaration qui a demandé la création de cet ingrédient",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )

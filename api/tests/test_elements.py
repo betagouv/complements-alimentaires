@@ -9,6 +9,7 @@ from data.choices import IngredientActivity
 from data.factories import (
     ComputedSubstanceFactory,
     DeclaredSubstanceFactory,
+    DeclaredPlantFactory,
     IngredientFactory,
     InstructionRoleFactory,
     MicroorganismFactory,
@@ -32,6 +33,7 @@ from data.models import (
     Plant,
     Population,
     SubstanceType,
+    Addable,
 )
 from data.models.substance import Substance, SubstanceMaxQuantityPerPopulationRelation
 
@@ -766,6 +768,69 @@ class TestElementsModifyApi(APITestCase):
             "l'autre partie ne devrait pas été ajoutée à la plante",
         )
         self.assertNotEqual(plant.name, "new name", "autres modifications devraient être ignorées aussi")
+
+    @authenticate
+    def test_authorising_plant_parts_updates_ongoing_part_requests(self):
+        """
+        Si il y a de demandes d'ajout pour une partie de plante, les marquer comme remplacée
+        quand la partie est ajoutée à la plante comme autorisée
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        good_part = PlantPartFactory.create()
+        questionable_part = PlantPartFactory.create()
+        new_good_part = PlantPartFactory.create()
+        new_dangerous_part = PlantPartFactory.create()
+        plant = PlantFactory.create()
+
+        Part.objects.create(plant=plant, plantpart=good_part, status=IngredientStatus.AUTHORIZED)
+        Part.objects.create(plant=plant, plantpart=questionable_part, status=IngredientStatus.NOT_AUTHORIZED)
+
+        declaration = OngoingInstructionDeclarationFactory()
+        request_1 = DeclaredPlantFactory(
+            declaration=declaration,
+            plant=plant,
+            used_part=questionable_part,
+            request_status=Addable.AddableStatus.REQUESTED,
+        )
+        request_2 = DeclaredPlantFactory(
+            declaration=declaration,
+            plant=plant,
+            used_part=new_good_part,
+            request_status=Addable.AddableStatus.REQUESTED,
+        )
+        request_3 = DeclaredPlantFactory(
+            declaration=declaration,
+            plant=plant,
+            used_part=new_dangerous_part,
+            request_status=Addable.AddableStatus.REQUESTED,
+        )
+        request_4 = DeclaredPlantFactory(
+            declaration=declaration, plant=plant, used_part=good_part, request_status=Addable.AddableStatus.REQUESTED
+        )
+
+        # update plant to authorise a part and add a new part as authorised and new part as unauthorised
+        payload = {
+            "plantParts": [
+                {"plantpart": good_part.id, "status": IngredientStatus.AUTHORIZED},
+                {"plantpart": questionable_part.id, "status": IngredientStatus.AUTHORIZED},
+                {"plantpart": new_good_part.id, "status": IngredientStatus.AUTHORIZED},
+                {"plantpart": new_dangerous_part.id, "status": IngredientStatus.NOT_AUTHORIZED},
+            ],
+        }
+        response = self.client.patch(reverse("api:single_plant", kwargs={"pk": plant.id}), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # les deux nouvelles parties autorisées devraient être marquées comme remplacées
+        request_1.refresh_from_db()
+        self.assertEqual(request_1.request_status, Addable.AddableStatus.REPLACED)
+        request_2.refresh_from_db()
+        self.assertEqual(request_2.request_status, Addable.AddableStatus.REPLACED)
+        # la partie ajoutée comme non-autorisée devrait rester comme une demande
+        request_3.refresh_from_db()
+        self.assertEqual(request_3.request_status, Addable.AddableStatus.REQUESTED)
+        # la partie déjà autorisée n'etait pas une demande, le statut reste en "REQUESTED"
+        request_4.refresh_from_db()
+        self.assertEqual(request_4.request_status, Addable.AddableStatus.REQUESTED)
 
     @authenticate
     def test_update_siccrf_max_quantity(self):
