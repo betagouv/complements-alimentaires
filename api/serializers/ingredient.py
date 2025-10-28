@@ -1,6 +1,12 @@
 from rest_framework import serializers
 
-from data.models import Ingredient, IngredientMaxQuantityPerPopulationRelation, IngredientSynonym, Population
+from data.models import (
+    Ingredient,
+    IngredientMaxQuantityPerPopulationRelation,
+    IngredientSynonym,
+    Population,
+    DeclaredIngredient,
+)
 
 from .common_ingredient import (
     COMMON_FETCH_FIELDS,
@@ -79,6 +85,7 @@ class IngredientModificationSerializer(CommonIngredientModificationSerializer, W
     ingredient_name_field = "ingredient"
 
     declaredingredient_set_field_names = ["declaredingredient_set"]
+    declaredingredient_model = DeclaredIngredient
 
     class Meta:
         model = Ingredient
