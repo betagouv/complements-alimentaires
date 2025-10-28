@@ -1151,11 +1151,10 @@ class TestElementsModifyApi(APITestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        print(response.json())
 
         microorganism.refresh_from_db()
         self.assertEqual(microorganism.status, IngredientStatus.AUTHORIZED)
-        self.assertIsNone(microorganism.revoked_detail)
+        self.assertEqual(microorganism.revoked_detail, "")
 
     @authenticate
     def test_cannot_revoke_unauthorized_ingredient(self):
@@ -1175,4 +1174,4 @@ class TestElementsModifyApi(APITestCase):
 
         microorganism.refresh_from_db()
         self.assertEqual(microorganism.status, IngredientStatus.NOT_AUTHORIZED)
-        self.assertIsNone(microorganism.revoked_detail)
+        self.assertEqual(microorganism.revoked_detail, "")
