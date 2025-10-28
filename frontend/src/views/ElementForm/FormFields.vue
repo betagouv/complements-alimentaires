@@ -214,7 +214,7 @@
             :options="store.units?.map((unit) => ({ text: unit.name, value: unit.id }))"
             v-model="state.unit"
             defaultUnselectedText="Unité"
-            required
+            :required="state.mustSpecifyQuantity"
           />
         </DsfrInputGroup>
         <div v-else class="pt-4">
