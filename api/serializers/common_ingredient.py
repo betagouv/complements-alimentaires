@@ -178,7 +178,7 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
                 .distinct()
             )
             tasks.revoke_authorisation_from_declarations(
-                Declaration.objects.filter(id__in=authorized_declarations_ids)
+                Declaration.objects.filter(id__in=authorized_declarations_ids), instance
             )
         return instance
 
