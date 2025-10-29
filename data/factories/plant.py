@@ -38,7 +38,6 @@ class PlantFactory(factory.django.DjangoModelFactory):
     family = factory.SubFactory(PlantFamilyFactory)
     status = IngredientStatus.AUTHORIZED
     to_be_entered_in_next_decree = False
-    must_specify_quantity = False
 
     @factory.post_generation
     def substances(self, create, extracted, **kwargs):

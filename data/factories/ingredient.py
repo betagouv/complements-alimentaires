@@ -19,7 +19,6 @@ class IngredientFactory(factory.django.DjangoModelFactory):
     to_be_entered_in_next_decree = False
     ingredient_type = IngredientType.ACTIVE_INGREDIENT
     is_obsolete = False
-    must_specify_quantity = False
 
     @factory.post_generation
     def substances(self, create, extracted, **kwargs):

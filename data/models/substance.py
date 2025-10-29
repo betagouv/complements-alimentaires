@@ -62,6 +62,10 @@ class Substance(IngredientCommonModel):
         blank=True,
         verbose_name="numéro EINECS",
     )
+    # must_specify_quantity
+    must_specify_quantity = models.BooleanField(
+        default=False, verbose_name="spécification de quantité obligatoire lors de la déclaration ?"
+    )
 
     # max_quantity
     max_quantities = models.ManyToManyField(Population, through="SubstanceMaxQuantityPerPopulationRelation")

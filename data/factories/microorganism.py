@@ -18,7 +18,6 @@ class MicroorganismFactory(factory.django.DjangoModelFactory):
     status = IngredientStatus.AUTHORIZED
     to_be_entered_in_next_decree = False
     is_obsolete = False
-    must_specify_quantity = False
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):

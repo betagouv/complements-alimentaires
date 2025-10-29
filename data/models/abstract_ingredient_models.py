@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 
 # cette librairie permets d'avoir un affichage de l'arrayfield plus friendly dans l'admin
@@ -72,16 +71,11 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
         verbose_name="mention(s) d'avertissement devant figurer sur l'étiquette",
     )
     description = models.TextField(blank=True)
-    # must_specify_quantity
-    must_specify_quantity = models.BooleanField(
-        default=False, verbose_name="spécification de quantité obligatoire lors de la déclaration ?"
-    )
 
     unit = models.ForeignKey(
         Unit,
         default=None,
         null=True,
-        blank=True,
         on_delete=models.CASCADE,
         verbose_name="unité des quantités spécifiées (quantité max, apport de référence)",
     )
@@ -117,14 +111,3 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
             "additive": IngredientActivity.NOT_ACTIVE,
         }
         return TYPE_ACTIVITY_MAPPING[self.object_type]
-
-    def _validate_unit_if_must_specify_quantity(self):
-        if (not self.unit) & self.must_specify_quantity:
-            raise ValidationError("L'unité doit être spécifiée si la quantité est nécessaire à la déclaration.")
-
-    def save(self, *args, **kwargs):
-        # blank = True permet de ne pas renseigner d'unité dans l'admin
-        if not self.unit:
-            self.unit = None
-        self._validate_unit_if_must_specify_quantity()
-        super().save(*args, **kwargs)
