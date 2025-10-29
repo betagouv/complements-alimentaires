@@ -53,6 +53,16 @@ class Ingredient(IngredientCommonModel):
         else:
             return self.__class__.__name__.lower()
 
+    @property
+    def object_type_fr(self):
+        return {
+            "form_of_supply": "forme-d-apport",
+            "aroma": "arôme",
+            "additive": "additif",
+            "active_ingredient": "ingredient-actif",
+            "non_active_ingredient": "ingredient-non-actif",
+        }[self.object_type]
+
 
 class IngredientSubstanceRelation(TimeStampable, Historisable):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)

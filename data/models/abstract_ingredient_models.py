@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 # cette librairie permets d'avoir un affichage de l'arrayfield plus friendly dans l'admin
@@ -74,6 +75,13 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
         return self.__class__.__name__.lower()
 
     @property
+    def object_type_fr(self):
+        """
+        Une traduction du type d'objet, avec un défaut raisonnable
+        """
+        return self.__class__._meta.verbose_name_raw
+
+    @property
     def activity(self):
         """
         Dans la base SICCRF, l'activité d'un ingrédient :
@@ -94,3 +102,9 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
             "additive": IngredientActivity.NOT_ACTIVE,
         }
         return TYPE_ACTIVITY_MAPPING[self.object_type]
+
+    @property
+    def url(self):
+        return (
+            f"{'https' if settings.SECURE else 'http'}://{settings.HOSTNAME}/element/{self.id}--{self.object_type_fr}"
+        )

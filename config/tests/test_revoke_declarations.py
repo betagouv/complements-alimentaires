@@ -19,7 +19,7 @@ class TestRevokeDeclarations(TestCase):
 
         declaration.refresh_from_db()
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZATION_REVOKED)
-        template_number = 99  # TODO: use proper number
+        template_number = 37
         mocked_brevo.assert_called_once_with(
             template_number,
             {
