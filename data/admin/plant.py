@@ -111,6 +111,7 @@ class PlantAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeReasonA
             "Quantités",
             {
                 "fields": [
+                    "must_specify_quantity",
                     "unit",
                 ],
             },

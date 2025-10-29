@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from data.factories import (
@@ -8,8 +9,9 @@ from data.factories import (
     PlantFactory,
     PlantPartFactory,
     SubstanceFactory,
+    UnitFactory,
 )
-from data.models import IngredientType, Part, SubstanceType, IngredientStatus
+from data.models import IngredientStatus, IngredientType, Part, SubstanceType
 
 
 class IngredientTestCase(TestCase):
@@ -81,3 +83,15 @@ class IngredientTestCase(TestCase):
         )
         declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=unassociated_part)
         self.assertTrue(declared_plant.is_part_request)
+
+    def test_unit_is_required_when_quantity_must_be_specified(self):
+        """
+        Si un ingrédient doit avoir sa quantité renseignée dans la déclaration
+        Alors son unité doit être renseignée.
+        """
+        with self.assertRaises(ValidationError):
+            IngredientFactory(must_specify_quantity=True)
+        try:
+            IngredientFactory(must_specify_quantity=True, unit=UnitFactory())
+        except ValidationError:
+            self.fail("creation of Ingredient with unit and must_specify_quantity=True raised unexpectedly!")

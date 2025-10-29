@@ -13,7 +13,6 @@ from .abstract_ingredient_relation_models import (
 )
 from .mixins import PublicReasonHistoricalModel
 from .population import Population
-from .unit import Unit
 
 
 class SubstanceType(models.IntegerChoices):
@@ -64,21 +63,12 @@ class Substance(IngredientCommonModel):
         verbose_name="numéro EINECS",
     )
 
-    # must_specify_quantity
-    must_specify_quantity = models.BooleanField(default=False, verbose_name="spécification de quantité obligatoire")
-
     # max_quantity
     max_quantities = models.ManyToManyField(Population, through="SubstanceMaxQuantityPerPopulationRelation")
 
-    # nutritional_reference
+    # nutritional_reference (concerne seulement les types vitamines et minéraux)
     nutritional_reference = models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé")
-    unit = models.ForeignKey(
-        Unit,
-        default=None,
-        null=True,
-        on_delete=models.CASCADE,
-        verbose_name="unité des quantités spécifiées (quantité max, apport de référence)",
-    )
+
     substance_types = ArrayField(
         models.IntegerField(choices=SubstanceType.choices),
         verbose_name="type(s) de la substance",

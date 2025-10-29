@@ -97,6 +97,7 @@ class MicroorganismAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, Chang
             "Quantités",
             {
                 "fields": [
+                    "must_specify_quantity",
                     "unit",
                 ],
             },

@@ -94,6 +94,7 @@ class IngredientAdmin(RecomputeDeclarationArticleAtIngredientSaveMixin, ChangeRe
             "Quantités",
             {
                 "fields": [
+                    "must_specify_quantity",
                     "unit",
                 ],
             },
