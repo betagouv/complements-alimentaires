@@ -89,6 +89,10 @@
       </div>
       <ElementTextSection title="Description" :text="description" />
 
+      <div v-if="status === 'retiré par l\'administration' && element.revokedDetail">
+        <h2 class="fr-h6 mb-1!">Retiré par l'administration</h2>
+        <p class="whitespace-pre-line">{{ element.revokedDetail }}</p>
+      </div>
       <ElementDoses
         v-if="element.maxQuantities && element.maxQuantities.length"
         :maxQuantities="element.maxQuantities"
