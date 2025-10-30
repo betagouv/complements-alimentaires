@@ -34,6 +34,7 @@ COMMON_FIELDS = (
     "to_be_entered_in_next_decree",
     "requires_analysis_report",
     "regulatory_resource_links",
+    "revoked_detail",
     "is_obsolete",
     "origin_declaration",
 )
@@ -59,6 +60,7 @@ COMMON_FETCH_FIELDS = (
     "requires_analysis_report",
     "regulatory_resource_links",
     "is_obsolete",
+    "revoked_detail",
     # Les suivants sont cachés si l'utilisateur.ice ne fait pas partie de l'administration
     "private_comments",
     "origin_declaration",
@@ -80,6 +82,19 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
         if len(population_ids) != len(unique_pop_ids):
             raise serializers.ValidationError("Veuillez ne donner qu'une quantité maximale par population")
         return value
+
+    def validate(self, data):
+        status = data.get("status")
+        if status == IngredientStatus.AUTHORIZATION_REVOKED:
+            if self.instance.status != IngredientStatus.AUTHORIZED:
+                raise serializers.ValidationError(
+                    {"status": "Pas possible de retirer l'autorisation d'un ingrédient non-autorisé"}
+                )
+            if not data.get("revoked_detail"):
+                raise serializers.ValidationError(
+                    {"revoked_detail": "Il faut donner du détail sur la décision de retirer l'ingrédient"}
+                )
+        return data
 
     # DRF ne gère pas automatiquement la création des nested-fields :
     # https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations

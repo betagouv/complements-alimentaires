@@ -1113,3 +1113,65 @@ class TestElementsModifyApi(APITestCase):
         )
 
         mocked_task.assert_not_called()
+
+    @authenticate
+    def test_can_revoke_ingredient_authorization(self):
+        """
+        Quand un ingrédient est autorisée, c'est possible de retirer l'autorisation
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        microorganism = MicroorganismFactory.create(status=IngredientStatus.AUTHORIZED)
+
+        response = self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {"status": IngredientStatus.AUTHORIZATION_REVOKED, "revoked_detail": "Une raison..."},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        microorganism.refresh_from_db()
+        self.assertEqual(microorganism.status, IngredientStatus.AUTHORIZATION_REVOKED)
+        self.assertEqual(microorganism.revoked_detail, "Une raison...")
+
+    @authenticate
+    def test_must_provide_revoked_detail(self):
+        """
+        Ce n'est pas possible de retirer l'ingrédient sans détail
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        microorganism = MicroorganismFactory.create(status=IngredientStatus.AUTHORIZED)
+
+        response = self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {
+                "status": IngredientStatus.AUTHORIZATION_REVOKED,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        microorganism.refresh_from_db()
+        self.assertEqual(microorganism.status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(microorganism.revoked_detail, "")
+
+    @authenticate
+    def test_cannot_revoke_unauthorized_ingredient(self):
+        """
+        Ce n'est pas possible de retirer l'autorisation d'un ingrédient non-autorisé
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        microorganism = MicroorganismFactory.create(status=IngredientStatus.NOT_AUTHORIZED)
+
+        response = self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {"status": IngredientStatus.AUTHORIZATION_REVOKED, "revoked_detail": "Une raison..."},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        microorganism.refresh_from_db()
+        self.assertEqual(microorganism.status, IngredientStatus.NOT_AUTHORIZED)
+        self.assertEqual(microorganism.revoked_detail, "")
