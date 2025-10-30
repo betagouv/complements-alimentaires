@@ -1,6 +1,12 @@
 from rest_framework import serializers
 
-from data.models import Microorganism, MicroorganismMaxQuantityPerPopulationRelation, MicroorganismSynonym, Population
+from data.models import (
+    Microorganism,
+    MicroorganismMaxQuantityPerPopulationRelation,
+    MicroorganismSynonym,
+    Population,
+    DeclaredMicroorganism,
+)
 
 from .common_ingredient import (
     COMMON_FETCH_FIELDS,
@@ -82,6 +88,7 @@ class MicroorganismModificationSerializer(CommonIngredientModificationSerializer
     ingredient_name_field = "microorganism"
 
     declaredingredient_set_field_names = ["declaredmicroorganism_set"]
+    declaredingredient_model = DeclaredMicroorganism
 
     class Meta:
         model = Microorganism

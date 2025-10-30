@@ -156,6 +156,7 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
     max_quantities_set_field_name = "plantmaxquantityperpopulationrelation_set"
     ingredient_name_field = "plant"
     declaredingredient_set_field_names = ["declaredplant_set"]
+    declaredingredient_model = DeclaredPlant
 
     class Meta:
         model = Plant

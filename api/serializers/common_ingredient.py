@@ -167,6 +167,19 @@ class CommonIngredientModificationSerializer(serializers.ModelSerializer):
                     self.add_max_quantity(ingredient, max_quantity)
 
         self.update_declaration_articles(instance, validated_data)
+        if validated_data.get("status") == IngredientStatus.AUTHORIZATION_REVOKED:
+            filter_fields = {}
+            filter_fields[self.ingredient_name_field] = ingredient
+            authorized_declarations_ids = (
+                self.declaredingredient_model.objects.filter(
+                    declaration__status=Declaration.DeclarationStatus.AUTHORIZED, **filter_fields
+                )
+                .values_list("declaration", flat=True)
+                .distinct()
+            )
+            tasks.revoke_authorisation_from_declarations(
+                Declaration.objects.filter(id__in=authorized_declarations_ids)
+            )
         return instance
 
     def add_max_quantity(self, ingredient, max_quantity):
