@@ -332,7 +332,10 @@ class RevokeAuthorizationDeclarationFlow:
 
 
 @app.task
-def revoke_authorisation_from_declarations(declarations):
+def revoke_authorisation_from_declarations(declarations, ingredient):
+    if not ingredient:
+        raise Exception("Must pass ingredient to revoke authorisations from declarations")
+    brevo_template_id = 37
     success_count = 0
     error_count = 0
     logger.info(f"Start revoking authorization of {declarations.count()} declarations.")
@@ -340,6 +343,18 @@ def revoke_authorisation_from_declarations(declarations):
         flow = RevokeAuthorizationDeclarationFlow(declaration)
         try:
             flow.revoke_authorization()
+            if declaration.author:
+                email.send_sib_template(
+                    brevo_template_id,
+                    {
+                        "PRODUCT_NAME": declaration.brevo_parameters["PRODUCT_NAME"],
+                        "DECLARATION_LINK": declaration.brevo_parameters["DECLARATION_LINK"],
+                        "INGREDIENT_NAME": ingredient.name,
+                        "INGREDIENT_LINK": ingredient.url,
+                    },
+                    declaration.author.email,
+                    declaration.author.get_full_name(),
+                )
             success_count += 1
         except Exception as _:
             error_count += 1

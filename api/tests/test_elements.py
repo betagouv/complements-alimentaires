@@ -1205,3 +1205,4 @@ class TestElementsModifyApi(APITestCase):
         queryset_argument = arguments[0]
         self.assertEqual(queryset_argument.count(), 1)
         self.assertTrue(queryset_argument.filter(id=approved_declaration.id).exists())
+        self.assertTrue(arguments[1], substance)
