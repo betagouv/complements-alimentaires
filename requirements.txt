@@ -30,7 +30,7 @@ distlib==0.4.0
 Django==5.2.7
 django-anymail==13.1
 django-environ==0.12.0
-django-filter==25.1
+django-filter==25.2
 django-hijack==3.7.4
 django-js-asset==3.1.2
 django_jsonform==2.23.2
