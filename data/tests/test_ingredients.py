@@ -9,7 +9,7 @@ from data.factories import (
     PlantPartFactory,
     SubstanceFactory,
 )
-from data.models import IngredientType, Part, SubstanceType, IngredientStatus
+from data.models import IngredientStatus, IngredientType, Part, SubstanceType
 
 
 class IngredientTestCase(TestCase):

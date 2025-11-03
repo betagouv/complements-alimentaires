@@ -9,6 +9,7 @@ from data.choices import IngredientActivity
 
 from .ingredient_status import WithStatus
 from .mixins import WithComments, WithDefaultFields, WithIsRiskyBoolean, WithNovelFoodBoolean
+from .unit import Unit
 
 
 class SynonymType(models.TextChoices):
@@ -63,6 +64,14 @@ class IngredientCommonModel(CommonModel, WithComments, WithStatus, WithIsRiskyBo
         verbose_name="mention(s) d'avertissement devant figurer sur l'étiquette",
     )
     description = models.TextField(blank=True)
+
+    unit = models.ForeignKey(
+        Unit,
+        default=None,
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name="unité des quantités spécifiées (quantité max, apport de référence)",
+    )
 
     @property
     def object_type(self):

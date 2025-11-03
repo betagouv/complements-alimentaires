@@ -13,7 +13,6 @@ from .ingredient_type import IngredientType
 from .mixins import PublicReasonHistoricalModel
 from .population import Population
 from .substance import Substance
-from .unit import Unit
 
 
 class Ingredient(IngredientCommonModel):
@@ -28,13 +27,6 @@ class Ingredient(IngredientCommonModel):
     )
     substances = models.ManyToManyField(Substance, through="IngredientSubstanceRelation")
     max_quantities = models.ManyToManyField(Population, through="IngredientMaxQuantityPerPopulationRelation")
-    unit = models.ForeignKey(
-        Unit,
-        default=None,
-        null=True,
-        on_delete=models.CASCADE,
-        verbose_name="unité des quantités spécifiées (quantité max, apport de référence)",
-    )
 
     history = HistoricalRecords(
         bases=[
