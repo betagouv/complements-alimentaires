@@ -33,6 +33,7 @@ const baseFilterOptions = [
   { value: "AUTHORIZED", label: "Déclaration finalisée" },
   { value: "REJECTED", label: "Refus" },
   { value: "WITHDRAWN", label: "Retiré du marché" },
+  { value: "AUTHORIZATION_REVOKED", label: "Retiré du marché par l'administration" },
 ]
 const statusFilterOptions = props.groupInstruction
   ? baseFilterOptions

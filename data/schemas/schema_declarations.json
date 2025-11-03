@@ -190,46 +190,46 @@
     },
     {
       "description": "Liste des plantes actives composants le complément alimentaire. Pour chaque plante nous retrouvons son nom en latin, sa famille, la partie utilisée ainsi que la quantité par DJR.",
-      "example": "{'nom': 'Juglans regia L.', 'partie': 'Fleur', 'preparation': 'Alcoolat', 'quantité_par_djr': '2', 'unité': 'ml'}",
+      "example": "[{'nom': 'Juglans regia L.', 'partie': 'Fleur', 'preparation': 'Alcoolat', 'quantité_par_djr': '2', 'unité': 'ml'}]",
       "name": "plantes",
       "title": "Plantes",
       "type": "string"
     },
     {
       "description": "Liste des plantes/autres ingrédients inactifs composants le complément alimentaire. Pour chaque plante nous retrouvons son nom en latin, sa famille et la partie utilisée",
-      "example": "carotte, miel, fibre",
+      "example": "[carotte, miel, fibre]",
       "name": "ingredients_inactifs",
       "title": "Ingrédients inactifs",
       "type": "string"
     },
     {
-      "description": "Micro organismes composants le complément alimentaire. Si le micro-organisme a été inactivé, il n'est pas nécessaire de renseigner la quantité.",
-      "example": "{'genre': 'Lactobacillus', 'espèce': 'lactis', 'souche': '', 'quantité_par_djr': '2', 'unité': 'cfu', 'inactivé': 'True'}",
+      "description": "Liste des micro organismes composants le complément alimentaire. Si le micro-organisme a été inactivé, il n'est pas nécessaire de renseigner la quantité.",
+      "example": "[{'genre': 'Lactobacillus', 'espèce': 'lactis', 'souche': '', 'quantité_par_djr': '2', 'unité': 'cfu', 'inactivé': 'True'}]",
       "name": "micro_organismes",
       "type": "string"
     },
     {
       "description": "Additifs",
-      "example": "E416",
+      "example": "['E416']",
       "name": "additifs",
       "type": "string"
     },
     {
       "description": "Nutriments (ou forme d'apports)",
-      "example": "Cyanocobalamine",
+      "example": "['Cyanocobalamine']",
       "name": "nutriments",
       "type": "string"
     },
     {
       "description": "Autres ingrédients actifs",
-      "example": "dextrine",
+      "example": "['dextrine']",
       "name": "autres_ingredients_actifs",
       "title": "Autres ingredients actifs",
       "type": "string"
     },
     {
       "description": "Substances (composant actif)",
-      "example": "['nom': 'cafféine', 'quantité_par_djr': '2', 'unité': 'ml']",
+      "example": "[{'nom': 'cafféine', 'quantité_par_djr': '2', 'unité': 'ml'}]",
       "name": "substances",
       "title": "Substances",
       "type": "string"

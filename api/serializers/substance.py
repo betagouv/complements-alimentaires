@@ -1,6 +1,12 @@
 from rest_framework import serializers
 
-from data.models import Population, Substance, SubstanceMaxQuantityPerPopulationRelation, SubstanceSynonym
+from data.models import (
+    Population,
+    Substance,
+    SubstanceMaxQuantityPerPopulationRelation,
+    SubstanceSynonym,
+    DeclaredSubstance,
+)
 
 from .common_ingredient import (
     COMMON_FETCH_FIELDS,
@@ -106,6 +112,7 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer):
     max_quantities_set_field_name = "substancemaxquantityperpopulationrelation_set"
     ingredient_name_field = "substance"
     declaredingredient_set_field_names = ["declaredsubstance_set", "computedsubstance_set"]
+    declaredingredient_model = DeclaredSubstance
 
     class Meta:
         model = Substance

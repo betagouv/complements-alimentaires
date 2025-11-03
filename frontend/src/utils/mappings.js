@@ -142,6 +142,10 @@ export const statusProps = {
     icon: "ri-close-fill",
     label: "Retirée du marché",
   },
+  AUTHORIZATION_REVOKED: {
+    icon: "ri-close-fill",
+    label: "Retirée du marché par l'administration",
+  },
 }
 
 export const roleNameDisplayNameMapping = { DeclarantRole: "déclarant", SupervisorRole: "gestionnaire" }

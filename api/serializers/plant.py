@@ -14,6 +14,8 @@ from data.models import (
     PlantSynonym,
     Population,
     IngredientStatus,
+    Addable,
+    DeclaredPlant,
 )
 
 from .common_ingredient import (
@@ -27,6 +29,7 @@ from .common_ingredient import (
 )
 from .population import SimplePopulationSerializer
 from .substance import SubstanceShortSerializer
+from .utils import PrivateFieldsSerializer
 
 
 class PlantFamilySerializer(serializers.ModelSerializer):
@@ -48,7 +51,7 @@ class PlantPartSerializer(serializers.ModelSerializer):
         fields = ("id", "name")
 
 
-class PartRelationSerializer(serializers.ModelSerializer):
+class PartRelationSerializer(PrivateFieldsSerializer):
     name = serializers.CharField(source="plantpart.name")
     name_en = serializers.CharField(source="plantpart.name_en")
     is_obsolete = serializers.BooleanField(source="plantpart.is_obsolete")
@@ -56,9 +59,19 @@ class PartRelationSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source="plantpart.id")
     status = GoodReprChoiceField(choices=IngredientStatus.choices, read_only=True)
 
+    private_fields = ("siccrf_id", "origin_declaration")
+
     class Meta:
         model = Part
-        fields = ("id", "name", "name_en", "is_obsolete", "siccrf_id", "status")
+        fields = (
+            "id",
+            "name",
+            "name_en",
+            "is_obsolete",
+            "siccrf_id",
+            "status",
+            "origin_declaration",
+        )
         read_only_fields = fields
 
 
@@ -118,6 +131,7 @@ class PlantPartModificationSerializer(serializers.ModelSerializer):
         fields = (
             "plantpart",
             "status",
+            "origin_declaration",
         )
 
 
@@ -142,6 +156,7 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
     max_quantities_set_field_name = "plantmaxquantityperpopulationrelation_set"
     ingredient_name_field = "plant"
     declaredingredient_set_field_names = ["declaredplant_set"]
+    declaredingredient_model = DeclaredPlant
 
     class Meta:
         model = Plant
@@ -166,7 +181,12 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
         PlantModificationSerializer._check_part_unicity(parts)
 
         for part in parts:
-            Part.objects.create(plant=plant, plantpart=part["plantpart"], status=part["status"])
+            Part.objects.create(
+                plant=plant,
+                plantpart=part["plantpart"],
+                status=part["status"],
+                origin_declaration=part.get("origin_declaration"),
+            )
 
         return plant
 
@@ -179,14 +199,32 @@ class PlantModificationSerializer(CommonIngredientModificationSerializer, WithSu
         instance.part_set.exclude(plantpart__id__in=ids_to_keep_or_create).delete()
 
         for part in parts:
-            existing_part = instance.part_set.filter(plantpart=part["plantpart"])
+            plantpart = part["plantpart"]
+            status = part["status"]
+            existing_part = instance.part_set.filter(plantpart=plantpart)
             if existing_part.exists():
                 existing_part = existing_part.first()
-                existing_part.status = part["status"]
+                existing_part.status = status
+                existing_part.origin_declaration = part.get("origin_declaration")
                 existing_part.save()
             else:
-                Part.objects.create(plant=instance, plantpart=part["plantpart"], status=part["status"])
+                Part.objects.create(
+                    plant=instance,
+                    plantpart=plantpart,
+                    status=status,
+                    origin_declaration=part.get("origin_declaration"),
+                )
+            if status == IngredientStatus.AUTHORIZED:
+                part_requests = DeclaredPlant.objects.filter(
+                    plant=instance,
+                    used_part=plantpart,
+                    is_part_request=True,
+                    request_status=Addable.AddableStatus.REQUESTED,
+                )
+                part_requests.update(request_status=Addable.AddableStatus.REPLACED)
 
+        # il faut appeler ça de nouveau si il y avait de changements d'autorisation des parties
+        self.update_declaration_articles(instance, {"part_set": parts})
         return instance
 
     def _check_part_unicity(parts):

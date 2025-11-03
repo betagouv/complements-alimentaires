@@ -8,6 +8,8 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from unittest.mock import patch
+
 from data.choices import AuthorizationModes, CountryChoices, FrAuthorizationReasons
 from data.factories import (
     AwaitingInstructionDeclarationFactory,
@@ -2962,3 +2964,62 @@ class TestSingleDeclaredElementApi(APITestCase):
         declared_plant.refresh_from_db()
         self.assertEqual(declared_plant.request_status, Addable.AddableStatus.REPLACED)
         self.assertTrue(declared_plant.is_part_request)
+
+    @authenticate
+    @patch("config.tasks.recalculate_article_for_ongoing_declarations")
+    def test_article_recalculated_on_accept_part(self, mocked_task):
+        """
+        Vérifier que l'article est recalculé avec une autorisation de partie de plante
+        Quand c'est la première utilisation d'une partie, l'origin_declaration sera sauvegardé
+        et la déclaration garde l'article 16. Les autres demandes pour la même partie seront remplacées
+        et les déclarations recoivent l'article 15.
+        Même comportement pour l'autorisation d'une partie.
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        first_declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+        second_declaration = DeclarationFactory(status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
+
+        plant = PlantFactory()
+        unknown_part = PlantPartFactory()
+        self.assertFalse(plant.plant_parts.through.objects.filter(plantpart=unknown_part).exists())
+
+        declared_plant = DeclaredPlantFactory(declaration=first_declaration, plant=plant, used_part=unknown_part)
+        second_declared_plant = DeclaredPlantFactory(
+            declaration=second_declaration, plant=plant, used_part=unknown_part
+        )
+
+        first_declaration.assign_calculated_article()
+        first_declaration.save()
+        second_declaration.assign_calculated_article()
+        second_declaration.save()
+
+        # on suppose que, avec les nouvelles parties de plantes, la déclaration récoit un article 16
+        first_declaration.refresh_from_db()
+        self.assertEqual(first_declaration.calculated_article, Declaration.Article.ARTICLE_16)
+
+        response = self.client.post(
+            reverse("api:declared_element_accept_part", kwargs={"pk": declared_plant.id, "type": "plant"}),
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        first_declaration.refresh_from_db()
+        self.assertEqual(
+            first_declaration.calculated_article,
+            Declaration.Article.ARTICLE_16,
+            "L'article reste en article 16 car la déclaration est la première utilisation",
+        )
+
+        # On lance le recalcul d'article pour d'autres déclarations
+        mocked_task.assert_called_once()
+        arguments = mocked_task.call_args.args
+        queryset_argument = arguments[0]
+        self.assertEqual(queryset_argument.count(), 1)
+        self.assertTrue(queryset_argument.filter(id=second_declaration.id).exists())
+
+        second_declared_plant.refresh_from_db()
+        self.assertEqual(
+            second_declared_plant.request_status,
+            Addable.AddableStatus.REPLACED,
+            "Statut MAJ pour d'autres demandes de la même partie",
+        )

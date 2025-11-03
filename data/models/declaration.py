@@ -55,6 +55,7 @@ class Declaration(Historisable, TimeStampable):
         AUTHORIZED = "AUTHORIZED", "Autorisée"
         REJECTED = "REJECTED", "Refusée"
         WITHDRAWN = "WITHDRAWN", "Retiré du marché"
+        AUTHORIZATION_REVOKED = "AUTHORIZATION_REVOKED", "Retirée par l'administration"
 
     class RejectionReason(models.TextChoices):
         MISSING_DATA = "MISSING_DATA", "Le dossier manque des données nécessaires"
@@ -610,13 +611,27 @@ class Declaration(Historisable, TimeStampable):
                     ).exists()
                 )
 
-                has_new_plant_parts = any(
-                    x.filter(is_part_request=True).exclude(request_status=Addable.AddableStatus.REPLACED).exists()
-                    for x in composition_ingredients
-                    if issubclass(x.model, DeclaredPlant)
-                )
+                part_requests = self.declared_plants.filter(is_part_request=True)
+                has_new_plant_parts = part_requests.exclude(request_status=Addable.AddableStatus.REPLACED).exists()
 
-                if has_ongoing_new_ingredients or has_created_ingredients or has_new_plant_parts:
+                from data.models import Part
+
+                has_created_plant_parts = False
+                for replaced_part_request in part_requests.filter(request_status=Addable.AddableStatus.REPLACED).all():
+                    has_created_plant_parts = Part.objects.filter(
+                        plant=replaced_part_request.plant,
+                        plantpart=replaced_part_request.used_part,
+                        origin_declaration=self,
+                    ).exists()
+                    if has_created_plant_parts:
+                        break
+
+                if (
+                    has_ongoing_new_ingredients
+                    or has_created_ingredients
+                    or has_new_plant_parts
+                    or has_created_plant_parts
+                ):
                     self.calculated_article = Declaration.Article.ARTICLE_16
                 elif self.has_risky_ingredients or (self.galenic_formulation and self.galenic_formulation.is_risky):
                     self.calculated_article = Declaration.Article.ARTICLE_15_WARNING

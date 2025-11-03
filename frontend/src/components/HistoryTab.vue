@@ -36,6 +36,7 @@ const snapshots = computed(() => {
       "APPROVE_VISA",
       "WITHDRAW",
       "ABANDON",
+      "REVOKE_AUTHORIZATION",
     ]
     return props.snapshots?.filter((x) => allowedActions.indexOf(x.action) > -1)
   }
@@ -43,7 +44,7 @@ const snapshots = computed(() => {
 })
 
 const showOnRight = (snapshot) => {
-  const rightSideStatus = ["OBSERVATION", "AUTHORIZED", "AWAITING_VISA", "OBJECTION"]
+  const rightSideStatus = ["OBSERVATION", "AUTHORIZED", "AWAITING_VISA", "OBJECTION", "AUTHORIZATION_REVOKED"]
   return rightSideStatus.indexOf(snapshot.status) > -1
 }
 </script>

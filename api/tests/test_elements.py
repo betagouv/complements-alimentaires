@@ -9,10 +9,12 @@ from data.choices import IngredientActivity
 from data.factories import (
     ComputedSubstanceFactory,
     DeclaredSubstanceFactory,
+    DeclaredPlantFactory,
     IngredientFactory,
     InstructionRoleFactory,
     MicroorganismFactory,
     OngoingInstructionDeclarationFactory,
+    AuthorizedDeclarationFactory,
     PlantFactory,
     PlantFamilyFactory,
     PlantPartFactory,
@@ -32,6 +34,7 @@ from data.models import (
     Plant,
     Population,
     SubstanceType,
+    Addable,
 )
 from data.models.substance import Substance, SubstanceMaxQuantityPerPopulationRelation
 
@@ -768,6 +771,69 @@ class TestElementsModifyApi(APITestCase):
         self.assertNotEqual(plant.name, "new name", "autres modifications devraient être ignorées aussi")
 
     @authenticate
+    def test_authorising_plant_parts_updates_ongoing_part_requests(self):
+        """
+        Si il y a de demandes d'ajout pour une partie de plante, les marquer comme remplacée
+        quand la partie est ajoutée à la plante comme autorisée
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        good_part = PlantPartFactory.create()
+        questionable_part = PlantPartFactory.create()
+        new_good_part = PlantPartFactory.create()
+        new_dangerous_part = PlantPartFactory.create()
+        plant = PlantFactory.create()
+
+        Part.objects.create(plant=plant, plantpart=good_part, status=IngredientStatus.AUTHORIZED)
+        Part.objects.create(plant=plant, plantpart=questionable_part, status=IngredientStatus.NOT_AUTHORIZED)
+
+        declaration = OngoingInstructionDeclarationFactory()
+        request_1 = DeclaredPlantFactory(
+            declaration=declaration,
+            plant=plant,
+            used_part=questionable_part,
+            request_status=Addable.AddableStatus.REQUESTED,
+        )
+        request_2 = DeclaredPlantFactory(
+            declaration=declaration,
+            plant=plant,
+            used_part=new_good_part,
+            request_status=Addable.AddableStatus.REQUESTED,
+        )
+        request_3 = DeclaredPlantFactory(
+            declaration=declaration,
+            plant=plant,
+            used_part=new_dangerous_part,
+            request_status=Addable.AddableStatus.REQUESTED,
+        )
+        request_4 = DeclaredPlantFactory(
+            declaration=declaration, plant=plant, used_part=good_part, request_status=Addable.AddableStatus.REQUESTED
+        )
+
+        # update plant to authorise a part and add a new part as authorised and new part as unauthorised
+        payload = {
+            "plantParts": [
+                {"plantpart": good_part.id, "status": IngredientStatus.AUTHORIZED},
+                {"plantpart": questionable_part.id, "status": IngredientStatus.AUTHORIZED},
+                {"plantpart": new_good_part.id, "status": IngredientStatus.AUTHORIZED},
+                {"plantpart": new_dangerous_part.id, "status": IngredientStatus.NOT_AUTHORIZED},
+            ],
+        }
+        response = self.client.patch(reverse("api:single_plant", kwargs={"pk": plant.id}), payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # les deux nouvelles parties autorisées devraient être marquées comme remplacées
+        request_1.refresh_from_db()
+        self.assertEqual(request_1.request_status, Addable.AddableStatus.REPLACED)
+        request_2.refresh_from_db()
+        self.assertEqual(request_2.request_status, Addable.AddableStatus.REPLACED)
+        # la partie ajoutée comme non-autorisée devrait rester comme une demande
+        request_3.refresh_from_db()
+        self.assertEqual(request_3.request_status, Addable.AddableStatus.REQUESTED)
+        # la partie déjà autorisée n'etait pas une demande, le statut reste en "REQUESTED"
+        request_4.refresh_from_db()
+        self.assertEqual(request_4.request_status, Addable.AddableStatus.REQUESTED)
+
+    @authenticate
     def test_update_siccrf_max_quantity(self):
         """
         Si une dose max est specifiée avec les données siccrf, quand on fait la modif ça ajoute dans le champ equivalent ca_
@@ -1048,3 +1114,95 @@ class TestElementsModifyApi(APITestCase):
         )
 
         mocked_task.assert_not_called()
+
+    @authenticate
+    def test_can_revoke_ingredient_authorization(self):
+        """
+        Quand un ingrédient est autorisée, c'est possible de retirer l'autorisation
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        microorganism = MicroorganismFactory.create(status=IngredientStatus.AUTHORIZED)
+
+        response = self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {"status": IngredientStatus.AUTHORIZATION_REVOKED, "revoked_detail": "Une raison..."},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        microorganism.refresh_from_db()
+        self.assertEqual(microorganism.status, IngredientStatus.AUTHORIZATION_REVOKED)
+        self.assertEqual(microorganism.revoked_detail, "Une raison...")
+
+    @authenticate
+    def test_must_provide_revoked_detail(self):
+        """
+        Ce n'est pas possible de retirer l'ingrédient sans détail
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        microorganism = MicroorganismFactory.create(status=IngredientStatus.AUTHORIZED)
+
+        response = self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {
+                "status": IngredientStatus.AUTHORIZATION_REVOKED,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        microorganism.refresh_from_db()
+        self.assertEqual(microorganism.status, IngredientStatus.AUTHORIZED)
+        self.assertEqual(microorganism.revoked_detail, "")
+
+    @authenticate
+    def test_cannot_revoke_unauthorized_ingredient(self):
+        """
+        Ce n'est pas possible de retirer l'autorisation d'un ingrédient non-autorisé
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        microorganism = MicroorganismFactory.create(status=IngredientStatus.NOT_AUTHORIZED)
+
+        response = self.client.patch(
+            reverse("api:single_microorganism", kwargs={"pk": microorganism.id}),
+            {"status": IngredientStatus.AUTHORIZATION_REVOKED, "revoked_detail": "Une raison..."},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        microorganism.refresh_from_db()
+        self.assertEqual(microorganism.status, IngredientStatus.NOT_AUTHORIZED)
+        self.assertEqual(microorganism.revoked_detail, "")
+
+    @authenticate
+    @patch("config.tasks.revoke_authorisation_from_declarations")
+    def test_revoke_authorised_declarations_on_revoke_ingredient(self, mocked_task):
+        """
+        Quand un ingrédient est retiré, retirer l'autorization de déclarations finalisées
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        substance = SubstanceFactory.create(status=IngredientStatus.AUTHORIZED)
+
+        approved_declaration = AuthorizedDeclarationFactory()
+        DeclaredSubstanceFactory(declaration=approved_declaration, substance=substance)
+        ongoing_declaration = OngoingInstructionDeclarationFactory()
+        DeclaredSubstanceFactory(declaration=ongoing_declaration, substance=substance)
+        # créer une autre déclaration autorisée pas liée à l'ingrédient retiré
+        AuthorizedDeclarationFactory()
+
+        self.client.patch(
+            reverse("api:single_substance", kwargs={"pk": substance.id}),
+            {"status": IngredientStatus.AUTHORIZATION_REVOKED, "revoked_detail": "Une raison..."},
+            format="json",
+        )
+
+        mocked_task.assert_called_once()
+        arguments = mocked_task.call_args.args
+        queryset_argument = arguments[0]
+        self.assertEqual(queryset_argument.count(), 1)
+        self.assertTrue(queryset_argument.filter(id=approved_declaration.id).exists())
+        self.assertTrue(arguments[1], substance)

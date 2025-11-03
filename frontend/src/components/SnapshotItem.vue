@@ -63,6 +63,7 @@ const isAdministrativeAction = computed(() => {
     "TAKE_FOR_VISA",
     "APPROVE_VISA",
     "REFUSE_VISA",
+    "REVOKE_AUTHORIZATION",
   ]
   return instructionActions.indexOf(props.snapshot.action) > -1
 })
@@ -84,6 +85,7 @@ const fullName = computed(() => {
   return `${props.snapshot.user.firstName} ${props.snapshot.user.lastName}`
 })
 const actionText = computed(() => {
+  if (props.snapshot.action === "REVOKE_AUTHORIZATION") return "Déclaration retirée du marché par l'administration"
   const mapping = {
     SUBMIT: "a soumis la déclaration pour instruction",
     OBSERVE_NO_VISA: "a emis des observations",

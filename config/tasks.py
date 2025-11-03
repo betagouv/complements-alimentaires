@@ -304,3 +304,62 @@ def import_control_emails():
 
     objs = ControlRoleEmail.objects.bulk_create(objs_to_create)
     logger.info(f"Task import_control_emails: {len(objs)} emails imported")
+
+
+class RevokeAuthorizationDeclarationFlow:
+    status = fsm.State(Status, default=Status.DRAFT)
+
+    def __init__(self, declaration):
+        self.declaration = declaration
+
+    @status.setter()
+    def _set_declaration_state(self, value):
+        self.declaration.status = value
+
+    @status.getter()
+    def _get_declaration_state(self):
+        return self.declaration.status
+
+    @status.on_success()
+    def _on_transition_success(self, descriptor, source, target):
+        with transaction.atomic():
+            self.declaration.save()
+            self.declaration.create_snapshot(action=Snapshot.SnapshotActions.REVOKE_AUTHORIZATION)
+
+    @status.transition(source={Status.AUTHORIZED}, target=Status.AUTHORIZATION_REVOKED)
+    def revoke_authorization(self):
+        pass
+
+
+@app.task
+def revoke_authorisation_from_declarations(declarations, ingredient):
+    if not ingredient:
+        raise Exception("Must pass ingredient to revoke authorisations from declarations")
+    brevo_template_id = 37
+    success_count = 0
+    error_count = 0
+    logger.info(f"Start revoking authorization of {declarations.count()} declarations.")
+    for declaration in declarations:
+        flow = RevokeAuthorizationDeclarationFlow(declaration)
+        try:
+            flow.revoke_authorization()
+            if declaration.author:
+                email.send_sib_template(
+                    brevo_template_id,
+                    {
+                        "PRODUCT_NAME": declaration.brevo_parameters["PRODUCT_NAME"],
+                        "DECLARATION_LINK": declaration.brevo_parameters["DECLARATION_LINK"],
+                        "INGREDIENT_NAME": ingredient.name,
+                        "INGREDIENT_LINK": ingredient.url,
+                    },
+                    declaration.author.email,
+                    declaration.author.get_full_name(),
+                )
+            success_count += 1
+        except Exception as _:
+            error_count += 1
+            logger.exception(f"Could not revoke declaration {declaration.id}")
+
+    logger.info(f"{success_count} declarations had authorization revoked.")
+    if error_count:
+        logger.error(f"{error_count} declarations failed to be revoked.")

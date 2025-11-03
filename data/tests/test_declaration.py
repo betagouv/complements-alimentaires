@@ -202,6 +202,36 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration_replaced.calculated_article, Declaration.Article.ARTICLE_15)
         self.assertEqual(declaration_replaced.overridden_article, "")
 
+        # pour les déclarations avec une partie de plante remplacée avec une partie déjà en base,
+        # l'article devrait passer à 15
+        declaration_part_replaced = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+        )
+        declared_plant = DeclaredPlantFactory(
+            new=True,
+            is_part_request=True,
+            declaration=declaration_part_replaced,
+            request_status=Addable.AddableStatus.REPLACED,
+        )
+        # disons que la partie de plante est connue et autorisée par une demande d'une autre déclaration
+        Part.objects.create(
+            plant=declared_plant.plant,
+            plantpart=declared_plant.used_part,
+            origin_declaration=DeclarationFactory(),
+            status=IngredientStatus.AUTHORIZED,
+        )
+        declaration_part_replaced.assign_calculated_article()
+        declaration_part_replaced.save()
+        declaration_part_replaced.refresh_from_db()
+
+        self.assertEqual(declaration_part_replaced.article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration_part_replaced.calculated_article, Declaration.Article.ARTICLE_15)
+        self.assertEqual(declaration_part_replaced.overridden_article, "")
+
     def test_article_15_warning(self):
         """
         Il existe 2 types d'article 15 vigilance :
@@ -431,6 +461,36 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration_part_unknown.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_part_unknown.calculated_article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_part_unknown.overridden_article, "")
+
+        # pour les déclarations avec une partie de plante remplacée avec une partie créé pour cette déclaration,
+        # l'article devrait être 16
+        declaration_part_replaced = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+        )
+        declared_plant = DeclaredPlantFactory(
+            new=True,
+            is_part_request=True,
+            declaration=declaration_part_replaced,
+            request_status=Addable.AddableStatus.REPLACED,
+        )
+        # disons que la partie de plante est connue et autorisée par une demande d'une autre déclaration
+        Part.objects.create(
+            plant=declared_plant.plant,
+            plantpart=declared_plant.used_part,
+            origin_declaration=declaration_part_replaced,
+            status=IngredientStatus.AUTHORIZED,
+        )
+        declaration_part_replaced.assign_calculated_article()
+        declaration_part_replaced.save()
+        declaration_part_replaced.refresh_from_db()
+
+        self.assertEqual(declaration_part_replaced.article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_part_replaced.calculated_article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_part_replaced.overridden_article, "")
 
     def test_article_18(self):
         SUBSTANCE_MAX_QUANTITY = 1.0
