@@ -204,7 +204,7 @@ watch(data, () => {
 
 const hasNewElements = computed(() => {
   const hasNewPart = payload.value.declaredPlants.some(
-    (x) => x.usedPart && x.element?.plantParts?.find((ep) => ep.id === x.usedPart)?.status !== "AUTHORIZED"
+    (x) => x.usedPart && x.element?.plantParts?.find((ep) => ep.id === x.usedPart)?.status !== "autorisé"
   )
   return (
     hasNewPart ||
