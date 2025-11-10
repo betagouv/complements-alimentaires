@@ -89,12 +89,16 @@
       </div>
       <ElementTextSection title="Description" :text="description" />
 
+      <div v-if="status === 'retiré par l\'administration' && element.revokedDetail">
+        <h2 class="fr-h6 mb-1!">Retiré par l'administration</h2>
+        <p class="whitespace-pre-line">{{ element.revokedDetail }}</p>
+      </div>
       <ElementDoses
         v-if="element.maxQuantities && element.maxQuantities.length"
         :maxQuantities="element.maxQuantities"
         :unit="element.unit"
       ></ElementDoses>
-      <div v-if="element.warningsOnLabel">
+      <div v-if="element.warningsOnLabel?.length">
         <h2 class="fr-h6 mb-1!">Avertissement à faire figurer sur l'étiquetage</h2>
         <ul>
           <li v-for="(warning, idx) in element.warningsOnLabel" :key="`warning-${idx}`">
@@ -212,7 +216,9 @@ const casNumber = computed(() => element.value?.casNumber)
 const einecNumber = computed(() => element.value?.einecNumber)
 const activity = computed(() => (element.value?.activity ? "Actif" : "Non actif"))
 const status = computed(() =>
-  ["autorisé", "non autorisé"].includes(element.value?.status) ? element.value?.status : null
+  ["autorisé", "non autorisé", "retiré par l'administration"].includes(element.value?.status)
+    ? element.value?.status
+    : null
 )
 const novelFood = computed(() => element.value?.novelFood)
 const nutritionalReference = computed(() => {
