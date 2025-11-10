@@ -689,8 +689,13 @@ class TestDeclarationFlow(APITestCase):
         declaration.refresh_from_db()
         latest_snapshot = declaration.snapshots.latest("creation_date")
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
-        self.assertEqual(latest_snapshot.comment, "À authoriser")
-        self.assertEqual(latest_snapshot.expiration_days, 12)
+
+        # Il n'y a pas de commentaires pour une autorisation, même si le post_validation_producer_message
+        # est rempli
+        self.assertEqual(latest_snapshot.comment, "")
+
+        # Il n'y a pas d'expiration_days pour une autorisation même si post_validation_expiration_days est rempli
+        self.assertIsNone(latest_snapshot.expiration_days)
 
         latest_snapshot = declaration.snapshots.latest("creation_date")
         self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.ACCEPT_VISA)
