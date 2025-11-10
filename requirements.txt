@@ -79,7 +79,7 @@ pillow==11.3.0
 pipdeptree==2.29.0
 platformdirs==4.4.0
 pluggy==1.6.0
-pre_commit==4.3.0
+pre_commit==4.4.0
 prompt_toolkit==3.0.52
 psycopg2==2.9.10
 ptyprocess==0.7.0
