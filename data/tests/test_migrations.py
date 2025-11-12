@@ -3,6 +3,9 @@ from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.test import TestCase
 
+from data.factories import AuthorizedDeclarationFactory, ObjectionDeclarationFactory, SnapshotFactory
+from data.models import Declaration, Snapshot
+
 
 class TestMigrations(TestCase):
     @property
@@ -121,3 +124,84 @@ class TestMigrations(TestCase):
 #             self.teleicare_microorganism.siccrf_name
 #         self.assertTrue(self.teleicare_microorganism.name, "ca genus ca species")
 #         self.assertTrue(self.teleicare_microorganism.is_obsolete, True)
+
+
+class SnapshotsTestCase(TestMigrations):
+    migrate_from = "0198_merge_20251103_1411"
+    migrate_to = "0199_remove_approval_comments"
+
+    def setUpBeforeMigration(self, apps):
+        self.snapshot_1 = SnapshotFactory(
+            action=Snapshot.SnapshotActions.AUTHORIZE_NO_VISA,
+            status=Declaration.DeclarationStatus.AUTHORIZED,
+            comment="Comment to remove",
+            expiration_days=15,
+            blocking_reasons=["1", "2"],
+            declaration=AuthorizedDeclarationFactory(teleicare_declaration_number=None),
+        )
+        self.snapshot_2 = SnapshotFactory(
+            action=Snapshot.SnapshotActions.ACCEPT_VISA,
+            post_validation_status=Declaration.DeclarationStatus.AUTHORIZED,
+            status=Declaration.DeclarationStatus.AUTHORIZED,
+            comment="Comment to remove",
+            expiration_days=15,
+            blocking_reasons=["1", "2"],
+            declaration=AuthorizedDeclarationFactory(teleicare_declaration_number=None),
+        )
+
+        # Pas pris en compte car le statut n'est pas AUTHORIZED
+        self.snapshot_3 = SnapshotFactory(
+            action=Snapshot.SnapshotActions.ACCEPT_VISA,
+            post_validation_status=Declaration.DeclarationStatus.OBJECTION,
+            status=Declaration.DeclarationStatus.OBJECTION,
+            comment="Comment to preserve",
+            expiration_days=15,
+            blocking_reasons=["1", "2"],
+            declaration=ObjectionDeclarationFactory(teleicare_declaration_number=None),
+        )
+
+        # Pas pris en compte car l'action et le statut ne sont pas cohérents (on peut en
+        # trouver comme ça dans des déclarations historiques)
+        self.snapshot_4 = SnapshotFactory(
+            action=Snapshot.SnapshotActions.SUBMIT,
+            status=Declaration.DeclarationStatus.AUTHORIZED,
+            comment="Comment to preserve",
+            expiration_days=15,
+            blocking_reasons=["1", "2"],
+            declaration=AuthorizedDeclarationFactory(teleicare_declaration_number=None),
+        )
+
+        # Pas pris en compte car on ne touche pas les déclarations importées de téléicare
+        self.snapshot_5 = SnapshotFactory(
+            action=Snapshot.SnapshotActions.AUTHORIZE_NO_VISA,
+            status=Declaration.DeclarationStatus.AUTHORIZED,
+            comment="Comment to preserve",
+            expiration_days=15,
+            blocking_reasons=["1", "2"],
+            declaration=AuthorizedDeclarationFactory(teleicare_declaration_number="1234"),
+        )
+
+    def test_migration_0199(self):
+        """
+        La migration enleve trois champs inutiles des snapshots d'autorisation :
+        - commentaire
+        - expiration_days
+        - blocking_reasons
+        """
+
+        modified_snapshots = [self.snapshot_1, self.snapshot_2]
+        other_snapshots = [self.snapshot_3, self.snapshot_4, self.snapshot_5]
+        all_snapshots = modified_snapshots + other_snapshots
+
+        for snapshot in all_snapshots:
+            snapshot.refresh_from_db()
+
+        for snapshot in modified_snapshots:
+            self.assertEqual(snapshot.comment, "")
+            self.assertIsNone(snapshot.expiration_days)
+            self.assertIsNone(snapshot.blocking_reasons)
+
+        for snapshot in other_snapshots:
+            self.assertEqual(snapshot.comment, "Comment to preserve")
+            self.assertEqual(snapshot.expiration_days, 15)
+            self.assertEqual(len(snapshot.blocking_reasons), 2)
