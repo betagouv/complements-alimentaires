@@ -217,6 +217,9 @@ class AddCompanyRoleView(APIView):
         user = get_object_or_404(User, pk=user_pk)
         company = get_object_or_404(Company, pk=request.data["company_pk"])
 
+        if user not in company.collaborators:
+            raise NotFound()
+
         self.check_object_permissions(request, company)
         role_class = apps.get_model("data", request.data["role_name"])
         new_role, _ = role_class.objects.get_or_create(company=company, user=user)
