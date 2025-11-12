@@ -30,7 +30,7 @@
             <RoleTag
               v-for="role in user.roles"
               :key="role.name"
-              :role="role"
+              :role="role.name"
               :show-actions="!(role.name == 'SupervisorRole' && user.id == loggedUser.id)"
               @remove="changeRole(role.name, user, 'remove')"
             />
