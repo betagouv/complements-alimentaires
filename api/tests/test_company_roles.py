@@ -46,6 +46,12 @@ class TestAddDeclarantRole(ProjectAPITestCase):
         response = self.post(self.url(user_pk=99999), self.payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_add_declarant_role_non_employee_ko(self):
+        self.login(self.user)
+        user = UserFactory()
+        response = self.post(self.url(user_pk=user.id), self.payload)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_add_declarant_role_unexisting_company_ko(self):
         self.login(self.user)
         payload = dict(company_pk=99999, role_name="DeclarantRole")
