@@ -255,6 +255,10 @@ class DeclarationFilterSet(django_filters.FilterSet):
         )
 
     def filter_active_ingredient_dose(self, queryset, ingredient, operation, quantity, quantity_max=None, unit=None):
+        # Cas spécial ≥0 renvoie toutes les déclarations ayant l'ingrédient
+        if quantity == 0 and operation == self.GREATER_THAN_OR_EQUAL:
+            return queryset.filter(declared_ingredients__ingredient_id=ingredient.id).distinct()
+
         filters = Q(computed_substances__substance__in=ingredient.substances.all())
         filters &= Q(declared_ingredients__ingredient_id=ingredient.id)
         return self._apply_quantity_filter(
