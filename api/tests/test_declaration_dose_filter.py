@@ -267,3 +267,95 @@ class DeclarationDoseFilterTests(APITestCase):
 
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["id"], declaration.id)
+
+    @authenticate
+    def test_ingredient_any_amount_includes_null_quantities(self):
+        """
+        Filtrage d'un ingrédient actif avec ≥ 0 doit inclure les déclarations où l'ingrédient
+        est présent indépendamment de la dose
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        snail_protein = SubstanceFactory()
+        snail = IngredientFactory(ingredient_type=IngredientType.ACTIVE_INGREDIENT, substances=[snail_protein])
+
+        # Ingrédient présent, substance avec quantité > 0
+        declaration_with_quantity = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration_with_quantity, ingredient=snail)
+        ComputedSubstanceFactory(
+            declaration=declaration_with_quantity, substance=snail_protein, quantity=30.0, unit=self.unit_mg
+        )
+
+        # Ingrédient présent, substance sans quantité
+        declaration_without_quantity = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration_without_quantity, ingredient=snail)
+        ComputedSubstanceFactory(
+            declaration=declaration_without_quantity,
+            substance=snail_protein,
+            quantity=None,
+            unit=None,
+        )
+
+        # Ingrédient présent, substance avec quantité = 0
+        declaration_with_zero_quantity = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration_with_zero_quantity, ingredient=snail)
+        ComputedSubstanceFactory(
+            declaration=declaration_with_zero_quantity, substance=snail_protein, quantity=0.0, unit=self.unit_mg
+        )
+
+        # Pas d'ingrédient
+        declaration_without_ingredient = AuthorizedDeclarationFactory()
+
+        # Devrait inclure les 3 premières déclarations
+        dose = f"dose=active_ingredient||Escargot||{snail.id}||≥||0||{self.unit_mg.id}"
+        results = self.make_request(dose)
+
+        returned_ids = {result["id"] for result in results}
+        expected_ids = {
+            declaration_with_quantity.id,
+            declaration_without_quantity.id,
+            declaration_with_zero_quantity.id,
+        }
+
+        self.assertEqual(len(results), 3)
+        self.assertEqual(returned_ids, expected_ids)
+
+        self.assertNotIn(declaration_without_ingredient.id, returned_ids)
+
+    @authenticate
+    def test_active_ingredient_specific_amount_excludes_null_quantities(self):
+        """
+        Filtrage d'un ingrédient actif avec une quantité spécifique (> 0) ne doit inclure
+        que les déclarations où la substance liée a une quantité spécifiée qui satisfait le critère
+        """
+        InstructionRoleFactory(user=authenticate.user)
+
+        snail_protein = SubstanceFactory()
+        snail = IngredientFactory(ingredient_type=IngredientType.ACTIVE_INGREDIENT, substances=[snail_protein])
+
+        # Quantité > 5 (doit être incluse)
+        declaration_high_quantity = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration_high_quantity, ingredient=snail)
+        ComputedSubstanceFactory(
+            declaration=declaration_high_quantity, substance=snail_protein, quantity=30.0, unit=self.unit_mg
+        )
+
+        # Quantité = 0 (ne doit pas être incluse)
+        declaration_zero_quantity = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration_zero_quantity, ingredient=snail)
+        ComputedSubstanceFactory(
+            declaration=declaration_zero_quantity, substance=snail_protein, quantity=0.0, unit=self.unit_mg
+        )
+
+        # Pas de quantité spécifiée (ne doit pas être incluse)
+        declaration_null_quantity = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration_null_quantity, ingredient=snail)
+        ComputedSubstanceFactory(
+            declaration=declaration_null_quantity, substance=snail_protein, quantity=None, unit=None
+        )
+
+        dose = f"dose=active_ingredient||Escargot||{snail.id}||>||0||{self.unit_mg.id}"
+        results = self.make_request(dose)
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], declaration_high_quantity.id)
