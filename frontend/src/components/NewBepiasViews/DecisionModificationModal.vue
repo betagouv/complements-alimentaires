@@ -43,10 +43,10 @@
           </DsfrInputGroup>
         </div>
       </div>
-      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'comment')">
-        <DsfrInput is-textarea label="Message au déclarant·e" v-model="overriddenDecision.comment" label-visible />
-      </DsfrInputGroup>
-      <div v-if="showReasons" class="border p-4">
+      <div v-if="showAdditionalFields" class="border p-4">
+        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'comment')">
+          <DsfrInput is-textarea label="Message au déclarant·e" v-model="overriddenDecision.comment" label-visible />
+        </DsfrInputGroup>
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reasons')">
           <div class="mb-8" v-for="reason in blockingReasons" :key="reason.title">
             <DsfrCheckboxSet
@@ -131,7 +131,7 @@ const proposalOptions = [
   { text: "Refus", value: "REJECTED" },
 ]
 
-const showReasons = computed(
+const showAdditionalFields = computed(
   () => overriddenDecision.value.proposal && overriddenDecision.value.proposal !== "AUTHORIZED"
 )
 

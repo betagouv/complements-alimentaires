@@ -645,6 +645,15 @@ class DeclarationAuthorizeView(DeclarationFlowView):
         declaration.instructor = InstructionRole.objects.get(user=request.user)
         return super().on_transition_success(request, declaration)
 
+    def perform_snapshot_creation(self, request, declaration):
+        """
+        Surchargé pour ignorer le commentaire, expiration_days, post_validation_status e blocking_reasons
+        """
+        declaration.create_snapshot(
+            user=request.user,
+            action=self.get_snapshot_action(request, declaration),
+        )
+
 
 class DeclarationResubmitView(DeclarationFlowView):
     """
@@ -756,13 +765,21 @@ class DeclarationAcceptVisaView(VisaDecisionView):
         overridden = request.data.get("proposal")
         data = request.data
         d = declaration
+
+        status = self.get_snapshot_post_validation_status(request, d)
+        is_authorization = status == Declaration.DeclarationStatus.AUTHORIZED
+        comment = data.get("comment", "") if overridden else d.post_validation_producer_message
+        expiration_days = data.get("delay_days") if overridden else d.post_validation_expiration_days
+        blocking_reasons = data.get("reasons") if overridden else None
+
         d.create_snapshot(
             user=request.user,
-            comment=data.get("comment", "") if overridden else d.post_validation_producer_message,
-            expiration_days=data.get("delay_days") if overridden else d.post_validation_expiration_days,
             action=self.get_snapshot_action(request, d),
-            post_validation_status=self.get_snapshot_post_validation_status(request, d),
-            blocking_reasons=data.get("reasons") if overridden else None,
+            post_validation_status=status,
+            # Si on est dans le cas d'une autorisation, on ne met rien dans ces paramètres
+            comment="" if is_authorization else comment,
+            expiration_days=None if is_authorization else expiration_days,
+            blocking_reasons=None if is_authorization else blocking_reasons,
         )
 
     def get_transition(self, request, declaration):
