@@ -271,9 +271,8 @@ class DeclarationDoseFilterTests(APITestCase):
     @authenticate
     def test_ingredient_any_amount_includes_null_quantities(self):
         """
-        Filtrage d'un ingrédient actif avec ≥ 0 doit inclure les déclarations où:
-        - L'ingrédient est présent ET la substance liée a une quantité > 0
-        - OU l'ingrédient est présent même si la substance liée n'a pas de quantité spécifiée
+        Filtrage d'un ingrédient actif avec ≥ 0 doit inclure les déclarations où l'ingrédient
+        est présent indépendamment de la dose
         """
         InstructionRoleFactory(user=authenticate.user)
 
@@ -331,12 +330,8 @@ class DeclarationDoseFilterTests(APITestCase):
         """
         InstructionRoleFactory(user=authenticate.user)
 
-        snail_protein = SubstanceFactory(name="Protéine d'escargot")
-        snail = IngredientFactory(
-            name="Escargot",
-            ingredient_type=IngredientType.ACTIVE_INGREDIENT,
-            substances=[snail_protein],
-        )
+        snail_protein = SubstanceFactory()
+        snail = IngredientFactory(ingredient_type=IngredientType.ACTIVE_INGREDIENT, substances=[snail_protein])
 
         # Quantité > 5 (doit être incluse)
         declaration_high_quantity = AuthorizedDeclarationFactory()
