@@ -130,7 +130,7 @@ const clearLocalStorage = () => {
 
 const proposal = useStorage(getLocalStorageKey("proposal"), null)
 const delayDays = useStorage(getLocalStorageKey("delayDays"), null)
-const comment = useStorage(getLocalStorageKey("comment"), declaration.value?.lastAdministrationComment || "")
+const comment = useStorage(getLocalStorageKey("comment"), "")
 const reasons = useStorage(getLocalStorageKey("reasons"), [])
 const decisionCategory = useStorage(getLocalStorageKey("decisionCategory"), null)
 const needsVisa = useStorage(getLocalStorageKey("needsVisa"), false)
@@ -186,7 +186,11 @@ const url = computed(() => {
   return `/api/v1/declarations/${declaration.value?.id}/${urlPath}/`
 })
 
-const requestPayload = computed(() => ({ comment: comment.value, reasons: reasons.value, expiration: delayDays.value }))
+const requestPayload = computed(() =>
+  proposal.value !== "autorisation"
+    ? { comment: comment.value, reasons: reasons.value, expiration: delayDays.value }
+    : null
+)
 const { response, isFetching, execute } = useFetch(url, { headers: headers() }, { immediate: false })
   .post(requestPayload)
   .json()

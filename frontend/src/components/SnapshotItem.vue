@@ -68,7 +68,12 @@ const isAdministrativeAction = computed(() => {
   return instructionActions.indexOf(props.snapshot.action) > -1
 })
 
-const showComment = computed(() => props.snapshot?.comment && props.snapshot?.action !== "REFUSE_VISA")
+const showComment = computed(
+  () =>
+    props.snapshot?.comment &&
+    props.snapshot?.action !== "REFUSE_VISA" &&
+    props.snapshot?.action !== "AUTHORIZE_NO_VISA"
+)
 
 const initials = computed(() => {
   if (!props.snapshot.user) return "?"
