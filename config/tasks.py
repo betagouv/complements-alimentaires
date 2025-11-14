@@ -332,8 +332,12 @@ class RevokeAuthorizationDeclarationFlow:
             self.declaration.create_snapshot(action=Snapshot.SnapshotActions.REVOKE_AUTHORIZATION)
 
     @status.transition(source={Status.AUTHORIZED}, target=Status.AUTHORIZATION_REVOKED)
-    def revoke_authorization(self):
-        pass
+    def revoke_authorization(self, ingredient):
+        self.declaration.revoked_ingredient = {
+            "name": ingredient.name,
+            "id": ingredient.id,
+            "model": ingredient.__class__.__name__,
+        }
 
 
 @app.task
@@ -347,7 +351,7 @@ def revoke_authorisation_from_declarations(declarations, ingredient):
     for declaration in declarations:
         flow = RevokeAuthorizationDeclarationFlow(declaration)
         try:
-            flow.revoke_authorization()
+            flow.revoke_authorization(ingredient)
             if declaration.author:
                 email.send_sib_template(
                     brevo_template_id,
