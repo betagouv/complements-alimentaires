@@ -72,3 +72,6 @@ class TestRevokeDeclarations(TestCase):
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
         self.assertEqual(declaration.revoked_ingredient, {})
         mocked_brevo.assert_not_called()
+
+    # TODO: test cannot revoke declaration if ingredient isn't in declared ingredients?
+    # TODO: test a declaration authorized with a revoked
