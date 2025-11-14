@@ -98,15 +98,18 @@
         :maxQuantities="element.maxQuantities"
         :unit="element.unit"
       ></ElementDoses>
-      <div v-if="element.warningsOnLabel?.length">
-        <h2 class="fr-h6 mb-1!">Avertissement à faire figurer sur l'étiquetage</h2>
+      <DsfrCallout
+        v-if="element.warningsOnLabel?.length"
+        title="Avertissements à faire figurer sur l'étiquetage"
+        icon="ri-alarm-warning-line"
+        accent="orange-terre-battue"
+      >
         <ul>
           <li v-for="(warning, idx) in element.warningsOnLabel" :key="`warning-${idx}`">
             {{ warning }}
           </li>
         </ul>
-      </div>
-      <!-- Utiliser DsfrCallout avec une couleur particulière pour les avertissements quand cela sera possible https://github.com/dnum-mi/vue-dsfr/issues/1126 -->
+      </DsfrCallout>
 
       <ElementTextSection
         v-if="element.requiresAnalysisReport"
