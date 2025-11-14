@@ -212,6 +212,8 @@ class Declaration(Historisable, TimeStampable):
         verbose_name="numéro de déclaration Teleicare connu par les déclarants et indiqué dans les attestations",
     )  # pas de contrainte d'unicité car dans 124 cas le teleicare_declaration_number est dupliqué
 
+    revoked_ingredient = models.JSONField(null=True, verbose_name="l'ingrédient retiré par l'administration")
+
     def create_snapshot(
         self,
         user=None,
