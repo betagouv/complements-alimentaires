@@ -59,6 +59,19 @@ class TestRevokeDeclarations(TestCase):
         self.assertIsNone(declaration.revoked_ingredient)
         mocked_brevo.assert_not_called()
 
-    # TODO: test cannot revoke declarations if ingredient isn't revoked
+    @mock.patch("config.email.send_sib_template")
+    def test_cannot_revoke_declarations_for_non_revoked_ingredient(self, mocked_brevo):
+        ingredient = IngredientFactory(status=IngredientStatus.AUTHORIZED)
+        declaration = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration, ingredient=ingredient)
+
+        with self.assertRaises(Exception, msg="Cannot revoke declarations for non-revoked ingredient"):
+            tasks.revoke_authorisation_from_declarations(Declaration.objects.all(), ingredient)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
+        self.assertIsNone(declaration.revoked_ingredient)
+        mocked_brevo.assert_not_called()
+
     # TODO: test cannot revoke declaration if ingredient isn't in declared ingredients?
     # TODO: test a declaration authorized with a revoked
