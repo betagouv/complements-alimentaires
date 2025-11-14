@@ -47,6 +47,10 @@ const latestSnapshot = computed(
 )
 const canDownloadAbandonedCertificate = computed(() => latestSnapshot.value?.status === "OBJECTION")
 
+const revokedIngredientName = computed(() => {
+  return props.declaration.revokedIngredient?.name || "nom inconnu"
+})
+
 const declarantDisplayData = computed(() => {
   switch (props.declaration.status) {
     case "DRAFT":
@@ -125,6 +129,7 @@ const declarantDisplayData = computed(() => {
       return {
         type: "info",
         title: "Ce produit a été retiré du marché par l'administration",
+        body: `Cette déclaration contient un ingrédient desormais interdit (${revokedIngredientName.value}). Elle n'est plus autorisée à la mise sur le marché.`,
         canDownloadCertificate: false,
       }
     default:
@@ -204,6 +209,7 @@ const instructorDisplayData = computed(() => {
       return {
         type: "info",
         title: "Ce produit a été retiré du marché par l'administration",
+        body: `Cette déclaration contient un ingrédient desormais interdit (${revokedIngredientName.value}). Elle n'est plus autorisée à la mise sur le marché.`,
         canDownloadCertificate: false,
       }
     default:
@@ -278,6 +284,7 @@ const visorDisplayData = computed(() => {
       return {
         type: "info",
         title: "Ce produit a été retiré du marché par l'administration",
+        body: `Cette déclaration contient un ingrédient desormais interdit (${revokedIngredientName.value}). Elle n'est plus autorisée à la mise sur le marché.`,
         canDownloadCertificate: false,
       }
     default:
