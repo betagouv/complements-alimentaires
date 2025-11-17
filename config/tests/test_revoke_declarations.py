@@ -56,7 +56,7 @@ class TestRevokeDeclarations(TestCase):
 
         declaration.refresh_from_db()
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
-        self.assertIsNone(declaration.revoked_ingredient)
+        self.assertEqual(declaration.revoked_ingredient, {})
         mocked_brevo.assert_not_called()
 
     @mock.patch("config.email.send_sib_template")
@@ -70,5 +70,5 @@ class TestRevokeDeclarations(TestCase):
 
         declaration.refresh_from_db()
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
-        self.assertIsNone(declaration.revoked_ingredient)
+        self.assertEqual(declaration.revoked_ingredient, {})
         mocked_brevo.assert_not_called()
