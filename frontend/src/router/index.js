@@ -93,7 +93,7 @@ export const routes = [
     name: "BlogHomePage",
     component: BlogHomePage,
     meta: {
-      title: "Articles de blog",
+      title: "Ressources",
       sitemap: true,
     },
   },

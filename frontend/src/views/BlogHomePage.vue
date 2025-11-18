@@ -1,8 +1,8 @@
 <template>
   <div class="pt-10 bg-blue-france-975 relative min-h-[160px]">
     <div class="fr-container">
-      <h1 class="mb-2">Nos articles</h1>
-      <p>Découvrez notre espace blog et témoignages</p>
+      <h1 class="mb-2">Nos ressources</h1>
+      <p>Apprenez plus de la reglementation et de notre plateforme avec nos infolettres et articles.</p>
     </div>
     <img class="hidden md:block absolute bottom-0 right-20" src="/static/images/plants.png" alt="" />
   </div>
@@ -28,7 +28,7 @@
           :truncLimit="5"
         />
       </div>
-      <p v-else>Nous n'avons pas encore d'articles de blog</p>
+      <p v-else>Nous n'avons pas encore de ressources</p>
     </template>
   </div>
 </template>
@@ -67,7 +67,7 @@ const { data, response, execute, isFetching } = useFetch(url, { immediate: false
 const fetchCurrentPage = async () => {
   await execute()
   await handleError(response)
-  setDocumentTitle(["Articles de blog"], {
+  setDocumentTitle(["Ressources"], {
     number: page.value,
     total: pages.value.length,
     term: "page",
