@@ -1,6 +1,9 @@
+import logging
 import requests
 
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 
 def fetch_control_emails_from_grist():
@@ -18,9 +21,12 @@ def fetch_control_emails_from_grist():
     )
     response.raise_for_status()
     records = response.json()["records"]
+    logger.info(f"{len(records)} records imported from SD table")
     response = requests.get(
         f"https://grist.numerique.gouv.fr/api/docs/{anses_doc}/tables/{anses_table}/records", headers=header
     )
     response.raise_for_status()
-    records += response.json()["records"]
+    anses_records = response.json()["records"]
+    logger.info(f"{len(anses_records)} records imported from ANSES table")
+    records += anses_records
     return [r["fields"]["mail"] for r in records]
