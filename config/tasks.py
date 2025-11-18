@@ -392,6 +392,7 @@ def assign_control_roles(dry_run=False):
 
     # Ajout des nouveaux rôles de controle
     added_count = 0
+    user_not_found_count = 0
     for e in emails_to_add:
         try:
             user = get_user_model().objects.get(email__iexact=e, is_active=True)
@@ -401,6 +402,7 @@ def assign_control_roles(dry_run=False):
         except get_user_model().DoesNotExist:
             # INFO : Éventuellement on pourrait envoyer des emails pour inviter ces usagers à créer un compte
             logger.info(f"⚠ Active user not found for control role assignment: {e}")
+            user_not_found_count += 1
 
     # Suppression des rôles de controle existants
     removed_count = 0
@@ -413,4 +415,6 @@ def assign_control_roles(dry_run=False):
         except ControlRole.DoesNotExist:
             logger.info(f"⚠ Control role for {e} does not exist")
 
-    logger.info(f"Successfully processed: {added_count} added, {removed_count} removed")
+    logger.info(
+        f"Successfully processed: {added_count} added, {removed_count} removed, {user_not_found_count} users not found"
+    )
