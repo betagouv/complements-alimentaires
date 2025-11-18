@@ -300,6 +300,7 @@ def import_control_emails():
     gov_emails = [e for e in emails_to_add if e.endswith(".gouv.fr")]
     non_gov_emails = [e for e in emails_to_add if not e.endswith(".gouv.fr")]
     logger.info(f"{len(non_gov_emails)} emails not ending in .gouv.fr will be ignored")
+    logger.info(non_gov_emails)
 
     objs_to_create = []
     for email_address in gov_emails:
