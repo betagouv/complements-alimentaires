@@ -2,11 +2,7 @@
   <div class="fr-container">
     <DsfrBreadcrumb
       class="mb-8"
-      :links="[
-        { to: '/', text: 'Accueil' },
-        { to: '/blog', text: 'Articles de blog' },
-        { text: blogPost?.title || '' },
-      ]"
+      :links="[{ to: '/', text: 'Accueil' }, { to: '/blog', text: 'Ressources' }, { text: blogPost?.title || '' }]"
     />
   </div>
   <div v-if="blogPost" class="fr-container my-8">
