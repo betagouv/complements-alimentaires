@@ -56,6 +56,10 @@ app.conf.beat_schedule = {
         "task": "config.tasks.export_datasets_to_data_gouv",
         "schedule": export_time,
     },
+    "assign_control_roles": {
+        "task": "config.tasks.assign_control_roles",
+        "schedule": nightly,
+    },
 }
 
 app.conf.timezone = "Europe/Paris"
