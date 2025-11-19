@@ -124,8 +124,10 @@ OBSERVATION_DAYS (optionnel)= Le nombre de jours proposé pour une période d'ob
 DECLARATIONS_EXPORT_BATCH_SIZE (optionnel)= Le nombre de déclarations par batch pour l'export vers open data
 DECLARATIONS_EXPORT_HOUR (optionnel)= L'heure pour l'export vers open data (par défaut c'est à 1h)
 GRIST_API_KEY (optionnel)= La clé de l'API pour grist
-GRIST_CONTROL_DOC_ID (optionnel)= L'identifiant du document utilisé pour recuperer les mails du role contrôle. Retrouvable depuis settings -> API console de grist
-GRIST_CONTROL_TABLE_ID (optionnel)= L'identifiant du tableau utilisé dans GRIST_CONTROL_DOC_ID. Retrouvable depuis settings -> API console de grist
+GRIST_SD_CONTROL_DOC_ID (optionnel)= L'identifiant du document utilisé pour recuperer les mails du role contrôle. Retrouvable depuis settings -> API console de grist
+GRIST_SD_CONTROL_TABLE_ID (optionnel)= L'identifiant du tableau utilisé dans GRIST_SD_CONTROL_DOC_ID. Retrouvable depuis settings -> API console de grist
+GRIST_ANSES_CONTROL_DOC_ID (optionnel)= L'identifiant du document utilisé pour recuperer les mails du role contrôle. Retrouvable depuis settings -> API console de grist
+GRIST_ANSES_CONTROL_TABLE_ID (optionnel)= L'identifiant du tableau utilisé dans GRIST_ANSES_CONTROL_DOC_ID. Retrouvable depuis settings -> API console de grist
 ```
 
 #### Créer les différents modèles Django dans la base de données

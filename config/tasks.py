@@ -297,8 +297,13 @@ def import_control_emails():
     existing_emails = set(ControlRoleEmail.objects.all().values_list("email", flat=True))
     emails_to_add = set(unique_emails) - existing_emails
 
+    gov_emails = [e for e in emails_to_add if e[-8:] in ["@gouv.fr", ".gouv.fr"]]
+    non_gov_emails = set(emails_to_add).difference(gov_emails)
+    if len(non_gov_emails):
+        logger.info(f"{len(non_gov_emails)} emails not ending in gouv.fr will be ignored: {', '.join(non_gov_emails)}")
+
     objs_to_create = []
-    for email_address in emails_to_add:
+    for email_address in gov_emails:
         if email_address:  # ne pas ajouter des mails vides
             objs_to_create.append(ControlRoleEmail(email=email_address))
 
