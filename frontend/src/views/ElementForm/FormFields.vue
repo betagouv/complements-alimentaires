@@ -434,13 +434,16 @@
             aux déclarants concernés.
           </p>
           <p>L'ingrédient sera toujours déclarable, et les déclarations qui l'utilisent vont recevoir l'article 16.</p>
-          <DsfrInput
-            label="Raison de retrait"
-            hint="Visible par le public"
-            v-model="state.revokedDetail"
-            :isTextarea="true"
-            label-visible
-          />
+          <DsfrInputGroup :error-message="revokedDetailError">
+            <DsfrInput
+              label="Raison de retrait"
+              hint="Visible par le public"
+              v-model="state.revokedDetail"
+              :isTextarea="true"
+              label-visible
+              required
+            />
+          </DsfrInputGroup>
         </template>
       </DsfrModal>
       <DsfrButton
@@ -527,14 +530,15 @@ watch(
   }
 )
 
+const REQUIRED_FIELDS_ERROR =
+  "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis"
+
 const saveElement = async () => {
   v$.value.$reset()
   v$.value.$validate()
   validateMaxQuantities()
   if (v$.value.$error || maxQuantitiesError.value) {
-    useToaster().addErrorMessage(
-      "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis"
-    )
+    useToaster().addErrorMessage(REQUIRED_FIELDS_ERROR)
     window.scrollTo(0, 0)
     return
   }
@@ -803,6 +807,7 @@ const deleteActions = [
 ]
 
 const revokeModalOpened = ref(false)
+const revokedDetailError = ref("")
 
 const AUTHORIZATION_REVOKED_STATUS = 99
 
@@ -810,6 +815,12 @@ const revokeActions = [
   {
     label: "Retirer l'ingrédient",
     onClick: async () => {
+      if (!state.value.revokedDetail) {
+        revokedDetailError.value = "Ce champ doit être rempli"
+        useToaster().addErrorMessage(REQUIRED_FIELDS_ERROR)
+        return
+      } else revokedDetailError.value = ""
+
       const url = `/api/v1/${apiType.value}s/`
       const { response } = await useFetch(url + elementId.value, { headers: headers() })
         .patch({ status: AUTHORIZATION_REVOKED_STATUS, revokedDetail: state.value.revokedDetail })
