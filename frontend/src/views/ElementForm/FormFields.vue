@@ -412,7 +412,7 @@
     <div class="flex gap-x-2 mt-4">
       <DsfrButton label="Enregistrer ingrédient" @click="saveElement" />
       <DsfrButton
-        v-if="!isNewIngredient"
+        v-if="canRevokeIngredient"
         tertiary
         size="small"
         icon="ri-error-warning-line"
@@ -420,7 +420,7 @@
         @click="revokeModalOpened = true"
       />
       <DsfrModal
-        v-if="!isNewIngredient"
+        v-if="canRevokeIngredient"
         :opened="revokeModalOpened"
         @close="revokeModalOpened = false"
         :title="`Retirer ${element.name} du marché`"
@@ -834,6 +834,10 @@ const revokeActions = [
     secondary: true,
   },
 ]
+
+const canRevokeIngredient = computed(() => {
+  return !isNewIngredient.value && state.value.status === 1
+})
 </script>
 
 <style scoped>
