@@ -415,6 +415,38 @@
         v-if="!isNewIngredient"
         tertiary
         size="small"
+        icon="ri-error-warning-line"
+        label="Retirer l'ingrédient"
+        @click="revokeModalOpened = true"
+      />
+      <DsfrModal
+        v-if="!isNewIngredient"
+        :opened="revokeModalOpened"
+        @close="revokeModalOpened = false"
+        :title="`Retirer ${element.name} du marché`"
+        :actions="revokeActions"
+      >
+        <template #default>
+          <p>Voulez-vous retirer l'ingredient {{ element.name }} du marché ?</p>
+          <p>
+            Cette action va marquer l'ingrédient comme "retiré par l'administration" et elle va marquer toutes les
+            déclarations autorisées qui utilisent l'ingrédient comme retirées par l'administration, avec un mail envoyé
+            aux déclarants concernés.
+          </p>
+          <p>L'ingrédient sera toujours déclarable, et les déclarations qui l'utilisent vont recevoir l'article 16.</p>
+          <DsfrInput
+            label="Raison de retrait"
+            hint="Visible par le public"
+            v-model="state.revokedDetail"
+            :isTextarea="true"
+            label-visible
+          />
+        </template>
+      </DsfrModal>
+      <DsfrButton
+        v-if="!isNewIngredient"
+        tertiary
+        size="small"
         icon="ri-delete-bin-line"
         label="Supprimer l'ingrédient"
         @click="deleteModalOpened = true"
@@ -756,6 +788,39 @@ const deleteActions = [
           type: "success",
           id: "element-deletion-success",
           description: "L'ingrédient a été supprimé",
+        })
+        router.push({ name: "ElementPage", params: { urlComponent: props.urlComponent } })
+      }
+    },
+  },
+  {
+    label: "Garder l'ingredient",
+    onClick: () => {
+      deleteModalOpened.value = false
+    },
+    secondary: true,
+  },
+]
+
+const revokeModalOpened = ref(false)
+
+const AUTHORIZATION_REVOKED_STATUS = 99
+
+const revokeActions = [
+  {
+    label: "Retirer l'ingrédient",
+    onClick: async () => {
+      const url = `/api/v1/${apiType.value}s/`
+      const { response } = await useFetch(url + elementId.value, { headers: headers() })
+        .patch({ status: AUTHORIZATION_REVOKED_STATUS, revokedDetail: state.value.revokedDetail })
+        .json()
+      $externalResults.value = await handleError(response)
+
+      if (response.value.ok) {
+        useToaster().addMessage({
+          type: "success",
+          id: "element-revoke-success",
+          description: "L'ingrédient a été retiré",
         })
         router.push({ name: "ElementPage", params: { urlComponent: props.urlComponent } })
       }
