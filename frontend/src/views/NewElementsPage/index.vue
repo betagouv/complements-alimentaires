@@ -165,5 +165,5 @@ const orderingOptions = [
   },
 ]
 
-useQueryStorage("NewElementsPage")
+useQueryStorage()
 </script>

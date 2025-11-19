@@ -186,7 +186,7 @@ const search = () => {
   fetchSearchResults()
 }
 
-useQueryStorage("InstructionDeclarationsPage", (savedQuery) => (searchTerm.value = savedQuery.value.recherche))
+useQueryStorage()
 </script>
 
 <style scoped>

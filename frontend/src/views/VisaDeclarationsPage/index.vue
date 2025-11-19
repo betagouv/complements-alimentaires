@@ -115,7 +115,7 @@ const fetchSearchResults = async () => {
 
 watch([page, filteredStatus, ordering, article, limit], fetchSearchResults)
 
-useQueryStorage("VisaDeclarationsPage")
+useQueryStorage()
 </script>
 
 <style scoped>

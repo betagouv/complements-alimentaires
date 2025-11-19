@@ -414,7 +414,7 @@ const seeOverflow = ref(false)
 watch(activeAccordion, (x) => setTimeout(() => (seeOverflow.value = x === 0), 500))
 ///////////
 
-useQueryStorage("AdvancedSearchPage", (savedQuery) => (searchTerm.value = savedQuery.value?.recherche))
+useQueryStorage()
 </script>
 
 <style scoped>
