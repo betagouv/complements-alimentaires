@@ -2,7 +2,7 @@
   <div class="pt-10 bg-blue-france-975 relative min-h-[160px]">
     <div class="fr-container">
       <h1 class="mb-2">Nos ressources</h1>
-      <p>Apprenez plus de la reglementation et de notre plateforme avec nos infolettres et articles.</p>
+      <p>Ne manquez rien de l'actualité réglementaire et des évolutions de notre plateforme.</p>
     </div>
     <img class="hidden md:block absolute bottom-0 right-20" src="/static/images/plants.png" alt="" />
   </div>
