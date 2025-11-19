@@ -373,6 +373,7 @@ export const routes = [
         limit: "10",
         recherche: "",
       },
+      saveQuery: true,
     },
   },
   {
@@ -391,6 +392,7 @@ export const routes = [
         triage: "responseLimitDate",
         limit: "10",
       },
+      saveQuery: true,
     },
   },
   {
@@ -472,6 +474,7 @@ export const routes = [
         article: "",
         limit: "10",
       },
+      saveQuery: true,
     },
   },
   {
@@ -529,6 +532,7 @@ export const routes = [
         decisionAvant: "",
         decisionApres: "",
       },
+      saveQuery: true,
     },
   },
   {
@@ -562,6 +566,7 @@ export const routes = [
         formeGalenique: "",
         dose: "",
       },
+      saveQuery: true,
     },
   },
   {
@@ -727,6 +732,12 @@ router.navigateBack = (defaultRoute, additionalParameters) => {
 }
 
 router.beforeEach((to, from, next) => {
+  // sauvegarder le query du from
+  if (from.meta.saveQuery) {
+    const savedQuery = useStorage(from.name, {})
+    savedQuery.value = from.query
+  }
+  // preparer la prochaine vue
   const store = useRootStore()
   previousRoute.value = from
   if (ensureDefaultQueryParams(to, next)) chooseAuthorisedRoute(to, from, next, store)
