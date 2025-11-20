@@ -15,7 +15,7 @@ from viewflow import fsm
 from api.utils.simplified_status import SimplifiedStatusHelper
 from config import email
 from data.etl.declarations import OpenDataDeclarationsETL
-from data.models import Company, Declaration, Snapshot, ControlRoleEmail
+from data.models import Company, Declaration, Snapshot, ControlRoleEmail, ControlRole
 
 from .grist_api import fetch_control_emails_from_grist
 
@@ -297,8 +297,13 @@ def import_control_emails():
     existing_emails = set(ControlRoleEmail.objects.all().values_list("email", flat=True))
     emails_to_add = set(unique_emails) - existing_emails
 
+    gov_emails = [e for e in emails_to_add if e[-8:] in ["@gouv.fr", ".gouv.fr"]]
+    non_gov_emails = set(emails_to_add).difference(gov_emails)
+    if len(non_gov_emails):
+        logger.info(f"{len(non_gov_emails)} emails not ending in gouv.fr will be ignored: {', '.join(non_gov_emails)}")
+
     objs_to_create = []
-    for email_address in emails_to_add:
+    for email_address in gov_emails:
         if email_address:  # ne pas ajouter des mails vides
             objs_to_create.append(ControlRoleEmail(email=email_address))
 
@@ -363,3 +368,58 @@ def revoke_authorisation_from_declarations(declarations, ingredient):
     logger.info(f"{success_count} declarations had authorization revoked.")
     if error_count:
         logger.error(f"{error_count} declarations failed to be revoked.")
+
+
+@app.task
+def assign_control_roles(dry_run=False):
+    emails_in_list = {email.lower() for email in ControlRoleEmail.objects.all().values_list("email", flat=True)}
+    emails_to_persist = {
+        email.lower()
+        for email in ControlRole.objects.filter(always_persist=True, is_active=True).values_list(
+            "user__email", flat=True
+        )
+    }
+
+    authorized_emails = emails_in_list.union(emails_to_persist)
+    current_controllers = {
+        email.lower() for email in ControlRole.objects.filter(is_active=True).values_list("user__email", flat=True)
+    }
+
+    emails_to_add = authorized_emails - current_controllers
+    emails_to_remove = current_controllers - authorized_emails
+
+    logger.info(f"Emails to add: {len(emails_to_add)}")
+    logger.info(f"Emails to remove: {len(emails_to_remove)}")
+
+    if dry_run:
+        logger.info("DRY RUN - No changes made")
+        return
+
+    # Ajout des nouveaux rôles de controle
+    added_count = 0
+    user_not_found_count = 0
+    for e in emails_to_add:
+        try:
+            user = get_user_model().objects.get(email__iexact=e, is_active=True)
+            ControlRole.objects.get_or_create(user=user)
+            added_count += 1
+            logger.info(f"✓ Added control role to {e}")
+        except get_user_model().DoesNotExist:
+            # INFO : Éventuellement on pourrait envoyer des emails pour inviter ces usagers à créer un compte
+            logger.info(f"⚠ Active user not found for control role assignment: {e}")
+            user_not_found_count += 1
+
+    # Suppression des rôles de controle existants
+    removed_count = 0
+    for e in emails_to_remove:
+        try:
+            control_role = ControlRole.objects.get(user__email__iexact=e, is_active=True)
+            control_role.delete()
+            removed_count += 1
+            logger.info(f"✗ Removed control role from {e}")
+        except ControlRole.DoesNotExist:
+            logger.info(f"⚠ Control role for {e} does not exist")
+
+    logger.info(
+        f"Successfully processed: {added_count} added, {removed_count} removed, {user_not_found_count} users not found"
+    )

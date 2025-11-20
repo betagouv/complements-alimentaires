@@ -56,6 +56,14 @@ app.conf.beat_schedule = {
         "task": "config.tasks.export_datasets_to_data_gouv",
         "schedule": export_time,
     },
+    "import_control_emails": {
+        "task": "config.tasks.import_control_emails",
+        "schedule": crontab(hour=3, minute=0, day_of_week="*"),
+    },
+    "assign_control_roles": {
+        "task": "config.tasks.assign_control_roles",
+        "schedule": crontab(hour=4, minute=0, day_of_week="*"),
+    },
 }
 
 app.conf.timezone = "Europe/Paris"

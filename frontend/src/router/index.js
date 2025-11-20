@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import { useRootStore } from "@/stores/root"
+import { useStorage } from "@vueuse/core"
 
 // views
 import LandingPage from "@/views/LandingPage"
@@ -93,7 +94,7 @@ export const routes = [
     name: "BlogHomePage",
     component: BlogHomePage,
     meta: {
-      title: "Articles de blog",
+      title: "Ressources",
       sitemap: true,
     },
   },
@@ -372,6 +373,7 @@ export const routes = [
         limit: "10",
         recherche: "",
       },
+      saveQuery: true,
     },
   },
   {
@@ -390,6 +392,7 @@ export const routes = [
         triage: "responseLimitDate",
         limit: "10",
       },
+      saveQuery: true,
     },
   },
   {
@@ -471,6 +474,7 @@ export const routes = [
         article: "",
         limit: "10",
       },
+      saveQuery: true,
     },
   },
   {
@@ -528,6 +532,7 @@ export const routes = [
         decisionAvant: "",
         decisionApres: "",
       },
+      saveQuery: true,
     },
   },
   {
@@ -561,6 +566,7 @@ export const routes = [
         formeGalenique: "",
         dose: "",
       },
+      saveQuery: true,
     },
   },
   {
@@ -687,14 +693,27 @@ const chooseAuthorisedRoute = async (to, from, next, store) => {
   }
 }
 
+const objectIsEmpty = (obj) => {
+  // c'est le test le plus efficace
+  // https://stackoverflow.com/a/59787784/3845770
+  for (let i in obj) return false
+  return true
+}
+
 const ensureDefaultQueryParams = (route, next) => {
-  if (!route.meta.defaultQueryParams) return true
   let needsRedirection = false
-  for (const [queryParam, value] of Object.entries(route.meta.defaultQueryParams))
-    if (!(queryParam in route.query)) {
-      route.query[queryParam] = value
-      needsRedirection = true
-    }
+  const savedQuery = useStorage(route.name, {})
+  if (objectIsEmpty(route.query) && !objectIsEmpty(savedQuery.value)) {
+    route.query = savedQuery.value
+    needsRedirection = true
+  }
+  if (route.meta.defaultQueryParams) {
+    for (const [queryParam, value] of Object.entries(route.meta.defaultQueryParams))
+      if (!(queryParam in route.query)) {
+        route.query[queryParam] = value
+        needsRedirection = true
+      }
+  }
   if (!needsRedirection) return true
   next(route)
   return false
@@ -713,6 +732,12 @@ router.navigateBack = (defaultRoute, additionalParameters) => {
 }
 
 router.beforeEach((to, from, next) => {
+  // sauvegarder le query du from
+  if (from.meta.saveQuery) {
+    const savedQuery = useStorage(from.name, {})
+    savedQuery.value = from.query
+  }
+  // preparer la prochaine vue
   const store = useRootStore()
   previousRoute.value = from
   if (ensureDefaultQueryParams(to, next)) chooseAuthorisedRoute(to, from, next, store)
