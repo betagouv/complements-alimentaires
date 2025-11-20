@@ -595,6 +595,21 @@ class Declaration(Historisable, TimeStampable):
                     self.calculated_article = Declaration.Article.ARTICLE_16
                     return
 
+                has_revoked_ingredients = (
+                    any(self.declared_plants.filter(plant__status=IngredientStatus.AUTHORIZATION_REVOKED))
+                    or any(
+                        self.declared_microorganisms.filter(
+                            microorganism__status=IngredientStatus.AUTHORIZATION_REVOKED
+                        )
+                    )
+                    or any(self.declared_substances.filter(substance__status=IngredientStatus.AUTHORIZATION_REVOKED))
+                    or any(self.declared_ingredients.filter(ingredient__status=IngredientStatus.AUTHORIZATION_REVOKED))
+                )
+
+                if has_revoked_ingredients:
+                    self.calculated_article = Declaration.Article.ARTICLE_16
+                    return
+
                 has_ongoing_new_ingredients = any(
                     x.filter(new=True).exclude(request_status=Addable.AddableStatus.REPLACED).exists()
                     for x in composition_ingredients
