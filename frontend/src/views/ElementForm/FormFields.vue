@@ -436,8 +436,8 @@
           <p>L'ingrédient sera toujours déclarable, et les déclarations qui l'utilisent vont recevoir l'article 16.</p>
           <DsfrInputGroup :error-message="revokedDetailError">
             <DsfrInput
-              label="Raison de retrait"
-              hint="Visible par le public"
+              label="Détail du retrait"
+              hint="Visible par le public. Penser à noter le fondement juridique du changement de statut, les mesures à mettre en place retrait et/ou rappel, toute autre info pertinente à ajouter au cas par cas."
               v-model="state.revokedDetail"
               :isTextarea="true"
               label-visible
