@@ -59,7 +59,7 @@
                 :exclude="['DRAFT']"
                 @updateFilter="updateStatusFilter"
                 :statusString="filteredStatus"
-                class="my-6"
+                class="my-6 status-filter"
               />
               <DsfrFieldset legend="Cible" class="min-w-60">
                 <DsfrInputGroup>
@@ -425,6 +425,9 @@ watch(activeAccordion, (x) => setTimeout(() => (seeOverflow.value = x === 0), 50
 }
 .filter-area :deep(.fr-fieldset__element) {
   @apply my-0!;
+}
+.status-filter :deep(.fr-fieldset__element) {
+  @apply my-2!;
 }
 div.seeOverflow :deep(#filter-accordeon.fr-collapse--expanded) {
   overflow: visible;
