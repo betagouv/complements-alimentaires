@@ -117,7 +117,6 @@ import { getPagesForPagination } from "@/utils/components"
 import StatusFilter from "@/components/StatusFilter.vue"
 import { orderingOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
-import { useQueryStorage } from "@/utils/storage"
 import { setDocumentTitle } from "@/utils/document"
 
 const router = useRouter()
@@ -185,8 +184,6 @@ const search = () => {
   updateQuery({ recherche: searchTerm.value })
   fetchSearchResults()
 }
-
-useQueryStorage("InstructionDeclarationsPage", (savedQuery) => (searchTerm.value = savedQuery.value.recherche))
 </script>
 
 <style scoped>
