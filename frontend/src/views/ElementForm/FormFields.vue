@@ -271,11 +271,11 @@
       legendClass="fr-h4 mb-0!"
       class="mb-0"
     >
-      <tr v-for="(q, idx) in state.warningsOnLabel" :key="`warning-${idx}`" class="grid md:grid-cols-8 md:gap-4 mb-4">
-        <td class="col-span-7">
+      <div v-for="(q, idx) in state.warningsOnLabel" :key="`warning-${idx}`" class="grid md:grid-cols-8 md:gap-4 mb-4">
+        <span class="col-span-7">
           <DsfrInput v-model="state.warningsOnLabel[idx]" />
-        </td>
-        <td>
+        </span>
+        <span>
           <DsfrButton
             label="Supprimer"
             @click="deleteWarning(idx)"
@@ -284,8 +284,8 @@
             tertiary
             class="mt-2"
           />
-        </td>
-      </tr>
+        </span>
+      </div>
       <DsfrButton
         label="Ajouter un avertissement"
         @click="() => (state.warningsOnLabel ? state.warningsOnLabel.push('') : (state.warningsOnLabel = ['']))"
