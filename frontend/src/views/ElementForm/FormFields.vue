@@ -271,14 +271,21 @@
       legendClass="fr-h4 mb-0!"
       class="mb-0"
     >
-      <DsfrInputGroup wrapperClass="mt-0 mb-0">
-        <DsfrInput
-          v-for="(_, idx) in state.warningsOnLabel"
-          :key="`warning-${idx}`"
-          v-model="state.warningsOnLabel[idx]"
-          class="mb-4"
-        />
-      </DsfrInputGroup>
+      <div v-for="(q, idx) in state.warningsOnLabel" :key="`warning-${idx}`" class="grid md:grid-cols-8 md:gap-4 mb-4">
+        <span class="col-span-7">
+          <DsfrInput v-model="state.warningsOnLabel[idx]" />
+        </span>
+        <span>
+          <DsfrButton
+            label="Supprimer"
+            @click="deleteWarning(idx)"
+            :icon="{ name: 'ri-delete-bin-line' }"
+            icon-only
+            tertiary
+            class="mt-2"
+          />
+        </span>
+      </div>
       <DsfrButton
         label="Ajouter un avertissement"
         @click="() => (state.warningsOnLabel ? state.warningsOnLabel.push('') : (state.warningsOnLabel = ['']))"
@@ -679,6 +686,9 @@ const addNewMaxQuantity = () => {
 }
 const deleteMaxQuantity = (idx) => {
   state.value.maxQuantities.splice(idx, 1)
+}
+const deleteWarning = (idx) => {
+  state.value.warningsOnLabel.splice(idx, 1)
 }
 const deletePlantPart = (idx) => {
   state.value.plantParts.splice(idx, 1)
