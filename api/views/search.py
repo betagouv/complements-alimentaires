@@ -36,7 +36,7 @@ class SearchView(APIView):
 
         try:
             limit = int(self.request.data.get("limit", 0))
-        except ValueError:
+        except (TypeError, ValueError):
             raise ParseError("Limit devrait être un chiffre entier")
 
         if limit > self.max_pagination_limit:
@@ -56,7 +56,7 @@ class SearchView(APIView):
         try:
             self.limit = int(self.request.data.get("limit", self.default_pagination_limit))
             self.offset = int(self.request.data.get("offset", 0))
-        except TypeError:
+        except (TypeError, ValueError):
             raise ParseError("Limit et offset devront être des chiffres entiers")
 
         self.count = len(results)
