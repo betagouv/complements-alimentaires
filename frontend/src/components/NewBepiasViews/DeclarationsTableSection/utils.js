@@ -11,7 +11,7 @@ export const getStatusTagForCell = (status) => {
   return {
     component: "DsfrTag",
     label: status,
-    class: tagData[status].color,
-    icon: tagData[status].icon,
+    class: tagData[status]?.color,
+    icon: tagData[status]?.icon,
   }
 }
