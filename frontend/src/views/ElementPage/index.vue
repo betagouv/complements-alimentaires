@@ -89,7 +89,7 @@
       </div>
       <ElementTextSection title="Description" :text="description" />
 
-      <div v-if="status === 'retiré par l\'administration' && element.revokedDetail">
+      <div v-if="status === ingredientStatuses.AUTHORIZATION_REVOKED.apiValue && element.revokedDetail">
         <h2 class="fr-h6 mb-1!">Retiré par l'administration</h2>
         <p class="whitespace-pre-line">{{ element.revokedDetail }}</p>
       </div>
@@ -166,7 +166,14 @@
 
 <script setup>
 import { ref, computed, watch } from "vue"
-import { getTypeIcon, getTypeInFrench, unSlugifyType, slugifyType, getApiType } from "@/utils/mappings"
+import {
+  getTypeIcon,
+  getTypeInFrench,
+  unSlugifyType,
+  slugifyType,
+  getApiType,
+  ingredientStatuses,
+} from "@/utils/mappings"
 import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
@@ -208,10 +215,14 @@ const icon = computed(() => getTypeIcon(type.value))
 const family = computed(() => element.value?.family?.name)
 const genre = computed(() => element.value?.genre)
 const plantParts = computed(() =>
-  element.value?.plantParts?.filter((x) => x.status === "autorisé" && !!x.name).map((x) => x.name)
+  element.value?.plantParts
+    ?.filter((x) => x.status === ingredientStatuses.AUTHORIZED.apiValue && !!x.name)
+    .map((x) => x.name)
 )
 const forbiddenPlantParts = computed(() =>
-  element.value?.plantParts?.filter((x) => x.status === "non autorisé" && !!x.name).map((x) => x.name)
+  element.value?.plantParts
+    ?.filter((x) => x.status === ingredientStatuses.NOT_AUTHORIZED.apiValue && !!x.name)
+    .map((x) => x.name)
 )
 const substances = computed(() => element.value?.substances)
 const synonyms = computed(() => element.value?.synonyms?.map((x) => x.name).filter((x) => !!x))
@@ -219,7 +230,11 @@ const casNumber = computed(() => element.value?.casNumber)
 const einecNumber = computed(() => element.value?.einecNumber)
 const activity = computed(() => (element.value?.activity ? "Actif" : "Non actif"))
 const status = computed(() =>
-  ["autorisé", "non autorisé", "retiré par l'administration"].includes(element.value?.status)
+  [
+    ingredientStatuses.AUTHORIZED.apiValue,
+    ingredientStatuses.NOT_AUTHORIZED.apiValue,
+    ingredientStatuses.AUTHORIZATION_REVOKED.apiValue,
+  ].includes(element.value?.status)
     ? element.value?.status
     : null
 )

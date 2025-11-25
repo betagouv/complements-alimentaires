@@ -29,13 +29,17 @@ import { computed } from "vue"
 import NewElementList from "./NewElementList"
 import SectionTitle from "@/components/SectionTitle"
 import { getObjectSubTypeList } from "@/utils/elements"
+import { ingredientStatuses } from "@/utils/mappings"
 
 const payload = defineModel()
 
 const newPlants = computed(() => payload.value.declaredPlants.filter((x) => x.new))
 const newPlantParts = computed(() =>
   payload.value.declaredPlants.filter(
-    (x) => !x.new && x.usedPart && x.element?.plantParts?.find((ep) => ep.id === x.usedPart)?.status !== "autorisé"
+    (x) =>
+      !x.new &&
+      x.usedPart &&
+      x.element?.plantParts?.find((ep) => ep.id === x.usedPart)?.status !== ingredientStatuses.AUTHORIZED.apiValue
   )
 )
 const newMicroorganisms = computed(() => payload.value.declaredMicroorganisms.filter((x) => x.new))

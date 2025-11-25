@@ -440,7 +440,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue"
-import { getApiType } from "@/utils/mappings"
+import { getApiType, ingredientStatuses } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRouter } from "vue-router"
@@ -655,9 +655,9 @@ const ingredientTypes = [
 ]
 
 const statuses = [
-  { value: 1, text: "✅ Autorisé", apiValue: "autorisé" },
-  { value: 2, text: "🛑 Non autorisé", apiValue: "non autorisé" },
-  { value: 3, text: "Sans objet", apiValue: "sans objet" },
+  { ...ingredientStatuses.AUTHORIZED, text: "✅ Autorisé" },
+  { ...ingredientStatuses.NOT_AUTHORIZED, text: "🛑 Non autorisé" },
+  { ...ingredientStatuses.NO_STATUS, text: "Sans objet" },
 ]
 
 const plantPartStatuses = statuses.filter((s) => s.value !== 3)
