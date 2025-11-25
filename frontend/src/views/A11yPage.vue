@@ -263,5 +263,6 @@
   </div>
 </template>
 <script>
+// eslint-disable-next-line no-unused-vars
 const contact_email = window.CONTACT_EMAIL
 </script>
