@@ -155,7 +155,7 @@
     </p>
     <p>
       Par voie numérique :
-      <a href="mailto:compl-alim@beta.gouv.fr">compl-alim@beta.gouv.fr</a>
+      <a :href="'mailto:' + contact_email">{{ contact_email }}</a>
     </p>
     <p>Par voie postale :</p>
     <address>
@@ -220,3 +220,6 @@
     />
   </div>
 </template>
+<script>
+const contact_email = window.CONTACT_EMAIL
+</script>

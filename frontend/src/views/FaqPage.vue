@@ -135,7 +135,9 @@
           <p>
             Si vous souhaitez ajuster les rôles des déclarants de votre entreprise, n’hésitez pas à nous contacter à
             l'adresse suivante :
-            <a href="mailto:contact@compl-alim.beta.gouv.fr"><i>contact@compl-alim.beta.gouv.fr</i></a>
+            <a :href="'mailto:' + contact_email">
+              <i>{{ contact_email }}</i>
+            </a>
           </p>
         </DsfrAccordion>
         <h2 class="fr-h4">Déclarations</h2>
@@ -441,6 +443,7 @@
 <script setup>
 import { ref } from "vue"
 const activeAccordion = ref()
+const contact_email = window.CONTACT_EMAIL
 </script>
 
 <style scoped>

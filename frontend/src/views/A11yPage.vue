@@ -236,7 +236,7 @@
     <h2>Retour d’information et contact</h2>
     <p>
       Si vous n’arrivez pas à accéder à un contenu ou à un service, vous nous contacter par email à l'adresse
-      <a href="mailto:contact@compl-alim.beta.gouv.fr">contact@compl-alim.beta.gouv.fr</a>
+      <a :href="'mailto:' + contact_email">{{ contact_email }}</a>
       pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.
     </p>
     <h2>Voie de recours</h2>
@@ -262,3 +262,6 @@
     </ul>
   </div>
 </template>
+<script>
+const contact_email = window.CONTACT_EMAIL
+</script>
