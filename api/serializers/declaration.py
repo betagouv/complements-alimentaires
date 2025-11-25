@@ -581,7 +581,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
                 "partie": declared_plant.used_part.name if declared_plant.used_part else None,
                 "preparation": declared_plant.preparation.name if declared_plant.preparation else None,
                 "quantité_par_djr": declared_plant.quantity if declared_plant.quantity else None,
-                "unite": declared_plant.unit.name,
+                "unite": declared_plant.unit.name if declared_plant.unit else None,
             }
             if active
             else declared_plant.plant.name
