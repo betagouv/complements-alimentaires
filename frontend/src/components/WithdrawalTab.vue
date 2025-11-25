@@ -22,7 +22,7 @@
       <p>Êtes-vous sûr de vouloir retirer ce produit du marché ?</p>
       <div class="flex gap-4">
         <DsfrButton secondary label="Non" @click="confirmationModalOpened = false" />
-        <DsfrButton label="Oui, je veux le retirer" @click="withdrawDeclaration" />
+        <DsfrButton label="Oui, je veux le retirer" @click="withdrawDeclaration" :disabled="isFetching" />
       </div>
     </DsfrModal>
   </div>
@@ -42,18 +42,6 @@ const declaration = defineModel()
 const $externalResults = ref({})
 const confirmationModalOpened = ref(false)
 const emit = defineEmits("withdraw")
-
-const withdrawDeclaration = async () => {
-  const url = `/api/v1/declarations/${declaration.value.id}/withdraw/`
-  const payload = { effectiveWithdrawalDate: effectiveDate.value }
-  const { response } = await useFetch(url, { headers: headers() }).post(payload).json()
-  $externalResults.value = await handleError(response)
-
-  if (response.value.ok) {
-    useToaster().addSuccessMessage("Votre produit a été retiré du marché")
-    emit("withdraw")
-  }
-}
 
 // Gestion de la date effective de retrait du marché
 const formatApiDate = (date) => date.toISOString().split("T")[0]
@@ -105,5 +93,29 @@ const openModal = () => {
   v$.value.$validate()
   if (v$.value.$error) return
   confirmationModalOpened.value = true
+}
+
+const payload = computed(() => ({
+  effectiveWithdrawalDate: effectiveDate.value,
+}))
+
+const { response, execute, isFetching } = useFetch(
+  `/api/v1/declarations/${declaration.value.id}/withdraw/`,
+  {
+    headers: headers(),
+  },
+  { immediate: false }
+)
+  .post(payload)
+  .json()
+
+const withdrawDeclaration = async () => {
+  await execute()
+  $externalResults.value = await handleError(response)
+
+  if (response.value.ok) {
+    useToaster().addSuccessMessage("Votre produit a été retiré du marché")
+    emit("withdraw")
+  }
 }
 </script>
