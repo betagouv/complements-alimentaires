@@ -10,7 +10,7 @@
       <span v-if="plantPartStatus === 'inconnu'" class="self-center mt-1 ml-2">
         <DsfrBadge label="Nouvelle partie de plante" type="info" />
       </span>
-      <span v-else-if="plantPartStatus === 'non autorisé'" class="self-center mt-1 ml-2">
+      <span v-else-if="plantPartStatus === ingredientStatuses.NOT_AUTHORIZED.apiValue" class="self-center mt-1 ml-2">
         <DsfrBadge label="Partie de plante non autorisée" type="warning" />
       </span>
     </div>
@@ -112,7 +112,7 @@ import { computed, watch } from "vue"
 import { useRootStore } from "@/stores/root"
 import CountryField from "@/components/fields/CountryField"
 import { getElementName } from "@/utils/elements"
-import { getAuthorizationModeInFrench } from "@/utils/mappings"
+import { getAuthorizationModeInFrench, ingredientStatuses } from "@/utils/mappings"
 import { getCurrentInstance } from "vue"
 
 const model = defineModel()
