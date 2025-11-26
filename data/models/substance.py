@@ -119,9 +119,9 @@ class Substance(IngredientCommonModel):
             self.update_metabolite_type()
         # Les substances devenues obsolètes ne sont plus liées à aucun Ingredient/Plant/Microorganism
         if self.is_obsolete:
-            self.ingredientsubstancerelation_set.delete()
-            self.plantsubstancerelation_set.delete()
-            self.microorganismsubstancerelation_set.delete()
+            self.ingredientsubstancerelation_set.all().delete()
+            self.plantsubstancerelation_set.all().delete()
+            self.microorganismsubstancerelation_set.all().delete()
 
 
 class SubstanceSynonym(SynonymCommonModel):
