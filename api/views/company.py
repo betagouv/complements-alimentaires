@@ -270,7 +270,6 @@ class AddMandatedCompanyView(GenericAPIView):
             raise NotFound()
 
         company.mandated_companies.add(mandated_company)
-        company.save()
 
         brevo_template = 27
         for supervisor in mandated_company.supervisor_roles.all():
@@ -312,7 +311,6 @@ class RemoveMandatedCompanyView(GenericAPIView):
         try:
             mandated_company = company.mandated_companies.get(pk=mandated_company_id)
             company.mandated_companies.remove(mandated_company)
-            company.save()
         except Company.DoesNotExist as _:
             pass
 
