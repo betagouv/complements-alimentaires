@@ -236,7 +236,7 @@
     <h2>Retour d’information et contact</h2>
     <p>
       Si vous n’arrivez pas à accéder à un contenu ou à un service, vous nous contacter par email à l'adresse
-      <a :href="'mailto:' + contact_email">{{ contact_email }}</a>
+      <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
       pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.
     </p>
     <h2>Voie de recours</h2>
@@ -262,7 +262,7 @@
     </ul>
   </div>
 </template>
-<script>
-// eslint-disable-next-line no-unused-vars
-const contact_email = window.CONTACT_EMAIL
+
+<script setup>
+const contactEmail = window.CONTACT_EMAIL
 </script>

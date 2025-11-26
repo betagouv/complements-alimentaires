@@ -155,7 +155,7 @@
     </p>
     <p>
       Par voie numérique :
-      <a :href="'mailto:' + contact_email">{{ contact_email }}</a>
+      <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
     </p>
     <p>Par voie postale :</p>
     <address>
@@ -220,7 +220,7 @@
     />
   </div>
 </template>
-<script>
-// eslint-disable-next-line no-unused-vars
-const contact_email = window.CONTACT_EMAIL
+
+<script setup>
+const contactEmail = window.CONTACT_EMAIL
 </script>

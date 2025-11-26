@@ -47,7 +47,7 @@
     <ul>
       <li>
         nous signaler par email :
-        <a :href="'mailto:' + contact_email">{{ contact_email }}</a>
+        <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
       </li>
       <li>
         créer une “issue” sur
@@ -105,7 +105,7 @@
     </p>
   </div>
 </template>
-<script>
-// eslint-disable-next-line no-unused-vars
-const contact_email = window.CONTACT_EMAIL
+
+<script setup>
+const contactEmail = window.CONTACT_EMAIL
 </script>
