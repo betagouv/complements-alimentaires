@@ -271,11 +271,10 @@ class AddMandatedCompanyView(GenericAPIView):
 
         company.mandated_companies.add(mandated_company)
 
-        brevo_template = 27
         for supervisor in mandated_company.supervisor_roles.all():
             try:
                 email.send_sib_template(
-                    brevo_template,
+                    email.EmailTemplateID.COMPANY_GIVEN_MANDATE.value,
                     {
                         "COMPANY_NAME": company.social_name,
                         "MANDATED_COMPANY_NAME": mandated_company.social_name,
