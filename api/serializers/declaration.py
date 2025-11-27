@@ -594,8 +594,12 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def serialize_micro_organismes(self, obj, active):
         return [
             {
-                "genre": declared_microorganism.microorganism.genus,
-                "espece": declared_microorganism.microorganism.species,
+                "genre": declared_microorganism.microorganism.genus
+                if declared_microorganism.microorganism
+                else declared_microorganism.new_genre,
+                "espece": declared_microorganism.microorganism.species
+                if declared_microorganism.microorganism
+                else declared_microorganism.new_species,
                 "souche": declared_microorganism.strain
                 if declared_microorganism.strain
                 else None,  # elle est normalement obligatoire mais quelques entrées ont pu être rentrées avant le required
