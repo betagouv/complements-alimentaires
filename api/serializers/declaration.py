@@ -617,12 +617,12 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def get_substances(self, obj):
         return [
             {
-                "nom": declared_substance.substance.name,
+                "nom": declared_substance.substance.name
+                if declared_substance.substance
+                else declared_substance.new_name,
                 "quantité_par_djr": declared_substance.quantity,
-                "unite": declared_substance.unit.name,
+                "unite": declared_substance.unit.name if declared_substance.unit else None,
             }
-            if declared_substance.substance and declared_substance.quantity and declared_substance.unit
-            else {}
             for declared_substance in obj.declared_substances.all()
         ]
 
