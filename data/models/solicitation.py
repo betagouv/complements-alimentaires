@@ -104,11 +104,10 @@ class SupervisionClaim(BaseSolicitation, models.Model):
     def create_hook(self):
         recipients = User.objects.filter(is_staff=True)
         self.recipients.set(recipients)  # TODO: Je ne pense pas que le self.recipients sert à quelque chose
-        brevo_template_id = 15
         for recipient in recipients:
             try:
                 email.send_sib_template(
-                    brevo_template_id,
+                    email.EmailTemplateID.REQUEST_TO_JOIN_EMPTY_COMPANY.value,
                     {
                         "REQUESTER_NAME": self.sender.get_full_name(),
                         "COMPANY_NAME": self.company.social_name,
@@ -174,11 +173,10 @@ class CompanyAccessClaim(BaseSolicitation, models.Model):
     def create_hook(self):
         recipients = self.company.supervisors.all()
         self.recipients.set(recipients)
-        brevo_template_id = 12
         for recipient in self.recipients.all():
             try:
                 email.send_sib_template(
-                    brevo_template_id,
+                    email.EmailTemplateID.REQUEST_TO_JOIN_COMPANY.value,
                     {
                         "REQUESTER_NAME": self.sender.get_full_name(),
                         "COMPANY_NAME": self.company.social_name,
@@ -199,10 +197,9 @@ class CompanyAccessClaim(BaseSolicitation, models.Model):
         if self.declarant_role:
             self.company.declarants.add(self.sender)
 
-        brevo_template_id = 13
         try:
             email.send_sib_template(
-                brevo_template_id,
+                email.EmailTemplateID.ACCEPT_REQUEST_TO_JOIN_COMPANY.value,
                 {
                     "REQUESTER_NAME": self.sender.get_full_name(),
                     "COMPANY_NAME": self.company.social_name,
@@ -217,10 +214,9 @@ class CompanyAccessClaim(BaseSolicitation, models.Model):
 
     @processable_action
     def refuse(self, processor):
-        brevo_template_id = 14
         try:
             email.send_sib_template(
-                brevo_template_id,
+                email.EmailTemplateID.REFUSE_REQUEST_TO_JOIN_COMPANY.value,
                 {
                     "COMPANY_NAME": self.company.social_name,
                 },
@@ -257,10 +253,9 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
         return f"{self.sender.name} vous invite à créer un compte Compl'Alim et rejoindre l'entreprise {self.company.social_name}."
 
     def create_hook(self):
-        brevo_template_id = 16
         try:
             email.send_sib_template(
-                brevo_template_id,
+                email.EmailTemplateID.INVITE_TO_JOIN_COMPANY.value,
                 {
                     "COMPANY_NAME": self.company.social_name,
                     "SENDER_NAME": self.sender.name,
@@ -281,9 +276,8 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
             role_class.objects.get_or_create(company=self.company, user=processor)
 
         try:
-            brevo_template_id = 17
             email.send_sib_template(
-                brevo_template_id,
+                email.EmailTemplateID.COMPANY_INVITATION_ACCEPTED.value,
                 {
                     "COMPANY_NAME": self.company.social_name,
                     "NEW_COLLABORATOR": processor.get_full_name(),

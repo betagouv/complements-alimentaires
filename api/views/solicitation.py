@@ -102,9 +102,8 @@ class AddNewCollaboratorView(APIView):
                     role_class.objects.get_or_create(company=company, user=recipient)
 
                 try:
-                    brevo_template_id = 18
                     email.send_sib_template(
-                        brevo_template_id,
+                        email.EmailTemplateID.USER_ADDED_TO_COMPANY.value,
                         {
                             "SENDER_NAME": sender.get_full_name(),
                             "COMPANY_NAME": company.social_name,
