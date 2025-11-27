@@ -34,10 +34,9 @@ logger = logging.getLogger(__name__)
 def _send_verification_mail(user):
     new_token = MagicLinkToken.objects.create(user=user, usage=MagicLinkUsage.VERIFY_EMAIL_ADDRESS)
     verification_url = urljoin(get_base_url(), new_token.as_url(key=new_token.key))
-    brevo_template_id = 19
     try:
         email.send_sib_template(
-            brevo_template_id,
+            email.EmailTemplateID.CONFIRM_EMAIL.value,
             {"CONFIRMATION_LINK": verification_url},
             user.email,
             user.get_full_name(),
