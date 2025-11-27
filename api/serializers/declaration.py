@@ -577,7 +577,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def serialize_plants(self, obj, active):
         return [
             {
-                "nom": declared_plant.plant.name if declared_plant.plant else declared_plant.new_name,
+                "nom": declared_plant.plant.name,
                 "partie": declared_plant.used_part.name if declared_plant.used_part else None,
                 "preparation": declared_plant.preparation.name if declared_plant.preparation else None,
                 "quantité_par_djr": declared_plant.quantity if declared_plant.quantity else None,
@@ -585,7 +585,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             }
             if active
             else declared_plant.plant.name
-            for declared_plant in obj.declared_plants.filter(active=active)
+            for declared_plant in obj.declared_plants.filter(active=active).exclude(plant__isnull=True)
         ]
 
     def get_plantes(self, obj):
@@ -594,12 +594,8 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def serialize_micro_organismes(self, obj, active):
         return [
             {
-                "genre": declared_microorganism.microorganism.genus
-                if declared_microorganism.microorganism
-                else declared_microorganism.new_genre,
-                "espece": declared_microorganism.microorganism.species
-                if declared_microorganism.microorganism
-                else declared_microorganism.new_species,
+                "genre": declared_microorganism.microorganism.genus,
+                "espece": declared_microorganism.microorganism.species,
                 "souche": declared_microorganism.strain
                 if declared_microorganism.strain
                 else None,  # elle est normalement obligatoire mais quelques entrées ont pu être rentrées avant le required
@@ -608,7 +604,9 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             }
             if active
             else declared_microorganism.microorganism.name
-            for declared_microorganism in obj.declared_microorganisms.filter(active=active)
+            for declared_microorganism in obj.declared_microorganisms.filter(active=active).exclude(
+                microorganism__isnull=True
+            )
         ]
 
     def get_micro_organismes(self, obj):
@@ -617,13 +615,11 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     def get_substances(self, obj):
         return [
             {
-                "nom": declared_substance.substance.name
-                if declared_substance.substance
-                else declared_substance.new_name,
+                "nom": declared_substance.substance.name,
                 "quantité_par_djr": declared_substance.quantity,
                 "unite": declared_substance.unit.name if declared_substance.unit else None,
             }
-            for declared_substance in obj.declared_substances.all()
+            for declared_substance in obj.declared_substances.exclude(substance__isnull=True)
         ]
 
     def get_additifs(self, obj):
