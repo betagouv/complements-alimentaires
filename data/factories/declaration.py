@@ -54,7 +54,7 @@ class DeclaredPlantFactory(factory.django.DjangoModelFactory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         obj = model_class(*args, **kwargs)
-        if not obj.used_part:
+        if not obj.used_part and obj.plant:
             # par défaut, rattacher une partie de plante marqué comme utile
             # pour ne pas avoir une demande d'ajout de partie de plante
             used_part = PlantPartFactory()
