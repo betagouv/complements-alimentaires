@@ -114,7 +114,7 @@ import { handleError } from "@/utils/error-handling"
 import FormWrapper from "@/components/FormWrapper"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
-import { tabTitles } from "@/utils/mappings"
+import { tabTitles, ingredientStatuses } from "@/utils/mappings"
 import { setDocumentTitle } from "@/utils/document"
 
 // Il y a deux refs qui stockent des erreurs. $externalResults sert
@@ -204,7 +204,9 @@ watch(data, () => {
 
 const hasNewElements = computed(() => {
   const hasNewPart = payload.value.declaredPlants.some(
-    (x) => x.usedPart && x.element?.plantParts?.find((ep) => ep.id === x.usedPart)?.status !== "autorisé"
+    (x) =>
+      x.usedPart &&
+      x.element?.plantParts?.find((ep) => ep.id === x.usedPart)?.status !== ingredientStatuses.AUTHORIZED.apiValue
   )
   return (
     hasNewPart ||
