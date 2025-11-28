@@ -707,6 +707,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
     blocking_reasons = serializers.ListField(read_only=True)
     simplified_status = serializers.SerializerMethodField(read_only=True)
     simplified_status_date = serializers.SerializerMethodField(read_only=True)
+    revoked_ingredient = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Declaration
@@ -765,6 +766,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "last_administration_comment",
             "simplified_status",
             "simplified_status_date",
+            "revoked_ingredient",
         )
         read_only_fields = (
             "id",
@@ -877,6 +879,12 @@ class DeclarationSerializer(serializers.ModelSerializer):
 
     def get_simplified_status_date(self, instance):
         return SimplifiedStatusHelper.get_simplified_status_date(instance)
+
+    def get_revoked_ingredient(self, instance):
+        # aujourd'hui on donne que le nom, mais utiliser le format d'objet
+        # si jamais plus d'infos sont nécessaires à l'avenir
+        if instance.status == Declaration.DeclarationStatus.AUTHORIZATION_REVOKED and instance.revoked_ingredient:
+            return {"name": instance.revoked_ingredient["name"]}
 
 
 class DeclarationShortSerializer(serializers.ModelSerializer):
