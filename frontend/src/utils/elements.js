@@ -23,3 +23,20 @@ export const getUnitQuantityString = (declaration, units) => {
 export const getUnitString = (unitId, units) => {
   return units.value?.find?.((x) => x.id === unitId)?.name || "-"
 }
+
+export const hasNewElements = (declaration) => {
+  const hasNewPart = declaration.declaredPlants.some(
+    (x) => x.usedPart && x.element?.plantParts?.find((ep) => ep.id === x.usedPart)?.status !== "autorisé"
+  )
+  return (
+    hasNewPart ||
+    []
+      .concat(
+        declaration.declaredPlants,
+        declaration.declaredMicroorganisms,
+        declaration.declaredIngredients,
+        declaration.declaredSubstances
+      )
+      .some((x) => x.new)
+  )
+}

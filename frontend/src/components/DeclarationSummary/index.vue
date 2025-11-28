@@ -29,12 +29,12 @@
 
       <h3 class="fr-h6 mt-8!">
         Adresse sur l'étiquetage
-        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
+        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />
       </h3>
       <AddressLine :payload="payload" />
       <h3 class="fr-h6 mt-8!">
         Pièces jointes
-        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(2))" />
+        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(attachmentLink)" />
       </h3>
       <RequiresAnalysisReportNotice :declaration="payload" class="mb-4" />
       <div class="grid grid-cols-12 gap-3 mb-8">
@@ -55,6 +55,7 @@ export default { name: "DeclarationSummary" }
 </script>
 
 <script setup>
+import { computed } from "vue"
 import AddressLine from "@/components/AddressLine"
 import ProductInfoSegment from "@/components/ProductInfoSegment"
 import ArticleInfoRow from "./ArticleInfoRow"
@@ -65,6 +66,7 @@ import { useRouter } from "vue-router"
 import SummaryModificationButton from "./SummaryModificationButton"
 import HistoryBadge from "../History/HistoryBadge.vue"
 import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNotice"
+import { hasNewElements } from "@/utils/elements"
 
 const router = useRouter()
 
@@ -77,6 +79,10 @@ defineProps({
 })
 
 const editLink = (tab) => ({ query: { tab } })
+
+const attachmentLink = computed(() => {
+  return hasNewElements(payload.value) ? editLink(3) : editLink(2)
+})
 </script>
 
 <style scoped>
