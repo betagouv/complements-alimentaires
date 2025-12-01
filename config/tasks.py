@@ -15,7 +15,7 @@ from viewflow import fsm
 from api.utils.simplified_status import SimplifiedStatusHelper
 from config import email
 from data.etl.declarations import OpenDataDeclarationsETL
-from data.models import Company, Declaration, Snapshot, ControlRoleEmail, ControlRole
+from data.models import Company, Declaration, Snapshot, ControlRoleEmail, ControlRole, IngredientStatus
 
 from .grist_api import fetch_control_emails_from_grist
 
@@ -332,14 +332,20 @@ class RevokeAuthorizationDeclarationFlow:
             self.declaration.create_snapshot(action=Snapshot.SnapshotActions.REVOKE_AUTHORIZATION)
 
     @status.transition(source={Status.AUTHORIZED}, target=Status.AUTHORIZATION_REVOKED)
-    def revoke_authorization(self):
-        pass
+    def revoke_authorization(self, ingredient):
+        self.declaration.revoked_ingredient = {
+            "name": ingredient.name,
+            "id": ingredient.id,
+            "model": ingredient.__class__.__name__,
+        }
 
 
 @app.task
 def revoke_authorisation_from_declarations(declarations, ingredient):
     if not ingredient:
         raise Exception("Must pass ingredient to revoke authorisations from declarations")
+    if not ingredient.status == IngredientStatus.AUTHORIZATION_REVOKED:
+        raise Exception("Cannot revoke declaration for non-revoked ingredient")
     brevo_template_id = 37
     success_count = 0
     error_count = 0
@@ -347,7 +353,7 @@ def revoke_authorisation_from_declarations(declarations, ingredient):
     for declaration in declarations:
         flow = RevokeAuthorizationDeclarationFlow(declaration)
         try:
-            flow.revoke_authorization()
+            flow.revoke_authorization(ingredient)
             if declaration.author:
                 email.send_sib_template(
                     brevo_template_id,

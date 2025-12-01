@@ -2,8 +2,13 @@ from django.test import TestCase
 from unittest import mock
 
 from config import tasks
-from data.factories import AuthorizedDeclarationFactory, OngoingInstructionDeclarationFactory, IngredientFactory
-from data.models import Declaration
+from data.factories import (
+    AuthorizedDeclarationFactory,
+    OngoingInstructionDeclarationFactory,
+    IngredientFactory,
+    DeclaredIngredientFactory,
+)
+from data.models import Declaration, IngredientStatus
 
 
 class TestRevokeDeclarations(TestCase):
@@ -12,13 +17,18 @@ class TestRevokeDeclarations(TestCase):
         """
         Déclarations autorisées peuvent être retirées du marché par l'administration
         """
-        ingredient = IngredientFactory(revoked_detail="Some detail")
+        ingredient = IngredientFactory(status=IngredientStatus.AUTHORIZATION_REVOKED)
         declaration = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration, ingredient=ingredient)
 
         tasks.revoke_authorisation_from_declarations(Declaration.objects.all(), ingredient)
 
         declaration.refresh_from_db()
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZATION_REVOKED)
+        self.assertIsNotNone(declaration.revoked_ingredient)
+        self.assertEqual(declaration.revoked_ingredient["id"], ingredient.id)
+        self.assertEqual(declaration.revoked_ingredient["name"], ingredient.name)
+        self.assertEqual(declaration.revoked_ingredient["model"], "Ingredient")
         template_number = 37
         mocked_brevo.assert_called_once_with(
             template_number,
@@ -38,11 +48,27 @@ class TestRevokeDeclarations(TestCase):
         Les déclarations qui ne sont pas autorisées ne peuvent pas basculer au statut
         retiré par l'administration
         """
-        ingredient = IngredientFactory()
+        ingredient = IngredientFactory(status=IngredientStatus.AUTHORIZATION_REVOKED)
         declaration = OngoingInstructionDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration, ingredient=ingredient)
 
         tasks.revoke_authorisation_from_declarations(Declaration.objects.all(), ingredient)
 
         declaration.refresh_from_db()
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+        self.assertEqual(declaration.revoked_ingredient, {})
+        mocked_brevo.assert_not_called()
+
+    @mock.patch("config.email.send_sib_template")
+    def test_cannot_revoke_declarations_for_non_revoked_ingredient(self, mocked_brevo):
+        ingredient = IngredientFactory(status=IngredientStatus.AUTHORIZED)
+        declaration = AuthorizedDeclarationFactory()
+        DeclaredIngredientFactory(declaration=declaration, ingredient=ingredient)
+
+        with self.assertRaises(Exception, msg="Cannot revoke declarations for non-revoked ingredient"):
+            tasks.revoke_authorisation_from_declarations(Declaration.objects.all(), ingredient)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
+        self.assertEqual(declaration.revoked_ingredient, {})
         mocked_brevo.assert_not_called()
