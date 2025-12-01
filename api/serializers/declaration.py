@@ -585,7 +585,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             }
             if active
             else declared_plant.plant.name
-            for declared_plant in obj.declared_plants.filter(active=active)
+            for declared_plant in obj.declared_plants.filter(active=active).exclude(plant__isnull=True)
         ]
 
     def get_plantes(self, obj):
@@ -604,7 +604,9 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             }
             if active
             else declared_microorganism.microorganism.name
-            for declared_microorganism in obj.declared_microorganisms.filter(active=active)
+            for declared_microorganism in obj.declared_microorganisms.filter(active=active).exclude(
+                microorganism__isnull=True
+            )
         ]
 
     def get_micro_organismes(self, obj):
@@ -615,11 +617,9 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             {
                 "nom": declared_substance.substance.name,
                 "quantité_par_djr": declared_substance.quantity,
-                "unite": declared_substance.unit.name,
+                "unite": declared_substance.unit.name if declared_substance.unit else None,
             }
-            if declared_substance.substance and declared_substance.quantity and declared_substance.unit
-            else {}
-            for declared_substance in obj.declared_substances.all()
+            for declared_substance in obj.declared_substances.exclude(substance__isnull=True)
         ]
 
     def get_additifs(self, obj):

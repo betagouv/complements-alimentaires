@@ -30,7 +30,7 @@ from data.factories import (
 from data.models import Declaration
 
 
-class IngredientTestCase(TestCase):
+class OpenDataTestCase(TestCase):
     def setUp(self):
         # default_storage est FileSystemStorage dans l'environnement de test
 
@@ -143,3 +143,43 @@ class IngredientTestCase(TestCase):
         substance_loaded = json.loads(next(x for x in open_data_jdd["substances"] if is_vitamin_c(x)))
         self.assertEqual(substance_loaded[0]["quantité_par_djr"], 10)
         self.assertEqual(substance_loaded[0]["unite"], "mg")
+
+    @override_settings(DECLARATIONS_EXPORT_BATCH_SIZE=1)
+    def test_ingredients_without_database_ingredient_ignored(self):
+        """
+        Pour le edge case où une déclaration est autorisée avec des nouveaux ingrédients
+        non-liés à des ingrédients en base, s'assurer que ces ingrédients ne sont pas inclus
+        dans l'open data.
+        """
+        declaration = AuthorizedDeclarationFactory(
+            declared_plants=[], declared_microorganisms=[], declared_substances=[], declared_ingredients=[]
+        )
+
+        DeclaredPlantFactory(declaration=declaration, new=True, active=True, plant=None, new_name="Test plant")
+        DeclaredMicroorganismFactory(
+            declaration=declaration,
+            new=True,
+            active=True,
+            microorganism=None,
+            new_genre="Test genre",
+            new_species="Test species",
+        )
+        DeclaredSubstanceFactory(
+            declaration=declaration, new=True, active=True, substance=None, new_name="Test substance"
+        )
+        DeclaredIngredientFactory(
+            declaration=declaration, new=True, active=True, ingredient=None, new_name="Test ingredient"
+        )
+
+        # tester l'export avec un taille de batch d'une déclaration
+        self.etl_test.export()
+
+        open_data_jdd = pd.read_csv(os.path.join(settings.MEDIA_ROOT, self.etl_test.filename), delimiter=";")
+        self.assertEqual(len(open_data_jdd), 1)
+        self.assertEqual(json.loads(open_data_jdd["plantes"][0]), [])
+        self.assertEqual(json.loads(open_data_jdd["micro_organismes"][0]), [])
+        self.assertEqual(json.loads(open_data_jdd["substances"][0]), [])
+        self.assertEqual(json.loads(open_data_jdd["additifs"][0]), [])
+        self.assertEqual(json.loads(open_data_jdd["nutriments"][0]), [])
+        self.assertEqual(json.loads(open_data_jdd["autres_ingredients_actifs"][0]), [])
+        self.assertEqual(json.loads(open_data_jdd["ingredients_inactifs"][0]), [])
