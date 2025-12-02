@@ -17,6 +17,7 @@ from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from data.behaviours import Historisable, TimeStampable
 from data.choices import AuthorizationModes, CountryChoices, FrAuthorizationReasons
 from data.models import (
+    Aroma,
     Company,
     Condition,
     Effect,
@@ -818,6 +819,36 @@ class DeclaredIngredient(Historisable, Addable):
     @property
     def type(self):
         return "ingredient"
+
+
+class DeclaredAroma(Historisable, Addable):
+    class Meta:
+        verbose_name = "arôme déclaré"
+        verbose_name_plural = "arômes déclarés"
+
+    declaration = models.ForeignKey(
+        Declaration,
+        related_name="declared_aromas",
+        verbose_name=Declaration._meta.verbose_name,
+        on_delete=models.CASCADE,
+    )
+    aroma = models.ForeignKey(
+        Aroma, null=True, blank=True, verbose_name="arôme ajouté par l'user", on_delete=models.RESTRICT
+    )
+    new_name = models.TextField(blank=True, verbose_name="libellé")
+    new_type = models.TextField(blank=True, verbose_name="type de l'ingrédient")
+    quantity = models.FloatField(null=True, blank=True, verbose_name="quantité par DJR")
+    unit = models.ForeignKey(Unit, null=True, blank=True, verbose_name="unité", on_delete=models.RESTRICT)
+
+    def __str__(self):
+        if self.new:
+            return f"-NEW- {self.new_name}"
+        else:
+            return self.ingredient.name
+
+    @property
+    def type(self):
+        return "arome"
 
 
 class DeclaredSubstance(Historisable, Addable):
