@@ -32,7 +32,7 @@
 <script setup>
 import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
-import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
+import { getTypeIcon, getTypeInFrench, ingredientStatuses } from "@/utils/mappings"
 
 const props = defineProps({ element: Object, type: String, declarationLink: Object })
 const store = useRootStore()
@@ -107,8 +107,9 @@ const elementProfile = computed(() => {
 const plantPartBadge = computed(() => {
   if (props.element.isPartRequest) {
     const associatedPart = props.element.element.plantParts.find((p) => p.id === props.element.usedPart)
-    if (associatedPart?.status === "autorisé") return { label: "Autorisée", type: "success", component: "DsfrBadge" }
-    else if (associatedPart?.status === "non autorisé")
+    if (associatedPart?.status === ingredientStatuses.AUTHORIZED.apiValue)
+      return { label: "Autorisée", type: "success", component: "DsfrBadge" }
+    else if (associatedPart?.status === ingredientStatuses.NOT_AUTHORIZED.apiValue)
       return { label: "Non autorisée", type: "warning", component: "DsfrBadge" }
     else return { label: "Non associée", type: "info", component: "DsfrBadge" }
   }
