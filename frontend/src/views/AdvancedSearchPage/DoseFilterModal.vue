@@ -102,7 +102,9 @@
     <div class="flex mt-2 mb-4" v-if="filterString">
       <v-icon class="self-center mr-3" :name="getTypeIcon(filterString.split('||')[0])"></v-icon>
       <div>
-        <p class="mb-0 font-medium" v-for="line in filterTextLines" :key="`line-${line}`">{{ line }}</p>
+        <p class="mb-0 font-medium" v-for="line in filterTextLines" :key="`line-${line}`">
+          {{ decodeURIComponent(line) }}
+        </p>
       </div>
     </div>
     <p class="mb-2 italic" v-else>Aucun filtrage par dose n'est appliqué.</p>
@@ -237,7 +239,7 @@ const setFilter = () => {
 
   // "<type d'élément>||<nom de l'élément>||<ID de l'élément (partie de plante optionnelle)>||<opération>||<quantité>||<ID de l'unité>"
   // "plant||Camomille||<ID de la plante>|<ID de la partie>|<nom de la partie>||<opération>||<quantité>||<ID de l'unité>"
-  let newFilterString = `${selectedIngredient.value.objectType}||${selectedIngredient.value.name}||${selectedIngredient.value.id}`
+  let newFilterString = `${selectedIngredient.value.objectType}||${encodeURIComponent(selectedIngredient.value.name)}||${selectedIngredient.value.id}`
 
   // Ajout de l'info sur la partie de plante en cas de ingrédient plante
   if (ingredientIsPlant.value) {
