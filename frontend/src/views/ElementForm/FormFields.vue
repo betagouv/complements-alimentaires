@@ -430,7 +430,7 @@
           <p>Voulez-vous retirer l'ingredient {{ element.name }} du marché ?</p>
           <p>
             Cette action va marquer l'ingrédient comme "retiré par l'administration" et elle va marquer toutes les
-            déclarations autorisées qui utilisent l'ingrédient comme retirées par l'administration, avec un mail envoyé
+            déclarations autorisées qui utilisent l'ingrédient comme "retirées par l'administration", un mail sera envoyé
             aux déclarants concernés.
           </p>
           <p>L'ingrédient sera toujours déclarable, et les déclarations qui l'utilisent vont recevoir l'article 16.</p>
