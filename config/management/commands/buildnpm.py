@@ -1,5 +1,6 @@
 import os
 import subprocess
+
 from django.core.management.base import BaseCommand
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -12,6 +13,6 @@ class Command(BaseCommand):
         print(BASE_DIR)
 
         os.chdir(os.path.join(BASE_DIR, "frontend"))
-        subprocess.run(["npm", "install"])
+        subprocess.run(["npm", "ci"])
         subprocess.run(["npm", "run", "build"])
         os.chdir(os.path.join(BASE_DIR))

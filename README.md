@@ -40,7 +40,7 @@ L'application frontend se trouve sous `/frontend`. Pour installer les dépendanc
 
 ```
 cd frontend
-npm install
+npm ci
 ```
 
 #### Créer la base de données
