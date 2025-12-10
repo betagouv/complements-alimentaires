@@ -126,7 +126,7 @@ import NumberField from "@/components/NumberField"
 import { useRootStore } from "@/stores/root"
 import { computed, watch, ref, onMounted } from "vue"
 import { getElementName } from "@/utils/elements"
-import { getActivityReadonlyByType } from "@/utils/mappings"
+import { getActivityReadonlyByType, ingredientStatuses } from "@/utils/mappings"
 import ElementCommentModal from "@/components/ElementCommentModal"
 
 const model = defineModel()
@@ -142,8 +142,8 @@ const synonyms = computed(() => model.value.element?.synonyms?.map((x) => x.name
 
 const plantParts = computed(() => {
   const elementParts = model.value.element?.plantParts || []
-  const authorizedParts = elementParts.filter((p) => p.status === "autorisé")
-  const unauthorizedParts = elementParts.filter((p) => p.status === "non autorisé")
+  const authorizedParts = elementParts.filter((p) => p.status === ingredientStatuses.AUTHORIZED.apiValue)
+  const unauthorizedParts = elementParts.filter((p) => p.status === ingredientStatuses.NOT_AUTHORIZED.apiValue)
   let parts = authorizedParts
   if (props.canAddNewPlantPart || !elementParts.length) {
     if (parts.length) {

@@ -148,6 +148,25 @@ export const statusProps = {
   },
 }
 
+export const ingredientStatuses = {
+  AUTHORIZED: {
+    value: 1,
+    apiValue: "autorisé",
+  },
+  NOT_AUTHORIZED: {
+    value: 2,
+    apiValue: "non autorisé",
+  },
+  NO_STATUS: {
+    value: 3,
+    apiValue: "sans objet",
+  },
+  AUTHORIZATION_REVOKED: {
+    value: 99,
+    apiValue: "retiré par l'administration",
+  },
+}
+
 export const roleNameDisplayNameMapping = { DeclarantRole: "déclarant", SupervisorRole: "gestionnaire" }
 
 export const tabTitles = (components, useSubmission = false) => {
