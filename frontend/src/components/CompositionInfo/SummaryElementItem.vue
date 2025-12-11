@@ -18,7 +18,7 @@
 
           <ElementStatusBadge
             :text="model.element.status"
-            v-if="showElementAuthorization && model.element?.status === 'non autorisé'"
+            v-if="showElementAuthorization && model.element?.status !== 'autorisé'"
             class="self-center ml-2"
           />
 
