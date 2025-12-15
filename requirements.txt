@@ -50,7 +50,7 @@ et_xmlfile==2.0.0
 executing==2.2.1
 factory_boy==3.3.3
 Faker==38.0.0
-filelock==3.19.1
+filelock==3.20.0
 gprof2dot==2025.4.14
 html5lib==1.1
 identify==2.6.15
