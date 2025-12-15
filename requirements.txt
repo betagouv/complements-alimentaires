@@ -102,7 +102,7 @@ reportlab==4.4.4
 requests==2.32.4
 requests-mock==1.12.1
 ruff==0.14.6
-s3transfer==0.15.0
+s3transfer==0.16.0
 sentry-sdk==2.45.0
 sib-api-v3-sdk==7.6.0
 six==1.17.0
