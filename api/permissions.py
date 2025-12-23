@@ -105,7 +105,6 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
         if not request.user.is_authenticated:
             return False
 
-        is_author = IsDeclarationAuthor().has_object_permission(request, view, obj)
         is_agent = IsInstructor().has_permission(request, view) or IsVisor().has_permission(request, view)
 
         declarable_companies = request.user.declarable_companies.all()
@@ -120,14 +119,10 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
 
         is_draft = obj.status == Declaration.DeclarationStatus.DRAFT
         if request.method in permissions.SAFE_METHODS:
-            return (
-                is_author
-                or is_declarant_from_same_company
-                or is_supervisor_from_same_company
-                or (is_agent and not is_draft)
-            )
+            # le gestionnaire d'une entreprise a les droits de lecture seulement
+            return is_declarant_from_same_company or is_supervisor_from_same_company or (is_agent and not is_draft)
 
-        return (is_author or is_declarant_from_same_company) or (is_agent and not is_draft)
+        return is_declarant_from_same_company or (is_agent and not is_draft)
 
 
 class CanTakeAuthorship(permissions.BasePermission):
