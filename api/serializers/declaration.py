@@ -1,5 +1,7 @@
 import logging
 
+from django.db.models import Q
+
 from drf_base64.fields import Base64FileField
 from openpyxl.cell.cell import Hyperlink
 from rest_framework import serializers
@@ -888,11 +890,19 @@ class DeclarationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         request = self.context["request"]
-        declarable_companies = request.user.declarable_companies.all()
-        if "company" in attrs and attrs["company"] not in declarable_companies:
-            raise serializers.ValidationError({"company": "Vous n'avez pas les droits sur cette company"})
-        if "mandated_company" in attrs and attrs["mandated_company"] not in declarable_companies:
-            raise serializers.ValidationError({"mandated_company": "Vous n'avez pas les droits sur cette company"})
+        declarable_companies = Company.objects.filter(
+            Q(pk__in=request.user.declarable_companies.values_list("pk"))
+            | Q(mandated_companies__in=request.user.declarable_companies.values_list("pk"))
+        ).distinct()
+
+        is_declarant_from_same_company = ("company" in attrs and attrs["company"] in declarable_companies) or (
+            "mandated_company" in attrs and attrs["mandated_company"] in declarable_companies
+        )
+        if not is_declarant_from_same_company:
+            raise serializers.ValidationError(
+                {"company/mandated_company": "Vous n'avez pas les droits sur cette entreprise."}
+            )
+
         return attrs
 
 
