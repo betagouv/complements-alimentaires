@@ -1,7 +1,5 @@
 import logging
 
-from django.db.models import Q
-
 from drf_base64.fields import Base64FileField
 from openpyxl.cell.cell import Hyperlink
 from rest_framework import serializers
@@ -887,23 +885,6 @@ class DeclarationSerializer(serializers.ModelSerializer):
         # si jamais plus d'infos sont nécessaires à l'avenir
         if instance.status == Declaration.DeclarationStatus.AUTHORIZATION_REVOKED and instance.revoked_ingredient:
             return {"name": instance.revoked_ingredient["name"]}
-
-    def validate(self, attrs):
-        request = self.context["request"]
-        declarable_companies = Company.objects.filter(
-            Q(pk__in=request.user.declarable_companies.values_list("pk"))
-            | Q(mandated_companies__in=request.user.declarable_companies.values_list("pk"))
-        ).distinct()
-
-        is_declarant_from_same_company = ("company" in attrs and attrs["company"] in declarable_companies) or (
-            "mandated_company" in attrs and attrs["mandated_company"] in declarable_companies
-        )
-        if not is_declarant_from_same_company:
-            raise serializers.ValidationError(
-                {"company/mandated_company": "Vous n'avez pas les droits sur cette entreprise."}
-            )
-
-        return attrs
 
 
 class DeclarationShortSerializer(serializers.ModelSerializer):

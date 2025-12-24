@@ -1,6 +1,8 @@
+from django.db.models import Q
+
 from rest_framework import permissions
 
-from data.models import ControlRole, Declaration, InstructionRole, VisaRole
+from data.models import Company, ControlRole, Declaration, InstructionRole, VisaRole
 
 
 class CanAccessUser(permissions.BasePermission):
@@ -106,7 +108,10 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
             return False
         is_agent = IsInstructor().has_permission(request, view) or IsVisor().has_permission(request, view)
 
-        declarable_companies = request.user.declarable_companies.all()
+        declarable_companies = Company.objects.filter(
+            Q(pk__in=request.user.declarable_companies.values_list("pk"))
+            | Q(mandated_companies__in=request.user.declarable_companies.values_list("pk"))
+        ).distinct()
         is_declarant_from_same_company = obj.company in declarable_companies or (
             obj.mandated_company and obj.mandated_company in declarable_companies
         )
@@ -121,7 +126,19 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return is_declarant_from_same_company or is_supervisor_from_same_company or (is_agent and not is_draft)
 
-        return is_declarant_from_same_company or (is_agent and not is_draft)
+        if request.method == "DELETE":
+            return is_declarant_from_same_company or (is_agent and not is_draft)
+
+        company_changed_in_auhorized_companies = (
+            "company" in request.data and request.data["company"] in declarable_companies.values_list("id", flat=True)
+        ) or (
+            "mandated_company" in request.data
+            and request.data["mandated_company"] in declarable_companies.values_list("id", flat=True)
+        )
+
+        return (company_changed_in_auhorized_companies and is_declarant_from_same_company) or (
+            is_agent and not is_draft
+        )
 
 
 class CanTakeAuthorship(permissions.BasePermission):
