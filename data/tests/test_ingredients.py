@@ -81,3 +81,32 @@ class IngredientTestCase(TestCase):
         )
         declared_plant = DeclaredPlantFactory(declaration=declaration, plant=plant, used_part=unassociated_part)
         self.assertTrue(declared_plant.is_part_request)
+
+    def test_obsolete_substance_has_no_relation_anymore(self):
+        """
+        Si une substance est déclarée obsolète alors tous les liens qui existaient entre des ingrédients et cette substance sont supprimés
+        """
+        substance_that_will_be_obsolete = SubstanceFactory.create(name="substance Z")
+        substance = SubstanceFactory.create(name="substance Z")
+
+        ingredient_supplying_substance = IngredientFactory.create(
+            name="substance Z form of supply", ingredient_type=IngredientType.FORM_OF_SUPPLY, substances=[]
+        )
+        ingredient_supplying_substance.substances.add(substance_that_will_be_obsolete)
+        plant_supplying_substance = PlantFactory.create(name="plant supplying substance Z", substances=[])
+
+        plant_supplying_substance.substances.add(substance_that_will_be_obsolete)
+        plant_supplying_substance.substances.add(substance)
+        microorganism_supplying_substance = MicroorganismFactory.create(
+            name="microorganism supplying substance Z", substances=[]
+        )
+
+        microorganism_supplying_substance.substances.add(substance_that_will_be_obsolete)
+        substance_that_will_be_obsolete.refresh_from_db()
+        self.assertEqual(ingredient_supplying_substance.substances.count(), 1)
+        self.assertEqual(plant_supplying_substance.substances.count(), 2)
+        self.assertEqual(microorganism_supplying_substance.substances.count(), 1)
+        substance_that_will_be_obsolete.delete()
+        self.assertEqual(ingredient_supplying_substance.substances.count(), 0)
+        self.assertEqual(plant_supplying_substance.substances.count(), 1)
+        self.assertEqual(microorganism_supplying_substance.substances.count(), 0)
