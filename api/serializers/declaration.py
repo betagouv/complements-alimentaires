@@ -886,6 +886,15 @@ class DeclarationSerializer(serializers.ModelSerializer):
         if instance.status == Declaration.DeclarationStatus.AUTHORIZATION_REVOKED and instance.revoked_ingredient:
             return {"name": instance.revoked_ingredient["name"]}
 
+    def validate(self, attrs):
+        request = self.context["request"]
+        declarable_companies = request.user.declarable_companies.all()
+        if "company" in attrs and attrs["company"] not in declarable_companies:
+            raise serializers.ValidationError({"company": "Vous n'avez pas les droits sur cette company"})
+        if "mandated_company" in attrs and attrs["mandated_company"] not in declarable_companies:
+            raise serializers.ValidationError({"mandated_company": "Vous n'avez pas les droits sur cette company"})
+        return attrs
+
 
 class DeclarationShortSerializer(serializers.ModelSerializer):
     author = SimpleUserSerializer(read_only=True)
