@@ -95,7 +95,7 @@
       La validation des CGU implique l’inscription automatique à l’infolettre Compl'Alim. Conforment à la
       réglementation, cette inscription est révocable à tout moment, soit en vous désabonnant à réception du courriel,
       ou en nous notifiant votre refus à l’adresse suivante :
-      <a href="mailto:compl-alim@beta.gouv.fr">compl-alim@beta.gouv.fr</a>
+      <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
     </p>
     <h2>Statistiques</h2>
     <p>Les données récoltées dans le cadre du téléservice servent au pilotage de la politique publique.</p>
@@ -152,16 +152,20 @@
     <ul>
       <li>
         Difficultés techniques :
-        <a href="mailto:compl-alim@beta.gouv.fr">compl-alim@beta.gouv.fr</a>
+        <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
       </li>
       <li>
         Problèmes liés à la procédure :
-        <a href="mailto:compl-alim@beta.gouv.fr">compl-alim@beta.gouv.fr</a>
+        <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
       </li>
       <li>
         Droit d’accès CNIL :
-        <a href="mailto:compl-alim@beta.gouv.fr">compl-alim@beta.gouv.fr</a>
+        <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
       </li>
     </ul>
   </div>
 </template>
+
+<script setup>
+const contactEmail = window.CONTACT_EMAIL
+</script>

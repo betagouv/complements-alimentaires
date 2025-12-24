@@ -360,6 +360,7 @@ class DeclarationTestCase(TestCase):
         - un ingrédient non autorisé ajouté
         - une partie de plante inconnue
         - une partie de plante non autorisée
+        - un ingrédient retiré ajouté
         """
         declaration_new = InstructionReadyDeclarationFactory(
             declared_plants=[],
@@ -491,6 +492,25 @@ class DeclarationTestCase(TestCase):
         self.assertEqual(declaration_part_replaced.article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_part_replaced.calculated_article, Declaration.Article.ARTICLE_16)
         self.assertEqual(declaration_part_replaced.overridden_article, "")
+
+        # declaration avec ingrédient reŧiré
+        declaration_revoked = InstructionReadyDeclarationFactory(
+            declared_plants=[],
+            declared_microorganisms=[],
+            declared_substances=[],
+            declared_ingredients=[],
+            computed_substances=[],
+        )
+        plant_revoked = PlantFactory(status=IngredientStatus.AUTHORIZATION_REVOKED)
+        DeclaredPlantFactory(plant=plant_revoked, declaration=declaration_revoked)
+
+        declaration_revoked.assign_calculated_article()
+        declaration_revoked.save()
+        declaration_revoked.refresh_from_db()
+
+        self.assertEqual(declaration_revoked.article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_revoked.calculated_article, Declaration.Article.ARTICLE_16)
+        self.assertEqual(declaration_revoked.overridden_article, "")
 
     def test_article_18(self):
         SUBSTANCE_MAX_QUANTITY = 1.0

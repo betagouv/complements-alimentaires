@@ -341,7 +341,7 @@ const addIngredient = async (ingredient) => {
   // Temporairement on traite les ajouts d'ingrédients comme ayant une dose supérieure ou égale
   // à 0. Par la suite on pourra spécifier également la dose précise recherchée et la partie de
   // plante
-  let newFilterString = `${ingredient.objectType}||${ingredient.name}||${ingredient.id}`
+  let newFilterString = `${ingredient.objectType}||${encodeURIComponent(ingredient.name)}||${ingredient.id}`
 
   if (ingredient.objectType === "plant") newFilterString += "|-|Toutes les parties"
 

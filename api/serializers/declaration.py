@@ -581,11 +581,11 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
                 "partie": declared_plant.used_part.name if declared_plant.used_part else None,
                 "preparation": declared_plant.preparation.name if declared_plant.preparation else None,
                 "quantité_par_djr": declared_plant.quantity if declared_plant.quantity else None,
-                "unite": declared_plant.unit.name,
+                "unite": declared_plant.unit.name if declared_plant.unit else None,
             }
             if active
             else declared_plant.plant.name
-            for declared_plant in obj.declared_plants.filter(active=active)
+            for declared_plant in obj.declared_plants.filter(active=active).exclude(plant__isnull=True)
         ]
 
     def get_plantes(self, obj):
@@ -604,7 +604,9 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             }
             if active
             else declared_microorganism.microorganism.name
-            for declared_microorganism in obj.declared_microorganisms.filter(active=active)
+            for declared_microorganism in obj.declared_microorganisms.filter(active=active).exclude(
+                microorganism__isnull=True
+            )
         ]
 
     def get_micro_organismes(self, obj):
@@ -615,11 +617,9 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             {
                 "nom": declared_substance.substance.name,
                 "quantité_par_djr": declared_substance.quantity,
-                "unite": declared_substance.unit.name,
+                "unite": declared_substance.unit.name if declared_substance.unit else None,
             }
-            if declared_substance.substance and declared_substance.quantity and declared_substance.unit
-            else {}
-            for declared_substance in obj.declared_substances.all()
+            for declared_substance in obj.declared_substances.exclude(substance__isnull=True)
         ]
 
     def get_additifs(self, obj):
@@ -707,6 +707,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
     blocking_reasons = serializers.ListField(read_only=True)
     simplified_status = serializers.SerializerMethodField(read_only=True)
     simplified_status_date = serializers.SerializerMethodField(read_only=True)
+    revoked_ingredient = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Declaration
@@ -765,6 +766,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "last_administration_comment",
             "simplified_status",
             "simplified_status_date",
+            "revoked_ingredient",
         )
         read_only_fields = (
             "id",
@@ -877,6 +879,12 @@ class DeclarationSerializer(serializers.ModelSerializer):
 
     def get_simplified_status_date(self, instance):
         return SimplifiedStatusHelper.get_simplified_status_date(instance)
+
+    def get_revoked_ingredient(self, instance):
+        # aujourd'hui on donne que le nom, mais utiliser le format d'objet
+        # si jamais plus d'infos sont nécessaires à l'avenir
+        if instance.status == Declaration.DeclarationStatus.AUTHORIZATION_REVOKED and instance.revoked_ingredient:
+            return {"name": instance.revoked_ingredient["name"]}
 
 
 class DeclarationShortSerializer(serializers.ModelSerializer):

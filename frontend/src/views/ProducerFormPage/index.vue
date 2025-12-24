@@ -116,6 +116,7 @@ import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { tabTitles } from "@/utils/mappings"
 import { setDocumentTitle } from "@/utils/document"
+import { hasNewElements } from "@/utils/elements"
 
 // Il y a deux refs qui stockent des erreurs. $externalResults sert
 // lors qu'on sauvegarde la déclaration (POST ou PUT) mais qu'on ne change
@@ -202,22 +203,6 @@ watch(data, () => {
   setDocumentTitleForTab(selectedTabIndex.value, data)
 })
 
-const hasNewElements = computed(() => {
-  const hasNewPart = payload.value.declaredPlants.some(
-    (x) => x.usedPart && x.element?.plantParts?.find((ep) => ep.id === x.usedPart)?.status !== "autorisé"
-  )
-  return (
-    hasNewPart ||
-    []
-      .concat(
-        payload.value.declaredPlants,
-        payload.value.declaredMicroorganisms,
-        payload.value.declaredIngredients,
-        payload.value.declaredSubstances
-      )
-      .some((x) => x.new)
-  )
-})
 const readonly = computed(
   () =>
     !isNewDeclaration.value &&
@@ -234,7 +219,7 @@ const showWithdrawal = computed(() => payload.value.status === "AUTHORIZED")
 const components = computed(() => {
   const baseComponents = readonly.value ? [SummaryTab] : [ProductTab, CompositionTab, AttachmentTab, SummaryTab]
 
-  if (!readonly.value && hasNewElements.value) baseComponents.splice(2, 0, NewElementTab)
+  if (!readonly.value && hasNewElements(payload.value)) baseComponents.splice(2, 0, NewElementTab)
   if (showHistory.value) baseComponents.splice(0, 0, HistoryTab)
   if (showWithdrawal.value) baseComponents.push(WithdrawalTab)
   return baseComponents

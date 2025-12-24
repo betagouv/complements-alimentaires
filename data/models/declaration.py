@@ -212,6 +212,12 @@ class Declaration(Historisable, TimeStampable):
         verbose_name="numéro de déclaration Teleicare connu par les déclarants et indiqué dans les attestations",
     )  # pas de contrainte d'unicité car dans 124 cas le teleicare_declaration_number est dupliqué
 
+    # pour un champ JSON, il y a un difference entre SQL NULL et JSON null. Ça rend le filtrage compliqué
+    # par ex: .filter(revoked_ingredient=None) n'est pas le même que .filter(revoked_ingredient__isnull=True)
+    # https://docs.djangoproject.com/en/5.2/topics/db/queries/#storing-and-querying-for-none
+    # Pour éviter de la confusion, utiliser un dict vide comme valeur défaut
+    revoked_ingredient = models.JSONField(default=dict, verbose_name="l'ingrédient retiré par l'administration")
+
     def create_snapshot(
         self,
         user=None,
@@ -586,6 +592,21 @@ class Declaration(Historisable, TimeStampable):
                 )
 
                 if has_unauthorized_ingredients:
+                    self.calculated_article = Declaration.Article.ARTICLE_16
+                    return
+
+                has_revoked_ingredients = (
+                    any(self.declared_plants.filter(plant__status=IngredientStatus.AUTHORIZATION_REVOKED))
+                    or any(
+                        self.declared_microorganisms.filter(
+                            microorganism__status=IngredientStatus.AUTHORIZATION_REVOKED
+                        )
+                    )
+                    or any(self.declared_substances.filter(substance__status=IngredientStatus.AUTHORIZATION_REVOKED))
+                    or any(self.declared_ingredients.filter(ingredient__status=IngredientStatus.AUTHORIZATION_REVOKED))
+                )
+
+                if has_revoked_ingredients:
                     self.calculated_article = Declaration.Article.ARTICLE_16
                     return
 

@@ -47,7 +47,7 @@
     <ul>
       <li>
         nous signaler par email :
-        <a href="mailto:compl-alim@beta.gouv.fr">compl-alim@beta.gouv.fr</a>
+        <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
       </li>
       <li>
         créer une “issue” sur
@@ -105,3 +105,7 @@
     </p>
   </div>
 </template>
+
+<script setup>
+const contactEmail = window.CONTACT_EMAIL
+</script>
