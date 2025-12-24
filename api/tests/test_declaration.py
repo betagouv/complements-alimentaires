@@ -1,6 +1,7 @@
 import base64
 import os
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.urls import reverse
 from django.utils import timezone
@@ -8,10 +9,9 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from unittest.mock import patch
-
 from data.choices import AuthorizationModes, CountryChoices, FrAuthorizationReasons
 from data.factories import (
+    AuthorizedDeclarationFactory,
     AwaitingInstructionDeclarationFactory,
     AwaitingVisaDeclarationFactory,
     CompanyFactory,
@@ -40,7 +40,6 @@ from data.factories import (
     SupervisorRoleFactory,
     UnitFactory,
     VisaRoleFactory,
-    AuthorizedDeclarationFactory,
 )
 from data.models import (
     Addable,
@@ -49,10 +48,10 @@ from data.models import (
     DeclaredMicroorganism,
     DeclaredPlant,
     DeclaredSubstance,
+    IngredientStatus,
     IngredientType,
     Part,
     Snapshot,
-    IngredientStatus,
 )
 
 from .utils import authenticate
@@ -2367,8 +2366,9 @@ class TestSingleDeclaredElementApi(APITestCase):
         La déclaration ne doit pas contenir les champs statut et notes privés pour des ingrédients
         si l'user est un déclarant
         """
-        DeclarantRoleFactory(user=authenticate.user)
-        declaration = DeclarationFactory(author=authenticate.user)
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+        declaration = DeclarationFactory(author=authenticate.user, company=company)
         microorganism = DeclaredMicroorganismFactory(declaration=declaration)
 
         response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
