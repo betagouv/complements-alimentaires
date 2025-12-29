@@ -16,11 +16,7 @@
             </p>
           </div>
 
-          <ElementStatusBadge
-            :text="model.element.status"
-            v-if="showElementAuthorization && model.element?.status !== 'autorisé'"
-            class="self-center ml-2"
-          />
+          <ElementStatusBadge v-if="showElementStatusBadge" :text="model.element?.status" class="self-center ml-2" />
 
           <DsfrBadge v-if="novelFood" label="Novel Food" type="new" class="self-center ml-2" small />
           <DsfrBadge
@@ -61,6 +57,7 @@
 <script setup>
 import { computed } from "vue"
 import { getElementName } from "@/utils/elements"
+import { ingredientStatuses } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import ElementCommentModal from "@/components/ElementCommentModal"
@@ -137,6 +134,10 @@ const treatedRequest = computed(() => {
       type: "info",
     },
   }[model.value.requestStatus]
+})
+
+const showElementStatusBadge = computed(() => {
+  return props.showElementAuthorization && model.value.element?.status !== ingredientStatuses.AUTHORIZED.apiValue
 })
 </script>
 
