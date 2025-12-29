@@ -1,4 +1,4 @@
-import { slugifyType } from "@/utils/mappings"
+import { slugifyType, ingredientStatuses } from "@/utils/mappings"
 
 // on check e.substance car c'est le format des substances calculés
 // faut avoir quand même le format pour les microorganismes pour le cas où on travaille avec les données
@@ -26,7 +26,9 @@ export const getUnitString = (unitId, units) => {
 
 export const hasNewElements = (declaration) => {
   const hasNewPart = declaration.declaredPlants.some(
-    (x) => x.usedPart && x.element?.plantParts?.find((ep) => ep.id === x.usedPart)?.status !== "autorisé"
+    (x) =>
+      x.usedPart &&
+      x.element?.plantParts?.find((ep) => ep.id === x.usedPart)?.status !== ingredientStatuses.AUTHORIZED.apiValue
   )
   return (
     hasNewPart ||
