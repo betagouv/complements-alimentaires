@@ -8,22 +8,22 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@gouvminint/vue-dsfr": "^8.12.1",
+    "@gouvminint/vue-dsfr": "^8.13.1",
     "@vue/cli": "^5.0.9",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
     "@vueuse/core": "^14.1.0",
     "core-js": "^3.47.0",
     "pinia": "^3.0.4",
-    "vue": "^3.5.25",
+    "vue": "^3.5.26",
     "vue-matomo": "^4.2.0",
-    "vue-router": "^4.6.3",
-    "webpack-bundle-tracker": "^3.2.2"
+    "vue-router": "^4.6.4",
+    "webpack-bundle-tracker": "^3.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@babel/eslint-parser": "^7.28.5",
-    "@tailwindcss/postcss": "^4.1.17",
+    "@tailwindcss/postcss": "^4.1.18",
     "@vue/cli-plugin-babel": "~5.0.9",
     "@vue/cli-plugin-eslint": "~5.0.9",
     "@vue/cli-plugin-router": "~5.0.0",
@@ -33,7 +33,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-vue": "^10.6.2",
     "postcss": "^8.5.5",
-    "prettier": "3.7.3",
+    "prettier": "3.7.4",
     "tailwindcss": "^4.1.17",
     "vue-eslint-parser": "^10.2.0"
   },
