@@ -36,6 +36,7 @@ class TestLogin(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("csrfToken", response.json())
+        self.assertNotIn("nonFieldErrors", response.json())
         self.assertTrue(response.wsgi_request.user.is_authenticated)
         self.assertEqual(response.wsgi_request.user.id, self.verified_user.id)
 
@@ -45,6 +46,7 @@ class TestLogin(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("csrfToken", response.json())
+        self.assertNotIn("nonFieldErrors", response.json())
         self.assertTrue(response.wsgi_request.user.is_authenticated)
         self.assertEqual(response.wsgi_request.user.id, self.verified_user.id)
 
