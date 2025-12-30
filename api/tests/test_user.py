@@ -26,27 +26,27 @@ class TestLogin(APITestCase):
     def setUp(self):
         self.url = reverse("api:login")
         self.password = "TestPass123!"
-        self.user = User.objects.create_user(
+        self.verified_user = UserFactory(
             username="testuser", email="test@example.com", password=self.password, is_verified=True
         )
 
     def test_login_with_username_success(self):
-        data = {"username": self.user.username, "password": self.password}
+        data = {"username": self.verified_user.username, "password": self.password}
         response = self.client.post(self.url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("csrfToken", response.json())
         self.assertTrue(response.wsgi_request.user.is_authenticated)
-        self.assertEqual(response.wsgi_request.user.id, self.user.id)
+        self.assertEqual(response.wsgi_request.user.id, self.verified_user.id)
 
     def test_login_with_email_success(self):
-        data = {"username": self.user.email, "password": self.password}
+        data = {"username": self.verified_user.email, "password": self.password}
         response = self.client.post(self.url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("csrfToken", response.json())
         self.assertTrue(response.wsgi_request.user.is_authenticated)
-        self.assertEqual(response.wsgi_request.user.id, self.user.id)
+        self.assertEqual(response.wsgi_request.user.id, self.verified_user.id)
 
     def test_login_invalid_username(self):
         data = {"username": "nonexistent", "password": self.password}
@@ -64,7 +64,7 @@ class TestLogin(APITestCase):
         self.assertFalse(response.wsgi_request.user.is_authenticated)
 
     def test_login_wrong_password(self):
-        data = {"username": self.user.username, "password": "WrongPassword123!"}
+        data = {"username": self.verified_user.username, "password": "WrongPassword123!"}
         response = self.client.post(self.url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -72,7 +72,7 @@ class TestLogin(APITestCase):
         self.assertFalse(response.wsgi_request.user.is_authenticated)
 
     def test_login_wrong_password_with_email(self):
-        data = {"username": self.user.email, "password": "WrongPassword123!"}
+        data = {"username": self.verified_user.email, "password": "WrongPassword123!"}
         response = self.client.post(self.url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -88,7 +88,7 @@ class TestLogin(APITestCase):
         self.assertFalse(response.wsgi_request.user.is_authenticated)
 
     def test_login_missing_password(self):
-        data = {"username": self.user.username}
+        data = {"username": self.verified_user.username}
         response = self.client.post(self.url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("nonFieldErrors", response.json())
