@@ -88,8 +88,8 @@
     <div class="grid grid-cols-2 gap-4">
       <div class="col-span-2 md:col-span-1 max-w-md mt-6">
         <DsfrFieldset legend="Poids ou volume d'une unité de consommation">
-          <div class="flex">
-            <div class="max-w-64">
+          <div class="sm:flex">
+            <div class="max-w-64 mb-4 sm:mb-0">
               <NumberField
                 label="Quantité"
                 label-visible
@@ -98,7 +98,7 @@
                 :required="true"
               />
             </div>
-            <div class="max-w-32 ml-4">
+            <div class="max-w-32 sm:ml-4">
               <DsfrSelect
                 label="Unité"
                 label-visible
@@ -111,7 +111,7 @@
           </div>
         </DsfrFieldset>
       </div>
-      <div class="col-span-2 md:col-span-1 max-w-md pt-0 sm:pt-8">
+      <div class="col-span-2 md:col-span-1 max-w-md pt-0 sm:pt-12">
         <DsfrInputGroup>
           <DsfrInput v-model="payload.conditioning" label-visible label="Conditionnement" />
         </DsfrInputGroup>
