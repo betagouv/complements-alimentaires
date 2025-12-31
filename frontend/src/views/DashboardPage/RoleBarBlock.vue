@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-blue-france-950 h-14 flex items-center">
+  <div class="bg-blue-france-950 py-2 flex items-center">
     <div class="fr-container">
-      <div class="flex justify-between">
+      <div class="sm:flex justify-between">
         <div class="flex items-center gap-x-2.5 gap-y-1 flex-wrap">
           <div class="flex items-center gap-x-1">
             <v-icon class="text-blue-france-sun-113" name="ri-account-circle-line" />
