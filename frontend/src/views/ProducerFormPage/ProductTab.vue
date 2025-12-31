@@ -47,13 +47,13 @@
       </DsfrInputGroup>
     </div>
     <SectionTitle title="Format" class="mt-10!" sizeTag="h6" icon="ri-capsule-fill" />
-    <div class="grid grid-cols-2 gap-4">
-      <DsfrFieldset legend="Forme galénique" legendClass="fr-label pb-0!">
-        <div class="flex">
-          <div class="max-w-32">
+    <DsfrFieldset legend="Forme galénique">
+      <div class="sm:grid grid-cols-2 gap-4">
+        <div class="sm:flex">
+          <div class="sm:max-w-32 sm:mr-4 mb-4 sm:mb-0">
             <DsfrSelect :required="true" label="État" :options="formulationStates" v-model="galenicFormulationState" />
           </div>
-          <div class="max-w-md ml-4">
+          <div class="max-w-md mb-4 sm:mb-0">
             <DsfrSelect
               :required="true"
               label="Forme"
@@ -67,27 +67,27 @@
             />
           </div>
         </div>
-      </DsfrFieldset>
-      <div class="max-w-2xl pt-0 sm:pt-6">
-        <DsfrInput
-          v-if="
-            payload.galenicFormulation &&
-            galenicFormulations &&
-            getAllIndexesOfRegex(galenicFormulations, /Autre.*(à préciser)/).includes(
-              parseInt(payload.galenicFormulation)
-            )
-          "
-          v-model="payload.otherGalenicFormulation"
-          label-visible
-          label="Merci de préciser la forme galénique"
-          required="true"
-        />
+        <div class="max-w-2xl pt-0">
+          <DsfrInput
+            v-if="
+              payload.galenicFormulation &&
+              galenicFormulations &&
+              getAllIndexesOfRegex(galenicFormulations, /Autre.*(à préciser)/).includes(
+                parseInt(payload.galenicFormulation)
+              )
+            "
+            v-model="payload.otherGalenicFormulation"
+            label-visible
+            label="Merci de préciser la forme galénique"
+            :required="true"
+          />
+        </div>
       </div>
-    </div>
+    </DsfrFieldset>
 
     <div class="grid grid-cols-2 gap-4">
       <div class="col-span-2 md:col-span-1 max-w-md mt-6">
-        <DsfrFieldset legend="Poids ou volume d'une unité de consommation" legendClass="fr-label pb-0!">
+        <DsfrFieldset legend="Poids ou volume d'une unité de consommation">
           <div class="flex">
             <div class="max-w-64">
               <NumberField
