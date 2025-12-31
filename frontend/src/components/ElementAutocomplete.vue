@@ -12,6 +12,9 @@
           @focus="hasFocus = true"
           @blur="hasFocus = false"
           @keydown="checkKeyboardNav($event)"
+          role="combobox"
+          aria-controls="search-suggestions"
+          :aria-expanded="displayOptions"
         />
       </div>
 
@@ -21,6 +24,8 @@
         @click="search"
         :iconOnly="true"
         icon="ri-search-line"
+        aria-controls="search-suggestions"
+        :aria-expanded="displayOptions"
       />
     </div>
     <ul
@@ -31,6 +36,8 @@
         'at-the-top': displayAtTheTop,
         'z-10': true,
       }"
+      role="listbox"
+      id="search-suggestions"
     >
       <!-- Recherche par entreprise, nom de produit ou marque (lorsque extendedOptionsVisible est à true) -->
       <template v-if="extendedOptionsVisible">
@@ -38,6 +45,8 @@
           class="list-item pt-1 border-b"
           :class="{ 'active-option': activeOption === 0 }"
           @mousedown="$emit('searchProduct', searchTerm)"
+          role="option"
+          :aria-selected="activeOption === 0"
         >
           <div class="p-2 pl-4 text-left flex">
             <div class="self-center"><v-icon scale="0.85" class="mr-2" name="ri-capsule-fill" /></div>
@@ -48,6 +57,8 @@
           class="list-item pt-1 border-b"
           :class="{ 'active-option': activeOption === 1 }"
           @mousedown="$emit('searchBrand', searchTerm)"
+          role="option"
+          :aria-selected="activeOption === 1"
         >
           <div class="p-2 pl-4 text-left flex">
             <div class="self-center"><v-icon scale="0.85" class="mr-2" name="ri-price-tag-3-line" /></div>
@@ -58,6 +69,8 @@
           class="list-item pt-1 border-b"
           :class="{ 'active-option': activeOption === 2 }"
           @mousedown="$emit('searchCompany', searchTerm)"
+          role="option"
+          :aria-selected="activeOption === 2"
         >
           <div class="p-2 pl-4 text-left flex">
             <div class="self-center"><v-icon scale="0.85" class="mr-2" name="ri-building-4-line" /></div>
@@ -71,6 +84,8 @@
         class="list-item"
         :class="{ 'active-option': activeOption === (extendedOptionsVisible ? i + 3 : i) }"
         @mousedown="selectOption(option)"
+        role="option"
+        :aria-selected="activeOption === (extendedOptionsVisible ? i + 3 : i)"
       >
         <div class="p-2 pl-4 text-left flex">
           <div class="self-center"><v-icon scale="0.85" class="mr-2" :name="getTypeIcon(option.objectType)" /></div>
