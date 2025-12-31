@@ -1,12 +1,14 @@
 <template>
   <div>
     <DsfrAlert>
-      L'entreprise dont le n°
-      {{ company.identifierType.toUpperCase() + " " }}
-      est
-      <strong>{{ company.identifier }}</strong>
-      n'est pas encore enregistrée dans notre base de données. Pour ce faire, veuillez vérifier ou compléter les
-      informations ci-dessous. À l'issue, vous en deviendrez automatiquement son gestionnaire.
+      <p>
+        L'entreprise dont le n°
+        {{ company.identifierType.toUpperCase() + " " }}
+        est
+        <strong>{{ company.identifier }}</strong>
+        n'est pas encore enregistrée dans notre base de données. Pour ce faire, veuillez vérifier ou compléter les
+        informations ci-dessous. À l'issue, vous en deviendrez automatiquement son gestionnaire.
+      </p>
     </DsfrAlert>
     <CompanyForm
       class="mt-8"
