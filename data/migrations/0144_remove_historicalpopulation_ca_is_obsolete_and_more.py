@@ -11,23 +11,25 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # Pas besoin de supprimer les GeneratedField qui sont automatiquement supprimés avec la suppression d'un des champs source
+        # Depuis Django 6 + Postgresql 15, on a besoin de supprimer les GeneratedField qui ne sont plus automatiquement
+        # supprimés avec la suppression d'un des champs source
+        migrations.RemoveField(
+            model_name='population',
+            name='is_obsolete',
+        ),
+        migrations.RemoveField(
+            model_name='population',
+            name='name',
+        ),
         # migrations.RemoveField(
-        #     model_name='population',
+        #     model_name='historicalpopulation',
         #     name='is_obsolete',
         # ),
         # migrations.RemoveField(
-        #     model_name='population',
-        #     name='name',
-        # ),
-        # migrations.RemoveField(
-        #     model_name='historicalpopulation',
-        #     name='is_obsolete',
-        # ),
-        # migrations.RemoveField(
         #     model_name='historicalpopulation',
         #     name='name',
         # ),
+        ####################################
         migrations.RemoveField(
             model_name='historicalpopulation',
             name='siccrf_id',

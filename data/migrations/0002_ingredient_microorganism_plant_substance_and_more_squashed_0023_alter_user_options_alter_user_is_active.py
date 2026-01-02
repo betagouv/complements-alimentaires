@@ -2060,11 +2060,12 @@ class Migration(migrations.Migration):
             model_name='substancesynonym',
             name='CA_name',
         ),
-        migrations.AddField(
-            model_name='plant',
-            name='family',
-            field=models.GeneratedField(db_persist=True, expression=django.db.models.functions.comparison.Coalesce(models.F('CA_family'), models.F('siccrf_family')), output_field=models.BigIntegerField(verbose_name='famille de plante')),
-        ),
+        # Innécessaire car recrée dans la ligne 2995
+        # migrations.AddField(
+        #     model_name='plant',
+        #     name='family',
+        #     field=models.GeneratedField(db_persist=True, expression=django.db.models.functions.comparison.Coalesce(models.F('CA_family'), models.F('siccrf_family')), output_field=models.BigIntegerField(verbose_name='famille de plante')),
+        # ),
         migrations.AlterField(
             model_name='condition',
             name='siccrf_is_obsolete',
