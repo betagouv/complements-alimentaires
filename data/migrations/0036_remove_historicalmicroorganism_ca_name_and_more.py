@@ -11,6 +11,13 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # Opération ajoutée à posteriori car impossible de supprimer ca_name si le champ généré
+        # existe encore. Contrainte sur Django 6 + Postgresql 15
+        migrations.RemoveField(
+            model_name="microorganism",
+            name="name",
+        ),
+        ####################################################################
         migrations.RemoveField(
             model_name="historicalmicroorganism",
             name="ca_name",

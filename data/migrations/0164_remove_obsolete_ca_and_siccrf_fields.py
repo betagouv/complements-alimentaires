@@ -144,6 +144,13 @@ class Migration(migrations.Migration):
             model_name='historicalingredient',
             name='siccrf_public_comments',
         ),
+        # Ajouté à posteriori car Django 6 + Postgresql 15 ne permettent pas la suppression
+        # de champs qui composent un generated field si celui-ci existe encore
+        migrations.RemoveField(
+            model_name='historicalmaxquantityperpopulationrelation',
+            name='max_quantity',
+        ),
+        ####################################
         migrations.RemoveField(
             model_name='historicalmaxquantityperpopulationrelation',
             name='ca_max_quantity',
