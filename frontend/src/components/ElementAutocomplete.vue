@@ -20,13 +20,16 @@
 
       <DsfrButton
         v-if="!hideSearchButton"
+        title="Rechercher"
         class="max-h-10 mt-2 rounded-r"
         @click="search"
         :iconOnly="true"
         icon="ri-search-line"
         aria-controls="search-suggestions"
         :aria-expanded="displayOptions"
-      />
+      >
+        <span class="fr-sr-only">Rechercher</span>
+      </DsfrButton>
     </div>
     <ul
       v-show="displayOptions"
