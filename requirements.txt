@@ -115,7 +115,7 @@ tblib==3.2.2
 tinycss2==1.4.0
 tqdm==4.67.1
 traitlets==5.14.3
-typing_extensions==4.14.1
+typing_extensions==4.15.0
 tzdata==2025.2
 tzlocal==5.3.1
 Unidecode==1.4.0
