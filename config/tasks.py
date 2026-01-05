@@ -33,7 +33,6 @@ def send_expiration_reminder():
     cette periodicité pour ne pas envoyer des doublons d'email
     """
     declarations = Declaration.objects.filter(status__in=allowed_statuses)
-    brevo_template_id = 10
     send_days_before = 5
     for declaration in declarations:
         try:
@@ -45,7 +44,7 @@ def send_expiration_reminder():
             if delta.days >= send_days_before and delta.days < send_days_before + 1:
                 parameters = {**declaration.brevo_parameters, **{"REMAINING_DAYS": send_days_before}}
                 email.send_sib_template(
-                    brevo_template_id,
+                    email.EmailTemplateID.DECLARATION_EXPIRATION_REMINDER.value,
                     parameters,
                     declaration.author.email,
                     declaration.author.get_full_name(),
@@ -103,7 +102,6 @@ class ExpirationDeclarationFlow:
 
 @app.task
 def expire_declarations():
-    brevo_template_id = 9
     declarations = Declaration.objects.filter(status__in=allowed_statuses)
 
     success_count = 0
@@ -116,7 +114,7 @@ def expire_declarations():
             flow.abandon()
             if declaration.author:
                 email.send_sib_template(
-                    brevo_template_id,
+                    email.EmailTemplateID.DECLARATION_EXPIRED.value,
                     declaration.brevo_parameters,
                     declaration.author.email,
                     declaration.author.get_full_name(),
@@ -138,10 +136,9 @@ def send_automatic_validation_email(declaration):
     if not declaration.author:
         logger.log(f"Email not sent on automatic validation of declaration {declaration.id}: no author")
         return
-    brevo_template_id = 6
     try:
         email.send_sib_template(
-            brevo_template_id,
+            email.EmailTemplateID.DECLARATION_AUTHORIZED.value,
             declaration.brevo_parameters,
             declaration.author.email,
             declaration.author.get_full_name(),
@@ -346,7 +343,6 @@ def revoke_authorisation_from_declarations(declarations, ingredient):
         raise Exception("Must pass ingredient to revoke authorisations from declarations")
     if not ingredient.status == IngredientStatus.AUTHORIZATION_REVOKED:
         raise Exception("Cannot revoke declaration for non-revoked ingredient")
-    brevo_template_id = 37
     success_count = 0
     error_count = 0
     logger.info(f"Start revoking authorization of {declarations.count()} declarations.")
@@ -356,7 +352,7 @@ def revoke_authorisation_from_declarations(declarations, ingredient):
             flow.revoke_authorization(ingredient)
             if declaration.author:
                 email.send_sib_template(
-                    brevo_template_id,
+                    email.EmailTemplateID.DECLARATION_AUTHORIZATION_REVOKED.value,
                     {
                         "PRODUCT_NAME": declaration.brevo_parameters["PRODUCT_NAME"],
                         "DECLARATION_LINK": declaration.brevo_parameters["DECLARATION_LINK"],
