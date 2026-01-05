@@ -33,7 +33,12 @@
           />
         </div>
 
-        <div v-if="props.canRemove"><DsfrButton secondary @click="$emit('remove', model)">Enlever</DsfrButton></div>
+        <div v-if="props.canRemove">
+          <DsfrButton secondary @click="$emit('remove', model)">
+            Enlever
+            <span class="fr-sr-only">« {{ getElementName(model).toLowerCase() }} »</span>
+          </DsfrButton>
+        </div>
       </div>
     </div>
 

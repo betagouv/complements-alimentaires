@@ -1,12 +1,15 @@
 <template>
   <DsfrButton
     @click="toggleShowPassword"
-    :label="(showPassword ? 'Cacher' : 'Afficher') + (manyPasswords ? ' les mots de passe' : '')"
     :icon="showPassword ? 'ri-eye-off-line' : 'ri-eye-line'"
     size="sm"
     tertiary
     noOutline
-  />
+  >
+    {{ showPassword ? "Cacher" : "Afficher" }}
+    <span v-if="manyPasswords">les mots de passe</span>
+    <span v-else class="fr-sr-only">le mot de passe</span>
+  </DsfrButton>
 </template>
 
 <script setup>
