@@ -13,7 +13,10 @@
         <DsfrInput class="max-w-2xl" isTextarea v-model="state.message" label="Message" required label-visible />
       </DsfrInputGroup>
       <div>
-        <DsfrButton size="lg" label="Envoyer" icon="ri-mail-send-line" @click="sendEmail" />
+        <DsfrButton size="lg" icon="ri-mail-send-line" @click="sendEmail">
+          Envoyer
+          <span class="fr-sr-only">le message</span>
+        </DsfrButton>
       </div>
     </FormWrapper>
   </div>

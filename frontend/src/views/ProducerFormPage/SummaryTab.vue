@@ -33,7 +33,10 @@
           </template>
         </DsfrCheckbox>
       </DsfrInputGroup>
-      <DsfrButton :disabled="!conformityEngaged" @click="submitDeclaration" label="Soumettre ma démarche" />
+      <DsfrButton :disabled="!conformityEngaged" @click="submitDeclaration">
+        Soumettre ma démarche
+        <span class="fr-sr-only">pour le produit « {{ payload.name }} »</span>
+      </DsfrButton>
     </DsfrAlert>
   </div>
 </template>
