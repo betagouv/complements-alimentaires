@@ -31,5 +31,7 @@ class ControlRoleAdmin(admin.ModelAdmin):
         return "🔒 Reste même si absent sur Grist" if obj.always_persist else " "
 
     def domaine_email_ok(self, obj):
-        government_email = obj.user.email[-8:] in ["@gouv.fr", ".gouv.fr"]
-        return "" if government_email else f"⚠️ Adresse en « {obj.user.email.split('@')[-1]} »"
+        user_email = obj.user.email
+        government_email = user_email[-8:] in ["@gouv.fr", ".gouv.fr", "@anses.fr"] or user_email[-9:] == "@anses.fr"
+
+        return "" if government_email else f"⚠️ Adresse en « {user_email.split('@')[-1]} »"

@@ -1,6 +1,7 @@
+from unittest.mock import MagicMock, patch
+
 from django.test import TestCase
 from django.test.utils import override_settings
-from unittest.mock import patch, MagicMock
 
 from config.tasks import import_control_emails
 from data.models import ControlRoleEmail
@@ -22,9 +23,11 @@ class TestControlEmailImport(TestCase):
         mock_response.json.return_value = {
             "records": [
                 {"fields": {"mail": "new@Example.gouv.fr"}},
+                {"fields": {"mail": "new@anses.fr"}},
                 {"fields": {"mail": "keep@Example.gouv.fr"}},  # test normalisation
                 {"fields": {"mail": "new@example.gouv.fr"}},  # duplicate devrait être ignoré
                 {"fields": {"mail": "new@example.org"}},  # adresse non-gouv devrait être ignoré
+                {"fields": {"mail": "new@abcanses.fr"}},  # adresse non-gouv devrait être ignoré
                 {"fields": {"mail": ""}},  # adresse vide devrait être ignoré
             ]
         }
@@ -36,9 +39,11 @@ class TestControlEmailImport(TestCase):
 
         import_control_emails()
 
-        self.assertEqual(ControlRoleEmail.objects.count(), 2)
+        self.assertEqual(ControlRoleEmail.objects.count(), 3)
         self.assertTrue(ControlRoleEmail.objects.filter(email="keep@example.gouv.fr").exists())
         self.assertTrue(ControlRoleEmail.objects.filter(email="new@example.gouv.fr").exists())
+        self.assertTrue(ControlRoleEmail.objects.filter(email="new@anses.fr").exists())
         self.assertFalse(ControlRoleEmail.objects.filter(email="delete@example.org").exists())
         self.assertFalse(ControlRoleEmail.objects.filter(email="new@example.org").exists())
+        self.assertFalse(ControlRoleEmail.objects.filter(email="new@abcanses.fr").exists())
         self.assertFalse(ControlRoleEmail.objects.filter(email="").exists())
