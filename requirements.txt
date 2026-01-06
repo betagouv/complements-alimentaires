@@ -91,7 +91,7 @@ pyHanko==0.32.0
 pyhanko-certvalidator==0.29.0
 pypdf==6.4.0
 pytest==8.4.1
-python-bidi==0.6.6
+python-bidi==0.6.7
 python-dateutil==2.9.0.post0
 pytz==2025.2
 PyYAML==6.0.3
