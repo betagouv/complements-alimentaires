@@ -1,9 +1,9 @@
 <template>
   <div>
     <DsfrAlert type="success">
-      <div>
+      <p>
         Votre demande a bien été envoyée. Veuillez patienter. Vous recevrez un e-mail lorsque celle-ci aura été traitée.
-      </div>
+      </p>
       <DsfrButton
         class="mt-4"
         label="Retour au tableau de bord"

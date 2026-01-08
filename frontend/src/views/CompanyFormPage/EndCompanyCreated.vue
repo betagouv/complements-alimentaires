@@ -1,7 +1,7 @@
 <template>
   <div>
     <DsfrAlert type="success">
-      <div>L'entreprise « {{ company.socialName }} » a bien été créée et vous en avez les droits de gestion.</div>
+      <p>L'entreprise « {{ company.socialName }} » a bien été créée et vous en avez les droits de gestion.</p>
       <div class="mt-4 flex gap-x-4">
         <DsfrButton
           :label="`Accéder à « ${company.socialName} »`"

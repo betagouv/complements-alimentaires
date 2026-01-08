@@ -8,8 +8,10 @@
         <h1>Tester ma composition de compléments alimentaires</h1>
         <p>Vérifier la conformité de vos ingrédients en amont de vos développements produits.</p>
         <DsfrAlert small class="mb-4">
-          <b>Non exhaustivité des données</b>
-          : Cette base est en amélioration continue, nous faisons notre possible pour la mettre à jour régulièrement.
+          <p>
+            <b>Non exhaustivité des données</b>
+            : Cette base est en amélioration continue, nous faisons notre possible pour la mettre à jour régulièrement.
+          </p>
         </DsfrAlert>
         <ElementAutocomplete
           autocomplete="nothing"

@@ -1,12 +1,14 @@
 <template>
   <div>
     <DsfrAlert>
-      L'entreprise
-      <strong>{{ company.socialName }}</strong>
-      avec le n° {{ company.identifierType.toUpperCase() + " " }}
-      <strong>{{ company.identifier }}</strong>
-      est présente dans notre base de données, mais ne dispose actuellement d'aucun gestionnaire. Si vous souhaitez
-      revendiquer la gestion de cette entreprise, veuillez nous envoyer une demande :
+      <p>
+        L'entreprise
+        <strong>{{ company.socialName }}</strong>
+        avec le n° {{ company.identifierType.toUpperCase() + " " }}
+        <strong>{{ company.identifier }}</strong>
+        est présente dans notre base de données, mais ne dispose actuellement d'aucun gestionnaire. Si vous souhaitez
+        revendiquer la gestion de cette entreprise, veuillez nous envoyer une demande :
+      </p>
       <DsfrInputGroup>
         <DsfrInput v-model="message" label="Message (optionnel)" labelVisible isTextarea />
       </DsfrInputGroup>

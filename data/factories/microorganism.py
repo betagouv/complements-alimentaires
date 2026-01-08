@@ -21,12 +21,14 @@ class MicroorganismFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def substances(self, created, extracted, **kwargs):
-        if created:
-            for _ in range(random.randint(1, 4)):
-                self.substances.add(SubstanceFactory.create())
-        elif extracted:
+        if not created:
+            return
+        if extracted or isinstance(extracted, list):
             for substance in extracted:
                 self.substances.add(substance)
+        else:
+            for _ in range(random.randint(1, 4)):
+                self.substances.add(SubstanceFactory.create())
 
 
 class MicroorganismSynonymFactory(factory.django.DjangoModelFactory):
