@@ -69,7 +69,10 @@ type d’activité exercée par le déclarant."
         </div>
       </DsfrFieldset>
       <div class="flex gap-x-2 mt-4">
-        <DsfrButton v-if="showCancelButton" label="Annuler" @click="$emit('editCancelled')" secondary />
+        <DsfrButton v-if="showCancelButton" @click="$emit('editCancelled')" secondary>
+          Annuler
+          <span class="fr-sr-only">la modification de l'entreprise</span>
+        </DsfrButton>
         <DsfrButton label="Enregistrer l'entreprise" @click="submitCompany" :disabled="isFetching" />
       </div>
     </FormWrapper>
