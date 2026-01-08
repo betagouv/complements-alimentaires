@@ -38,9 +38,9 @@ django-phonenumber-field==8.1.0
 django-prose==2.1.0
 django-redis==6.0.0
 django-silk==5.4.3
-django-simple-history==3.10.1
+django-simple-history==3.11.0
 django-storages==1.14.6
-django-viewflow==2.2.14
+django-viewflow==2.2.15
 django-webpack-loader==3.2.2
 djangorestframework==3.16.1
 djangorestframework-camel-case==1.4.2
@@ -91,7 +91,7 @@ pyHanko==0.32.0
 pyhanko-certvalidator==0.29.0
 pypdf==6.4.0
 pytest==8.4.1
-python-bidi==0.6.6
+python-bidi==0.6.7
 python-dateutil==2.9.0.post0
 pytz==2025.2
 PyYAML==6.0.3
@@ -115,7 +115,7 @@ tblib==3.2.2
 tinycss2==1.4.0
 tqdm==4.67.1
 traitlets==5.14.3
-typing_extensions==4.14.1
+typing_extensions==4.15.0
 tzdata==2025.2
 tzlocal==5.3.1
 Unidecode==1.4.0

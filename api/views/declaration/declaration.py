@@ -581,7 +581,7 @@ class DeclarationSubmitView(DeclarationFlowView):
     transition = "submit"
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.SUBMIT
-    brevo_template_id = 3
+    brevo_template_id = email.EmailTemplateID.DECLARATION_SUBMISSION_CONFIRMATION.value
 
 
 class DeclarationTakeForInstructionView(DeclarationFlowView):
@@ -623,7 +623,7 @@ class DeclarationObserveView(DeclarationFlowView):
     transition = "observe_no_visa"
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.OBSERVE_NO_VISA
-    brevo_template_id = 4
+    brevo_template_id = email.EmailTemplateID.DECLARATION_OBSERVATION.value
 
     def on_transition_success(self, request, declaration):
         declaration.instructor = InstructionRole.objects.get(user=request.user)
@@ -639,7 +639,7 @@ class DeclarationAuthorizeView(DeclarationFlowView):
     transition = "authorize_no_visa"
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.AUTHORIZE_NO_VISA
-    brevo_template_id = 6
+    brevo_template_id = email.EmailTemplateID.DECLARATION_AUTHORIZED.value
 
     def on_transition_success(self, request, declaration):
         declaration.instructor = InstructionRole.objects.get(user=request.user)
@@ -679,7 +679,7 @@ class DeclarationWithdrawView(DeclarationFlowView):
     transition = "withdraw"
     create_snapshot = True
     snapshot_action = Snapshot.SnapshotActions.WITHDRAW
-    brevo_template_id = 8
+    brevo_template_id = email.EmailTemplateID.DECLARATION_WITHDRAWN.value
 
     def perform_snapshot_creation(self, request, declaration):
         """
@@ -793,10 +793,10 @@ class DeclarationAcceptVisaView(VisaDecisionView):
 
     def get_brevo_template_id(self, request, declaration):
         template_map = {
-            Declaration.DeclarationStatus.AUTHORIZED: 6,
-            Declaration.DeclarationStatus.REJECTED: 7,
-            Declaration.DeclarationStatus.OBJECTION: 5,
-            Declaration.DeclarationStatus.OBSERVATION: 4,
+            Declaration.DeclarationStatus.AUTHORIZED: email.EmailTemplateID.DECLARATION_AUTHORIZED.value,
+            Declaration.DeclarationStatus.REJECTED: email.EmailTemplateID.DECLARATION_REJECTED.value,
+            Declaration.DeclarationStatus.OBJECTION: email.EmailTemplateID.DECLARATION_OBJECTION.value,
+            Declaration.DeclarationStatus.OBSERVATION: email.EmailTemplateID.DECLARATION_OBSERVATION.value,
         }
         return template_map.get(self.get_validation_status(request, declaration))
 
