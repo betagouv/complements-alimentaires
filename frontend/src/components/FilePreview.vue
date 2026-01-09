@@ -20,14 +20,10 @@
         Ouvrir {{ isPDF ? "PDF" : "image" }}
       </a>
 
-      <DsfrButton
-        icon="ri-close-fill"
-        @click="$emit('remove', file)"
-        label="Supprimer"
-        secondary
-        size="sm"
-        v-if="!props.readonly"
-      />
+      <DsfrButton icon="ri-close-fill" @click="$emit('remove', file)" secondary size="sm" v-if="!props.readonly">
+        Supprimer
+        <span class="fr-sr-only">le fichier {{ props.file.name }}</span>
+      </DsfrButton>
     </div>
   </div>
 </template>

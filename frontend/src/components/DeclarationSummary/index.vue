@@ -8,16 +8,16 @@
       v-if="allowArticleChange || payload.article"
       class="mb-2"
     />
-    <h3 class="fr-h6">
-      Informations sur le produit
-      <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />
-    </h3>
+    <div class="flex items-center section-header">
+      <h3 class="fr-h6 mb-0">Informations sur le produit</h3>
+      <SummaryModificationButton class="ml-4" v-if="!readonly" :to="editLink(0)" tabName="produit" />
+    </div>
     <ProductInfoSegment :payload="payload" />
     <div>
-      <h3 class="fr-h6 mt-8!">
-        Composition
-        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(1))" />
-      </h3>
+      <div class="flex items-center mt-8! section-header">
+        <h3 class="fr-h6 mb-0">Composition</h3>
+        <SummaryModificationButton class="ml-4" v-if="!readonly" :to="editLink(1)" tabName="composition" />
+      </div>
 
       <CompositionInfo
         v-model="payload"
@@ -27,15 +27,21 @@
 
       <ComputedSubstancesInfo v-model="payload" tableTitle="Substances contenues dans la composition" class="mt-8" />
 
-      <h3 class="fr-h6 mt-8!">
-        Adresse sur l'étiquetage
-        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(editLink(0))" />
-      </h3>
+      <div class="flex items-center mt-8! section-header">
+        <h3 class="fr-h6 mb-0">Adresse sur l'étiquetage</h3>
+        <SummaryModificationButton
+          class="ml-4"
+          v-if="!readonly"
+          :to="editLink(0)"
+          tabName="produit"
+          suffix="l'adresse"
+        />
+      </div>
       <AddressLine :payload="payload" />
-      <h3 class="fr-h6 mt-8!">
-        Pièces jointes
-        <SummaryModificationButton class="ml-4" v-if="!readonly" @click="router.push(attachmentLink)" />
-      </h3>
+      <div class="flex items-center mt-8! section-header">
+        <h3 class="fr-h6 mb-0">Pièces jointes</h3>
+        <SummaryModificationButton class="ml-4" v-if="!readonly" :to="attachmentLink" tabName="Pièces jointes" />
+      </div>
       <RequiresAnalysisReportNotice :declaration="payload" class="mb-4" />
       <div class="grid grid-cols-12 gap-3 mb-8">
         <FilePreview
@@ -88,7 +94,7 @@ const attachmentLink = computed(() => {
 <style scoped>
 @reference "../../styles/index.css";
 
-h3 {
-  @apply border p-2 sm:p-4 bg-blue-france-975;
+.section-header {
+  @apply border p-2 sm:p-4 bg-blue-france-975 mb-6;
 }
 </style>

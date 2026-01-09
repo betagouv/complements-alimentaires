@@ -26,7 +26,7 @@ const props = defineProps({
   buttonLabel: { type: String, default: "Supprimer cette déclaration" },
   helperText: { type: String, default: "" },
   modalText: { type: String, default: "" },
-  actionButtonLabel: { type: String, default: "Supprimer" },
+  actionButtonLabel: { type: String, default: "Supprimer mon brouillon" },
 })
 
 const actions = computed(() => [
