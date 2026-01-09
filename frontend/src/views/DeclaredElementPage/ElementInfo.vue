@@ -14,14 +14,21 @@
       </p>
       <p class="col-span-2">
         <component v-if="info.component" :is="info.component.component" v-bind="info.component" />
-        <a v-else-if="info.href" :href="info.href" target="_blank" rel="noopener" class="text-blue-france-sun-113">
+        <a
+          v-else-if="info.href"
+          :href="info.href"
+          target="_blank"
+          rel="noopener external"
+          class="fr-link"
+          :title="`${info.text} - nouvelle fenêtre`"
+        >
           {{ info.text }}
         </a>
         <span v-else>{{ info.text }}</span>
       </p>
     </div>
     <div class="grid justify-items-end p-2">
-      <router-link :to="declarationLink" class="text-blue-france-sun-113">
+      <router-link :to="declarationLink" class="fr-link">
         Voir la déclaration
         <v-icon icon="ri-arrow-right-line"></v-icon>
       </router-link>

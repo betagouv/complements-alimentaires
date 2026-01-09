@@ -8,7 +8,8 @@
       <a
         href="https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire"
         target="_blank"
-        ref="noopener noreferrer"
+        ref="noopener external"
+        title="Qu'est-ce qu'un complément alimentaire ? - nouvelle fenêtre"
       >
         Qu'est-ce qu'un complément alimentaire ?
       </a>

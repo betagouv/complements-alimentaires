@@ -171,7 +171,12 @@
       En raison de l’obligation de sécurité et de confidentialité dans le traitement des données à caractère personnel
       qui incombe au responsable de traitement, votre demande ne sera traitée que si vous apportez la preuve de votre
       identité. Pour vous aider dans votre démarche,
-      <a href="https://www.cnil.fr/fr/modele/courrier/exercer-son-droit-dacces" target="_blank" rel="noopener">
+      <a
+        href="https://www.cnil.fr/fr/modele/courrier/exercer-son-droit-dacces"
+        target="_blank"
+        rel="noopener external"
+        title="un modèle de courrier élaboré par la Cnil - nouvelle fenêtre"
+      >
         un modèle de courrier élaboré par la Cnil
       </a>
       est à votre disposition.
@@ -182,7 +187,8 @@
       <a
         href="https://www.cnil.fr/fr/modele/courrier/rectifier-des-donnees-inexactes-obsoletes-ou-perimees"
         target="_blank"
-        rel="noopener"
+        rel="noopener external"
+        title="un modèle de courrier élaboré par la Cnil - nouvelle fenêtre"
       >
         un modèle de courrier élaboré par la Cnil
       </a>

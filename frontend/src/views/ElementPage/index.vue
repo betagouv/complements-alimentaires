@@ -120,7 +120,7 @@
       <ul v-if="element.regulatoryResourceLinks?.length" class="list-none -ml-4 mb-6">
         <li v-for="resourceLink in element.regulatoryResourceLinks" :key="resourceLink">
           Ressource reglementaire :
-          <a :href="`${resourceLink}`" target="_blank" ref="noopener noreferrer">
+          <a :href="`${resourceLink}`" target="_blank" ref="noopener external">
             {{ resourceLink }}
           </a>
         </li>
