@@ -2,7 +2,7 @@
   <div>
     <SectionTitle :title="title" :icon="icon" />
     <div v-for="solicitation in solicitations" :key="solicitation.id">
-      <div class="flex items-center">
+      <div class="sm:flex items-center">
         <v-icon class="size-4" :name="icon" />
 
         <div class="ml-2">
