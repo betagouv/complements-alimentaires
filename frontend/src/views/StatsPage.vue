@@ -131,8 +131,9 @@
           <p>
             <a
               href="https://www.data.gouv.fr/fr/datasets/declarations-de-complements-alimentaires"
-              rel="noreferrer noopener"
+              rel="noopener external"
               target="_blank"
+              title="Le jeu de données data.gouv.fr publié par Compl'Alim - nouvelle fenêtre"
             >
               Le jeu de données data.gouv.fr publié par Compl'Alim
             </a>

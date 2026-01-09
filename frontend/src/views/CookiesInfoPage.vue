@@ -34,12 +34,22 @@
     </p>
     <ul>
       <li>
-        <a href="https://www.cnil.fr/fr/cookies-traceurs-que-dit-la-loi" target="_blank" rel="noopener">
+        <a
+          href="https://www.cnil.fr/fr/cookies-traceurs-que-dit-la-loi"
+          target="_blank"
+          rel="noopener external"
+          title="Cookies & traceurs : que dit la loi ? - nouvelle fenêtre"
+        >
           Cookies & traceurs : que dit la loi ?
         </a>
       </li>
       <li>
-        <a href="https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser" target="_blank" rel="noopener">
+        <a
+          href="https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser"
+          target="_blank"
+          rel="noopener external"
+          title="Cookies : les outils pour les maîtriser - nouvelle fenêtre"
+        >
           Cookies : les outils pour les maîtriser
         </a>
       </li>
