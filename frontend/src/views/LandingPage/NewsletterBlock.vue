@@ -62,13 +62,9 @@ const submit = async () => {
   await execute()
   await handleError(response)
 
-  const { addMessage } = useToaster()
+  const { addSuccessMessage } = useToaster()
   if (response.value.ok) {
-    addMessage({
-      type: "success",
-      title: "C'est tout bon !",
-      description: "Votre inscription a bien été prise en compte.",
-    })
+    addSuccessMessage("Votre inscription a bien été prise en compte.")
     // Reset both form state & Vuelidate validation state
     state.value.email = ""
     v$.value.$reset()
