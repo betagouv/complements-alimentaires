@@ -27,7 +27,11 @@
             <span>
               J'atteste que ce produit répond aux prescriptions du droit alimentaire qui lui sont applicables.
             </span>
-            <router-link :to="{ name: 'CompliancePage' }" target="_blank">
+            <router-link
+              :to="{ name: 'CompliancePage' }"
+              target="_blank"
+              title="Informations supplémentaires sur la conformité au droit alimentaire - nouvelle fenêtre"
+            >
               Informations supplémentaires sur la conformité au droit alimentaire.
             </router-link>
           </template>

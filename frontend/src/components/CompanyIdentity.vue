@@ -16,6 +16,8 @@
         class="ml-1"
         :href="`https://annuaire-entreprises.data.gouv.fr/etablissement/${company.siret}`"
         target="_blank"
+        rel="noopener external"
+        title="(voir dans l'annuaire des entreprises) - nouvelle fenêtre"
       >
         (voir dans l'annuaire des entreprises)
       </a>

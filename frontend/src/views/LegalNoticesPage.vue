@@ -36,8 +36,13 @@
     </p>
     <p>
       Pour en savoir plus :
-      <a href="http://references.modernisation.gouv.fr/accessibilite-numerique" target="_blank" rel="noopener">
-        http://references.modernisation.gouv.fr/accessibilite-numerique.
+      <a
+        href="http://references.modernisation.gouv.fr/accessibilite-numerique"
+        target="_blank"
+        rel="noopener external"
+        title="http://references.modernisation.gouv.fr/accessibilite-numerique - nouvelle fenêtre"
+      >
+        http://references.modernisation.gouv.fr/accessibilite-numerique
       </a>
     </p>
     <p>
@@ -51,14 +56,24 @@
       </li>
       <li>
         créer une “issue” sur
-        <a href="https://github.com/betagouv/complements-alimentaires/" target="_blank" rel="noopener">
+        <a
+          href="https://github.com/betagouv/complements-alimentaires/"
+          target="_blank"
+          rel="noopener external"
+          title="le dépôt de code sur GitHub. - nouvelle fenêtre"
+        >
           le dépôt de code sur GitHub.
         </a>
       </li>
     </ul>
     <p>
       Le code source est ouvert et les contributions sont bienvenues.
-      <a href="https://github.com/betagouv/complements-alimentaires/" target="_blank" rel="noopener">
+      <a
+        href="https://github.com/betagouv/complements-alimentaires/"
+        target="_blank"
+        rel="noopener external"
+        title="Voir le code source. - nouvelle fenêtre"
+      >
         Voir le code source.
       </a>
     </p>
@@ -82,11 +97,23 @@
     </p>
     <p>
       Nous utilisons pour cela
-      <a href="https://matomo.org/" target="_blank" rel="noopener">Matomo</a>
+      <a href="https://matomo.org/" target="_blank" rel="noopener external" title="Matomo - nouvelle fenêtre">Matomo</a>
       , un outil
-      <a href="https://matomo.org/free-software/" target="_blank" rel="noopener">libre</a>
+      <a
+        href="https://matomo.org/free-software/"
+        target="_blank"
+        rel="noopener external"
+        title="libre - nouvelle fenêtre"
+      >
+        libre
+      </a>
       , paramétré pour être en conformité avec la
-      <a href="https://www.cnil.fr/fr/solutions-pour-la-mesure-daudience" target="_blank" rel="noopener">
+      <a
+        href="https://www.cnil.fr/fr/solutions-pour-la-mesure-daudience"
+        target="_blank"
+        rel="noopener external"
+        title="recommandation « Cookies » - nouvelle fenêtre"
+      >
         recommandation « Cookies »
       </a>
       de la CNIL. Cela signifie que votre adresse IP, par exemple, est anonymisée avant d’être enregistrée. Il est donc
@@ -95,10 +122,15 @@
     <h3>Je contribue à enrichir vos données, puis-je y accéder ?</h3>
     <p>
       Bien sûr ! Les statistiques d’usage de la majorité de nos produits, dont
-      <a href="https://beta.gouv.fr/" target="_blank" rel="noopener">beta.gouv.fr,</a>
-      sont disponibles en accès libre sur
+      <a href="https://beta.gouv.fr/" target="_blank" rel="noopener external" title="beta.gouv.fr - nouvelle fenêtre">
+        beta.gouv.fr
+      </a>
+      , sont disponibles en accès libre sur
       <a
         href="https://stats.beta.gouv.fr/index.php?module=CoreHome&action=index&idSite=95&period=day&date=yesterday#?period=day&date=yesterday&category=Dashboard_Dashboard&subcategory=1"
+        target="_blank"
+        rel="noopener external"
+        title="stats.beta.gouv.fr - nouvelle fenêtre"
       >
         stats.beta.gouv.fr.
       </a>

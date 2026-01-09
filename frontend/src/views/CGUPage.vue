@@ -116,7 +116,12 @@
     </p>
     <p>
       Le Service a été développé sous licence MIT , le code est disponible à l’adresse suivante :
-      <a href="https://github.com/betagouv/complements-alimentaires/" target="_blank" rel="noopener">
+      <a
+        href="https://github.com/betagouv/complements-alimentaires/"
+        target="_blank"
+        rel="noopener external"
+        title="https://github.com/betagouv/complements-alimentaires/ - nouvelle fenêtre"
+      >
         https://github.com/betagouv/complements-alimentaires/
       </a>
     </p>

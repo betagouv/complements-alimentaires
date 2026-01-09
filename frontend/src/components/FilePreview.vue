@@ -16,7 +16,12 @@
     </DsfrInputGroup>
     <div v-else>{{ file.typeDisplay }}</div>
     <div class="flex gap-2">
-      <a :href="file.file" target="_blank" class="fr-btn fr-btn--secondary fr-btn--sm inline-flex">
+      <a
+        :href="file.file"
+        target="_blank"
+        class="fr-btn fr-btn--secondary fr-btn--sm inline-flex"
+        :title="`Ouvrir ${isPDF ? 'PDF' : 'image'} - ${props.file.name} - nouvelle fenêtre`"
+      >
         Ouvrir {{ isPDF ? "PDF" : "image" }}
       </a>
 
