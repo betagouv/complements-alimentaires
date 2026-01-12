@@ -11,7 +11,7 @@ bleach==6.3.0
 boto3==1.41.5
 botocore==1.41.5
 bs4==0.0.2
-celery==5.5.3
+celery==5.6.2
 certifi==2025.8.3
 cffi==2.0.0
 cfgv==3.4.0
