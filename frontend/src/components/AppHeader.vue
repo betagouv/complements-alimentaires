@@ -10,10 +10,7 @@
       </div>
     </template>
     <template #mainnav>
-      <div class="flex justify-between whitespace-nowrap">
-        <DsfrNavigation :nav-items="navItems" />
-        <DsfrNavigation v-if="store.loggedUser" :nav-items="loggedOnlyNavItems" />
-      </div>
+      <DsfrNavigation :nav-items="navItems" :class="{ 'last-link-right': store.loggedUser }" />
     </template>
   </DsfrHeader>
 </template>
@@ -27,30 +24,32 @@ defineProps({ logoText: Array })
 
 const environment = window.ENVIRONMENT
 const store = useRootStore()
-const navItems = [
-  {
-    to: "/accueil",
-    text: "Accueil",
-  },
-  {
-    to: "/entreprises",
-    text: "Recherche ingrédients",
-  },
-  {
-    to: "/blog",
-    text: "Ressources",
-  },
-  {
-    to: "/faq",
-    text: "FAQ",
-  },
-]
-const loggedOnlyNavItems = [
-  {
-    to: "/tableau-de-bord",
-    text: "Tableau de bord",
-  },
-]
+const navItems = computed(() => {
+  const links = [
+    {
+      to: "/accueil",
+      text: "Accueil",
+    },
+    {
+      to: "/entreprises",
+      text: "Recherche ingrédients",
+    },
+    {
+      to: "/blog",
+      text: "Ressources",
+    },
+    {
+      to: "/faq",
+      text: "FAQ",
+    },
+  ]
+  if (store.loggedUser)
+    links.push({
+      to: "/tableau-de-bord",
+      text: "Tableau de bord",
+    })
+  return links
+})
 
 const quickLinks = computed(() => {
   if (store.loggedUser)
@@ -77,3 +76,9 @@ const quickLinks = computed(() => {
     ]
 })
 </script>
+
+<style>
+.fr-header__menu:not(.fr-modal--opened) nav.last-link-right > ul > li:last-child {
+  margin-left: auto;
+}
+</style>
