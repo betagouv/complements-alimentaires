@@ -6,6 +6,7 @@
 import { computed, watch } from "vue"
 import ElementCommentModal from "@/components/ElementCommentModal"
 import QuantityInputCell from "./QuantityInputCell"
+import SpanCell from "./SpanCell"
 
 const payload = defineModel()
 const props = defineProps({ readonly: Boolean, hidePrivateComments: Boolean })
@@ -21,13 +22,13 @@ const rows = computed(() => {
         modelValue: substance,
       },
       {
-        component: "span",
+        component: SpanCell,
         text: substance.substance.name.toLowerCase(),
         class: "capitalize",
         id: `substance-info-${index}`,
       },
       {
-        component: "span",
+        component: SpanCell,
         text: sourceElements(substance.substance),
         class: "capitalize",
       },
