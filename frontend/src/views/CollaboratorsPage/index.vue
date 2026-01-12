@@ -25,8 +25,8 @@
           </div>
           <div class="text-xs">{{ user.email }}</div>
         </div>
-        <div class="ml-2 md:ml-8 flex gap-x-2">
-          <div class="flex gap-x-2 items-center">
+        <div class="ml-2 md:ml-8 flex gap-2 flex-wrap">
+          <div class="flex gap-2 flex-wrap items-center">
             <RoleTag
               v-for="role in user.roles"
               :key="role.name"
