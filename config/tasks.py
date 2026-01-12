@@ -15,11 +15,10 @@ from viewflow import fsm
 from api.utils.simplified_status import SimplifiedStatusHelper
 from config import email
 from data.etl.declarations import OpenDataDeclarationsETL
-from data.models import Company, Declaration, Snapshot, ControlRoleEmail, ControlRole, IngredientStatus
-
-from .grist_api import fetch_control_emails_from_grist
+from data.models import Company, ControlRole, ControlRoleEmail, Declaration, IngredientStatus, Snapshot
 
 from .celery import app
+from .grist_api import fetch_control_emails_from_grist
 
 logger = logging.getLogger(__name__)
 Status = Declaration.DeclarationStatus
@@ -294,7 +293,7 @@ def import_control_emails():
     existing_emails = set(ControlRoleEmail.objects.all().values_list("email", flat=True))
     emails_to_add = set(unique_emails) - existing_emails
 
-    gov_emails = [e for e in emails_to_add if e[-8:] in ["@gouv.fr", ".gouv.fr"]]
+    gov_emails = [e for e in emails_to_add if e[-8:] in ["@gouv.fr", ".gouv.fr"] or e[-9:] == "@anses.fr"]
     non_gov_emails = set(emails_to_add).difference(gov_emails)
     if len(non_gov_emails):
         logger.info(f"{len(non_gov_emails)} emails not ending in gouv.fr will be ignored: {', '.join(non_gov_emails)}")
