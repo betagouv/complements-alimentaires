@@ -6,7 +6,7 @@
 import { computed, watch } from "vue"
 import ElementCommentModal from "@/components/ElementCommentModal"
 import QuantityInputCell from "./QuantityInputCell"
-import SpanCell from "./SpanCell"
+import SpanCell from "@/components/SpanCell"
 
 const payload = defineModel()
 const props = defineProps({ readonly: Boolean, hidePrivateComments: Boolean })
