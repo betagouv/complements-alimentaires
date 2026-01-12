@@ -108,7 +108,7 @@ sib-api-v3-sdk==7.6.0
 six==1.17.0
 soupsieve==2.8
 sqlfluff==3.4.2
-sqlparse==0.5.3
+sqlparse==0.5.5
 stack-data==0.6.3
 svglib==1.6.0
 tblib==3.2.2
