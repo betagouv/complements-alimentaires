@@ -7,6 +7,10 @@
         { id: 'footer', text: 'Aller au pied de page' },
       ]"
     />
+
+    <p v-if="environment !== 'prod'" id="env-banner" :class="`${environment} mb-0`">
+      Environnement de {{ environment }}
+    </p>
     <AppHeader :logo-text="logoText" id="navigation" />
     <main id="main-content">
       <router-view></router-view>
@@ -49,6 +53,7 @@ watch(route, (to) => {
 })
 
 const lowContrastMode = computed(() => ["IdentitySection", "HistorySection"].includes(route.name))
+const environment = window.ENVIRONMENT
 </script>
 
 <style>
@@ -63,5 +68,22 @@ const lowContrastMode = computed(() => ["IdentitySection", "HistorySection"].inc
   .border-l {
     @apply border-gray-500;
   }
+}
+
+#env-banner {
+  display: block;
+  text-align: center;
+  font-weight: bold;
+  padding: 0.5em;
+  background-color: #f60700;
+}
+#env-banner.dev {
+  background-color: #95e257;
+}
+#env-banner.staging {
+  background-color: #a6f2fa;
+}
+#env-banner.demo {
+  background-color: #fcc0b0;
 }
 </style>

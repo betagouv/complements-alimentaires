@@ -3,10 +3,6 @@
     <template #operator>
       <div class="flex items-center">
         <img :src="require('@/assets/logo.svg')" alt="Compl'Alim" class="h-20" />
-
-        <DsfrBadge v-if="environment === 'dev'" :label="environment" type="info" />
-        <DsfrBadge v-if="environment === 'demo'" :label="environment" type="new" />
-        <DsfrBadge v-if="environment === 'staging'" :label="environment" type="warning" />
       </div>
     </template>
     <template #mainnav>
@@ -22,7 +18,6 @@ import { logOut } from "@/utils/auth"
 
 defineProps({ logoText: Array })
 
-const environment = window.ENVIRONMENT
 const store = useRootStore()
 const navItems = computed(() => {
   const links = [
