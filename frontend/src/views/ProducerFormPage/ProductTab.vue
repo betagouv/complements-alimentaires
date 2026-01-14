@@ -158,8 +158,10 @@
       <DsfrInput is-textarea v-model="payload.warning" label-visible label="Mise en garde et avertissement" />
     </DsfrInputGroup>
 
-    <SectionTitle title="Objectifs / effets" class="mt-10!" sizeTag="h6" icon="ri-focus-2-fill" />
     <DsfrFieldset>
+      <template #legend>
+        <SectionTitle title="Objectifs / effets" class="mt-4! mb-2" sizeTag="h6" icon="ri-focus-2-fill" />
+      </template>
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
         <div
           v-for="effect in orderedEffects"

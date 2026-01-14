@@ -4,6 +4,8 @@
       :options="options"
       :selectedString="statusString"
       filterTitle="Types de déclaration affichés :"
+      modalTitle="Changer les déclarations affichées"
+      legend="Type de déclaration"
       noFilterText="Toutes les déclarations"
       @updateFilter="emitUpdate"
     />

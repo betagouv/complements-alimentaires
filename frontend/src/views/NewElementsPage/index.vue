@@ -13,6 +13,8 @@
       <div class="border px-4 py-4 mb-2 sm:flex gap-8 items-baseline filters">
         <MultiselectFilter
           filterTitle="Statut de la demande :"
+          modalTitle="Changer les demandes affichées"
+          legend="Statut de la demande"
           :options="statusOptions"
           :selectedString="statusFilter"
           @updateFilter="(v) => updateQuery({ statut: v })"
@@ -21,6 +23,8 @@
         <div class="md:border-l md:pl-4">
           <MultiselectFilter
             filterTitle="Type :"
+            modalTitle="Changer les demandes affichées"
+            legend="Type de la demande"
             :options="typeOptions"
             :selectedString="typeFilter"
             noFilterText="Tous les types"
@@ -31,6 +35,8 @@
         <div class="md:border-l md:pl-4">
           <MultiselectFilter
             filterTitle="Statut de la déclaration :"
+            modalTitle="Changer les demandes affichées"
+            legend="Statut de la déclaration"
             :options="declarationStatusOptions"
             :selectedString="declarationStatusFilter"
             noFilterText="Toutes les déclarations ouvertes"
