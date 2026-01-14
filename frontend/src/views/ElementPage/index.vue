@@ -137,20 +137,24 @@
 
       <div v-if="isInstructor" class="text-right mt-4">
         <p class="mb-2"><em>Vous avez le role d'instruction :</em></p>
-        <div class="flex justify-end items-center">
-          <router-link
-            :to="{ name: 'AdvancedSearchPage', query: { composition: `${element.id}||${element.name}||${type}` } }"
-            class="h-fit"
-          >
-            Voir les déclarations concernées
-          </router-link>
-          <router-link
-            :to="{ name: 'ModifyElement', params: { urlComponent: props.urlComponent } }"
-            class="fr-btn fr-btn--tertiary fr-btn--sm ml-4"
-          >
-            <v-icon name="ri-pencil-line" :scale="0.85" class="mr-1"></v-icon>
-            Modifier
-          </router-link>
+        <div class="flex flex-wrap gap-y-4 justify-end items-center">
+          <p class="mb-0">
+            <router-link
+              :to="{ name: 'AdvancedSearchPage', query: { composition: `${element.id}||${element.name}||${type}` } }"
+              class="fr-link"
+            >
+              Voir les déclarations concernées
+            </router-link>
+          </p>
+          <p class="mb-0">
+            <router-link
+              :to="{ name: 'ModifyElement', params: { urlComponent: props.urlComponent } }"
+              class="fr-btn fr-btn--tertiary fr-btn--sm ml-4"
+            >
+              <v-icon name="ri-pencil-line" :scale="0.85" class="mr-1"></v-icon>
+              Modifier
+            </router-link>
+          </p>
         </div>
       </div>
     </div>

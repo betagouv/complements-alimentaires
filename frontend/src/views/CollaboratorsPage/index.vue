@@ -5,7 +5,7 @@
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Gestion des collaborateurs' }]"
     />
 
-    <div class="flex justify-between">
+    <div class="sm:flex justify-between mb-4 sm:mb-0">
       <SectionTitle :title="`Collaborateurs actuels de ${company.socialName}`" icon="ri-user-line" />
       <AddNewCollaborator
         :companyId="company.id"
@@ -16,7 +16,7 @@
     <p>Gérez ici l'ensemble des collaborateurs et leurs rôles.</p>
 
     <div v-for="user in collaborators" :key="user.id">
-      <div class="flex items-center">
+      <div class="sm:flex items-center">
         <v-icon class="size-5" name="ri-user-follow-line" />
         <div class="ml-2">
           <div>
@@ -25,8 +25,8 @@
           </div>
           <div class="text-xs">{{ user.email }}</div>
         </div>
-        <div class="ml-2 md:ml-8 flex gap-x-2">
-          <div class="flex gap-x-2 items-center">
+        <div class="ml-2 md:ml-8 flex gap-2 flex-wrap">
+          <div class="flex gap-2 flex-wrap items-center">
             <RoleTag
               v-for="role in user.roles"
               :key="role.name"

@@ -409,7 +409,7 @@
         </router-link>
       </p>
     </DsfrAlert>
-    <div class="flex gap-x-2 mt-4">
+    <div class="flex flex-wrap gap-2 mt-4">
       <DsfrButton label="Enregistrer ingrédient" @click="saveElement" />
       <DsfrButton
         v-if="!isNewIngredient"
