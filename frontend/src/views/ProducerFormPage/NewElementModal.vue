@@ -77,7 +77,7 @@ const addElement = () => {
 
 const actions = [
   {
-    label: "Ajouter",
+    label: "Ajouter le nouvel ingrédient à la composition",
     onClick: addElement,
   },
 ]
