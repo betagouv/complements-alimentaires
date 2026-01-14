@@ -8,7 +8,7 @@
         <span class="fr-sr-only">« {{ currentTabTitle }} »</span>
         et revenir
       </span>
-      a l'onglet « {{ previousTabTitle }} »
+      à l'onglet « {{ previousTabTitle }} »
     </DsfrButton>
     <DsfrButton class="ml-4" v-if="selectedTabIndex < titles.length - 1" @click="emit('forward')">
       <span v-if="props.removeSaveLabel">Passer</span>
@@ -17,7 +17,7 @@
         <span class="fr-sr-only">« {{ currentTabTitle }} »</span>
         et passer
       </span>
-      a l'onglet « {{ nextTabTitle }} »
+      à l'onglet « {{ nextTabTitle }} »
     </DsfrButton>
   </div>
 </template>
