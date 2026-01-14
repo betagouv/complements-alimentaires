@@ -56,6 +56,7 @@
           <div class="max-w-md mb-4 sm:mb-0">
             <DsfrSelect
               :required="true"
+              :disabled="!galenicFormulationState"
               label="Forme"
               v-model="payload.galenicFormulation"
               :options="

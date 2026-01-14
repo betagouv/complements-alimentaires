@@ -200,6 +200,7 @@ const makeQuantityLabel = (suffix) => {
 // Options pour les DsfrSelect
 const plantPartOptions = computed(() => {
   const options = plantParts.value?.map((x) => ({ text: x.name, value: x.id.toString() }))
+  options.sort((a, b) => a.text.localeCompare(b.text))
   options.unshift({ disabled: true, text: "---------" })
   options.unshift({ value: "", text: "Toutes les parties" })
   return options
