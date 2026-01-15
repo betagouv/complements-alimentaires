@@ -1,5 +1,5 @@
 <template>
-  <div class="fr-container">
+  <div class="fr-container overflow-hidden">
     <DsfrBreadcrumb
       :links="[
         { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
