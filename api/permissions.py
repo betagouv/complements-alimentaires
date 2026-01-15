@@ -1,8 +1,6 @@
-from django.db.models import Q
-
 from rest_framework import permissions
 
-from data.models import Company, ControlRole, Declaration, InstructionRole, VisaRole
+from data.models import ControlRole, Declaration, InstructionRole, VisaRole
 
 
 class CanAccessUser(permissions.BasePermission):
@@ -108,10 +106,8 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
             return False
         is_agent = IsInstructor().has_permission(request, view) or IsVisor().has_permission(request, view)
 
-        declarable_companies = Company.objects.filter(
-            Q(pk__in=request.user.declarable_companies.values_list("pk"))
-            | Q(mandated_companies__in=request.user.declarable_companies.values_list("pk"))
-        ).distinct()
+        declarable_companies = request.user.declarable_companies.all()
+
         is_declarant_from_same_company = obj.company in declarable_companies or (
             obj.mandated_company and obj.mandated_company in declarable_companies
         )
