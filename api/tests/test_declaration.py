@@ -44,6 +44,7 @@ from data.factories import (
 from data.models import (
     Addable,
     Attachment,
+    DeclarantRole,
     Declaration,
     DeclaredMicroorganism,
     DeclaredPlant,
@@ -3045,6 +3046,34 @@ class TestSingleDeclaredElementApi(APITestCase):
 
         other_company = CompanyFactory()
         payload["company"] = other_company.id
+        response_2 = self.client.put(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            payload,
+            format="json",
+        )
+        self.assertEqual(response_2.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_declaration_author_left_company(self):
+        """
+        La modification d'une déclaration par l'auteur de cette déclaration est impossible
+        si l'auteur à quitté l'entreprise
+        """
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+        declaration = DeclarationFactory(
+            author=authenticate.user, status=Declaration.DeclarationStatus.DRAFT, company=company
+        )
+        declaration.save()
+        response_1 = self.client.get(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            format="json",
+        )
+        self.assertEqual(response_1.status_code, status.HTTP_200_OK)
+        payload = response_1.json()
+        DeclarantRole.objects.filter(company=company, user=authenticate.user).delete()
+
+        payload["name"] = "New name"
         response_2 = self.client.put(
             reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
             payload,
