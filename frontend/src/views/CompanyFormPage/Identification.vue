@@ -11,7 +11,13 @@
           @input="removeSpaces"
         />
         <div v-if="company.identifierType == 'siret'" class="mt-2">
-          <a class="fr-link" target="_blank" rel="noopener" href="https://annuaire-entreprises.data.gouv.fr/">
+          <a
+            class="fr-link"
+            target="_blank"
+            rel="noopener external"
+            href="https://annuaire-entreprises.data.gouv.fr/"
+            title="Annuaire des entreprises - nouvelle fenêtre"
+          >
             Annuaire des entreprises
           </a>
         </div>

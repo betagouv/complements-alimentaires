@@ -266,6 +266,7 @@ const savePayload = async ({
     useToaster().addMessage({
       type: "success",
       id: "declaration-success",
+      title: "Succès",
       description: successMessage,
     })
     return true
