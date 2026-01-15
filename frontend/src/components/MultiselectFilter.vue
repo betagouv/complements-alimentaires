@@ -1,7 +1,7 @@
 <template>
   <div>
-    <DsfrModal :opened="opened" @close="opened = false">
-      <DsfrCheckboxSet v-model="selectedOptions" :options="options" />
+    <DsfrModal :opened="opened" @close="opened = false" :title="modalTitle">
+      <DsfrCheckboxSet v-model="selectedOptions" :options="options" :legend="legend" />
     </DsfrModal>
     <p class="mb-2!">
       {{ filterTitle }}
@@ -33,6 +33,8 @@ const props = defineProps({
   options: { type: Array },
   selectedString: { type: String, required: false },
   filterTitle: { type: String },
+  modalTitle: { type: String },
+  legend: { type: String },
   noFilterText: { type: String, required: false },
 })
 const selectedOptions = ref([])

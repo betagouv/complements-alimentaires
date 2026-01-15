@@ -16,6 +16,7 @@ import { isoToPrettyDate } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import { articleOptionsWith15Subtypes } from "@/utils/mappings"
 import CompanyTableCell from "@/components/CompanyTableCell"
+import SpanCell from "@/components/SpanCell"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 
@@ -47,10 +48,10 @@ const rows = computed(() =>
       x.responseLimitDate && isoToPrettyDate(x.responseLimitDate),
       x.instructor
         ? `${x.instructor.firstName} ${x.instructor.lastName}`
-        : { component: "span", text: "Non-assigné", class: "italic" },
+        : { component: SpanCell, text: "Non-assigné", class: "italic" },
       x.visor
         ? `${x.visor.firstName} ${x.visor.lastName}`
-        : { component: "span", text: "Non-assigné", class: "italic" },
+        : { component: SpanCell, text: "Non-assigné", class: "italic" },
       x.article ? articleOptionsWith15Subtypes.find((y) => y.value === x.article)?.shortText : "",
     ],
   }))

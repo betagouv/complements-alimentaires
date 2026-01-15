@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row justify-between border p-2">
+  <div class="flex flex-row flex-wrap justify-between border p-2">
     <span class="self-center">{{ helperText }}</span>
     <DsfrButton
       class="text-red-marianne-425!"

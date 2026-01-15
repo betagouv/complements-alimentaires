@@ -20,6 +20,7 @@ import { articleOptionsWith15Subtypes } from "@/utils/mappings"
 import CompanyTableCell from "@/components/CompanyTableCell"
 import CircleIndicators from "./CircleIndicators"
 import DeclarationName from "@/components/DeclarationName"
+import SpanCell from "@/components/SpanCell"
 
 const { loggedUser } = storeToRefs(useRootStore())
 
@@ -50,7 +51,7 @@ const rows = computed(() =>
       x.responseLimitDate && isoToPrettyDate(x.responseLimitDate),
       x.instructor
         ? `${x.instructor.firstName} ${x.instructor.lastName}`
-        : { component: "span", text: "Non-assigné", class: "italic" },
+        : { component: SpanCell, text: "Non-assigné", class: "italic" },
       x.article ? articleOptionsWith15Subtypes.find((y) => y.value === x.article)?.shortText : "",
     ],
   }))
