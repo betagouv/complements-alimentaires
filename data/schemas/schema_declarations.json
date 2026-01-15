@@ -33,6 +33,22 @@
     },
     {
       "constraints": {
+        "enum": [
+          "Article 15",
+          "Article 16",
+          "Article 17",
+          "Article 18"
+        ],
+        "required": true
+      },
+      "description": "Réference de l'article juridique qui encadre la déclaration du produit. La déclaration du complément ne suit pas la même procédure en fonction de l'article dans lequel il tombe. Voir sur : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000638341",
+      "example": "Article 15",
+      "name": "article_procedure",
+      "title": "Article de procédure",
+      "type": "string"
+    },
+    {
+      "constraints": {
         "required": true
       },
       "description": "Décision prise suite à la déclaration du complément alimentaire. Indique s'il est autorisé ou refusé à la vente",
@@ -48,6 +64,16 @@
       "description": "Date de décision sur la déclaration du complément alimentaire.",
       "example": "2024-01-27",
       "name": "date_decision",
+      "title": "Date décision",
+      "type": "date"
+    },
+    {
+      "constraints": {
+        "required": true
+      },
+      "description": "Date de retrait du marché du complément alimentaire par le déclarant.",
+      "example": "2024-01-27",
+      "name": "date_retrait",
       "title": "Date décision",
       "type": "date"
     },
@@ -110,22 +136,6 @@
       "example": "SK9999999999",
       "name": "vat_responsable_mise_sur_marche",
       "title": "N° TVA intracommunautaire responsable de la mise sur le marché",
-      "type": "string"
-    },
-    {
-      "constraints": {
-        "enum": [
-          "Article 15",
-          "Article 16",
-          "Article 17",
-          "Article 18"
-        ],
-        "required": true
-      },
-      "description": "Réference de l'article juridique qui encadre la déclaration du produit. La déclaration du complément ne suit pas la même procédure en fonction de l'article dans lequel il tombe. Voir sur : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000638341",
-      "example": "Article 15",
-      "name": "article_procedure",
-      "title": "Article de procédure",
       "type": "string"
     },
     {
