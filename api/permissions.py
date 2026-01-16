@@ -125,16 +125,20 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
         if request.method == "DELETE":
             return is_declarant_from_same_company or (is_agent and not is_draft)
 
-        company_changed_in_auhorized_companies = (
-            "company" in request.data and request.data["company"] in declarable_companies.values_list("id", flat=True)
-        ) or (
-            "mandated_company" in request.data
-            and request.data["mandated_company"] in declarable_companies.values_list("id", flat=True)
+        company_id = request.data["company"] if "company" in request.data else (obj.company and obj.company.id)
+        mandated_company_id = (
+            request.data["mandated_company"]
+            if "mandated_company" in request.data
+            else (obj.mandated_company and obj.mandated_company.id)
         )
 
-        return (company_changed_in_auhorized_companies and is_declarant_from_same_company) or (
-            is_agent and not is_draft
-        )
+        if company_id not in declarable_companies.values_list("id", flat=True):
+            return False
+
+        if mandated_company_id and mandated_company_id not in declarable_companies.values_list("id", flat=True):
+            return False
+
+        return is_declarant_from_same_company or (is_agent and not is_draft)
 
 
 class CanTakeAuthorship(permissions.BasePermission):
