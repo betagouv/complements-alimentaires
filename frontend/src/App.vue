@@ -8,7 +8,7 @@
       ]"
     />
 
-    <p v-if="environment !== 'prod'" id="env-banner" :class="`${environment} mb-0`">
+    <p v-if="environment !== 'prod'" id="env-banner" :class="`${environment} mb-0 sm:hidden`">
       Environnement de {{ environment }}
     </p>
     <AppHeader :logo-text="logoText" id="navigation" />
