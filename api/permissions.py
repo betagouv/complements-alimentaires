@@ -104,30 +104,37 @@ class CanAccessIndividualDeclaration(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):  # obj: Declaration
         if not request.user.is_authenticated:
             return False
-
-        is_author = IsDeclarationAuthor().has_object_permission(request, view, obj)
         is_agent = IsInstructor().has_permission(request, view) or IsVisor().has_permission(request, view)
 
         declarable_companies = request.user.declarable_companies.all()
+
         is_declarant_from_same_company = obj.company in declarable_companies or (
             obj.mandated_company and obj.mandated_company in declarable_companies
         )
-
+        # le gestionnaire d'une entreprise a les droits de lecture seulement
         superviseable_companies = request.user.supervisable_companies.all()
         is_supervisor_from_same_company = obj.company in superviseable_companies or (
             obj.mandated_company and obj.mandated_company in superviseable_companies
         )
 
         is_draft = obj.status == Declaration.DeclarationStatus.DRAFT
-        if request.method in permissions.SAFE_METHODS:
-            return (
-                is_author
-                or is_declarant_from_same_company
-                or is_supervisor_from_same_company
-                or (is_agent and not is_draft)
-            )
 
-        return (is_author or is_declarant_from_same_company) or (is_agent and not is_draft)
+        if request.method in permissions.SAFE_METHODS:
+            return is_declarant_from_same_company or is_supervisor_from_same_company or (is_agent and not is_draft)
+
+        if request.method == "DELETE":
+            return is_declarant_from_same_company or (is_agent and not is_draft)
+
+        company_changed_in_auhorized_companies = (
+            "company" in request.data and request.data["company"] in declarable_companies.values_list("id", flat=True)
+        ) or (
+            "mandated_company" in request.data
+            and request.data["mandated_company"] in declarable_companies.values_list("id", flat=True)
+        )
+
+        return (company_changed_in_auhorized_companies and is_declarant_from_same_company) or (
+            is_agent and not is_draft
+        )
 
 
 class CanTakeAuthorship(permissions.BasePermission):

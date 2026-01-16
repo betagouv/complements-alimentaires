@@ -7,13 +7,13 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from data.factories import (
-    AwaitingInstructionDeclarationFactory,
-    UserFactory,
-    SnapshotFactory,
     AuthorizedDeclarationFactory,
+    AwaitingInstructionDeclarationFactory,
+    DeclarantRoleFactory,
+    SnapshotFactory,
+    UserFactory,
 )
-from data.models import Snapshot, Declaration
-
+from data.models import Declaration, Snapshot
 from web.views import CertificateView
 
 
@@ -41,7 +41,8 @@ class DeclarationPdfViewTests:
 
     def setUp(self):
         self.user = UserFactory()
-        self.declaration = AwaitingInstructionDeclarationFactory(author=self.user)
+        self.declarant_role = DeclarantRoleFactory(user=self.user)
+        self.declaration = AwaitingInstructionDeclarationFactory(author=self.user, company=self.declarant_role.company)
         self.declaration.assign_calculated_article()
         self.declaration.save()
 
