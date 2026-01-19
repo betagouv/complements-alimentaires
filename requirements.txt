@@ -2,7 +2,7 @@ amqp==5.3.1
 arabic-reshaper==3.0.0
 asgiref==3.10.0
 asn1crypto==1.5.1
-asttokens==3.0.0
+asttokens==3.0.1
 async-timeout==5.0.1
 autopep8==2.3.2
 beautifulsoup4==4.14.3
