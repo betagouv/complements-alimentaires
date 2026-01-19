@@ -226,7 +226,7 @@ export const routes = [
     meta: {
       title: "Vérification envoyée",
       // Pas d'envoi des infos perso UserId, Email à Matomo
-      matomo: false,
+      analyticsIgnore: true,
     },
   },
   {
