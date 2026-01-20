@@ -64,7 +64,7 @@
         <div class="mb-4 md:max-w-sm">
           <DsfrSelect
             label="Préparation"
-            :options="store.preparations?.map((preparation) => ({ text: preparation.name, value: preparation.id }))"
+            :options="preparations"
             v-model.number="model.preparation"
             defaultUnselectedText=""
             :required="model.active"
@@ -142,8 +142,12 @@ const synonyms = computed(() => model.value.element?.synonyms?.map((x) => x.name
 
 const plantParts = computed(() => {
   const elementParts = model.value.element?.plantParts || []
-  const authorizedParts = elementParts.filter((p) => p.status === ingredientStatuses.AUTHORIZED.apiValue)
-  const unauthorizedParts = elementParts.filter((p) => p.status === ingredientStatuses.NOT_AUTHORIZED.apiValue)
+  const authorizedParts = elementParts
+    .filter((p) => p.status === ingredientStatuses.AUTHORIZED.apiValue)
+    .sort((a, b) => a.name.localeCompare(b.name))
+  const unauthorizedParts = elementParts
+    .filter((p) => p.status === ingredientStatuses.NOT_AUTHORIZED.apiValue)
+    .sort((a, b) => a.name.localeCompare(b.name))
   let parts = authorizedParts
   if (props.canAddNewPlantPart || !elementParts.length) {
     if (parts.length) {
@@ -154,11 +158,17 @@ const plantParts = computed(() => {
       }
       parts.push({ text: "Toutes les parties", disabled: true })
     }
-    parts = parts.concat(store.plantParts || [])
+    const allParts = [].concat(store.plantParts).sort((a, b) => a.name.localeCompare(b.name))
+    parts = parts.concat(allParts)
   }
   return parts.map((x) => {
     return x.text ? x : { text: x.name, value: x.id }
   })
+})
+
+const preparations = computed(() => {
+  const p = [].concat(store.preparations).sort((a, b) => a.name.localeCompare(b.name))
+  return p.map((preparation) => ({ text: preparation.name, value: preparation.id }))
 })
 
 const showFields = computed(() => {

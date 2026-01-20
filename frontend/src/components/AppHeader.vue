@@ -4,9 +4,11 @@
       <div class="flex items-center">
         <img :src="require('@/assets/logo.svg')" alt="Compl'Alim" class="h-20" />
 
-        <DsfrBadge v-if="environment === 'dev'" :label="environment" type="info" />
-        <DsfrBadge v-if="environment === 'demo'" :label="environment" type="new" />
-        <DsfrBadge v-if="environment === 'staging'" :label="environment" type="warning" />
+        <div class="hidden sm:inline">
+          <DsfrBadge v-if="environment === 'dev'" :label="environment" type="info" />
+          <DsfrBadge v-if="environment === 'demo'" :label="environment" type="new" />
+          <DsfrBadge v-if="environment === 'staging'" :label="environment" type="warning" />
+        </div>
       </div>
     </template>
     <template #mainnav>

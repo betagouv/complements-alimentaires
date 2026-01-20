@@ -1,6 +1,7 @@
 import base64
 import os
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.urls import reverse
 from django.utils import timezone
@@ -8,10 +9,9 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from unittest.mock import patch
-
 from data.choices import AuthorizationModes, CountryChoices, FrAuthorizationReasons
 from data.factories import (
+    AuthorizedDeclarationFactory,
     AwaitingInstructionDeclarationFactory,
     AwaitingVisaDeclarationFactory,
     CompanyFactory,
@@ -40,19 +40,19 @@ from data.factories import (
     SupervisorRoleFactory,
     UnitFactory,
     VisaRoleFactory,
-    AuthorizedDeclarationFactory,
 )
 from data.models import (
     Addable,
     Attachment,
+    DeclarantRole,
     Declaration,
     DeclaredMicroorganism,
     DeclaredPlant,
     DeclaredSubstance,
+    IngredientStatus,
     IngredientType,
     Part,
     Snapshot,
-    IngredientStatus,
 )
 
 from .utils import authenticate
@@ -2367,8 +2367,9 @@ class TestSingleDeclaredElementApi(APITestCase):
         La déclaration ne doit pas contenir les champs statut et notes privés pour des ingrédients
         si l'user est un déclarant
         """
-        DeclarantRoleFactory(user=authenticate.user)
-        declaration = DeclarationFactory(author=authenticate.user)
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+        declaration = DeclarationFactory(author=authenticate.user, company=company)
         microorganism = DeclaredMicroorganismFactory(declaration=declaration)
 
         response = self.client.get(reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}))
@@ -3023,3 +3024,59 @@ class TestSingleDeclaredElementApi(APITestCase):
             Addable.AddableStatus.REPLACED,
             "Statut MAJ pour d'autres demandes de la même partie",
         )
+
+    @authenticate
+    def test_change_company_on_send_impossible(self):
+        """
+        Attribution d'une déclaration DRAFT à une autre entreprise de manière malicieuse
+        Pas possible
+        """
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+        declaration = DeclarationFactory(
+            author=authenticate.user, status=Declaration.DeclarationStatus.DRAFT, company=company
+        )
+        declaration.save()
+        response_1 = self.client.get(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            format="json",
+        )
+        self.assertEqual(response_1.status_code, status.HTTP_200_OK)
+        payload = response_1.json()
+
+        other_company = CompanyFactory()
+        payload["company"] = other_company.id
+        response_2 = self.client.put(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            payload,
+            format="json",
+        )
+        self.assertEqual(response_2.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    def test_declaration_author_left_company(self):
+        """
+        La modification d'une déclaration par l'auteur de cette déclaration est impossible
+        si l'auteur à quitté l'entreprise
+        """
+        company = CompanyFactory()
+        DeclarantRoleFactory(user=authenticate.user, company=company)
+        declaration = DeclarationFactory(
+            author=authenticate.user, status=Declaration.DeclarationStatus.DRAFT, company=company
+        )
+        declaration.save()
+        response_1 = self.client.get(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            format="json",
+        )
+        self.assertEqual(response_1.status_code, status.HTTP_200_OK)
+        payload = response_1.json()
+        DeclarantRole.objects.filter(company=company, user=authenticate.user).delete()
+
+        payload["name"] = "New name"
+        response_2 = self.client.put(
+            reverse("api:retrieve_update_destroy_declaration", kwargs={"pk": declaration.id}),
+            payload,
+            format="json",
+        )
+        self.assertEqual(response_2.status_code, status.HTTP_403_FORBIDDEN)
