@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import reverse
-from django.utils.html import format_html, format_html_join, mark_safe
+from django.utils.html import format_html, format_html_join
 
 from simple_history.admin import SimpleHistoryAdmin
 
@@ -96,7 +96,7 @@ class CompanyAdmin(SimpleHistoryAdmin):
         represented = obj.represented_companies.all()
         if represented.exists():
             list_items = format_html_join(
-                mark_safe(""),
+                "\n",
                 '<li><a href="{}">{}</a></li>',
                 (
                     (
@@ -106,6 +106,7 @@ class CompanyAdmin(SimpleHistoryAdmin):
                     for company in represented
                 ),
             )
+
             return format_html('<ul style="margin-left:0;">{}</ul>', list_items)
         return "Cette entreprise peut seulement déclarer pour elle-même."
 
