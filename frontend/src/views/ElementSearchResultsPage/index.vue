@@ -15,7 +15,10 @@
   <div class="fr-container pb-6">
     <DsfrBreadcrumb
       class="mb-8"
-      :links="[{ to: '/', text: 'Accueil' }, { text: `Recherche : « ${currentSearch} »` }]"
+      :links="[
+        { to: { name: 'ProducerHomePage' }, text: 'Recherche ingrédients' },
+        { text: `Recherche : « ${currentSearch} »` },
+      ]"
     />
     <div v-if="isFetching" class="flex justify-center my-24">
       <ProgressSpinner />
