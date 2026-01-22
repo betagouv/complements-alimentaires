@@ -135,6 +135,8 @@ WEBPACK_LOADER = {
     }
 }
 
+ADMIN_URL = os.environ.get("ADMIN_URL", "admin")
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 

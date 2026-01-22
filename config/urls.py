@@ -7,7 +7,7 @@ from django.urls import path, re_path
 from web.views import VueAppDisplayView
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path(f"{settings.ADMIN_URL}/", admin.site.urls),
     path("prose/", include("prose.urls")),
     path("hijack/", include("hijack.urls")),
 ]
