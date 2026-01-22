@@ -14,7 +14,7 @@
 
     <title>Compl'Alim</title>
     <meta name="description" content="Compléments alimentaires">
-    <script type="text/javascript">
+    <script type="text/javascript" nonce="{{ csp_nonce }}">
         window.CSRF_TOKEN = "{{ csrf_token }}";
         window.ENVIRONMENT = "{% environment %}";
         window.MATOMO_ID = "{% matomo_id %}";
@@ -28,6 +28,7 @@
         <strong>We're sorry but frontend doesn't work properly without JavaScript enabled. Please enable it to
             continue.</strong>
     </noscript>
+    {% render_bundle 'app' 'css' %}
     <div id="app">
         {% render_bundle 'app' %}
     </div>

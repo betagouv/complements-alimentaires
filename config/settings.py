@@ -119,6 +119,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.csp",
             ],
         },
     },
@@ -366,22 +367,35 @@ GRIST_SD_CONTROL_TABLE_ID = env("GRIST_SD_CONTROL_TABLE_ID", default=None)
 GRIST_ANSES_CONTROL_DOC_ID = env("GRIST_ANSES_CONTROL_DOC_ID", default=None)
 GRIST_ANSES_CONTROL_TABLE_ID = env("GRIST_ANSES_CONTROL_TABLE_ID", default=None)
 
-# Content Security Policy (CSP) https://docs.djangoproject.com/en/6.0/ref/csp/
-
-CSP_DOMAINS = [CSP.SELF, CSP.UNSAFE_INLINE, CSP.UNSAFE_HASHES, "data:"]
-
-if DEBUG:
-    CSP_DOMAINS.extend(["localhost:8080", "ws:"])
-
-CSP_DOMAINS.extend(
-    [
-        "api.iconify.design",
-        "api.unisvg.com",
-        "api.simplesvg.com",
+# Configuration CSP avec nonces
+SECURE_CSP = {
+    "default-src": [
+        CSP.SELF,
         "*.gouv.fr",
     ]
-)
-
-SECURE_CSP = {
-    "default-src": CSP_DOMAINS,
+    + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    "script-src": [
+        CSP.SELF,
+        CSP.NONCE,
+        "*.gouv.fr",
+    ]
+    + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    "style-src": [
+        CSP.SELF,
+        CSP.NONCE,
+    ]
+    + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    "img-src": [
+        CSP.SELF,
+        "data:",
+    ]
+    + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    "connect-src": [
+        CSP.SELF,
+        "*.gouv.fr",
+        "https://api.iconify.design",
+        "https://api.unisvg.com",
+        "https://api.simplesvg.com",
+    ]
+    + (["ws:"] if DEBUG else []),
 }

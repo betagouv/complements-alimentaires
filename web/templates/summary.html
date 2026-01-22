@@ -1,7 +1,7 @@
 {% load static %}
 <html lang="fr">
     <head>
-        <style>
+        <style nonce="{{ csp_nonce }}">
             @font-face {
             font-family: 'Marianne';
             src: url({% static 'fonts/Marianne-Regular.ttf' %}) format('truetype');
