@@ -18,6 +18,37 @@
                 font-family: 'Marianne', Arial, Helvetica, sans-serif;
                 /* margin: 20px; */
             }
+            .text-bold {
+                font-family: 'Marianne-Bold';
+                font-weight: bold;
+            }
+            .text-bold-italic {
+                font-family: 'Marianne-Bold';
+                font-weight: italic;
+            }
+            .text-center {
+                text-align: center;
+            }
+            .font-1 {
+                font-size: 1em;
+            }
+            .font-1-2 {
+                font-size: 1.2em;
+            }
+            .pl-10 {
+                padding-left: 10cm;
+            }
+            .pt-20 {
+                padding-top: 20px;
+            }
+            .mt-20 {
+                margin-top: 20px;
+            }
+            .table-bold {
+                font-weight: bold;
+                font-size: 1.7em;
+                font-family: 'Marianne-Bold';
+            }
             @page {
                 size: A4 portrait;
                 margin: 1.3cm 2cm;
@@ -45,14 +76,14 @@
                         <img width="160" src="{% static 'images/certificate/masa.png' %}" alt="Ministère de l'Agriculture et de la Souveraineté Alimentaire">
                         {% endif %}
                     </td>
-                    <td align="right" style="font-weight: bold; font-size: 1.7em; font-family: 'Marianne-Bold'">
+                    <td align="right" class="table-bold">
                         Direction générale<br />{{direction}}
                     </td>
                 </tr>
 
-                <tr style="padding-top: 20px;">
+                <tr class="pt-20">
                     <td>
-                        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+                        <span class="text-bold">
                         Direction générale {{ direction }}<br />
                         {{ address_street }}<br />
                         {{ address_cedex }}<br />
@@ -61,14 +92,14 @@
                             <br />
                             Mél : <a href="mailto:{{mail}}">{{ mail }}</a><br />
                     </td>
-                    <td align="right" style="font-size: 1.2em;">
+                    <td align="right" class="font-1-2">
                         Paris, le {{ date|date:"l j F Y" }}
                     </td>
                 </tr>
                 {% if include_recipient_address %}
                 <tr>
                     <td></td>
-                    <td align="right" style="font-size: 1em;">
+                    <td align="right" class="font-1">
                         {% for line in recipient_lines %}
                         {{line}}<br />
                         {% endfor %}
@@ -76,7 +107,7 @@
                 </tr>
                 {% endif %}
             </table>
-            <div style="margin-top: 20px;">
+            <div class="mt-20">
                 {% block 'body' %}
                 {% endblock %}
             </div>

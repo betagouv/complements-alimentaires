@@ -3,14 +3,14 @@
 Accusé d'enregistrement de déclaration d'un complément alimentaire n° {{ declaration.id }}
 {% endblock %}
 {% block 'body' %}
-<h1 style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
+<h1 class="text-bold text-center">
     ATTESTATION DE DÉCLARATION<br />
     D’UN COMPLÉMENT ALIMENTAIRE
 </h1>
-<div style="font-size: 1.2em;">
+<div class="font-1-2">
     <p>
         La Direction générale de l'alimentation (DGAL) atteste que
-        <span style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
+        <span class="">
             {% if declaration.mandated_company %}
             l'entreprise mandataire {{ declaration.mandated_company.social_name }}
             {% elif declaration.company %}
@@ -19,7 +19,7 @@ Accusé d'enregistrement de déclaration d'un complément alimentaire n° {{ dec
         </span>
         a effectué, le {{ last_submission_date|date:"l j F Y" }}, la déclaration pour le produit :
     </p>
-    <p style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
+    <p class="text-bold text-center">
         {{ declaration.name }}
         {% if declaration.galenic_formulation %}
         <br />{{ declaration.galenic_formulation.name }}
@@ -32,11 +32,11 @@ Accusé d'enregistrement de déclaration d'un complément alimentaire n° {{ dec
         Cette déclaration enregistre un ou plusieurs ingrédient(s) avec dépassement de doses maximum autorisées
         pour la population générale. Elle va faire l'objet d'une étude approfondie par nos services
         avant potentielle acceptation. Elle est enregistrée sous le numéro
-        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+        <span class="text-bold">
             {{ declaration.id }}
         </span>.
     </p>
-    <p style="font-family: 'Marianne-Bold'; font-weight: bold;">
+    <p class="text-bold">
         Cette attestation ne constitue donc pas une garantie de conformité aux dispositions en
         vigueur ni une autorisation de mise sur le marché.
     </p>
