@@ -14,6 +14,8 @@ import os
 import sys
 from pathlib import Path
 
+from django.utils.csp import CSP
+
 import environ
 import sentry_sdk
 from botocore.client import Config as BotoConfig
@@ -92,6 +94,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "django.middleware.csp.ContentSecurityPolicyMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -362,3 +365,23 @@ GRIST_SD_CONTROL_DOC_ID = env("GRIST_SD_CONTROL_DOC_ID", default=None)
 GRIST_SD_CONTROL_TABLE_ID = env("GRIST_SD_CONTROL_TABLE_ID", default=None)
 GRIST_ANSES_CONTROL_DOC_ID = env("GRIST_ANSES_CONTROL_DOC_ID", default=None)
 GRIST_ANSES_CONTROL_TABLE_ID = env("GRIST_ANSES_CONTROL_TABLE_ID", default=None)
+
+# Content Security Policy (CSP) https://docs.djangoproject.com/en/6.0/ref/csp/
+
+CSP_DOMAINS = [CSP.SELF, CSP.UNSAFE_INLINE, CSP.UNSAFE_HASHES, "data:"]
+
+if DEBUG:
+    CSP_DOMAINS.extend(["localhost:8080", "ws:"])
+
+CSP_DOMAINS.extend(
+    [
+        "api.iconify.design",
+        "api.unisvg.com",
+        "api.simplesvg.com",
+        "*.gouv.fr",
+    ]
+)
+
+SECURE_CSP = {
+    "default-src": CSP_DOMAINS,
+}
