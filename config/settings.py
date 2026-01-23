@@ -372,6 +372,7 @@ SECURE_CSP = {
     "default-src": [
         CSP.SELF,
         "*.gouv.fr",
+        "*.services.clever-cloud.com",
     ]
     + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
     "script-src": [
@@ -387,6 +388,7 @@ SECURE_CSP = {
     + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
     "img-src": [
         CSP.SELF,
+        "*.services.clever-cloud.com",
         "data:",
     ]
     + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
