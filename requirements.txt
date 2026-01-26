@@ -116,7 +116,7 @@ tinycss2==1.4.0
 tqdm==4.67.1
 traitlets==5.14.3
 typing_extensions==4.15.0
-tzdata==2025.2
+tzdata==2025.3
 tzlocal==5.3.1
 Unidecode==1.4.0
 uritools==5.0.0
