@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.28.6",
-    "@babel/eslint-parser": "^7.28.5",
+    "@babel/eslint-parser": "^7.28.6",
     "@tailwindcss/postcss": "^4.1.18",
     "@vue/cli-plugin-babel": "~5.0.9",
     "@vue/cli-plugin-eslint": "~5.0.9",
