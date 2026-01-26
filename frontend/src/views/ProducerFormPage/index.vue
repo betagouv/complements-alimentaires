@@ -88,6 +88,7 @@
             ? 'La suppression de votre déclaration n\'est pas réversible. Êtes-vous sûr de vouloir procéder ?'
             : 'En mettant votre déclaration en abandon le procesus d\'instruction sera interrompu. Êtes-vous sûr de vouloir continuer ?'
         "
+        :productName="payload.name"
       />
     </div>
   </div>
