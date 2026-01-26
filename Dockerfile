@@ -6,7 +6,7 @@
 
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
-ARG PYTHON_VERSION=3.11
+ARG PYTHON_VERSION=3.12
 # slim is based on Debian
 FROM python:${PYTHON_VERSION}-slim as base
 
@@ -33,9 +33,11 @@ RUN adduser \
 
 # in order to download the magic auth dependency, which comes from a github repo
 # we need to install git
+# and in order to use svglib 1.6.0, which relies on rlpycairo, which relies on pycairo, we need to download libcairo2-dev
+# https://github.com/pygobject/pycairo/issues/89
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y git libpq-dev gcc
+    apt-get install -y git libpq-dev gcc libcairo2-dev
 
 # i had a problem accessing github.com. When I followed https://docs.docker.com/desktop/get-started/#credentials-management-for-linux-users
 # and restarted the problem was resolved
@@ -46,6 +48,7 @@ RUN apt-get update && \
 # into this layer.
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
+    python -m pip install --upgrade pip && \
     python -m pip install -r requirements.txt
 
 # Switch to the non-privileged user to run the application.
