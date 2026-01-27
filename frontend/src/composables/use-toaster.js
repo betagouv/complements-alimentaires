@@ -54,13 +54,15 @@ const useToaster = () => {
     message.closeable ??= true
     message.type ??= "info"
     message.timeout ??= 5000
+    if (!message.title && message.type === "success") message.title = "Succès"
+    if (!message.title && message.type === "error") message.title = "Erreur"
     messages.push({ ...message, description: `${message.description}` })
     timeouts[message.id] = window.setTimeout(() => removeMessage(message.id), message.timeout)
   }
 
-  const addSuccessMessage = (description) => addMessage({ type: "success", title: "Succès", description })
+  const addSuccessMessage = (description) => addMessage({ type: "success", description })
 
-  const addErrorMessage = (description) => addMessage({ type: "error", title: "Erreur", description })
+  const addErrorMessage = (description) => addMessage({ type: "error", description })
 
   return {
     messages,

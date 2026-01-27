@@ -62,7 +62,6 @@ const changeArticle = async () => {
   payload.value = data.value
   useToaster().addMessage({
     type: "success",
-    title: "Succès",
     id: "article-update-success",
     description: "L'article de cette déclaration à été mis à jour",
   })
