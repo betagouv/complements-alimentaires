@@ -21,6 +21,7 @@ class PdfView(GenericAPIView, ABC):
         html = template.render(self.get_context(obj))
 
         if self.as_html:
+            html = "<!doctype html>" + html
             return HttpResponse(html, status=200)
 
         response = HttpResponse(content_type="application/pdf")

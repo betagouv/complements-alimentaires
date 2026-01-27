@@ -45,7 +45,7 @@
                         <img width="160" src="{% static 'images/certificate/masa.png' %}" alt="Ministère de l'Agriculture et de la Souveraineté Alimentaire">
                         {% endif %}
                     </td>
-                    <td align="right" style="font-weight: bold; font-size: 1.7em; font-family: 'Marianne-Bold'">
+                    <td style="text-align: right; font-weight: bold; font-size: 1.7em; font-family: 'Marianne-Bold'">
                         Direction générale<br />{{direction}}
                     </td>
                 </tr>
@@ -61,14 +61,14 @@
                             <br />
                             Mél : <a href="mailto:{{mail}}">{{ mail }}</a><br />
                     </td>
-                    <td align="right" style="font-size: 1.2em;">
+                    <td style="text-align: right; font-size: 1.2em;">
                         Paris, le {{ date|date:"l j F Y" }}
                     </td>
                 </tr>
                 {% if include_recipient_address %}
                 <tr>
                     <td></td>
-                    <td align="right" style="font-size: 1em;">
+                    <td style="text-align: right; font-size: 1em;">
                         {% for line in recipient_lines %}
                         {{line}}<br />
                         {% endfor %}
