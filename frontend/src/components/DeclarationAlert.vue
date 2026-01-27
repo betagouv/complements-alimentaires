@@ -14,7 +14,7 @@
       <a
         :href="`/declarations/${declaration.id}/certificate.html`"
         target="_blank"
-        rel="noopener noreferrer"
+        rel="noopener external"
         class="ml-4 relative"
         :title="`${displayData.documentName || 'L\'attestation'} (HTML) - nouvelle fenêtre`"
       >
