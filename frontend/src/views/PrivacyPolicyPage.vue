@@ -119,7 +119,7 @@
       Les cookies de mesure d’audience, lorsque les données sont anonymisées, ne nécessitent pas de consentement. En
       l’occurrence, la plateforme utilise Matomo dans sa version anonymisée, vous pouvez néanmoins vous opposer au suivi
       de votre navigation sur ce site web. Pour plus d’informations, visitez
-      <router-link :to="{ name: 'CookiesInfoPage' }">notre page dédiée.</router-link>
+      <router-link :to="{ name: 'CookiesInfoPage' }" class="fr-link">notre page dédiée.</router-link>
     </p>
     <h2>Durée de conservation</h2>
     <DsfrTable
@@ -155,7 +155,7 @@
     </p>
     <p>
       Par voie numérique :
-      <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
+      <a :href="`mailto:${contactEmail}`" class="fr-link">{{ contactEmail }}</a>
     </p>
     <p>Par voie postale :</p>
     <address>
@@ -171,27 +171,19 @@
       En raison de l’obligation de sécurité et de confidentialité dans le traitement des données à caractère personnel
       qui incombe au responsable de traitement, votre demande ne sera traitée que si vous apportez la preuve de votre
       identité. Pour vous aider dans votre démarche,
-      <a
+      <ExternalLink
         href="https://www.cnil.fr/fr/modele/courrier/exercer-son-droit-dacces"
-        target="_blank"
-        rel="noopener external"
-        title="un modèle de courrier élaboré par la Cnil - nouvelle fenêtre"
-      >
-        un modèle de courrier élaboré par la Cnil
-      </a>
+        text="un modèle de courrier élaboré par la Cnil"
+      />
       est à votre disposition.
     </p>
     <p>
       Vous avez la possibilité de vous opposer à un traitement de vos données personnelles. Pour vous aider dans votre
       démarche,
-      <a
+      <ExternalLink
         href="https://www.cnil.fr/fr/modele/courrier/rectifier-des-donnees-inexactes-obsoletes-ou-perimees"
-        target="_blank"
-        rel="noopener external"
-        title="un modèle de courrier élaboré par la Cnil - nouvelle fenêtre"
-      >
-        un modèle de courrier élaboré par la Cnil
-      </a>
+        text="un modèle de courrier élaboré par la Cnil"
+      />
       est à votre disposition.
     </p>
     <p>
@@ -228,5 +220,7 @@
 </template>
 
 <script setup>
+import ExternalLink from "@/components/ExternalLink"
+
 const contactEmail = window.CONTACT_EMAIL
 </script>

@@ -42,7 +42,7 @@
     </ul>
     <p>
       Plus d'informations sur nos
-      <router-link :to="{ name: 'LegalNoticesPage' }">page dédiée aux mentions légales.</router-link>
+      <router-link class="fr-link" :to="{ name: 'LegalNoticesPage' }">page dédiée aux mentions légales.</router-link>
     </p>
     <h2>Modalités d’utilisation du Service</h2>
     <p>L'utilisation du Service est facultative et gratuite.</p>
@@ -89,13 +89,13 @@
     <p>
       Pour plus d’informations sur le traitement des données à caractère personnel l’utilisateur est invité à se référer
       à la
-      <router-link :to="{ name: 'PrivacyPolicyPage' }">politique de confidentialité.</router-link>
+      <router-link class="fr-link" :to="{ name: 'PrivacyPolicyPage' }">politique de confidentialité.</router-link>
     </p>
     <p>
       La validation des CGU implique l’inscription automatique à l’infolettre Compl'Alim. Conforment à la
       réglementation, cette inscription est révocable à tout moment, soit en vous désabonnant à réception du courriel,
       ou en nous notifiant votre refus à l’adresse suivante :
-      <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
+      <a class="fr-link" :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
     </p>
     <h2>Statistiques</h2>
     <p>Les données récoltées dans le cadre du téléservice servent au pilotage de la politique publique.</p>
@@ -116,14 +116,7 @@
     </p>
     <p>
       Le Service a été développé sous licence MIT , le code est disponible à l’adresse suivante :
-      <a
-        href="https://github.com/betagouv/complements-alimentaires/"
-        target="_blank"
-        rel="noopener external"
-        title="https://github.com/betagouv/complements-alimentaires/ - nouvelle fenêtre"
-      >
-        https://github.com/betagouv/complements-alimentaires/
-      </a>
+      <ExternalLink href="https://github.com/betagouv/complements-alimentaires/" />
     </p>
     <p>
       Le Service est mis à disposition sans autres garanties expresses ou tacites que celles qui sont prévues par les
@@ -157,20 +150,22 @@
     <ul>
       <li>
         Difficultés techniques :
-        <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
+        <a class="fr-link" :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
       </li>
       <li>
         Problèmes liés à la procédure :
-        <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
+        <a class="fr-link" :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
       </li>
       <li>
         Droit d’accès CNIL :
-        <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
+        <a class="fr-link" :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
       </li>
     </ul>
   </div>
 </template>
 
 <script setup>
+import ExternalLink from "@/components/ExternalLink"
+
 const contactEmail = window.CONTACT_EMAIL
 </script>

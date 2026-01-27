@@ -12,15 +12,11 @@
     <p class="font-bold">{{ company.socialName }}</p>
     <p v-if="company.siret">
       Numéro SIRET : {{ company.siret }}
-      <a
-        class="ml-1"
+      <ExternalLink
         :href="`https://annuaire-entreprises.data.gouv.fr/etablissement/${company.siret}`"
-        target="_blank"
-        rel="noopener external"
-        title="(voir dans l'annuaire des entreprises) - nouvelle fenêtre"
-      >
-        (voir dans l'annuaire des entreprises)
-      </a>
+        text="(voir dans l'annuaire des entreprises)"
+        style="color: var(--text-default-grey)"
+      />
     </p>
 
     <p v-if="company.vat">Numéro de TVA : {{ company.vat }}</p>
@@ -40,6 +36,7 @@
 
 <script setup>
 import AddressLine from "@/components/AddressLine"
+import ExternalLink from "@/components/ExternalLink"
 defineProps({ company: Object, mandatedCompany: Object })
 </script>
 

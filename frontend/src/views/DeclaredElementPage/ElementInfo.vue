@@ -14,16 +14,7 @@
       </p>
       <p class="col-span-2">
         <component v-if="info.component" :is="info.component.component" v-bind="info.component" />
-        <a
-          v-else-if="info.href"
-          :href="info.href"
-          target="_blank"
-          rel="noopener external"
-          class="fr-link"
-          :title="`${info.text} - nouvelle fenêtre`"
-        >
-          {{ info.text }}
-        </a>
+        <ExternalLink v-else-if="info.href" :href="info.href" :text="info.text" />
         <span v-else>{{ info.text }}</span>
       </p>
     </div>
@@ -37,6 +28,7 @@
 </template>
 
 <script setup>
+import ExternalLink from "@/components/ExternalLink"
 import { computed } from "vue"
 import { useRootStore } from "@/stores/root"
 import { getTypeIcon, getTypeInFrench, ingredientStatuses } from "@/utils/mappings"
