@@ -28,19 +28,23 @@
         </DsfrInputGroup>
         <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
         <div class="md:mt-6 justify-self-end shrink self-center">
-          <DsfrButton @click="canDownloadFile ? null : (opened = true)" secondary size="sm" icon="ri-file-excel-2-fill">
-            <a :href="canDownloadFile ? excelUrl : 'javascript:void(0)'" download>Télécharger</a>
-          </DsfrButton>
-          <DsfrModal v-model:opened="opened" title="Nombre de déclarations trop élévé" @close="opened = false">
-            <p>
-              La recherche actuelle présente {{ data?.count }} résultats. Un maximum de
-              {{ maxDownloadSize }} déclarations peuvent être exportées.
-            </p>
-            <p>
-              Merci d'affiner votre recherche ou de contacter notre équipe pour demander un export avec les filtres
-              choisis.
-            </p>
-          </DsfrModal>
+          <a v-if="canDownloadFile" :href="excelUrl" download class="fr-link fr-link--download">
+            Télécharger
+            <span class="fr-link__detail">XLSX</span>
+          </a>
+          <div v-else>
+            <DsfrButton @click="opened = true" secondary size="sm" icon="ri-file-excel-2-fill">Télécharger</DsfrButton>
+            <DsfrModal v-model:opened="opened" title="Nombre de déclarations trop élévé" @close="opened = false">
+              <p>
+                La recherche actuelle présente {{ data?.count }} résultats. Un maximum de
+                {{ maxDownloadSize }} déclarations peuvent être exportées.
+              </p>
+              <p>
+                Merci d'affiner votre recherche ou de contacter notre équipe pour demander un export avec les filtres
+                choisis.
+              </p>
+            </DsfrModal>
+          </div>
         </div>
       </div>
     </div>
