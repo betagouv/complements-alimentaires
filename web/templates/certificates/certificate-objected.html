@@ -3,10 +3,10 @@
 Réf. : Dossier n° {{ declaration.id }}
 {% endblock %}
 {% block 'body' %}
-<h1 style="font-family: 'Marianne-Bold'; font-weight: bold;">
+<h1 class="text-bold">
     Réf. : Dossier n° {{declaration.id}}
 </h1>
-<div style="font-size: 1.2em;">
+<div class="font-1-2">
     <p>
         Madame, Monsieur,
     </p>
@@ -15,19 +15,19 @@ Réf. : Dossier n° {{ declaration.id }}
         n°2006-352 du 20 mars 2006, vous avez déclaré pour le compte de la société
         {% if declaration.company %}« {{ declaration.company.social_name }} »{% endif %}
         la mise sur le marché du produit :
-        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+        <span class="text-bold">
             {{ declaration.name }} / {{ declaration.galenic_formulation }}
         </span>
     <p>
         L’examen de cette déclaration soulève les objections suivantes, qui la rendent irrecevable :
-        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+        <span class="text-bold">
             <br>
             {% for reason in declaration.blocking_reasons %}
                 - {{ reason }}<br>
             {% endfor %}
         </span>
     </p>
-    <p style="font-family: 'Marianne-Bold'; font-style: italic;">
+    <p class="text-bold-italic">
         {{ declaration.last_administration_comment }}
     </p>
     <p>
@@ -44,10 +44,10 @@ Réf. : Dossier n° {{ declaration.id }}
     <p>
         Je vous prie d’agréer, Madame, Monsieur, l’expression de ma considération distinguée.
     </p>
-    <p style="padding-left: 10cm;">
+    <p class="pl-10">
         {{ signature_title }}
     </p>
-    <p style="padding-left: 10cm;">
+    <p class="pl-10">
         {{ signature_name }}
     </p>
 </div>

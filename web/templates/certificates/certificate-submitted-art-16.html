@@ -3,18 +3,18 @@
 Accusé d'enregistrement de déclaration d'un complément alimentaire n° {{ declaration.id }}
 {% endblock %}
 {% block 'body' %}
-<h1 style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
+<h1 class="text-bold text-center">
     ACCUSÉ D'ENREGISTREMENT<br />
     DE DÉCLARATION D'UN COMPLEMENT ALIMENTAIRE
 </h1>
-<div style="font-size: 1.2em;">
+<div class="font-1-2">
     <p>
         Madame, Monsieur,
     </p>
     <p>
         Le {{ last_submission_date|date:"l j F Y" }} vous avez déclaré par voie électronique le produit suivant :
     </p>
-    <p style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
+    <p class="text-bold text-center">
         {{ declaration.name }}
         {% if declaration.galenic_formulation %}
         <br />{{ declaration.galenic_formulation.name }}
@@ -25,12 +25,12 @@ Accusé d'enregistrement de déclaration d'un complément alimentaire n° {{ dec
     </p>
     <p>
         Cette déclaration a été effectuée au titre de l’article 16 du décret n°2006-352 du 20 mars 2006 relatif aux
-        compléments alimentaires, pour le compte de la société <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+        compléments alimentaires, pour le compte de la société <span class="text-bold">
             {% if declaration.company %}{{ declaration.company.social_name }}{% endif %}
         </span>.
     </p>
     <p>
-        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">Votre dossier porte le numéro : {{ declaration.id }}.</span>
+        <span class="text-bold">Votre dossier porte le numéro : {{ declaration.id }}.</span>
     </p>
     <p>
         Ce numéro unique facilitera le suivi de votre dossier.
@@ -59,10 +59,10 @@ Accusé d'enregistrement de déclaration d'un complément alimentaire n° {{ dec
     <pdf:nextpage />
 </div>
 
-<h1 style="text-align: center; font-family: 'Marianne-Bold'; font-weight: bold;">
+<h1 class="text-bold text-center">
     Annexe 1 : prescriptions du droit alimentaire applicables au compléments alimentaires (liste non exhaustive)
 </h1>
-<div style="font-size: 1.2em">
+<div class="font-1-2">
     <ul>
         <li>
             <a href="https://eur-lex.europa.eu/legal-content/FR/TXT/PDF/?uri=CELEX:02002L0046-20220930&from=EN">

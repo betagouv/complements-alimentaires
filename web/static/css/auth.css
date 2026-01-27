@@ -217,6 +217,23 @@
     margin-top: 40px;
   }
 
+  .mt-10 {
+    margin-top: 10px;
+  }
+  .mt-22 {
+    margin-top: 22px;
+  }
+  .password-reset {
+      font-size: 0.85em;
+      margin-top: 20px;
+  }
+  .text-left {
+    text-align: left;
+  }
+  .d-block {
+    display: block;
+  }
+
   @media (max-width: 1005px) {
     #wrapper.columns {
       width: 300px;

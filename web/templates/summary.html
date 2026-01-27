@@ -1,7 +1,7 @@
 {% load static %}
 <html lang="fr">
     <head>
-        <style>
+        <style nonce="{{ csp_nonce }}">
             @font-face {
             font-family: 'Marianne';
             src: url({% static 'fonts/Marianne-Regular.ttf' %}) format('truetype');
@@ -89,6 +89,12 @@
                 margin-top: 0pt;
                 margin-bottom: 10pt;
             }
+            .mt-20 {
+                margin-top: 20px;
+            }
+            .d-block {
+                display: block;
+            }
         </style>
         <title>Votre déclaration « {{ declaration.name }} »</title>
     </head>
@@ -107,7 +113,7 @@
                     </td>
                 </tr>
             </table>
-            <div style="margin-top: 20px;">
+            <div class="mt-20">
                 <!-- Environnement si différent à prod -->
                 {% if environment %}
                 <p class="bold-marianne">Environnement : {{ environment }}</p>
@@ -342,7 +348,7 @@
                         {% else %}
                         <img class="keep-with-next" width="220" src="{{ attachment.file.url }}" alt="">
                         {% endif %}
-                        <figcaption class="bold-marianne" style="display: block;">
+                        <figcaption class="bold-marianne" class="d-block">
                             {{ attachment.type_display }} ({{ attachment.name }})
                         </figcaption>
                     </figure>

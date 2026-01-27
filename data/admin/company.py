@@ -107,7 +107,7 @@ class CompanyAdmin(SimpleHistoryAdmin):
                 ),
             )
 
-            return format_html('<ul style="margin-left:0;">{}</ul>', list_items)
+            return format_html('<ul class="ml-0">{}</ul>', list_items)
         return "Cette entreprise peut seulement déclarer pour elle-même."
 
     display_represented_companies.short_description = "Entreprises representées"

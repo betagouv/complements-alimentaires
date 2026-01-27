@@ -15,7 +15,7 @@ module.exports = defineConfig({
 
   css: {
     sourceMap: true,
-    extract: false,
+    extract: true,
   },
   chainWebpack: (config) => {
     config.optimization.splitChunks(false)
