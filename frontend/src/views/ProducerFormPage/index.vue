@@ -82,12 +82,13 @@
         class="mb-4"
         :buttonLabel="isDraft ? 'Supprimer mon brouillon' : 'Abandonner cette déclaration'"
         :helperText="isDraft ? 'Votre déclaration est en brouillon' : ''"
-        :actionButtonLabel="isDraft ? 'Supprimer' : 'Abandonner'"
+        :actionButtonLabel="isDraft ? 'Supprimer mon brouillon' : 'Abandonner cette déclaration'"
         :modalText="
           isDraft
             ? 'La suppression de votre déclaration n\'est pas réversible. Êtes-vous sûr de vouloir procéder ?'
             : 'En mettant votre déclaration en abandon le procesus d\'instruction sera interrompu. Êtes-vous sûr de vouloir continuer ?'
         "
+        :productName="payload.name"
       />
     </div>
   </div>

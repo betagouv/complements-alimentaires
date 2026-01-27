@@ -15,7 +15,7 @@
         <DsfrInput label="Quel(s) problème(s) constatez-vous ?" labelVisible v-model="message" :isTextarea="true" />
       </DsfrInputGroup>
       <div class="text-right">
-        <DsfrButton :disabled="isFetching" label="Valider" @click="submit" />
+        <DsfrButton :disabled="isFetching" label="Signaler l'erreur" @click="submit" />
       </div>
     </div>
   </div>
