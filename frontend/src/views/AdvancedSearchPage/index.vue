@@ -27,8 +27,8 @@
           />
         </DsfrInputGroup>
         <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
-        <div class="md:mt-6 justify-self-end shrink self-center">
-          <a v-if="canDownloadFile" :href="excelUrl" download class="fr-link fr-link--download">
+        <div class="md:mt-6 justify-self-end shrink self-center min-w-fit">
+          <a v-if="canDownloadFile" :href="excelUrl" download="true" class="fr-link fr-link--download">
             Télécharger
             <span class="fr-link__detail">XLSX</span>
           </a>

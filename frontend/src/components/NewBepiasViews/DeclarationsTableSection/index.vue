@@ -35,7 +35,7 @@
       </div>
 
       <div class="my-4 md:my-0" v-if="data?.count && data.count <= MAX_EXPORT_RESULTS">
-        <a :href="excelUrl" download class="fr-link fr-link--download">
+        <a :href="excelUrl" download="true" class="fr-link fr-link--download">
           Télécharger
           <span class="fr-link__detail">XLSX</span>
         </a>
