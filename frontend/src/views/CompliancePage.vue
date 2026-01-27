@@ -5,13 +5,10 @@
 
     <DsfrCallout>
       Consultez également l'article
-      <a
+      <ExternalLink
         href="https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire"
-        target="_blank"
-        ref="noopener noreferrer"
-      >
-        Qu'est-ce qu'un complément alimentaire ?
-      </a>
+        text="Qu'est-ce qu'un complément alimentaire ?"
+      />
     </DsfrCallout>
     <p>
       Les compléments alimentaires déclarés sur Compl'Alim doivent répondre aux prescriptions du droit alimentaire qui
@@ -32,6 +29,8 @@
 </template>
 
 <script setup>
+import ExternalLink from "@/components/ExternalLink"
+
 const items = [
   {
     title: "Directive n°2002/46/CE",

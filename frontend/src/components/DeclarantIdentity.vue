@@ -3,7 +3,7 @@
     <p>{{ user.firstName }} {{ user.lastName }}</p>
     <p>
       Adresse email :
-      <a :href="`mailto:${user.email}`" target="_blank">{{ user.email }}</a>
+      <a :href="`mailto:${user.email}`">{{ user.email }}</a>
     </p>
   </div>
   <p v-else>
