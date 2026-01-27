@@ -10,7 +10,10 @@
           <div class="grow">
             <DsfrInput v-model="state.email" label="Votre e-mail" labelVisible @keydown.enter="submit" />
           </div>
-          <DsfrButton class="mt-4 md:mt-0 md:ml-4" :disabled="isFetching" label="Valider" @click="submit" />
+          <DsfrButton class="mt-4 md:mt-0 md:ml-4" :disabled="isFetching" @click="submit">
+            S'abonner
+            <span class="fr-sr-only">à l'info-lettre</span>
+          </DsfrButton>
         </div>
       </DsfrInputGroup>
     </div>

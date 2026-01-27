@@ -225,6 +225,8 @@ export const routes = [
     component: VerificationSentPage,
     meta: {
       title: "Vérification envoyée",
+      // Pas d'envoi des infos perso UserId, Email à Matomo
+      analyticsIgnore: true,
     },
   },
   {

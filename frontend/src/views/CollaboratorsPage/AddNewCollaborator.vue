@@ -108,7 +108,7 @@ const submit = async () => {
 
 const actions = computed(() => [
   {
-    label: "Valider",
+    label: "Ajouter",
     onClick: submit,
     disabled: props.disabled || isFetching.value,
   },
