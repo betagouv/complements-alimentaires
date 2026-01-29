@@ -1,11 +1,17 @@
 <template>
-  <DsfrFieldset
-    legend="Population à risque, facteurs de risque"
-    hint="La consommation du complément alimentaire est déconseillée pour ces populations."
-    legendClass="fr-label"
-  >
-    <div v-for="(section, index) in conditionsSections" class="mb-6 last:mb-0" :key="`condition-section-${index}`">
-      <p class="font-bold mb-2">{{ section.title }}</p>
+  <div class="mb-8">
+    <h3 class="fr-label mb-2">Population à risque, facteurs de risque</h3>
+    <p class="fr-hint-text">La consommation du complément alimentaire est déconseillée pour ces populations.</p>
+    <DsfrFieldset
+      v-for="(section, index) in conditionsSections"
+      class="mb-2"
+      :key="`condition-section-${index}`"
+      legendClass="pb-2"
+    >
+      <template #legend>
+        <span class="sr-only">Population à risque, facteurs de risque,</span>
+        {{ section.title }}
+      </template>
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
         <div
           v-for="condition in section.items"
@@ -16,8 +22,8 @@
           <label :for="`condition-${condition.id}`" class="fr-label">{{ condition.name }}</label>
         </div>
       </div>
-    </div>
-  </DsfrFieldset>
+    </DsfrFieldset>
+  </div>
 </template>
 
 <script setup>
