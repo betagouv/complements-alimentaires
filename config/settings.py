@@ -401,5 +401,5 @@ SECURE_CSP = {
         "https://api.unisvg.com",
         "https://api.simplesvg.com",
     ]
-    + (["ws:"] if DEBUG else []),
+    + (["ws:", "http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
 }
