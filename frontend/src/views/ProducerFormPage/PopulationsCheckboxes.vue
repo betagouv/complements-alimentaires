@@ -37,7 +37,6 @@ const modelValue = defineModel()
 const props = defineProps({ populations: { type: Array, default: Array } })
 
 const ageSort = (a, b) => a.maxAge - b.maxAge
-const alphabeticalSort = (a, b) => a.name.localeCompare(b.name)
 
 const populationsSections = computed(() => {
   const p = props.populations
@@ -49,11 +48,17 @@ const populationsSections = computed(() => {
     },
     {
       title: populationCategoriesMapping.PREGNANCY.label,
-      items: transformArrayByColumn(p?.filter((x) => x.category === "PREGNANCY").sort(alphabeticalSort), cols),
+      items: transformArrayByColumn(
+        p?.filter((x) => x.category === "PREGNANCY"),
+        cols
+      ),
     },
     {
       title: populationCategoriesMapping.OTHER.label,
-      items: transformArrayByColumn(p?.filter((x) => x.category === "OTHER").sort(alphabeticalSort), cols),
+      items: transformArrayByColumn(
+        p?.filter((x) => x.category === "OTHER"),
+        cols
+      ),
     },
   ]
 })

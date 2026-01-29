@@ -39,7 +39,6 @@ const modelValue = defineModel()
 const props = defineProps({ conditions: { type: Array, default: Array } })
 
 const ageSort = (a, b) => a.maxAge - b.maxAge
-const alphabeticalSort = (a, b) => a.name.localeCompare(b.name)
 
 const conditionsSections = computed(() => {
   const c = props.conditions
@@ -51,19 +50,31 @@ const conditionsSections = computed(() => {
     },
     {
       title: populationCategoriesMapping.MEDICAL.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "MEDICAL").sort(alphabeticalSort), cols),
+      items: transformArrayByColumn(
+        c?.filter((x) => x.category === "MEDICAL"),
+        cols
+      ),
     },
     {
       title: populationCategoriesMapping.PREGNANCY.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "PREGNANCY").sort(alphabeticalSort), cols),
+      items: transformArrayByColumn(
+        c?.filter((x) => x.category === "PREGNANCY"),
+        cols
+      ),
     },
     {
       title: populationCategoriesMapping.MEDICAMENTS.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "MEDICAMENTS").sort(alphabeticalSort), cols),
+      items: transformArrayByColumn(
+        c?.filter((x) => x.category === "MEDICAMENTS"),
+        cols
+      ),
     },
     {
       title: populationCategoriesMapping.OTHER.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "OTHER").sort(alphabeticalSort), cols),
+      items: transformArrayByColumn(
+        c?.filter((x) => x.category === "OTHER"),
+        cols
+      ),
       isOtherSection: true,
     },
   ]
