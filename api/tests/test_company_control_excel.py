@@ -49,3 +49,9 @@ class TestCompanyControlExcel(APITestCase):
         self.assertGreaterEqual(len(data_rows), 2)
         self.assertIn(c1.social_name, [row[headers.index("Nom de l'entreprise")] for row in data_rows])
         self.assertIn(c2.social_name, [row[headers.index("Nom de l'entreprise")] for row in data_rows])
+
+        self.assertIn(c1.siret, [row[headers.index("No. SIRET")] for row in data_rows])
+        self.assertIn(c2.siret, [row[headers.index("No. SIRET")] for row in data_rows])
+
+        self.assertIn(c1.vat, [row[headers.index("No. de TVA")] for row in data_rows])
+        self.assertIn(c2.vat, [row[headers.index("No. de TVA")] for row in data_rows])

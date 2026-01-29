@@ -68,13 +68,10 @@ import ArticleInfoRow from "./ArticleInfoRow"
 import CompositionInfo from "@/components/CompositionInfo"
 import ComputedSubstancesInfo from "@/components/ComputedSubstancesInfo"
 import FilePreview from "@/components/FilePreview"
-import { useRouter } from "vue-router"
 import SummaryModificationButton from "./SummaryModificationButton"
 import HistoryBadge from "../History/HistoryBadge.vue"
 import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNotice"
 import { hasNewElements } from "@/utils/elements"
-
-const router = useRouter()
 
 const payload = defineModel()
 defineProps({
