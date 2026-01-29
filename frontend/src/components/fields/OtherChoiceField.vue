@@ -1,6 +1,6 @@
 <template>
-  <div class="mt-6">
-    <DsfrInputGroup v-if="listOfChoices && listOfChoices.indexOf(otherChoiceId) > -1">
+  <div v-if="listOfChoices && listOfChoices.indexOf(otherChoiceId) > -1" class="mt-6">
+    <DsfrInputGroup>
       <DsfrInput v-model="model" label-visible :label="label" :required="true" />
     </DsfrInputGroup>
   </div>

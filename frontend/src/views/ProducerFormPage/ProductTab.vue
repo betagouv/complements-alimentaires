@@ -180,38 +180,42 @@
       ></OtherChoiceField>
     </DsfrFieldset>
 
-    <SectionTitle title="Adresse sur l'étiquetage" class="mt-10!" sizeTag="h6" icon="ri-home-2-fill" />
-    <div class="max-w-2xl mb-8 address-form">
-      <DsfrInputGroup>
-        <DsfrInput v-model="payload.address" label-visible label="Adresse" hint="Numéro et voie" :required="true" />
-      </DsfrInputGroup>
-      <DsfrInputGroup>
-        <DsfrInput
-          v-model="payload.additionalDetails"
-          label-visible
-          label="Complément d'adresse"
-          hint="Bâtiment, immeuble, escalier et numéro d’appartement"
-        />
-      </DsfrInputGroup>
-      <div class="grid grid-cols-12 gap-6">
-        <div class="col-span-12 md:col-span-4">
-          <DsfrInputGroup>
-            <DsfrInput v-model="payload.postalCode" label-visible label="Code Postal" :required="true" />
-          </DsfrInputGroup>
+    <DsfrFieldset legendClass="pb-2" class="mb-0">
+      <template #legend>
+        <SectionTitle title="Adresse sur l'étiquetage" class="mt-4! mb-0" sizeTag="h6" icon="ri-home-2-fill" />
+      </template>
+      <div class="max-w-2xl address-form">
+        <DsfrInputGroup>
+          <DsfrInput v-model="payload.address" label-visible label="Adresse" hint="Numéro et voie" :required="true" />
+        </DsfrInputGroup>
+        <DsfrInputGroup>
+          <DsfrInput
+            v-model="payload.additionalDetails"
+            label-visible
+            label="Complément d'adresse"
+            hint="Bâtiment, immeuble, escalier et numéro d’appartement"
+          />
+        </DsfrInputGroup>
+        <div class="grid grid-cols-12 gap-6">
+          <div class="col-span-12 md:col-span-4">
+            <DsfrInputGroup>
+              <DsfrInput v-model="payload.postalCode" label-visible label="Code Postal" :required="true" />
+            </DsfrInputGroup>
+          </div>
+          <div class="col-span-12 md:col-span-5">
+            <DsfrInputGroup>
+              <DsfrInput v-model="payload.city" label-visible label="Ville ou commune" :required="true" />
+            </DsfrInputGroup>
+          </div>
         </div>
-        <div class="col-span-12 md:col-span-5">
-          <DsfrInputGroup>
-            <DsfrInput v-model="payload.city" label-visible label="Ville ou commune" :required="true" />
-          </DsfrInputGroup>
-        </div>
+        <DsfrInputGroup>
+          <DsfrInput v-model="payload.cedex" label-visible label="Cedex" />
+        </DsfrInputGroup>
+        <DsfrInputGroup>
+          <CountryField v-model="payload.country" :required="true" />
+        </DsfrInputGroup>
       </div>
-      <DsfrInputGroup>
-        <DsfrInput v-model="payload.cedex" label-visible label="Cedex" />
-      </DsfrInputGroup>
-      <DsfrInputGroup>
-        <CountryField v-model="payload.country" :required="true" />
-      </DsfrInputGroup>
-    </div>
+    </DsfrFieldset>
   </div>
 </template>
 <script setup>
@@ -323,7 +327,7 @@ const orderedEffects = computed(() => transformArrayByColumn(effects.value, numb
 <style scoped>
 @reference "../../styles/index.css";
 
-.address-form .fr-input-group:not(:last-child) {
+.address-form .fr-input-group {
   @apply mb-0;
 }
 </style>
