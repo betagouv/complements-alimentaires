@@ -22,6 +22,7 @@
           <label :for="`condition-${condition.id}`" class="fr-label">{{ condition.name }}</label>
         </div>
       </div>
+      <slot v-if="section.isOtherSection"></slot>
     </DsfrFieldset>
   </div>
 </template>
@@ -63,6 +64,7 @@ const conditionsSections = computed(() => {
     {
       title: populationCategoriesMapping.OTHER.label,
       items: transformArrayByColumn(c?.filter((x) => x.category === "OTHER").sort(alphabeticalSort), cols),
+      isOtherSection: true,
     },
   ]
 })

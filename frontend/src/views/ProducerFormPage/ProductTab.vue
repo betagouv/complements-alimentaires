@@ -145,14 +145,14 @@
     </DsfrInputGroup>
     <SectionTitle title="Populations cibles et à risque" class="mt-10!" sizeTag="h6" icon="ri-file-user-fill" />
     <PopulationsCheckboxes v-model="payload.populations" :populations="populations" />
-    <ConditionsCheckboxes v-model="payload.conditionsNotRecommended" :conditions="conditions" />
-
-    <OtherChoiceField
-      :listOfChoices="payload.conditionsNotRecommended"
-      v-model="payload.otherConditions"
-      :otherChoiceId="otherConditionId"
-      label="Merci de préciser les autres populations à risques ou facteurs de risques"
-    ></OtherChoiceField>
+    <ConditionsCheckboxes v-model="payload.conditionsNotRecommended" :conditions="conditions">
+      <OtherChoiceField
+        :listOfChoices="payload.conditionsNotRecommended"
+        v-model="payload.otherConditions"
+        :otherChoiceId="otherConditionId"
+        label="Merci de préciser les autres populations à risques ou facteurs de risques"
+      ></OtherChoiceField>
+    </ConditionsCheckboxes>
 
     <DsfrInputGroup class="max-w-2xl mt-6">
       <DsfrInput is-textarea v-model="payload.warning" label-visible label="Mise en garde et avertissement" />
@@ -172,13 +172,13 @@
           <label :for="`effect-${effect.id}`" class="fr-label">{{ effect.name }}</label>
         </div>
       </div>
+      <OtherChoiceField
+        :listOfChoices="payload.effects"
+        v-model="payload.otherEffects"
+        :otherChoiceId="otherEffectsId"
+        label="Merci de préciser les autres objectifs ou effets"
+      ></OtherChoiceField>
     </DsfrFieldset>
-    <OtherChoiceField
-      :listOfChoices="payload.effects"
-      v-model="payload.otherEffects"
-      :otherChoiceId="otherEffectsId"
-      label="Merci de préciser les autres objectifs ou effets"
-    ></OtherChoiceField>
 
     <SectionTitle title="Adresse sur l'étiquetage" class="mt-10!" sizeTag="h6" icon="ri-home-2-fill" />
     <div class="max-w-2xl mb-8 address-form">
