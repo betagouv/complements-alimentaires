@@ -3,20 +3,20 @@
 Réf. : Dossier n° {{ declaration.id }}
 {% endblock %}
 {% block 'body' %}
-<h1 style="font-family: 'Marianne-Bold'; font-weight: bold;">
+<h1 class="text-bold">
     Réf. : Dossier {% if declaration.teleicare_declaration_number %}
     TELEICARE n° {{ declaration.teleicare_declaration_number }}
     {% else %}
     n° {{ declaration.id }}
     {% endif %}
 </h1>
-<div style="font-size: 1.2em;">
+<div class="font-1-2">
     <p>
         Madame, Monsieur,
     </p>
     <p>
         Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré{% if declaration.teleicare_declaration_number %}, sur la plateforme TELEICARE,{% endif %} la mise sur le marché du produit :
-        <span style="font-family: 'Marianne-Bold'; font-weight: bold;">
+        <span class="text-bold">
             {{ declaration.name }} / {{ declaration.galenic_formulation }} / {{ declaration.company.social_name }}
         </span>
     <p>
@@ -54,10 +54,10 @@ Réf. : Dossier n° {{ declaration.id }}
     <p>
         Je vous prie d’agréer, Madame, Monsieur, l’expression de ma considération distinguée.
     </p>
-    <p style="padding-left: 10cm;">
+    <p class="pl-10">
         {{ signature_title }}
     </p>
-    <p style="padding-left: 10cm;">
+    <p class="pl-10">
         {{ signature_name }}
     </p>
 </div>

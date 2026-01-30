@@ -14,6 +14,8 @@ import os
 import sys
 from pathlib import Path
 
+from django.utils.csp import CSP
+
 import environ
 import sentry_sdk
 from botocore.client import Config as BotoConfig
@@ -92,6 +94,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "django.middleware.csp.ContentSecurityPolicyMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -116,6 +119,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.csp",
             ],
         },
     },
@@ -134,6 +138,8 @@ WEBPACK_LOADER = {
         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
     }
 }
+
+ADMIN_URL = os.environ.get("ADMIN_URL", "admin")
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -362,3 +368,38 @@ GRIST_SD_CONTROL_DOC_ID = env("GRIST_SD_CONTROL_DOC_ID", default=None)
 GRIST_SD_CONTROL_TABLE_ID = env("GRIST_SD_CONTROL_TABLE_ID", default=None)
 GRIST_ANSES_CONTROL_DOC_ID = env("GRIST_ANSES_CONTROL_DOC_ID", default=None)
 GRIST_ANSES_CONTROL_TABLE_ID = env("GRIST_ANSES_CONTROL_TABLE_ID", default=None)
+
+# Configuration CSP avec nonces
+SECURE_CSP = {
+    "default-src": [
+        CSP.SELF,
+        "*.gouv.fr",
+        "*.services.clever-cloud.com",
+    ]
+    + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    "script-src": [
+        CSP.SELF,
+        CSP.NONCE,
+        "*.gouv.fr",
+    ]
+    + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    "style-src": [
+        CSP.SELF,
+        CSP.NONCE,
+    ]
+    + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    "img-src": [
+        CSP.SELF,
+        "*.services.clever-cloud.com",
+        "data:",
+    ]
+    + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    "connect-src": [
+        CSP.SELF,
+        "*.gouv.fr",
+        "https://api.iconify.design",
+        "https://api.unisvg.com",
+        "https://api.simplesvg.com",
+    ]
+    + (["ws:", "http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+}

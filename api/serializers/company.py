@@ -167,9 +167,6 @@ class DeclarantRoleSerializer(BaseRoleSerializer):
 
 
 class ControlCompanyExcelSerializer(serializers.ModelSerializer):
-    siret = serializers.CharField(read_only=True, source="company.siret")
-    vat = serializers.CharField(read_only=True, source="company.vat")
-
     # Champ spécial utilisé par drf-excel documenté ici : https://github.com/django-commons/drf-excel
     row_color = serializers.SerializerMethodField()
 

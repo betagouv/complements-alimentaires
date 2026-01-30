@@ -7,7 +7,7 @@
     </div>
     <div class="hidden md:flex md:col-span-4 lg:col-span-6 justify-center content-center">
       <img
-        style="max-width: 90%; max-height: 90%; object-fit: contain"
+        class="max-w-[90%] max-h-[90%] object-contain"
         src="/static/images/illustrations/declaration-illustration.png"
         alt=""
       />

@@ -83,7 +83,7 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             link = reverse(f"admin:data_{object_name}_change", args=[obj.id])
             rel_list += "<li><a href='{}'>{}</a></li>".format(link, obj.name)
         rel_list += "</ul>"
-        return format_html(rel_list)
+        return format_html(rel_list, "")
 
     @admin.display(description="plantes")
     def get_plants(self, obj):

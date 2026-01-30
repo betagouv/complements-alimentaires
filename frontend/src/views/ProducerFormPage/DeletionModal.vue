@@ -10,7 +10,13 @@
       @click="open"
     />
 
-    <DsfrModal :actions="actions" ref="modal" @close="close" :opened="opened" :title="buttonLabel">
+    <DsfrModal
+      :actions="actions"
+      ref="modal"
+      @close="close"
+      :opened="opened"
+      :title="`${buttonLabel} « ${productName} »`"
+    >
       {{ modalText }}
     </DsfrModal>
   </div>
@@ -26,7 +32,8 @@ const props = defineProps({
   buttonLabel: { type: String, default: "Supprimer cette déclaration" },
   helperText: { type: String, default: "" },
   modalText: { type: String, default: "" },
-  actionButtonLabel: { type: String, default: "Supprimer" },
+  actionButtonLabel: { type: String, default: "Supprimer mon brouillon" },
+  productName: { type: String, default: "" },
 })
 
 const actions = computed(() => [
@@ -35,6 +42,7 @@ const actions = computed(() => [
     onClick: () => emit("delete"),
     secondary: true,
     icon: { name: "ri-delete-bin-line", fill: "#c9191e" },
+    ariaLabel: `${props.actionButtonLabel} du produit ${props.productName}`,
   },
   {
     label: "Revenir en arrière",
