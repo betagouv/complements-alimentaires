@@ -8,7 +8,7 @@
       ]"
     />
 
-    <div class="border px-4 pt-4 mb-2 md:flex gap-4 items-baseline filters">
+    <div class="border px-4 pt-4 pb-2 mb-2 md:flex gap-4 items-baseline filters">
       <div class="md:min-w-lg">
         <DsfrFieldset class="mb-0!">
           <DsfrSearchBar
@@ -19,7 +19,7 @@
             @update:modelValue="(val) => val === '' && search()"
           />
         </DsfrFieldset>
-        <div class="md:flex gap-4 items-baseline mb-2">
+        <div class="md:flex gap-4 items-baseline">
           <DsfrInputGroup>
             <DsfrSelect
               label="Entreprise"
