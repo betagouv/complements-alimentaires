@@ -447,6 +447,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
     )
     decision = serializers.SerializerMethodField()
     date_decision = serializers.DateTimeField(required=False, source="acceptation_date")
+    date_retrait = serializers.DateTimeField(required=False, source="effective_withdrawal_date")
     responsable_mise_sur_marche = serializers.CharField(read_only=True, source="company.social_name")
     adresse_responsable_mise_sur_marche = serializers.SerializerMethodField()
     siret_responsable_mise_sur_marche = serializers.CharField(read_only=True, source="company.siret")
@@ -502,6 +503,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
             "autres_ingredients_actifs",
             "ingredients_inactifs",
             "date_decision",
+            "date_retrait",
         )
         read_only_fields = fields
 
