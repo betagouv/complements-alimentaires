@@ -581,7 +581,6 @@ const formQuestions = {
     },
     einecNumber: true,
     casNumber: true,
-    nutritionalReference: true,
     substanceTypes: true,
   },
   microorganism: {
@@ -612,7 +611,6 @@ const rules = computed(() => {
     substanceTypes: form?.substanceTypes ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
     unit: !props.element ? errorRequiredField : {},
-    nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
     publicChangeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
   }

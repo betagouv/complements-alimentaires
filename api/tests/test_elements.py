@@ -7,14 +7,14 @@ from rest_framework.test import APITestCase
 
 from data.choices import IngredientActivity
 from data.factories import (
+    AuthorizedDeclarationFactory,
     ComputedSubstanceFactory,
-    DeclaredSubstanceFactory,
     DeclaredPlantFactory,
+    DeclaredSubstanceFactory,
     IngredientFactory,
     InstructionRoleFactory,
     MicroorganismFactory,
     OngoingInstructionDeclarationFactory,
-    AuthorizedDeclarationFactory,
     PlantFactory,
     PlantFamilyFactory,
     PlantPartFactory,
@@ -26,6 +26,7 @@ from data.factories import (
     UnitFactory,
 )
 from data.models import (
+    Addable,
     Ingredient,
     IngredientStatus,
     IngredientType,
@@ -34,7 +35,6 @@ from data.models import (
     Plant,
     Population,
     SubstanceType,
-    Addable,
 )
 from data.models.substance import Substance, SubstanceMaxQuantityPerPopulationRelation
 
@@ -390,7 +390,6 @@ class TestElementsCreateApi(APITestCase):
                 {"population": self.general_pop.id, "maxQuantity": 3.4},
                 {"population": other_pop.id, "maxQuantity": 4.5},
             ],
-            "nutritionalReference": 1.2,
             "unit": unit.id,
         }
         response = self.client.post(reverse("api:substance_create"), payload, format="json")
