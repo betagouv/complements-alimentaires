@@ -143,9 +143,9 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, computed, onMounted } from "vue"
-import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
+import { useFetch } from "@vueuse/core"
+import { computed, onMounted, ref, watch } from "vue"
 
 const activeAccordion = ref()
 const { response, data } = useFetch("/api/v1/stats/").json()
@@ -180,10 +180,12 @@ onMounted(async () => {
   const script = document.createElement("script")
   script.type = "module"
   script.src = "/static/js/BarChart.js"
+  script.nonce = data.value.csp_nonce
   document.body.appendChild(script)
   const style = document.createElement("link")
   style.rel = "stylesheet"
   style.src = "/static/css/BarChart.js"
+  style.nonce = data.value.csp_nonce
   document.body.appendChild(style)
 })
 </script>

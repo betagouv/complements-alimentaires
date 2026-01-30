@@ -33,6 +33,7 @@ class StatsView(APIView):
         data = {
             "element_visit_stats": MatomoAPI().get_page_evolution(),
             "declaration_visit_stats": DataGouvAPI().get_declaration_stats(),
+            "csp_nonce": str(getattr(request, "_csp_nonce", "")),
         }
 
         # Cache pour une heure
