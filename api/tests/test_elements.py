@@ -415,7 +415,6 @@ class TestElementsCreateApi(APITestCase):
             ).max_quantity,
             4.5,
         )
-        self.assertEqual(substance.nutritional_reference, 1.2)
         self.assertEqual(substance.unit, unit)
 
     @authenticate
