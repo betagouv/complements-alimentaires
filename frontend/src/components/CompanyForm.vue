@@ -19,7 +19,7 @@
             hint="Bâtiment, immeuble, escalier et numéro d’appartement"
           />
         </DsfrInputGroup>
-        <div class="block md:flex md:gap-x-4">
+        <div class="md:flex md:gap-x-4 -my-4">
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'postalCode')">
             <DsfrInput v-model="state.postalCode" label="Code postal" required labelVisible />
           </DsfrInputGroup>
@@ -34,23 +34,25 @@
         </DsfrInputGroup>
       </DsfrFieldset>
 
-      <DsfrFieldset
-        legend="Activités de l'entreprise"
-        hint="Veuillez cocher obligatoirement une ou plusieurs des six cases proposées correspondant au
-type d’activité exercée par le déclarant."
+      <DsfrCheckboxSet
+        class="max-w-3xl"
+        v-model="state.activities"
+        :options="allActivities"
+        :error-message="firstErrorMsg(v$, 'activities')"
       >
-        <DsfrCheckboxSet
-          class="max-w-3xl"
-          v-model="state.activities"
-          :options="allActivities"
-          :error-message="firstErrorMsg(v$, 'activities')"
-        />
-      </DsfrFieldset>
+        <template #legend>
+          Activités de l'entreprise
+          <span class="fr-hint-text">
+            Veuillez cocher obligatoirement une ou plusieurs des six cases proposées correspondant au type d’activité
+            exercée par le déclarant.
+          </span>
+        </template>
+      </DsfrCheckboxSet>
       <DsfrFieldset
         legend="Informations de contact"
         hint="Veuillez transmettre les coordonnées d’une personne au sein de la société que la DGAL pourra être amenée à contacter en cas de nécessité ou pour des informations complémentaires."
       >
-        <div class="grid gap-4 grid-cols-1 md:grid-cols-2">
+        <div class="grid gap-x-4 grid-cols-1 md:grid-cols-2 -my-4">
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'phoneNumber')">
             <DsfrInput
               required
@@ -68,7 +70,7 @@ type d’activité exercée par le déclarant."
           </DsfrInputGroup>
         </div>
       </DsfrFieldset>
-      <div class="flex gap-x-2 mt-4">
+      <div class="flex gap-x-2 mt-8">
         <DsfrButton v-if="showCancelButton" @click="$emit('editCancelled')" secondary>
           Annuler
           <span class="fr-sr-only">la modification de l'entreprise</span>

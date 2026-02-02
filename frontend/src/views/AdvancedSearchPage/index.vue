@@ -59,9 +59,20 @@
                 :exclude="['DRAFT']"
                 @updateFilter="updateStatusFilter"
                 :statusString="filteredStatus"
-                class="my-6 status-filter"
+                class="mb-6 status-filter"
               />
-              <DsfrFieldset legend="Cible" class="min-w-60">
+
+              <DsfrInputGroup>
+                <DsfrSelect
+                  label="Article"
+                  defaultUnselectedText=""
+                  :modelValue="article"
+                  @update:modelValue="updateArticle"
+                  :options="articleSelectOptions"
+                  class="text-sm!"
+                />
+              </DsfrInputGroup>
+              <div class="min-w-60">
                 <DsfrInputGroup>
                   <DsfrSelect
                     label="Population cible"
@@ -82,8 +93,8 @@
                     class="text-sm!"
                   />
                 </DsfrInputGroup>
-              </DsfrFieldset>
-              <DsfrFieldset legend="Format" class="min-w-60">
+              </div>
+              <div class="min-w-60">
                 <DsfrInputGroup>
                   <DsfrSelect
                     label="Forme galénique"
@@ -94,25 +105,14 @@
                     class="text-sm!"
                   />
                 </DsfrInputGroup>
-              </DsfrFieldset>
-              <DsfrFieldset legend="Localisation" class="min-w-60">
+              </div>
+              <div class="min-w-60">
                 <DsfrInputGroup>
                   <CountryField :modelValue="country" @update:modelValue="updateCountry" :includeAllOption="true" />
                 </DsfrInputGroup>
-              </DsfrFieldset>
+              </div>
             </div>
             <div class="md:w-2/4">
-              <DsfrInputGroup>
-                <DsfrSelect
-                  label="Article"
-                  defaultUnselectedText=""
-                  :modelValue="article"
-                  @update:modelValue="updateArticle"
-                  :options="articleSelectOptions"
-                  class="text-sm!"
-                />
-              </DsfrInputGroup>
-
               <ElementAutocomplete
                 v-model="ingredientSearchTerm"
                 label="Composition"
