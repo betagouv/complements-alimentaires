@@ -9,7 +9,13 @@
     </div>
     <div class="col-span-12 md:col-span-5 my-6 md:my-0">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
-        <DsfrInput label="Votre e-mail (optionnel)" labelVisible v-model="userEmail" />
+        <DsfrInput
+          label="Votre e-mail (optionnel)"
+          labelVisible
+          v-model="userEmail"
+          type="email"
+          autocomplete="email"
+        />
       </DsfrInputGroup>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'message')">
         <DsfrInput label="Quel(s) problème(s) constatez-vous ?" labelVisible v-model="message" :isTextarea="true" />
