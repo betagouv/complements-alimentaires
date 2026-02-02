@@ -303,24 +303,16 @@ class Declaration(Historisable, TimeStampable):
         except Exception as _:
             expiration_days = ""
 
-        effective_withdrawal_date = None
-        if self.status == status.WITHDRAWN:
-            try:
-                snapshot_withdrawal_date = (
-                    self.snapshots.filter(status=status.WITHDRAWN).latest("creation_date").effective_withdrawal_date
-                )
-                effective_withdrawal_date = (
-                    date_format(snapshot_withdrawal_date, "l j F Y") if snapshot_withdrawal_date else None
-                )
-            except Exception as _:
-                pass
+        formatted_effective_withdrawal_date = (
+            date_format(self.effective_withdrawal_date, "l j F Y") if self.effective_withdrawal_date else None
+        )
         return {
             "PRODUCT_NAME": self.name,
             "COMPANY_NAME": self.company.social_name if self.company else "",
             "DECLARATION_LINK": self.producer_url,
             "DECLARATION_ID": self.id,
             "EXPIRATION_DAYS": expiration_days,
-            "EFFECTIVE_WITHDRAWAL_DATE": effective_withdrawal_date,
+            "EFFECTIVE_WITHDRAWAL_DATE": formatted_effective_withdrawal_date,
         }
 
     @property
@@ -539,6 +531,20 @@ class Declaration(Historisable, TimeStampable):
                     return latest_snapshot.creation_date
             else:  ## Déclaration Téléicare
                 return self.creation_date
+
+    @property
+    def effective_withdrawal_date(self):
+        effective_withdrawal_date = None
+        if self.status == Declaration.DeclarationStatus.WITHDRAWN:
+            try:
+                effective_withdrawal_date = (
+                    self.snapshots.filter(status=Declaration.DeclarationStatus.WITHDRAWN)
+                    .latest("creation_date")
+                    .effective_withdrawal_date
+                )
+            except Exception as _:
+                pass
+        return effective_withdrawal_date
 
     def assign_calculated_article(self):
         """
