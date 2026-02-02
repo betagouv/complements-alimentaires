@@ -1,11 +1,17 @@
 <template>
-  <DsfrFieldset
-    legend="Population à risque, facteurs de risque"
-    hint="La consommation du complément alimentaire est déconseillée pour ces populations."
-    legendClass="fr-label"
-  >
-    <div v-for="(section, index) in conditionsSections" class="mb-6 last:mb-0" :key="`condition-section-${index}`">
-      <p class="font-bold mb-2">{{ section.title }}</p>
+  <div class="mb-8">
+    <h3 class="fr-label mb-2">Population à risque, facteurs de risque</h3>
+    <p class="fr-hint-text">La consommation du complément alimentaire est déconseillée pour ces populations.</p>
+    <DsfrFieldset
+      v-for="(section, index) in conditionsSections"
+      class="mb-2"
+      :key="`condition-section-${index}`"
+      legendClass="pb-2"
+    >
+      <template #legend>
+        <span class="sr-only">Population à risque, facteurs de risque,</span>
+        {{ section.title }}
+      </template>
       <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
         <div
           v-for="condition in section.items"
@@ -16,8 +22,9 @@
           <label :for="`condition-${condition.id}`" class="fr-label">{{ condition.name }}</label>
         </div>
       </div>
-    </div>
-  </DsfrFieldset>
+      <slot v-if="section.isOtherSection"></slot>
+    </DsfrFieldset>
+  </div>
 </template>
 
 <script setup>
@@ -32,7 +39,6 @@ const modelValue = defineModel()
 const props = defineProps({ conditions: { type: Array, default: Array } })
 
 const ageSort = (a, b) => a.maxAge - b.maxAge
-const alphabeticalSort = (a, b) => a.name.localeCompare(b.name)
 
 const conditionsSections = computed(() => {
   const c = props.conditions
@@ -44,19 +50,32 @@ const conditionsSections = computed(() => {
     },
     {
       title: populationCategoriesMapping.MEDICAL.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "MEDICAL").sort(alphabeticalSort), cols),
+      items: transformArrayByColumn(
+        c?.filter((x) => x.category === "MEDICAL"),
+        cols
+      ),
     },
     {
       title: populationCategoriesMapping.PREGNANCY.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "PREGNANCY").sort(alphabeticalSort), cols),
+      items: transformArrayByColumn(
+        c?.filter((x) => x.category === "PREGNANCY"),
+        cols
+      ),
     },
     {
       title: populationCategoriesMapping.MEDICAMENTS.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "MEDICAMENTS").sort(alphabeticalSort), cols),
+      items: transformArrayByColumn(
+        c?.filter((x) => x.category === "MEDICAMENTS"),
+        cols
+      ),
     },
     {
       title: populationCategoriesMapping.OTHER.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "OTHER").sort(alphabeticalSort), cols),
+      items: transformArrayByColumn(
+        c?.filter((x) => x.category === "OTHER"),
+        cols
+      ),
+      isOtherSection: true,
     },
   ]
 })
