@@ -224,14 +224,6 @@
           <p class="mb-0">{{ unitString }}</p>
         </div>
       </div>
-      <div
-        class="grid sm:grid-cols-3 gap-x-8"
-        v-if="formForType.nutritionalReference && [1, 2].some((substType) => state.substanceTypes.includes(substType))"
-      >
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'nutritionalReference')">
-          <NumberField label="Apport nutritionnel de référence" label-visible v-model="state.nutritionalReference" />
-        </DsfrInputGroup>
-      </div>
       <div class="mt-8 sm:mt-0">
         <DsfrTable
           v-if="state.maxQuantities.length"
@@ -589,7 +581,6 @@ const formQuestions = {
     },
     einecNumber: true,
     casNumber: true,
-    nutritionalReference: true,
     substanceTypes: true,
   },
   microorganism: {
@@ -620,7 +611,6 @@ const rules = computed(() => {
     substanceTypes: form?.substanceTypes ? errorRequiredField : {},
     family: form?.family ? errorRequiredField : {},
     unit: !props.element ? errorRequiredField : {},
-    nutritionalReference: form?.nutritionalReference ? errorNumeric : {},
     changeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
     publicChangeReason: isNewIngredient.value ? {} : errorMaxStringLength(100),
   }

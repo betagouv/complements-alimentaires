@@ -82,10 +82,6 @@
         <ElementColumn title="Statut" v-if="status">
           <ElementStatusBadge :text="status" />
         </ElementColumn>
-
-        <ElementColumn title="Apport nutritionnel de référence" v-if="nutritionalReference">
-          <ElementText :text="nutritionalReference" :lowercase="true" />
-        </ElementColumn>
       </div>
       <ElementTextSection title="Description" :text="description" />
 
@@ -169,29 +165,29 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue"
+import ElementAutocomplete from "@/components/ElementAutocomplete"
+import ElementDoses from "@/components/ElementDoses.vue"
+import ElementStatusBadge from "@/components/ElementStatusBadge.vue"
+import RegulatoryWarning from "@/components/RegulatoryWarning.vue"
+import { useRootStore } from "@/stores/root"
+import { setDocumentTitle } from "@/utils/document"
+import { handleError } from "@/utils/error-handling"
 import {
+  getApiType,
   getTypeIcon,
   getTypeInFrench,
-  unSlugifyType,
-  slugifyType,
-  getApiType,
   ingredientStatuses,
+  slugifyType,
+  unSlugifyType,
 } from "@/utils/mappings"
-import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
-import { handleError } from "@/utils/error-handling"
-import { useRootStore } from "@/stores/root"
+import { computed, ref, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import ElementColumn from "./ElementColumn.vue"
 import ElementTag from "./ElementTag.vue"
-import ElementStatusBadge from "@/components/ElementStatusBadge.vue"
 import ElementText from "./ElementText.vue"
 import ElementTextSection from "./ElementTextSection.vue"
-import ElementAutocomplete from "@/components/ElementAutocomplete"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
-import ElementDoses from "@/components/ElementDoses.vue"
-import RegulatoryWarning from "@/components/RegulatoryWarning.vue"
-import { setDocumentTitle } from "@/utils/document"
 
 const store = useRootStore()
 const route = useRoute()
@@ -243,11 +239,6 @@ const status = computed(() =>
     : null
 )
 const novelFood = computed(() => element.value?.novelFood)
-const nutritionalReference = computed(() => {
-  if (element.value?.unit && (element.value?.nutritionalReference || element.value.nutritionalReference == 0))
-    return element.value?.nutritionalReference.toLocaleString("fr-FR") + " " + element.value?.unit
-  else return null
-})
 
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
