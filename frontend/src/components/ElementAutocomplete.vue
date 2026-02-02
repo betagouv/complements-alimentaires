@@ -5,7 +5,6 @@
         <DsfrInput
           v-model="searchTerm"
           :options="autocompleteResults"
-          autocomplete="nothing"
           @update:searchTerm="$emit('update:searchTerm', $event)"
           v-bind="$attrs"
           :required="required"

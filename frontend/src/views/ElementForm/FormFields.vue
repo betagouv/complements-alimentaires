@@ -172,7 +172,6 @@
     <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 mb-0! pb-2!">
       <div v-if="formForType.substances" class="grid md:grid-cols-3 items-end my-4 md:my-2">
         <ElementAutocomplete
-          autocomplete="nothing"
           label="Substances actives"
           label-visible
           class="max-w-md grow mb-3"

@@ -3,7 +3,6 @@
     <SectionTitle title="Ma composition" sizeTag="h6" icon="ri-flask-line" />
     <div class="sm:flex gap-10 items-center">
       <ElementAutocomplete
-        autocomplete="nothing"
         label="Cherchez un ingrédient"
         label-visible
         class="max-w-md grow"

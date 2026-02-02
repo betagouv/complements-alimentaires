@@ -1,7 +1,6 @@
 <template>
   <div>
     <ElementAutocomplete
-      autocomplete="nothing"
       label="Chercher un ingrédient dans la base de données"
       label-visible
       hint="Tapez au moins trois caractères pour démarrer la recherche"
