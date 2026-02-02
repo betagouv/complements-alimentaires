@@ -15,7 +15,6 @@
           label="Entrez l'adresse e-mail de votre collaborateur :"
           labelVisible
           type="email"
-          autocomplete="email"
           spellcheck="false"
           class="max-w-md"
         />
