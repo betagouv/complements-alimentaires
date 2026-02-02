@@ -64,7 +64,7 @@ jmespath==1.0.1
 kombu==5.6.2
 lxml==6.0.1
 MarkupSafe==3.0.3
-matplotlib-inline==0.1.7
+matplotlib-inline==0.2.1
 nodeenv==1.10.0
 numpy==2.3.5
 openpyxl==3.1.5
