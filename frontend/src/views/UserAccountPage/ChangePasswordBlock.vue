@@ -9,6 +9,7 @@
             :type="showPassword ? 'text' : 'password'"
             v-model="state.oldPassword"
             labelVisible
+            autocomplete="current-password"
           />
         </DsfrInputGroup>
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'newPassword')">
@@ -17,6 +18,7 @@
             :type="showPassword ? 'text' : 'password'"
             v-model="state.newPassword"
             labelVisible
+            autocomplete="new-password"
           />
           <PasswordRules />
         </DsfrInputGroup>
@@ -26,6 +28,7 @@
             :type="showPassword ? 'text' : 'password'"
             v-model="state.confirmNewPassword"
             labelVisible
+            autocomplete="new-password"
           />
         </DsfrInputGroup>
         <div class="flex justify-between">

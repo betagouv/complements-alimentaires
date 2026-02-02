@@ -53,7 +53,7 @@
           v-model="state.password"
           labelVisible
           :type="showPassword ? 'text' : 'password'"
-          autocomplete="off"
+          autocomplete="new-password"
           spellcheck="false"
         >
           <template #label>

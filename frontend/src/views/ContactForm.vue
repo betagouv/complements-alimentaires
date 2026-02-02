@@ -4,10 +4,25 @@
     <h1>Contactez-nous</h1>
     <FormWrapper :externalResults="$externalResults">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'name')">
-        <DsfrInput class="max-w-md" v-model="state.name" label="Votre nom et prénom" required label-visible />
+        <DsfrInput
+          class="max-w-md"
+          v-model="state.name"
+          label="Votre nom et prénom"
+          required
+          label-visible
+          autocomplete="name"
+        />
       </DsfrInputGroup>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
-        <DsfrInput class="max-w-md" v-model="state.email" label="Votre adresse email" required label-visible />
+        <DsfrInput
+          class="max-w-md"
+          v-model="state.email"
+          label="Votre adresse email"
+          required
+          label-visible
+          type="email"
+          autocomplete="email"
+        />
       </DsfrInputGroup>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'message')">
         <DsfrInput class="max-w-2xl" isTextarea v-model="state.message" label="Message" required label-visible />
