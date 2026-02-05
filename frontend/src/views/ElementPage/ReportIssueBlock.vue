@@ -54,7 +54,9 @@ const state = computed(() => {
 })
 
 const rules = {
-  email: { email: helpers.withMessage("Ce champ doit contenir un e-mail valide s'il est spécifié", email) },
+  email: {
+    email: helpers.withMessage("L'e-mail doit être en format valide (ex : nom@entreprise.com)", email),
+  },
   message: { required: helpers.withMessage("Ce champ doit contenir vos constatations", required) },
 }
 
