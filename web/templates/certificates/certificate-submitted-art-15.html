@@ -4,15 +4,15 @@ Accusé d'enregistrement de déclaration d'un complément alimentaire n° {{ dec
 {% endblock %}
 {% block 'body' %}
 <h1 class="text-bold text-center">
-    ACCUSÉ D'ENREGISTREMENT<br />
-    DE DÉCLARATION D'UN COMPLEMENT ALIMENTAIRE
+    ACCUSÉ DE RECEPTION DE DÉCLARATION<br />
+    D'UN COMPLEMENT ALIMENTAIRE
 </h1>
 <div class="font-1-2">
     <p>
         Madame, Monsieur,
     </p>
     <p>
-        Le {{ last_submission_date|date:"l j F Y" }} vous avez déclaré par voie électronique le produit suivant :
+        Le {{ last_submission_date|date:"l j F Y" }} vous avez déclaré par voie électronique sur l’application de télédéclaration COMPL’ALIM® le produit suivant :
     </p>
     <p class="text-bold text-center">
         {{ declaration.name }}
@@ -33,18 +33,10 @@ Accusé d'enregistrement de déclaration d'un complément alimentaire n° {{ dec
         <span class="text-bold">Votre dossier porte le numéro : {{ declaration.id }}.</span>
     </p>
     <p>
-        Ce numéro unique facilitera le suivi de votre dossier.
+        RAPPEL : il est de votre responsabilité de déclarer et mettre en marché un produit conforme à la
+        réglementation applicable aux denrées alimentaires (notamment les règlements (CE) n°178/2002, (UE)
+        1169/ 2011 et 2283/2015).
     </p>
-    <p>
-        Nous vous rappelons qu’il est de votre responsabilité de déclarer et mettre en marché un produit conforme à la
-        réglementation applicable aux denrées alimentaires (notamment les règlements (CE) n°178/2002, (UE) n°1169/ 2011 et
-        n°2283/2015).
-    </p>
-        Sauf incomplétude du dossier de déclaration, examen défavorable par nos services, ou contrordre de votre part,
-        votre produit fera l’objet, sous deux mois, d’une attestation de déclaration et d’une inscription à la liste des
-        compléments alimentaires.
-    </p>
-
     <p>
         Pour tout renseignement d’ordre général sur le cadre réglementaire applicable aux compléments alimentaires, nous
         vous invitons à vous rendre sur le site de la DGAL à l’adresse suivante :
