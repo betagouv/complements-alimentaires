@@ -40,42 +40,6 @@ export const pushOtherChoiceFieldAtTheEnd = (choices) => {
   return choices
 }
 
-export const transformArrayByColumn = (arr, numberOfColumns) => {
-  /*
-  Transforme l'affichage d'un tableau en son équivalent d'affichage par colonnes. Par exemple,
-  [0, 1, 2, 3, 4, 5] en trois colonnes s'afficherait :
-  ---
-  0, 1, 2
-  3, 4, 5
-  ---
-  En passant par cette fonction, l'output serait :
-  [0, 2, 4, 1, 3, 5], qu'en trois colonnes s'afficherait :
-  ---
-  0, 2, 4
-  1, 3, 5
-  ---
-  Privilégiant ainsi une lecture verticale.
-  Utile pour l'affichage des checkboxes dans des grilles de colonnes.
-  */
-  const result = []
-  if (!arr) return result
-  const fullRows = Math.floor(arr.length / numberOfColumns) // Les rangées pleines
-  const remainingItems = arr.length % numberOfColumns // Les éléments qui resterons dans une dernière rangée
-
-  const numRows = remainingItems > 0 ? fullRows + 1 : fullRows
-
-  for (let row = 0; row < numRows; row++) {
-    for (let col = 0; col < numberOfColumns; col++) {
-      const index = col * fullRows + Math.min(col, remainingItems) + row
-      if (row < fullRows || (row === fullRows && col < remainingItems)) result.push(arr[index])
-    }
-  }
-
-  return result
-}
-
-export const checkboxColumnNumbers = { sm: 1, md: 2, lg: 2, xl: 3 }
-
 export const toOptions = (list) => {
   const options =
     (list || [])

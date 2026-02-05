@@ -162,12 +162,8 @@
       <template #legend>
         <SectionTitle title="Objectifs / effets" class="mt-4! mb-2" sizeTag="h6" icon="ri-focus-2-fill" />
       </template>
-      <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
-        <div
-          v-for="effect in orderedEffects"
-          :key="`effect-${effect.id}`"
-          class="flex col-span-6 sm:col-span-3 lg:col-span-2"
-        >
+      <div class="fr-checkbox-group input md:columns-2 lg:columns-3">
+        <div v-for="effect in effects" :key="`effect-${effect.id}`" class="flex mb-4 last:mb-0">
           <input :id="`effect-${effect.id}`" type="checkbox" v-model="payload.effects" :value="effect.id" />
           <label :for="`effect-${effect.id}`" class="fr-label">{{ effect.name }}</label>
         </div>
@@ -223,8 +219,7 @@ import { computed, watch, ref } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useVuelidate } from "@vuelidate/core"
-import { firstErrorMsg, transformArrayByColumn, checkboxColumnNumbers } from "@/utils/forms"
-import { useCurrentBreakpoint } from "@/utils/screen"
+import { firstErrorMsg } from "@/utils/forms"
 import { pushOtherChoiceFieldAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
 import CountryField from "@/components/fields/CountryField.vue"
 import OtherChoiceField from "@/components/fields/OtherChoiceField"
@@ -318,10 +313,6 @@ watch(selectedCompany, () => {
 
 // S'il n'y a qu'une entreprise on l'assigne par défaut
 if (companies.value?.length === 1) payload.value.company = companies.value[0].id
-
-const currentBreakpoint = useCurrentBreakpoint()
-const numberOfColumns = computed(() => checkboxColumnNumbers[currentBreakpoint.value])
-const orderedEffects = computed(() => transformArrayByColumn(effects.value, numberOfColumns.value))
 </script>
 
 <style scoped>

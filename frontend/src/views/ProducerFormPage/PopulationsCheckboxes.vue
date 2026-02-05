@@ -11,12 +11,8 @@
         <span class="sr-only">Population cible,</span>
         {{ section.title }}
       </template>
-      <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
-        <div
-          v-for="population in section.items"
-          :key="`pop-${population.id}`"
-          class="flex col-span-6 sm:col-span-3 lg:col-span-2"
-        >
+      <div class="fr-checkbox-group input md:columns-2 lg:columns-3">
+        <div v-for="population in section.items" :key="`pop-${population.id}`" class="flex mb-4 last:mb-0">
           <input :id="`population-${population.id}`" type="checkbox" v-model="modelValue" :value="population.id" />
           <label :for="`population-${population.id}`" class="fr-label">{{ population.name }}</label>
         </div>
@@ -27,12 +23,8 @@
 
 <script setup>
 import { computed } from "vue"
-import { transformArrayByColumn, checkboxColumnNumbers } from "@/utils/forms"
-import { useCurrentBreakpoint } from "@/utils/screen"
 import { populationCategoriesMapping } from "@/utils/mappings"
 
-const currentBreakpoint = useCurrentBreakpoint()
-const numberOfColumns = computed(() => checkboxColumnNumbers[currentBreakpoint.value])
 const modelValue = defineModel()
 const props = defineProps({ populations: { type: Array, default: Array } })
 
@@ -40,25 +32,18 @@ const ageSort = (a, b) => a.maxAge - b.maxAge
 
 const populationsSections = computed(() => {
   const p = props.populations
-  const cols = numberOfColumns.value
   return [
     {
       title: populationCategoriesMapping.AGE.label,
-      items: transformArrayByColumn(p?.filter((x) => x.category === "AGE").sort(ageSort), cols),
+      items: p?.filter((x) => x.category === "AGE").sort(ageSort),
     },
     {
       title: populationCategoriesMapping.PREGNANCY.label,
-      items: transformArrayByColumn(
-        p?.filter((x) => x.category === "PREGNANCY"),
-        cols
-      ),
+      items: p?.filter((x) => x.category === "PREGNANCY"),
     },
     {
       title: populationCategoriesMapping.OTHER.label,
-      items: transformArrayByColumn(
-        p?.filter((x) => x.category === "OTHER"),
-        cols
-      ),
+      items: p?.filter((x) => x.category === "OTHER"),
     },
   ]
 })
