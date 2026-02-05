@@ -49,6 +49,9 @@
                 font-size: 1.7em;
                 font-family: 'Marianne-Bold';
             }
+            .align-right {
+                text-align: right;
+            }
             @page {
                 size: A4 portrait;
                 margin: 1.3cm 2cm;
@@ -76,7 +79,7 @@
                         <img width="140" src="{% static 'images/certificate/masa.png' %}" alt="Ministère de l'Agriculture, de l'Agro-alimentaire et de la Souveraineté alimentaire">
                         {% endif %}
                     </td>
-                    <td align="right" class="table-bold">
+                    <td class="table-bold align-right">
                         Direction générale<br />{{direction}}
                     </td>
                 </tr>
@@ -92,14 +95,14 @@
                             <br />
                             Mél : <a href="mailto:{{mail}}">{{ mail }}</a><br />
                     </td>
-                    <td align="right" class="font-1-2">
+                    <td class="font-1-2 align-right">
                         Paris, le {{ date|date:"l j F Y" }}
                     </td>
                 </tr>
                 {% if include_recipient_address %}
                 <tr>
                     <td></td>
-                    <td align="right" class="font-1">
+                    <td class="font-1 align-right">
                         {% for line in recipient_lines %}
                         {{line}}<br />
                         {% endfor %}
