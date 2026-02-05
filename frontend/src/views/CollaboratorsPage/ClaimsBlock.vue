@@ -29,10 +29,7 @@ const process = async (solicitationId, actionName) => {
   await handleError(response)
   if (response.value.ok) {
     emit("process")
-    useToaster().addMessage({
-      type: "success",
-      description: "La demande a bien été traitée.",
-    })
+    useToaster().addSuccessMessage("La demande a bien été traitée.")
   }
 }
 </script>

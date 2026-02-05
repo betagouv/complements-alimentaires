@@ -78,11 +78,7 @@ const submit = async () => {
   await execute()
   await handleError(response) // we don't get returned result as we don't except other errors than global
   if (response.value.ok) {
-    useToaster().addMessage({
-      type: "success",
-      title: "C'est envoyé !",
-      description: "Votre message a bien été envoyé. Merci pour votre contribution.",
-    })
+    useToaster().addSuccessMessage("Votre message a bien été envoyé. Merci pour votre contribution.")
   }
   // Reset both form state & Vuelidate validation state
   message.value = ""

@@ -6,18 +6,20 @@
       Sans retour de votre part, ce dossier expirera le {{ isoToPrettyDate(displayData.expirationDate) }}.
     </p>
     <div v-if="displayData.canDownloadCertificate">
-      <DsfrButton icon="ri-file-text-line" class="mt-2" secondary>
-        <a :href="`/declarations/${declaration.id}/certificate`" target="_blank" rel="noopener noreferrer">
-          {{ displayData.downloadButtonText || "Télécharger l'attestation" }}
-        </a>
-      </DsfrButton>
+      <a download="true" :href="`/declarations/${declaration.id}/certificate`" class="fr-link fr-link--download">
+        Télécharger
+        <span class="lowercase">{{ displayData.documentName || "l'attestation" }}</span>
+        <span class="fr-link__detail">PDF</span>
+      </a>
       <a
         :href="`/declarations/${declaration.id}/certificate.html`"
         target="_blank"
-        rel="noopener noreferrer"
-        class="ml-4"
+        rel="noopener external"
+        class="ml-4 relative"
+        :title="`${displayData.documentName || 'L\'attestation'} (HTML) - nouvelle fenêtre`"
       >
-        {{ displayData.downloadButtonText || "L'attestation" }} (vérsion HTML)
+        {{ displayData.documentName || "L'attestation" }}
+        <span class="link-detail">HTML</span>
       </a>
     </div>
   </DsfrAlert>
@@ -60,28 +62,28 @@ const declarantDisplayData = computed(() => {
         type: "info",
         title: "Votre dossier est en attente",
         canDownloadCertificate: true,
-        downloadButtonText: "Accusé d'enregistrement",
+        documentName: "L'accusé d'enregistrement",
       }
     case "ONGOING_INSTRUCTION":
       return {
         type: "info",
         title: "Votre dossier est en attente",
         canDownloadCertificate: true,
-        downloadButtonText: "Accusé d'enregistrement",
+        documentName: "L'accusé d'enregistrement",
       }
     case "AWAITING_VISA":
       return {
         type: "info",
         title: "Votre dossier est en attente",
         canDownloadCertificate: true,
-        downloadButtonText: "Accusé d'enregistrement",
+        documentName: "L'accusé d'enregistrement",
       }
     case "ONGOING_VISA":
       return {
         type: "info",
         title: "Votre dossier est en attente",
         canDownloadCertificate: true,
-        downloadButtonText: "Accusé d'enregistrement",
+        documentName: "L'accusé d'enregistrement",
       }
     case "OBJECTION":
       return {
@@ -90,7 +92,7 @@ const declarantDisplayData = computed(() => {
         expirationDate: props.declaration?.expirationDate,
         body: blockingReasons.value,
         canDownloadCertificate: true,
-        downloadButtonText: "Télécharger le courrier d'objection",
+        documentName: "Le courrier d'objection",
       }
     case "OBSERVATION":
       return {
@@ -296,3 +298,20 @@ const blockingReasons = computed(
   () => props.declaration?.blockingReasons && "- " + props.declaration?.blockingReasons?.join(",\n- ")
 )
 </script>
+
+<style scoped>
+/* style pris du .fr-link__detail */
+/* position: relative; est obligatoire pour l'élément parent */
+.link-detail {
+  cursor: text;
+  font-size: 0.75rem;
+  font-weight: 400;
+  left: 0;
+  line-height: 1.25rem;
+  margin-top: 1.75rem;
+  pointer-events: none;
+  position: absolute;
+  white-space: nowrap;
+  color: var(--text-mention-grey);
+}
+</style>

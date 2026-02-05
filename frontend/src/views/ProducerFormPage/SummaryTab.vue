@@ -1,12 +1,17 @@
 <template>
   <div>
-    <div class="text-right">
-      <a :href="`/declarations/${payload.id}/summary`" download class="text-sm font-medium">
-        <v-icon name="ri-printer-line"></v-icon>
-        Imprimer
-      </a>
+    <div class="flex justify-between flex-wrap content-center mb-4">
+      <div class="content-center">
+        <SectionTitle title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" class="mb-0" />
+      </div>
+      <div>
+        <a :href="`/declarations/${payload.id}/summary`" download class="fr-link fr-link--download">
+          Télécharger
+          <span class="fr-link__detail">PDF</span>
+          <span class="sr-only">votre démarche {{ payload.name }}</span>
+        </a>
+      </div>
     </div>
-    <SectionTitle title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" />
     <DeclarationSummary v-model="payload" :readonly="readonly" />
     <hr v-if="!readonly" />
     <h2 v-if="!readonly">Soumettre</h2>
@@ -27,7 +32,11 @@
             <span>
               J'atteste que ce produit répond aux prescriptions du droit alimentaire qui lui sont applicables.
             </span>
-            <router-link :to="{ name: 'CompliancePage' }" target="_blank">
+            <router-link
+              :to="{ name: 'CompliancePage' }"
+              target="_blank"
+              title="Informations supplémentaires sur la conformité au droit alimentaire - nouvelle fenêtre"
+            >
               Informations supplémentaires sur la conformité au droit alimentaire.
             </router-link>
           </template>

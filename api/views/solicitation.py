@@ -88,7 +88,7 @@ class AddNewCollaboratorView(APIView):
             CollaborationInvitation.objects.create(
                 sender=sender, company=company, recipient_email=recipient_email, roles=roles
             )
-            return Response({"message": f"L'invitation a bien été envoyéee à {recipient_email}."})
+            return Response({"message": f"L'invitation a bien été envoyée à {recipient_email}."})
         else:
             # Cas C : l'invité existe en base et fait déjà partie des collaborateurs de l'entreprise
             if recipient in company.collaborators:

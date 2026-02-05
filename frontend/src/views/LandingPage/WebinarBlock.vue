@@ -24,7 +24,7 @@
           <v-icon scale="0.9" class="-mb-1 mr-1" name="ri-video-chat-line"></v-icon>
           Visio-conférence
         </div>
-        <a :href="webinar.link" target="_blank" rel="noopener noreferrer" class="fr-btn fr-btn--md">Je m'inscris</a>
+        <a :href="webinar.link" target="_blank" rel="noopener external" class="fr-btn fr-btn--md">Je m'inscris</a>
       </div>
     </div>
   </div>

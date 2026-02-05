@@ -129,13 +129,10 @@
             selected-palette="default"
           ></bar-chart>
           <p>
-            <a
+            <ExternalLink
               href="https://www.data.gouv.fr/fr/datasets/declarations-de-complements-alimentaires"
-              rel="noreferrer noopener"
-              target="_blank"
-            >
-              Le jeu de données data.gouv.fr publié par Compl'Alim
-            </a>
+              text="Le jeu de données data.gouv.fr publié par Compl'Alim"
+            />
           </p>
         </DsfrAccordion>
       </DsfrAccordionsGroup>
@@ -146,6 +143,7 @@
 import { ref, watch, computed, onMounted } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
+import ExternalLink from "@/components/ExternalLink"
 
 const activeAccordion = ref()
 const { response, data } = useFetch("/api/v1/stats/").json()

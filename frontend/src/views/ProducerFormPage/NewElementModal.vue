@@ -7,7 +7,9 @@
     ref="modalOrigin"
     class="mr-2"
   />
-  <DsfrTooltip class="whitespace-pre-wrap" :content="simpleDescription" />
+  <DsfrTooltip class="whitespace-pre-wrap" :content="simpleDescription">
+    <span class="fr-sr-only">Infobulle création d'un nouvel ingrédient</span>
+  </DsfrTooltip>
   <DsfrModal :actions="actions" ref="modal" @close="close" :opened="opened" title="Nouvel ingrédient">
     <DsfrAlert
       type="info"
