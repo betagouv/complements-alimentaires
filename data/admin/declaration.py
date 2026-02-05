@@ -330,6 +330,7 @@ class DeclarationAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
                 "fields": (
                     "author",
                     "company",
+                    "mandated_company",
                 ),
             },
         ),
