@@ -11,7 +11,7 @@ const payload = defineModel()
 const props = defineProps({ readonly: Boolean, hidePrivateComments: Boolean })
 
 const headers = [
-  { text: "Infos", headerAttrs: { id: "th-comments" } },
+  { text: "Commentaires", headerAttrs: { id: "th-comments", class: "fr-sr-only" } },
   { text: "Nom", headerAttrs: { id: "th-name" } },
   { text: "Ingrédient(s) source", headerAttrs: { id: "th-ingredients" } },
   { text: "Quantité totale par DJR", headerAttrs: { id: "th-quantity" } },
