@@ -6,12 +6,17 @@
 import { computed, watch } from "vue"
 import ElementCommentModal from "@/components/ElementCommentModal"
 import QuantityInputCell from "./QuantityInputCell"
-import SpanCell from "@/components/SpanCell"
 
 const payload = defineModel()
 const props = defineProps({ readonly: Boolean, hidePrivateComments: Boolean })
 
-const headers = ["", "Nom", "Ingrédient(s) source", "Qté totale par DJR", "Unité"]
+const headers = [
+  { text: "Infos", headerAttrs: { id: "th-comments" } },
+  { text: "Nom", headerAttrs: { id: "th-name" } },
+  { text: "Ingrédient(s) source", headerAttrs: { id: "th-ingredients" } },
+  { text: "Quantité totale par DJR", headerAttrs: { id: "th-quantity" } },
+  { text: "Unité", headerAttrs: { id: "th-unit" } },
+]
 
 const rows = computed(() => {
   return payload.value.computedSubstances.map((substance, index) => ({
@@ -22,15 +27,12 @@ const rows = computed(() => {
         modelValue: substance,
       },
       {
-        component: SpanCell,
         text: substance.substance.name.toLowerCase(),
-        class: "capitalize",
-        id: `substance-info-${index}`,
+        cellAttrs: { id: `substance-name-${index}`, class: "capitalize" },
       },
       {
-        component: SpanCell,
         text: sourceElements(substance.substance),
-        class: "capitalize",
+        cellAttrs: { class: "capitalize" },
       },
       {
         component: QuantityInputCell,
@@ -39,7 +41,10 @@ const rows = computed(() => {
         readonly: props.readonly,
         rowIndex: index,
       },
-      payload.value.computedSubstances[index].substance.unit,
+      {
+        text: payload.value.computedSubstances[index].substance.unit,
+        cellAttrs: { id: `substance-unit-${index}` },
+      },
     ],
   }))
 })

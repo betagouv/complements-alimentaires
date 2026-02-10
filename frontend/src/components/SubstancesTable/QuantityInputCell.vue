@@ -22,18 +22,21 @@
       <DsfrInputGroup>
         <NumberField
           v-model="payload.computedSubstances[rowIndex].quantity"
-          label="Quantité par DJR"
           :required="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
-          :descriptionId="`substance-info-${rowIndex}`"
+          :aria-labelledby="`substance-name-${rowIndex} th-quantity th-unit substance-unit-${rowIndex} substance-required-${rowIndex}`"
         />
-        <div class="text-neutral-500! mt-1" v-if="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity">
+        <p
+          :id="`substance-required-${rowIndex}`"
+          class="fr-hint-text mt-1 mb-0"
+          v-if="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
+        >
           * champ obligatoire
-        </div>
+        </p>
         <p
           v-if="amountInfoText[rowIndex]"
           role="alert"
           aria-live="polite"
-          :id="`substance-info-${rowIndex}`"
+          :id="`substance-quantity-${rowIndex}`"
           class="amount-info-text"
         >
           <v-icon name="ri-information-fill"></v-icon>
