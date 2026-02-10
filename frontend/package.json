@@ -21,7 +21,7 @@
     "webpack-bundle-tracker": "^3.2.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.6",
+    "@babel/core": "^7.29.0",
     "@babel/eslint-parser": "^7.28.6",
     "@tailwindcss/postcss": "^4.1.18",
     "@vue/cli-plugin-babel": "~5.0.9",
