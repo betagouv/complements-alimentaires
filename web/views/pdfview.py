@@ -18,13 +18,12 @@ class PdfView(GenericAPIView, ABC):
 
     def get(self, request, *args, **kwargs):
         obj = self.get_object()
-        template = get_template(self.get_template_path(obj))
-        html = template.render(self.get_context(obj))
 
         if self.as_html:
-            html = "<!doctype html>" + html
-            return HttpResponse(html, status=200)
+            return render(request, self.get_template_path(obj), self.get_context(obj))
 
+        template = get_template(self.get_template_path(obj))
+        html = template.render(self.get_context(obj))
         response = HttpResponse(content_type="application/pdf")
         filename = self.get_pdf_file_name(obj)
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
