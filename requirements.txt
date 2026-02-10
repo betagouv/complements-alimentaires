@@ -101,7 +101,7 @@ regex==2025.11.3
 reportlab==4.4.4
 requests==2.32.4
 requests-mock==1.12.1
-ruff==0.14.6
+ruff==0.14.14
 s3transfer==0.16.0
 sentry-sdk==2.49.0
 sib-api-v3-sdk==7.6.0
