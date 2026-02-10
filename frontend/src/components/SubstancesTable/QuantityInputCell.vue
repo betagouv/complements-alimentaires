@@ -21,9 +21,12 @@
     <div v-else class="-mt-1 pb-1">
       <DsfrInputGroup>
         <NumberField
+          :id="`quantity-input-${rowIndex}`"
           v-model="payload.computedSubstances[rowIndex].quantity"
           :required="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
           :aria-labelledby="`substance-name-${rowIndex} th-quantity th-unit substance-unit-${rowIndex} substance-required-${rowIndex}`"
+          labelClass="hidden"
+          :title="titleFromAria(`quantity-input-${rowIndex}`)"
         />
         <p
           :id="`substance-required-${rowIndex}`"
@@ -77,6 +80,12 @@ const getMaxQuantityExceeded = (declaration, substance) => {
     )
   const intro = maxQuantitiesExceeded.length > 1 ? "Maximums excédés : " : "Maximum excédé : "
   return intro + maxQuantitiesExceeded.map((p) => `${p.maxQuantity} pour ${p.population?.name}`).join(", ")
+}
+
+const titleFromAria = (id) => {
+  const element = document.getElementById(id)
+  if (!element) return
+  return element.ariaLabelledByElements.map((el) => el.textContent.trim()).join(" ")
 }
 </script>
 
