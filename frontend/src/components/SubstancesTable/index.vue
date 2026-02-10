@@ -1,5 +1,12 @@
 <template>
-  <DsfrTable ref="table" class="w-full" :headers="headers" :rows="rows" :no-caption="true" :pagination="false" />
+  <DsfrTable
+    ref="table"
+    class="w-full overflow-scroll"
+    :headers="headers"
+    :rows="rows"
+    :no-caption="true"
+    :pagination="false"
+  />
 </template>
 
 <script setup>
