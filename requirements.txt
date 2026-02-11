@@ -75,7 +75,7 @@ parso==0.8.5
 pathspec==1.0.3
 pexpect==4.9.0
 phonenumbers==9.0.21
-pillow==12.1.0
+pillow==12.1.1
 pipdeptree==2.30.0
 platformdirs==4.5.0
 pluggy==1.6.0
