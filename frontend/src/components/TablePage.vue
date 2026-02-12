@@ -1,23 +1,33 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="breadcrumbLinks" />
-    <div>
+    <h1 class="fr-h4 mb-0">{{ pageTitle }}</h1>
+    <div class="filters mb-8">
       <slot name="primary"></slot>
     </div>
+    <!-- could make choice of box/accordion a prop, then for views up to md always use accordion to save space -->
     <DsfrAccordionsGroup v-if="$slots.accordion" v-model="activeAccordion" class="border mb-8 filter-area">
-      <DsfrAccordion id="filter-accordeon">
+      <DsfrAccordion id="filter-accordeon" title="Filtres">
         <template v-slot:title>
-          <p>
+          <h2 class="fr-accordion__title">
             <v-icon name="ri-equalizer-fill"></v-icon>
             Filtres
-          </p>
+          </h2>
         </template>
         <div class="p-2">
           <slot name="accordion"></slot>
         </div>
       </DsfrAccordion>
     </DsfrAccordionsGroup>
-    <slot name="filter-box"></slot>
+    <div class="mb-8" v-if="$slots['filter-box']">
+      <h2 class="fr-text--lg mb-1">
+        <v-icon name="ri-equalizer-fill"></v-icon>
+        Filtres
+      </h2>
+      <div class="border p-4 filters">
+        <slot name="filter-box"></slot>
+      </div>
+    </div>
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
@@ -58,8 +68,10 @@ const page = computed(() => parseInt(props.route?.query.page))
 const pages = computed(() => getPagesForPagination(props.data?.count, props.limit, props.route?.path))
 const showPagination = computed(() => props.data?.count > props.data?.results?.length)
 
+const pageTitle = computed(() => props.breadcrumbLinks[props.breadcrumbLinks.length - 1].text)
+
 const updateDocumentTitle = () => {
-  setDocumentTitle([props.breadcrumbLinks[props.breadcrumbLinks.length - 1].text], {
+  setDocumentTitle([pageTitle.value], {
     number: page.value,
     total: pages.value.length,
     term: "page",
@@ -72,3 +84,20 @@ watch(pages, async () => {
   updateDocumentTitle()
 })
 </script>
+
+<style scoped>
+@reference "../styles/index.css";
+
+/* le bouton de l'accordéon devrait être en bleu,
+mais la couleur de l'h2 prend précedence sans ce CSS */
+h2.fr-accordion__title {
+  color: unset;
+}
+
+.filters :deep(.fr-input-group) {
+  @apply my-0;
+}
+.filters :deep(.fr-select-group) {
+  @apply mb-0;
+}
+</style>

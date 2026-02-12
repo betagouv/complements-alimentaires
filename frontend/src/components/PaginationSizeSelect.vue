@@ -1,13 +1,11 @@
 <template>
-  <DsfrInputGroup>
-    <DsfrSelect
-      label="Déclarations par page"
-      :options="options"
-      @update:modelValue="(val) => emit('update:modelValue', val)"
-      :modelValue="limit"
-      class="text-sm!"
-    />
-  </DsfrInputGroup>
+  <DsfrSelect
+    label="Déclarations par page"
+    :options="options"
+    @update:modelValue="(val) => emit('update:modelValue', val)"
+    :modelValue="limit"
+    class="text-sm!"
+  />
 </template>
 
 <script setup>

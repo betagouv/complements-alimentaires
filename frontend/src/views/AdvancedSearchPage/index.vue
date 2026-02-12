@@ -8,31 +8,27 @@
     :route="route"
   >
     <template v-slot:primary>
-      <div class="mb-2 md:flex gap-8 search-area">
-        <div class="md:w-1/3 lg:w-2/5 pt-1">
-          <DsfrFieldset legend="Recherche" class="mb-0!">
-            <DsfrSearchBar
-              v-model="searchTerm"
-              label="Nom du produit, ID ou entreprise"
-              placeholder="Nom du produit, ID ou entreprise"
-              @search="search"
-              @update:modelValue="(val) => val === '' && search()"
-            />
-          </DsfrFieldset>
+      <div class="mb-2 md:flex gap-8 items-end">
+        <div class="grow">
+          <DsfrSearchBar
+            v-model="searchTerm"
+            label="Nom du produit, ID ou entreprise"
+            placeholder="Nom du produit, ID ou entreprise"
+            @search="search"
+            @update:modelValue="(val) => val === '' && search()"
+          />
         </div>
-        <div class="md:w-2/3 lg:w-3/5 md:flex gap-3">
-          <DsfrInputGroup>
-            <DsfrSelect
-              label="Trier par"
-              defaultUnselectedText=""
-              :modelValue="ordering"
-              @update:modelValue="updateOrdering"
-              :options="orderingOptions"
-              class="text-sm!"
-            />
-          </DsfrInputGroup>
+        <div class="sm:flex gap-3">
+          <DsfrSelect
+            label="Trier par"
+            defaultUnselectedText=""
+            :modelValue="ordering"
+            @update:modelValue="updateOrdering"
+            :options="orderingOptions"
+            class="text-sm!"
+          />
           <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
-          <div class="md:mt-6 justify-self-end shrink self-center min-w-fit">
+          <div class="self-center">
             <a v-if="canDownloadFile" :href="excelUrl" download="true" class="fr-link fr-link--download">
               Télécharger
               <span class="fr-link__detail">XLSX</span>
@@ -359,6 +355,7 @@ const articleSelectOptions = [
   ],
   ...articleOptionsWith15Subtypes,
 ]
+// TODO: replace by a mapping?
 const orderingOptions = [
   { value: "name", text: "Nom du produit" },
   { value: "-name", text: "Nom du produit (descendant)" },
@@ -375,15 +372,6 @@ const galenicFormulationOptions = computed(() => toOptions(galenicFormulations.v
 <style scoped>
 @reference "../../styles/index.css";
 
-.search-area :deep(.fr-select-group) {
-  @apply my-0!;
-}
-.filter-area :deep(.fr-fieldset__legend) {
-  @apply py-0!;
-}
-.filter-area :deep(.fr-fieldset__element) {
-  @apply my-0!;
-}
 .status-filter :deep(.fr-fieldset__element) {
   @apply my-2!;
 }

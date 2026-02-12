@@ -1,109 +1,92 @@
 <template>
-  <div class="fr-container">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Mes déclarations' }]"
-    />
-    <div class="block sm:flex items-center mb-8">
-      <DsfrButton
-        size="small"
-        v-if="hasDeclarations"
-        label="Nouvelle déclaration"
-        secondary
-        @click="createNewDeclaration"
-      />
-    </div>
-
-    <div class="border px-4 pb-2 mb-2 lg:flex gap-4 items-baseline filters">
-      <div class="lg:border-r pt-4 md:pr-4">
-        <DsfrFieldset class="mb-0!">
+  <TablePage
+    :breadcrumbLinks="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Mes déclarations' }]"
+    :data="data"
+    :isFetching="isFetching"
+    @updatePage="updatePage"
+    :limit="limit"
+    :route="route"
+  >
+    <template v-slot:primary>
+      <div class="mb-2 md:flex gap-8 items-end">
+        <div class="grow">
           <DsfrSearchBar
             v-model="searchTerm"
             label="Nom, ID ou entreprise"
             placeholder="Nom, ID ou entreprise"
-            class="max-w-sm"
             @search="search"
             @update:modelValue="(val) => val === '' && search()"
           />
-        </DsfrFieldset>
-
-        <div class="sm:flex gap-4 items-baseline">
-          <DsfrInputGroup>
-            <DsfrSelect
-              label="Entreprise"
-              :modelValue="company"
-              @update:modelValue="updateCompany"
-              defaultUnselectedText="Toutes"
-              :options="companiesOptions"
-              class="text-sm!"
-            />
-          </DsfrInputGroup>
-          <div class="min-w-44">
-            <DsfrInputGroup>
-              <DsfrSelect
-                label="Personne assignée"
-                :modelValue="author"
-                @update:modelValue="updateAuthor"
-                defaultUnselectedText="Toutes"
-                :options="authorOptions"
-                class="text-sm!"
-              />
-            </DsfrInputGroup>
-          </div>
-          <div class="min-w-48">
-            <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
-          </div>
-          <DsfrInputGroup>
-            <DsfrSelect
-              label="Trier par"
-              defaultUnselectedText=""
-              :modelValue="ordering"
-              @update:modelValue="updateOrdering"
-              :options="orderingOptionsPro"
-              class="text-sm!"
-            />
-          </DsfrInputGroup>
+        </div>
+        <div class="sm:flex gap-3">
+          <DsfrSelect
+            label="Trier par"
+            defaultUnselectedText=""
+            :modelValue="ordering"
+            @update:modelValue="updateOrdering"
+            :options="orderingOptionsPro"
+            class="text-sm!"
+          />
+          <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
+        </div>
+        <div class="mb-1">
+          <DsfrButton
+            size="small"
+            v-if="hasDeclarations"
+            label="Nouvelle déclaration"
+            secondary
+            @click="createNewDeclaration"
+          />
         </div>
       </div>
-      <StatusFilter
-        class="lg:max-w-2xs xl:max-w-md pb-2 md:mt-0 mt-4"
-        @updateFilter="updateStatusFilter"
-        :statusString="filteredStatus"
-        :groupInstruction="true"
-      />
-    </div>
-    <div v-if="isFetching" class="flex justify-center my-10">
-      <ProgressSpinner />
-    </div>
-    <DeclarationsTable :data="data" v-else-if="hasDeclarations" />
-    <div v-else class="mb-8">
+    </template>
+    <template v-slot:filter-box>
+      <div class="grid sm:grid-cols-2">
+        <div class="grid sm:grid-cols-2 gap-4 sm:pr-4 mb-4 sm:mb-0">
+          <DsfrSelect
+            label="Entreprise"
+            :modelValue="company"
+            @update:modelValue="updateCompany"
+            defaultUnselectedText="Toutes"
+            :options="companiesOptions"
+            class="text-sm!"
+          />
+          <DsfrSelect
+            label="Personne assignée"
+            :modelValue="author"
+            @update:modelValue="updateAuthor"
+            defaultUnselectedText="Toutes"
+            :options="authorOptions"
+            class="text-sm!"
+          />
+        </div>
+        <div class="sm:border-l sm:pl-4">
+          <StatusFilter @updateFilter="updateStatusFilter" :statusString="filteredStatus" :groupInstruction="true" />
+        </div>
+      </div>
+    </template>
+    <template v-slot:table>
+      <DeclarationsTable :data="data" />
+    </template>
+    <template v-slot:no-results>
       <p>Vous n'avez pas encore des déclarations avec ces filtres.</p>
       <DsfrButton icon="ri-capsule-fill" label="Créer ma première déclaration" @click="createNewDeclaration" />
-    </div>
-    <DsfrPagination
-      v-if="showPagination"
-      @update:currentPage="updatePage"
-      :pages="pages"
-      :current-page="page - 1"
-      :truncLimit="5"
-    />
-  </div>
+    </template>
+  </TablePage>
 </template>
 
 <script setup>
 import { computed, watch, ref } from "vue"
-import ProgressSpinner from "@/components/ProgressSpinner"
 import { handleError } from "@/utils/error-handling"
 import DeclarationsTable from "./DeclarationsTable"
 import { useRouter, useRoute } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { getPagesForPagination } from "@/utils/components"
 import { orderingOptionsPro } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import StatusFilter from "@/components/StatusFilter"
-import { setDocumentTitle } from "@/utils/document"
+import TablePage from "@/components/TablePage"
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -115,7 +98,6 @@ const searchTerm = ref(route.query.recherche)
 const ordering = computed(() => route.query.triage)
 
 const hasDeclarations = computed(() => !!data.value?.results?.length)
-const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 const offset = computed(() => (page.value - 1) * limit.value)
 
 const authorOptions = computed(() => {
@@ -135,8 +117,6 @@ const companiesOptions = computed(() => {
   companies.unshift(emptyOption)
   return companies
 })
-
-const pages = computed(() => getPagesForPagination(data.value.count, limit.value, route.path))
 
 const page = computed(() => parseInt(route.query.page))
 const filteredStatus = computed(() => route.query.status)
@@ -162,11 +142,6 @@ const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
-  setDocumentTitle(["Mes déclarations"], {
-    number: page.value,
-    total: pages.value.length,
-    term: "page",
-  })
 }
 
 const search = () => {
@@ -176,14 +151,3 @@ const search = () => {
 
 watch([page, filteredStatus, company, author, limit, ordering], fetchSearchResults)
 </script>
-
-<style scoped>
-@reference "../../styles/index.css";
-
-.filters :deep(.fr-input-group) {
-  @apply mb-0 mt-2;
-}
-.filters :deep(.fr-select-group) {
-  @apply mb-2;
-}
-</style>
