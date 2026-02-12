@@ -187,11 +187,12 @@
   </TablePage>
 </template>
 <script setup>
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import { storeToRefs } from "pinia"
 import { useRoute, useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { articleOptionsWith15Subtypes } from "@/utils/mappings"
+import { handleError } from "@/utils/error-handling"
 import StatusFilter from "@/components/StatusFilter"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import SearchResultsTable from "./SearchResultsTable"
@@ -338,9 +339,14 @@ const apiQueryParams = computed(() => {
 const apiUrl = computed(() => `/api/v1/declarations${apiQueryParams.value}`)
 const excelUrl = computed(() => `/api/v1/declarations-export.xlsx${apiQueryParams.value}`)
 
-const { data, isFetching } = useFetch(apiUrl, { headers: { Accept: "application/json" } })
+const { response, data, isFetching, execute } = useFetch(apiUrl, { headers: { Accept: "application/json" } })
   .get()
   .json()
+
+watch(route, async () => {
+  await execute()
+  if (response?.value) await handleError(response) // Utile pour éviter des traiter les NS_BINDING_ABORTED de Firefox
+})
 
 // Remplissage d'options dans les champs select
 
