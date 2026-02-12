@@ -1,7 +1,7 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="breadcrumbLinks" />
-    <h1 class="fr-h4 mb-0">{{ pageTitle }}</h1>
+    <h1 class="fr-h4 sm:mb-0">{{ pageTitle }}</h1>
     <div class="filters mb-8">
       <slot name="primary"></slot>
     </div>
@@ -14,7 +14,7 @@
             Filtres
           </h2>
         </template>
-        <div class="p-2">
+        <div class="p-2 filters">
           <slot name="accordion"></slot>
         </div>
       </DsfrAccordion>
@@ -94,10 +94,15 @@ h2.fr-accordion__title {
   color: unset;
 }
 
-.filters :deep(.fr-input-group) {
-  @apply my-0;
-}
 .filters :deep(.fr-select-group) {
   @apply mb-0;
+}
+
+.filters :deep(legend.fr-fieldset__legend) {
+  @apply pb-0 mb-2;
+}
+
+.filters :deep(.fr-fieldset) {
+  align-items: normal;
 }
 </style>

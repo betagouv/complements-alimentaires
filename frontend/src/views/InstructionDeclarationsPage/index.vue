@@ -1,15 +1,44 @@
 <template>
-  <div class="fr-container">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Déclarations pour instruction' }]"
-    />
-    <div class="border px-4 pb-2 mb-2 md:flex gap-4 items-baseline filters">
-      <div>
-        <div class="sm:flex gap-4 items-baseline md:border-r pb-2">
-          <DsfrFieldset legend="Nom d'entreprise" class="mb-0! min-w-44">
+  <TablePage
+    :breadcrumbLinks="[
+      { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
+      { text: 'Déclarations pour instruction' },
+    ]"
+    :data="data"
+    :isFetching="isFetching"
+    @updatePage="updatePage"
+    :limit="limit"
+    :route="route"
+  >
+    <template v-slot:primary>
+      <div class="mb-2 md:flex gap-8 items-end">
+        <div class="grow">
+          <DsfrSearchBar
+            v-model="searchTerm"
+            label="Nom, ID ou entreprise"
+            placeholder="Nom, ID ou entreprise"
+            @search="search"
+          />
+        </div>
+        <div class="sm:flex gap-3">
+          <DsfrSelect
+            label="Trier par"
+            defaultUnselectedText=""
+            :modelValue="ordering"
+            @update:modelValue="updateOrdering"
+            :options="orderingOptions"
+            class="text-sm!"
+          />
+          <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
+        </div>
+      </div>
+    </template>
+    <template v-slot:filter-box>
+      <div class="grid sm:grid-cols-2">
+        <div class="flex gap-4 mb-4 sm:mb-0 sm:pr-4 items-baseline">
+          <DsfrFieldset legend="Nom d'entreprise" class="min-w-44">
             <div class="flex gap-4">
-              <DsfrInputGroup>
+              <div>
                 <DsfrInput
                   class="max-w-16 text-sm!"
                   label="De :"
@@ -17,8 +46,8 @@
                   label-visible
                   @update:modelValue="updateCompanyNameStartFilter"
                 />
-              </DsfrInputGroup>
-              <DsfrInputGroup>
+              </div>
+              <div>
                 <DsfrInput
                   class="max-w-16 text-sm!"
                   label="À :"
@@ -26,98 +55,50 @@
                   label-visible
                   @update:modelValue="updateCompanyNameEndFilter"
                 />
-              </DsfrInputGroup>
+              </div>
             </div>
           </DsfrFieldset>
-          <div class="mb-0! min-w-52">
-            <div class="md:px-4 md:border-l">
-              <DsfrInputGroup>
-                <DsfrSelect
-                  label="Personne assignée"
-                  :modelValue="assignedInstructor"
-                  @update:modelValue="updateInstructorFilter"
-                  defaultUnselectedText=""
-                  :options="instructorSelectOptions"
-                  class="text-sm!"
-                />
-              </DsfrInputGroup>
-            </div>
-          </div>
+          <DsfrSelect
+            label="Personne assignée"
+            :modelValue="assignedInstructor"
+            @update:modelValue="updateInstructorFilter"
+            defaultUnselectedText=""
+            :options="instructorSelectOptions"
+            class="text-sm!"
+          />
+          <DsfrSelect
+            label="Article"
+            defaultUnselectedText=""
+            :modelValue="article"
+            @update:modelValue="updateArticle"
+            :options="articleSelectOptions"
+            class="text-sm!"
+          />
         </div>
-        <div class="md:pr-4 md:border-r md:border-t md:-mt-3">
-          <DsfrFieldset legend="Recherche" class="mb-0!">
-            <DsfrSearchBar
-              v-model="searchTerm"
-              label="Nom, ID ou entreprise"
-              placeholder="Nom, ID ou entreprise"
-              @search="search"
-            />
-          </DsfrFieldset>
+        <div class="sm:border-l sm:pl-4">
+          <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" :statusString="filteredStatus" />
         </div>
       </div>
-      <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" :statusString="filteredStatus" />
-      <div class="min-w-96 md:border-l">
-        <div class="md:pl-4 min-w-36 flex flex-row gap-4">
-          <div class="w-2/4">
-            <DsfrInputGroup>
-              <DsfrSelect
-                label="Trier par"
-                defaultUnselectedText=""
-                :modelValue="ordering"
-                @update:modelValue="updateOrdering"
-                :options="orderingOptions"
-                class="text-sm!"
-              />
-            </DsfrInputGroup>
-          </div>
-          <div class="w-2/4">
-            <DsfrInputGroup>
-              <DsfrSelect
-                label="Article"
-                defaultUnselectedText=""
-                :modelValue="article"
-                @update:modelValue="updateArticle"
-                :options="articleSelectOptions"
-                class="text-sm!"
-              />
-            </DsfrInputGroup>
-          </div>
-        </div>
-
-        <div class="md:pl-4 min-w-36 pb-2">
-          <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
-        </div>
-      </div>
-    </div>
-    <div v-if="isFetching" class="flex justify-center my-10">
-      <ProgressSpinner />
-    </div>
-    <div v-else-if="hasDeclarations">
+    </template>
+    <template v-slot:table>
       <InstructionDeclarationsTable :data="data" />
-    </div>
-    <p v-else class="mb-8">Aucune déclaration.</p>
-    <DsfrPagination
-      v-if="showPagination"
-      @update:currentPage="updatePage"
-      :pages="pages"
-      :current-page="page - 1"
-      :truncLimit="5"
-    />
-  </div>
+    </template>
+    <template v-slot:no-results>
+      <p class="mb-8">Aucune déclaration.</p>
+    </template>
+  </TablePage>
 </template>
 
 <script setup>
 import { useFetch } from "@vueuse/core"
 import { computed, watch, ref } from "vue"
 import { handleError } from "@/utils/error-handling"
-import ProgressSpinner from "@/components/ProgressSpinner"
 import InstructionDeclarationsTable from "./InstructionDeclarationsTable"
 import { useRoute, useRouter } from "vue-router"
-import { getPagesForPagination } from "@/utils/components"
 import StatusFilter from "@/components/StatusFilter.vue"
 import { orderingOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
-import { setDocumentTitle } from "@/utils/document"
+import TablePage from "@/components/TablePage.vue"
 
 const router = useRouter()
 const route = useRoute()
@@ -125,11 +106,8 @@ const searchTerm = ref(route.query.recherche)
 
 const articleSelectOptions = [...articleOptionsWith15Subtypes, ...[{ value: "", text: "Tous" }]]
 
-const hasDeclarations = computed(() => data.value?.count > 0)
-const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 const offset = computed(() => (page.value - 1) * limit.value)
 
-const pages = computed(() => getPagesForPagination(data.value?.count, limit.value, route.path))
 const allInstructors = computed(() => data.value?.instructors)
 const instructorSelectOptions = computed(() => {
   const availableInstructors = allInstructors.value?.map((x) => ({ value: "" + x.id, text: x.name })) || []
@@ -168,11 +146,6 @@ const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
-  setDocumentTitle(["Instruction"], {
-    number: page.value,
-    total: pages.value.length,
-    term: "page",
-  })
 }
 
 watch(
@@ -185,17 +158,3 @@ const search = () => {
   fetchSearchResults()
 }
 </script>
-
-<style scoped>
-@reference "../../styles/index.css";
-
-.filters :deep(legend.fr-fieldset__legend) {
-  @apply pb-0 pt-4;
-}
-.filters :deep(.fr-input-group) {
-  @apply mb-0 mt-2;
-}
-.filters :deep(.fr-select-group) {
-  @apply mb-2;
-}
-</style>

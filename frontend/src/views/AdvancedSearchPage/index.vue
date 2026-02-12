@@ -53,7 +53,7 @@
       </div>
     </template>
     <template v-slot:accordion>
-      <div class="md:flex gap-16 filter-area">
+      <div class="md:flex gap-16">
         <div class="md:w-2/4">
           <StatusFilter
             :exclude="['DRAFT']"

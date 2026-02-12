@@ -1,16 +1,18 @@
 <template>
-  <div class="fr-container">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[
-        { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { text: 'Les déclarations de mon entreprise' },
-      ]"
-    />
-
-    <div class="border px-4 pt-4 pb-2 mb-2 md:flex gap-4 items-baseline filters">
-      <div class="md:min-w-lg">
-        <DsfrFieldset class="mb-0!">
+  <TablePage
+    :breadcrumbLinks="[
+      { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
+      { text: 'Les déclarations de mon entreprise' },
+    ]"
+    :data="data"
+    :isFetching="isFetching"
+    @updatePage="updatePage"
+    :limit="limit"
+    :route="route"
+  >
+    <template v-slot:primary>
+      <div class="mb-2 md:flex gap-8 items-end">
+        <div class="grow mb-4 sm:mb-0">
           <DsfrSearchBar
             v-model="searchTerm"
             label="Nom, ID ou entreprise"
@@ -18,28 +20,8 @@
             @search="search"
             @update:modelValue="(val) => val === '' && search()"
           />
-        </DsfrFieldset>
-        <div class="md:flex gap-4 items-baseline">
-          <DsfrInputGroup>
-            <DsfrSelect
-              label="Entreprise"
-              :modelValue="company"
-              @update:modelValue="updateCompany"
-              defaultUnselectedText="Toutes"
-              :options="companiesOptions"
-              class="text-sm!"
-            />
-          </DsfrInputGroup>
-          <DsfrInputGroup>
-            <DsfrSelect
-              label="Personne assignée"
-              :modelValue="author"
-              @update:modelValue="updateAuthor"
-              defaultUnselectedText="Toutes"
-              :options="authorOptions"
-              class="text-sm!"
-            />
-          </DsfrInputGroup>
+        </div>
+        <div class="sm:flex gap-3">
           <DsfrSelect
             label="Trier par"
             defaultUnselectedText=""
@@ -50,30 +32,44 @@
           />
         </div>
       </div>
-      <div class="pb-4 max-w-sm mt-4 md:mt-0 md:border-l md:pl-4">
-        <StatusFilter
-          :exclude="['DRAFT']"
-          @updateFilter="updateStatusFilter"
-          :statusString="filteredStatus"
-          :groupInstruction="true"
-        />
+    </template>
+    <template v-slot:filter-box>
+      <div class="grid sm:grid-cols-2">
+        <div class="grid sm:grid-cols-2 gap-4 sm:pr-4 mb-4 sm:mb-0">
+          <DsfrSelect
+            label="Entreprise"
+            :modelValue="company"
+            @update:modelValue="updateCompany"
+            defaultUnselectedText="Toutes"
+            :options="companiesOptions"
+            class="text-sm!"
+          />
+          <DsfrSelect
+            label="Personne assignée"
+            :modelValue="author"
+            @update:modelValue="updateAuthor"
+            defaultUnselectedText="Toutes"
+            :options="authorOptions"
+            class="text-sm!"
+          />
+        </div>
+        <div class="sm:border-l sm:pl-4">
+          <StatusFilter
+            :exclude="['DRAFT']"
+            @updateFilter="updateStatusFilter"
+            :statusString="filteredStatus"
+            :groupInstruction="true"
+          />
+        </div>
       </div>
-    </div>
-    <div v-if="isFetching" class="flex justify-center my-10">
-      <ProgressSpinner />
-    </div>
-    <div v-else-if="hasDeclarations">
+    </template>
+    <template v-slot:table>
       <CompanyDeclarationsTable :data="data" />
-    </div>
-    <p v-else class="mb-8">Aucune déclaration.</p>
-    <DsfrPagination
-      v-if="showPagination"
-      @update:currentPage="updatePage"
-      :pages="pages"
-      :current-page="page - 1"
-      :truncLimit="5"
-    />
-  </div>
+    </template>
+    <template v-slot:no-results>
+      <p class="mb-8">Aucune déclaration.</p>
+    </template>
+  </TablePage>
 </template>
 
 <script setup>
@@ -83,12 +79,10 @@ import { useRootStore } from "@/stores/root"
 import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
-import { getPagesForPagination } from "@/utils/components"
 import CompanyDeclarationsTable from "./CompanyDeclarationsTable"
-import ProgressSpinner from "@/components/ProgressSpinner"
 import StatusFilter from "@/components/StatusFilter.vue"
 import { orderingOptionsPro } from "@/utils/mappings"
-import { setDocumentTitle } from "@/utils/document"
+import TablePage from "@/components/TablePage.vue"
 
 const route = useRoute()
 const store = useRootStore()
@@ -110,11 +104,7 @@ const companiesOptions = computed(() => {
 })
 
 const limit = 10
-const hasDeclarations = computed(() => data.value?.count > 0)
-const showPagination = computed(() => data.value?.count > data.value?.results?.length)
 const offset = computed(() => (page.value - 1) * limit)
-
-const pages = computed(() => getPagesForPagination(data.value.count, limit, route.path))
 
 // Valeurs obtenus du queryparams
 const page = computed(() => parseInt(route.query.page))
@@ -140,11 +130,6 @@ const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {
   await execute()
   await handleError(response)
-  setDocumentTitle(["Les déclarations de mon entreprise"], {
-    number: page.value,
-    total: pages.value.length,
-    term: "page",
-  })
 }
 
 const search = () => {
@@ -154,14 +139,3 @@ const search = () => {
 
 watch([page, filteredStatus, company, author, ordering], fetchSearchResults)
 </script>
-
-<style scoped>
-@reference "../../styles/index.css";
-
-.filters :deep(.fr-input-group) {
-  @apply mb-0 mt-2;
-}
-.filters :deep(.fr-select-group) {
-  @apply mb-2;
-}
-</style>
