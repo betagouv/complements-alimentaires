@@ -16,7 +16,7 @@
       <div class="fr-container">
         <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" v-if="breadcrumbLinks" />
       </div>
-      <router-view></router-view>
+      <router-view @page-title="updatePageTitle"></router-view>
     </main>
     <DsfrFooter
       :logo-text="logoText"
@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { watch, computed } from "vue"
+import { watch, computed, ref } from "vue"
 import { useRoute } from "vue-router"
 import AppToaster from "@/components/AppToaster.vue"
 import useToaster from "@/composables/use-toaster"
@@ -52,9 +52,12 @@ const route = useRoute()
 const { messages, removeMessage } = useToaster()
 const logoText = ["Ministère", "de l'Agriculture,", "de l'Agro-alimentaire", "et de la Souveraineté", "Alimentaire"]
 
+const pageTitle = ref("")
+
 watch(route, (to) => {
   const suffix = "Compl'Alim"
   document.title = to.meta.title ? to.meta.title + " - " + suffix : suffix
+  pageTitle.value = to.meta.title
 })
 
 const lowContrastMode = computed(() => ["IdentitySection", "HistorySection"].includes(route.name))
@@ -62,10 +65,14 @@ const environment = window.ENVIRONMENT
 
 const breadcrumbLinks = computed(() => {
   if (route.meta?.breadcrumbLinks) {
-    return route.meta.breadcrumbLinks.concat({ text: route.meta?.title })
+    return route.meta.breadcrumbLinks.concat({ text: pageTitle.value })
   }
   return undefined
 })
+
+const updatePageTitle = (newPageTitle) => {
+  pageTitle.value = newPageTitle
+}
 </script>
 
 <style>

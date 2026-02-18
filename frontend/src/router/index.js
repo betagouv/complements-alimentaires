@@ -107,6 +107,10 @@ export const routes = [
     name: "BlogPostPage",
     component: BlogPostPage,
     props: true,
+    meta: {
+      title: "Ressource",
+      breadcrumbLinks: [HOMEPAGE_TO, { to: "/blog", text: "Ressources" }],
+    },
   },
   {
     path: "/resultats",
@@ -262,6 +266,7 @@ export const routes = [
     component: ProducerFormPage,
     meta: {
       title: "Nouvelle démarche",
+      breadcrumbLinks: [DASHBOARD_TO, { to: { name: "DeclarationsHomePage" }, text: "Mes déclarations" }],
       requiredRoles: ["DeclarantRole"],
       authenticationRequired: true,
       defaultQueryParams: {
@@ -324,7 +329,8 @@ export const routes = [
     component: ProducerFormPage,
     props: true,
     meta: {
-      title: "Ma déclaration",
+      title: "Détails de ma déclaration",
+      breadcrumbLinks: [DASHBOARD_TO, { to: { name: "DeclarationsHomePage" }, text: "Mes déclarations" }],
       authenticationRequired: true,
       defaultQueryParams: {
         tab: 0,
@@ -570,6 +576,7 @@ export const routes = [
     component: AdvancedSearchResult,
     meta: {
       title: "Résultat de recherche",
+      breadcrumbLinks: [DASHBOARD_TO, { to: { name: "AdvancedSearchPage" }, text: "Recherche avancée" }],
       authenticationRequired: true,
       requiredRoles: ["InstructionRole", "VisaRole"],
     },
