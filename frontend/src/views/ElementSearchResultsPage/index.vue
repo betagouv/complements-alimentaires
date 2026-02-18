@@ -13,7 +13,7 @@
     </div>
   </div>
   <div class="fr-container pb-6">
-    <DsfrBreadcrumb
+    <CaBreadcrumb
       class="mb-8"
       :links="[
         { to: { name: 'ProducerHomePage' }, text: 'Recherche ingrédients' },
@@ -63,6 +63,7 @@ import { handleError } from "@/utils/error-handling"
 import { slugifyType } from "@/utils/mappings"
 import { getPagesForPagination } from "@/utils/components"
 import RegulatoryWarning from "@/components/RegulatoryWarning"
+import CaBreadcrumb from "@/components/CaBreadcrumb"
 import { setDocumentTitle } from "@/utils/document"
 
 const router = useRouter()

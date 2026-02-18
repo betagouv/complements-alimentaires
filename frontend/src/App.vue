@@ -14,7 +14,7 @@
     <AppHeader :logo-text="logoText" id="navigation" />
     <main id="main-content">
       <div class="fr-container">
-        <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" v-if="breadcrumbLinks" />
+        <CaBreadcrumb class="mb-8" :links="breadcrumbLinks" v-if="breadcrumbLinks" />
       </div>
       <router-view @page-title="updatePageTitle"></router-view>
     </main>
@@ -47,6 +47,7 @@ import { useRoute } from "vue-router"
 import AppToaster from "@/components/AppToaster.vue"
 import useToaster from "@/composables/use-toaster"
 import AppHeader from "@/components/AppHeader.vue"
+import CaBreadcrumb from "@/components/CaBreadcrumb.vue"
 
 const route = useRoute()
 const { messages, removeMessage } = useToaster()
