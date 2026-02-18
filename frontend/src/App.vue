@@ -13,6 +13,9 @@
     </p>
     <AppHeader :logo-text="logoText" id="navigation" />
     <main id="main-content">
+      <div class="fr-container">
+        <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" v-if="breadcrumbLinks" />
+      </div>
       <router-view></router-view>
     </main>
     <DsfrFooter
@@ -56,6 +59,13 @@ watch(route, (to) => {
 
 const lowContrastMode = computed(() => ["IdentitySection", "HistorySection"].includes(route.name))
 const environment = window.ENVIRONMENT
+
+const breadcrumbLinks = computed(() => {
+  if (route.meta?.breadcrumbLinks) {
+    return route.meta.breadcrumbLinks.concat({ text: route.meta?.title })
+  }
+  return undefined
+})
 </script>
 
 <style>

@@ -1,9 +1,5 @@
 <template>
   <div v-if="company" class="fr-container mb-8 flex flex-col">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Mon entreprise' }]"
-    />
     <div class="flex justify-between">
       <SectionTitle :title="company.socialName" icon="ri-home-4-line" />
       <div v-if="!isEditing">

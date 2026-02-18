@@ -1,6 +1,5 @@
 <template>
   <div class="fr-container pb-10">
-    <DsfrBreadcrumb :links="[{ to: '/', text: 'Accueil' }, { text: 'Mentions Légales' }]" />
     <h1>Mentions Légales</h1>
     <h2>Éditeur de la Plateforme</h2>
     <p>
