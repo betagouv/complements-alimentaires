@@ -87,7 +87,7 @@ import { useVuelidate } from "@vuelidate/core"
 import FormWrapper from "@/components/FormWrapper"
 import { firstErrorMsg } from "@/utils/forms"
 import { allActivities } from "@/utils/mappings"
-import { errorRequiredField } from "@/utils/forms"
+import { errorRequiredField, errorRequiredEmail } from "@/utils/forms"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 import { useFetch } from "@vueuse/core"
@@ -111,7 +111,7 @@ const rules = {
   // `country` et `siret/vat` ne sont pas affichés dans le formulaire car déjà entrés plus tôt
   activities: errorRequiredField,
   phoneNumber: errorRequiredField,
-  email: errorRequiredField,
+  email: errorRequiredEmail,
   website: {},
 }
 
