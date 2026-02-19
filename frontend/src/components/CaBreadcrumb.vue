@@ -35,7 +35,7 @@
 // 3 est le plus facile et n'est pas très mal pour un site qui n'a pas beaucoup de profondeur de navigation
 //   alors les liens toujours affichés ne prennent pas plus d'espace verticale que le bouton originel
 
-const props = defineProps({
+defineProps({
   links: { type: Array, default: () => [{ text: "" }] },
   navigationLabel: { type: String, default: "vous êtes ici :" },
 })
