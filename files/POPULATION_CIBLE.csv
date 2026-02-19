@@ -8,6 +8,6 @@ IDENT,LIBELLE,AGE_MIN,AGE_MAX,CATEGORIE_ANSES
 7,Hommes et femmes de 18 ans et plus,18,,1
 8,Femmes enceintes,18,,1
 9,Femmes allaitantes,18,,1
-10,Personnes âgées,,,0
+10,Personnes de plus de 60 ans,,,0
 11,Homme,18,,0
 12,Femme,18,,0
