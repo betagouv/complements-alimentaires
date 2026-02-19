@@ -42,9 +42,11 @@
           <DsfrInput v-model="payload.flavor" label-visible label="Arôme" />
         </DsfrInputGroup>
       </div>
-      <DsfrInputGroup class="max-w-2xl mt-6">
-        <DsfrInput is-textarea v-model="payload.description" label-visible label="Description" />
-      </DsfrInputGroup>
+      <div class="col-span-2 md:col-span-1">
+        <DsfrInputGroup>
+          <DsfrInput is-textarea v-model="payload.description" label-visible label="Description" />
+        </DsfrInputGroup>
+      </div>
     </div>
     <SectionTitle title="Format" class="mt-10!" sizeTag="h6" icon="ri-capsule-fill" />
     <DsfrFieldset legend="Forme galénique">
@@ -86,9 +88,9 @@
       </div>
     </DsfrFieldset>
 
-    <div class="grid grid-cols-2 gap-4">
-      <div class="col-span-2 md:col-span-1 max-w-md mt-6">
-        <DsfrFieldset legend="Poids ou volume d'une unité de consommation">
+    <div class="grid grid-cols-2 gap-4 items-end">
+      <div class="col-span-2 md:col-span-1 max-w-md">
+        <DsfrFieldset legend="Poids ou volume d'une unité de consommation" class="-mb-4">
           <div class="sm:flex">
             <div class="max-w-64 mb-4 sm:mb-0">
               <NumberField
@@ -112,13 +114,11 @@
           </div>
         </DsfrFieldset>
       </div>
-      <div class="col-span-2 md:col-span-1 max-w-md pt-0 sm:pt-12">
+      <div class="col-span-2 md:col-span-1 max-w-md">
         <DsfrInputGroup>
           <DsfrInput v-model="payload.conditioning" label-visible label="Conditionnement" />
         </DsfrInputGroup>
       </div>
-    </div>
-    <div class="grid grid-cols-2 gap-4">
       <div class="col-span-2 md:col-span-1 max-w-md">
         <DsfrInputGroup>
           <DsfrInput
@@ -136,13 +136,16 @@
             v-model="payload.minimumDuration"
             label-visible
             label="Durabilité minimale / DLUO (en mois)"
+            hint="DLUO - Date limite d'utilisation optimale"
           />
         </DsfrInputGroup>
       </div>
+      <div class="col-span-2 md:col-span-1">
+        <DsfrInputGroup>
+          <DsfrInput v-model="payload.instructions" label-visible label="Mode d'emploi" />
+        </DsfrInputGroup>
+      </div>
     </div>
-    <DsfrInputGroup class="max-w-2xl mt-6">
-      <DsfrInput v-model="payload.instructions" label-visible label="Mode d'emploi" />
-    </DsfrInputGroup>
     <SectionTitle title="Populations cibles et à risque" class="mt-10!" sizeTag="h6" icon="ri-file-user-fill" />
     <PopulationsCheckboxes v-model="payload.populations" :populations="populations" />
     <ConditionsCheckboxes v-model="payload.conditionsNotRecommended" :conditions="conditions">
