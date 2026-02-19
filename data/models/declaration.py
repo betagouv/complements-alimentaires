@@ -126,6 +126,7 @@ class Declaration(Historisable, TimeStampable):
     mandated_company = models.ForeignKey(
         Company,
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         verbose_name="entreprise mandataire",
         related_name="mandated_declarations",
