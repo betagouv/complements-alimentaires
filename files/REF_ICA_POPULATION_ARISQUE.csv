@@ -1,6 +1,6 @@
 "POPRS_IDENT","POPRS_LIBELLE","POPRS_LIBELLE_EN","POPRS_OBSOLET","POPRS_ORDRE"
 1,"Adolescents de 13 à 17 ans","Adolescents (under 18 years of age)","False",1
-2,"Allaitement","Feeding","False",2
+2,"Femmes allaitantes","Feeding","False",2
 3,"Allergie aux dérivés salicylés","Allergy to salicylates","False",3
 4,"Antécédent de cancer du sein","History of breast cancer","False",4
 6,"Autre (à préciser)","Other (specify)","False",200
@@ -8,7 +8,7 @@
 8,"Déficit congénital en G6PD (favisme)","Congenital G6PD deficiency (favism)","False",8
 9,"À prendre en dehors des repas","Outside mealtimes","False",9
 11,"Enfants en bas âge de 1 à 3 ans","Young children (1 to 3 years)","False",11
-12,"Grossesse","Pregnancy","False",12
+12,"Femmes enceintes","Pregnancy","False",12
 13,"Hypertension","Hypertension","False",13
 14,"Insuffisance rénale","Renal failure","False",14
 15,"Maladie rénale","Kidney disease","False",15
