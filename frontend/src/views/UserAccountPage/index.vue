@@ -1,9 +1,5 @@
 <template>
   <div class="fr-container mb-8 flex flex-col">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Mes informations personnelles' }]"
-    />
     <EditPersonalInformationBlock />
     <hr class="mt-14 mb-4" />
     <ChangePasswordBlock />

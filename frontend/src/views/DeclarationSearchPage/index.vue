@@ -1,11 +1,5 @@
 <template>
   <div class="fr-container">
-    <DsfrBreadcrumb
-      :links="[
-        { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { text: 'Recherche compléments alimentaires' },
-      ]"
-    />
     <h1 class="fr-h3">Tableau des compléments alimentaires</h1>
     <DeclarationsTableSection v-if="store.initialDataLoaded" />
   </div>

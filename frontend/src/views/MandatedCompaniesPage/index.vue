@@ -1,9 +1,5 @@
 <template>
   <div class="fr-container mb-8">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Entreprises mandatées' }]"
-    />
     <div v-if="company">
       <h1 class="fr-h3">Entreprises mandatées par {{ company.socialName }}</h1>
       <p>

@@ -54,6 +54,9 @@ import CompanyControlSection from "@/views/DeclarationIndividualPage/CompanyCont
 import SiteMap from "@/views/SiteMap"
 import { ref } from "vue"
 
+const DASHBOARD_TO = { to: { name: "DashboardPage" }, text: "Tableau de bord" }
+const HOMEPAGE_TO = { to: "/", text: "Accueil" }
+
 export const routes = [
   {
     path: "/",
@@ -86,6 +89,7 @@ export const routes = [
     component: ContactForm,
     meta: {
       title: "Contactez-nous",
+      breadcrumbLinks: [HOMEPAGE_TO],
       sitemap: true,
     },
   },
@@ -103,6 +107,10 @@ export const routes = [
     name: "BlogPostPage",
     component: BlogPostPage,
     props: true,
+    meta: {
+      title: "Ressource",
+      breadcrumbLinks: [HOMEPAGE_TO, { to: "/blog", text: "Ressources" }],
+    },
   },
   {
     path: "/resultats",
@@ -160,6 +168,7 @@ export const routes = [
     component: LegalNoticesPage,
     meta: {
       title: "Mentions légales",
+      breadcrumbLinks: [HOMEPAGE_TO],
       sitemap: true,
     },
   },
@@ -169,6 +178,7 @@ export const routes = [
     component: CGUPage,
     meta: {
       title: "Conditions générales d'utilisation",
+      breadcrumbLinks: [HOMEPAGE_TO],
       sitemap: true,
     },
   },
@@ -178,6 +188,7 @@ export const routes = [
     component: PrivacyPolicyPage,
     meta: {
       title: "Politique de confidentialité",
+      breadcrumbLinks: [HOMEPAGE_TO],
       sitemap: true,
     },
   },
@@ -187,6 +198,7 @@ export const routes = [
     component: CookiesInfoPage,
     meta: {
       title: "Cookies",
+      breadcrumbLinks: [HOMEPAGE_TO],
       sitemap: true,
     },
   },
@@ -196,6 +208,7 @@ export const routes = [
     component: A11yPage,
     meta: {
       title: "Accessibilité",
+      breadcrumbLinks: [HOMEPAGE_TO],
       sitemap: true,
     },
   },
@@ -253,6 +266,7 @@ export const routes = [
     component: ProducerFormPage,
     meta: {
       title: "Nouvelle démarche",
+      breadcrumbLinks: [DASHBOARD_TO, { to: { name: "DeclarationsHomePage" }, text: "Mes déclarations" }],
       requiredRoles: ["DeclarantRole"],
       authenticationRequired: true,
       defaultQueryParams: {
@@ -266,6 +280,7 @@ export const routes = [
     component: UserAccountPage,
     meta: {
       title: "Mes informations personnelles",
+      breadcrumbLinks: [DASHBOARD_TO],
       authenticationRequired: true,
     },
   },
@@ -275,6 +290,7 @@ export const routes = [
     component: CompanyPage,
     meta: {
       title: "Mon entreprise",
+      breadcrumbLinks: [DASHBOARD_TO],
       authenticationRequired: true,
     },
   },
@@ -284,6 +300,7 @@ export const routes = [
     component: CompanyFormPage,
     meta: {
       title: "Nouvelle entreprise",
+      breadcrumbLinks: [DASHBOARD_TO],
       authenticationRequired: true,
     },
   },
@@ -293,6 +310,7 @@ export const routes = [
     component: DeclarationsHomePage,
     meta: {
       title: "Mes déclarations",
+      breadcrumbLinks: [DASHBOARD_TO],
       authenticationRequired: true,
       defaultQueryParams: {
         page: 1,
@@ -311,7 +329,8 @@ export const routes = [
     component: ProducerFormPage,
     props: true,
     meta: {
-      title: "Ma déclaration",
+      title: "Détails de ma déclaration",
+      breadcrumbLinks: [DASHBOARD_TO, { to: { name: "DeclarationsHomePage" }, text: "Mes déclarations" }],
       authenticationRequired: true,
       defaultQueryParams: {
         tab: 0,
@@ -324,6 +343,7 @@ export const routes = [
     component: CollaboratorsPage,
     meta: {
       title: "Gestion des collaborateurs",
+      breadcrumbLinks: [DASHBOARD_TO],
       requiredRoles: ["SupervisorRole"],
       authenticationRequired: true,
     },
@@ -333,7 +353,8 @@ export const routes = [
     name: "MandatedCompaniesPage",
     component: MandatedCompaniesPage,
     meta: {
-      title: "Gestion des entreprises mandatées",
+      title: "Entreprises mandatées",
+      breadcrumbLinks: [DASHBOARD_TO],
       requiredRoles: ["SupervisorRole"],
       authenticationRequired: true,
     },
@@ -344,6 +365,7 @@ export const routes = [
     component: CompanyDeclarationsPage,
     meta: {
       title: "Les déclarations de mon entreprise",
+      breadcrumbLinks: [DASHBOARD_TO],
       requiredRoles: ["SupervisorRole"],
       authenticationRequired: true,
       defaultQueryParams: {
@@ -362,6 +384,7 @@ export const routes = [
     component: InstructionDeclarationsPage,
     meta: {
       title: "Instruction",
+      breadcrumbLinks: [DASHBOARD_TO],
       requiredRoles: ["InstructionRole"],
       authenticationRequired: true,
       defaultQueryParams: {
@@ -384,6 +407,7 @@ export const routes = [
     component: NewElementsPage,
     meta: {
       title: "Nouveaux ingrédients",
+      breadcrumbLinks: [DASHBOARD_TO],
       requiredRoles: ["InstructionRole"],
       authenticationRequired: true,
       defaultQueryParams: {
@@ -403,6 +427,10 @@ export const routes = [
     component: NewInstructionPage,
     meta: {
       title: "Instruction",
+      breadcrumbLinks: [
+        DASHBOARD_TO,
+        { to: { name: "InstructionDeclarations" }, text: "Déclarations pour instruction" },
+      ],
       requiredRoles: ["InstructionRole"],
       authenticationRequired: true,
     },
@@ -434,6 +462,7 @@ export const routes = [
     component: NewVisaPage,
     meta: {
       title: "Visa",
+      breadcrumbLinks: [DASHBOARD_TO, { to: { name: "VisaDeclarations" }, text: "Déclarations pour visa" }],
       requiredRoles: ["VisaRole"],
       authenticationRequired: true,
     },
@@ -464,7 +493,8 @@ export const routes = [
     name: "VisaDeclarations",
     component: VisaDeclarationsPage,
     meta: {
-      title: "Visa",
+      title: "Visa / Signature",
+      breadcrumbLinks: [DASHBOARD_TO],
       requiredRoles: ["VisaRole"],
       authenticationRequired: true,
       defaultQueryParams: {
@@ -486,6 +516,7 @@ export const routes = [
     component: CompliancePage,
     meta: {
       title: "Conformité au droit alimentaire",
+      breadcrumbLinks: [HOMEPAGE_TO],
       sitemap: true,
     },
   },
@@ -513,6 +544,7 @@ export const routes = [
     component: AdvancedSearchPage,
     meta: {
       title: "Recherche avancée",
+      breadcrumbLinks: [DASHBOARD_TO],
       requiredRoles: ["InstructionRole", "VisaRole"],
       authenticationRequired: true,
       defaultQueryParams: {
@@ -544,6 +576,7 @@ export const routes = [
     component: AdvancedSearchResult,
     meta: {
       title: "Résultat de recherche",
+      breadcrumbLinks: [DASHBOARD_TO, { to: { name: "AdvancedSearchPage" }, text: "Recherche avancée" }],
       authenticationRequired: true,
       requiredRoles: ["InstructionRole", "VisaRole"],
     },
@@ -553,7 +586,8 @@ export const routes = [
     name: "DeclarationSearchPage",
     component: DeclarationSearchPage,
     meta: {
-      title: "Tableau des compléments alimentaires",
+      title: "Recherche compléments alimentaires",
+      breadcrumbLinks: [DASHBOARD_TO],
       requiredRoles: ["ControlRole"],
       authenticationRequired: true,
       defaultQueryParams: {
@@ -576,7 +610,8 @@ export const routes = [
     name: "CompanySearchPage",
     component: CompanySearchPage,
     meta: {
-      title: "Les entreprises",
+      title: "Recherche entreprises",
+      breadcrumbLinks: [DASHBOARD_TO],
       requiredRoles: ["ControlRole"],
       authenticationRequired: true,
       defaultQueryParams: {
@@ -640,6 +675,7 @@ export const routes = [
     name: "SiteMap",
     meta: {
       title: "Plan du site",
+      breadcrumbLinks: [HOMEPAGE_TO],
     },
   },
   {

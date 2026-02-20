@@ -16,7 +16,7 @@
 
   <!-- Element -->
   <div class="fr-container">
-    <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
+    <CaBreadcrumb class="mb-8" :links="breadcrumbLinks" />
   </div>
   <template v-if="element">
     <div class="fr-container my-8">
@@ -189,6 +189,7 @@ import ElementAutocomplete from "@/components/ElementAutocomplete"
 import ReportIssueBlock from "./ReportIssueBlock.vue"
 import ElementDoses from "@/components/ElementDoses.vue"
 import RegulatoryWarning from "@/components/RegulatoryWarning.vue"
+import CaBreadcrumb from "@/components/CaBreadcrumb"
 import { setDocumentTitle } from "@/utils/document"
 import ExternalLink from "@/components/ExternalLink.vue"
 

@@ -1,10 +1,5 @@
 <template>
   <div class="fr-container mb-8 flex flex-col">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Gestion des collaborateurs' }]"
-    />
-
     <div class="sm:flex justify-between mb-4 sm:mb-0">
       <SectionTitle :title="`Collaborateurs actuels de ${company.socialName}`" icon="ri-user-line" />
       <AddNewCollaborator
