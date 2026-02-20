@@ -27,7 +27,7 @@
         <h2 class="fr-h4">Comptes utilisateurs</h2>
         <DsfrAccordion title="Comment créer mon compte ?">
           <ol>
-            <li>Rendez-vous sur le site de Compl’Alim et cliquez sur le bouton “S’enregistrer” (en haut à droite) ;</li>
+            <li>Rendez-vous sur le site de Compl’Alim et cliquez sur le bouton "S’enregistrer" (en haut à droite) ;</li>
             <li>Renseignez les informations demandées (nom, prénom, adresse email, identifiant et mot de passe) ;</li>
             <li>Vous recevrez alors un mail de confirmation sur l’adresse email que vous avez indiquée ;</li>
             <li>
@@ -36,7 +36,7 @@
             </li>
           </ol>
         </DsfrAccordion>
-        <DsfrAccordion title="Comment enregistrer/ rejoindre mon entreprise ?">
+        <DsfrAccordion title="Comment enregistrer/rejoindre mon entreprise ?">
           <ol>
             <li>Connectez-vous à votre compte sur Compl’Alim.</li>
             <li>Accédez à votre tableau de bord (situé dans le menu à droite).</li>
@@ -85,7 +85,7 @@
             déclarant) ou révoquer ses accès.
           </p>
         </DsfrAccordion>
-        <DsfrAccordion title="Quelles différences entre les rôles de “gestionnaire” et de “déclarant” ?">
+        <DsfrAccordion title='Quelles différences entre les rôles de "gestionnaire" et de "déclarant" ?'>
           <p>Le gestionnaire et le déclarant jouent des rôles distincts au sein de la plateforme.</p>
           <p>
             Le gestionnaire est responsable de la gestion des informations de l'entreprise ainsi que des collaborateurs
@@ -115,17 +115,10 @@
             Désormais, tous les comptes associés à une société mandataire auront automatiquement l’autorisation de
             déclarer pour les clients ayant confié un mandat à cette entité.
           </p>
-          <p>
-            Pour cela, un nouvel onglet
-            <i>Entreprises mandatées</i>
-            est disponible dans votre tableau de bord.
-          </p>
+          <p>Pour cela, la carte "Entreprises mandatées" est disponible dans votre tableau de bord.</p>
           <p>Voici les étapes à suivre pour rattacher une entreprise :</p>
           <ol>
-            <li>
-              Rendez-vous dans l’onglet
-              <i><strong>Entreprises mandatées.</strong></i>
-            </li>
+            <li>Rendez-vous dans la carte "Entreprises mandatées".</li>
             <li>Ajoutez le numéro de SIRET ou le numéro de TVA intracommunautaire de l’entreprise mandatée.</li>
           </ol>
           <p>
@@ -136,7 +129,7 @@
             Si vous souhaitez ajuster les rôles des déclarants de votre entreprise, n’hésitez pas à nous contacter à
             l'adresse suivante :
             <a :href="`mailto:${contactEmail}`">
-              <i>{{ contactEmail }}</i>
+              {{ contactEmail }}
             </a>
           </p>
         </DsfrAccordion>
@@ -145,7 +138,7 @@
           <ol>
             <li>Connectez-vous à votre compte Compl’Alim.</li>
             <li>Rendez-vous dans votre tableau de bord (menu à droite).</li>
-            <li>Cliquez sur la carte “Créez une nouvelle déclaration”</li>
+            <li>Cliquez sur la carte "Créez une nouvelle déclaration"</li>
             <li>
               Vous allez alors devoir renseigner les informations sur votre complément alimentaire, qui sont réparties
               en 4 onglets distincts :
@@ -174,7 +167,7 @@
             sera automatiquement sauvegardé en tant que brouillon.
           </p>
         </DsfrAccordion>
-        <DsfrAccordion title="Comment remplir les informations demandées dans l’onglet “Produit” ?">
+        <DsfrAccordion title='Comment remplir les informations demandées dans l’onglet "Produit" ?'>
           <p>
             L'onglet "Produit" vous permet de renseigner les informations principales relatives à votre complément
             alimentaire, telles que son nom, sa marque, son format, les populations cibles, ainsi que les effets
@@ -224,7 +217,7 @@
             complémentaires.
           </p>
         </DsfrAccordion>
-        <DsfrAccordion title="Comment remplir les informations demandées dans l’onglet “Composition” ?">
+        <DsfrAccordion title='Comment remplir les informations demandées dans l’onglet "Composition" ?'>
           <p>
             Cet onglet vous permet de renseigner les ingrédients et les substances actives de votre complément
             alimentaire.
@@ -352,7 +345,7 @@
               cliquez sur le nom du produit qui vous intéresse dans le tableau récapitulatif ("Toutes mes
               déclarations").
             </li>
-            <li>cliquez sur le bouton “Accusé d’enregistrement”.</li>
+            <li>cliquez sur le bouton "Accusé d’enregistrement".</li>
           </ul>
           <p>
             Ce PDF contient l’accusé d’enregistrement de déclaration de votre complément alimentaire ainsi que votre
@@ -366,21 +359,21 @@
           </p>
           <p>En attendant cette fonctionnalité, vous pouvez créer une version PDF en suivant cette méthode :</p>
           <ul>
-            <li>rendez-vous sur l’onglet “Résumé”</li>
+            <li>rendez-vous sur l’onglet "Résumé"</li>
             <li>effectuez un clic droit avec votre souris</li>
-            <li>sélectionnez “Imprimer”</li>
-            <li>choisissez l'option “Enregistrer au format PDF” pour obtenir un fichier téléchargeable.</li>
+            <li>sélectionnez "Imprimer"</li>
+            <li>choisissez l'option "Enregistrer au format PDF" pour obtenir un fichier téléchargeable.</li>
           </ul>
           <p>Et voilà, le tour est joué !</p>
         </DsfrAccordion>
-        <DsfrAccordion title="Comment gérer une observation/ objection sur votre dossier ?">
+        <DsfrAccordion title="Comment gérer une observation/objection sur votre dossier ?">
           <p>
             Lorsqu’une objection a été émise sur la déclaration de votre produit, vous pouvez consulter les détails en
             vous rendant sur la page dédiée à ce complément alimentaire. Pour cela, cliquez sur le nom du produit qui
             vous intéresse dans le tableau récapitulatif ("Toutes mes déclarations").
           </p>
           <p>
-            Les commentaires de l’instructeur, expliquant les raisons de cette observation/ objection, seront visibles
+            Les commentaires de l’instructeur, expliquant les raisons de cette observation/objection, seront visibles
             dans l'onglet Historique. Après avoir pris connaissance des remarques, il vous sera nécessaire de soumettre
             une nouvelle version de votre dossier, en tenant compte des éléments supplémentaires ou des modifications
             demandées par l'administration.
@@ -398,11 +391,11 @@
               cliquez sur le nom du produit qui vous intéresse dans le tableau récapitulatif ("Toutes mes
               déclarations").
             </li>
-            <li>cliquez sur le bouton “Attestation de déclaration”.</li>
+            <li>cliquez sur le bouton "Attestation de déclaration".</li>
           </ul>
           <p>Pour rappel, vous serez informé.e par mail lorsque votre dossier aura été instruit.</p>
         </DsfrAccordion>
-        <h2 class="fr-h4">Transition Teleicare/ Compl’Alim</h2>
+        <h2 class="fr-h4">Transition Teleicare/Compl’Alim</h2>
         <DsfrAccordion
           title="Dois-je recréer mon entreprise sur Compl'Alim alors qu'elle est déjà enregistrée sur Teleicare ?"
         >
@@ -419,17 +412,16 @@
             grâce au SIRET de l'entreprise (après qu'elle ait été créée sur Compl'Alim).
           </p>
           <p>
-            En attendant que cela soit fait, vous conserverez l'accès à la rubrique "
-            <i>Je consulte les produits</i>
-            " de Teleicare et pourrez donc toujours accéder à vos attestations de déclaration.
+            En attendant que cela soit fait, vous conserverez l'accès à la rubrique "Je consulte les produits" de
+            Teleicare et pourrez donc toujours accéder à vos attestations de déclaration.
           </p>
         </DsfrAccordion>
         <DsfrAccordion
           title="Dois-je resoumettre sur Compl’Alim les dossiers transmis via Teleicare mais pas encore instruits ?"
         >
           <p>
-            Les dossiers transmis sur Teleicare seront instruits sur Teleicare. Vous conservez l’accès à la rubrique “Je
-            suis mes déclarations” de Teleicare.
+            Les dossiers transmis sur Teleicare seront instruits sur Teleicare. Vous conservez l’accès à la rubrique "Je
+            suis mes déclarations" de Teleicare.
           </p>
           <p>
             Une fois votre dossier instruit, l’attestation de déclaration sera importée sur Compl’Alim au moment de
