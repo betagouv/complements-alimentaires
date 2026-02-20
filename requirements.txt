@@ -33,7 +33,7 @@ django-environ==0.12.0
 django-filter==25.2
 django-hijack==3.7.4
 django-js-asset==3.1.2
-django_jsonform==2.23.2
+django-jsonform==2.23.2
 django-phonenumber-field==8.4.0
 django-prose==2.1.0
 django-redis==6.0.0
@@ -51,6 +51,7 @@ executing==2.2.1
 factory_boy==3.3.3
 Faker==38.0.0
 filelock==3.20.3
+freetype-py==2.5.1
 gprof2dot==2025.4.14
 html5lib==1.1
 identify==2.6.16
@@ -58,6 +59,7 @@ idna==3.11
 iniconfig==2.1.0
 ipdb==0.13.13
 ipython==9.10.0
+ipython_pygments_lexers==1.1.1
 jedi==0.19.2
 Jinja2==3.1.6
 jmespath==1.1.0
@@ -84,6 +86,7 @@ prompt_toolkit==3.0.52
 psycopg2==2.9.11
 ptyprocess==0.7.0
 pure_eval==0.2.3
+pycairo==1.28.0
 pycodestyle==2.14.0
 pycparser==2.23
 Pygments==2.19.2
@@ -93,6 +96,7 @@ pypdf==6.7.1
 pytest==8.4.1
 python-bidi==0.6.7
 python-dateutil==2.9.0.post0
+python-magic==0.4.27
 pytz==2025.2
 PyYAML==6.0.3
 qrcode==8.2
@@ -101,6 +105,7 @@ regex==2025.11.3
 reportlab==4.4.4
 requests==2.32.4
 requests-mock==1.12.1
+rlPyCairo==0.4.0
 ruff==0.14.14
 s3transfer==0.16.0
 sentry-sdk==2.49.0
