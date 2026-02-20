@@ -24,6 +24,13 @@ export const errorMaxStringLength = (max) => {
     ),
   }
 }
+export const errorRequiredPhoneNumber = {
+  required: REQUIRED,
+  ...errorMaxStringLength(16), // le format E164 demande un + et un max de 15 chiffres
+  phoneNumber: helpers.withMessage("Le numéro doit être en format valide (ex : +33612345678)", (phoneNumber) =>
+    /^\+[1-9]\d{1,14}$/.test(phoneNumber)
+  ),
+}
 
 export const getAllIndexesOfRegex = (array, regex) => {
   return array.map((obj) => (regex.test(obj.name) ? obj.id : -1)).filter((i) => i != -1)
