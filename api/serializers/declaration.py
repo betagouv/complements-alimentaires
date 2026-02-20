@@ -1,5 +1,6 @@
 import logging
 
+import magic
 from drf_base64.fields import Base64FileField
 from openpyxl.cell.cell import Hyperlink
 from rest_framework import serializers
@@ -246,6 +247,15 @@ class ComputedSubstanceSerializer(DeclaredElementNestedField, serializers.ModelS
         )
 
 
+ALLOWED_MIME_TYPES = {
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+}
+
+
 class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
     file = Base64FileField()
 
@@ -262,11 +272,27 @@ class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
         read_only_fields = ("file",)
 
     def validate_file(self, file):
+        # Validation de taille
         size_limit = 1048576 * 2
         if file.size > size_limit:
             raise ProjectAPIException(
                 field_errors=[{"attachments": "La pièce jointe dépasse la taille limite de 2 Mo"}]
             )
+
+        # Validation de type de fichier
+        try:
+            mime = magic.from_buffer(file.read(2048), mime=True)
+            file.seek(0)
+        except Exception:
+            raise ProjectAPIException(field_errors=[{"attachments": "Impossible de déterminer le type du fichier"}])
+
+        if mime not in ALLOWED_MIME_TYPES:
+            raise ProjectAPIException(
+                field_errors=[
+                    {"attachments": "Seuls les fichiers PDF et images (JPEG, PNG, GIF, WEBP) sont autorisés"}
+                ]
+            )
+
         return file
 
 

@@ -16,7 +16,7 @@
     <DsfrInputGroup>
       <DsfrFileUpload
         label="Veuillez nous transmettre l'étiquetage de votre produit (format PDF ou image)"
-        :accept="['image/jpeg, image/gif, image/png, application/pdf']"
+        :accept="acceptedTypes"
         hint="Taille maximale du fichier : 2 Mo"
         @change="addLabelFiles"
         v-model="selectedLabelFile"
@@ -33,7 +33,7 @@
     <DsfrInputGroup>
       <DsfrFileUpload
         :label="otherAttachmentsLabel"
-        :acceptTypes="acceptedTypes"
+        :accept="acceptedTypes"
         hint="Taille maximale du fichier : 2 Mo"
         @change="addOtherFiles"
         v-model="selectedOtherFile"
@@ -51,7 +51,7 @@ import FileGrid from "./FileGrid"
 import SectionTitle from "@/components/SectionTitle"
 import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNotice"
 
-const acceptedTypes = ["image/jpeg", "image/gif", "image/png", "application/pdf"]
+const acceptedTypes = ["image/jpeg", "image/gif", "image/png", "application/pdf", "image/webp"]
 const props = defineProps(["externalResults"])
 const payload = defineModel()
 
