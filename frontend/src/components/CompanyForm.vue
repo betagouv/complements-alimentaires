@@ -53,18 +53,24 @@
         hint="Veuillez transmettre les coordonnées d’une personne au sein de la société que la DGAL pourra être amenée à contacter en cas de nécessité ou pour des informations complémentaires."
       >
         <div class="grid gap-x-4 grid-cols-1 md:grid-cols-2 -my-4">
-          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'phoneNumber')">
-            <DsfrInput
-              required
-              type="tel"
-              v-model="state.phoneNumber"
-              label="N° de téléphone de contact"
-              labelVisible
-            />
-          </DsfrInputGroup>
-          <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
-            <DsfrInput required v-model="state.email" label="Adresse e-mail de contact" labelVisible />
-          </DsfrInputGroup>
+          <div class="mb-2">
+            <DsfrInputGroup :error-message="firstErrorMsg(v$, 'phoneNumber')">
+              <DsfrInput
+                required
+                type="tel"
+                v-model="state.phoneNumber"
+                label="N° de téléphone de contact"
+                hint="Le numéro doit commencer par un + suivi par le code du pays"
+                pattern="^\+[1-9]\d{1,14}$"
+                labelVisible
+              />
+            </DsfrInputGroup>
+          </div>
+          <div class="md:mt-6 mb-2">
+            <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
+              <DsfrInput required v-model="state.email" label="Adresse e-mail de contact" labelVisible />
+            </DsfrInputGroup>
+          </div>
           <DsfrInputGroup :error-message="firstErrorMsg(v$, 'website')">
             <DsfrInput v-model="state.website" label="Site web de l'entreprise (optionnel)" labelVisible />
           </DsfrInputGroup>
@@ -87,7 +93,7 @@ import { useVuelidate } from "@vuelidate/core"
 import FormWrapper from "@/components/FormWrapper"
 import { firstErrorMsg } from "@/utils/forms"
 import { allActivities } from "@/utils/mappings"
-import { errorRequiredField } from "@/utils/forms"
+import { errorRequiredField, errorRequiredEmail, errorRequiredPhoneNumber } from "@/utils/forms"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 import { useFetch } from "@vueuse/core"
@@ -110,8 +116,8 @@ const rules = {
   cedex: {},
   // `country` et `siret/vat` ne sont pas affichés dans le formulaire car déjà entrés plus tôt
   activities: errorRequiredField,
-  phoneNumber: errorRequiredField,
-  email: errorRequiredField,
+  phoneNumber: errorRequiredPhoneNumber,
+  email: errorRequiredEmail,
   website: {},
 }
 
@@ -137,6 +143,10 @@ const submitCompany = async () => {
   }
   await execute()
   $externalResults.value = await handleError(response)
+  console.log($externalResults.value)
+  // surcharge le message donné par le back, qui ne contient pas un exemple de format (RGAA 11.11)
+  if ($externalResults.value?.phoneNumber)
+    $externalResults.value.phoneNumber = "Le numéro doit être en format valide (ex : +33612345678)"
   emit("responseReady", data) // prévient le composant parent que la réponse est prête et lui retourne les données
 }
 </script>

@@ -8,7 +8,7 @@ const REQUIRED = helpers.withMessage("Ce champ doit être rempli", required)
 export const errorRequiredField = { required: REQUIRED }
 export const errorRequiredEmail = {
   required: REQUIRED,
-  email: helpers.withMessage("Ce champ doit contenir un e-mail valide", email),
+  email: helpers.withMessage("L'e-mail doit être en format valide (ex : nom@entreprise.com)", email),
 }
 export const errorNumeric = {
   numeric: helpers.withMessage("Ce champ doit être un chiffre", numeric),
@@ -23,6 +23,13 @@ export const errorMaxStringLength = (max) => {
       maxLength(max)
     ),
   }
+}
+export const errorRequiredPhoneNumber = {
+  required: REQUIRED,
+  ...errorMaxStringLength(16), // le format E164 demande un + et un max de 15 chiffres
+  phoneNumber: helpers.withMessage("Le numéro doit être en format valide (ex : +33612345678)", (phoneNumber) =>
+    /^\+[1-9]\d{1,14}$/.test(phoneNumber)
+  ),
 }
 
 export const getAllIndexesOfRegex = (array, regex) => {
