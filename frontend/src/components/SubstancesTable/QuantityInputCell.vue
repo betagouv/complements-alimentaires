@@ -21,19 +21,25 @@
     <div v-else class="-mt-1 pb-1">
       <DsfrInputGroup>
         <NumberField
+          :id="`quantity-input-${rowIndex}`"
           v-model="payload.computedSubstances[rowIndex].quantity"
-          label="Quantité par DJR"
           :required="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
-          :descriptionId="`substance-info-${rowIndex}`"
+          :aria-labelledby="`substance-name-${rowIndex} th-quantity th-unit substance-unit-${rowIndex} substance-required-${rowIndex}`"
+          labelClass="hidden"
+          :title="titleFromAria(`quantity-input-${rowIndex}`)"
         />
-        <div class="text-neutral-500! mt-1" v-if="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity">
+        <p
+          :id="`substance-required-${rowIndex}`"
+          class="fr-hint-text mt-1 mb-0"
+          v-if="payload.computedSubstances[rowIndex].substance.mustSpecifyQuantity"
+        >
           * champ obligatoire
-        </div>
+        </p>
         <p
           v-if="amountInfoText[rowIndex]"
           role="alert"
           aria-live="polite"
-          :id="`substance-info-${rowIndex}`"
+          :id="`substance-quantity-${rowIndex}`"
           class="amount-info-text"
         >
           <v-icon name="ri-information-fill"></v-icon>
@@ -74,6 +80,12 @@ const getMaxQuantityExceeded = (declaration, substance) => {
     )
   const intro = maxQuantitiesExceeded.length > 1 ? "Maximums excédés : " : "Maximum excédé : "
   return intro + maxQuantitiesExceeded.map((p) => `${p.maxQuantity} pour ${p.population?.name}`).join(", ")
+}
+
+const titleFromAria = (id) => {
+  const element = document.getElementById(id)
+  if (!element) return
+  return element.ariaLabelledByElements.map((el) => el.textContent.trim()).join(" ")
 }
 </script>
 
