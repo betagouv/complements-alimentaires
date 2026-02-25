@@ -18,13 +18,13 @@
     <div v-for="user in collaborators" :key="user.id">
       <div class="sm:flex items-center">
         <v-icon class="size-5" name="ri-user-follow-line" />
-        <h3 class="ml-2 fr-text--md font-normal mb-0">
-          <span class="block">
+        <div class="ml-2">
+          <h3 class="fr-text--md font-normal mb-0">
             {{ user.firstName }} {{ user.lastName }}
             <span class="text-xs" v-if="user.id === loggedUser.id">(vous)</span>
-          </span>
-          <span class="text-xs block">{{ user.email }}</span>
-        </h3>
+          </h3>
+          <p class="text-xs mb-0">{{ user.email }}</p>
+        </div>
         <div class="ml-2 md:ml-8 flex gap-2 flex-wrap">
           <div class="flex gap-2 flex-wrap items-center">
             <RoleTag

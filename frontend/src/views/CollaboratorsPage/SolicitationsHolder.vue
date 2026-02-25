@@ -5,14 +5,14 @@
       <div class="sm:flex items-center">
         <v-icon class="size-4" :name="icon" />
 
-        <h3 class="ml-2 fr-text--md font-normal mb-0">
-          <span class="block">{{ solicitation.senderName }}</span>
-          <span class="-mt-1.5 block" v-if="showRecipientEmail">à {{ solicitation.recipientEmail }}</span>
-          <span class="text-xs block">
+        <div class="ml-2">
+          <h3 class="fr-text--md font-normal mb-0">{{ solicitation.senderName }}</h3>
+          <p class="-mt-1.5 mb-0" v-if="showRecipientEmail">à {{ solicitation.recipientEmail }}</p>
+          <p class="text-xs mb-0">
             {{ isoToPrettyDate(solicitation.creationDate, dateOptions) }}
             à {{ isoToPrettyTime(solicitation.creationDate) }}
-          </span>
-        </h3>
+          </p>
+        </div>
 
         <div class="ml-2 md:ml-8 flex flex-col gap-y-1">
           <p class="italic mb-0">{{ solicitation.description }}</p>
