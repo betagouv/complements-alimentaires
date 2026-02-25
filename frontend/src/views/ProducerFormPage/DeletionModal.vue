@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row flex-wrap justify-between border p-2">
-    <span class="self-center">{{ helperText }}</span>
+    <p class="self-center mb-0">{{ helperText }}</p>
     <DsfrButton
       class="text-red-marianne-425!"
       size="sm"
@@ -17,7 +17,7 @@
       :opened="opened"
       :title="`${buttonLabel} « ${productName} »`"
     >
-      {{ modalText }}
+      <p class="mb-0">{{ modalText }}</p>
     </DsfrModal>
   </div>
 </template>

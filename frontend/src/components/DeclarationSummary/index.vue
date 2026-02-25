@@ -50,6 +50,7 @@
           :key="`file-${index}`"
           :file="file"
           readonly
+          fileNameHeadingLevel="h4"
         />
       </div>
     </div>
