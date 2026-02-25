@@ -1,12 +1,12 @@
 <template>
   <div class="p-4 border shadow-md">
     <div class="flex">
-      <div class="self-center font-bold capitalize">
+      <h4 class="self-center font-bold capitalize fr-text--md mb-0">
         {{ getElementName(model).toLowerCase() }}
-      </div>
-      <div v-if="objectType === 'plant_part'" class="self-center ml-2">
+      </h4>
+      <p v-if="objectType === 'plant_part'" class="self-center ml-2 mb-0">
         {{ plantPartName }}
-      </div>
+      </p>
       <span v-if="plantPartStatus === 'inconnu'" class="self-center mt-1 ml-2">
         <DsfrBadge label="Nouvelle partie de plante" type="info" />
       </span>
