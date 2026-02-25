@@ -8,39 +8,45 @@
       'right-side': rightSide,
     }"
   >
-    <DsfrModal size="xl" :opened="modalOpened" @close="modalOpened = false" class="text-left">
-      <h2>Version de la déclaration au {{ date }}</h2>
-      <DeclarationSummary :readonly="true" v-model="snapshot.jsonDeclaration" />
-    </DsfrModal>
-    <div class="initials rounded-full min-w-12 w-12 h-12 flex items-center justify-center">
-      <v-icon v-if="hideInstructionDetails && isAdministrativeAction" name="ri-user-fill" aria-hidden />
+    <div class="initials rounded-full min-w-12 w-12 h-12 flex items-center justify-center" aria-hidden="true">
+      <v-icon v-if="hideInstructionDetails && isAdministrativeAction" name="ri-user-fill" />
       <span v-else>{{ initials }}</span>
     </div>
-    <div class="max-w-xl">
-      <div :class="`flex ${rightSide ? 'justify-end' : 'justify-start'}`">
-        <div
-          v-if="showComment"
-          :class="`comment italic mb-2 rounded-xl p-4 ${rightSide ? 'rounded-tr-none' : 'rounded-tl-none'}`"
-        >
-          {{ snapshot.comment }}
-        </div>
-      </div>
-      <div
-        :class="`${rightSide ? 'justify-end' : 'justify-start'} fr-text--sm mb-0! text-slate-500! flex gap-4 items-center pb-1`"
-      >
-        <div>
+    <div class="max-w-xl flex flex-col">
+      <div :class="`${rightSide ? 'justify-end' : 'justify-start'} flex gap-4 items-center pb-1`">
+        <h2 class="fr-text--sm mb-0! text-slate-500! font-normal">
           {{ date }}
-        </div>
+        </h2>
         <div>
-          <DsfrButton v-if="displayViewButton" tertiary label="Voir" size="sm" @click="modalOpened = true" />
+          <DsfrButton v-if="displayViewButton" tertiary size="sm" @click="modalOpened = true" aria-haspopup="true">
+            Voir
+            <span class="sr-only">la vérsion de la déclaration au {{ date }}</span>
+          </DsfrButton>
+          <DsfrModal
+            size="xl"
+            :opened="modalOpened"
+            @close="modalOpened = false"
+            class="text-left"
+            :title="`Version de la déclaration au ${date}`"
+          >
+            <DeclarationSummary :readonly="true" v-model="snapshot.jsonDeclaration" />
+          </DsfrModal>
         </div>
       </div>
-      <div v-if="actionText">
+      <p v-if="actionText" class="mb-0">
         {{ actionText }}
-      </div>
-      <div v-else>
+      </p>
+      <p v-else class="mb-0">
         {{ fullName }} a changé le statut à « {{ statusProps[snapshot.status].label }} »
         <span v-if="!snapshot.comment && !isInValidationState">sans laisser de message</span>
+      </p>
+      <div :class="`flex order-first ${rightSide ? 'justify-end' : 'justify-start'}`">
+        <p
+          v-if="showComment"
+          :class="`comment italic mb-2 rounded-xl p-4 mb-0 ${rightSide ? 'rounded-tr-none' : 'rounded-tl-none'}`"
+        >
+          {{ snapshot.comment }}
+        </p>
       </div>
     </div>
   </div>
