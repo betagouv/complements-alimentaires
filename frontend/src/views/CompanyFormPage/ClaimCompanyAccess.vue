@@ -1,12 +1,13 @@
 <template>
   <div>
     <DsfrAlert>
-      L'entreprise
-      <strong>{{ company.socialName }}</strong>
-      avec le n° {{ company.identifierType.toUpperCase() + " " }}
-      <strong>{{ company.identifier }}</strong>
-      existe déjà dans Compl-Alim. Vous pouvez cependant envoyer une demande d'accès aux gestionnaires.
-
+      <p class="mb-0">
+        L'entreprise
+        <strong>{{ company.socialName }}</strong>
+        avec le n° {{ company.identifierType.toUpperCase() + " " }}
+        <strong>{{ company.identifier }}</strong>
+        existe déjà dans Compl-Alim. Vous pouvez cependant envoyer une demande d'accès aux gestionnaires.
+      </p>
       <DsfrInputGroup>
         <DsfrCheckbox
           :hint="`Vous avec déjà des droits de déclaration sur la compagnie ${company.socialName}`"

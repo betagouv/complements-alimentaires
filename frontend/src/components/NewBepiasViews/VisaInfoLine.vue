@@ -1,9 +1,9 @@
 <template>
   <div class="sm:flex border-b last:border-0 py-3 gap-4">
-    <div class="sm:flex-[0_0_25%] font-bold">
+    <p class="sm:flex-[0_0_25%] font-bold mb-0">
       <v-icon class="mr-2" :name="icon" aria-hidden />
       <span>{{ title }}</span>
-    </div>
+    </p>
     <div class="comment sm:flex-auto">
       <slot name="value">
         <p class="mb-0 line-through" v-if="strikethroughText">
