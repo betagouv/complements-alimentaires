@@ -5,7 +5,7 @@
     <h2>Éditeur de la Plateforme</h2>
     <p>
       La Plateforme Compl'Alim (
-      <router-link :to="{ name: 'LandingPage' }">https://compl-alim.beta.gouv.fr/</router-link>
+      <router-link :to="{ name: 'LandingPage' }" class="fr-link">https://compl-alim.beta.gouv.fr/</router-link>
       ) est éditée par l'Incubateur de services numériques de la Direction Interministérielle du Numérique (DINUM).
     </p>
     <h2>Coordonnées</h2>
@@ -36,9 +36,7 @@
     </p>
     <p>
       Pour en savoir plus :
-      <a href="http://references.modernisation.gouv.fr/accessibilite-numerique" target="_blank" rel="noopener">
-        http://references.modernisation.gouv.fr/accessibilite-numerique.
-      </a>
+      <ExternalLink href="http://references.modernisation.gouv.fr/accessibilite-numerique" />
     </p>
     <p>
       Pour nous signaler des problèmes ou suggestions d'amélioration concernant l'accessibilité de la plateforme, deux
@@ -47,20 +45,16 @@
     <ul>
       <li>
         nous signaler par email :
-        <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
+        <a :href="`mailto:${contactEmail}`" class="fr-link">{{ contactEmail }}</a>
       </li>
       <li>
         créer une “issue” sur
-        <a href="https://github.com/betagouv/complements-alimentaires/" target="_blank" rel="noopener">
-          le dépôt de code sur GitHub.
-        </a>
+        <ExternalLink href="https://github.com/betagouv/complements-alimentaires/" text="le dépôt de code sur GitHub" />
       </li>
     </ul>
     <p>
       Le code source est ouvert et les contributions sont bienvenues.
-      <a href="https://github.com/betagouv/complements-alimentaires/" target="_blank" rel="noopener">
-        Voir le code source.
-      </a>
+      <ExternalLink href="https://github.com/betagouv/complements-alimentaires/" text="Voir le code source" />
     </p>
     <h2>Données personnelles, suivi d’audience et gestion des cookies</h2>
     <p>
@@ -82,30 +76,32 @@
     </p>
     <p>
       Nous utilisons pour cela
-      <a href="https://matomo.org/" target="_blank" rel="noopener">Matomo</a>
+      <ExternalLink href="https://matomo.org/" text="Matomo" />
       , un outil
-      <a href="https://matomo.org/free-software/" target="_blank" rel="noopener">libre</a>
+      <ExternalLink href="https://matomo.org/free-software/" text="libre" />
       , paramétré pour être en conformité avec la
-      <a href="https://www.cnil.fr/fr/solutions-pour-la-mesure-daudience" target="_blank" rel="noopener">
-        recommandation « Cookies »
-      </a>
+      <ExternalLink
+        href="https://www.cnil.fr/fr/solutions-pour-la-mesure-daudience"
+        text="recommandation « Cookies »"
+      />
       de la CNIL. Cela signifie que votre adresse IP, par exemple, est anonymisée avant d’être enregistrée. Il est donc
       impossible d’associer vos visites sur ce site à votre personne.
     </p>
     <h3>Je contribue à enrichir vos données, puis-je y accéder ?</h3>
     <p>
       Bien sûr ! Les statistiques d’usage de la majorité de nos produits, dont
-      <a href="https://beta.gouv.fr/" target="_blank" rel="noopener">beta.gouv.fr,</a>
-      sont disponibles en accès libre sur
-      <a
+      <ExternalLink href="https://beta.gouv.fr/" text="beta.gouv.fr" />
+      , sont disponibles en accès libre sur
+      <ExternalLink
         href="https://stats.beta.gouv.fr/index.php?module=CoreHome&action=index&idSite=95&period=day&date=yesterday#?period=day&date=yesterday&category=Dashboard_Dashboard&subcategory=1"
-      >
-        stats.beta.gouv.fr.
-      </a>
+        text="stats.beta.gouv.fr"
+      />
     </p>
   </div>
 </template>
 
 <script setup>
+import ExternalLink from "@/components/ExternalLink"
+
 const contactEmail = window.CONTACT_EMAIL
 </script>

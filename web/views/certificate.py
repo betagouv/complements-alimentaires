@@ -76,12 +76,11 @@ class CertificateView(PdfView):
             if declaration.teleicare_declaration_number
             else "de l'alimentation (DGAL)"
         )
+        sub_direction = "Sous-Direction de la Sécurité Sanitaire des Aliments"
         address_street = (
-            "59 BD VINCENT AURIOL - TÉLÉDOC 223"
-            if declaration.teleicare_declaration_number
-            else "251 RUE DE VAUGIRARD"
+            "59 BD VINCENT AURIOL - TÉLÉDOC 223" if declaration.teleicare_declaration_number else "78 RUE DE VARENNE"
         )
-        address_cedex = "75703 PARIS CEDEX 13" if declaration.teleicare_declaration_number else "75732 PARIS CEDEX 15"
+        address_cedex = "75703 PARIS CEDEX 13" if declaration.teleicare_declaration_number else "75349 PARIS 07 SP"
         bureau = (
             "Bureau 4A - Nutrition et information sur les denrées alimentaires"
             if declaration.teleicare_declaration_number
@@ -151,6 +150,7 @@ class CertificateView(PdfView):
             ],
             "declaration": declaration,
             "direction": direction,
+            "sub_direction": sub_direction,
             "address_street": address_street,
             "address_cedex": address_cedex,
             "bureau": bureau,

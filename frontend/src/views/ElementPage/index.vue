@@ -120,9 +120,7 @@
       <ul v-if="element.regulatoryResourceLinks?.length" class="list-none -ml-4 mb-6">
         <li v-for="resourceLink in element.regulatoryResourceLinks" :key="resourceLink">
           Ressource reglementaire :
-          <a :href="`${resourceLink}`" target="_blank" ref="noopener noreferrer">
-            {{ resourceLink }}
-          </a>
+          <ExternalLink :href="resourceLink" />
         </li>
       </ul>
       <!-- Date de dernière mise à jour de la donnée -->
@@ -192,6 +190,7 @@ import ReportIssueBlock from "./ReportIssueBlock.vue"
 import ElementDoses from "@/components/ElementDoses.vue"
 import RegulatoryWarning from "@/components/RegulatoryWarning.vue"
 import { setDocumentTitle } from "@/utils/document"
+import ExternalLink from "@/components/ExternalLink.vue"
 
 const store = useRootStore()
 const route = useRoute()

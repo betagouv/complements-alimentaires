@@ -6,9 +6,10 @@
     </p>
     <ul>
       <li v-for="(link, index) in paginatedExcelLinks" :key="`download-links-${index}`">
-        {{ link.label }}
-        <a :href="link.url" download class="bg-none ml-2">
-          <DsfrButton label="Télécharger" tertiary no-outline size="sm" icon="ri-file-excel-2-fill"></DsfrButton>
+        <a :href="link.url" download="true" class="fr-link fr-link--download">
+          Télécharger
+          {{ link.label }}
+          <span class="fr-link__detail">XLSX</span>
         </a>
       </li>
     </ul>
@@ -40,7 +41,7 @@ const paginatedExcelLinks = computed(() => {
 
     links.push({
       url: url,
-      label: `Lignes ${startRange} à ${endRange} (${pageNumber}/${numFiles})`,
+      label: `lignes ${startRange} à ${endRange} (${pageNumber}/${numFiles})`,
     })
   }
 

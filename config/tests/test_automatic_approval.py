@@ -24,7 +24,7 @@ from data.models import Declaration, Snapshot
 class TestAutomaticApproval(TestCase):
     @staticmethod
     def _create_submission_snapshot(declaration):
-        submission_date = timezone.now() - relativedelta(days=15)
+        submission_date = timezone.now()
         snapshot = SnapshotFactory(
             action=Snapshot.SnapshotActions.SUBMIT,
             status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
@@ -145,18 +145,20 @@ class TestAutomaticApproval(TestCase):
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
         mocked_brevo.assert_not_called()
 
-    def test_awaiting_declaration_not_approved_art_15_vig(self, mocked_brevo):
+    def test_awaiting_declaration_approved_art_15_vig(self, mocked_brevo):
         """
-        Une déclaration en attente d'instruction de doit pas se valider si elle a l'article
-        15 vigilance
+        Une déclaration en attente d'instruction de doit également se valider si elle a l'article
+        15 vigilance (plus d'info https://github.com/betagouv/complements-alimentaires/issues/2702)
         """
         declaration = AwaitingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_15_WARNING)
         TestAutomaticApproval._create_submission_snapshot(declaration)
 
         approve_declarations()
         declaration.refresh_from_db()
-        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_INSTRUCTION)
-        mocked_brevo.assert_not_called()
+
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
+        latest_snapshot_15 = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot_15.action, Snapshot.SnapshotActions.AUTOMATICALLY_AUTHORIZE)
 
     def test_awaiting_declaration_not_approved_art_16(self, mocked_brevo):
         """

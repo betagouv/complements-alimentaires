@@ -35,9 +35,10 @@ RUN adduser \
 # we need to install git
 # and in order to use svglib 1.6.0, which relies on rlpycairo, which relies on pycairo, we need to download libcairo2-dev
 # https://github.com/pygobject/pycairo/issues/89
+# libmagic1 is necessary for the python-magic library
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y git libpq-dev gcc libcairo2-dev
+    apt-get install -y git libpq-dev gcc libcairo2-dev libmagic1
 
 # i had a problem accessing github.com. When I followed https://docs.docker.com/desktop/get-started/#credentials-management-for-linux-users
 # and restarted the problem was resolved

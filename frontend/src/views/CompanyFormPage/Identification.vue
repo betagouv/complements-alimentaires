@@ -11,9 +11,7 @@
           @input="removeSpaces"
         />
         <div v-if="company.identifierType == 'siret'" class="mt-2">
-          <a class="fr-link" target="_blank" rel="noopener" href="https://annuaire-entreprises.data.gouv.fr/">
-            Annuaire des entreprises
-          </a>
+          <ExternalLink href="https://annuaire-entreprises.data.gouv.fr/" text="Annuaire des entreprises" />
         </div>
       </DsfrInputGroup>
       <DsfrButton icon="ri-arrow-right-line" iconRight @click="submitIdentifier" :disabled="isFetching">
@@ -31,6 +29,7 @@ import { useVuelidate } from "@vuelidate/core"
 import { headers } from "@/utils/data-fetching"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
+import ExternalLink from "@/components/ExternalLink.vue"
 
 // Props & emits
 const company = defineModel()

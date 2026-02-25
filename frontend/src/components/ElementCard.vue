@@ -19,26 +19,29 @@
             <DsfrBadge label="Partie de plante non autorisée" type="warning" />
           </div>
         </div>
-        <div class="content-center ml-6 pl-4 sm:border-l">
+        <div class="content-center ml-6 px-4 sm:border-l sm:border-r">
           <ElementCommentModal v-model="model" :hidePrivateComments="true" />
         </div>
       </div>
 
-      <div class="flex grow">
-        <div class="grow sm:pl-4 sm:ml-4 pt-4 sm:border-l self-center">
-          <DsfrCheckbox
-            :disabled="getActivityReadonlyByType(objectType)"
-            v-model="model.active"
-            :label="model.active ? 'Actif' : 'Non actif'"
-          />
-        </div>
+      <div class="sm:ml-4 pt-4 self-center w-fit">
+        <DsfrToggleSwitch
+          :disabled="getActivityReadonlyByType(objectType)"
+          v-model="model.active"
+          label="Ingrédient actif&nbsp;?"
+          activeText="Oui"
+          inactiveText="Non"
+          labelLeft
+        />
+      </div>
 
-        <div v-if="props.canRemove">
-          <DsfrButton secondary @click="$emit('remove', model)">
-            Enlever
-            <span class="fr-sr-only">« {{ getElementName(model).toLowerCase() }} »</span>
-          </DsfrButton>
-        </div>
+      <div class="grow"></div>
+
+      <div v-if="props.canRemove" class="sm:ml-4 md:ml-6 self-center">
+        <DsfrButton secondary @click="$emit('remove', model)">
+          Enlever
+          <span class="fr-sr-only">« {{ getElementName(model).toLowerCase() }} »</span>
+        </DsfrButton>
       </div>
     </div>
 
@@ -76,16 +79,19 @@
           />
         </div>
       </div>
-      <div v-else-if="objectType === 'microorganism'" class="md:flex gap-4 items-end">
+      <div v-else-if="objectType === 'microorganism'" class="md:flex gap-4 items-center">
         <div class="mb-4 md:max-w-sm">
           <DsfrInput label-visible label="Souche" v-model="model.strain" :required="true" />
         </div>
-        <div class="md:max-w-sm">
-          <DsfrCheckbox
+        <div class="flex">
+          <DsfrToggleSwitch
             v-model="model.activated"
-            :label="model.activated ? 'Activés' : 'Ces micro-organismes ont été inactivés'"
-            hint="L'inactivation rend la réplication impossible"
+            label="Activés&nbsp;?"
+            activeText="Oui"
+            inactiveText="Non"
+            labelLeft
           />
+          <DsfrTooltip content="L'inactivation rend la réplication impossible" class="pb-3 ml-1" />
         </div>
         <div v-if="model.activated" class="mb-4">
           <NumberField label-visible v-model="model.quantity" label="Qté par DJR (en UFC)" :required="true" />

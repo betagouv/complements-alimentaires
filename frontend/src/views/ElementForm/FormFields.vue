@@ -526,11 +526,7 @@ const saveElement = async () => {
   $externalResults.value = await handleError(response)
 
   if (response.value.ok) {
-    useToaster().addMessage({
-      type: "success",
-      id: "element-creation-success",
-      description: `L'ingrédient a été ${isNewIngredient.value ? "créé" : "modifié"}`,
-    })
+    useToaster().addSuccessMessage(`L'ingrédient a été ${isNewIngredient.value ? "créé" : "modifié"}`)
     if (isNewIngredient.value) router.push({ name: "NewElementsPage" })
     else router.push({ name: "ElementPage", params: { urlComponent: props.urlComponent } })
   } else {
@@ -751,11 +747,7 @@ const deleteActions = [
       $externalResults.value = await handleError(response)
 
       if (response.value.ok) {
-        useToaster().addMessage({
-          type: "success",
-          id: "element-deletion-success",
-          description: "L'ingrédient a été supprimé",
-        })
+        useToaster().addSuccessMessage("L'ingrédient a été supprimé")
         router.push({ name: "ElementPage", params: { urlComponent: props.urlComponent } })
       }
     },

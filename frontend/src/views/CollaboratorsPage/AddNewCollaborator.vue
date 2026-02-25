@@ -100,7 +100,7 @@ const submit = async () => {
   if (response.value.ok) {
     emit("added")
     // exceptionnellement on utilise le message directement du back, car plusieurs cas possibles
-    useToaster().addMessage({ type: "success", description: data.value.message })
+    useToaster().addSuccessMessage(data.value.message)
     close()
   }
 }

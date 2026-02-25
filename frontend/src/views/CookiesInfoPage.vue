@@ -34,15 +34,21 @@
     </p>
     <ul>
       <li>
-        <a href="https://www.cnil.fr/fr/cookies-traceurs-que-dit-la-loi" target="_blank" rel="noopener">
-          Cookies & traceurs : que dit la loi ?
-        </a>
+        <ExternalLink
+          href="https://www.cnil.fr/fr/cookies-traceurs-que-dit-la-loi"
+          text="Cookies & traceurs : que dit la loi ?"
+        />
       </li>
       <li>
-        <a href="https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser" target="_blank" rel="noopener">
-          Cookies : les outils pour les maîtriser
-        </a>
+        <ExternalLink
+          href="https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser"
+          text="Cookies : les outils pour les maîtriser"
+        />
       </li>
     </ul>
   </div>
 </template>
+
+<script setup>
+import ExternalLink from "@/components/ExternalLink"
+</script>
