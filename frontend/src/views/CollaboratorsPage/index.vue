@@ -18,13 +18,13 @@
     <div v-for="user in collaborators" :key="user.id">
       <div class="sm:flex items-center">
         <v-icon class="size-5" name="ri-user-follow-line" />
-        <div class="ml-2">
-          <div>
+        <h3 class="ml-2 fr-text--md font-normal mb-0">
+          <span class="block">
             {{ user.firstName }} {{ user.lastName }}
             <span class="text-xs" v-if="user.id === loggedUser.id">(vous)</span>
-          </div>
-          <div class="text-xs">{{ user.email }}</div>
-        </div>
+          </span>
+          <span class="text-xs block">{{ user.email }}</span>
+        </h3>
         <div class="ml-2 md:ml-8 flex gap-2 flex-wrap">
           <div class="flex gap-2 flex-wrap items-center">
             <RoleTag
@@ -59,6 +59,7 @@
     />
     <SolicitationsHolder
       v-if="ongoingInvitations"
+      class="mt-8"
       title="Invitations envoyées"
       icon="ri-chat-upload-line"
       :solicitations="ongoingInvitations"
