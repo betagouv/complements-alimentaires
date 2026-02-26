@@ -1,6 +1,6 @@
 <template>
   <div v-if="blogPosts.results.length > 0">
-    <h3>Les ressources nouvellement ajoutées</h3>
+    <h2 class="fr-h3">Les ressources nouvellement ajoutées</h2>
     <div class="mb-4 text-right">
       <router-link :to="{ name: 'BlogHomePage' }">
         Voir toutes les ressources
