@@ -11,9 +11,9 @@
         <div class="flex content-center">
           <ElementCommentModal v-model="model" class="mr-2" />
           <div class="self-center">
-            <p class="capitalize font-bold mb-0">
+            <component :is="titleTag" class="capitalize mb-0 fr-text--md">
               {{ getElementName(model).toLowerCase() }}
-            </p>
+            </component>
           </div>
 
           <ElementStatusBadge
@@ -71,7 +71,11 @@ const { plantParts, units, preparations, loggedUser } = storeToRefs(useRootStore
 const isInstructor = computed(() => loggedUser.value?.globalRoles.some((x) => x.name === "InstructionRole"))
 
 const model = defineModel()
-const props = defineProps({ objectType: { type: String }, showElementAuthorization: { type: Boolean } })
+const props = defineProps({
+  objectType: { type: String },
+  showElementAuthorization: { type: Boolean },
+  titleTag: { type: String, default: "h5" },
+})
 
 const plantPartName = computed(() => plantParts.value?.find((x) => x.id === model.value.usedPart)?.name || "Aucune")
 const unitName = computed(() => units.value?.find((x) => x.id === model.value.unit)?.name || "")

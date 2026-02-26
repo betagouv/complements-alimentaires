@@ -10,12 +10,13 @@
           :showElementAuthorization="showElementAuthorization"
           :objectType="objectType"
           :elements="elements"
+          titleTag="h4"
         />
       </DsfrAccordion>
     </DsfrAccordionsGroup>
     <!-- Affichage sans les accordéons, tous les ingrédients sont affichés -->
     <div v-else>
-      <SummaryElementListTitle class="mt-6 mb-3" :objectType="objectType" />
+      <h4 class="fr-text--md mb-0"><SummaryElementListTitle class="mt-6 mb-3" :objectType="objectType" /></h4>
       <SummaryElementListItems
         :showElementAuthorization="showElementAuthorization"
         :objectType="objectType"

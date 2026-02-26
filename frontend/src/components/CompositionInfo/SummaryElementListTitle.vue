@@ -1,13 +1,13 @@
 <template>
-  <div class="flex">
-    <div :class="`mr-2 self-center justify-center rounded-full size-4 flex`">
+  <span class="flex">
+    <span :class="`mr-2 self-center justify-center rounded-full size-4 flex`">
       <v-icon class="self-center" :name="getTypeIcon(objectType)" />
-    </div>
-    <p class="m-0 font-bold capitalize self-center">
+    </span>
+    <span class="m-0 capitalize font-bold self-center">
       {{ getTypeInFrench(objectType) }}s
       <span v-if="elementCount">({{ elementCount }})</span>
-    </p>
-  </div>
+    </span>
+  </span>
 </template>
 
 <script setup>
