@@ -103,6 +103,7 @@
         title="Avertissements à faire figurer sur l'étiquetage"
         icon="ri-alarm-warning-line"
         accent="orange-terre-battue"
+        titleTag="h2"
       >
         <ul>
           <li v-for="(warning, idx) in element.warningsOnLabel" :key="`warning-${idx}`">
@@ -124,7 +125,7 @@
         </li>
       </ul>
       <!-- Date de dernière mise à jour de la donnée -->
-      <DsfrAccordion title="Historique de l'ingrédient" id="accordion-history">
+      <DsfrAccordion title="Historique de l'ingrédient" id="accordion-history" titleTag="h2">
         <DsfrTable
           :headers="historyHeaders"
           :rows="historyDataDedup"

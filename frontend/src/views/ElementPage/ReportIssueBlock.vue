@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cols-12">
     <div class="col-span-12 md:col-span-7 md:pr-10">
-      <h4>Une erreur ? Signalez-là ici</h4>
+      <h2 class="fr-h4">Une erreur ? Signalez-là ici</h2>
       <p class="m-0">
         Aidez-nous à améliorer la qualité de nos données en remontant toute erreur ou incohérence que vous pourriez
         constater. Nous vous remercions d'avance 🙏🏼
