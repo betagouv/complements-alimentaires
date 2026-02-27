@@ -1,15 +1,18 @@
 import csv
+import json
+import logging
+
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
-import json
-import logging
-import pandas as pd
+from django.db.models import Q
 
-from . import datagouv
+import pandas as pd
 
 from api.serializers import OpenDataDeclarationSerializer
 from data.models import Declaration
+
+from . import datagouv
 
 logger = logging.getLogger(__name__)
 
@@ -21,9 +24,9 @@ class OpenDataDeclarationsETL:
         self.schema = json.load(open("data/schemas/schema_declarations.json"))
         self.columns = [i["name"] for i in self.schema["fields"]]
         self.serializer = OpenDataDeclarationSerializer
-        self.queryset = Declaration.objects.filter(status=Declaration.DeclarationStatus.AUTHORIZED).order_by(
-            "-modification_date"
-        )
+        self.queryset = Declaration.objects.filter(
+            Q(status=Declaration.DeclarationStatus.AUTHORIZED) | Q(status=Declaration.DeclarationStatus.WITHDRAWN)
+        ).order_by("-modification_date")
         self.filename = f"{self.dataset_name}.csv"
 
     def export(self):
