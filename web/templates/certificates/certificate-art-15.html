@@ -18,8 +18,8 @@ Attestation de déclaration d'un complément alimentaire n° {{ declaration.id }
             {% endif %}
         </span>
         a effectué {% if declaration.teleicare_declaration_number %}sur la plateforme TELEICARE,{% endif %}
-        le {{ last_submission_date|date:"l j F Y" }}, la déclaration mentionnée à l’article 15 du décret
-        n°2006-352 du 20 mars 2006 relatif aux compléments alimentaires pour le produit :
+        le {{ last_submission_date|date:"l j F Y" }}, conformément à l’article 15 du décret n°2006-352 du
+        20 mars 2006 relatif aux compléments alimentaires, la déclaration pour le produit :
     </p>
     <p class="text-bold text-center">
         {{ declaration.name }}
@@ -31,7 +31,7 @@ Attestation de déclaration d'un complément alimentaire n° {{ declaration.id }
         {% endif %}
     </p>
     <p>
-        Cette déclaration, acceptée, est enregistrée sous le numéro
+        Cette déclaration est enregistrée sur la plateforme Compl’Alim sous le numéro
         <span class="text-bold">
             {% if declaration.teleicare_declaration_number %}
             {{ declaration.teleicare_declaration_number }}
@@ -40,9 +40,13 @@ Attestation de déclaration d'un complément alimentaire n° {{ declaration.id }
             {% endif %}
         </span>.
     </p>
+    <p class="text-bold">
+        Les informations relatives à cette déclaration restent consultables à l’adresse suivante :
+        <a href="{{ declaration.producer_url }}">{{ declaration.producer_url }}</a>.
+    </p>
     <p>
-        La déclaration prévue à l’article 15 du décret n°2006-352 vise à informer l’administration
-        de la mise sur le marché d’un complément alimentaire.
+        Cette attestation ne constitue pas une garantie de conformité aux dispositions en vigueur ni une
+        autorisation de mise sur le marché de l’administration.
     </p>
     {% if effective_withdrawal_date %}
     <p>
@@ -55,28 +59,25 @@ Attestation de déclaration d'un complément alimentaire n° {{ declaration.id }
         le retrait du marché du produit.
     </p>
     {% endif %}
+
     <p>
-        Votre produit reste consultable à l’adresse suivante :
-        <a href="{{ declaration.producer_url }}">{{ declaration.producer_url }}</a>.
-        Il pourra faire l’objet de contrôles de l’administration.
-    </p>
-    <p class="text-bold">
-        Cette attestation ne constitue donc pas une garantie de conformité aux dispositions en
-        vigueur ni une autorisation de mise sur le marché.
-    </p>
-    <p>
-        Conformément aux dispositions de l’article 17 du règlement (CE) n° 178/2002 établissant les principes généraux
-        et les prescriptions générales de la législation alimentaire, il vous incombe de veiller à ce que le complément
-        alimentaire que vous mettez sur le marché réponde à la définition des compléments alimentaires au sens
-        de l’article 2 du décret n°2006-352, ainsi qu’aux prescriptions du droit alimentaire qui leur sont applicables,
-        notamment en matière d’hygiène (R(CE) n°852/2004), d’information du consommateur (R(UE) n°1169/2011) et de
-        nouveaux aliments (R(UE) n°2015/2283). À cet égard, vous devez être en mesure de prouver que les ingrédients
-        mis en œuvre disposent d’un historique de consommation dans l’Union européenne avant le 15 mai 1997 ou, à
-        défaut, qu’ils ont été autorisés au titre du règlement (UE) n°2015/2283.
+        Conformément aux dispositions de l’article 17 du règlement (CE) n° 178/2002 établissant
+        les principes généraux et les prescriptions générales de la législation alimentaire, il
+        incombe au premier metteur sur le marché français de veiller à ce que le complément
+        alimentaire mis sur le marché réponde à la définition des compléments alimentaires au
+        sens de l’article 2 du décret n°2006-352, ainsi qu’aux prescriptions du droit alimentaire
+        qui lui sont applicables, notamment en matière d’hygiène (R(CE) n°852/2004), d’information
+        du consommateur (R(UE) n°1169/2011) et de nouveaux aliments (R(UE) n°2015/2283). À cet
+        égard, il est indispensable de pouvoir apporter la preuve que les ingrédients mis en
+        œuvre disposent d’un historique de consommation dans l’Union européenne avant le
+        15 mai 1997 ou, à défaut, qu’ils ont été autorisés au titre du règlement (UE)
+        n°2015/2283.
     </p>
     <p>
         Pour tout renseignement d’ordre général sur le cadre réglementaire applicable aux compléments alimentaires,
-        rendez-vous sur le site de la DGAL {% if declaration.teleicare_declaration_number %}(autorité compétente depuis le 1° janvier 2023 pour la sécurité sanitaire des compléments alimentaires){% endif %} à l’adresse suivante :
+        rendez-vous sur le site de la DGAL
+        {% if declaration.teleicare_declaration_number %}(autorité compétente depuis le 1° janvier 2023 pour la sécurité sanitaire des compléments alimentaires){% endif %}
+        à l’adresse suivante :
         <a href="https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire">
             https://agriculture.gouv.fr/quest-ce-quun-complement-alimentaire
         </a>.

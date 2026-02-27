@@ -1,50 +1,49 @@
 <template>
-  <DsfrFieldset legend="Population cible" legendClass="fr-label">
-    <div v-for="(section, index) in populationsSections" class="mb-6 last:mb-0" :key="`pop-section-${index}`">
-      <p class="mb-2 font-bold">{{ section.title }}</p>
-      <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
-        <div
-          v-for="population in section.items"
-          :key="`pop-${population.id}`"
-          class="flex col-span-6 sm:col-span-3 lg:col-span-2"
-        >
+  <div class="mb-6">
+    <h3 class="fr-label mb-4">Population cible</h3>
+    <DsfrFieldset
+      v-for="(section, index) in populationsSections"
+      class="mb-2"
+      :key="`pop-section-${index}`"
+      legendClass="pb-2"
+    >
+      <template #legend>
+        <span class="sr-only">Population cible,</span>
+        {{ section.title }}
+      </template>
+      <div class="fr-checkbox-group input md:columns-2 lg:columns-3">
+        <div v-for="population in section.items" :key="`pop-${population.id}`" class="flex mb-4 last:mb-0">
           <input :id="`population-${population.id}`" type="checkbox" v-model="modelValue" :value="population.id" />
           <label :for="`population-${population.id}`" class="fr-label">{{ population.name }}</label>
         </div>
       </div>
-    </div>
-  </DsfrFieldset>
+    </DsfrFieldset>
+  </div>
 </template>
 
 <script setup>
 import { computed } from "vue"
-import { transformArrayByColumn, checkboxColumnNumbers } from "@/utils/forms"
-import { useCurrentBreakpoint } from "@/utils/screen"
 import { populationCategoriesMapping } from "@/utils/mappings"
 
-const currentBreakpoint = useCurrentBreakpoint()
-const numberOfColumns = computed(() => checkboxColumnNumbers[currentBreakpoint.value])
 const modelValue = defineModel()
 const props = defineProps({ populations: { type: Array, default: Array } })
 
 const ageSort = (a, b) => a.maxAge - b.maxAge
-const alphabeticalSort = (a, b) => a.name.localeCompare(b.name)
 
 const populationsSections = computed(() => {
   const p = props.populations
-  const cols = numberOfColumns.value
   return [
     {
       title: populationCategoriesMapping.AGE.label,
-      items: transformArrayByColumn(p?.filter((x) => x.category === "AGE").sort(ageSort), cols),
+      items: p?.filter((x) => x.category === "AGE").sort(ageSort),
     },
     {
       title: populationCategoriesMapping.PREGNANCY.label,
-      items: transformArrayByColumn(p?.filter((x) => x.category === "PREGNANCY").sort(alphabeticalSort), cols),
+      items: p?.filter((x) => x.category === "PREGNANCY"),
     },
     {
       title: populationCategoriesMapping.OTHER.label,
-      items: transformArrayByColumn(p?.filter((x) => x.category === "OTHER").sort(alphabeticalSort), cols),
+      items: p?.filter((x) => x.category === "OTHER"),
     },
   ]
 })

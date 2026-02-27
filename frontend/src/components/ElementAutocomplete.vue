@@ -5,7 +5,6 @@
         <DsfrInput
           v-model="searchTerm"
           :options="autocompleteResults"
-          autocomplete="nothing"
           @update:searchTerm="$emit('update:searchTerm', $event)"
           v-bind="$attrs"
           :required="required"
@@ -271,7 +270,6 @@ const fetchAutocompleteResults = useDebounceFn(async () => {
   if (error.value) {
     useToaster().addMessage({
       type: "error",
-      title: "Erreur",
       description: "Une erreur avec la recherche est survenue, veuillez réessayer plus tard.",
       id: "autocomplete-error",
     })

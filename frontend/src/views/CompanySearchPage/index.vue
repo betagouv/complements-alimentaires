@@ -17,12 +17,13 @@
           />
         </DsfrFieldset>
       </div>
-      <div class="mb-4 md:mb-0" v-if="data?.results?.length && data?.results?.length <= MAX_EXPORT_RESULTS">
-        <a :href="excelUrl" download class="bg-none">
-          <DsfrButton label="Télécharger" secondary size="sm" icon="ri-file-excel-2-fill"></DsfrButton>
+      <div class="mb-4 md:mb-0" v-if="data?.count && data.count <= MAX_EXPORT_RESULTS">
+        <a :href="excelUrl" download="true" class="fr-link fr-link--download">
+          Télécharger
+          <span class="fr-link__detail">XLSX</span>
         </a>
       </div>
-      <div class="mb-4 md:mb-0" v-if="data?.results?.length && data?.results?.length > MAX_EXPORT_RESULTS">
+      <div class="mb-4 md:mb-0" v-if="data?.count && data.count > MAX_EXPORT_RESULTS">
         <DsfrButton
           secondary
           size="sm"

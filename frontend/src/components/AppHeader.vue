@@ -1,5 +1,10 @@
 <template>
-  <DsfrHeader :logo-text="logoText" :homeTo="{ name: 'LandingPage' }" :quickLinks="quickLinks">
+  <DsfrHeader
+    :logo-text="logoText"
+    :homeTo="{ name: 'LandingPage' }"
+    :quickLinks="quickLinks"
+    homeLabel="Accueil - Compl'Alim - Ministère de l'Agriculture, de l'Agro-alimentaire et de la Souveraineté Alimentaire"
+  >
     <template #operator>
       <div class="flex items-center">
         <img :src="require('@/assets/logo.svg')" alt="Compl'Alim" class="h-20" />

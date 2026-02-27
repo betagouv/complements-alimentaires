@@ -1,19 +1,15 @@
 <template>
   <div class="grid grid-cols-12 gap-3 mb-8">
-    <div
-      class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 overflow-auto"
+    <p
+      class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 mb-0"
       v-for="(file, index) in attachments"
       :key="`file-download-${index}`"
     >
-      <DsfrFileDownload
-        :title="`${truncateMiddle(file.name, 20)}`"
-        :href="file.file"
-        :size="file.size"
-        :format="file.typeDisplay"
-        :download="null"
-        target="_blank"
-      />
-    </div>
+      <a :title="`${file.name} - nouvelle fenêtre`" :href="file.file" target="_blank" class="fr-link">
+        {{ truncateMiddle(file.name, 20) }}
+      </a>
+      <span class="fr-link__detail fr-text--xs block mb-0">{{ file.typeDisplay }} - {{ file.size }}</span>
+    </p>
   </div>
 </template>
 

@@ -27,6 +27,8 @@
         { label: 'Plan du site', to: { name: 'SiteMap' } },
       ]"
       id="footer"
+      :homeLink="{ name: 'LandingPage' }"
+      homeTitle="Retour à l'accueil du site Compl'Alim - Ministère de l'Agriculture, de l'Agro-alimentaire et de la Souveraineté Alimentaire"
     >
       <template v-slot:description>
         <p>Compl'Alim</p>

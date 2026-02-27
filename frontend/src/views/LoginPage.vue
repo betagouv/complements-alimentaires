@@ -101,11 +101,7 @@ const submit = async () => {
     {
       await rootStore.fetchInitialData()
       window.CSRF_TOKEN = data.value.csrfToken
-      useToaster().addMessage({
-        type: "success",
-        title: "Vous êtes connecté",
-        description: "Vous êtes connecté à la plateforme Compl'Alim.",
-      })
+      useToaster().addSuccessMessage("Vous êtes connecté à la plateforme Compl'Alim.")
       router.push(route.query.next || { name: "DashboardPage" })
     }
   }
