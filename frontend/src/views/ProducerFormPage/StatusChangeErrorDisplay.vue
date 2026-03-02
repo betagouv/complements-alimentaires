@@ -1,13 +1,12 @@
 <template>
   <div>
-    <DsfrAlert type="error" v-if="shownErrors && shownErrors.length">
-      <p class="mb-4">
-        Veuillez corriger les erreurs indiquées ci-dessous avant de
-        <router-link :to="routeForTab('Soumettre')">soumettre à nouveau</router-link>
-        votre dossier.
-      </p>
-
-      <DsfrAccordionsGroup v-model="activeAccordion">
+    <DsfrAlert
+      type="error"
+      v-if="shownErrors && shownErrors.length"
+      title="Veuillez corriger les erreurs indiquées ci-dessous"
+      titleTag="h2"
+    >
+      <DsfrAccordionsGroup v-model="activeAccordion" class="my-4">
         <DsfrAccordion
           v-for="tabSection in shownErrors"
           :key="tabSection.tab"
@@ -24,6 +23,11 @@
           </ul>
         </DsfrAccordion>
       </DsfrAccordionsGroup>
+      <p>
+        Après avoir corrigé les erreurs,
+        <router-link :to="routeForTab('Soumettre')">soumettez à nouveau</router-link>
+        votre dossier.
+      </p>
     </DsfrAlert>
   </div>
 </template>

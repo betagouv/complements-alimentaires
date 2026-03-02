@@ -15,7 +15,7 @@
     <DeclarationSummary v-model="payload" :readonly="readonly" />
     <hr v-if="!readonly" />
     <h2 v-if="!readonly">Soumettre</h2>
-    <DsfrAlert v-if="!readonly">
+    <div v-if="!readonly">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'comment')">
         <DsfrInput
           class="max-w-lg!"
@@ -25,7 +25,6 @@
           :isTextarea="true"
         />
       </DsfrInputGroup>
-      <hr />
       <DsfrInputGroup>
         <DsfrCheckbox v-model="conformityEngaged">
           <template v-slot:label>
@@ -46,7 +45,7 @@
         Soumettre ma démarche
         <span class="fr-sr-only">pour le produit « {{ payload.name }} »</span>
       </DsfrButton>
-    </DsfrAlert>
+    </div>
   </div>
 </template>
 
