@@ -14,7 +14,6 @@
           </p>
         </DsfrAlert>
         <ElementAutocomplete
-          autocomplete="nothing"
           label="Cherchez un ingrédient"
           hint="Tapez au moins trois caractères pour démarrer la recherche"
           @selected="goToSelectedOption"

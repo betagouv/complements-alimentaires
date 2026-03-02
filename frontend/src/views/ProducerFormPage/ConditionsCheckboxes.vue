@@ -1,62 +1,60 @@
 <template>
-  <DsfrFieldset
-    legend="Population à risque, facteurs de risque"
-    hint="La consommation du complément alimentaire est déconseillée pour ces populations."
-    legendClass="fr-label"
-  >
-    <div v-for="(section, index) in conditionsSections" class="mb-6 last:mb-0" :key="`condition-section-${index}`">
-      <p class="font-bold mb-2">{{ section.title }}</p>
-      <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
-        <div
-          v-for="condition in section.items"
-          :key="`condition-${condition.id}`"
-          class="flex col-span-6 sm:col-span-3 lg:col-span-2"
-        >
+  <div class="mb-8">
+    <h3 class="fr-label mb-2">Population à risque, facteurs de risque</h3>
+    <p class="fr-hint-text">La consommation du complément alimentaire est déconseillée pour ces populations.</p>
+    <DsfrFieldset
+      v-for="(section, index) in conditionsSections"
+      class="mb-2"
+      :key="`condition-section-${index}`"
+      legendClass="pb-2"
+    >
+      <template #legend>
+        <span class="sr-only">Population à risque, facteurs de risque,</span>
+        {{ section.title }}
+      </template>
+      <div class="fr-checkbox-group input md:columns-2 lg:columns-3">
+        <div v-for="condition in section.items" :key="`condition-${condition.id}`" class="flex mb-4 last:mb-0">
           <input :id="`condition-${condition.id}`" type="checkbox" v-model="modelValue" :value="condition.id" />
           <label :for="`condition-${condition.id}`" class="fr-label">{{ condition.name }}</label>
         </div>
       </div>
-    </div>
-  </DsfrFieldset>
+      <slot v-if="section.isOtherSection"></slot>
+    </DsfrFieldset>
+  </div>
 </template>
 
 <script setup>
 import { computed } from "vue"
-import { transformArrayByColumn, checkboxColumnNumbers } from "@/utils/forms"
-import { useCurrentBreakpoint } from "@/utils/screen"
 import { populationCategoriesMapping } from "@/utils/mappings"
 
-const currentBreakpoint = useCurrentBreakpoint()
-const numberOfColumns = computed(() => checkboxColumnNumbers[currentBreakpoint.value])
 const modelValue = defineModel()
 const props = defineProps({ conditions: { type: Array, default: Array } })
 
 const ageSort = (a, b) => a.maxAge - b.maxAge
-const alphabeticalSort = (a, b) => a.name.localeCompare(b.name)
 
 const conditionsSections = computed(() => {
   const c = props.conditions
-  const cols = numberOfColumns.value
   return [
     {
       title: populationCategoriesMapping.AGE.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "AGE").sort(ageSort), cols),
+      items: c?.filter((x) => x.category === "AGE").sort(ageSort),
     },
     {
       title: populationCategoriesMapping.MEDICAL.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "MEDICAL").sort(alphabeticalSort), cols),
+      items: c?.filter((x) => x.category === "MEDICAL"),
     },
     {
       title: populationCategoriesMapping.PREGNANCY.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "PREGNANCY").sort(alphabeticalSort), cols),
+      items: c?.filter((x) => x.category === "PREGNANCY"),
     },
     {
       title: populationCategoriesMapping.MEDICAMENTS.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "MEDICAMENTS").sort(alphabeticalSort), cols),
+      items: c?.filter((x) => x.category === "MEDICAMENTS"),
     },
     {
       title: populationCategoriesMapping.OTHER.label,
-      items: transformArrayByColumn(c?.filter((x) => x.category === "OTHER").sort(alphabeticalSort), cols),
+      items: c?.filter((x) => x.category === "OTHER"),
+      isOtherSection: true,
     },
   ]
 })

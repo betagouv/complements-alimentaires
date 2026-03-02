@@ -370,6 +370,7 @@ const performDuplication = (originalDeclaration) => {
   // duplication
   const fieldsToKeep = [
     "company",
+    "mandatedCompany",
     "address",
     "additionalDetails",
     "postalCode",

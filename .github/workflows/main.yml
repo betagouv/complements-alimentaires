@@ -5,14 +5,41 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     strategy:
       matrix:
         python-version: [3.12]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
       - name: Set up Python 3.12
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4
         with:
           python-version: 3.12
 
@@ -21,25 +48,10 @@ jobs:
           sudo apt-get update && \
           sudo apt-get install -y libcairo2-dev libffi-dev pkg-config libxml2-dev libxslt1-dev libjpeg-dev
 
-      - name: Setup PostgreSQL
-        uses: Harmon758/postgresql-action@v1.0.0
-        with:
-          postgresql version: '15'
-          postgresql db: postgres
-          postgresql user: postgres
-          postgresql password: postgres
-
-      - name: Setup Redis
-        uses: zhulik/redis-action@1.1.0
-        with:
-          redis version: "7"
-          number of databases: 1
-
-
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: 24.x
+          node-version: '22.x'
 
       - name: Install Python dependencies
         run: |

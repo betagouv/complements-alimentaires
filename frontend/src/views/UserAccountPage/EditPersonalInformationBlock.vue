@@ -39,7 +39,7 @@
             label="Identifiant"
             labelVisible
             type="text"
-            autocomplete="off"
+            autocomplete="username"
             spellcheck="false"
           />
         </DsfrInputGroup>

@@ -145,14 +145,14 @@
     </DsfrInputGroup>
     <SectionTitle title="Populations cibles et à risque" class="mt-10!" sizeTag="h6" icon="ri-file-user-fill" />
     <PopulationsCheckboxes v-model="payload.populations" :populations="populations" />
-    <ConditionsCheckboxes v-model="payload.conditionsNotRecommended" :conditions="conditions" />
-
-    <OtherChoiceField
-      :listOfChoices="payload.conditionsNotRecommended"
-      v-model="payload.otherConditions"
-      :otherChoiceId="otherConditionId"
-      label="Merci de préciser les autres populations à risques ou facteurs de risques"
-    ></OtherChoiceField>
+    <ConditionsCheckboxes v-model="payload.conditionsNotRecommended" :conditions="conditions">
+      <OtherChoiceField
+        :listOfChoices="payload.conditionsNotRecommended"
+        v-model="payload.otherConditions"
+        :otherChoiceId="otherConditionId"
+        label="Merci de préciser les autres populations à risques ou facteurs de risques"
+      ></OtherChoiceField>
+    </ConditionsCheckboxes>
 
     <DsfrInputGroup class="max-w-2xl mt-6">
       <DsfrInput is-textarea v-model="payload.warning" label-visible label="Mise en garde et avertissement" />
@@ -162,56 +162,56 @@
       <template #legend>
         <SectionTitle title="Objectifs / effets" class="mt-4! mb-2" sizeTag="h6" icon="ri-focus-2-fill" />
       </template>
-      <div class="grid grid-cols-6 gap-4 fr-checkbox-group input">
-        <div
-          v-for="effect in orderedEffects"
-          :key="`effect-${effect.id}`"
-          class="flex col-span-6 sm:col-span-3 lg:col-span-2"
-        >
+      <div class="fr-checkbox-group input md:columns-2 lg:columns-3">
+        <div v-for="effect in effects" :key="`effect-${effect.id}`" class="flex mb-4 last:mb-0">
           <input :id="`effect-${effect.id}`" type="checkbox" v-model="payload.effects" :value="effect.id" />
           <label :for="`effect-${effect.id}`" class="fr-label">{{ effect.name }}</label>
         </div>
       </div>
+      <OtherChoiceField
+        :listOfChoices="payload.effects"
+        v-model="payload.otherEffects"
+        :otherChoiceId="otherEffectsId"
+        label="Merci de préciser les autres objectifs ou effets"
+      ></OtherChoiceField>
     </DsfrFieldset>
-    <OtherChoiceField
-      :listOfChoices="payload.effects"
-      v-model="payload.otherEffects"
-      :otherChoiceId="otherEffectsId"
-      label="Merci de préciser les autres objectifs ou effets"
-    ></OtherChoiceField>
 
-    <SectionTitle title="Adresse sur l'étiquetage" class="mt-10!" sizeTag="h6" icon="ri-home-2-fill" />
-    <div class="max-w-2xl mb-8 address-form">
-      <DsfrInputGroup>
-        <DsfrInput v-model="payload.address" label-visible label="Adresse" hint="Numéro et voie" :required="true" />
-      </DsfrInputGroup>
-      <DsfrInputGroup>
-        <DsfrInput
-          v-model="payload.additionalDetails"
-          label-visible
-          label="Complément d'adresse"
-          hint="Bâtiment, immeuble, escalier et numéro d’appartement"
-        />
-      </DsfrInputGroup>
-      <div class="grid grid-cols-12 gap-6">
-        <div class="col-span-12 md:col-span-4">
-          <DsfrInputGroup>
-            <DsfrInput v-model="payload.postalCode" label-visible label="Code Postal" :required="true" />
-          </DsfrInputGroup>
+    <DsfrFieldset legendClass="pb-2" class="mb-0">
+      <template #legend>
+        <SectionTitle title="Adresse sur l'étiquetage" class="mt-4! mb-0" sizeTag="h6" icon="ri-home-2-fill" />
+      </template>
+      <div class="max-w-2xl address-form">
+        <DsfrInputGroup>
+          <DsfrInput v-model="payload.address" label-visible label="Adresse" hint="Numéro et voie" :required="true" />
+        </DsfrInputGroup>
+        <DsfrInputGroup>
+          <DsfrInput
+            v-model="payload.additionalDetails"
+            label-visible
+            label="Complément d'adresse"
+            hint="Bâtiment, immeuble, escalier et numéro d’appartement"
+          />
+        </DsfrInputGroup>
+        <div class="grid grid-cols-12 gap-6">
+          <div class="col-span-12 md:col-span-4">
+            <DsfrInputGroup>
+              <DsfrInput v-model="payload.postalCode" label-visible label="Code Postal" :required="true" />
+            </DsfrInputGroup>
+          </div>
+          <div class="col-span-12 md:col-span-5">
+            <DsfrInputGroup>
+              <DsfrInput v-model="payload.city" label-visible label="Ville ou commune" :required="true" />
+            </DsfrInputGroup>
+          </div>
         </div>
-        <div class="col-span-12 md:col-span-5">
-          <DsfrInputGroup>
-            <DsfrInput v-model="payload.city" label-visible label="Ville ou commune" :required="true" />
-          </DsfrInputGroup>
-        </div>
+        <DsfrInputGroup>
+          <DsfrInput v-model="payload.cedex" label-visible label="Cedex" />
+        </DsfrInputGroup>
+        <DsfrInputGroup>
+          <CountryField v-model="payload.country" :required="true" />
+        </DsfrInputGroup>
       </div>
-      <DsfrInputGroup>
-        <DsfrInput v-model="payload.cedex" label-visible label="Cedex" />
-      </DsfrInputGroup>
-      <DsfrInputGroup>
-        <CountryField v-model="payload.country" :required="true" />
-      </DsfrInputGroup>
-    </div>
+    </DsfrFieldset>
   </div>
 </template>
 <script setup>
@@ -219,8 +219,7 @@ import { computed, watch, ref } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useVuelidate } from "@vuelidate/core"
-import { firstErrorMsg, transformArrayByColumn, checkboxColumnNumbers } from "@/utils/forms"
-import { useCurrentBreakpoint } from "@/utils/screen"
+import { firstErrorMsg } from "@/utils/forms"
 import { pushOtherChoiceFieldAtTheEnd, getAllIndexesOfRegex } from "@/utils/forms"
 import CountryField from "@/components/fields/CountryField.vue"
 import OtherChoiceField from "@/components/fields/OtherChoiceField"
@@ -314,16 +313,12 @@ watch(selectedCompany, () => {
 
 // S'il n'y a qu'une entreprise on l'assigne par défaut
 if (companies.value?.length === 1) payload.value.company = companies.value[0].id
-
-const currentBreakpoint = useCurrentBreakpoint()
-const numberOfColumns = computed(() => checkboxColumnNumbers[currentBreakpoint.value])
-const orderedEffects = computed(() => transformArrayByColumn(effects.value, numberOfColumns.value))
 </script>
 
 <style scoped>
 @reference "../../styles/index.css";
 
-.address-form .fr-input-group:not(:last-child) {
+.address-form .fr-input-group {
   @apply mb-0;
 }
 </style>

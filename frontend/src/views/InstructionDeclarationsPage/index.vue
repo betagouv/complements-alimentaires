@@ -4,9 +4,9 @@
       class="mb-8"
       :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Déclarations pour instruction' }]"
     />
-    <div class="border px-4 mb-2 md:flex gap-4 items-baseline filters">
+    <div class="border px-4 pb-2 mb-2 md:flex gap-4 items-baseline filters">
       <div>
-        <div class="sm:flex gap-4 items-baseline md:border-r">
+        <div class="sm:flex gap-4 items-baseline md:border-r pb-2">
           <DsfrFieldset legend="Nom d'entreprise" class="mb-0! min-w-44">
             <div class="flex gap-4">
               <DsfrInputGroup>
@@ -29,7 +29,7 @@
               </DsfrInputGroup>
             </div>
           </DsfrFieldset>
-          <DsfrFieldset class="mb-0! min-w-52">
+          <div class="mb-0! min-w-52">
             <div class="md:px-4 md:border-l">
               <DsfrInputGroup>
                 <DsfrSelect
@@ -42,7 +42,7 @@
                 />
               </DsfrInputGroup>
             </div>
-          </DsfrFieldset>
+          </div>
         </div>
         <div class="md:pr-4 md:border-r md:border-t md:-mt-3">
           <DsfrFieldset legend="Recherche" class="mb-0!">

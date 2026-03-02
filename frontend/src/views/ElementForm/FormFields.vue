@@ -172,7 +172,6 @@
     <DsfrFieldset legend="Utilisation de l’ingrédient" legendClass="fr-h4 mb-0! pb-2!">
       <div v-if="formForType.substances" class="grid md:grid-cols-3 items-end my-4 md:my-2">
         <ElementAutocomplete
-          autocomplete="nothing"
           label="Substances actives"
           label-visible
           class="max-w-md grow mb-3"
@@ -519,11 +518,7 @@ const saveElement = async () => {
   $externalResults.value = await handleError(response)
 
   if (response.value.ok) {
-    useToaster().addMessage({
-      type: "success",
-      id: "element-creation-success",
-      description: `L'ingrédient a été ${isNewIngredient.value ? "créé" : "modifié"}`,
-    })
+    useToaster().addSuccessMessage(`L'ingrédient a été ${isNewIngredient.value ? "créé" : "modifié"}`)
     if (isNewIngredient.value) router.push({ name: "NewElementsPage" })
     else router.push({ name: "ElementPage", params: { urlComponent: props.urlComponent } })
   } else {
@@ -742,11 +737,7 @@ const deleteActions = [
       $externalResults.value = await handleError(response)
 
       if (response.value.ok) {
-        useToaster().addMessage({
-          type: "success",
-          id: "element-deletion-success",
-          description: "L'ingrédient a été supprimé",
-        })
+        useToaster().addSuccessMessage("L'ingrédient a été supprimé")
         router.push({ name: "ElementPage", params: { urlComponent: props.urlComponent } })
       }
     },

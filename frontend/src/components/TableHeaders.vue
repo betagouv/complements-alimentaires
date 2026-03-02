@@ -9,7 +9,9 @@
       <div class="flex items-baseline">
         <div class="grow">
           <span>{{ header.text }}</span>
-          <DsfrTooltip v-if="header.tooltipContent" :content="header.tooltipContent" />
+          <DsfrTooltip v-if="header.tooltipContent" :content="header.tooltipContent">
+            <span class="fr-sr-only">Infobulle {{ header.text }}</span>
+          </DsfrTooltip>
         </div>
         <div class="flex-none">
           <DsfrButton

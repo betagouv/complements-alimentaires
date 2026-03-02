@@ -1,11 +1,14 @@
 <template>
   <div>
-    <DsfrAlert class="mb-4" small type="error" v-if="validationError">{{ validationError }}</DsfrAlert>
+    <DsfrAlert class="mb-4" small type="error" v-if="validationError">
+      <p class="fr-sr-only">Erreur</p>
+      <p>{{ validationError }}</p>
+    </DsfrAlert>
     <SectionTitle title="Étiquetage" sizeTag="h6" icon="ri-price-tag-2-fill" />
     <DsfrAlert
       v-if="containsAlcohol"
       class="mb-4"
-      title="Votre complément alimentaire contient de l'alcool en tant qu'ingrédient"
+      title="Attention : Votre complément alimentaire contient de l'alcool en tant qu'ingrédient"
       type="warning"
     >
       <p>
@@ -16,11 +19,12 @@
     <DsfrInputGroup>
       <DsfrFileUpload
         label="Veuillez nous transmettre l'étiquetage de votre produit (format PDF ou image)"
-        :accept="['image/jpeg, image/gif, image/png, application/pdf']"
-        hint="Taille maximale du fichier : 2 Mo"
+        :accept="acceptedTypes"
+        hint="Taille maximale par fichier : 2 Mo"
         @change="addLabelFiles"
         v-model="selectedLabelFile"
         :required="true"
+        multiple
       />
     </DsfrInputGroup>
 
@@ -33,11 +37,12 @@
     <DsfrInputGroup>
       <DsfrFileUpload
         :label="otherAttachmentsLabel"
-        :acceptTypes="acceptedTypes"
-        hint="Taille maximale du fichier : 2 Mo"
+        :accept="acceptedTypes"
+        hint="Taille maximale par fichier : 2 Mo"
         @change="addOtherFiles"
         v-model="selectedOtherFile"
         :required="needsEuProof"
+        multiple
       />
     </DsfrInputGroup>
 
@@ -51,7 +56,7 @@ import FileGrid from "./FileGrid"
 import SectionTitle from "@/components/SectionTitle"
 import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNotice"
 
-const acceptedTypes = ["image/jpeg", "image/gif", "image/png", "application/pdf"]
+const acceptedTypes = ["image/jpeg", "image/gif", "image/png", "application/pdf", "image/webp"]
 const props = defineProps(["externalResults"])
 const payload = defineModel()
 
@@ -76,7 +81,15 @@ const otherAttachmentsLabel = computed(() => {
   return label
 })
 
-const validationError = computed(() => props.externalResults?.[0]?.attachments)
+const validationError = computed(() => {
+  const externalResults = props.externalResults
+  if (!externalResults) return undefined
+  // temporaire : dans une autre PR on veut afficher l'erreur par fichier
+  if (externalResults[0]?.attachments) return externalResults[0].attachments
+  const firstFileError = externalResults.fieldErrors?.attachments?.find((a) => a?.file)
+  if (firstFileError?.file) return firstFileError.file[0]
+  return undefined
+})
 
 const selectedLabelFile = ref(null)
 const selectedOtherFile = ref(null)

@@ -8,7 +8,14 @@
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'email')">
         <div class="md:flex justify-between items-end">
           <div class="grow">
-            <DsfrInput v-model="state.email" label="Votre e-mail" labelVisible @keydown.enter="submit" />
+            <DsfrInput
+              v-model="state.email"
+              label="Votre e-mail"
+              labelVisible
+              @keydown.enter="submit"
+              type="email"
+              autocomplete="email"
+            />
           </div>
           <DsfrButton class="mt-4 md:mt-0 md:ml-4" :disabled="isFetching" @click="submit">
             S'abonner
@@ -62,13 +69,9 @@ const submit = async () => {
   await execute()
   await handleError(response)
 
-  const { addMessage } = useToaster()
+  const { addSuccessMessage } = useToaster()
   if (response.value.ok) {
-    addMessage({
-      type: "success",
-      title: "C'est tout bon !",
-      description: "Votre inscription a bien été prise en compte.",
-    })
+    addSuccessMessage("Votre inscription a bien été prise en compte.")
     // Reset both form state & Vuelidate validation state
     state.value.email = ""
     v$.value.$reset()

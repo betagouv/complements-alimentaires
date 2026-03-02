@@ -3,7 +3,6 @@
     <SectionTitle title="Ma composition" sizeTag="h6" icon="ri-flask-line" />
     <div class="sm:flex gap-10 items-center">
       <ElementAutocomplete
-        autocomplete="nothing"
         label="Cherchez un ingrédient"
         label-visible
         class="max-w-md grow"
@@ -65,7 +64,7 @@
         title="Dosage total des substances actives"
         content="Ce tableau présente les substances actives identifiées dans les ingrédients que vous avez sélectionnés. Une même substance pouvant être introduite par plusieurs sources, la quantité totale par dose journalière recommandée (DJR) est demandée pour certaines substances faisant l'objet d'une règlementation spécifique ou impliquant un risque."
       />
-      <SubstancesTable :hidePrivateComments="true" v-model="payload" title="Substances actives" />
+      <SubstancesTable :hidePrivateComments="true" v-model="payload" title="Dosage total des substances actives" />
     </div>
   </div>
 </template>

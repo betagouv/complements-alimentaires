@@ -27,20 +27,24 @@
           />
         </DsfrInputGroup>
         <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
-        <div class="md:mt-6 justify-self-end shrink self-center">
-          <DsfrButton @click="canDownloadFile ? null : (opened = true)" secondary size="sm" icon="ri-file-excel-2-fill">
-            <a :href="canDownloadFile ? excelUrl : 'javascript:void(0)'" download>Télécharger</a>
-          </DsfrButton>
-          <DsfrModal v-model:opened="opened" title="Nombre de déclarations trop élévé" @close="opened = false">
-            <p>
-              La recherche actuelle présente {{ data?.count }} résultats. Un maximum de
-              {{ maxDownloadSize }} déclarations peuvent être exportées.
-            </p>
-            <p>
-              Merci d'affiner votre recherche ou de contacter notre équipe pour demander un export avec les filtres
-              choisis.
-            </p>
-          </DsfrModal>
+        <div class="md:mt-6 justify-self-end shrink self-center min-w-fit">
+          <a v-if="canDownloadFile" :href="excelUrl" download="true" class="fr-link fr-link--download">
+            Télécharger
+            <span class="fr-link__detail">XLSX</span>
+          </a>
+          <div v-else>
+            <DsfrButton @click="opened = true" secondary size="sm" icon="ri-file-excel-2-fill">Télécharger</DsfrButton>
+            <DsfrModal v-model:opened="opened" title="Nombre de déclarations trop élévé" @close="opened = false">
+              <p>
+                La recherche actuelle présente {{ data?.count }} résultats. Un maximum de
+                {{ maxDownloadSize }} déclarations peuvent être exportées.
+              </p>
+              <p>
+                Merci d'affiner votre recherche ou de contacter notre équipe pour demander un export avec les filtres
+                choisis.
+              </p>
+            </DsfrModal>
+          </div>
         </div>
       </div>
     </div>
@@ -59,9 +63,20 @@
                 :exclude="['DRAFT']"
                 @updateFilter="updateStatusFilter"
                 :statusString="filteredStatus"
-                class="my-6 status-filter"
+                class="mb-6 status-filter"
               />
-              <DsfrFieldset legend="Cible" class="min-w-60">
+
+              <DsfrInputGroup>
+                <DsfrSelect
+                  label="Article"
+                  defaultUnselectedText=""
+                  :modelValue="article"
+                  @update:modelValue="updateArticle"
+                  :options="articleSelectOptions"
+                  class="text-sm!"
+                />
+              </DsfrInputGroup>
+              <div class="min-w-60">
                 <DsfrInputGroup>
                   <DsfrSelect
                     label="Population cible"
@@ -82,8 +97,8 @@
                     class="text-sm!"
                   />
                 </DsfrInputGroup>
-              </DsfrFieldset>
-              <DsfrFieldset legend="Format" class="min-w-60">
+              </div>
+              <div class="min-w-60">
                 <DsfrInputGroup>
                   <DsfrSelect
                     label="Forme galénique"
@@ -94,25 +109,14 @@
                     class="text-sm!"
                   />
                 </DsfrInputGroup>
-              </DsfrFieldset>
-              <DsfrFieldset legend="Localisation" class="min-w-60">
+              </div>
+              <div class="min-w-60">
                 <DsfrInputGroup>
                   <CountryField :modelValue="country" @update:modelValue="updateCountry" :includeAllOption="true" />
                 </DsfrInputGroup>
-              </DsfrFieldset>
+              </div>
             </div>
             <div class="md:w-2/4">
-              <DsfrInputGroup>
-                <DsfrSelect
-                  label="Article"
-                  defaultUnselectedText=""
-                  :modelValue="article"
-                  @update:modelValue="updateArticle"
-                  :options="articleSelectOptions"
-                  class="text-sm!"
-                />
-              </DsfrInputGroup>
-
               <ElementAutocomplete
                 v-model="ingredientSearchTerm"
                 label="Composition"

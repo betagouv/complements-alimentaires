@@ -5,10 +5,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Count, F, Max, Q
+from django.db.models import Count, F, Q
 from django.utils import timezone
 
-from dateutil.relativedelta import relativedelta
 from simple_history.utils import update_change_reason
 from viewflow import fsm
 
@@ -152,14 +151,16 @@ def approve_declarations():
         logger.info("Automatic validation of declarations disabled. Enable setting ENABLE_AUTO_VALIDATION.")
         return
 
-    cutoff_delta = timezone.now() - relativedelta(days=14)
-
     declarations = (
         Declaration.objects
-        # On prend seulement les déclatations en attente d'instruction et articles 15 / 15 vigilance population
+        # On prend seulement les déclatations en attente d'instruction et articles 15
         .filter(
             status=Declaration.DeclarationStatus.AWAITING_INSTRUCTION,
-            article__in=[Declaration.Article.ARTICLE_15, Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION],
+            article__in=[
+                Declaration.Article.ARTICLE_15,
+                Declaration.Article.ARTICLE_15_HIGH_RISK_POPULATION,
+                Declaration.Article.ARTICLE_15_WARNING,
+            ],
         )
         # Plus précisement, seulement les déclarations qui n'ont pas été traitées ni touchées par l'instruction,
         # et donc ont seulement des snapshots type "SUBMIT" (créés par le passage DRAFT => AWAITING_INSTRUCTION)
@@ -168,9 +169,6 @@ def approve_declarations():
             submit_snapshots_count=Count("snapshots", filter=Q(snapshots__action=Snapshot.SnapshotActions.SUBMIT)),
         )
         .filter(total_snapshot_count=F("submit_snapshots_count"))
-        # Et finalement on ne prend que celles soumises au moins il y a deux mois
-        .annotate(submission_date=Max("snapshots__creation_date"))
-        .filter(submission_date__lt=cutoff_delta)
     )
 
     logger.info(f"Starting the automatic validation of {declarations.count()} declarations.")

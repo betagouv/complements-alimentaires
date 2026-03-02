@@ -14,7 +14,7 @@
       />
     </div>
 
-    <div class="border px-4 mb-2 lg:flex gap-4 items-baseline filters">
+    <div class="border px-4 pb-2 mb-2 lg:flex gap-4 items-baseline filters">
       <div class="lg:border-r pt-4 md:pr-4">
         <DsfrFieldset class="mb-0!">
           <DsfrSearchBar
@@ -28,49 +28,41 @@
         </DsfrFieldset>
 
         <div class="sm:flex gap-4 items-baseline">
-          <DsfrFieldset class="mb-0!">
-            <div>
-              <DsfrInputGroup>
-                <DsfrSelect
-                  label="Entreprise"
-                  :modelValue="company"
-                  @update:modelValue="updateCompany"
-                  defaultUnselectedText="Toutes"
-                  :options="companiesOptions"
-                  class="text-sm!"
-                />
-              </DsfrInputGroup>
-            </div>
-          </DsfrFieldset>
-          <DsfrFieldset class="mb-0!">
-            <div class="min-w-44">
-              <DsfrInputGroup>
-                <DsfrSelect
-                  label="Personne assignée"
-                  :modelValue="author"
-                  @update:modelValue="updateAuthor"
-                  defaultUnselectedText="Toutes"
-                  :options="authorOptions"
-                  class="text-sm!"
-                />
-              </DsfrInputGroup>
-            </div>
-          </DsfrFieldset>
-          <div class="min-w-48">
-            <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
-          </div>
-          <div>
+          <DsfrInputGroup>
+            <DsfrSelect
+              label="Entreprise"
+              :modelValue="company"
+              @update:modelValue="updateCompany"
+              defaultUnselectedText="Toutes"
+              :options="companiesOptions"
+              class="text-sm!"
+            />
+          </DsfrInputGroup>
+          <div class="min-w-44">
             <DsfrInputGroup>
               <DsfrSelect
-                label="Trier par"
-                defaultUnselectedText=""
-                :modelValue="ordering"
-                @update:modelValue="updateOrdering"
-                :options="orderingOptionsPro"
+                label="Personne assignée"
+                :modelValue="author"
+                @update:modelValue="updateAuthor"
+                defaultUnselectedText="Toutes"
+                :options="authorOptions"
                 class="text-sm!"
               />
             </DsfrInputGroup>
           </div>
+          <div class="min-w-48">
+            <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
+          </div>
+          <DsfrInputGroup>
+            <DsfrSelect
+              label="Trier par"
+              defaultUnselectedText=""
+              :modelValue="ordering"
+              @update:modelValue="updateOrdering"
+              :options="orderingOptionsPro"
+              class="text-sm!"
+            />
+          </DsfrInputGroup>
         </div>
       </div>
       <StatusFilter
