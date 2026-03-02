@@ -53,7 +53,6 @@ class SubstanceSerializer(CommonIngredientReadSerializer):
             "einec_number",
             "must_specify_quantity",
             "max_quantity",
-            "nutritional_reference",
             "substance_types",
         )
         read_only_fields = fields
@@ -123,7 +122,6 @@ class SubstanceModificationSerializer(CommonIngredientModificationSerializer):
                 "cas_number",
                 "einec_number",
                 "max_quantity",  # une property du Model, set grâce à create() et update()
-                "nutritional_reference",
                 "must_specify_quantity",
                 "substance_types",
             )

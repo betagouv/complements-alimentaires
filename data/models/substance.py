@@ -70,9 +70,6 @@ class Substance(IngredientCommonModel):
     # max_quantity
     max_quantities = models.ManyToManyField(Population, through="SubstanceMaxQuantityPerPopulationRelation")
 
-    # nutritional_reference (concerne seulement les types vitamines et minéraux)
-    nutritional_reference = models.FloatField(null=True, blank=True, verbose_name="apport nutritionnel conseillé")
-
     substance_types = ArrayField(
         models.IntegerField(choices=SubstanceType.choices),
         verbose_name="type(s) de la substance",

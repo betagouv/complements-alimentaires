@@ -157,7 +157,6 @@ class SubstanceAdmin(ChangeReasonAdminMixin, SimpleHistoryAdmin):
             {
                 "fields": [
                     "must_specify_quantity",
-                    "nutritional_reference",
                     "unit",
                 ],
             },

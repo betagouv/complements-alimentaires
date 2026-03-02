@@ -82,10 +82,6 @@
         <ElementColumn title="Statut" v-if="status">
           <ElementStatusBadge :text="status" />
         </ElementColumn>
-
-        <ElementColumn title="Apport nutritionnel de référence" v-if="nutritionalReference">
-          <ElementText :text="nutritionalReference" :lowercase="true" />
-        </ElementColumn>
       </div>
       <ElementTextSection title="Description" :text="description" />
 
@@ -242,11 +238,6 @@ const status = computed(() =>
     : null
 )
 const novelFood = computed(() => element.value?.novelFood)
-const nutritionalReference = computed(() => {
-  if (element.value?.unit && (element.value?.nutritionalReference || element.value.nutritionalReference == 0))
-    return element.value?.nutritionalReference.toLocaleString("fr-FR") + " " + element.value?.unit
-  else return null
-})
 
 const description = computed(() => element.value?.description)
 const publicComments = computed(() => element.value?.publicComments)
