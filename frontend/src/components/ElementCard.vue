@@ -91,7 +91,9 @@
             inactiveText="Non"
             labelLeft
           />
-          <DsfrTooltip content="L'inactivation rend la réplication impossible" class="pb-3 ml-1" />
+          <DsfrTooltip content="L'inactivation rend la réplication impossible" class="pb-3 ml-1">
+            <span class="fr-sr-only">Infobulle question activés</span>
+          </DsfrTooltip>
         </div>
         <div v-if="model.activated" class="mb-4">
           <NumberField label-visible v-model="model.quantity" label="Qté par DJR (en UFC)" :required="true" />
