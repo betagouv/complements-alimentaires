@@ -1,6 +1,5 @@
 <template>
   <div class="fr-container mb-10">
-    <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
@@ -62,12 +61,6 @@ import { setDocumentTitle } from "@/utils/document"
 
 const props = defineProps({ declarationId: String })
 const route = useRoute()
-
-const breadcrumbLinks = [
-  { to: { name: "DashboardPage" }, text: "Tableau de bord" },
-  { to: { name: "VisaDeclarations" }, text: "Déclarations pour visa" },
-  { text: "Instruction" },
-]
 
 const isFetching = computed(() =>
   [

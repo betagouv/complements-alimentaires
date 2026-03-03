@@ -1,8 +1,5 @@
 <template>
   <div class="fr-container pb-8">
-    <DsfrBreadcrumb
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Recherche entreprises' }]"
-    />
     <h1 class="fr-h3">Entreprises responsables de la mise sur le marché</h1>
 
     <div class="md:flex justify-between">

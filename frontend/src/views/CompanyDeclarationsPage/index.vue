@@ -1,13 +1,5 @@
 <template>
   <div class="fr-container">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[
-        { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { text: 'Les déclarations de mon entreprise' },
-      ]"
-    />
-
     <div class="border px-4 pt-4 pb-2 mb-2 md:flex gap-4 items-baseline filters">
       <div class="md:min-w-lg">
         <DsfrFieldset class="mb-0!">

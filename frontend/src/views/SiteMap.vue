@@ -1,6 +1,5 @@
 <template>
   <div class="fr-container pb-10">
-    <DsfrBreadcrumb :links="[{ to: '/', text: 'Accueil' }, { text: 'Plan du site' }]" />
     <h1>Plan du site</h1>
     <ul>
       <li v-for="page in pages" :key="page.path">

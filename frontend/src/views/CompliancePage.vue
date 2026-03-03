@@ -1,6 +1,5 @@
 <template>
   <div class="fr-container pb-10">
-    <DsfrBreadcrumb :links="[{ to: '/', text: 'Accueil' }, { text: 'Conformité au droit alimentaire' }]" />
     <h1>Conformité au droit alimentaire</h1>
 
     <DsfrCallout>

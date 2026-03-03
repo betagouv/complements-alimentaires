@@ -1,9 +1,5 @@
 <template>
   <div class="fr-container">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Mes déclarations' }]"
-    />
     <div class="block sm:flex items-center mb-8">
       <DsfrButton
         size="small"

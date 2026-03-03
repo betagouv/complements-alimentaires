@@ -1,9 +1,5 @@
 <template>
   <div class="fr-container">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Visa / Signature' }]"
-    />
     <div class="border px-4 pt-4 mb-2 sm:flex gap-8 items-baseline filters">
       <StatusFilter
         :exclude="['DRAFT']"

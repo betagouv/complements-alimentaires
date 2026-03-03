@@ -1,10 +1,4 @@
 <template>
-  <div class="fr-container">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[{ to: '/', text: 'Accueil' }, { to: '/blog', text: 'Ressources' }, { text: blogPost?.title || '' }]"
-    />
-  </div>
   <div v-if="blogPost" class="fr-container my-8">
     <div class="p-4 border mb-4">
       <h1 class="fr-h4 mb-2!">{{ blogPost.title }}</h1>
@@ -24,6 +18,7 @@ import { setDocumentTitle } from "@/utils/document"
 const props = defineProps({
   id: String,
 })
+const emit = defineEmits(["page-title"])
 
 const { data: blogPost, response, execute } = useFetch(`/api/v1/blog-post/${props.id}`, { immediate: false }).json()
 const fetchBlogPost = async () => {
@@ -48,7 +43,10 @@ const author = computed(() => {
 fetchBlogPost()
 
 watch(blogPost, (post) => {
-  if (post) setDocumentTitle([post.title])
+  if (post) {
+    setDocumentTitle([post.title])
+    emit("page-title", post.title)
+  }
 })
 </script>
 

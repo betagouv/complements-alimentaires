@@ -1,6 +1,5 @@
 <template>
   <div class="fr-container pb-10">
-    <DsfrBreadcrumb :links="[{ to: '/', text: 'Accueil' }, { text: 'Politique de confidentialité' }]" />
     <h1>Politique de confidentialité</h1>
     <h2>Traitement des données à caractère personnel</h2>
     <p>

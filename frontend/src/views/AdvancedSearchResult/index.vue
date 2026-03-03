@@ -1,12 +1,5 @@
 <template>
   <div class="fr-container mb-10">
-    <DsfrBreadcrumb
-      :links="[
-        { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { to: { name: 'AdvancedSearchPage' }, text: 'Recherche avancée' },
-        { text: declaration?.name || 'Résultat' },
-      ]"
-    />
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
@@ -56,9 +49,10 @@ import { useRootStore } from "@/stores/root"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import { statusProps } from "@/utils/mappings"
-
 import DeclarationSummary from "@/components/DeclarationSummary"
 import { setDocumentTitle } from "@/utils/document"
+
+const emit = defineEmits(["page-title"])
 
 const store = useRootStore()
 const { loggedUser } = storeToRefs(store)
@@ -87,5 +81,6 @@ onMounted(async () => {
   await executeDeclarationFetch()
   handleError(declarationResponse)
   setDocumentTitle([declaration.value.name, "Résultat de recherche"])
+  emit("page-title", declaration.value.name)
 })
 </script>

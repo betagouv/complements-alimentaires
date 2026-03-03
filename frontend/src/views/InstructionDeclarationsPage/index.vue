@@ -1,9 +1,5 @@
 <template>
   <div class="fr-container">
-    <DsfrBreadcrumb
-      class="mb-8"
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Déclarations pour instruction' }]"
-    />
     <div class="border px-4 pb-2 mb-2 md:flex gap-4 items-baseline filters">
       <div>
         <div class="sm:flex gap-4 items-baseline md:border-r pb-2">

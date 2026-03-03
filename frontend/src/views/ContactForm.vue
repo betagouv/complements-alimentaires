@@ -1,6 +1,5 @@
 <template>
   <div class="fr-container pb-10">
-    <DsfrBreadcrumb :links="[{ to: '/', text: 'Accueil' }, { text: 'Contactez-nous' }]" />
     <h1>Contactez-nous</h1>
     <FormWrapper :externalResults="$externalResults">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'name')">

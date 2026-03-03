@@ -1,6 +1,6 @@
 <template>
   <div class="fr-container mb-10">
-    <DsfrBreadcrumb
+    <CaBreadcrumb
       :links="[
         { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
         { to: previousRoute, text: 'Recherche entreprises' },
@@ -40,6 +40,7 @@ import { getCompanyActivitiesString } from "@/utils/mappings"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import InfoTable from "@/components/InfoTable.vue"
 import DeclarationsTableSection from "@/components/NewBepiasViews/DeclarationsTableSection"
+import CaBreadcrumb from "@/components/CaBreadcrumb"
 import { setDocumentTitle } from "@/utils/document"
 import { useRootStore } from "@/stores/root"
 

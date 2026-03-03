@@ -1,6 +1,5 @@
 <template>
   <div class="fr-container pb-10">
-    <DsfrBreadcrumb :links="[{ to: '/', text: 'Accueil' }, { text: 'Conditions générales d\'utilisation' }]" />
     <h1>Conditions générales d'utilisation</h1>
     <p>
       Les présentes conditions d’utilisation (CGU) sont mises en œuvre conformément à l’article L. 112-9 du code des

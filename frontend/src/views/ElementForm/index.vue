@@ -2,7 +2,7 @@
   <div class="mb-8">
     <div class="bg-blue-france-950 py-1">
       <div class="fr-container">
-        <DsfrBreadcrumb :links="breadcrumbLinks" />
+        <CaBreadcrumb :links="breadcrumbLinks" />
 
         <h1 class="-mt-6 mb-4">{{ pageTitle }}</h1>
       </div>
@@ -45,6 +45,7 @@ import { useRoute } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import FormFields from "./FormFields"
+import CaBreadcrumb from "@/components/CaBreadcrumb"
 import { setDocumentTitle } from "@/utils/document"
 
 const props = defineProps({ urlComponent: String })

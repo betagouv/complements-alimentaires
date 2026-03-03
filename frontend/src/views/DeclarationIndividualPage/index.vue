@@ -1,6 +1,6 @@
 <template>
   <div class="fr-container mb-10">
-    <DsfrBreadcrumb :links="breadcrumbs" />
+    <CaBreadcrumb :links="breadcrumbs" />
     <div v-if="isFetching" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
@@ -44,6 +44,7 @@ import { computed, onMounted, watch } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
+import CaBreadcrumb from "@/components/CaBreadcrumb"
 import NavSidebar from "./NavSidebar"
 import { useRootStore } from "@/stores/root"
 import { setDocumentTitle } from "@/utils/document"

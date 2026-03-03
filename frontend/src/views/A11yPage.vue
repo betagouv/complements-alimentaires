@@ -1,6 +1,5 @@
 <template>
   <div class="fr-container pb-10">
-    <DsfrBreadcrumb :links="[{ to: '/', text: 'Accueil' }, { text: 'Accessibilité' }]" />
     <h1>Déclaration d'accessibilité</h1>
     <p class="italic">Cette déclaration a été établie le 9 septembre 2025</p>
     <p>

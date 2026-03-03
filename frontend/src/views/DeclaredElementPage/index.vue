@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="fr-container">
-      <DsfrBreadcrumb class="mb-8" :links="breadcrumbLinks" />
+      <CaBreadcrumb class="mb-8" :links="breadcrumbLinks" />
       <ElementAlert :element="element" />
       <div v-if="element">
         <div class="grid md:grid-cols-2 gap-4">
@@ -49,6 +49,7 @@ import ElementInfo from "./ElementInfo"
 import ElementAlert from "./ElementAlert"
 import ReplacementSearch from "./ReplacementSearch"
 import ElementCard from "@/components/ElementCard"
+import CaBreadcrumb from "@/components/CaBreadcrumb"
 import ElementSynonyms from "./ElementSynonyms"
 import { setDocumentTitle } from "@/utils/document"
 

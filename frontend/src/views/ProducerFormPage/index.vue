@@ -1,13 +1,5 @@
 <template>
   <div class="fr-container overflow-hidden">
-    <DsfrBreadcrumb
-      :links="[
-        { to: { name: 'DashboardPage' }, text: 'Tableau de bord' },
-        { to: { name: 'DeclarationsHomePage' }, text: 'Mes déclarations' },
-        { text: isNewDeclaration ? 'Nouvelle déclaration' : 'Détails de ma déclaration' },
-      ]"
-    />
-
     <div v-if="isFetching" class="flex justify-center items-center min-h-60">
       <ProgressSpinner />
     </div>

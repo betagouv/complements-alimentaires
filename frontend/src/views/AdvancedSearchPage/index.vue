@@ -1,8 +1,5 @@
 <template>
   <div :class="{ 'fr-container': true, seeOverflow }">
-    <DsfrBreadcrumb
-      :links="[{ to: { name: 'DashboardPage' }, text: 'Tableau de bord' }, { text: 'Recherche avancée' }]"
-    />
     <div class="mb-2 md:flex gap-8 search-area">
       <div class="md:w-1/3 lg:w-2/5 pt-1">
         <DsfrFieldset legend="Recherche" class="mb-0!">

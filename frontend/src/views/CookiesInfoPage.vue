@@ -1,6 +1,5 @@
 <template>
   <div class="fr-container pb-10">
-    <DsfrBreadcrumb :links="[{ to: '/', text: 'Accueil' }, { text: 'Cookies' }]" />
     <h1>Cookies</h1>
     <p>
       Un cookie est un fichier déposé sur votre terminal lors de la visite d’un site. Il a pour but de collecter des
