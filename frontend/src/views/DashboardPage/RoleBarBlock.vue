@@ -18,7 +18,7 @@
             :modelValue="activeCompany?.id"
             @update:modelValue="(x) => emit('changeCompany', x)"
             label="Entreprise"
-            class="-mt-5"
+            title="Entreprise"
           />
         </div>
       </div>
@@ -49,7 +49,17 @@ const roles = computed(() => {
 <style>
 @reference "../../styles/index.css";
 
+/* pris de .fr-search-bar pour caché le libellé mais le laisser visible pour les lecteurs d'écran */
 #company-select-wrapper .fr-label {
-  @apply invisible;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  display: block;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
 </style>
