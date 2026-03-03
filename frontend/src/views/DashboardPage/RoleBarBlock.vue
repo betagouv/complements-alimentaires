@@ -5,7 +5,7 @@
         <div class="flex items-center gap-x-2.5 gap-y-1 flex-wrap">
           <div class="flex items-center gap-x-1">
             <v-icon class="text-blue-france-sun-113" name="ri-account-circle-line" />
-            <div class="shrink-0 fr-notice__title text-blue-france-sun-113">Bienvenue, {{ name }}</div>
+            <h1 class="shrink-0 fr-notice__title text-blue-france-sun-113 mb-0">Bienvenue, {{ name }}</h1>
           </div>
           <div v-if="activeCompany" class="flex gap-x-1.5">
             <RoleTag v-for="role in roles" :key="role" :role="role" />

@@ -7,6 +7,7 @@
       v-model="elements[index]"
       :objectType="objectType"
       :showElementAuthorization="showElementAuthorization"
+      :titleTag="titleTag"
     />
   </ul>
 </template>
@@ -14,5 +15,10 @@
 <script setup>
 import SummaryElementItem from "./SummaryElementItem"
 
-defineProps({ objectType: { type: String }, elements: { type: Array }, showElementAuthorization: { type: Boolean } })
+defineProps({
+  objectType: { type: String },
+  elements: { type: Array },
+  showElementAuthorization: { type: Boolean },
+  titleTag: String,
+})
 </script>
