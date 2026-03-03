@@ -143,7 +143,6 @@ const submitCompany = async () => {
   }
   await execute()
   $externalResults.value = await handleError(response)
-  console.log($externalResults.value)
   // surcharge le message donné par le back, qui ne contient pas un exemple de format (RGAA 11.11)
   if ($externalResults.value?.phoneNumber)
     $externalResults.value.phoneNumber = "Le numéro doit être en format valide (ex : +33612345678)"
