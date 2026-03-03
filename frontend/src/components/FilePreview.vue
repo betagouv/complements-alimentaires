@@ -1,10 +1,10 @@
 <template>
   <div class="border p-4 flex flex-col gap-2">
-    <div class="border-b -mx-4 -mt-4 h-32 bg-blue-france-975 flex justify-center items-center">
+    <div class="border-b -mx-4 -mt-4 h-32 bg-blue-france-975 flex justify-center items-center" aria-hidden="true">
       <v-icon v-if="isPDF" scale="3" name="ri-file-text-line" />
       <img v-else :src="file.file" class="object-contain h-32" alt="" />
     </div>
-    <div class="fr-text--sm grow mb-0!">{{ props.file.name }}</div>
+    <component :is="fileNameHeadingLevel" class="fr-text--sm grow mb-0! font-normal">{{ props.file.name }}</component>
     <DsfrInputGroup class="max-w-sm" v-if="!hideTypeSelection && !props.readonly">
       <DsfrSelect
         label="Type de document"
@@ -14,7 +14,7 @@
         :required="true"
       />
     </DsfrInputGroup>
-    <div v-else>{{ file.typeDisplay }}</div>
+    <p v-else class="mb-0">{{ file.typeDisplay }}</p>
     <div class="flex gap-2">
       <a
         :href="file.file"
@@ -36,7 +36,12 @@
 <script setup>
 import { computed } from "vue"
 
-const props = defineProps({ file: Object, hideTypeSelection: Boolean, readonly: Boolean })
+const props = defineProps({
+  file: Object,
+  hideTypeSelection: Boolean,
+  readonly: Boolean,
+  fileNameHeadingLevel: { type: String, default: "h3" },
+})
 const isPDF = computed(() => props.file?.name?.endsWith("pdf"))
 
 // TODO: Une fois qu'on aura confirmé les types de document, on peut les exposer via l'API pour ne pas

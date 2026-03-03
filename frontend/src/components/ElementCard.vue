@@ -3,12 +3,12 @@
     <div class="sm:flex">
       <div class="flex">
         <div class="self-center">
-          <div class="font-bold capitalize">
+          <h4 class="font-bold capitalize fr-text--md mb-0">
             {{ getElementName(model).toLowerCase() }}
-          </div>
-          <div v-if="synonyms">
+          </h4>
+          <p v-if="synonyms" class="mb-0">
             {{ synonyms }}
-          </div>
+          </p>
           <div v-if="model.new" class="self-center mt-1">
             <DsfrBadge label="Nouvel ingrédient" type="info" />
           </div>

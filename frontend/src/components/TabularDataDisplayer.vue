@@ -1,17 +1,17 @@
 <template>
   <div>
-    <div class="font-bold uppercase text-sm">{{ title }}</div>
+    <h2 class="uppercase text-sm mb-0">{{ title }}</h2>
     <div class="mt-3 grid grid-col-3 border-gray-100">
       <div class="divide-y divide-gray-100">
-        <div
+        <dl
           v-for="(line, index) in dataLines"
           :key="line.title"
-          class="grid grid-cols-3 py-5 whitespace-pre-line items-center"
+          class="grid grid-cols-3 py-5 whitespace-pre-line items-center pl-0"
           :class="index % 2 === 0 ? 'bg-blue-france-975' : ''"
         >
           <dt class="font-medium pl-2 sm:pl-4">{{ line.title }}</dt>
           <dd class="text-gray-700">{{ line.val }}</dd>
-        </div>
+        </dl>
       </div>
     </div>
   </div>

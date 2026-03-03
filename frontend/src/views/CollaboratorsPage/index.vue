@@ -19,11 +19,11 @@
       <div class="sm:flex items-center">
         <v-icon class="size-5" name="ri-user-follow-line" />
         <div class="ml-2">
-          <div>
+          <h3 class="fr-text--md font-normal mb-0">
             {{ user.firstName }} {{ user.lastName }}
             <span class="text-xs" v-if="user.id === loggedUser.id">(vous)</span>
-          </div>
-          <div class="text-xs">{{ user.email }}</div>
+          </h3>
+          <p class="text-xs mb-0">{{ user.email }}</p>
         </div>
         <div class="ml-2 md:ml-8 flex gap-2 flex-wrap">
           <div class="flex gap-2 flex-wrap items-center">
@@ -59,6 +59,7 @@
     />
     <SolicitationsHolder
       v-if="ongoingInvitations"
+      class="mt-8"
       title="Invitations envoyées"
       icon="ri-chat-upload-line"
       :solicitations="ongoingInvitations"

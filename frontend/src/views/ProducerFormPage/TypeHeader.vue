@@ -3,7 +3,7 @@
     <div :class="`mr-4 self-center justify-center rounded-full icon icon-${objectType} size-8 flex`">
       <v-icon class="self-center" fill="white" :name="getTypeIcon(objectType)" />
     </div>
-    <p class="m-0 font-bold self-center">{{ typeName }}</p>
+    <h3 class="m-0 font-bold self-center fr-text--md">{{ typeName }}</h3>
   </div>
 </template>
 

@@ -6,16 +6,16 @@
         <v-icon class="size-4" :name="icon" />
 
         <div class="ml-2">
-          <div>{{ solicitation.senderName }}</div>
-          <div class="-mt-1.5" v-if="showRecipientEmail">à {{ solicitation.recipientEmail }}</div>
-          <div class="text-xs">
+          <h3 class="fr-text--md font-normal mb-0">{{ solicitation.senderName }}</h3>
+          <p class="-mt-1.5 mb-0" v-if="showRecipientEmail">à {{ solicitation.recipientEmail }}</p>
+          <p class="text-xs mb-0">
             {{ isoToPrettyDate(solicitation.creationDate, dateOptions) }}
             à {{ isoToPrettyTime(solicitation.creationDate) }}
-          </div>
+          </p>
         </div>
 
         <div class="ml-2 md:ml-8 flex flex-col gap-y-1">
-          <div class="italic">{{ solicitation.description }}</div>
+          <p class="italic mb-0">{{ solicitation.description }}</p>
           <div v-if="actions.length > 0" class="flex gap-x-2">
             <DsfrButton
               v-for="action in actions"
@@ -32,9 +32,7 @@
       </div>
       <hr class="mt-4 -mb-2" />
     </div>
-    <div v-if="solicitations.length === 0">
-      <p class="italic">{{ emptyText }}</p>
-    </div>
+    <p class="italic" v-if="solicitations.length === 0">{{ emptyText }}</p>
   </div>
 </template>
 

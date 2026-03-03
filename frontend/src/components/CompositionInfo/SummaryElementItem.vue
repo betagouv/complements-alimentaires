@@ -2,8 +2,8 @@
   <li class="border-l-2 border-b pl-4 py-2">
     <DsfrAlert v-if="treatedRequest" :type="treatedRequest.type" small class="mb-2">
       <p>{{ treatedRequest.label }}</p>
-      <p v-if="showRequestComment">
-        <i>{{ model.requestPrivateNotes }}</i>
+      <p v-if="showRequestComment" class="italic">
+        {{ model.requestPrivateNotes }}
       </p>
     </DsfrAlert>
     <div class="md:flex justify-between">
