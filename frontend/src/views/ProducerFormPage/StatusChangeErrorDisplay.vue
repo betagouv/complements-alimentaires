@@ -13,7 +13,7 @@
           :title="`${tabSection.tab} (${tabSection.errors.length} erreur${tabSection.errors.length > 1 ? 's' : ''})`"
           :id="tabSection.tab"
         >
-          <router-link :to="routeForTab(tabSection.tab)" v-if="tabSection.tab !== 'Autres'">
+          <router-link :to="routeForTab(tabSection.tab)" v-if="tabSection.tab !== 'Autres'" aria-current="false">
             Aller dans l'onglet « {{ tabSection.tab }} »
           </router-link>
           <ul>
