@@ -32,26 +32,31 @@
         </ul>
       </div>
     </DsfrModal>
-    <button @click="infoModalOpened = true" :disabled="!hasInformationToShow" :title="moreInfoButtonTitle">
+    <button
+      @click="infoModalOpened = true"
+      :disabled="!hasInformationToShow"
+      @mouseover="showTooltip = true"
+      @mouseleave="showTooltip = false"
+      ref="source"
+    >
       <v-icon
         :name="hasInformationToShow ? 'ri-chat-4-line' : 'ri-chat-off-line'"
         :color="hasInformationToShow ? 'rgb(0, 0, 145)' : '#AAA'"
       ></v-icon>
+      <span class="fr-sr-only">Commentaires sur l'ingrédient {{ elementName }}</span>
     </button>
+    <span class="fr-tooltip fr-placement" :class="tooltipClass" :style="tooltipStyle" role="tooltip" ref="tooltip">
+      {{ tooltipContent }}
+    </span>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, useTemplateRef, onMounted } from "vue"
+import { computed, ref, useTemplateRef, watch } from "vue"
 import { getElementName } from "@/utils/elements"
 import ElementDoses from "@/components/ElementDoses.vue"
 
 const model = defineModel()
-const tooltip = useTemplateRef("tooltip")
-
-// Enlève le comportement par défaut de scroller vers le haut lors du click du DsfrTootlip
-// en ajoutant un preventDefault du click
-onMounted(() => tooltip.value?.$el?.nextElementSibling?.addEventListener?.("click", (e) => e.preventDefault()))
 
 // Le backend sérialise les  commentaires privés seulement si l'utilisateur.ice
 // fait partie de l'administartion. Néanmoins, il y a des contextes où on ne
@@ -74,9 +79,9 @@ const warningsOnLabel = computed(() => element.value?.warningsOnLabel)
 
 const constitutingSubstances = computed(() => element.value?.substances)
 
-const moreInfoButtonTitle = computed(() => {
-  if (!hasInformationToShow.value) return "Pas d'informations supplementaires sur l'ingrédient " + elementName.value
-  let content = "Cliquez pour voir plus d'informations sur l'ingrédient " + elementName.value + ". "
+const tooltipContent = computed(() => {
+  if (!hasInformationToShow.value) return "Pas d'informations supplementaires."
+  let content = ""
   if (hasMaxQuantities.value) content += `Quantités maximales : ${maxQuantitiesString.value}. `
   if (warningsOnLabel.value && warningsOnLabel.value.length) content += "Cet ingrédient contient des avertissements. "
   if (element.value?.publicComments) content += `Commentaires : ${element.value?.publicComments}. `
@@ -98,4 +103,72 @@ const hasInformationToShow = computed(
     warningsOnLabel.value ||
     constitutingSubstances.value?.length
 )
+
+// gérer le style du tooltip en reprenant le code de DsfrTooltip
+const showTooltip = ref(false)
+
+const source = useTemplateRef("source")
+const tooltip = useTemplateRef("tooltip")
+
+const translateX = ref("0px")
+const translateY = ref("0px")
+const arrowX = ref("0px")
+const top = ref(false)
+const opacity = ref(0)
+
+async function computePosition() {
+  if (typeof document === "undefined") {
+    return
+  }
+  if (typeof window === "undefined") {
+    return
+  }
+  if (!showTooltip.value) {
+    return
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 100))
+  const sourceTop = source.value?.getBoundingClientRect().top
+  const sourceHeight = source.value?.offsetHeight
+  const sourceWidth = source.value?.offsetWidth
+  const sourceLeft = source.value?.getBoundingClientRect().left
+  const tooltipHeight = tooltip.value?.offsetHeight
+  const tooltipWidth = tooltip.value?.offsetWidth
+  const tooltipTop = tooltip.value?.offsetTop
+  const tooltipLeft = tooltip.value?.offsetLeft
+
+  const isTooltipAtBottom = sourceTop + sourceHeight + tooltipHeight >= window.innerHeight
+  top.value = isTooltipAtBottom
+
+  const isTooltipOnRightSide = sourceLeft + sourceWidth / 2 + tooltipWidth / 2 >= document.documentElement.offsetWidth
+  const isTooltipOnLeftSide = sourceLeft + sourceWidth / 2 - tooltipWidth / 2 < 0
+
+  translateY.value = isTooltipAtBottom
+    ? `${sourceTop - tooltipTop - tooltipHeight + 8}px`
+    : `${sourceTop - tooltipTop + sourceHeight - 8}px`
+  opacity.value = 1
+  translateX.value = isTooltipOnRightSide
+    ? `${sourceLeft - tooltipLeft + sourceWidth - tooltipWidth - 4}px`
+    : isTooltipOnLeftSide
+      ? `${sourceLeft - tooltipLeft + 4}px`
+      : `${sourceLeft - tooltipLeft + sourceWidth / 2 - tooltipWidth / 2}px`
+
+  arrowX.value = isTooltipOnRightSide
+    ? `${tooltipWidth / 2 - sourceWidth / 2 + 4}px`
+    : isTooltipOnLeftSide
+      ? `${-(tooltipWidth / 2) + sourceWidth / 2 - 4}px`
+      : "0px"
+}
+
+watch(showTooltip, computePosition, { immediate: true })
+
+const tooltipStyle = computed(
+  () =>
+    `transform: translate(${translateX.value}, ${translateY.value}); --arrow-x: ${arrowX.value}; opacity: ${opacity.value};'`
+)
+const tooltipClass = computed(() => ({
+  "fr-tooltip--shown": showTooltip.value,
+  "fr-placement--top": top.value,
+  "fr-placement--bottom": !top.value,
+}))
 </script>
