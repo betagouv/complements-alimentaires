@@ -93,7 +93,7 @@ Pygments==2.19.2
 pyHanko==0.32.0
 pyhanko-certvalidator==0.29.0
 pypdf==6.7.5
-pytest==8.4.1
+pytest==9.0.2
 python-bidi==0.6.7
 python-dateutil==2.9.0.post0
 python-magic==0.4.27
