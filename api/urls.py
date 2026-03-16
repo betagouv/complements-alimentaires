@@ -247,6 +247,8 @@ urlpatterns = {
     path("contact/", views.ContactView.as_view(), name="contact"),
     # Stats
     path("stats/", views.StatsView.as_view(), name="stats"),
+    # PoC
+    path("declarations/<int:pk>/extract-label/", views.ExtractLabelView.as_view(), name="extract_label"),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)

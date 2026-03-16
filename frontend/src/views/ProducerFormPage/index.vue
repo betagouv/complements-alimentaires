@@ -27,6 +27,16 @@
       </DsfrAlert>
 
       <StatusChangeErrorDisplay class="mb-8" :errors="statusChangeErrors" :tabTitles="titles" />
+      <DsfrButton @click="executeExtractLabel">Extract label</DsfrButton>
+      <div v-if="labelData && labelData.extraction">
+        <p>languages: {{ labelData.extraction.languages }}</p>
+        <p>productName: {{ labelData.extraction.productName }}</p>
+        <p>galenicForm: {{ labelData.extraction.galenicForm }}</p>
+        <p>targetPopulation: {{ labelData.extraction.targetPopulation }}</p>
+        <p>riskPopulation: {{ labelData.extraction.riskPopulation }}</p>
+        <p>composition: {{ labelData.extraction.composition }}</p>
+        <p>match: {{ labelData.results }}</p>
+      </div>
       <DsfrTabs
         v-if="payload"
         ref="tabs"
@@ -178,6 +188,14 @@ const {
   data: snapshots,
   execute: executeSnapshotsFetch,
 } = useFetch(() => `/api/v1/declarations/${props.id}/snapshots/`, { immediate: false })
+  .get()
+  .json()
+
+const {
+  // response: labelResponse,
+  data: labelData,
+  execute: executeExtractLabel,
+} = useFetch(() => `/api/v1/declarations/${props.id}/extract-label/`, { immediate: false })
   .get()
   .json()
 

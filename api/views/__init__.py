@@ -87,3 +87,4 @@ from .grouped_views import DeclarationFieldsGroupedView
 from .contact import ContactView
 from .error_report import ErrorReportCreateView
 from .stats import StatsView
+from .extract_label import ExtractLabelView
