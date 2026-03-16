@@ -34,8 +34,36 @@
         <p>galenicForm: {{ labelData.extraction.galenicForm }}</p>
         <p>targetPopulation: {{ labelData.extraction.targetPopulation }}</p>
         <p>riskPopulation: {{ labelData.extraction.riskPopulation }}</p>
-        <p>composition: {{ labelData.extraction.composition }}</p>
-        <p>match: {{ labelData.results }}</p>
+        <p class="fr-h6 mt-4">composition:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Quantity</th>
+              <th>Unit</th>
+              <th>Purpose</th>
+              <th>Preparation</th>
+              <th>Plant part</th>
+              <th>Matches</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="ingredient in labelData.extraction.composition" :key="ingredient.name">
+              <td>{{ ingredient.name }}</td>
+              <td>{{ ingredient.quantity }}</td>
+              <td>{{ ingredient.unit }}</td>
+              <td>{{ ingredient.purpose }}</td>
+              <td>{{ ingredient.preparation }}</td>
+              <td>{{ ingredient.plantPart }}</td>
+              <td>{{ labelData.results[ingredient.name]?.count }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="fr-h6 mt-8">match ingrédients</p>
+        <div v-for="(result, ingredient) in labelData.results" :key="ingredient">
+          <p class="font-bold">{{ ingredient }} ({{ result.count }} ingrédient(s) matché(s))</p>
+          <p v-for="match in result.results" :key="match.id">{{ match.id }}, {{ match.name }}, {{ match.type }}</p>
+        </div>
       </div>
       <DsfrTabs
         v-if="payload"
