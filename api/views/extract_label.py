@@ -63,10 +63,11 @@ class Document(BaseModel):
     )
     product_name: str = Field(..., description="Le nom du produit")
     composition: list[Ingredient] = Field(
-        ..., description="La composition du produit, la liste d'ingrédients avec leur quantité"
+        ...,
+        description="La composition du produit, la liste d'ingrédients avec leur quantité. Inclure que les ingrédients écrits en français",
     )
     galenic_form: str = Field(..., description="La forme galénique du produit")
-    ingredient_list: list[str] = Field(..., description="Les noms d'ingrédients dans le produit")
+    # ingredient_list: list[str] = Field(..., description="Les noms d'ingrédients dans le produit")
     target_population: list[str | None] = Field(
         ..., description="La ou les populations auxquelles le produit est déstiné"
     )
@@ -95,6 +96,25 @@ def extract_structured_data(attachment_path):
     return json.loads(data)
 
 
+def match_ingredient(ingredient):
+    search_results = search_elements({"term": ingredient})
+    if not search_results:
+        normalised_name = re.sub(r"[®*]", "", ingredient)
+        search_results = search_elements({"term": normalised_name})
+    if not search_results:
+        match = re.match(r"(.+?) \((.+)\)", normalised_name)
+        if match:
+            first_name = match.group(1)
+            search_results = search_elements({"term": first_name})
+            second_name = match.group(2)
+            search_results += search_elements({"term": second_name})
+    unique_results = list(set(search_results))
+    serialized_results = []
+    for result in unique_results:
+        serialized_results.append({"id": result.id, "type": result.object_type, "name": result.name})
+    return serialized_results
+
+
 def match_ingredients(ingredients):
     results = {}
     one_result = []
@@ -102,25 +122,11 @@ def match_ingredients(ingredients):
     multiple_results = []
 
     for ingredient in ingredients:
-        search_results = search_elements({"term": ingredient})
-        if not search_results:
-            normalised_name = re.sub(r"[®*]", "", ingredient)
-            search_results = search_elements({"term": normalised_name})
-        if not search_results:
-            match = re.match(r"(.+?) \((.+)\)", normalised_name)
-            if match:
-                first_name = match.group(1)
-                search_results = search_elements({"term": first_name})
-                second_name = match.group(2)
-                search_results += search_elements({"term": second_name})
-        unique_results = list(set(search_results))
-        serialized_results = []
-        for result in unique_results:
-            serialized_results.append({"id": result.id, "type": result.object_type, "name": result.name})
-        results[ingredient] = {"results": serialized_results, "count": len(unique_results)}
-        if len(unique_results) == 1:
+        serialized_results = match_ingredient(ingredient)
+        results[ingredient] = {"results": serialized_results, "count": len(serialized_results)}
+        if len(serialized_results) == 1:
             one_result.append(ingredient)
-        elif len(unique_results) == 0:
+        elif len(serialized_results) == 0:
             zero_results.append(ingredient)
         else:
             multiple_results.append(ingredient)
@@ -142,5 +148,6 @@ class ExtractLabelView(GenericAPIView):
         if not label:
             return Response("Must upload label", status=status.HTTP_400_BAD_REQUEST)
         json_data = extract_structured_data(label.file.path)
-        results = match_ingredients(json_data["ingredient_list"])
+        ingredient_list = list(map(lambda x: x["name"], json_data["composition"]))
+        results = match_ingredients(ingredient_list)
         return Response({"extraction": json_data, "results": results}, status=status.HTTP_200_OK)
