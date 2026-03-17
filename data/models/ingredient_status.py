@@ -1,4 +1,5 @@
 from django.db import models
+
 from django_jsonform.models.fields import ArrayField
 
 
@@ -10,9 +11,9 @@ class IngredientStatus(models.IntegerChoices):
     si on veut s'assurer de la cohérence des données.
     """
 
-    AUTHORIZED = 1, "autorisé"  # contient aussi les status SICCRF "à inscrire" et "sans objet"
+    AUTHORIZED = 1, "autorisé"
     NOT_AUTHORIZED = 2, "non autorisé"
-    NO_STATUS = 3, "sans objet"
+    NO_STATUS = 3, "sans objet"  # seuls les additifs et arômes peuvent avoir un status sans_objet
     AUTHORIZATION_REVOKED = 99, "retiré par l'administration"  # integer sans équivalent siccrf_id
 
 
@@ -22,8 +23,6 @@ class WithStatus(models.Model):
     C'est le statut de leur autorisation dans les compléments alimentaires.
     Cette mixins ne se trouve pas dans le fichier mixins pour éviter
     les imports circulaires.
-    On ne fait pas 2 champs un siccrf_ un ca_ car c'est un champ
-    spécifiquement voué a évoluer.
     """
 
     class Meta:

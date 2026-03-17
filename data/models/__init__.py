@@ -13,6 +13,7 @@ from .ingredient import (
     IngredientSubstanceRelation,
     IngredientMaxQuantityPerPopulationRelation,
 )
+from .aroma import Aroma, AromaSynonym
 from .ingredient_type import IngredientType
 from .microorganism import (
     Microorganism,
