@@ -31,7 +31,7 @@
           </a>
           <div v-else>
             <DsfrButton @click="opened = true" secondary size="sm" icon="ri-file-excel-2-fill">Télécharger</DsfrButton>
-            <DsfrModal v-model:opened="opened" title="Nombre de déclarations trop élévé" @close="opened = false">
+            <DsfrModal :opened="opened" title="Nombre de déclarations trop élévé" @close="opened = false">
               <p>
                 La recherche actuelle présente {{ data?.count }} résultats. Un maximum de
                 {{ maxDownloadSize }} déclarations peuvent être exportées.
