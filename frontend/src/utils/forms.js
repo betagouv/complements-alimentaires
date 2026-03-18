@@ -8,7 +8,7 @@ const REQUIRED = helpers.withMessage("Ce champ doit être rempli", required)
 export const errorRequiredField = { required: REQUIRED }
 export const errorRequiredEmail = {
   required: REQUIRED,
-  email: helpers.withMessage("L'e-mail doit être en format valide (ex : nom@entreprise.com)", email),
+  email: helpers.withMessage("L'e-mail doit être en format valide (ex : nom@example.com)", email),
 }
 export const errorNumeric = {
   numeric: helpers.withMessage("Ce champ doit être un chiffre", numeric),
