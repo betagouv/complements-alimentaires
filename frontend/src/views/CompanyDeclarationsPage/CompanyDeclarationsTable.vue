@@ -16,7 +16,8 @@ import { useRootStore } from "@/stores/root"
 import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import CompanyTableCell from "@/components/CompanyTableCell"
-import DeclarationName from "@/components/DeclarationName.vue"
+import DeclarationName from "@/components/DeclarationName"
+import DuplicateDeclaration from "@/components/DuplicateDeclaration"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
 const store = useRootStore()
@@ -45,9 +46,8 @@ const rows = computed(() =>
       timeAgo(x.creationDate),
       hasDeclarationRoleForCompany(x.company)
         ? {
-            component: "router-link",
-            text: "Dupliquer",
-            to: { name: "NewDeclaration", query: { duplicate: x.id } },
+            component: DuplicateDeclaration,
+            declaration: x,
           }
         : null,
     ],
