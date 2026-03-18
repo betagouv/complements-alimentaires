@@ -1,7 +1,7 @@
 <template>
-  <div class="p-4 border shadow-md">
+  <div class="p-4 border shadow-md" role="group" :aria-labelledby="groupId">
     <div class="flex">
-      <h4 class="self-center font-bold capitalize fr-text--md mb-0">
+      <h4 :id="groupId" class="self-center font-bold capitalize fr-text--md mb-0">
         {{ getElementName(model).toLowerCase() }}
       </h4>
       <p v-if="objectType === 'plant_part'" class="self-center ml-2 mb-0">
@@ -113,6 +113,7 @@ import { useRootStore } from "@/stores/root"
 import CountryField from "@/components/fields/CountryField"
 import { getElementName } from "@/utils/elements"
 import { getAuthorizationModeInFrench, ingredientStatuses } from "@/utils/mappings"
+import { getRandomHtmlId } from "@/utils/random"
 import { getCurrentInstance } from "vue"
 
 const model = defineModel()
@@ -185,4 +186,6 @@ watch(
     if (model.value.authorizationMode === "FR") model.value.euReferenceCountry = "FR"
   }
 )
+
+const groupId = "new-element-" + getRandomHtmlId()
 </script>
