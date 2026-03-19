@@ -3,16 +3,14 @@
     <h1 class="fr-h3">Entreprises responsables de la mise sur le marché</h1>
 
     <div class="md:flex justify-between">
-      <div class="md:w-1/3 lg:w-2/5 pt-1">
-        <DsfrFieldset>
-          <DsfrSearchBar
-            v-model="searchTerm"
-            label="Nom de l'entreprise, No. SIRET, ou No. de TVA"
-            placeholder="Nom de l'entreprise, No. SIRET, ou No. de TVA"
-            @search="search"
-            @update:modelValue="(val) => val === '' && search()"
-          />
-        </DsfrFieldset>
+      <div class="md:w-1/3 lg:w-2/5 pt-1 mb-4">
+        <CaSearchBar
+          v-model="searchTerm"
+          @search="search"
+          label="Rechercher les entreprises"
+          placeholder="Nom de l'entreprise, No. SIRET, ou No. de TVA"
+          label-visible
+        />
       </div>
       <div class="mb-4 md:mb-0" v-if="data?.count && data.count <= MAX_EXPORT_RESULTS">
         <a :href="excelUrl" download="true" class="fr-link fr-link--download">
@@ -102,6 +100,7 @@ import jsonDepartments from "@/utils/departments.json"
 import { allActivities } from "@/utils/mappings"
 import PaginatedExcelDownload from "@/components/PaginatedExcelDownload"
 import { setDocumentTitle } from "@/utils/document"
+import CaSearchBar from "@/components/CaSearchBar"
 
 const MAX_EXPORT_RESULTS = 2000
 

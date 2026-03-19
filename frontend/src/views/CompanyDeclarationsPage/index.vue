@@ -2,15 +2,15 @@
   <div class="fr-container">
     <div class="border px-4 pt-4 pb-2 mb-2 md:flex gap-4 items-baseline filters">
       <div class="md:min-w-lg">
-        <DsfrFieldset class="mb-0!">
-          <DsfrSearchBar
+        <div class="mb-4">
+          <CaSearchBar
             v-model="searchTerm"
-            label="Nom, ID ou entreprise"
-            placeholder="Nom, ID ou entreprise"
             @search="search"
-            @update:modelValue="(val) => val === '' && search()"
+            label="Rechercher les déclarations"
+            placeholder="Nom du produit, ID ou entreprise"
+            label-visible
           />
-        </DsfrFieldset>
+        </div>
         <div class="md:flex gap-4 items-baseline">
           <DsfrInputGroup>
             <DsfrSelect
@@ -81,6 +81,7 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import StatusFilter from "@/components/StatusFilter.vue"
 import { orderingOptionsPro } from "@/utils/mappings"
 import { setDocumentTitle } from "@/utils/document"
+import CaSearchBar from "@/components/CaSearchBar"
 
 const route = useRoute()
 const store = useRootStore()

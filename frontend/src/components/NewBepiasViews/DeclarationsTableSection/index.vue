@@ -3,7 +3,7 @@
     <!-- Zone de recherche -->
     <div class="md:flex justify-between">
       <div class="md:w-4/5 lg:w-3/5 pt-1 md:flex gap-0 sm:gap-4 md:gap-8">
-        <DsfrFieldset class="mb-0! grow">
+        <div class="mb-4 grow">
           <ElementAutocomplete
             v-model="searchTerm"
             label="Recherche"
@@ -20,7 +20,7 @@
             @searchCompany="searchByCompany"
             :required="false"
           />
-        </DsfrFieldset>
+        </div>
         <div class="md:max-w-sm">
           <DsfrInput
             type="date"

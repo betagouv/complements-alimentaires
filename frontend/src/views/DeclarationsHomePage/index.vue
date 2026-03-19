@@ -12,7 +12,7 @@
 
     <div class="border px-4 pb-2 mb-2 lg:flex gap-4 items-baseline filters">
       <div class="lg:border-r pt-4 md:pr-4">
-        <DsfrFieldset class="mb-0!">
+        <div class="mb-4">
           <DsfrSearchBar
             v-model="searchTerm"
             label="Nom, ID ou entreprise"
@@ -21,7 +21,7 @@
             @search="search"
             @update:modelValue="(val) => val === '' && search()"
           />
-        </DsfrFieldset>
+        </div>
 
         <div class="sm:flex gap-4 items-baseline">
           <DsfrInputGroup>
