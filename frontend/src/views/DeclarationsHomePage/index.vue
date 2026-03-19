@@ -12,16 +12,15 @@
 
     <div class="border px-4 pb-2 mb-2 lg:flex gap-4 items-baseline filters">
       <div class="lg:border-r pt-4 md:pr-4">
-        <DsfrFieldset class="mb-0!">
-          <DsfrSearchBar
+        <div class="mb-4">
+          <CaSearchBar
             v-model="searchTerm"
-            label="Nom, ID ou entreprise"
+            label="Rechercher les déclarations"
             placeholder="Nom, ID ou entreprise"
-            class="max-w-sm"
+            label-visible
             @search="search"
-            @update:modelValue="(val) => val === '' && search()"
           />
-        </DsfrFieldset>
+        </div>
 
         <div class="sm:flex gap-4 items-baseline">
           <DsfrInputGroup>
@@ -99,6 +98,7 @@ import { getPagesForPagination } from "@/utils/components"
 import { orderingOptionsPro } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import StatusFilter from "@/components/StatusFilter"
+import CaSearchBar from "@/components/CaSearchBar"
 import { setDocumentTitle } from "@/utils/document"
 
 const store = useRootStore()
