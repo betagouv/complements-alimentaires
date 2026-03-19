@@ -16,12 +16,14 @@
         <ElementAutocomplete
           label="Cherchez un ingrédient"
           hint="Tapez au moins trois caractères pour démarrer la recherche"
+          label-visible
           @selected="goToSelectedOption"
           @search="search"
           :chooseFirstAsDefault="false"
           :searchAll="true"
+          descriptionId="ingredient-examples"
         />
-        <p class="mt-6">
+        <p id="ingredient-examples" class="mt-6">
           Exemples :
           <router-link :to="getRouteForTerm('Eucalyptus')">Eucalyptus</router-link>
           ,
