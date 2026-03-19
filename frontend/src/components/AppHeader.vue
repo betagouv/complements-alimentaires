@@ -86,7 +86,7 @@ const quickLinks = computed(() => {
   margin-left: auto;
 }
 
-/* hack pour mettre le lien sur le logo compl'alim et non pas sur le logo ministère */
+/* hack pour mettre le lien sur le logo compl'alim et non pas sur le logo ministère (RGAA 6.1) */
 .fr-header__service {
   display: none;
 }
