@@ -7,13 +7,11 @@
       {{ filterTitle }}
 
       <span v-if="selectedOptions.length">
-        <DsfrTag
-          class="mr-2 mt-1"
-          v-for="option in selectedOptions"
-          :key="`filter-opt-${option}`"
-          :label="findLabel(option)"
-          small
-        />
+        <ul class="list-none pl-0 my-0" role="list">
+          <li v-for="option in selectedOptions" :key="`filter-opt-${option}`" class="inline">
+            <DsfrTag class="mr-2 mt-1" :label="findLabel(option)" small />
+          </li>
+        </ul>
       </span>
       <span v-else-if="noFilterText">
         <DsfrTag class="ml-2 mt-1" :label="noFilterText" small />
