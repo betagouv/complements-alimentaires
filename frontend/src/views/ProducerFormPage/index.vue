@@ -5,6 +5,8 @@
     </div>
 
     <div v-else class="mb-4">
+      <h1>{{ isNewDeclaration ? "Nouvelle démarche" : payload.name }}</h1>
+
       <DeclarationAlert v-if="payload" role="declarant" :declaration="payload" :snapshots="snapshots" class="mb-4" />
 
       <DsfrAlert
