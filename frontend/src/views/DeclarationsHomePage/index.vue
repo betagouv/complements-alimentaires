@@ -1,7 +1,7 @@
 <template>
   <div class="fr-container">
     <h1 class="sr-only">Mes déclarations</h1>
-    <div class="grid md:grid-cols-5 lg:grid-cols-10 gap-3 items-end">
+    <div class="md:grid md:grid-cols-5 lg:grid-cols-10 gap-3 items-end">
       <div class="col-span-5">
         <CaSearchBar
           v-model="searchTerm"
@@ -12,7 +12,7 @@
         />
       </div>
       <div class="col-span-2">
-        <div class="-my-6">
+        <div class="md:-my-6">
           <PaginationSizeSelect :modelValue="limit" @update:modelValue="updateLimit" />
         </div>
       </div>
@@ -26,7 +26,7 @@
           class="text-sm!"
         />
       </div>
-      <p class="col-span-1 mb-0">
+      <p class="col-span-1 mb-0 mt-4 md:mt-0">
         <router-link
           v-if="hasDeclarations"
           :to="{ name: 'NewDeclaration' }"
