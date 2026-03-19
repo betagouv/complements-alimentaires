@@ -4,7 +4,7 @@
       <DsfrCheckboxSet v-model="selectedOptions" :options="options" :legend="legend" />
     </DsfrModal>
     <p class="mb-2!">
-      {{ filterTitle }}
+      {{ filterTitle }} :
 
       <span v-if="selectedOptions.length">
         <DsfrTag
@@ -20,7 +20,10 @@
       </span>
     </p>
     <p class="mb-0">
-      <DsfrButton @click="opened = true" tertiary size="small" label="Changer" />
+      <DsfrButton @click="opened = true" tertiary size="small">
+        Changer
+        <span class="sr-only">{{ filterTitle }}</span>
+      </DsfrButton>
     </p>
   </div>
 </template>
