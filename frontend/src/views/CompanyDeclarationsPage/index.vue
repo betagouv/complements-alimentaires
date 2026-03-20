@@ -12,7 +12,7 @@
         />
       </div>
       <div class="col-span-1 lg:col-span-3"></div>
-      <div class="col-span-4 lg:col-span-2">
+      <div class="col-span-4 lg:col-span-2 my-4 md:my-0">
         <DsfrSelect
           label="Trier par"
           defaultUnselectedText=""

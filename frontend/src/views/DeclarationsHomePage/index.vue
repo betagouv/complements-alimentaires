@@ -145,8 +145,6 @@ const page = computed(() => parseInt(route.query.page))
 const filteredStatus = computed(() => route.query.status)
 const limit = computed(() => route.query.limit)
 
-const createNewDeclaration = () => router.push({ name: "NewDeclaration" })
-
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...newQuery } })
 const updateStatusFilter = (status) => updateQuery({ status })
 const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
