@@ -1,17 +1,36 @@
 <template>
   <div class="fr-container">
-    <div class="border px-4 pt-4 pb-2 mb-2 md:flex gap-4 items-baseline filters">
-      <div class="md:min-w-lg">
-        <div class="mb-4">
-          <CaSearchBar
-            v-model="searchTerm"
-            @search="search"
-            label="Rechercher les déclarations"
-            placeholder="Nom du produit, ID ou entreprise"
-            label-visible
-          />
-        </div>
-        <div class="md:flex gap-4 items-baseline">
+    <h1 class="sr-only">Les déclarations de mon entreprise</h1>
+    <div class="md:grid grid-cols-10 gap-3 items-end">
+      <div class="col-span-5">
+        <CaSearchBar
+          v-model="searchTerm"
+          @search="search"
+          label="Rechercher les déclarations"
+          placeholder="Nom du produit, ID ou entreprise"
+          label-visible
+        />
+      </div>
+      <div class="col-span-1 lg:col-span-3"></div>
+      <div class="col-span-4 lg:col-span-2 my-4 md:my-0">
+        <DsfrSelect
+          label="Trier par"
+          defaultUnselectedText=""
+          :modelValue="ordering"
+          @update:modelValue="updateOrdering"
+          :options="orderingOptionsPro"
+          class="text-sm!"
+        />
+      </div>
+    </div>
+
+    <h2 class="fr-text--lg mt-4 mb-1">
+      <v-icon name="ri-equalizer-fill"></v-icon>
+      Filtres
+    </h2>
+    <div class="border px-4 mb-2 md:grid grid-cols-2 gap-4 items-center filters">
+      <div class="md:border-r pr-4">
+        <div class="sm:grid grid-cols-2 gap-4 items-baseline">
           <DsfrInputGroup>
             <DsfrSelect
               label="Entreprise"
@@ -32,17 +51,9 @@
               class="text-sm!"
             />
           </DsfrInputGroup>
-          <DsfrSelect
-            label="Trier par"
-            defaultUnselectedText=""
-            :modelValue="ordering"
-            @update:modelValue="updateOrdering"
-            :options="orderingOptionsPro"
-            class="text-sm!"
-          />
         </div>
       </div>
-      <div class="pb-4 max-w-sm mt-4 md:mt-0 md:border-l md:pl-4">
+      <div class="py-2">
         <StatusFilter
           :exclude="['DRAFT']"
           @updateFilter="updateStatusFilter"
