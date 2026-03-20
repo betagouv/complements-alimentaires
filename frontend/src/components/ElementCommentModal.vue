@@ -37,7 +37,6 @@
       :disabled="!hasInformationToShow"
       @focus="onMouseOverTooltip"
       @blur="onMouseLeaveTooltip"
-      @keydown.esc="showTooltip = false"
       @mouseover="onMouseOverTooltip"
       @mouseleave="onMouseLeaveTooltip"
       ref="source"
