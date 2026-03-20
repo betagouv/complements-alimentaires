@@ -1,6 +1,6 @@
 <template>
   <div class="flex border w-8 aspect-square rounded-full content-center justify-center">
-    <DsfrModal :title="elementName" size="lg" :opened="infoModalOpened" @close="infoModalOpened = false">
+    <DsfrModal :title="elementName" size="lg" :opened="infoModalOpened" @close="closeModal">
       <div v-if="element?.publicComments">
         <h2 class="fr-h6 mb-2!">Commentaires</h2>
         <p class="whitespace-pre-line">{{ element?.publicComments }}</p>
@@ -50,7 +50,6 @@
     </button>
     <span
       :id="tooltipContentId"
-      class="fr-tooltip fr-placement"
       :class="tooltipClass"
       :style="tooltipStyle"
       role="tooltip"
@@ -186,6 +185,7 @@ const tooltipStyle = computed(
     `transform: translate(${translateX.value}, ${translateY.value}); --arrow-x: ${arrowX.value}; opacity: ${opacity.value};'`
 )
 const tooltipClass = computed(() => ({
+  "fr-tooltip fr-placement": true,
   "fr-tooltip--shown": showTooltip.value,
   "fr-placement--top": top.value,
   "fr-placement--bottom": !top.value,
@@ -216,4 +216,11 @@ const onMouseLeaveTooltipContent = () => {
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") showTooltip.value = false
 })
+
+const closeModal = () => {
+  infoModalOpened.value = false
+  // utiliser setTimeout car le focus est mis sur le bouton une fois que le modal est fermé
+  // pour s'assurer que le tooltip ferme quand même, on utilise ce timeout
+  setTimeout(() => (showTooltip.value = false), 10)
+}
 </script>
