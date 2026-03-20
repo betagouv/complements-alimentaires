@@ -116,8 +116,10 @@ const accordionGroup = useTemplateRef("error-group")
 
 watch(shownErrors, (newErrors) => {
   if (newErrors.length) {
-    const buttons = accordionGroup.value.$el.getElementsByTagName("button")
-    if (buttons.length) buttons[0].focus()
+    setTimeout(() => {
+      const buttons = accordionGroup.value?.$el?.getElementsByTagName("button")
+      if (buttons.length) buttons[0].focus()
+    }, 10)
   }
 })
 </script>
