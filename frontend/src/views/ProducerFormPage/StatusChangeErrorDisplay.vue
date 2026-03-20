@@ -6,7 +6,7 @@
       title="Veuillez corriger les erreurs indiquées ci-dessous"
       titleTag="h2"
     >
-      <DsfrAccordionsGroup v-model="activeAccordion" class="my-4">
+      <DsfrAccordionsGroup v-model="activeAccordion" class="my-4" ref="error-group">
         <DsfrAccordion
           v-for="tabSection in shownErrors"
           :key="tabSection.tab"
@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { computed, ref, useTemplateRef, watch } from "vue"
 const props = defineProps({ errors: Object, tabTitles: Array })
 const activeAccordion = ref(-1)
 
@@ -111,4 +111,13 @@ const tabSections = {
   "Nouveaux ingrédients": ["euReferenceCountry", "euLegalSource", "authorizationMode"],
   Autres: [],
 }
+
+const accordionGroup = useTemplateRef("error-group")
+
+watch(shownErrors, (newErrors) => {
+  if (newErrors.length) {
+    const buttons = accordionGroup.value.$el.getElementsByTagName("button")
+    if (buttons.length) buttons[0].focus()
+  }
+})
 </script>
