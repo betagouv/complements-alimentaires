@@ -1,6 +1,6 @@
 <template>
   <div class="flex border w-8 aspect-square rounded-full content-center justify-center">
-    <DsfrModal :title="elementName" size="lg" :opened="infoModalOpened" @close="infoModalOpened = false">
+    <DsfrModal :title="elementName" size="lg" :opened="infoModalOpened" @close="closeModal">
       <div v-if="element?.publicComments">
         <h2 class="fr-h6 mb-2!">Commentaires</h2>
         <p class="whitespace-pre-line">{{ element?.publicComments }}</p>
@@ -32,26 +32,43 @@
         </ul>
       </div>
     </DsfrModal>
-    <button @click="infoModalOpened = true" :disabled="!hasInformationToShow" :title="moreInfoButtonTitle">
+    <button
+      @click="infoModalOpened = true"
+      :disabled="!hasInformationToShow"
+      @focus="onMouseOverTooltip"
+      @blur="onMouseLeaveTooltip"
+      @mouseover="onMouseOverTooltip"
+      @mouseleave="onMouseLeaveTooltip"
+      ref="source"
+      :aria-describedby="tooltipContentId"
+    >
       <v-icon
         :name="hasInformationToShow ? 'ri-chat-4-line' : 'ri-chat-off-line'"
         :color="hasInformationToShow ? 'rgb(0, 0, 145)' : '#AAA'"
       ></v-icon>
+      <span class="fr-sr-only">Commentaires sur l'ingrédient {{ elementName }}</span>
     </button>
+    <span
+      :id="tooltipContentId"
+      :class="tooltipClass"
+      :style="tooltipStyle"
+      role="tooltip"
+      ref="tooltip"
+      @mouseover="isMouseOverContent = true"
+      @mouseleave="onMouseLeaveTooltipContent"
+    >
+      {{ tooltipContent }}
+    </span>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, useTemplateRef, onMounted } from "vue"
+import { computed, ref, useTemplateRef, watch } from "vue"
 import { getElementName } from "@/utils/elements"
+import { getRandomHtmlId } from "@/utils/random"
 import ElementDoses from "@/components/ElementDoses.vue"
 
 const model = defineModel()
-const tooltip = useTemplateRef("tooltip")
-
-// Enlève le comportement par défaut de scroller vers le haut lors du click du DsfrTootlip
-// en ajoutant un preventDefault du click
-onMounted(() => tooltip.value?.$el?.nextElementSibling?.addEventListener?.("click", (e) => e.preventDefault()))
 
 // Le backend sérialise les  commentaires privés seulement si l'utilisateur.ice
 // fait partie de l'administartion. Néanmoins, il y a des contextes où on ne
@@ -74,9 +91,11 @@ const warningsOnLabel = computed(() => element.value?.warningsOnLabel)
 
 const constitutingSubstances = computed(() => element.value?.substances)
 
-const moreInfoButtonTitle = computed(() => {
-  if (!hasInformationToShow.value) return "Pas d'informations supplementaires sur l'ingrédient " + elementName.value
-  let content = "Cliquez pour voir plus d'informations sur l'ingrédient " + elementName.value + ". "
+const tooltipContentId = getRandomHtmlId("tooltip-content")
+
+const tooltipContent = computed(() => {
+  if (!hasInformationToShow.value) return "Pas d'informations supplementaires."
+  let content = ""
   if (hasMaxQuantities.value) content += `Quantités maximales : ${maxQuantitiesString.value}. `
   if (warningsOnLabel.value && warningsOnLabel.value.length) content += "Cet ingrédient contient des avertissements. "
   if (element.value?.publicComments) content += `Commentaires : ${element.value?.publicComments}. `
@@ -98,4 +117,110 @@ const hasInformationToShow = computed(
     warningsOnLabel.value ||
     constitutingSubstances.value?.length
 )
+
+// gérer le style du tooltip en reprenant le code de DsfrTooltip
+// notre vérsion va au-delà de la version VueDsfr du jour :
+// - option de mettre un tooltip sur un autre element interactif (bouton modal dans ce cas)
+// - RGAA 10.13.2 : pouvoir survoler le contenu du tooltip
+// - RGAA 10.13.1 : pouvoir masquer le tooltip avec esc sans bouger le souris
+const showTooltip = ref(false)
+
+const source = useTemplateRef("source")
+const tooltip = useTemplateRef("tooltip")
+
+const translateX = ref("0px")
+const translateY = ref("0px")
+const arrowX = ref("0px")
+const top = ref(false)
+const opacity = ref(0)
+
+async function computePosition() {
+  if (typeof document === "undefined") {
+    return
+  }
+  if (typeof window === "undefined") {
+    return
+  }
+  if (!showTooltip.value) {
+    return
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 100))
+  const sourceTop = source.value?.getBoundingClientRect().top
+  const sourceHeight = source.value?.offsetHeight
+  const sourceWidth = source.value?.offsetWidth
+  const sourceLeft = source.value?.getBoundingClientRect().left
+  const tooltipHeight = tooltip.value?.offsetHeight
+  const tooltipWidth = tooltip.value?.offsetWidth
+  const tooltipTop = tooltip.value?.offsetTop
+  const tooltipLeft = tooltip.value?.offsetLeft
+
+  const isTooltipAtBottom = sourceTop + sourceHeight + tooltipHeight >= window.innerHeight
+  top.value = isTooltipAtBottom
+
+  const isTooltipOnRightSide = sourceLeft + sourceWidth / 2 + tooltipWidth / 2 >= document.documentElement.offsetWidth
+  const isTooltipOnLeftSide = sourceLeft + sourceWidth / 2 - tooltipWidth / 2 < 0
+
+  translateY.value = isTooltipAtBottom
+    ? `${sourceTop - tooltipTop - tooltipHeight + 8}px`
+    : `${sourceTop - tooltipTop + sourceHeight - 8}px`
+  opacity.value = 1
+  translateX.value = isTooltipOnRightSide
+    ? `${sourceLeft - tooltipLeft + sourceWidth - tooltipWidth - 4}px`
+    : isTooltipOnLeftSide
+      ? `${sourceLeft - tooltipLeft + 4}px`
+      : `${sourceLeft - tooltipLeft + sourceWidth / 2 - tooltipWidth / 2}px`
+
+  arrowX.value = isTooltipOnRightSide
+    ? `${tooltipWidth / 2 - sourceWidth / 2 + 4}px`
+    : isTooltipOnLeftSide
+      ? `${-(tooltipWidth / 2) + sourceWidth / 2 - 4}px`
+      : "0px"
+}
+
+watch(showTooltip, computePosition, { immediate: true })
+
+const tooltipStyle = computed(
+  () =>
+    `transform: translate(${translateX.value}, ${translateY.value}); --arrow-x: ${arrowX.value}; opacity: ${opacity.value};'`
+)
+const tooltipClass = computed(() => ({
+  "fr-tooltip fr-placement": true,
+  "fr-tooltip--shown": showTooltip.value,
+  "fr-placement--top": top.value,
+  "fr-placement--bottom": !top.value,
+}))
+
+const isMouseOverContent = ref(false)
+const isMouseOverTooltip = ref(false)
+
+const onMouseOverTooltip = () => {
+  showTooltip.value = true
+  isMouseOverTooltip.value = true
+}
+
+const onMouseLeaveTooltip = () => {
+  isMouseOverTooltip.value = false
+  setTimeout(() => {
+    if (!isMouseOverContent.value) showTooltip.value = false
+  }, 100)
+}
+
+const onMouseLeaveTooltipContent = () => {
+  isMouseOverContent.value = false
+  setTimeout(() => {
+    if (!isMouseOverTooltip.value) showTooltip.value = false
+  }, 100)
+}
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") showTooltip.value = false
+})
+
+const closeModal = () => {
+  infoModalOpened.value = false
+  // utiliser setTimeout car le focus est mis sur le bouton une fois que le modal est fermé
+  // pour s'assurer que le tooltip ferme quand même, on utilise ce timeout
+  setTimeout(() => (showTooltip.value = false), 10)
+}
 </script>
