@@ -122,8 +122,9 @@
             <li>Ajoutez le numéro de SIRET ou le numéro de TVA intracommunautaire de l’entreprise mandatée.</li>
           </ol>
           <p>
-            ⚠️ L’entreprise mandatée doit disposer d’un compte sur la plateforme. Si ce n’est pas le cas, elle devra en
-            créer un au préalable.
+            <span aria-hidden="true">⚠️</span>
+            Attention : L’entreprise mandatée doit disposer d’un compte sur la plateforme. Si ce n’est pas le cas, elle
+            devra en créer un au préalable.
           </p>
           <p>
             Si vous souhaitez ajuster les rôles des déclarants de votre entreprise, n’hésitez pas à nous contacter à
