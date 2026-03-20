@@ -19,7 +19,7 @@
 
       <DsfrButton
         v-if="!hideSearchButton"
-        title="Rechercher"
+        title="Rechercher les ingrédients"
         class="max-h-10 mt-2 rounded-r"
         @click="search"
         :iconOnly="true"

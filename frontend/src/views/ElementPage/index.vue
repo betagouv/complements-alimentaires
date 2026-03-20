@@ -5,6 +5,8 @@
       <ElementAutocomplete
         v-model="searchTerm"
         label="Cherchez un ingrédient"
+        title="Cherchez un ingrédient"
+        placeholder="Cherchez un ingrédient"
         hint="Tapez au moins trois caractères pour démarrer la recherche"
         @selected="goToSelectedOption"
         @search="search"
@@ -197,7 +199,7 @@ const notFound = ref(false)
 
 const searchTerm = ref(null)
 const search = (newTerm) => {
-  if (newTerm.length < 3) window.alert("Veuillez saisir au moins trois caractères")
+  if (!newTerm || newTerm.length < 3) window.alert("Veuillez saisir au moins trois caractères")
   else router.push({ name: "ElementSearchResultsPage", query: { q: newTerm } })
 }
 
