@@ -121,6 +121,10 @@ const hasInformationToShow = computed(
 )
 
 // gérer le style du tooltip en reprenant le code de DsfrTooltip
+// notre vérsion va au-delà de la version VueDsfr du jour :
+// - option de mettre un tooltip sur un autre element interactif (bouton modal dans ce cas)
+// - RGAA 10.13.2 : pouvoir survoler le contenu du tooltip
+// - RGAA 10.13.1 : pouvoir masquer le tooltip avec esc sans bouger le souris
 const showTooltip = ref(false)
 
 const source = useTemplateRef("source")
