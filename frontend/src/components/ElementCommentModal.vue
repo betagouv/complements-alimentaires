@@ -35,9 +35,13 @@
     <button
       @click="infoModalOpened = true"
       :disabled="!hasInformationToShow"
-      @mouseover="showTooltip = true"
-      @mouseleave="showTooltip = false"
+      @focus="onMouseOverTooltip"
+      @blur="onMouseLeaveTooltip"
+      @keydown.esc="showTooltip = false"
+      @mouseover="onMouseOverTooltip"
+      @mouseleave="onMouseLeaveTooltip"
       ref="source"
+      :aria-describedby="tooltipContentId"
     >
       <v-icon
         :name="hasInformationToShow ? 'ri-chat-4-line' : 'ri-chat-off-line'"
@@ -45,7 +49,16 @@
       ></v-icon>
       <span class="fr-sr-only">Commentaires sur l'ingrédient {{ elementName }}</span>
     </button>
-    <span class="fr-tooltip fr-placement" :class="tooltipClass" :style="tooltipStyle" role="tooltip" ref="tooltip">
+    <span
+      :id="tooltipContentId"
+      class="fr-tooltip fr-placement"
+      :class="tooltipClass"
+      :style="tooltipStyle"
+      role="tooltip"
+      ref="tooltip"
+      @mouseover="isMouseOverContent = true"
+      @mouseleave="onMouseLeaveTooltipContent"
+    >
       {{ tooltipContent }}
     </span>
   </div>
@@ -54,6 +67,7 @@
 <script setup>
 import { computed, ref, useTemplateRef, watch } from "vue"
 import { getElementName } from "@/utils/elements"
+import { getRandomHtmlId } from "@/utils/random"
 import ElementDoses from "@/components/ElementDoses.vue"
 
 const model = defineModel()
@@ -78,6 +92,8 @@ const maxQuantitiesString = computed(() => stringifyMaxQuantities(maxQuantities.
 const warningsOnLabel = computed(() => element.value?.warningsOnLabel)
 
 const constitutingSubstances = computed(() => element.value?.substances)
+
+const tooltipContentId = getRandomHtmlId("tooltip-content")
 
 const tooltipContent = computed(() => {
   if (!hasInformationToShow.value) return "Pas d'informations supplementaires."
@@ -171,4 +187,30 @@ const tooltipClass = computed(() => ({
   "fr-placement--top": top.value,
   "fr-placement--bottom": !top.value,
 }))
+
+const isMouseOverContent = ref(false)
+const isMouseOverTooltip = ref(false)
+
+const onMouseOverTooltip = () => {
+  showTooltip.value = true
+  isMouseOverTooltip.value = true
+}
+
+const onMouseLeaveTooltip = () => {
+  isMouseOverTooltip.value = false
+  setTimeout(() => {
+    if (!isMouseOverContent.value) showTooltip.value = false
+  }, 100)
+}
+
+const onMouseLeaveTooltipContent = () => {
+  isMouseOverContent.value = false
+  setTimeout(() => {
+    if (!isMouseOverTooltip.value) showTooltip.value = false
+  }, 100)
+}
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") showTooltip.value = false
+})
 </script>
