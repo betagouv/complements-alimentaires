@@ -9,7 +9,7 @@
       <a download="true" :href="`/declarations/${declaration.id}/certificate`" class="fr-link fr-link--download">
         Télécharger
         <span class="lowercase">{{ displayData.documentName || "l'attestation" }}</span>
-        <span class="fr-link__detail">PDF</span>
+        <span class="fr-link__detail">&nbsp;PDF</span>
       </a>
       <a
         :href="`/declarations/${declaration.id}/certificate.html`"
@@ -20,6 +20,7 @@
       >
         {{ displayData.documentName || "L'attestation" }}
         <span class="link-detail">HTML</span>
+        <span class="fr-sr-only">&nbsp;- nouvelle fenêtre</span>
       </a>
     </div>
   </DsfrAlert>

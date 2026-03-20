@@ -12,6 +12,7 @@ updates:
       interval: "weekly"
     cooldown:
       default-days: 7
+
   - package-ecosystem: "npm"
     target-branch: "staging"
     directory: "/frontend"
@@ -19,3 +20,15 @@ updates:
       interval: "weekly"
     cooldown:
       default-days: 7
+
+  - package-ecosystem: "github-actions"
+    target-branch: "staging"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns:
+          - "*"

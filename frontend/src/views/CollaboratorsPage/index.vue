@@ -21,28 +21,27 @@
           <p class="text-xs mb-0">{{ user.email }}</p>
         </div>
         <div class="ml-2 md:ml-8 flex gap-2 flex-wrap">
-          <div class="flex gap-2 flex-wrap items-center">
-            <RoleTag
-              v-for="role in user.roles"
-              :key="role.name"
-              :role="role.name"
-              :user="user"
-              :show-actions="!(role.name == 'SupervisorRole' && user.id == loggedUser.id)"
-              @remove="changeRole(role.name, user, 'remove')"
-            />
-          </div>
-          <template v-for="(roleDisplayName, roleName) in roleNameDisplayNameMapping">
-            <DsfrButton
-              :key="roleName + user.id"
-              v-if="canRoleBeAddedTo(roleName, user)"
-              @click="changeRole(roleName, user, 'add')"
-              :label="`Attribuer rôle ${roleDisplayName}`"
-              icon="ri-add-circle-line"
-              tertiary
-              no-outline
-              size="sm"
-            />
-          </template>
+          <ul class="list-none pl-0 my-0 flex gap-2 flex-wrap items-center">
+            <li v-for="role in user.roles" :key="role.name">
+              <RoleTag
+                :role="role.name"
+                :user="user"
+                :show-actions="!(role.name == 'SupervisorRole' && user.id == loggedUser.id)"
+                @remove="changeRole(role.name, user, 'remove')"
+              />
+            </li>
+            <li v-for="(roleDisplayName, roleName) in roleNameDisplayNameMapping" :key="roleName + user.id">
+              <DsfrButton
+                v-if="canRoleBeAddedTo(roleName, user)"
+                @click="changeRole(roleName, user, 'add')"
+                :label="`Attribuer rôle ${roleDisplayName}`"
+                icon="ri-add-circle-line"
+                tertiary
+                no-outline
+                size="sm"
+              />
+            </li>
+          </ul>
         </div>
       </div>
       <hr class="mt-4 -mb-2" />

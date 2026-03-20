@@ -1,10 +1,10 @@
 <template>
-  <div class="p-4 border shadow-md">
+  <div class="p-4 border shadow-md" role="group" :aria-labelledby="groupId">
     <div class="sm:flex">
       <div class="flex">
         <div class="self-center">
-          <h4 class="font-bold capitalize fr-text--md mb-0">
-            {{ getElementName(model).toLowerCase() }}
+          <h4 :id="groupId" class="font-bold capitalize fr-text--md mb-0">
+            {{ elementName }}
           </h4>
           <p v-if="synonyms" class="mb-0">
             {{ synonyms }}
@@ -40,7 +40,7 @@
       <div v-if="props.canRemove" class="sm:ml-4 md:ml-6 self-center">
         <DsfrButton secondary @click="$emit('remove', model)">
           Enlever
-          <span class="fr-sr-only">« {{ getElementName(model).toLowerCase() }} »</span>
+          <span class="fr-sr-only">« {{ elementName }} »</span>
         </DsfrButton>
       </div>
     </div>
@@ -140,6 +140,7 @@ import { useRootStore } from "@/stores/root"
 import { computed, watch, ref, onMounted } from "vue"
 import { getElementName } from "@/utils/elements"
 import { getActivityReadonlyByType, ingredientStatuses } from "@/utils/mappings"
+import { getRandomHtmlId } from "@/utils/random"
 import ElementCommentModal from "@/components/ElementCommentModal"
 
 const model = defineModel()
@@ -218,4 +219,7 @@ const setPartStatus = (part) => {
 }
 watch(() => model.value.usedPart, setPartStatus)
 onMounted(() => setPartStatus(model.value.usedPart))
+
+const elementName = computed(() => getElementName(model.value).toLowerCase())
+const groupId = "element-" + getRandomHtmlId()
 </script>

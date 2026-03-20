@@ -2,22 +2,7 @@
 
 // use-toaster.ts
 import { reactive } from "vue"
-
-const alphanumBase = "abcdefghijklmnopqrstuvwyz0123456789"
-
-const alphanum = alphanumBase.repeat(10)
-
-const getRandomAlphaNum = () => {
-  const randomIndex = Math.floor(Math.random() * alphanum.length)
-  return alphanum[randomIndex]
-}
-
-const getRandomHtmlId = (prefix = "", suffix = "") => {
-  return (prefix ? prefix + "-" : "") + getRandomString(5) + (suffix ? "-" + suffix : "")
-}
-const getRandomString = (length) => {
-  return Array.from({ length }).map(getRandomAlphaNum).join("")
-}
+import { getRandomHtmlId } from "@/utils/random"
 
 /* -- Message object type --
   id?: string;

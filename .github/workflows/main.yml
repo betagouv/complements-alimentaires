@@ -1,6 +1,11 @@
+---
 name: Compléments Alimentaires CI
 
-on: [push]
+on:
+  push:
+    branches: [ staging, main ]
+  pull_request:
+    branches: [ staging, main ]
 
 jobs:
   build:
@@ -8,7 +13,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15
+        image: postgres:17
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -33,23 +38,25 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.12]
+        python-version: ["3.12"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.12
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
 
       - name: Setup Cairo for svglib 1.6.0
         run: |
           sudo apt-get update && \
-          sudo apt-get install -y libcairo2-dev libffi-dev pkg-config libxml2-dev libxslt1-dev libjpeg-dev
+          sudo apt-get install -y libcairo2-dev libffi-dev pkg-config \
+            libxml2-dev libxslt1-dev libjpeg-dev
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
           node-version: '22.x'
 
@@ -60,10 +67,10 @@ jobs:
 
       - name: Test Django
         env:
-          DEBUG: True
+          DEBUG: "True"
           SECRET: test
-          FORCE_HTTPS: False
-          SECURE: False
+          FORCE_HTTPS: "False"
+          SECURE: "False"
           ALLOWED_HOSTS: localhost
           ENVIRONMENT: ci
           DB_USER: postgres

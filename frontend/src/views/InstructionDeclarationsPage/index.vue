@@ -41,14 +41,15 @@
           </div>
         </div>
         <div class="md:pr-4 md:border-r md:border-t md:-mt-3">
-          <DsfrFieldset legend="Recherche" class="mb-0!">
-            <DsfrSearchBar
+          <div class="my-2">
+            <CaSearchBar
               v-model="searchTerm"
-              label="Nom, ID ou entreprise"
-              placeholder="Nom, ID ou entreprise"
               @search="search"
+              label="Rechercher"
+              placeholder="Nom, ID ou entreprise"
+              label-visible
             />
-          </DsfrFieldset>
+          </div>
         </div>
       </div>
       <StatusFilter :exclude="['DRAFT']" @updateFilter="updateStatusFilter" :statusString="filteredStatus" />
@@ -114,6 +115,7 @@ import StatusFilter from "@/components/StatusFilter.vue"
 import { orderingOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
 import PaginationSizeSelect from "@/components/PaginationSizeSelect"
 import { setDocumentTitle } from "@/utils/document"
+import CaSearchBar from "@/components/CaSearchBar"
 
 const router = useRouter()
 const route = useRoute()

@@ -5,6 +5,8 @@
       <ElementAutocomplete
         v-model="searchTerm"
         label="Cherchez un ingrédient"
+        title="Cherchez un ingrédient"
+        placeholder="Cherchez un ingrédient"
         hint="Tapez au moins trois caractères pour démarrer la recherche"
         @selected="goToSelectedOption"
         @search="search"
@@ -36,7 +38,11 @@
         </ElementColumn>
 
         <ElementColumn title="Synonymes" v-if="synonyms?.length">
-          <ElementTag :label="synonym" v-for="synonym in synonyms" :key="synonym" />
+          <ul class="list-none pl-0 my-0" role="list">
+            <li v-for="synonym in synonyms" :key="synonym">
+              <ElementTag :label="synonym" />
+            </li>
+          </ul>
         </ElementColumn>
 
         <ElementColumn title="Famille" v-if="family">
@@ -56,23 +62,33 @@
         </ElementColumn>
 
         <ElementColumn title="Parties autorisées" v-if="plantParts?.length">
-          <ElementTag :label="part" v-for="part in plantParts" :key="part" />
+          <ul class="list-none pl-0 my-0" role="list">
+            <li v-for="part in plantParts" :key="part">
+              <ElementTag :label="part" />
+            </li>
+          </ul>
         </ElementColumn>
 
         <ElementColumn title="Parties non-autorisées" v-if="forbiddenPlantParts?.length">
-          <ElementTag :label="part" v-for="part in forbiddenPlantParts" :key="part" />
+          <ul class="list-none pl-0 my-0" role="list">
+            <li v-for="part in forbiddenPlantParts" :key="part">
+              <ElementTag :label="part" />
+            </li>
+          </ul>
         </ElementColumn>
 
         <ElementColumn title="Substances" v-if="substances?.length">
-          <ElementTag
-            :link="{
-              name: 'ElementPage',
-              params: { urlComponent: `${substance.id}--substance--${substance.name}` },
-            }"
-            :label="substance.name"
-            v-for="substance in substances"
-            :key="`substance-${substance.id}`"
-          />
+          <ul class="list-none pl-0 my-0" role="list">
+            <li v-for="substance in substances" :key="`substance-${substance.id}`">
+              <ElementTag
+                :link="{
+                  name: 'ElementPage',
+                  params: { urlComponent: `${substance.id}--substance--${substance.name}` },
+                }"
+                :label="substance.name"
+              />
+            </li>
+          </ul>
         </ElementColumn>
 
         <ElementColumn title="Activité" v-if="activity">
@@ -114,14 +130,20 @@
         text="Un bulletin d'analyse vous sera demandé."
       />
       <ElementTextSection title="Commentaires" :text="publicComments" />
-      <ul v-if="element.regulatoryResourceLinks?.length" class="list-none -ml-4 mb-6">
-        <li v-for="resourceLink in element.regulatoryResourceLinks" :key="resourceLink">
-          Ressource reglementaire :
-          <ExternalLink :href="resourceLink" />
-        </li>
-      </ul>
+      <p v-if="element.regulatoryResourceLinks?.length === 1">
+        Ressource reglementaire :
+        <ExternalLink :href="resourceLink" />
+      </p>
+      <div v-else-if="element.regulatoryResourceLinks?.length">
+        <h2 class="fr-h6 mb-1">Ressources reglementaires</h2>
+        <ul v-if="element.regulatoryResourceLinks?.length">
+          <li v-for="resourceLink in element.regulatoryResourceLinks" :key="resourceLink">
+            <ExternalLink :href="resourceLink" />
+          </li>
+        </ul>
+      </div>
       <!-- Date de dernière mise à jour de la donnée -->
-      <DsfrAccordion title="Historique de l'ingrédient" id="accordion-history" titleTag="h2">
+      <DsfrAccordion title="Historique de l'ingrédient" id="accordion-history" titleTag="h2" class="mt-6">
         <DsfrTable
           :headers="historyHeaders"
           :rows="historyDataDedup"
@@ -197,7 +219,7 @@ const notFound = ref(false)
 
 const searchTerm = ref(null)
 const search = (newTerm) => {
-  if (newTerm.length < 3) window.alert("Veuillez saisir au moins trois caractères")
+  if (!newTerm || newTerm.length < 3) window.alert("Veuillez saisir au moins trois caractères")
   else router.push({ name: "ElementSearchResultsPage", query: { q: newTerm } })
 }
 

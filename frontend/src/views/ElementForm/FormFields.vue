@@ -438,13 +438,12 @@ import { useRouter } from "vue-router"
 import { useFetch } from "@vueuse/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
-import { firstErrorMsg, errorRequiredField, errorNumeric, errorMaxStringLength } from "@/utils/forms"
+import { firstErrorMsg, errorRequiredField, errorMaxStringLength } from "@/utils/forms"
 import { getUnitString } from "@/utils/elements"
 import { useVuelidate } from "@vuelidate/core"
 import useToaster from "@/composables/use-toaster"
 import FormWrapper from "@/components/FormWrapper"
 import ElementAutocomplete from "@/components/ElementAutocomplete"
-import NumberField from "@/components/NumberField"
 
 const props = defineProps({ element: Object, type: String, urlComponent: String })
 

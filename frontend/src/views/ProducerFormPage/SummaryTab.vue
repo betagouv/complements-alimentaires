@@ -37,6 +37,7 @@
               title="Informations supplémentaires sur la conformité au droit alimentaire - nouvelle fenêtre"
             >
               Informations supplémentaires sur la conformité au droit alimentaire.
+              <span class="fr-sr-only">- nouvelle fenêtre</span>
             </router-link>
           </template>
         </DsfrCheckbox>
