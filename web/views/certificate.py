@@ -71,6 +71,8 @@ class CertificateView(PdfView):
     def get_context(self, declaration):
         status = Declaration.DeclarationStatus
         date_statuses = [status.AWAITING_INSTRUCTION, status.AUTHORIZED, status.REJECTED]
+
+        platform = "TELEICARE" if declaration.teleicare_declaration_number else "COMPL’ALIM®"
         direction = (
             "de la concurrence, de la consommation et de la répression des fraudes (DGCCRF)"
             if declaration.teleicare_declaration_number
@@ -149,6 +151,7 @@ class CertificateView(PdfView):
                 f"{declaration.company.city} {declaration.company.country}",
             ],
             "declaration": declaration,
+            "platform": platform,
             "direction": direction,
             "sub_direction": sub_direction,
             "address_street": address_street,
