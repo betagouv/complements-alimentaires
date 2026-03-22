@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from rest_framework.exceptions import NotFound
@@ -8,6 +9,8 @@ from data.models import Declaration, Snapshot
 from .pdfview import PdfView
 
 logger = logging.getLogger(__name__)
+
+DGCCRF_TO_DGAL_TRANSFERT_DATE = datetime.date(2023, 2, 1)
 
 
 class CertificateView(PdfView):
@@ -71,34 +74,30 @@ class CertificateView(PdfView):
     def get_context(self, declaration):
         status = Declaration.DeclarationStatus
         date_statuses = [status.AWAITING_INSTRUCTION, status.AUTHORIZED, status.REJECTED]
-
+        # Les déclarations ont été faite sur TeleIcare avant le 20/09/2024
+        # Elles ont été traitées par la DGCCRF avant le 01/02/2023, ensuite par la DGAL
         platform = "TELEICARE" if declaration.teleicare_declaration_number else "COMPL’ALIM®"
-        direction = (
-            "de la concurrence, de la consommation et de la répression des fraudes (DGCCRF)"
-            if declaration.teleicare_declaration_number
-            else "de l'alimentation (DGAL)"
-        )
-        sub_direction = "Sous-Direction de la Sécurité Sanitaire des Aliments"
-        address_street = (
-            "59 BD VINCENT AURIOL - TÉLÉDOC 223" if declaration.teleicare_declaration_number else "78 RUE DE VARENNE"
-        )
-        address_cedex = "75703 PARIS CEDEX 13" if declaration.teleicare_declaration_number else "75349 PARIS 07 SP"
-        bureau = (
-            "Bureau 4A - Nutrition et information sur les denrées alimentaires"
-            if declaration.teleicare_declaration_number
-            else "BEPIAS (Bureau des Etablissements et Produits des Industries Alimentaires Spécialisées)"
-        )
-        mail = (
-            "bureau-4A@dgccrf.finances.gouv.fr"
-            if declaration.teleicare_declaration_number
-            else "bepias.sdssa.dgal@agriculture.gouv.fr"
-        )
-        signature_title = (
-            "La Sous-Direction"
-            if declaration.teleicare_declaration_number
-            else "La Sous-Directrice de la sécurité sanitaire des aliments"
-        )
-        signature_name = "" if declaration.teleicare_declaration_number else "Vanessa HUMMEL-FOURRAT"
+
+        if declaration.teleicare_declaration_number and declaration.creation_date < DGCCRF_TO_DGAL_TRANSFERT_DATE:
+            direction = "de la concurrence, de la consommation et de la répression des fraudes (DGCCRF)"
+            sub_direction = ""
+            address_street = "59 BD VINCENT AURIOL - TÉLÉDOC 223"
+            address_cedex = "75703 PARIS CEDEX 13"
+            bureau = "Bureau 4A - Nutrition et information sur les denrées alimentaires"
+            mail = "bureau-4A@dgccrf.finances.gouv.fr"
+            signature_title = "La Sous-Direction"
+            signature_name = ""
+
+        else:
+            direction = "de l'alimentation (DGAL)"
+            sub_direction = "Sous-Direction de la Sécurité Sanitaire des Aliments"
+            address_street = "78 RUE DE VARENNE"
+            address_cedex = "75349 PARIS 07 SP"
+            bureau = "BEPIAS (Bureau des Etablissements et Produits des Industries Alimentaires Spécialisées)"
+            mail = "bepias.sdssa.dgal@agriculture.gouv.fr"
+            signature_title = "La Sous-Directrice de la sécurité sanitaire des aliments"
+            signature_name = "Vanessa HUMMEL-FOURRAT"
+
         try:
             date = (
                 declaration.snapshots.filter(status__in=date_statuses)
