@@ -1,7 +1,10 @@
+import io
 import logging
 
-import magic
 from django.core.exceptions import ValidationError
+
+import magic
+import pikepdf
 from drf_base64.fields import Base64FileField
 from openpyxl.cell.cell import Hyperlink
 from rest_framework import serializers
@@ -257,6 +260,51 @@ ALLOWED_MIME_TYPES = {
 }
 
 
+def sanitize_pdf(file):
+    """
+    Reécrit le PDF via pikepdf pour supprimer les scripts embarqués,
+    les actions JavaScript, et les pièces jointes internes.
+    """
+    try:
+        pdf_bytes = file.read()
+        file.seek(0)
+
+        with pikepdf.open(io.BytesIO(pdf_bytes)) as pdf:
+            if "/Names" in pdf.Root:
+                # Actions JS
+                names = pdf.Root["/Names"]
+                if "/JavaScript" in names:
+                    del names["/JavaScript"]
+
+                # Pièces jointes embarquées
+                if "/EmbeddedFiles" in names:
+                    del names["/EmbeddedFiles"]
+
+            # Actions d'ouverture automatique
+            if "/OpenAction" in pdf.Root:
+                del pdf.Root["/OpenAction"]
+
+            # Actions sur les pages
+            for page in pdf.pages:
+                if "/AA" in page:
+                    del page["/AA"]
+                if "/Annots" in page:
+                    for annot in page["/Annots"]:
+                        if "/A" in annot:
+                            action = annot["/A"]
+                            if action.get("/S") == "/JavaScript":
+                                del annot["/A"]
+
+            output = io.BytesIO()
+            pdf.save(output)
+            return output.getvalue()
+
+    except pikepdf.PdfError as e:
+        raise ValidationError(f"Le fichier PDF est invalide ou corrompu : {e}")
+    except Exception as e:
+        raise ValidationError(f"Impossible de traiter le fichier PDF : {e}")
+
+
 class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
     file = Base64FileField()
 
@@ -287,6 +335,15 @@ class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
 
         if mime not in ALLOWED_MIME_TYPES:
             raise ValidationError("Seuls les fichiers PDF et images (JPEG, PNG, GIF, WEBP) sont autorisés")
+
+        # Sanitisation spécifique aux PDFs
+        if mime == "application/pdf":
+            sanitized_bytes = sanitize_pdf(file)
+            file.seek(0)
+            file.write(sanitized_bytes)
+            file.seek(0)
+            file.truncate(len(sanitized_bytes))
+            file.seek(0)
 
         return file
 

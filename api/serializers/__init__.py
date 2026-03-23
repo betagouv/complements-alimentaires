@@ -34,6 +34,7 @@ from .declaration import (
     DeclaredIngredientSerializer,
     DeclaredElementDeclarationSerializer,
     ExcelControlDeclarationSerializer,
+    sanitize_pdf,
 )
 from .company import (
     CompanySerializer,
