@@ -6,14 +6,14 @@
       title="Veuillez corriger les erreurs indiquées ci-dessous"
       titleTag="h2"
     >
-      <DsfrAccordionsGroup v-model="activeAccordion" class="my-4">
+      <DsfrAccordionsGroup v-model="activeAccordion" class="my-4" ref="error-group">
         <DsfrAccordion
           v-for="tabSection in shownErrors"
           :key="tabSection.tab"
           :title="`${tabSection.tab} (${tabSection.errors.length} erreur${tabSection.errors.length > 1 ? 's' : ''})`"
           :id="tabSection.tab"
         >
-          <router-link :to="routeForTab(tabSection.tab)" v-if="tabSection.tab !== 'Autres'">
+          <router-link :to="routeForTab(tabSection.tab)" v-if="tabSection.tab !== 'Autres'" aria-current="false">
             Aller dans l'onglet « {{ tabSection.tab }} »
           </router-link>
           <ul>
@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { computed, ref, useTemplateRef, watch } from "vue"
 const props = defineProps({ errors: Object, tabTitles: Array })
 const activeAccordion = ref(-1)
 
@@ -111,4 +111,15 @@ const tabSections = {
   "Nouveaux ingrédients": ["euReferenceCountry", "euLegalSource", "authorizationMode"],
   Autres: [],
 }
+
+const accordionGroup = useTemplateRef("error-group")
+
+watch(shownErrors, (newErrors) => {
+  if (newErrors.length) {
+    setTimeout(() => {
+      const buttons = accordionGroup.value?.$el?.getElementsByTagName("button")
+      if (buttons.length) buttons[0].focus()
+    }, 10)
+  }
+})
 </script>

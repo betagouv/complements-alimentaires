@@ -26,8 +26,10 @@
       </DsfrInputGroup>
       <DsfrButton class="block! w-full!" :disabled="isFetching" label="Se connecter" @click="submit" />
       <hr class="mt-8" />
-      <h4>Vous n'avez pas de compte ?</h4>
-      <DsfrButton class="block! w-full!" secondary label="S'enregistrer" @click="router.push({ name: 'SignupPage' })" />
+      <h2 class="fr-h4">Vous n'avez pas de compte ?</h2>
+      <router-link class="block! w-full! fr-btn fr-btn--secondary" :to="{ name: 'SignupPage' }">
+        Créer un compte
+      </router-link>
     </FormWrapper>
   </SingleItemWrapper>
 </template>

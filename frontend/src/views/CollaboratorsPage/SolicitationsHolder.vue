@@ -16,18 +16,18 @@
 
         <div class="ml-2 md:ml-8 flex flex-col gap-y-1">
           <p class="italic mb-0">{{ solicitation.description }}</p>
-          <div v-if="actions.length > 0" class="flex gap-x-2">
-            <DsfrButton
-              v-for="action in actions"
-              :key="action.label"
-              :label="action.label"
-              :icon="action.icon"
-              :primary="action.primary"
-              :secondary="action.secondary"
-              size="sm"
-              @click="emit('process', solicitation.id, action.name)"
-            />
-          </div>
+          <ul v-if="actions.length > 0" class="list-none pl-0 my-0 flex gap-x-2" role="list">
+            <li v-for="action in actions" :key="action.label">
+              <DsfrButton
+                :label="action.label"
+                :icon="action.icon"
+                :primary="action.primary"
+                :secondary="action.secondary"
+                size="sm"
+                @click="emit('process', solicitation.id, action.name)"
+              />
+            </li>
+          </ul>
         </div>
       </div>
       <hr class="mt-4 -mb-2" />

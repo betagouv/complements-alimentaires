@@ -2,15 +2,14 @@
   <div :class="{ 'fr-container': true, seeOverflow }">
     <div class="mb-2 md:flex gap-8 search-area">
       <div class="md:w-1/3 lg:w-2/5 pt-1">
-        <DsfrFieldset legend="Recherche" class="mb-0!">
-          <DsfrSearchBar
-            v-model="searchTerm"
-            label="Nom du produit, ID ou entreprise"
-            placeholder="Nom du produit, ID ou entreprise"
-            @search="search"
-            @update:modelValue="(val) => val === '' && search()"
-          />
-        </DsfrFieldset>
+        <CaSearchBar
+          v-model="searchTerm"
+          @search="search"
+          label="Rechercher les déclarations"
+          placeholder="Nom du produit, ID ou entreprise"
+          label-visible
+          class="mt-2"
+        />
       </div>
       <div class="md:w-2/3 lg:w-3/5 md:flex gap-3">
         <DsfrInputGroup>
@@ -31,7 +30,7 @@
           </a>
           <div v-else>
             <DsfrButton @click="opened = true" secondary size="sm" icon="ri-file-excel-2-fill">Télécharger</DsfrButton>
-            <DsfrModal v-model:opened="opened" title="Nombre de déclarations trop élévé" @close="opened = false">
+            <DsfrModal :opened="opened" title="Nombre de déclarations trop élévé" @close="opened = false">
               <p>
                 La recherche actuelle présente {{ data?.count }} résultats. Un maximum de
                 {{ maxDownloadSize }} déclarations peuvent être exportées.
@@ -226,6 +225,7 @@ import DoseFilterModal from "./DoseFilterModal"
 import DateFilterField from "./DateFilterField"
 import { toOptions } from "@/utils/forms.js"
 import { setDocumentTitle } from "@/utils/document"
+import CaSearchBar from "@/components/CaSearchBar"
 
 const store = useRootStore()
 store.fetchDeclarationFieldsData()

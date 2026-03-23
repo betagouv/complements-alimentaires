@@ -15,9 +15,9 @@
     "@vueuse/core": "^14.2.1",
     "core-js": "^3.48.0",
     "pinia": "^3.0.4",
-    "vue": "^3.5.27",
+    "vue": "^3.5.30",
     "vue-matomo": "^4.2.0",
-    "vue-router": "^5.0.2",
+    "vue-router": "^5.0.3",
     "webpack-bundle-tracker": "^3.2.3"
   },
   "devDependencies": {
@@ -31,11 +31,11 @@
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
-    "eslint-plugin-vue": "^10.8.0",
-    "postcss": "^8.5.5",
+    "eslint-plugin-vue": "^9.33.0",
+    "postcss": "^8.5.8",
     "prettier": "3.8.1",
     "tailwindcss": "^4.1.17",
-    "vue-eslint-parser": "^10.4.0"
+    "vue-eslint-parser": "^9.4.3"
   },
   "eslintConfig": {
     "root": true,

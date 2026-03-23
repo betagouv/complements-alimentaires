@@ -18,11 +18,13 @@
     <div class="flex gap-2">
       <a
         :href="file.file"
+        rel="noopener noreferrer"
         target="_blank"
         class="fr-btn fr-btn--secondary fr-btn--sm inline-flex"
         :title="`Ouvrir ${isPDF ? 'PDF' : 'image'} - ${props.file.name} - nouvelle fenêtre`"
       >
         Ouvrir {{ isPDF ? "PDF" : "image" }}
+        <span class="fr-sr-only">- nouvelle fenêtre</span>
       </a>
 
       <DsfrButton icon="ri-close-fill" @click="$emit('remove', file)" secondary size="sm" v-if="!props.readonly">

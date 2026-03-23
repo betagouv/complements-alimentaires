@@ -1,13 +1,10 @@
 <template>
-  <DsfrHeader
-    :logo-text="logoText"
-    :homeTo="{ name: 'LandingPage' }"
-    :quickLinks="quickLinks"
-    homeLabel="Accueil - Compl'Alim - Ministère de l'Agriculture, de l'Agro-alimentaire et de la Souveraineté Alimentaire"
-  >
+  <DsfrHeader :logo-text="logoText" :quickLinks="quickLinks" serviceTitle="Compl'Alim">
     <template #operator>
       <div class="flex items-center">
-        <img :src="require('@/assets/logo.svg')" alt="Compl'Alim" class="h-20" />
+        <router-link :to="{ name: 'LandingPage' }" title="Accueil - Compl'Alim">
+          <img :src="require('@/assets/logo.svg')" alt="Compl'Alim" class="h-20" />
+        </router-link>
 
         <div class="hidden sm:inline">
           <DsfrBadge v-if="environment === 'dev'" :label="environment" type="info" />
@@ -87,5 +84,10 @@ const quickLinks = computed(() => {
 <style>
 .fr-header__menu:not(.fr-modal--opened) nav.last-link-right > ul > li:last-child {
   margin-left: auto;
+}
+
+/* hack pour mettre le lien sur le logo compl'alim et non pas sur le logo ministère (RGAA 6.1) */
+.fr-header__service {
+  display: none;
 }
 </style>

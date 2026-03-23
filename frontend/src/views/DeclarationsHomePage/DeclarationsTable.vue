@@ -16,6 +16,7 @@ import { timeAgo } from "@/utils/date"
 import { getStatusTagForCell } from "@/utils/components"
 import CompanyTableCell from "@/components/CompanyTableCell"
 import DeclarationName from "@/components/DeclarationName"
+import DuplicateDeclaration from "@/components/DuplicateDeclaration"
 import { useResizeObserver, useDebounceFn } from "@vueuse/core"
 
 const props = defineProps({ data: { type: Object, default: () => {} } })
@@ -56,9 +57,8 @@ const rows = computed(() => {
       getStatusTagForCell(d.status, true),
       timeAgo(d.creationDate),
       {
-        component: "router-link",
-        text: "Dupliquer",
-        to: { name: "NewDeclaration", query: { duplicate: d.id } },
+        component: DuplicateDeclaration,
+        declaration: d,
       },
     ],
   }))

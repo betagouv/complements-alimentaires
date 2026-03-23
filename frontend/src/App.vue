@@ -31,7 +31,8 @@
       ]"
       id="footer"
       :homeLink="{ name: 'LandingPage' }"
-      homeTitle="Retour à l'accueil du site Compl'Alim - Ministère de l'Agriculture, de l'Agro-alimentaire et de la Souveraineté Alimentaire"
+      homeTitle="Accueil - Compl'Alim"
+      :operatorImgSrc="require('@/assets/logo.svg')"
     >
       <template v-slot:description>
         <p>Compl'Alim</p>
@@ -105,5 +106,13 @@ const updatePageTitle = (newPageTitle) => {
 }
 #env-banner.demo {
   background-color: #fcc0b0;
+}
+
+/* hack pour retirer le lien du logo ministère (RGAA 6.1) */
+.fr-footer__brand-link {
+  display: none;
+}
+#footer .fr-enlarge-link:hover {
+  background-color: unset;
 }
 </style>
