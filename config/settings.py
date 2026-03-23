@@ -100,6 +100,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "hijack.middleware.HijackUserMiddleware",
+    "config.middleware.SecureFileServingMiddleware",
 ]
 
 if ENABLE_SILK:
