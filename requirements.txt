@@ -32,7 +32,7 @@ Django==6.0.3
 django-anymail==14.0
 django-environ==0.13.0
 django-filter==25.2
-django-hijack==3.7.4
+django-hijack==3.7.6
 django-js-asset==3.1.2
 django-jsonform==2.23.2
 django-phonenumber-field==8.4.0
