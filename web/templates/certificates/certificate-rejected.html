@@ -15,7 +15,7 @@ Réf. : Dossier n° {{ declaration.id }}
         Madame, Monsieur,
     </p>
     <p>
-        Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré{% if declaration.teleicare_declaration_number %}, sur la plateforme TELEICARE,{% endif %} la mise sur le marché du produit :
+        Le {{ last_submission_date|date:"l j F Y" }}, vous avez déclaré sur l’application de télédéclaration {{ platform }}, la mise sur le marché du produit :
         <span class="text-bold">
             {{ declaration.name }} / {{ declaration.galenic_formulation }} / {{ declaration.company.social_name }}
         </span>
