@@ -10,7 +10,7 @@ from .pdfview import PdfView
 
 logger = logging.getLogger(__name__)
 
-DGCCRF_TO_DGAL_TRANSFERT_DATE = datetime.date(2023, 2, 1)
+DGCCRF_TO_DGAL_TRANSFERT_DATE = datetime.datetime(2023, 2, 1, tzinfo=datetime.timezone.utc)
 
 
 class CertificateView(PdfView):
