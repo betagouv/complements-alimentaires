@@ -10,7 +10,7 @@ from .pdfview import PdfView
 
 logger = logging.getLogger(__name__)
 
-DGCCRF_TO_DGAL_TRANSFERT_DATE = datetime.date(2023, 2, 1)
+DGCCRF_TO_DGAL_TRANSFERT_DATE = datetime.datetime(2023, 2, 1, tzinfo=datetime.timezone.utc)
 
 
 class CertificateView(PdfView):
@@ -78,7 +78,10 @@ class CertificateView(PdfView):
         # Elles ont été traitées par la DGCCRF avant le 01/02/2023, ensuite par la DGAL
         platform = "TELEICARE" if declaration.teleicare_declaration_number else "COMPL’ALIM®"
 
-        if declaration.teleicare_declaration_number and declaration.creation_date < DGCCRF_TO_DGAL_TRANSFERT_DATE:
+        if (
+            declaration.teleicare_declaration_number
+            and declaration.creation_date.replace(tzinfo=None) < DGCCRF_TO_DGAL_TRANSFERT_DATE
+        ):
             direction = "de la concurrence, de la consommation et de la répression des fraudes (DGCCRF)"
             sub_direction = ""
             address_street = "59 BD VINCENT AURIOL - TÉLÉDOC 223"
