@@ -6,7 +6,7 @@
     title: Les obligations réglementaires des étiquettes de compléments alimentaires
     tagline: il existe de nombreuses obligations réglementaires  connaître.
     display_date: 2024-01-11
-    body: '<p style="margin-left:var(--text-spacing);">La commercialisation de compléments
+    content: '<p style="margin-left:var(--text-spacing);">La commercialisation de compléments
       alimentaires en France est soumise à une réglementation stricte afin de garantir
       la sécurité des consommateurs et de fournir des informations transparentes et
       précises.</p><p style="margin-left:var(--text-spacing);">Les compléments aliments
@@ -75,7 +75,7 @@
     title: La déclaration de mise sur le marché des compléments alimentaires
     tagline: ''
     display_date: 2024-03-25
-    body: '<p style="margin-left:var(--text-spacing);"><strong>Pour pouvoir être commercialisé,
+    content: '<p style="margin-left:var(--text-spacing);"><strong>Pour pouvoir être commercialisé,
       un complément alimentaire doit obligatoirement faire l’objet d’une déclaration
       auprès des autorités compétentes, conformément aux exigences des articles 15
       et 16 du&nbsp;</strong><a href="https://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000000638341"><strong>décret
@@ -132,7 +132,7 @@
     title: Qu'est ce qu'un complément alimentaire ?
     tagline: ''
     display_date: 2024-03-25
-    body: '<p style="margin-left:var(--text-spacing);">En France, un complément alimentaire
+    content: '<p style="margin-left:var(--text-spacing);">En France, un complément alimentaire
       est défini comme une <strong>denrée alimentaire dont le but principal est de
       compléter le régime alimentaire normal </strong>et qui constitue une source
       concentrée de nutriments ou d''autres substances ayant un effet nutritionnel
@@ -192,6 +192,6 @@
     title: Article en brouillon
     tagline: ''
     display_date: 2024-03-25
-    body: <p>À écrire !</p>
+    content: <p>À écrire !</p>
     published: false
     author: null

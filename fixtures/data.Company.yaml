@@ -1,6 +1,8 @@
 - model: data.company
   pk: 1
   fields:
+    creation_date: 2026-01-09 14:50:09.719632+00:00
+    modification_date: 2026-01-11 10:44:23.983290+00:00
     address: 34 rue des peupliers
     additional_details: Bâtiment C
     postal_code: '92370'
@@ -18,6 +20,8 @@
 - model: data.company
   pk: 2
   fields:
+    creation_date: 2026-02-16 14:50:09.719632+00:00
+    modification_date: 2026-03-11 10:44:23.983290+00:00
     address: Too Good Corp
     additional_details: Bâtiment C
     postal_code: '75001'
@@ -35,6 +39,8 @@
 - model: data.company
   pk: 3
   fields:
+    creation_date: 2025-02-16 14:50:09.719632+00:00
+    modification_date: 2025-03-11 10:44:23.983290+00:00
     address: 12 rue des tilleuls
     additional_details: ''
     postal_code: '94100'
