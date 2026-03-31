@@ -1,0 +1,350 @@
+2026-03-31 10:29:52,238 pikepdf._core INFO     pikepdf C++ to Python logger bridge initialized
+2026-03-31 10:29:52,508 environ.environ INFO     /home/bas/app_c4be0586-8a7c-4377-9ed6-dd197b2d0c9c/.env not found - if you're not configuring your environment separately, check this.
+- model: data.condition
+  pk: 1
+  fields:
+    creation_date: 2024-08-27 16:47:42.765223+00:00
+    modification_date: 2026-02-19 13:47:47.115158+00:00
+    siccrf_id: 1
+    name: Adolescents (moins de 18 ans)
+    is_obsolete: false
+    siccrf_name_en: Adolescents (under 18 years of age)
+    min_age: 0.0
+    max_age: 18.0
+    category: AGE
+- model: data.condition
+  pk: 2
+  fields:
+    creation_date: 2024-08-27 16:47:42.783296+00:00
+    modification_date: 2026-02-19 15:22:32.944423+00:00
+    siccrf_id: 2
+    name: Femmes allaitantes
+    is_obsolete: false
+    siccrf_name_en: Feeding
+    min_age: null
+    max_age: null
+    category: PREGNANCY
+- model: data.condition
+  pk: 3
+  fields:
+    creation_date: 2024-08-27 16:47:42.799339+00:00
+    modification_date: 2025-08-04 14:51:36.553696+00:00
+    siccrf_id: 3
+    name: Allergie aux dérivés salicylés
+    is_obsolete: false
+    siccrf_name_en: Allergy to salicylates
+    min_age: null
+    max_age: null
+    category: MEDICAL
+- model: data.condition
+  pk: 4
+  fields:
+    creation_date: 2024-08-27 16:47:42.812798+00:00
+    modification_date: 2025-08-04 14:51:36.551933+00:00
+    siccrf_id: 4
+    name: Antécédent de cancer du sein
+    is_obsolete: false
+    siccrf_name_en: History of breast cancer
+    min_age: null
+    max_age: null
+    category: MEDICAL
+- model: data.condition
+  pk: 5
+  fields:
+    creation_date: 2024-08-27 16:47:42.826293+00:00
+    modification_date: 2025-08-04 14:51:36.539073+00:00
+    siccrf_id: 6
+    name: Autre (à préciser)
+    is_obsolete: false
+    siccrf_name_en: Other (specify)
+    min_age: null
+    max_age: null
+    category: OTHER
+- model: data.condition
+  pk: 6
+  fields:
+    creation_date: 2024-08-27 16:47:42.841285+00:00
+    modification_date: 2025-08-04 14:51:36.550172+00:00
+    siccrf_id: 7
+    name: Calculs rénaux
+    is_obsolete: false
+    siccrf_name_en: Kidney stones
+    min_age: null
+    max_age: null
+    category: MEDICAL
+- model: data.condition
+  pk: 7
+  fields:
+    creation_date: 2024-08-27 16:47:42.854878+00:00
+    modification_date: 2025-08-04 14:51:36.548102+00:00
+    siccrf_id: 8
+    name: Déficit congénital en G6PD (favisme)
+    is_obsolete: false
+    siccrf_name_en: Congenital G6PD deficiency (favism)
+    min_age: null
+    max_age: null
+    category: MEDICAL
+- model: data.condition
+  pk: 8
+  fields:
+    creation_date: 2024-08-27 16:47:42.868864+00:00
+    modification_date: 2026-02-19 12:33:13.068466+00:00
+    siccrf_id: 9
+    name: À prendre en dehors des repas
+    is_obsolete: false
+    siccrf_name_en: Outside mealtimes
+    min_age: null
+    max_age: null
+    category: OTHER
+- model: data.condition
+  pk: 9
+  fields:
+    creation_date: 2024-08-27 16:47:42.882531+00:00
+    modification_date: 2026-02-19 13:47:42.087861+00:00
+    siccrf_id: 10
+    name: Enfants (moins de 12 ans)
+    is_obsolete: false
+    siccrf_name_en: Children (under 12 years of age)
+    min_age: 0.0
+    max_age: 12.0
+    category: AGE
+- model: data.condition
+  pk: 10
+  fields:
+    creation_date: 2024-08-27 16:47:42.896006+00:00
+    modification_date: 2026-02-19 13:47:37.267459+00:00
+    siccrf_id: 11
+    name: Enfants en bas âge (1 à 3 ans)
+    is_obsolete: false
+    siccrf_name_en: Young children (1 to 3 years)
+    min_age: 1.0
+    max_age: 3.0
+    category: AGE
+- model: data.condition
+  pk: 11
+  fields:
+    creation_date: 2024-08-27 16:47:42.909871+00:00
+    modification_date: 2026-02-19 15:22:44.826079+00:00
+    siccrf_id: 12
+    name: Femmes enceintes
+    is_obsolete: false
+    siccrf_name_en: Pregnancy
+    min_age: null
+    max_age: null
+    category: PREGNANCY
+- model: data.condition
+  pk: 12
+  fields:
+    creation_date: 2024-08-27 16:47:42.923276+00:00
+    modification_date: 2025-08-04 14:51:36.586353+00:00
+    siccrf_id: 13
+    name: Hypertension
+    is_obsolete: false
+    siccrf_name_en: Hypertension
+    min_age: null
+    max_age: null
+    category: MEDICAL
+- model: data.condition
+  pk: 13
+  fields:
+    creation_date: 2024-08-27 16:47:42.937073+00:00
+    modification_date: 2025-08-04 14:51:36.584516+00:00
+    siccrf_id: 14
+    name: Insuffisance rénale
+    is_obsolete: false
+    siccrf_name_en: Renal failure
+    min_age: null
+    max_age: null
+    category: MEDICAL
+- model: data.condition
+  pk: 14
+  fields:
+    creation_date: 2024-08-27 16:47:42.951342+00:00
+    modification_date: 2025-08-04 14:51:36.582648+00:00
+    siccrf_id: 15
+    name: Maladie rénale
+    is_obsolete: false
+    siccrf_name_en: Kidney disease
+    min_age: null
+    max_age: null
+    category: MEDICAL
+- model: data.condition
+  pk: 15
+  fields:
+    creation_date: 2024-08-27 16:47:42.965113+00:00
+    modification_date: 2026-02-19 13:47:32.106808+00:00
+    siccrf_id: 16
+    name: Nourrissons (moins de 1 an)
+    is_obsolete: false
+    siccrf_name_en: Infant (under 1 year)
+    min_age: 0.0
+    max_age: 0.999
+    category: AGE
+- model: data.condition
+  pk: 16
+  fields:
+    creation_date: 2024-08-27 16:47:42.978605+00:00
+    modification_date: 2025-08-04 14:51:36.579403+00:00
+    siccrf_id: 17
+    name: Prise concomittante d'alcool
+    is_obsolete: false
+    siccrf_name_en: Alcohol consumption
+    min_age: null
+    max_age: null
+    category: MEDICAMENTS
+- model: data.condition
+  pk: 17
+  fields:
+    creation_date: 2024-08-27 16:47:42.991110+00:00
+    modification_date: 2025-08-04 14:51:36.577380+00:00
+    siccrf_id: 18
+    name: Prise concomittante d'un contraceptif
+    is_obsolete: false
+    siccrf_name_en: Use of contraceptives
+    min_age: null
+    max_age: null
+    category: MEDICAMENTS
+- model: data.condition
+  pk: 18
+  fields:
+    creation_date: 2024-08-27 16:47:43.004153+00:00
+    modification_date: 2025-08-04 14:51:36.574434+00:00
+    siccrf_id: 19
+    name: Problèmes cardiaques
+    is_obsolete: false
+    siccrf_name_en: Heart problems
+    min_age: null
+    max_age: null
+    category: MEDICAL
+- model: data.condition
+  pk: 19
+  fields:
+    creation_date: 2024-08-27 16:47:43.017310+00:00
+    modification_date: 2025-08-04 14:51:36.572889+00:00
+    siccrf_id: 20
+    name: Problèmes de foie
+    is_obsolete: false
+    siccrf_name_en: Liver problems
+    min_age: null
+    max_age: null
+    category: MEDICAL
+- model: data.condition
+  pk: 20
+  fields:
+    creation_date: 2024-08-27 16:47:43.031249+00:00
+    modification_date: 2025-08-04 14:51:36.571003+00:00
+    siccrf_id: 21
+    name: Sous anticoagulants
+    is_obsolete: false
+    siccrf_name_en: Under anticoagulation therapy
+    min_age: null
+    max_age: null
+    category: MEDICAMENTS
+- model: data.condition
+  pk: 21
+  fields:
+    creation_date: 2024-08-27 16:47:43.044246+00:00
+    modification_date: 2025-08-04 14:51:36.569412+00:00
+    siccrf_id: 22
+    name: Sous antidépresseurs
+    is_obsolete: false
+    siccrf_name_en: Under antidepressant therapy
+    min_age: null
+    max_age: null
+    category: MEDICAMENTS
+- model: data.condition
+  pk: 22
+  fields:
+    creation_date: 2024-08-27 16:47:43.058024+00:00
+    modification_date: 2025-08-04 14:51:36.567850+00:00
+    siccrf_id: 23
+    name: Sous antidiabétiques
+    is_obsolete: false
+    siccrf_name_en: Under antidiabetic medications
+    min_age: null
+    max_age: null
+    category: MEDICAMENTS
+- model: data.condition
+  pk: 23
+  fields:
+    creation_date: 2024-08-27 16:47:43.070846+00:00
+    modification_date: 2025-08-04 14:51:36.566022+00:00
+    siccrf_id: 24
+    name: Sous traitement antihypertenseur
+    is_obsolete: false
+    siccrf_name_en: Under antihypertensive medications
+    min_age: null
+    max_age: null
+    category: MEDICAMENTS
+- model: data.condition
+  pk: 24
+  fields:
+    creation_date: 2024-08-27 16:47:43.082932+00:00
+    modification_date: 2025-08-04 14:51:36.564395+00:00
+    siccrf_id: 25
+    name: Sous traitement médicamenteux
+    is_obsolete: false
+    siccrf_name_en: Under medications
+    min_age: null
+    max_age: null
+    category: MEDICAMENTS
+- model: data.condition
+  pk: 25
+  fields:
+    creation_date: 2024-08-27 16:47:43.096819+00:00
+    modification_date: 2025-08-04 14:51:36.562510+00:00
+    siccrf_id: 26
+    name: Sous traitement pour la thyroïde
+    is_obsolete: false
+    siccrf_name_en: Under therapy for thyroid
+    min_age: null
+    max_age: null
+    category: MEDICAMENTS
+- model: data.condition
+  pk: 26
+  fields:
+    creation_date: 2024-08-27 16:47:43.110936+00:00
+    modification_date: 2025-08-04 14:51:36.560651+00:00
+    siccrf_id: 27
+    name: Ulcère (estomac ou duodenum)
+    is_obsolete: false
+    siccrf_name_en: Ulcer (stomach or duodenum)
+    min_age: null
+    max_age: null
+    category: MEDICAL
+- model: data.condition
+  pk: 27
+  fields:
+    creation_date: 2024-08-27 16:47:43.123981+00:00
+    modification_date: 2025-08-04 14:51:36.558624+00:00
+    siccrf_id: 28
+    name: Utilisation prolongée
+    is_obsolete: false
+    siccrf_name_en: Prolonged use
+    min_age: null
+    max_age: null
+    category: OTHER
+- model: data.condition
+  pk: 28
+  fields:
+    creation_date: 2024-08-27 16:47:43.138010+00:00
+    modification_date: 2026-02-19 13:47:27.387352+00:00
+    siccrf_id: 29
+    name: Enfants (de moins de 6 ans)
+    is_obsolete: false
+    siccrf_name_en: Children (under 6 years of age)
+    min_age: 0.0
+    max_age: 6.0
+    category: AGE
+- model: data.condition
+  pk: 29
+  fields:
+    creation_date: 2024-08-27 16:47:43.150747+00:00
+    modification_date: 2026-02-19 13:47:22.589226+00:00
+    siccrf_id: 30
+    name: Enfants (de moins de 10 ans)
+    is_obsolete: false
+    siccrf_name_en: Children (under 10 years of age)
+    min_age: 0.0
+    max_age: 10.0
+    category: AGE

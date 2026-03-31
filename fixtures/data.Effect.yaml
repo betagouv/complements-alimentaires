@@ -1,0 +1,308 @@
+2026-03-31 10:29:35,241 pikepdf._core INFO     pikepdf C++ to Python logger bridge initialized
+2026-03-31 10:29:35,569 environ.environ INFO     /home/bas/app_c4be0586-8a7c-4377-9ed6-dd197b2d0c9c/.env not found - if you're not configuring your environment separately, check this.
+- model: data.effect
+  pk: 2
+  fields:
+    creation_date: 2024-08-27 16:45:48.973213+00:00
+    modification_date: 2025-08-04 14:51:38.214887+00:00
+    siccrf_id: 1
+    name: Antioxydant
+    is_obsolete: false
+    siccrf_name_en: Antioxidant
+- model: data.effect
+  pk: 3
+  fields:
+    creation_date: 2024-08-27 16:45:48.993576+00:00
+    modification_date: 2025-08-04 14:51:38.216710+00:00
+    siccrf_id: 2
+    name: Artères et cholestérol
+    is_obsolete: false
+    siccrf_name_en: Arteries and cholesterol
+- model: data.effect
+  pk: 4
+  fields:
+    creation_date: 2024-08-27 16:45:49.007293+00:00
+    modification_date: 2025-08-04 14:51:38.218271+00:00
+    siccrf_id: 3
+    name: Articulations
+    is_obsolete: false
+    siccrf_name_en: Joints
+- model: data.effect
+  pk: 5
+  fields:
+    creation_date: 2024-08-27 16:45:49.020719+00:00
+    modification_date: 2025-08-04 14:51:38.220181+00:00
+    siccrf_id: 4
+    name: Autre (à préciser)
+    is_obsolete: false
+    siccrf_name_en: Other (specify)
+- model: data.effect
+  pk: 6
+  fields:
+    creation_date: 2024-08-27 16:45:49.033794+00:00
+    modification_date: 2025-08-04 14:51:38.222221+00:00
+    siccrf_id: 5
+    name: Cheveux et ongles
+    is_obsolete: false
+    siccrf_name_en: Hear and nails
+- model: data.effect
+  pk: 7
+  fields:
+    creation_date: 2024-08-27 16:45:49.046576+00:00
+    modification_date: 2025-08-04 14:51:38.224323+00:00
+    siccrf_id: 6
+    name: Circulation sanguine et lymphatique
+    is_obsolete: false
+    siccrf_name_en: Blood and lymph flow
+- model: data.effect
+  pk: 8
+  fields:
+    creation_date: 2024-08-27 16:45:49.059230+00:00
+    modification_date: 2025-08-04 14:51:38.226016+00:00
+    siccrf_id: 7
+    name: Concentration
+    is_obsolete: false
+    siccrf_name_en: Focus
+- model: data.effect
+  pk: 9
+  fields:
+    creation_date: 2024-08-27 16:45:49.071997+00:00
+    modification_date: 2025-08-04 14:51:38.227812+00:00
+    siccrf_id: 8
+    name: Croissance et developpement
+    is_obsolete: false
+    siccrf_name_en: Growth and development
+- model: data.effect
+  pk: 10
+  fields:
+    creation_date: 2024-08-27 16:45:49.084201+00:00
+    modification_date: 2025-08-04 14:51:38.229348+00:00
+    siccrf_id: 9
+    name: Cycles féminins
+    is_obsolete: false
+    siccrf_name_en: Menstrual cycles
+- model: data.effect
+  pk: 11
+  fields:
+    creation_date: 2024-08-27 16:45:49.097534+00:00
+    modification_date: 2025-08-04 14:51:38.231313+00:00
+    siccrf_id: 10
+    name: Détoxifiant / Draineur
+    is_obsolete: false
+    siccrf_name_en: Detox / Drainer
+- model: data.effect
+  pk: 12
+  fields:
+    creation_date: 2024-08-27 16:45:49.110612+00:00
+    modification_date: 2025-08-04 14:51:38.233133+00:00
+    siccrf_id: 11
+    name: Digestion
+    is_obsolete: false
+    siccrf_name_en: Digestion
+- model: data.effect
+  pk: 13
+  fields:
+    creation_date: 2024-08-27 16:45:49.122783+00:00
+    modification_date: 2025-08-04 14:51:38.234688+00:00
+    siccrf_id: 12
+    name: Gestion du poids / minceur
+    is_obsolete: false
+    siccrf_name_en: Weight control / Slimming
+- model: data.effect
+  pk: 14
+  fields:
+    creation_date: 2024-08-27 16:45:49.135631+00:00
+    modification_date: 2025-08-04 14:51:38.236308+00:00
+    siccrf_id: 13
+    name: Grossesse et allaitement
+    is_obsolete: false
+    siccrf_name_en: Pregnancy and breastfeeding
+- model: data.effect
+  pk: 15
+  fields:
+    creation_date: 2024-08-27 16:45:49.148652+00:00
+    modification_date: 2025-08-04 14:51:38.237955+00:00
+    siccrf_id: 14
+    name: Humeur
+    is_obsolete: false
+    siccrf_name_en: Mood
+- model: data.effect
+  pk: 16
+  fields:
+    creation_date: 2024-08-27 16:45:49.161909+00:00
+    modification_date: 2025-08-04 14:51:38.239508+00:00
+    siccrf_id: 15
+    name: Immunité
+    is_obsolete: false
+    siccrf_name_en: Immunity
+- model: data.effect
+  pk: 17
+  fields:
+    creation_date: 2024-08-27 16:45:49.175069+00:00
+    modification_date: 2025-08-04 14:51:38.241161+00:00
+    siccrf_id: 16
+    name: Mémoire
+    is_obsolete: false
+    siccrf_name_en: Memory
+- model: data.effect
+  pk: 18
+  fields:
+    creation_date: 2024-08-27 16:45:49.188732+00:00
+    modification_date: 2025-08-04 14:51:38.242698+00:00
+    siccrf_id: 17
+    name: Ménopause
+    is_obsolete: false
+    siccrf_name_en: Menopause
+- model: data.effect
+  pk: 19
+  fields:
+    creation_date: 2024-08-27 16:45:49.201575+00:00
+    modification_date: 2025-08-04 14:51:38.244221+00:00
+    siccrf_id: 18
+    name: Minceur / Brûleur
+    is_obsolete: false
+    siccrf_name_en: Slimming / Burner
+- model: data.effect
+  pk: 20
+  fields:
+    creation_date: 2024-08-27 16:45:49.214828+00:00
+    modification_date: 2025-08-04 14:51:38.245665+00:00
+    siccrf_id: 19
+    name: Minceur / Capteur
+    is_obsolete: false
+    siccrf_name_en: Slimming / Blocker
+- model: data.effect
+  pk: 21
+  fields:
+    creation_date: 2024-08-27 16:45:49.228400+00:00
+    modification_date: 2025-08-04 14:51:38.247189+00:00
+    siccrf_id: 20
+    name: Minceur / Glycémie
+    is_obsolete: false
+    siccrf_name_en: Slimming / Blood sugar
+- model: data.effect
+  pk: 22
+  fields:
+    creation_date: 2024-08-27 16:45:49.241025+00:00
+    modification_date: 2025-08-04 14:51:38.248767+00:00
+    siccrf_id: 21
+    name: Minceur / Modérateur d'appétit
+    is_obsolete: false
+    siccrf_name_en: Slimming / Appetite reducer
+- model: data.effect
+  pk: 23
+  fields:
+    creation_date: 2024-08-27 16:45:49.254257+00:00
+    modification_date: 2025-08-04 14:51:38.250352+00:00
+    siccrf_id: 22
+    name: Minceur / Ventre plat
+    is_obsolete: false
+    siccrf_name_en: Slimming / Flat waistline
+- model: data.effect
+  pk: 24
+  fields:
+    creation_date: 2024-08-27 16:45:49.267988+00:00
+    modification_date: 2025-08-04 14:51:38.252023+00:00
+    siccrf_id: 24
+    name: Œil / Vision
+    is_obsolete: false
+    siccrf_name_en: Eyes / Vision
+- model: data.effect
+  pk: 25
+  fields:
+    creation_date: 2024-08-27 16:45:49.281933+00:00
+    modification_date: 2025-08-04 14:51:38.253737+00:00
+    siccrf_id: 25
+    name: Os
+    is_obsolete: false
+    siccrf_name_en: Bones
+- model: data.effect
+  pk: 26
+  fields:
+    creation_date: 2024-08-27 16:45:49.294497+00:00
+    modification_date: 2025-08-04 14:51:38.255447+00:00
+    siccrf_id: 26
+    name: Peau
+    is_obsolete: false
+    siccrf_name_en: Skin
+- model: data.effect
+  pk: 27
+  fields:
+    creation_date: 2024-08-27 16:45:49.307715+00:00
+    modification_date: 2025-08-04 14:51:38.257075+00:00
+    siccrf_id: 27
+    name: Santé bucco-dentaire
+    is_obsolete: false
+    siccrf_name_en: Oral health
+- model: data.effect
+  pk: 28
+  fields:
+    creation_date: 2024-08-27 16:45:49.320217+00:00
+    modification_date: 2025-08-04 14:51:38.258686+00:00
+    siccrf_id: 28
+    name: Solaire
+    is_obsolete: false
+    siccrf_name_en: Sunscreen
+- model: data.effect
+  pk: 29
+  fields:
+    creation_date: 2024-08-27 16:45:49.332208+00:00
+    modification_date: 2025-08-04 14:51:38.260509+00:00
+    siccrf_id: 29
+    name: Sommeil
+    is_obsolete: false
+    siccrf_name_en: Sleep
+- model: data.effect
+  pk: 30
+  fields:
+    creation_date: 2024-08-27 16:45:49.344614+00:00
+    modification_date: 2025-08-04 14:51:38.262066+00:00
+    siccrf_id: 30
+    name: Sport
+    is_obsolete: false
+    siccrf_name_en: Sport
+- model: data.effect
+  pk: 31
+  fields:
+    creation_date: 2024-08-27 16:45:49.357328+00:00
+    modification_date: 2025-08-04 14:51:38.263636+00:00
+    siccrf_id: 31
+    name: Système nerveux
+    is_obsolete: false
+    siccrf_name_en: Nervous system
+- model: data.effect
+  pk: 32
+  fields:
+    creation_date: 2024-08-27 16:45:49.369317+00:00
+    modification_date: 2025-08-04 14:51:38.265447+00:00
+    siccrf_id: 32
+    name: Système urinaire
+    is_obsolete: false
+    siccrf_name_en: Urinary tract
+- model: data.effect
+  pk: 33
+  fields:
+    creation_date: 2024-08-27 16:45:49.382748+00:00
+    modification_date: 2025-08-04 14:51:38.268003+00:00
+    siccrf_id: 33
+    name: Tonus sexuel
+    is_obsolete: false
+    siccrf_name_en: Sexual energy
+- model: data.effect
+  pk: 34
+  fields:
+    creation_date: 2024-08-27 16:45:49.395371+00:00
+    modification_date: 2025-08-04 14:51:38.269592+00:00
+    siccrf_id: 34
+    name: Transit
+    is_obsolete: false
+    siccrf_name_en: Bowel function
+- model: data.effect
+  pk: 35
+  fields:
+    creation_date: 2024-08-27 16:45:49.407672+00:00
+    modification_date: 2025-08-04 14:51:38.271258+00:00
+    siccrf_id: 35
+    name: Voies respiratoires
+    is_obsolete: false
+    siccrf_name_en: Respiratory tract

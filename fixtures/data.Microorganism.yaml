@@ -1,0 +1,679 @@
+2026-03-31 10:28:41,083 pikepdf._core INFO     pikepdf C++ to Python logger bridge initialized
+2026-03-31 10:28:41,381 environ.environ INFO     /home/bas/app_c4be0586-8a7c-4377-9ed6-dd197b2d0c9c/.env not found - if you're not configuring your environment separately, check this.
+- model: data.microorganism
+  pk: 1
+  fields:
+    creation_date: 2024-01-16 14:04:31.277123+00:00
+    modification_date: 2025-08-04 14:54:50.670995+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 1
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Pediococcus Acidilactici
+    genus: Pediococcus
+    species: Acidilactici
+- model: data.microorganism
+  pk: 2
+  fields:
+    creation_date: 2024-01-16 14:04:31.288612+00:00
+    modification_date: 2025-08-04 14:54:50.672750+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 2
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Propionibacterium Acidipropionici
+    genus: Propionibacterium
+    species: Acidipropionici
+- model: data.microorganism
+  pk: 3
+  fields:
+    creation_date: 2024-01-16 14:04:31.298569+00:00
+    modification_date: 2025-08-04 14:54:50.654339+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 3
+    is_obsolete: false
+    public_comments: ''
+    private_comments: 'Ce micro organisme bénéficie d''un historique de consommation
+      avant mai 1997 (entrée catalogue Novel Food : Lactobacillus acidophilus) et
+      est dans la liste des probiotiques autorisés par le Danemark.'
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Lactobacillus Acidophilus
+    genus: Lactobacillus
+    species: Acidophilus
+- model: data.microorganism
+  pk: 4
+  fields:
+    creation_date: 2024-01-16 14:04:31.309111+00:00
+    modification_date: 2025-08-04 14:54:50.662874+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 4
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Bifidobacterium Adolescentis
+    genus: Bifidobacterium
+    species: Adolescentis
+- model: data.microorganism
+  pk: 5
+  fields:
+    creation_date: 2024-01-16 14:04:31.319850+00:00
+    modification_date: 2025-08-04 14:54:50.664562+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 5
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Lactobacillus Alimentarius
+    genus: Lactobacillus
+    species: Alimentarius
+- model: data.microorganism
+  pk: 6
+  fields:
+    creation_date: 2024-01-16 14:04:31.329279+00:00
+    modification_date: 2025-08-04 14:54:50.726575+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 6
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Bacillus Amyloliquefaciens
+    genus: Bacillus
+    species: Amyloliquefaciens
+- model: data.microorganism
+  pk: 7
+  fields:
+    creation_date: 2024-01-16 14:04:31.339594+00:00
+    modification_date: 2025-08-04 14:54:50.679598+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 7
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Lactobacillus Amylolyticus
+    genus: Lactobacillus
+    species: Amylolyticus
+- model: data.microorganism
+  pk: 8
+  fields:
+    creation_date: 2024-01-16 14:04:31.349804+00:00
+    modification_date: 2025-08-04 14:54:50.681283+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 8
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Lactobacillus Amylovorus
+    genus: Lactobacillus
+    species: Amylovorus
+- model: data.microorganism
+  pk: 9
+  fields:
+    creation_date: 2024-01-16 14:04:31.360223+00:00
+    modification_date: 2025-08-04 14:54:50.682920+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 9
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Ogataea Angusta
+    genus: Ogataea
+    species: Angusta
+- model: data.microorganism
+  pk: 10
+  fields:
+    creation_date: 2024-01-16 14:04:31.370391+00:00
+    modification_date: 2025-08-04 14:54:50.684629+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 10
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Bifidobacterium Animalis
+    genus: Bifidobacterium
+    species: Animalis
+- model: data.microorganism
+  pk: 11
+  fields:
+    creation_date: 2024-01-16 14:04:31.379953+00:00
+    modification_date: 2025-08-04 14:54:50.689656+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 11
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Wickerhamomyces Anomalus
+    genus: Wickerhamomyces
+    species: Anomalus
+- model: data.microorganism
+  pk: 12
+  fields:
+    creation_date: 2024-01-16 14:04:31.390592+00:00
+    modification_date: 2025-08-04 14:54:50.691361+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 12
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Bacillus Atrophaeus
+    genus: Bacillus
+    species: Atrophaeus
+- model: data.microorganism
+  pk: 13
+  fields:
+    creation_date: 2024-01-16 14:04:31.400904+00:00
+    modification_date: 2025-08-04 14:54:50.693138+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 13
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Lactobacillus Aviaries
+    genus: Lactobacillus
+    species: Aviaries
+- model: data.microorganism
+  pk: 14
+  fields:
+    creation_date: 2024-01-16 14:04:31.413046+00:00
+    modification_date: 2025-08-04 14:54:50.728388+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 14
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Saccharomyces Bayanus
+    genus: Saccharomyces
+    species: Bayanus
+- model: data.microorganism
+  pk: 15
+  fields:
+    creation_date: 2024-01-16 14:04:31.424823+00:00
+    modification_date: 2025-08-04 14:54:50.695056+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 15
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Bifidobacterium Bifidum
+    genus: Bifidobacterium
+    species: Bifidum
+- model: data.microorganism
+  pk: 16
+  fields:
+    creation_date: 2024-01-16 14:04:31.436297+00:00
+    modification_date: 2025-08-04 14:54:50.696786+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 16
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Bifidobacterium Breve
+    genus: Bifidobacterium
+    species: Breve
+- model: data.microorganism
+  pk: 17
+  fields:
+    creation_date: 2024-01-16 14:04:31.446770+00:00
+    modification_date: 2025-08-04 14:54:50.698975+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 17
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Lactobacillus Brevis
+    genus: Lactobacillus
+    species: Brevis
+- model: data.microorganism
+  pk: 18
+  fields:
+    creation_date: 2024-01-16 14:04:31.456505+00:00
+    modification_date: 2025-08-04 14:54:50.700864+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 18
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Lactobacillus Buchneri
+    genus: Lactobacillus
+    species: Buchneri
+- model: data.microorganism
+  pk: 19
+  fields:
+    creation_date: 2024-01-16 14:04:31.468639+00:00
+    modification_date: 2025-08-04 14:54:50.730008+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 19
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Lactobacillus Bulgaricus
+    genus: Lactobacillus
+    species: Bulgaricus
+- model: data.microorganism
+  pk: 20
+  fields:
+    creation_date: 2024-01-16 14:04:31.479876+00:00
+    modification_date: 2025-08-04 14:54:50.702572+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 20
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Lactobacillus Casei
+    genus: Lactobacillus
+    species: Casei
+- model: data.microorganism
+  pk: 21
+  fields:
+    creation_date: 2024-01-16 14:04:31.490903+00:00
+    modification_date: 2025-08-04 14:54:50.704962+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 21
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Lactobacillus Cellobiosus
+    genus: Lactobacillus
+    species: Cellobiosus
+- model: data.microorganism
+  pk: 22
+  fields:
+    creation_date: 2024-01-16 14:04:31.500904+00:00
+    modification_date: 2025-08-04 14:54:50.715129+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 22
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Saccharomyces Cerevisiae
+    genus: Saccharomyces
+    species: Cerevisiae
+- model: data.microorganism
+  pk: 23
+  fields:
+    creation_date: 2024-01-16 14:04:31.512474+00:00
+    modification_date: 2025-08-04 14:54:50.717165+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 23
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Leuconostoc Citreum
+    genus: Leuconostoc
+    species: Citreum
+- model: data.microorganism
+  pk: 24
+  fields:
+    creation_date: 2024-01-16 14:04:31.523071+00:00
+    modification_date: 2025-08-04 14:54:50.746653+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 24
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Bacillus Clausii
+    genus: Bacillus
+    species: Clausii
+- model: data.microorganism
+  pk: 25
+  fields:
+    creation_date: 2024-01-16 14:04:31.534486+00:00
+    modification_date: 2025-08-04 14:54:50.736627+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 25
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Bacillus Coagulans
+    genus: Bacillus
+    species: Coagulans
+- model: data.microorganism
+  pk: 26
+  fields:
+    creation_date: 2024-01-16 14:04:31.544956+00:00
+    modification_date: 2025-08-04 14:54:50.748708+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 26
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Lactobacillus Collinoides
+    genus: Lactobacillus
+    species: Collinoides
+- model: data.microorganism
+  pk: 27
+  fields:
+    creation_date: 2024-01-16 14:04:31.556709+00:00
+    modification_date: 2025-08-04 14:54:50.738484+00:00
+    status: 1
+    to_be_entered_in_next_decree: false
+    regulatory_resource_links: null
+    origin_declaration: null
+    revoked_detail: ''
+    siccrf_id: 27
+    is_obsolete: false
+    public_comments: ''
+    private_comments: ''
+    siccrf_public_comments_en: ''
+    siccrf_private_comments_en: ''
+    is_risky: false
+    novel_food: false
+    requires_analysis_report: false
+    warnings_on_label: null
+    description: ''
+    unit: null
+    name: Lactobacillus Coryniformis
+    genus: Lactobacillus
+    species: Coryniformis
