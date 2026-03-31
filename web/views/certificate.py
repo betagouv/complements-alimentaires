@@ -11,6 +11,7 @@ from .pdfview import PdfView
 logger = logging.getLogger(__name__)
 
 DGCCRF_TO_DGAL_TRANSFERT_DATE = datetime.datetime(2023, 2, 1, tzinfo=datetime.timezone.utc)
+MASA_TO_MAASA_DATE = datetime.datetime(2025, 10, 13, tzinfo=datetime.timezone.utc)
 
 
 class CertificateView(PdfView):
@@ -87,8 +88,16 @@ class CertificateView(PdfView):
             mail = "bureau-4A@dgccrf.finances.gouv.fr"
             signature_title = "La Sous-Direction"
             signature_name = ""
+            image_name = "republique-francaise-logo.png"
+            image_alt = "République Française"
 
         else:
+            if declaration.creation_date < MASA_TO_MAASA_DATE:
+                image_name = "masa_v0.png"
+                image_alt = "Ministère de l'Agriculture et de la Souveraineté alimentaire"
+            else:
+                image_name = "masa.png"
+                image_alt = "Ministère de l'Agriculture, de l'Agro-alimentaire et de la Souveraineté alimentaire"
             direction = "de l'alimentation (DGAL)"
             sub_direction = "Sous-Direction de la Sécurité Sanitaire des Aliments"
             address_street = "78 RUE DE VARENNE"
@@ -161,6 +170,8 @@ class CertificateView(PdfView):
             "signature_name": signature_name,
             "withdrawal_date": withdrawal_date,
             "effective_withdrawal_date": effective_withdrawal_date,
+            "image_name": image_name,
+            "image_alt": image_alt,
         }
 
     def get_pdf_file_name(self, declaration):
