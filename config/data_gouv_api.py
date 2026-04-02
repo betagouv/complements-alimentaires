@@ -29,7 +29,7 @@ class DataGouvAPI:
         for stat in stats_list:
             if stat[0] == "__id":
                 continue
-            report_data[stat[2]] = {"visits": stat[3], "downloads": stat[4]}
+            report_data[stat[3]] = {"visits": stat[4], "downloads": stat[5]}
         return report_data
 
     def get_declaration_stats(self):
