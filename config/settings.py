@@ -358,9 +358,14 @@ FIXTURE_MODELS = [
     ("data", "Condition"),
     ("data", "Effect"),
     ("data", "GalenicFormulation"),
+    ("data", "Ingredient"),
     ("data", "Microorganism"),
     ("data", "Population"),
+    ("data", "PlantFamily"),
+    ("data", "Plant"),
     ("data", "Preparation"),
+    ("data", "Unit"),
+    ("data", "Substance"),
 ]
 
 ENABLE_AUTO_VALIDATION = env("ENABLE_AUTO_VALIDATION", cast=bool, default=False)
