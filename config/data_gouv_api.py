@@ -25,11 +25,16 @@ class DataGouvAPI:
         return list(cr)
 
     def _format_visit_stats(self, stats_list):
+        # on suppose que la premiere ligne sera toujours un header
+        header = stats_list[0]
+        col_index = {col: i for i, col in enumerate(header)}
         report_data = {}
-        for stat in stats_list:
-            if stat[0] == "__id":
-                continue
-            report_data[stat[3]] = {"visits": stat[4], "downloads": stat[5]}
+
+        for row in stats_list[1:]:
+            report_data[row[col_index["metric_month"]]] = {
+                "visits": row[col_index["metric_month"]],
+                "downloads": row[col_index["monthly_download_resource"]],
+            }
         return report_data
 
     def get_declaration_stats(self):
