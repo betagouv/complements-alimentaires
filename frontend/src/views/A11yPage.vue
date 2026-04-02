@@ -1,7 +1,7 @@
 <template>
   <div class="fr-container pb-10">
     <h1>Déclaration d'accessibilité</h1>
-    <p class="italic">Cette déclaration a été établie le 9 septembre 2025</p>
+    <p class="italic">Cette déclaration a été établie le 31 mars 2026</p>
     <p>
       Compl'Alim s’engage à rendre ses services numériques accessibles conformément à l’article 47 de la loi n° 2005-102
       du 11 février 2005.
@@ -20,7 +20,7 @@
     <h2>État de conformité</h2>
     <p>
       Le site internet Compl’Alim est
-      <b>non conforme</b>
+      <b>partiellement conforme</b>
       avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 4.1.2 en raison des non-conformités
       énumérées ci-dessous.
     </p>
@@ -28,13 +28,13 @@
     <p>
       L’audit de conformité réalisé par la société
       <a href="https://www.tanaguru.com">Tanaguru</a>
-      le 9 septembre 2025 révèle que :
+      le 31 mars 2026 révèle que :
     </p>
     <ul>
       <li>
         <b>Taux de conformité de l’échantillon audité</b>
         :
-        <b>46%</b>
+        <b>87%</b>
         des critères du RGAA version 4.1.2 sont respectés sur l’ensemble de l’échantillon
         <b>(17 pages)</b>
         .
@@ -42,7 +42,7 @@
       <li>
         <b>Taux moyen de chaque page</b>
         : Le taux de conformité moyen de chaque page de l’échantillon s’élève à
-        <b>68%</b>
+        <b>97%</b>
         .
       </li>
     </ul>
@@ -50,80 +50,25 @@
     <p>Les contenus listés ci-dessous ne sont pas accessibles pour les raisons suivantes :</p>
     <ul>
       <li>
-        Critère 1.2 : Certaines images de décoration ne sont pas correctement ignorées par les technologies d'assistance
-        ;
-      </li>
-      <li>Critère 3.1 : Certaines informations sont données uniquement par la couleur ;</li>
-      <li>Critère 5.3 : Pour chaque tableau de mise en forme, le contenu linéarisé ne reste pas compréhensible ;</li>
-      <li>Critère 5.4 : Des titres ne sont pas correctement associés au tableau de données ;</li>
-      <li>
         Critère 5.6 : Des en-têtes de colonnes ou des en-têtes de lignes de tableau ne sont pas correctement déclarés ;
       </li>
-      <li>Critère 5.7 : Les cellules d’en-têtes ne sont pas associées aux cellules correspondantes ;</li>
-      <li>Critère 6.1 : Certains liens ne sont pas explicites ;</li>
       <li>Critère 7.1 : Certains scripts sont incompatibles avec les technologies d’assistance ;</li>
-      <li>Critère 7.3 : Certains scripts ne sont pas contrôlables par le clavier ;</li>
-      <li>Critère 7.4 : Les utilisateurs ne sont pas avertis des changements de contexte ;</li>
-      <li>Critère 8.5 : Certaines pages n’ont pas de titre de page ;</li>
-      <li>Critère 8.9 : Certaines balises sont utilisées uniquement à des fins de présentation ;</li>
-      <li>Critère 9.1 : La hiérarchie des titres n’est pas appropriée ;</li>
-      <li>Critère 9.2 : La structure de certaines pages n’est pas cohérente ;</li>
       <li>Critère 9.3 : Certaines listes sont incorrectement structurées dans le code ;</li>
-      <li>
-        Critère 10.1 : Des éléments de présentation sont présents dans le code au lieu d’être sur des feuilles de style
-        ;
-      </li>
-      <li>
-        Critère 10.2 : Certains contenus visibles porteurs d’information disparaissent lorsque les feuilles de style
-        sont désactivées ;
-      </li>
-      <li>Critère 10.7 : Le style du focus natif du navigateur est supprimé ou dégradé ;</li>
       <li>Critère 10.8 : Certains contenus cachés devraient être restitués par les technologies d’assistance ;</li>
-      <li>
-        Critère 10.11 : Certains contenus ne peuvent être présentés sans défilement horizontal sur une fenêtre de 320px
-        de large ;
-      </li>
-      <li>
-        Critère 10.12 : Les propriétés d'espacement du texte ne peuvent pas être redéfinies par l'utilisateur sans perte
-        de contenu ou de fonctionnalité ;
-      </li>
-      <li>
-        Critère 10.13 : Certains contenus additionnels ne peuvent pas être masqués par l’utilisateur après leur
-        apparition ;
-      </li>
       <li>Critère 11.1 : Certains champs de formulaire n’ont pas d’étiquette ;</li>
-      <li>Critère 11.2 : Certaines étiquettes associées à des champs de formulaire ne sont pas pertinentes ;</li>
-      <li>
-        Critère 11.5 : Certains champs de même nature ne sont pas regroupés dans une balise
-        <code>&lt;fieldset&gt;</code>
-        ;
-      </li>
-      <li>Critère 11.6 : Certains regroupements de champs de même nature n’ont pas de légende ;</li>
-      <li>
-        Critère 11.8 : Les items de même nature d'une liste de choix ne sont pas regroupés de manière pertinente ;
-      </li>
       <li>Critère 11.9 : L'intitulé de certains boutons n’est pas pertinent ;</li>
       <li>
         Critère 11.10 : Le contrôle de saisie n’est pas pertinent (Indication des champs obligatoires, exemple de
         type/format de données attendus, message d’erreur nominatif, etc.) ;
       </li>
-      <li>
-        Critère 11.11 : Le contrôle de saisie n’est pas accompagné de suggestions pour faciliter la correction des
-        erreurs de saisie (exemple de type/format de données attendus, message d’erreur pertinent, etc.) ;
-      </li>
-      <li>
-        Critère 11.13 : La finalité de certains champs de saisie ne peut pas être déduite pour faciliter le remplissage
-        automatique des champs avec les données de l'utilisateur ;
-      </li>
       <li>Critère 12.8 : Dans chaque page web, l'ordre de tabulation dans le contenu est parfois incohérent ;</li>
-      <li>Critère 13.3 : Certains documents bureautiques ne sont pas accessibles ;</li>
     </ul>
     <h3>Dérogations pour charge disproportionnée</h3>
     <p>Aucune</p>
     <h3>Contenus non soumis à l’obligation d’accessibilité</h3>
     <p>Aucuns</p>
     <h2>Établissement de cette déclaration d’accessibilité</h2>
-    <p>Cette déclaration a été établie le 9 septembre 2025.</p>
+    <p>Cette déclaration a été établie le 31 mars 2026.</p>
     <h3>Technologies utilisées pour la réalisation du service</h3>
     <ul>
       <li>HTML 5</li>
@@ -234,11 +179,20 @@
     </ul>
     <h2>Retour d’information et contact</h2>
     <p>
-      Si vous n’arrivez pas à accéder à un contenu ou à un service, vous nous contacter par email à l'adresse
-      <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
-      pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.
+      Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable du site
+      internet Compl’Alim pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.
     </p>
-    <h2>Voie de recours</h2>
+    <ul>
+      <li>
+        Envoyer un message via
+        <router-link :to="{ name: 'ContactForm' }">le formulaire de contact en ligne</router-link>
+      </li>
+      <li>
+        Contacter par mail à l'adresse
+        <a :href="`mailto:${contactEmail}`">{{ contactEmail }}</a>
+      </li>
+    </ul>
+    <h2>Voies de recours</h2>
     <p>
       Cette procédure est à utiliser dans le cas suivant : vous avez signalé au responsable du site internet un défaut
       d’accessibilité qui vous empêche d’accéder à un contenu ou à un des services du portail et vous n’avez pas obtenu
