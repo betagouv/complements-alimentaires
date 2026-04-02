@@ -21,6 +21,7 @@
     <DsfrFooter
       :logo-text="logoText"
       :a11yComplianceLink="{ name: 'A11yPage' }"
+      a11yCompliance="partiellement conforme"
       :cookiesLink="{ name: 'CookiesInfoPage' }"
       :legalLink="{ name: 'LegalNoticesPage' }"
       :personalDataLink="{ name: 'PrivacyPolicyPage' }"
