@@ -74,11 +74,7 @@
             <table class="bg-marianne" role="presentation">
                 <tr>
                     <td>
-                        {% if declaration.teleicare_declaration_number %}
-                        <img width="160" src="{% static 'images/certificate/republique-francaise-logo.png' %}" alt="République Française">
-                        {% else %}
-                        <img width="140" src="{% static 'images/certificate/masa.png' %}" alt="Ministère de l'Agriculture, de l'Agro-alimentaire et de la Souveraineté alimentaire">
-                        {% endif %}
+                        <img width="140" src="{{ image_path }}" alt={{ image_alt }}>
                     </td>
                     <td class="table-bold align-right">
                         Direction générale<br />{{direction}}
