@@ -104,7 +104,7 @@ class CertificateView(PdfView):
             address_cedex = "75349 PARIS 07 SP"
             bureau = "BEPIAS (Bureau des Etablissements et Produits des Industries Alimentaires Spécialisées)"
             mail = "bepias.sdssa.dgal@agriculture.gouv.fr"
-            signature_title = "La Sous-Directrice de la sécurité sanitaire des aliments"
+            signature_title = "La Sous-Directrice de la Sécurité Sanitaire des Aliments"
             signature_name = "Vanessa HUMMEL-FOURRAT"
 
         try:
@@ -170,7 +170,7 @@ class CertificateView(PdfView):
             "signature_name": signature_name,
             "withdrawal_date": withdrawal_date,
             "effective_withdrawal_date": effective_withdrawal_date,
-            "image_name": image_name,
+            "image_path": f"images/certificate/{image_name}",
             "image_alt": image_alt,
         }
 
