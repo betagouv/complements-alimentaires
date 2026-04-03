@@ -181,7 +181,7 @@ onMounted(async () => {
   document.body.appendChild(script)
   const style = document.createElement("link")
   style.rel = "stylesheet"
-  style.src = "/static/css/BarChart.js"
+  style.href = "/static/css/BarChart.css"
   document.body.appendChild(style)
 })
 </script>
