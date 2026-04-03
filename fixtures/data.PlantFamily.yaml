@@ -1,0 +1,2349 @@
+- model: data.plantfamily
+  pk: 1
+  fields:
+    creation_date: 2024-01-25 16:29:30.979626+00:00
+    modification_date: 2025-08-05 04:33:57.283573+00:00
+    siccrf_id: 1
+    name: Acanthaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 2
+  fields:
+    creation_date: 2024-01-25 16:29:31.055839+00:00
+    modification_date: 2025-08-05 04:33:57.286627+00:00
+    siccrf_id: 3
+    name: Acoraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 3
+  fields:
+    creation_date: 2024-01-25 16:29:31.088541+00:00
+    modification_date: 2025-08-05 04:33:57.288312+00:00
+    siccrf_id: 4
+    name: Actinidiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 4
+  fields:
+    creation_date: 2024-01-25 16:29:31.122043+00:00
+    modification_date: 2025-08-05 04:33:57.291688+00:00
+    siccrf_id: 6
+    name: Adoxaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 5
+  fields:
+    creation_date: 2024-01-25 16:29:31.210059+00:00
+    modification_date: 2025-08-05 04:33:57.293172+00:00
+    siccrf_id: 7
+    name: Agaricaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 6
+  fields:
+    creation_date: 2024-01-25 16:29:31.239874+00:00
+    modification_date: 2025-08-05 04:33:57.295885+00:00
+    siccrf_id: 9
+    name: Aizoaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 7
+  fields:
+    creation_date: 2024-01-25 16:29:31.270860+00:00
+    modification_date: 2025-08-05 04:33:57.297180+00:00
+    siccrf_id: 10
+    name: Alariaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 8
+  fields:
+    creation_date: 2024-01-25 16:29:31.300854+00:00
+    modification_date: 2025-08-05 04:33:57.298772+00:00
+    siccrf_id: 11
+    name: Alismataceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 9
+  fields:
+    creation_date: 2024-01-25 16:29:31.333134+00:00
+    modification_date: 2025-08-05 04:33:57.300566+00:00
+    siccrf_id: 12
+    name: Altingiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 10
+  fields:
+    creation_date: 2024-01-25 16:29:31.364835+00:00
+    modification_date: 2025-08-05 04:33:57.302211+00:00
+    siccrf_id: 13
+    name: Amaranthaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 11
+  fields:
+    creation_date: 2024-01-25 16:29:31.526776+00:00
+    modification_date: 2025-08-05 04:33:57.303739+00:00
+    siccrf_id: 14
+    name: Amaryllidaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 12
+  fields:
+    creation_date: 2024-01-25 16:29:31.677435+00:00
+    modification_date: 2025-08-05 04:33:57.305096+00:00
+    siccrf_id: 15
+    name: Anacardiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 13
+  fields:
+    creation_date: 2024-01-25 16:29:31.846183+00:00
+    modification_date: 2025-08-05 04:33:57.306333+00:00
+    siccrf_id: 16
+    name: Annonaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 14
+  fields:
+    creation_date: 2024-01-25 16:29:31.930264+00:00
+    modification_date: 2025-08-05 04:33:57.308348+00:00
+    siccrf_id: 17
+    name: Apiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 15
+  fields:
+    creation_date: 2024-01-25 16:29:32.627012+00:00
+    modification_date: 2025-08-05 04:33:57.310318+00:00
+    siccrf_id: 18
+    name: Apocynaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 16
+  fields:
+    creation_date: 2024-01-25 16:29:32.866625+00:00
+    modification_date: 2025-08-05 04:33:57.228470+00:00
+    siccrf_id: 19
+    name: Aquifoliaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 17
+  fields:
+    creation_date: 2024-01-25 16:29:32.898921+00:00
+    modification_date: 2025-08-05 04:33:57.230154+00:00
+    siccrf_id: 20
+    name: Araceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 18
+  fields:
+    creation_date: 2024-01-25 16:29:33.084852+00:00
+    modification_date: 2025-08-05 04:33:57.231625+00:00
+    siccrf_id: 21
+    name: Araliaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 19
+  fields:
+    creation_date: 2024-01-25 16:29:33.205526+00:00
+    modification_date: 2025-08-05 04:33:57.232955+00:00
+    siccrf_id: 22
+    name: Arecaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 20
+  fields:
+    creation_date: 2024-01-25 16:29:33.352103+00:00
+    modification_date: 2025-08-05 04:33:57.234426+00:00
+    siccrf_id: 23
+    name: Aristolochiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 21
+  fields:
+    creation_date: 2024-01-25 16:29:33.398392+00:00
+    modification_date: 2025-08-05 04:33:57.235906+00:00
+    siccrf_id: 24
+    name: Asaparagaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 22
+  fields:
+    creation_date: 2024-01-25 16:29:33.458892+00:00
+    modification_date: 2025-08-05 04:33:57.237358+00:00
+    siccrf_id: 25
+    name: Asclepiadaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 23
+  fields:
+    creation_date: 2024-01-25 16:29:33.505090+00:00
+    modification_date: 2025-08-05 04:33:57.238771+00:00
+    siccrf_id: 26
+    name: Asparagaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 24
+  fields:
+    creation_date: 2024-01-25 16:29:33.694346+00:00
+    modification_date: 2025-08-05 04:33:57.240169+00:00
+    siccrf_id: 27
+    name: Aspleniaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 25
+  fields:
+    creation_date: 2024-01-25 16:29:33.768845+00:00
+    modification_date: 2025-08-05 04:33:57.241839+00:00
+    siccrf_id: 28
+    name: Asteraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 26
+  fields:
+    creation_date: 2024-01-25 16:29:34.046380+00:00
+    modification_date: 2025-08-05 04:33:57.243425+00:00
+    siccrf_id: 29
+    name: Atherospermataceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 27
+  fields:
+    creation_date: 2024-01-25 16:29:34.067932+00:00
+    modification_date: 2025-08-05 04:33:57.244900+00:00
+    siccrf_id: 30
+    name: Auriculariaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 28
+  fields:
+    creation_date: 2024-01-25 16:29:34.088635+00:00
+    modification_date: 2025-08-05 04:33:57.246114+00:00
+    siccrf_id: 31
+    name: Balsaminaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 29
+  fields:
+    creation_date: 2024-01-25 16:29:34.120008+00:00
+    modification_date: 2025-08-05 04:33:57.247293+00:00
+    siccrf_id: 32
+    name: Bangiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 30
+  fields:
+    creation_date: 2024-01-25 16:29:34.152456+00:00
+    modification_date: 2025-08-05 04:33:57.248689+00:00
+    siccrf_id: 33
+    name: Basellaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 31
+  fields:
+    creation_date: 2024-01-25 16:29:34.173763+00:00
+    modification_date: 2025-08-05 04:33:57.249910+00:00
+    siccrf_id: 34
+    name: Berberidaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 32
+  fields:
+    creation_date: 2024-01-25 16:29:34.254188+00:00
+    modification_date: 2025-08-05 04:33:57.251190+00:00
+    siccrf_id: 35
+    name: Betulaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 33
+  fields:
+    creation_date: 2024-01-25 16:29:34.352505+00:00
+    modification_date: 2025-08-05 04:33:57.252690+00:00
+    siccrf_id: 36
+    name: Bignoniaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 34
+  fields:
+    creation_date: 2024-01-25 16:29:34.414347+00:00
+    modification_date: 2025-08-05 04:33:57.254232+00:00
+    siccrf_id: 37
+    name: Bixaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 35
+  fields:
+    creation_date: 2024-01-25 16:29:34.436037+00:00
+    modification_date: 2025-08-05 04:33:57.255616+00:00
+    siccrf_id: 38
+    name: Boraginaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 36
+  fields:
+    creation_date: 2024-01-25 16:29:34.617856+00:00
+    modification_date: 2025-08-05 04:33:57.256914+00:00
+    siccrf_id: 39
+    name: Brassicaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 37
+  fields:
+    creation_date: 2024-01-25 16:29:34.901872+00:00
+    modification_date: 2025-08-05 04:33:57.258389+00:00
+    siccrf_id: 40
+    name: Bromeliaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 38
+  fields:
+    creation_date: 2024-01-25 16:29:34.921554+00:00
+    modification_date: 2025-08-05 04:33:57.259614+00:00
+    siccrf_id: 41
+    name: Burseraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 39
+  fields:
+    creation_date: 2024-01-25 16:29:35.102238+00:00
+    modification_date: 2025-08-05 04:33:57.260833+00:00
+    siccrf_id: 42
+    name: Butomaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 40
+  fields:
+    creation_date: 2024-01-25 16:29:35.126316+00:00
+    modification_date: 2025-08-05 04:33:57.262116+00:00
+    siccrf_id: 43
+    name: Buxaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 41
+  fields:
+    creation_date: 2024-01-25 16:29:35.148821+00:00
+    modification_date: 2025-08-05 04:33:57.263347+00:00
+    siccrf_id: 44
+    name: Cactaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 42
+  fields:
+    creation_date: 2024-01-25 16:29:35.201689+00:00
+    modification_date: 2025-08-05 04:33:57.264734+00:00
+    siccrf_id: 45
+    name: Caesalpiniaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 43
+  fields:
+    creation_date: 2024-01-25 16:29:35.232534+00:00
+    modification_date: 2025-08-05 04:33:57.266209+00:00
+    siccrf_id: 46
+    name: Calophyllaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 44
+  fields:
+    creation_date: 2024-01-25 16:29:35.263701+00:00
+    modification_date: 2025-08-05 04:33:57.267570+00:00
+    siccrf_id: 47
+    name: Campanulaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 45
+  fields:
+    creation_date: 2024-01-25 16:29:35.306159+00:00
+    modification_date: 2025-08-05 04:33:57.268908+00:00
+    siccrf_id: 48
+    name: Cannabaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 46
+  fields:
+    creation_date: 2024-01-25 16:29:35.336414+00:00
+    modification_date: 2025-08-05 04:33:57.270259+00:00
+    siccrf_id: 49
+    name: Capparaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 47
+  fields:
+    creation_date: 2024-01-25 16:29:35.359489+00:00
+    modification_date: 2025-08-05 04:33:57.271750+00:00
+    siccrf_id: 50
+    name: Caprifoliaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 48
+  fields:
+    creation_date: 2024-01-25 16:29:35.532933+00:00
+    modification_date: 2025-08-05 04:33:57.273224+00:00
+    siccrf_id: 51
+    name: Caricaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 49
+  fields:
+    creation_date: 2024-01-25 16:29:35.554009+00:00
+    modification_date: 2025-08-05 04:33:57.274530+00:00
+    siccrf_id: 52
+    name: Caryophyllaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 50
+  fields:
+    creation_date: 2024-01-25 16:29:35.674327+00:00
+    modification_date: 2025-08-05 04:33:57.275717+00:00
+    siccrf_id: 53
+    name: Celastraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 51
+  fields:
+    creation_date: 2024-01-25 16:29:35.716791+00:00
+    modification_date: 2025-08-05 04:33:57.172250+00:00
+    siccrf_id: 55
+    name: Chlorellaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 52
+  fields:
+    creation_date: 2024-01-25 16:29:35.778802+00:00
+    modification_date: 2025-08-05 04:33:57.173773+00:00
+    siccrf_id: 56
+    name: Chordariaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 53
+  fields:
+    creation_date: 2024-01-25 16:29:35.801076+00:00
+    modification_date: 2025-08-05 04:33:57.175090+00:00
+    siccrf_id: 57
+    name: Cibotiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 54
+  fields:
+    creation_date: 2024-01-25 16:29:35.822008+00:00
+    modification_date: 2025-08-05 04:33:57.176415+00:00
+    siccrf_id: 58
+    name: Cistaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 55
+  fields:
+    creation_date: 2024-01-25 16:29:35.865816+00:00
+    modification_date: 2025-08-05 04:33:57.177916+00:00
+    siccrf_id: 59
+    name: Cladoniaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 56
+  fields:
+    creation_date: 2024-01-25 16:29:35.898832+00:00
+    modification_date: 2025-08-05 04:33:57.179725+00:00
+    siccrf_id: 60
+    name: Clusiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 57
+  fields:
+    creation_date: 2024-01-25 16:29:35.939967+00:00
+    modification_date: 2025-08-05 04:33:57.182391+00:00
+    siccrf_id: 61
+    name: Colchicaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 58
+  fields:
+    creation_date: 2024-01-25 16:29:35.962000+00:00
+    modification_date: 2025-08-05 04:33:57.183798+00:00
+    siccrf_id: 62
+    name: Combretaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 59
+  fields:
+    creation_date: 2024-01-25 16:29:36.037350+00:00
+    modification_date: 2025-08-05 04:33:57.185206+00:00
+    siccrf_id: 63
+    name: Commelinaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 60
+  fields:
+    creation_date: 2024-01-25 16:29:36.070062+00:00
+    modification_date: 2025-08-05 04:33:57.186561+00:00
+    siccrf_id: 64
+    name: Compositae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 61
+  fields:
+    creation_date: 2024-01-25 16:29:37.345819+00:00
+    modification_date: 2025-08-05 04:33:57.188040+00:00
+    siccrf_id: 65
+    name: Convolvulaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 62
+  fields:
+    creation_date: 2024-01-25 16:29:37.455490+00:00
+    modification_date: 2025-08-05 04:33:57.189557+00:00
+    siccrf_id: 66
+    name: Corallinaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 63
+  fields:
+    creation_date: 2024-01-25 16:29:37.477273+00:00
+    modification_date: 2025-08-05 04:33:57.191147+00:00
+    siccrf_id: 67
+    name: Coriariaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 64
+  fields:
+    creation_date: 2024-01-25 16:29:37.509847+00:00
+    modification_date: 2025-08-05 04:33:57.192473+00:00
+    siccrf_id: 68
+    name: Cornaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 65
+  fields:
+    creation_date: 2024-01-25 16:29:37.574978+00:00
+    modification_date: 2025-08-05 04:33:57.193895+00:00
+    siccrf_id: 69
+    name: Costaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 66
+  fields:
+    creation_date: 2024-01-25 16:29:37.598157+00:00
+    modification_date: 2025-08-05 04:33:57.195234+00:00
+    siccrf_id: 70
+    name: Crassulaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 67
+  fields:
+    creation_date: 2024-01-25 16:29:37.699608+00:00
+    modification_date: 2025-08-05 04:33:57.196717+00:00
+    siccrf_id: 71
+    name: Cucurbitaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 68
+  fields:
+    creation_date: 2024-01-25 16:29:37.876536+00:00
+    modification_date: 2025-08-05 04:33:57.198160+00:00
+    siccrf_id: 72
+    name: Cupressaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 69
+  fields:
+    creation_date: 2024-01-25 16:29:37.944133+00:00
+    modification_date: 2025-08-05 04:33:57.199633+00:00
+    siccrf_id: 73
+    name: Cycadaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 70
+  fields:
+    creation_date: 2024-01-25 16:29:37.966200+00:00
+    modification_date: 2025-08-05 04:33:57.200887+00:00
+    siccrf_id: 74
+    name: Cyperaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 71
+  fields:
+    creation_date: 2024-01-25 16:29:38.008764+00:00
+    modification_date: 2025-08-05 04:33:57.202795+00:00
+    siccrf_id: 75
+    name: Dennstaedtiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 72
+  fields:
+    creation_date: 2024-01-25 16:29:38.031469+00:00
+    modification_date: 2025-08-05 04:33:57.204123+00:00
+    siccrf_id: 76
+    name: Dilleniaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 73
+  fields:
+    creation_date: 2024-01-25 16:29:38.053839+00:00
+    modification_date: 2025-08-05 04:33:57.205410+00:00
+    siccrf_id: 77
+    name: Dioscoreaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 74
+  fields:
+    creation_date: 2024-01-25 16:29:38.140252+00:00
+    modification_date: 2025-08-05 04:33:57.206945+00:00
+    siccrf_id: 78
+    name: Dipsacaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 75
+  fields:
+    creation_date: 2024-01-25 16:29:38.162643+00:00
+    modification_date: 2025-08-05 04:33:57.208257+00:00
+    siccrf_id: 79
+    name: Dipterocarpaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 76
+  fields:
+    creation_date: 2024-01-25 16:29:38.197704+00:00
+    modification_date: 2025-08-05 04:33:57.209547+00:00
+    siccrf_id: 80
+    name: Droseraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 77
+  fields:
+    creation_date: 2024-01-25 16:29:38.264983+00:00
+    modification_date: 2025-08-05 04:33:57.210688+00:00
+    siccrf_id: 81
+    name: Dryopteridaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 78
+  fields:
+    creation_date: 2024-01-25 16:29:38.298556+00:00
+    modification_date: 2025-08-05 04:33:57.212057+00:00
+    siccrf_id: 82
+    name: Dunaliellaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 79
+  fields:
+    creation_date: 2024-01-25 16:29:38.321858+00:00
+    modification_date: 2025-08-05 04:33:57.213242+00:00
+    siccrf_id: 83
+    name: Durvillaeaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 80
+  fields:
+    creation_date: 2024-01-25 16:29:38.343573+00:00
+    modification_date: 2025-08-05 04:33:57.214581+00:00
+    siccrf_id: 84
+    name: Ebenaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 81
+  fields:
+    creation_date: 2024-01-25 16:29:38.379263+00:00
+    modification_date: 2025-08-05 04:33:57.217616+00:00
+    siccrf_id: 86
+    name: Elaeagnaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 82
+  fields:
+    creation_date: 2024-01-25 16:29:38.413327+00:00
+    modification_date: 2025-08-05 04:33:57.218987+00:00
+    siccrf_id: 87
+    name: Ephedraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 83
+  fields:
+    creation_date: 2024-01-25 16:29:38.434655+00:00
+    modification_date: 2025-08-05 04:33:57.220595+00:00
+    siccrf_id: 88
+    name: Equisetaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 84
+  fields:
+    creation_date: 2024-01-25 16:29:38.487247+00:00
+    modification_date: 2025-08-05 04:33:57.222208+00:00
+    siccrf_id: 89
+    name: Ericaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 85
+  fields:
+    creation_date: 2024-01-25 16:29:38.745440+00:00
+    modification_date: 2025-08-05 04:33:57.223832+00:00
+    siccrf_id: 90
+    name: Erythroxylaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 86
+  fields:
+    creation_date: 2024-01-25 16:29:38.767250+00:00
+    modification_date: 2025-08-05 04:33:57.225471+00:00
+    siccrf_id: 91
+    name: Eucommiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 87
+  fields:
+    creation_date: 2024-01-25 16:29:38.789126+00:00
+    modification_date: 2025-08-05 04:33:57.226935+00:00
+    siccrf_id: 92
+    name: Euphorbiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 88
+  fields:
+    creation_date: 2024-01-25 16:29:38.988458+00:00
+    modification_date: 2025-08-05 04:33:57.111094+00:00
+    siccrf_id: 93
+    name: Fabaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 89
+  fields:
+    creation_date: 2024-01-25 16:29:39.067513+00:00
+    modification_date: 2025-08-05 04:33:57.112577+00:00
+    siccrf_id: 94
+    name: Fagaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 90
+  fields:
+    creation_date: 2024-01-25 16:29:39.187840+00:00
+    modification_date: 2025-08-05 04:33:57.113931+00:00
+    siccrf_id: 95
+    name: Fucaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 91
+  fields:
+    creation_date: 2024-01-25 16:29:39.230839+00:00
+    modification_date: 2025-08-05 04:33:57.115236+00:00
+    siccrf_id: 96
+    name: Fumariaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 92
+  fields:
+    creation_date: 2024-01-25 16:29:39.289213+00:00
+    modification_date: 2025-08-05 04:33:57.116424+00:00
+    siccrf_id: 97
+    name: Ganodermataceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 93
+  fields:
+    creation_date: 2024-01-25 16:29:39.312404+00:00
+    modification_date: 2025-08-05 04:33:57.117792+00:00
+    siccrf_id: 98
+    name: Garryaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 94
+  fields:
+    creation_date: 2024-01-25 16:29:39.337112+00:00
+    modification_date: 2025-08-05 04:33:57.119209+00:00
+    siccrf_id: 99
+    name: Gelidiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 95
+  fields:
+    creation_date: 2024-01-25 16:29:39.382822+00:00
+    modification_date: 2025-08-05 04:33:57.120686+00:00
+    siccrf_id: 100
+    name: Gelsemiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 96
+  fields:
+    creation_date: 2024-01-25 16:29:39.409360+00:00
+    modification_date: 2025-08-05 04:33:57.121871+00:00
+    siccrf_id: 101
+    name: Gentianaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 97
+  fields:
+    creation_date: 2024-01-25 16:29:39.493759+00:00
+    modification_date: 2025-08-05 04:33:57.123123+00:00
+    siccrf_id: 102
+    name: Geraniaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 98
+  fields:
+    creation_date: 2024-01-25 16:29:39.628821+00:00
+    modification_date: 2025-08-05 04:33:57.124241+00:00
+    siccrf_id: 103
+    name: Gigartinaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 99
+  fields:
+    creation_date: 2024-01-25 16:29:39.653501+00:00
+    modification_date: 2025-08-05 04:33:57.125733+00:00
+    siccrf_id: 104
+    name: Ginkgoaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 100
+  fields:
+    creation_date: 2024-01-25 16:29:39.677401+00:00
+    modification_date: 2025-08-05 04:33:57.127030+00:00
+    siccrf_id: 105
+    name: Globulariaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 101
+  fields:
+    creation_date: 2024-01-25 16:29:39.712907+00:00
+    modification_date: 2025-08-05 04:33:57.128277+00:00
+    siccrf_id: 106
+    name: Gracilariaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 102
+  fields:
+    creation_date: 2024-01-25 16:29:39.738089+00:00
+    modification_date: 2025-08-05 04:33:57.129772+00:00
+    siccrf_id: 107
+    name: Grossulariaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 103
+  fields:
+    creation_date: 2024-01-25 16:29:39.783875+00:00
+    modification_date: 2025-08-05 04:33:57.131103+00:00
+    siccrf_id: 108
+    name: Haematococcaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 104
+  fields:
+    creation_date: 2024-01-25 16:29:39.807120+00:00
+    modification_date: 2025-08-05 04:33:57.132585+00:00
+    siccrf_id: 109
+    name: Haemodoraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 105
+  fields:
+    creation_date: 2024-01-25 16:29:39.829741+00:00
+    modification_date: 2025-08-05 04:33:57.134137+00:00
+    siccrf_id: 110
+    name: Hamamelidaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 106
+  fields:
+    creation_date: 2024-01-25 16:29:39.853450+00:00
+    modification_date: 2025-08-05 04:33:57.135518+00:00
+    siccrf_id: 111
+    name: Hapalidiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 107
+  fields:
+    creation_date: 2024-01-25 16:29:39.887027+00:00
+    modification_date: 2025-08-05 04:33:57.136944+00:00
+    siccrf_id: 112
+    name: Himanthaliaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 108
+  fields:
+    creation_date: 2024-01-25 16:29:39.909327+00:00
+    modification_date: 2025-08-05 04:33:57.139950+00:00
+    siccrf_id: 114
+    name: Hydrangeaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 109
+  fields:
+    creation_date: 2024-01-25 16:29:39.930432+00:00
+    modification_date: 2025-08-05 04:33:57.141662+00:00
+    siccrf_id: 115
+    name: Hyperaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 110
+  fields:
+    creation_date: 2024-01-25 16:29:39.963430+00:00
+    modification_date: 2025-08-05 04:33:57.143268+00:00
+    siccrf_id: 116
+    name: Hypoxidaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 111
+  fields:
+    creation_date: 2024-01-25 16:29:39.985903+00:00
+    modification_date: 2025-08-05 04:33:57.144889+00:00
+    siccrf_id: 117
+    name: Illiciaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 112
+  fields:
+    creation_date: 2024-01-25 16:29:40.007672+00:00
+    modification_date: 2025-08-05 04:33:57.146546+00:00
+    siccrf_id: 118
+    name: Iridaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 113
+  fields:
+    creation_date: 2024-01-25 16:29:40.049086+00:00
+    modification_date: 2025-08-05 04:33:57.147899+00:00
+    siccrf_id: 119
+    name: Juglandaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 114
+  fields:
+    creation_date: 2024-01-25 16:29:40.110168+00:00
+    modification_date: 2025-08-05 04:33:57.311632+00:00
+    siccrf_id: 120
+    name: Krameriaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 115
+  fields:
+    creation_date: 2024-01-25 16:29:40.131478+00:00
+    modification_date: 2025-08-05 04:33:57.313005+00:00
+    siccrf_id: 121
+    name: Lamiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 116
+  fields:
+    creation_date: 2024-01-25 16:29:41.174427+00:00
+    modification_date: 2025-08-05 04:33:57.314408+00:00
+    siccrf_id: 122
+    name: Laminariaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 117
+  fields:
+    creation_date: 2024-01-25 16:29:41.265401+00:00
+    modification_date: 2025-08-05 04:33:57.316115+00:00
+    siccrf_id: 123
+    name: Lasiosphaeriaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 118
+  fields:
+    creation_date: 2024-01-25 16:29:41.286960+00:00
+    modification_date: 2025-08-05 04:33:57.317605+00:00
+    siccrf_id: 124
+    name: Lauraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 119
+  fields:
+    creation_date: 2024-01-25 16:29:41.433601+00:00
+    modification_date: 2025-08-05 04:33:57.319241+00:00
+    siccrf_id: 125
+    name: Lecythidaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 120
+  fields:
+    creation_date: 2024-01-25 16:29:41.457731+00:00
+    modification_date: 2025-08-05 04:33:57.320857+00:00
+    siccrf_id: 126
+    name: Leguminosae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 121
+  fields:
+    creation_date: 2024-01-25 16:29:42.736685+00:00
+    modification_date: 2025-08-05 04:33:57.322411+00:00
+    siccrf_id: 127
+    name: Lessoniaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 122
+  fields:
+    creation_date: 2024-01-25 16:29:42.761443+00:00
+    modification_date: 2025-08-05 04:33:57.324070+00:00
+    siccrf_id: 128
+    name: Liliaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 123
+  fields:
+    creation_date: 2024-01-25 16:29:42.941671+00:00
+    modification_date: 2025-08-05 04:33:57.149418+00:00
+    siccrf_id: 129
+    name: Linaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 124
+  fields:
+    creation_date: 2024-01-25 16:29:42.975954+00:00
+    modification_date: 2025-08-05 04:33:57.151066+00:00
+    siccrf_id: 130
+    name: Lobariaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 125
+  fields:
+    creation_date: 2024-01-25 16:29:42.998997+00:00
+    modification_date: 2025-08-05 04:33:57.344518+00:00
+    siccrf_id: 131
+    name: Loganiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 126
+  fields:
+    creation_date: 2024-01-25 16:29:43.043051+00:00
+    modification_date: 2025-08-05 04:33:57.345746+00:00
+    siccrf_id: 132
+    name: Losaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 127
+  fields:
+    creation_date: 2024-01-25 16:29:43.065355+00:00
+    modification_date: 2025-08-05 04:33:57.347031+00:00
+    siccrf_id: 133
+    name: Lycopodiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 128
+  fields:
+    creation_date: 2024-01-25 16:29:43.098913+00:00
+    modification_date: 2025-08-05 04:33:57.348214+00:00
+    siccrf_id: 134
+    name: Lythraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 129
+  fields:
+    creation_date: 2024-01-25 16:29:43.191465+00:00
+    modification_date: 2025-08-05 04:33:57.349877+00:00
+    siccrf_id: 135
+    name: Magnoliaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 130
+  fields:
+    creation_date: 2024-01-25 16:29:43.235751+00:00
+    modification_date: 2025-08-05 04:33:57.351637+00:00
+    siccrf_id: 136
+    name: Malpighiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 131
+  fields:
+    creation_date: 2024-01-25 16:29:43.257158+00:00
+    modification_date: 2025-08-05 04:33:57.353212+00:00
+    siccrf_id: 137
+    name: Malvaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 132
+  fields:
+    creation_date: 2024-01-25 16:29:43.590021+00:00
+    modification_date: 2025-08-05 04:33:57.354493+00:00
+    siccrf_id: 138
+    name: Marantaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 133
+  fields:
+    creation_date: 2024-01-25 16:29:43.614026+00:00
+    modification_date: 2025-08-05 04:33:57.356444+00:00
+    siccrf_id: 139
+    name: Marasmiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 134
+  fields:
+    creation_date: 2024-01-25 16:29:43.638477+00:00
+    modification_date: 2025-08-05 04:33:57.358280+00:00
+    siccrf_id: 140
+    name: Marchantiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 135
+  fields:
+    creation_date: 2024-01-25 16:29:43.664109+00:00
+    modification_date: 2025-08-05 04:33:57.359763+00:00
+    siccrf_id: 141
+    name: Melanthiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 136
+  fields:
+    creation_date: 2024-01-25 16:29:43.722004+00:00
+    modification_date: 2025-08-05 04:33:57.361910+00:00
+    siccrf_id: 142
+    name: Meliaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 137
+  fields:
+    creation_date: 2024-01-25 16:29:43.767419+00:00
+    modification_date: 2025-08-05 04:33:57.363600+00:00
+    siccrf_id: 143
+    name: Menispermaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 138
+  fields:
+    creation_date: 2024-01-25 16:29:43.851815+00:00
+    modification_date: 2025-08-05 04:33:57.365041+00:00
+    siccrf_id: 144
+    name: Menyanthaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 139
+  fields:
+    creation_date: 2024-01-25 16:29:43.885020+00:00
+    modification_date: 2025-08-05 04:33:57.368109+00:00
+    siccrf_id: 146
+    name: Molluginaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 140
+  fields:
+    creation_date: 2024-01-25 16:29:43.906204+00:00
+    modification_date: 2025-08-05 04:33:57.369767+00:00
+    siccrf_id: 147
+    name: Monascaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 141
+  fields:
+    creation_date: 2024-01-25 16:29:43.928781+00:00
+    modification_date: 2025-08-05 04:33:57.371415+00:00
+    siccrf_id: 148
+    name: Monimiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 142
+  fields:
+    creation_date: 2024-01-25 16:29:43.950090+00:00
+    modification_date: 2025-08-05 04:33:57.373346+00:00
+    siccrf_id: 149
+    name: Moraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 143
+  fields:
+    creation_date: 2024-01-25 16:29:44.080666+00:00
+    modification_date: 2025-08-05 04:33:57.152620+00:00
+    siccrf_id: 150
+    name: Moringaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 144
+  fields:
+    creation_date: 2024-01-25 16:29:44.112060+00:00
+    modification_date: 2025-08-05 04:33:57.154012+00:00
+    siccrf_id: 151
+    name: Musaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 145
+  fields:
+    creation_date: 2024-01-25 16:29:44.132354+00:00
+    modification_date: 2025-08-05 04:33:57.156730+00:00
+    siccrf_id: 152
+    name: Myricaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 146
+  fields:
+    creation_date: 2024-01-25 16:29:44.162063+00:00
+    modification_date: 2025-08-05 04:33:57.158332+00:00
+    siccrf_id: 153
+    name: Myristicaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 147
+  fields:
+    creation_date: 2024-01-25 16:29:44.183957+00:00
+    modification_date: 2025-08-05 04:33:57.160077+00:00
+    siccrf_id: 154
+    name: Myrothamnaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 148
+  fields:
+    creation_date: 2024-01-25 16:29:44.205721+00:00
+    modification_date: 2025-08-05 04:33:57.161836+00:00
+    siccrf_id: 155
+    name: Myrtaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 149
+  fields:
+    creation_date: 2024-01-25 16:29:44.515402+00:00
+    modification_date: 2025-08-05 04:33:57.325933+00:00
+    siccrf_id: 156
+    name: Nartheciaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 150
+  fields:
+    creation_date: 2024-01-25 16:29:44.536737+00:00
+    modification_date: 2025-08-05 04:33:57.327491+00:00
+    siccrf_id: 157
+    name: Nelumbonaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 151
+  fields:
+    creation_date: 2024-01-25 16:29:44.560521+00:00
+    modification_date: 2025-08-05 04:33:57.329168+00:00
+    siccrf_id: 158
+    name: Nostocaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 152
+  fields:
+    creation_date: 2024-01-25 16:29:44.582494+00:00
+    modification_date: 2025-08-05 04:33:57.330774+00:00
+    siccrf_id: 159
+    name: Nymphaeaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 153
+  fields:
+    creation_date: 2024-01-25 16:29:44.615723+00:00
+    modification_date: 2025-08-05 04:33:57.332284+00:00
+    siccrf_id: 160
+    name: Olacaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 154
+  fields:
+    creation_date: 2024-01-25 16:29:44.658716+00:00
+    modification_date: 2025-08-05 04:33:57.333706+00:00
+    siccrf_id: 161
+    name: Oleaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 155
+  fields:
+    creation_date: 2024-01-25 16:29:44.824877+00:00
+    modification_date: 2025-08-05 04:33:57.335148+00:00
+    siccrf_id: 162
+    name: Onagraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 156
+  fields:
+    creation_date: 2024-01-25 16:29:44.877082+00:00
+    modification_date: 2025-08-05 04:33:57.164455+00:00
+    siccrf_id: 163
+    name: Ophiocordycipitaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 157
+  fields:
+    creation_date: 2024-01-25 16:29:44.901406+00:00
+    modification_date: 2025-08-05 04:33:57.166349+00:00
+    siccrf_id: 164
+    name: Ophioglossaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 158
+  fields:
+    creation_date: 2024-01-25 16:29:44.924536+00:00
+    modification_date: 2025-08-05 04:33:57.277230+00:00
+    siccrf_id: 165
+    name: Orchidaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 159
+  fields:
+    creation_date: 2024-01-25 16:29:45.031091+00:00
+    modification_date: 2025-08-05 04:33:57.278773+00:00
+    siccrf_id: 166
+    name: Orobanchaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 160
+  fields:
+    creation_date: 2024-01-25 16:29:45.114735+00:00
+    modification_date: 2025-08-05 04:33:57.280465+00:00
+    siccrf_id: 167
+    name: Osmundaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 161
+  fields:
+    creation_date: 2024-01-25 16:29:45.138259+00:00
+    modification_date: 2025-08-05 04:33:57.374937+00:00
+    siccrf_id: 168
+    name: Oxalidaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 162
+  fields:
+    creation_date: 2024-01-25 16:29:45.184400+00:00
+    modification_date: 2025-08-05 04:33:57.376336+00:00
+    siccrf_id: 169
+    name: Paeoniaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 163
+  fields:
+    creation_date: 2024-01-25 16:29:45.257862+00:00
+    modification_date: 2025-08-05 04:33:57.377632+00:00
+    siccrf_id: 170
+    name: Palmariaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 164
+  fields:
+    creation_date: 2024-01-25 16:29:45.284307+00:00
+    modification_date: 2025-08-05 04:33:57.378854+00:00
+    siccrf_id: 171
+    name: Papaveraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 165
+  fields:
+    creation_date: 2024-01-25 16:29:45.393129+00:00
+    modification_date: 2025-08-05 04:33:57.380328+00:00
+    siccrf_id: 172
+    name: Parmeliaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 166
+  fields:
+    creation_date: 2024-01-25 16:29:45.482436+00:00
+    modification_date: 2025-08-05 04:33:57.381689+00:00
+    siccrf_id: 173
+    name: Passifloraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 167
+  fields:
+    creation_date: 2024-01-25 16:29:45.525728+00:00
+    modification_date: 2025-08-05 04:33:57.383169+00:00
+    siccrf_id: 174
+    name: Pedaliaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 168
+  fields:
+    creation_date: 2024-01-25 16:29:45.559681+00:00
+    modification_date: 2025-08-05 04:33:57.384422+00:00
+    siccrf_id: 175
+    name: Phyllanthaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 169
+  fields:
+    creation_date: 2024-01-25 16:29:45.604124+00:00
+    modification_date: 2025-08-05 04:33:57.385828+00:00
+    siccrf_id: 176
+    name: Phyllophoraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 170
+  fields:
+    creation_date: 2024-01-25 16:29:45.626788+00:00
+    modification_date: 2025-08-05 04:33:57.387661+00:00
+    siccrf_id: 177
+    name: Phytolaccaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 171
+  fields:
+    creation_date: 2024-01-25 16:29:45.672722+00:00
+    modification_date: 2025-08-05 04:33:57.389148+00:00
+    siccrf_id: 178
+    name: Picramniaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 172
+  fields:
+    creation_date: 2024-01-25 16:29:45.695774+00:00
+    modification_date: 2025-08-05 04:33:57.390357+00:00
+    siccrf_id: 179
+    name: Pinaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 173
+  fields:
+    creation_date: 2024-01-25 16:29:45.892461+00:00
+    modification_date: 2025-08-05 04:33:57.398924+00:00
+    siccrf_id: 180
+    name: Piperaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 174
+  fields:
+    creation_date: 2024-01-25 16:29:45.952796+00:00
+    modification_date: 2025-08-05 04:33:57.400467+00:00
+    siccrf_id: 181
+    name: Plantaginaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 175
+  fields:
+    creation_date: 2024-01-25 16:29:46.167980+00:00
+    modification_date: 2025-08-05 04:33:57.402122+00:00
+    siccrf_id: 182
+    name: Pleurotaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 176
+  fields:
+    creation_date: 2024-01-25 16:29:46.189325+00:00
+    modification_date: 2025-08-05 04:33:57.403550+00:00
+    siccrf_id: 183
+    name: Plumbaginaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 177
+  fields:
+    creation_date: 2024-01-25 16:29:46.222586+00:00
+    modification_date: 2025-08-05 04:33:57.405139+00:00
+    siccrf_id: 184
+    name: Poaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 178
+  fields:
+    creation_date: 2024-01-25 16:29:46.620091+00:00
+    modification_date: 2025-08-05 04:33:57.406302+00:00
+    siccrf_id: 185
+    name: Polygalaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 179
+  fields:
+    creation_date: 2024-01-25 16:29:46.700787+00:00
+    modification_date: 2025-08-05 04:33:57.407697+00:00
+    siccrf_id: 186
+    name: Polygonaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 180
+  fields:
+    creation_date: 2024-01-25 16:29:47.013599+00:00
+    modification_date: 2025-08-05 04:33:57.409040+00:00
+    siccrf_id: 187
+    name: Polypodiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 181
+  fields:
+    creation_date: 2024-01-25 16:29:47.063869+00:00
+    modification_date: 2025-08-05 04:33:57.410336+00:00
+    siccrf_id: 188
+    name: Polyporaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 182
+  fields:
+    creation_date: 2024-01-25 16:29:47.133760+00:00
+    modification_date: 2025-08-05 04:33:57.411682+00:00
+    siccrf_id: 189
+    name: Polytrichaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 183
+  fields:
+    creation_date: 2024-01-25 16:29:47.166695+00:00
+    modification_date: 2025-08-05 04:33:57.412989+00:00
+    siccrf_id: 190
+    name: Portulacaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 184
+  fields:
+    creation_date: 2024-01-25 16:29:47.189811+00:00
+    modification_date: 2025-08-05 04:33:57.414580+00:00
+    siccrf_id: 191
+    name: Primulaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 185
+  fields:
+    creation_date: 2024-01-25 16:29:47.287331+00:00
+    modification_date: 2025-08-05 04:33:57.416173+00:00
+    siccrf_id: 192
+    name: Proteaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 186
+  fields:
+    creation_date: 2024-01-25 16:29:47.309584+00:00
+    modification_date: 2025-08-05 04:33:57.417606+00:00
+    siccrf_id: 193
+    name: Pteridaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 187
+  fields:
+    creation_date: 2024-01-25 16:29:47.345202+00:00
+    modification_date: 2025-08-05 04:33:57.419030+00:00
+    siccrf_id: 194
+    name: Quillajaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 188
+  fields:
+    creation_date: 2024-01-25 16:29:47.376467+00:00
+    modification_date: 2025-08-05 04:33:57.420571+00:00
+    siccrf_id: 195
+    name: Rafflesiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 189
+  fields:
+    creation_date: 2024-01-25 16:29:47.399445+00:00
+    modification_date: 2025-08-05 04:33:57.421927+00:00
+    siccrf_id: 196
+    name: Ranunculaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 190
+  fields:
+    creation_date: 2024-01-25 16:29:47.799713+00:00
+    modification_date: 2025-08-05 04:33:57.423411+00:00
+    siccrf_id: 197
+    name: Rhamnaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 191
+  fields:
+    creation_date: 2024-01-25 16:29:47.899813+00:00
+    modification_date: 2025-08-05 04:33:57.425019+00:00
+    siccrf_id: 198
+    name: Rhodomelaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 192
+  fields:
+    creation_date: 2024-01-25 16:29:47.925013+00:00
+    modification_date: 2025-08-05 04:33:57.426260+00:00
+    siccrf_id: 199
+    name: Rocellaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 193
+  fields:
+    creation_date: 2024-01-25 16:29:47.962386+00:00
+    modification_date: 2025-08-05 04:33:57.427659+00:00
+    siccrf_id: 200
+    name: Rosaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 194
+  fields:
+    creation_date: 2024-01-25 16:29:48.818822+00:00
+    modification_date: 2025-08-05 04:33:57.428911+00:00
+    siccrf_id: 201
+    name: Rubiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 195
+  fields:
+    creation_date: 2024-01-25 16:29:49.258467+00:00
+    modification_date: 2025-08-05 04:33:57.430519+00:00
+    siccrf_id: 202
+    name: Rutaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 196
+  fields:
+    creation_date: 2024-01-25 16:29:49.666412+00:00
+    modification_date: 2025-08-05 04:33:57.432403+00:00
+    siccrf_id: 203
+    name: Salicaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 197
+  fields:
+    creation_date: 2024-01-25 16:29:49.798603+00:00
+    modification_date: 2025-08-05 04:33:57.433774+00:00
+    siccrf_id: 204
+    name: Santalaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 198
+  fields:
+    creation_date: 2024-01-25 16:29:49.863744+00:00
+    modification_date: 2025-08-05 04:33:57.435136+00:00
+    siccrf_id: 205
+    name: Sapindaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 199
+  fields:
+    creation_date: 2024-01-25 16:29:49.964598+00:00
+    modification_date: 2025-08-05 04:33:57.436364+00:00
+    siccrf_id: 206
+    name: Sapotaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 200
+  fields:
+    creation_date: 2024-01-25 16:29:50.036096+00:00
+    modification_date: 2025-08-05 04:33:57.437755+00:00
+    siccrf_id: 207
+    name: Sargassaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 201
+  fields:
+    creation_date: 2024-01-25 16:29:50.069674+00:00
+    modification_date: 2025-08-05 04:33:57.439117+00:00
+    siccrf_id: 208
+    name: Sarraceniaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 202
+  fields:
+    creation_date: 2024-01-25 16:29:50.091054+00:00
+    modification_date: 2025-08-05 04:33:57.440278+00:00
+    siccrf_id: 209
+    name: Saururaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 203
+  fields:
+    creation_date: 2024-01-25 16:29:50.112936+00:00
+    modification_date: 2025-08-05 04:33:57.441517+00:00
+    siccrf_id: 210
+    name: Saxifragaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 204
+  fields:
+    creation_date: 2024-01-25 16:29:50.145786+00:00
+    modification_date: 2025-08-05 04:33:57.442862+00:00
+    siccrf_id: 211
+    name: Schisandraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 205
+  fields:
+    creation_date: 2024-01-25 16:29:50.179475+00:00
+    modification_date: 2025-08-05 04:33:57.444400+00:00
+    siccrf_id: 212
+    name: Scotiellocystoidaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 206
+  fields:
+    creation_date: 2024-01-25 16:29:50.204268+00:00
+    modification_date: 2025-08-05 04:33:57.445915+00:00
+    siccrf_id: 213
+    name: Scrophulariaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 207
+  fields:
+    creation_date: 2024-01-25 16:29:50.322614+00:00
+    modification_date: 2025-08-05 04:33:57.391676+00:00
+    siccrf_id: 214
+    name: Simaroubaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 208
+  fields:
+    creation_date: 2024-01-25 16:29:50.415303+00:00
+    modification_date: 2025-08-05 04:33:57.393281+00:00
+    siccrf_id: 215
+    name: Simmondsiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 209
+  fields:
+    creation_date: 2024-01-25 16:29:50.438299+00:00
+    modification_date: 2025-08-05 04:33:57.394592+00:00
+    siccrf_id: 216
+    name: Smilacaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 210
+  fields:
+    creation_date: 2024-01-25 16:29:50.575266+00:00
+    modification_date: 2025-08-05 04:33:57.396165+00:00
+    siccrf_id: 217
+    name: Solanaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 211
+  fields:
+    creation_date: 2024-01-25 16:29:50.889525+00:00
+    modification_date: 2025-08-05 04:33:57.397599+00:00
+    siccrf_id: 218
+    name: Solieriaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 212
+  fields:
+    creation_date: 2024-01-25 16:29:50.924039+00:00
+    modification_date: 2025-08-05 04:33:57.167871+00:00
+    siccrf_id: 219
+    name: Spirulinaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 213
+  fields:
+    creation_date: 2024-01-25 16:29:50.987321+00:00
+    modification_date: 2025-08-05 04:33:57.169636+00:00
+    siccrf_id: 220
+    name: Sterculiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 214
+  fields:
+    creation_date: 2024-01-25 16:29:51.009578+00:00
+    modification_date: 2025-08-05 04:33:57.282095+00:00
+    siccrf_id: 221
+    name: Styracaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 215
+  fields:
+    creation_date: 2024-01-25 16:29:51.092785+00:00
+    modification_date: 2025-08-05 04:33:57.336710+00:00
+    siccrf_id: 222
+    name: Tamaricaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 216
+  fields:
+    creation_date: 2024-01-25 16:29:51.118854+00:00
+    modification_date: 2025-08-05 04:33:57.338325+00:00
+    siccrf_id: 223
+    name: Taxaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 217
+  fields:
+    creation_date: 2024-01-25 16:29:51.144203+00:00
+    modification_date: 2025-08-05 04:33:57.339823+00:00
+    siccrf_id: 224
+    name: Taxodiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 218
+  fields:
+    creation_date: 2024-01-25 16:29:51.170724+00:00
+    modification_date: 2025-08-05 04:33:57.341481+00:00
+    siccrf_id: 225
+    name: Theaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 219
+  fields:
+    creation_date: 2024-01-25 16:29:51.206068+00:00
+    modification_date: 2025-08-05 04:33:57.343002+00:00
+    siccrf_id: 226
+    name: Thymelaeaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 220
+  fields:
+    creation_date: 2024-01-25 16:29:51.277002+00:00
+    modification_date: 2025-08-05 04:33:57.447415+00:00
+    siccrf_id: 227
+    name: Tropaeolaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 221
+  fields:
+    creation_date: 2024-01-25 16:29:51.312272+00:00
+    modification_date: 2025-08-05 04:33:57.448799+00:00
+    siccrf_id: 228
+    name: Ulmaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 222
+  fields:
+    creation_date: 2024-01-25 16:29:51.364442+00:00
+    modification_date: 2025-08-05 04:33:57.450141+00:00
+    siccrf_id: 229
+    name: Ulvaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 223
+  fields:
+    creation_date: 2024-01-25 16:29:51.386410+00:00
+    modification_date: 2025-08-05 04:33:57.451411+00:00
+    siccrf_id: 230
+    name: Urticaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 224
+  fields:
+    creation_date: 2024-01-25 16:29:51.441037+00:00
+    modification_date: 2025-08-05 04:33:57.454250+00:00
+    siccrf_id: 232
+    name: Verbenaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 225
+  fields:
+    creation_date: 2024-01-25 16:29:51.487296+00:00
+    modification_date: 2025-08-05 04:33:57.455611+00:00
+    siccrf_id: 233
+    name: Violaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 226
+  fields:
+    creation_date: 2024-01-25 16:29:51.579995+00:00
+    modification_date: 2025-08-05 04:33:57.457093+00:00
+    siccrf_id: 234
+    name: Vitaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 227
+  fields:
+    creation_date: 2024-01-25 16:29:51.632303+00:00
+    modification_date: 2025-08-05 04:33:57.458338+00:00
+    siccrf_id: 235
+    name: Winteraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 228
+  fields:
+    creation_date: 2024-01-25 16:29:51.663869+00:00
+    modification_date: 2025-08-05 04:33:57.459751+00:00
+    siccrf_id: 236
+    name: Zingiberaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 229
+  fields:
+    creation_date: 2024-01-25 16:29:51.865103+00:00
+    modification_date: 2025-08-05 04:33:57.461115+00:00
+    siccrf_id: 237
+    name: Zygophyllaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 230
+  fields:
+    creation_date: 2024-01-25 16:29:52.037393+00:00
+    modification_date: 2025-08-05 04:33:57.462286+00:00
+    siccrf_id: 238
+    name: Hericiaceae
+    is_obsolete: false
+    siccrf_name_en: Hericiaceae
+- model: data.plantfamily
+  pk: 231
+  fields:
+    creation_date: 2024-01-25 16:29:52.091791+00:00
+    modification_date: 2025-08-05 04:33:57.463682+00:00
+    siccrf_id: 239
+    name: Platanaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 232
+  fields:
+    creation_date: 2024-01-25 16:29:52.201996+00:00
+    modification_date: 2025-08-05 04:33:57.465208+00:00
+    siccrf_id: 241
+    name: Elaeocarpaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 233
+  fields:
+    creation_date: 2024-01-25 16:29:52.224066+00:00
+    modification_date: 2025-08-05 04:33:57.466566+00:00
+    siccrf_id: 242
+    name: Eupodiscaceae
+    is_obsolete: false
+    siccrf_name_en: Eupodiscaceae
+- model: data.plantfamily
+  pk: 234
+  fields:
+    creation_date: 2024-01-25 16:29:52.290866+00:00
+    modification_date: 2025-08-05 04:33:57.467871+00:00
+    siccrf_id: 243
+    name: Phrymaceae
+    is_obsolete: false
+    siccrf_name_en: Phrymaceae
+- model: data.plantfamily
+  pk: 235
+  fields:
+    creation_date: 2024-01-25 16:29:52.325538+00:00
+    modification_date: 2025-08-05 04:33:57.469169+00:00
+    siccrf_id: 244
+    name: Symplocaceae
+    is_obsolete: false
+    siccrf_name_en: Symplocaceae
+- model: data.plantfamily
+  pk: 236
+  fields:
+    creation_date: 2024-01-25 16:29:52.347334+00:00
+    modification_date: 2025-08-05 04:33:57.470660+00:00
+    siccrf_id: 246
+    name: Irvingiaceae
+    is_obsolete: false
+    siccrf_name_en: Irvingiaceae
+- model: data.plantfamily
+  pk: 237
+  fields:
+    creation_date: 2024-01-25 16:29:52.401096+00:00
+    modification_date: 2025-08-05 04:33:57.474242+00:00
+    siccrf_id: 248
+    name: xanthorrhoeaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 238
+  fields:
+    creation_date: 2024-01-25 16:29:52.462034+00:00
+    modification_date: 2025-08-05 04:33:57.475756+00:00
+    siccrf_id: 249
+    name: Hymenochaetaceae
+    is_obsolete: false
+    siccrf_name_en: Hymenochaetaceae
+- model: data.plantfamily
+  pk: 239
+  fields:
+    creation_date: 2024-01-25 16:29:52.593032+00:00
+    modification_date: 2025-08-05 04:33:57.478743+00:00
+    siccrf_id: 252
+    name: Choanephoraceae
+    is_obsolete: false
+    siccrf_name_en: Choanephoraceae
+- model: data.plantfamily
+  pk: 240
+  fields:
+    creation_date: 2024-01-25 16:29:52.693279+00:00
+    modification_date: 2025-08-05 04:33:57.480167+00:00
+    siccrf_id: 253
+    name: Lyophyllaceae
+    is_obsolete: false
+    siccrf_name_en: Lyophyllaceae
+- model: data.plantfamily
+  pk: 241
+  fields:
+    creation_date: 2024-01-25 16:29:52.715498+00:00
+    modification_date: 2025-08-05 04:33:57.481407+00:00
+    siccrf_id: 254
+    name: Boletaceae
+    is_obsolete: false
+    siccrf_name_en: Boletaceae
+- model: data.plantfamily
+  pk: 242
+  fields:
+    creation_date: 2024-01-25 16:29:52.749474+00:00
+    modification_date: 2025-08-05 04:33:57.482765+00:00
+    siccrf_id: 255
+    name: Gesneriaceae
+    is_obsolete: false
+    siccrf_name_en: Gesneriaceae
+- model: data.plantfamily
+  pk: 243
+  fields:
+    creation_date: 2024-01-25 16:29:52.834574+00:00
+    modification_date: 2025-08-05 04:33:57.477274+00:00
+    siccrf_id: 250
+    name: Nyctaginaceae
+    is_obsolete: false
+    siccrf_name_en: Nyctaginaceae
+- model: data.plantfamily
+  pk: 244
+  fields:
+    creation_date: 2024-01-25 16:29:52.872825+00:00
+    modification_date: 2025-08-05 04:33:57.484142+00:00
+    siccrf_id: 256
+    name: Dictyotaceae
+    is_obsolete: false
+    siccrf_name_en: Dictyotaceae
+- model: data.plantfamily
+  pk: 245
+  fields:
+    creation_date: 2024-01-25 16:29:52.949705+00:00
+    modification_date: 2025-08-05 04:33:57.485608+00:00
+    siccrf_id: 257
+    name: Tremellaceae
+    is_obsolete: false
+    siccrf_name_en: Tremellaceae
+- model: data.plantfamily
+  pk: 246
+  fields:
+    creation_date: 2024-01-25 16:29:53.112775+00:00
+    modification_date: 2025-08-05 04:33:57.486940+00:00
+    siccrf_id: 258
+    name: cantharellaceae
+    is_obsolete: false
+    siccrf_name_en: cantharellaceae
+- model: data.plantfamily
+  pk: 247
+  fields:
+    creation_date: 2024-01-25 16:29:53.163263+00:00
+    modification_date: 2025-08-05 04:33:57.488336+00:00
+    siccrf_id: 261
+    name: Chlorodendraceae
+    is_obsolete: false
+    siccrf_name_en: Chlorodendraceae
+- model: data.plantfamily
+  pk: 248
+  fields:
+    creation_date: 2024-01-25 16:29:53.608203+00:00
+    modification_date: 2025-08-05 04:33:57.489670+00:00
+    siccrf_id: 263
+    name: Euglenaceae
+    is_obsolete: false
+    siccrf_name_en: Euglenaceae
+- model: data.plantfamily
+  pk: 249
+  fields:
+    creation_date: 2024-01-25 16:29:53.726202+00:00
+    modification_date: 2025-08-05 04:33:57.491269+00:00
+    siccrf_id: 264
+    name: Physalacriaceae
+    is_obsolete: false
+    siccrf_name_en: Physalacriaceae
+- model: data.plantfamily
+  pk: 250
+  fields:
+    creation_date: 2024-04-22 20:44:48.738076+00:00
+    modification_date: 2025-08-05 04:33:57.285274+00:00
+    siccrf_id: 2
+    name: Aceraceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 251
+  fields:
+    creation_date: 2024-04-22 20:44:48.786670+00:00
+    modification_date: 2025-08-05 04:33:57.290017+00:00
+    siccrf_id: 5
+    name: Adiantaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 252
+  fields:
+    creation_date: 2024-04-22 20:44:48.832778+00:00
+    modification_date: 2025-08-05 04:33:57.294606+00:00
+    siccrf_id: 8
+    name: Agavaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 253
+  fields:
+    creation_date: 2024-04-22 20:44:49.691927+00:00
+    modification_date: 2025-08-05 04:33:57.170940+00:00
+    siccrf_id: 54
+    name: Chenopodiaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 254
+  fields:
+    creation_date: 2024-04-22 20:44:50.337318+00:00
+    modification_date: 2025-08-05 04:33:57.215934+00:00
+    siccrf_id: 85
+    name: Echinacea
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 255
+  fields:
+    creation_date: 2024-04-22 20:44:50.727887+00:00
+    modification_date: 2025-08-05 04:33:57.138447+00:00
+    siccrf_id: 113
+    name: Hippocastanaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 256
+  fields:
+    creation_date: 2024-04-22 20:44:51.160856+00:00
+    modification_date: 2025-08-05 04:33:57.366566+00:00
+    siccrf_id: 145
+    name: Meripilaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 257
+  fields:
+    creation_date: 2024-04-22 20:44:52.575406+00:00
+    modification_date: 2025-08-05 04:33:57.452769+00:00
+    siccrf_id: 231
+    name: Valerianaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 258
+  fields:
+    creation_date: 2024-04-22 20:44:52.765941+00:00
+    modification_date: 2025-08-05 04:33:57.472652+00:00
+    siccrf_id: 247
+    name: ALOE
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 259
+  fields:
+    creation_date: 2024-07-10 08:47:44.948232+00:00
+    modification_date: 2025-08-05 04:33:57.492632+00:00
+    siccrf_id: 265
+    name: Tuberaceae
+    is_obsolete: false
+    siccrf_name_en: Tuberaceae
+- model: data.plantfamily
+  pk: 260
+  fields:
+    creation_date: 2024-11-15 13:55:06.050460+00:00
+    modification_date: 2025-08-05 04:33:57.108953+00:00
+    siccrf_id: null
+    name: Fomitopsidaceae
+    is_obsolete: false
+    siccrf_name_en: ''
+- model: data.plantfamily
+  pk: 261
+  fields:
+    creation_date: 2025-09-29 12:53:43.661241+00:00
+    modification_date: 2025-09-29 12:53:43.661260+00:00
+    siccrf_id: null
+    name: Cordycipitaceae
+    is_obsolete: false
+    siccrf_name_en: ''
