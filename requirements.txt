@@ -90,7 +90,7 @@ ptyprocess==0.7.0
 pure_eval==0.2.3
 pycairo==1.29.0
 pycodestyle==2.14.0
-pycparser==2.23
+pycparser==3.0
 Pygments==2.20.0
 pyHanko==0.34.1
 pyhanko-certvalidator==0.30.1
