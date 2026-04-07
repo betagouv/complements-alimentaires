@@ -120,7 +120,7 @@ stack-data==0.6.3
 svglib==1.6.0
 tblib==3.2.2
 tinycss2==1.4.0
-tqdm==4.67.1
+tqdm==4.67.3
 traitlets==5.14.3
 typing_extensions==4.15.0
 tzdata==2025.3
