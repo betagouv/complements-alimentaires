@@ -91,7 +91,7 @@ pure_eval==0.2.3
 pycairo==1.29.0
 pycodestyle==2.14.0
 pycparser==2.23
-Pygments==2.19.2
+Pygments==2.20.0
 pyHanko==0.34.1
 pyhanko-certvalidator==0.30.1
 pypdf==6.9.2
