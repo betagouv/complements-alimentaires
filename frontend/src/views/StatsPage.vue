@@ -100,7 +100,7 @@
             régulièrement. Notre hypothèse est qu'une consultation élevée de cette base de donnée aura pour conséquence
             une réduction des erreurs dans les déclarations.
           </p>
-          <h4>Consultations à la base ingrédients</h4>
+          <h4 v-if="elementVisitChartInfo">Consultations à la base ingrédients</h4>
           <bar-chart
             v-if="elementVisitChartInfo"
             :x="elementVisitChartInfo.x"
@@ -120,7 +120,7 @@
             permettra de sensibiliser les distributeurs (avant de référencer un produit) et les consommateurs (avant
             d’acheter un produit).
           </p>
-          <h4>Consultations au jeu de données de Compl'Alim</h4>
+          <h4 v-if="declarationVisitChartInfo">Consultations au jeu de données de Compl'Alim</h4>
           <bar-chart
             v-if="declarationVisitChartInfo"
             :x="declarationVisitChartInfo.x"
@@ -141,7 +141,7 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, computed, onMounted, nextTick } from "vue"
+import { ref, watch, onMounted } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 // import ExternalLink from "@/components/ExternalLink"
