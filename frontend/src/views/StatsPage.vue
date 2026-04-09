@@ -141,15 +141,15 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, onMounted } from "vue"
-import { useFetch } from "@vueuse/core"
-import { handleError } from "@/utils/error-handling"
+import { ref, onMounted } from "vue"
+// import { useFetch } from "@vueuse/core"
+// import { handleError } from "@/utils/error-handling"
 // import ExternalLink from "@/components/ExternalLink"
 
 const activeAccordion = ref()
-const { response, data } = useFetch("/api/v1/stats/").json()
+// const { response, data } = useFetch("/api/v1/stats/").json()
 
-watch(response, async () => response && handleError(response))
+// watch(response, async () => response && handleError(response))
 
 // const formatReportData = (reportData, xKey) => {
 //   const keys = (Object.keys(reportData) || []).map(formatMonthLabel)
