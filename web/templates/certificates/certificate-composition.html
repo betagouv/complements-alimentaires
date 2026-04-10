@@ -1,3 +1,4 @@
+{% load pdf_filters %}
 {% with declared_plants=declaration.declared_plants.all declared_microorganisms=declaration.declared_microorganisms.all declared_substances=declaration.declared_substances.all declared_ingredients=declaration.declared_ingredients.all computed_substances=declaration.computed_substances.all %}
 
 {% if declared_plants %}
@@ -24,7 +25,7 @@
                 {% if dp.preparation %}{{ dp.preparation.name }}{% else %}—{% endif %}
             </td>
             <td style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">
-                {% if dp.quantity %}{{ dp.quantity|floatformat:"-2" }}{% if dp.unit %} {{ dp.unit.name }}{% endif %}{% else %}—{% endif %}
+                {% if dp.quantity %}{{ dp.quantity|floatformat:"-2" }}{% if dp.unit %} {{ dp.unit.name|pdf_safe }}{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -76,7 +77,7 @@
                 {% if ds.new %}{{ ds.new_name }}{% else %}{{ ds.substance.name }}{% endif %}
             </td>
             <td style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">
-                {% if ds.quantity %}{{ ds.quantity|floatformat:"-2" }}{% if ds.unit %} {{ ds.unit.name }}{% endif %}{% else %}—{% endif %}
+                {% if ds.quantity %}{{ ds.quantity|floatformat:"-2" }}{% if ds.unit %} {{ ds.unit.name|pdf_safe }}{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -100,7 +101,7 @@
                 {% if di.new %}{{ di.new_name }}{% else %}{{ di.ingredient.name }}{% endif %}
             </td>
             <td style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">
-                {% if di.quantity %}{{ di.quantity|floatformat:"-2" }}{% if di.unit %} {{ di.unit.name }}{% endif %}{% else %}—{% endif %}
+                {% if di.quantity %}{{ di.quantity|floatformat:"-2" }}{% if di.unit %} {{ di.unit.name|pdf_safe }}{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -122,7 +123,7 @@
         <tr>
             <td style="border: 1px solid #aaa; padding: 4px 8px;">{{ cs.substance.name }}</td>
             <td style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">
-                {% if cs.quantity %}{{ cs.quantity|floatformat:"-2" }}{% if cs.unit %} {{ cs.unit.name }}{% endif %}{% else %}—{% endif %}
+                {% if cs.quantity %}{{ cs.quantity|floatformat:"-2" }}{% if cs.unit %} {{ cs.unit.name|pdf_safe }}{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
