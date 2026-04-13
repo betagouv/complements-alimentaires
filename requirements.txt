@@ -79,7 +79,7 @@ pathspec==1.0.3
 pexpect==4.9.0
 phonenumbers==9.0.24
 pikepdf==10.5.1
-pillow==12.1.1
+pillow==12.2.0
 pipdeptree==2.30.0
 platformdirs==4.5.0
 pluggy==1.6.0
