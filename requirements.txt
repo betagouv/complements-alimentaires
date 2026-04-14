@@ -50,7 +50,7 @@ drf_base64==2.0
 et_xmlfile==2.0.0
 executing==2.2.1
 factory_boy==3.3.3
-Faker==40.11.1
+Faker==40.13.0
 filelock==3.20.3
 freetype-py==2.5.1
 gprof2dot==2025.4.14
