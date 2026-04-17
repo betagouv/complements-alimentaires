@@ -419,6 +419,7 @@ class SimpleDeclarationSerializer(serializers.ModelSerializer):
 
 class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(read_only=True, source="company.social_name")
+    company_email = serializers.CharField(read_only=True, source="company.email")
     siret = serializers.CharField(read_only=True, source="company.siret")
     vat = serializers.CharField(read_only=True, source="company.vat")
     article = serializers.SerializerMethodField(read_only=True)
@@ -441,6 +442,7 @@ class ExcelExportDeclarationSerializer(serializers.ModelSerializer):
             "siret",
             "vat",
             "department",
+            "company_email",
             "row_color",  # Champ utilisé en interne par drf-excel
         )
         read_only_fields = fields
