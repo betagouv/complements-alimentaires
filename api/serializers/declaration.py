@@ -618,8 +618,8 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
 
     def get_adresse_responsable_mise_sur_marche(self, obj):
         return {
-            "code_postal": obj.company.postal_code,
-            "pays": obj.company.country,
+            "code_postal": obj.company.postal_code if obj.company else "",
+            "pays": obj.company.country if obj.company else "",
         }
 
     def get_article_procedure(self, obj):
