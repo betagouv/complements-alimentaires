@@ -109,26 +109,5 @@
 </table>
 {% endif %}
 
-{% if computed_substances %}
-<p class="text-bold">Substances calculées :</p>
-<table style="width:100%; border-collapse: collapse; margin-bottom: 1em; font-size: 0.9em;">
-    <thead>
-        <tr style="background-color: #eeeeee;">
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: left;">Substance</th>
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">Quantité par DJR</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for cs in computed_substances %}
-        <tr>
-            <td style="border: 1px solid #aaa; padding: 4px 8px;">{{ cs.substance.name }}</td>
-            <td style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">
-                {% if cs.quantity %}{{ cs.quantity|floatformat:"-2" }}{% if cs.unit %} {{ cs.unit.name|pdf_safe }}{% endif %}{% else %}—{% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% endif %}
 
 {% endwith %}
