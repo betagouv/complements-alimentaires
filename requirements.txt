@@ -15,7 +15,7 @@ celery==5.6.3
 certifi==2026.2.25
 cffi==2.0.0
 cfgv==3.5.0
-chardet==7.4.0.post2
+chardet==7.4.3
 charset-normalizer==3.4.7
 click==8.3.1
 click-didyoumean==0.3.1
@@ -65,7 +65,7 @@ jedi==0.19.2
 Jinja2==3.1.6
 jmespath==1.1.0
 kombu==5.6.2
-lxml==6.0.2
+lxml==6.1.0
 MarkupSafe==3.0.3
 matplotlib-inline==0.2.1
 nodeenv==1.10.0
@@ -73,7 +73,7 @@ numpy==2.4.3
 openpyxl==3.1.5
 oscrypto==1.3.0
 packaging==26.0
-pandas==3.0.1
+pandas==3.0.2
 parso==0.8.6
 pathspec==1.0.3
 pexpect==4.9.0
@@ -94,7 +94,7 @@ pycparser==3.0
 Pygments==2.20.0
 pyHanko==0.34.1
 pyhanko-certvalidator==0.30.1
-pypdf==6.10.0
+pypdf==6.10.2
 pytest==9.0.3
 python-bidi==0.6.7
 python-dateutil==2.9.0.post0
@@ -108,13 +108,13 @@ reportlab==4.4.10
 requests==2.33.0
 requests-mock==1.12.1
 rlPyCairo==0.4.0
-ruff==0.14.14
+ruff==0.15.10
 s3transfer==0.16.0
-sentry-sdk==2.49.0
+sentry-sdk==2.58.0
 sib-api-v3-sdk==7.6.0
 six==1.17.0
 soupsieve==2.8.3
-sqlfluff==4.0.4
+sqlfluff==4.1.0
 sqlparse==0.5.5
 stack-data==0.6.3
 svglib==1.6.0
