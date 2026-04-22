@@ -1,0 +1,220 @@
+- model: data.galenicformulation
+  pk: 1
+  fields:
+    creation_date: 2024-04-22 14:47:36.512881+00:00
+    modification_date: 2025-08-04 14:51:40.064502+00:00
+    siccrf_id: 1
+    name: Ampoule
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Bulb
+    is_liquid: true
+- model: data.galenicformulation
+  pk: 2
+  fields:
+    creation_date: 2024-04-22 14:47:36.538385+00:00
+    modification_date: 2025-08-04 14:51:40.066987+00:00
+    siccrf_id: 2
+    name: Autre forme liquide (à préciser)
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Other liquid form (specify)
+    is_liquid: true
+- model: data.galenicformulation
+  pk: 3
+  fields:
+    creation_date: 2024-04-22 14:47:36.554567+00:00
+    modification_date: 2025-08-04 14:51:40.068922+00:00
+    siccrf_id: 3
+    name: Autre forme solide (à préciser)
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Other solid form (specify)
+    is_liquid: false
+- model: data.galenicformulation
+  pk: 4
+  fields:
+    creation_date: 2024-04-22 14:47:36.570868+00:00
+    modification_date: 2025-08-04 14:51:40.070706+00:00
+    siccrf_id: 4
+    name: Autre forme solide à mâcher (à préciser)
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Other chewable solid form (specify)
+    is_liquid: false
+- model: data.galenicformulation
+  pk: 5
+  fields:
+    creation_date: 2024-04-22 14:47:36.589650+00:00
+    modification_date: 2025-08-04 14:51:40.072629+00:00
+    siccrf_id: 5
+    name: Bâton / batônnet / stick
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Stick / Rod-shaped
+    is_liquid: false
+- model: data.galenicformulation
+  pk: 6
+  fields:
+    creation_date: 2024-04-22 14:47:36.605490+00:00
+    modification_date: 2025-08-04 14:51:40.074239+00:00
+    siccrf_id: 6
+    name: Capsule
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Soft capsule
+    is_liquid: true
+- model: data.galenicformulation
+  pk: 7
+  fields:
+    creation_date: 2024-04-22 14:47:36.621068+00:00
+    modification_date: 2025-08-04 14:51:40.075760+00:00
+    siccrf_id: 7
+    name: Capsule à mâcher
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Chewable capsule
+    is_liquid: true
+- model: data.galenicformulation
+  pk: 8
+  fields:
+    creation_date: 2024-04-22 14:47:36.637194+00:00
+    modification_date: 2025-08-04 14:51:40.077363+00:00
+    siccrf_id: 8
+    name: Comprimé
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Tablet
+    is_liquid: false
+- model: data.galenicformulation
+  pk: 9
+  fields:
+    creation_date: 2024-04-22 14:47:36.653187+00:00
+    modification_date: 2025-08-04 14:51:40.078940+00:00
+    siccrf_id: 9
+    name: Compte-gouttes
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Dropper
+    is_liquid: true
+- model: data.galenicformulation
+  pk: 10
+  fields:
+    creation_date: 2024-04-22 14:47:36.678332+00:00
+    modification_date: 2025-08-04 14:51:40.080594+00:00
+    siccrf_id: 10
+    name: Flacon
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Bottle
+    is_liquid: true
+- model: data.galenicformulation
+  pk: 11
+  fields:
+    creation_date: 2024-04-22 14:47:36.694665+00:00
+    modification_date: 2025-08-04 14:51:40.082071+00:00
+    siccrf_id: 11
+    name: Gélule
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Hard capsule
+    is_liquid: false
+- model: data.galenicformulation
+  pk: 12
+  fields:
+    creation_date: 2024-04-22 14:47:36.719516+00:00
+    modification_date: 2025-08-04 14:51:40.083578+00:00
+    siccrf_id: 12
+    name: Gomme
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Gum
+    is_liquid: false
+- model: data.galenicformulation
+  pk: 13
+  fields:
+    creation_date: 2024-04-22 14:47:36.747888+00:00
+    modification_date: 2025-08-04 14:51:40.085155+00:00
+    siccrf_id: 13
+    name: Gomme à mâcher
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Chewable gum
+    is_liquid: false
+- model: data.galenicformulation
+  pk: 14
+  fields:
+    creation_date: 2024-04-22 14:47:36.772273+00:00
+    modification_date: 2025-08-04 14:51:40.086556+00:00
+    siccrf_id: 14
+    name: Granule
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Granule
+    is_liquid: false
+- model: data.galenicformulation
+  pk: 15
+  fields:
+    creation_date: 2024-04-22 14:47:36.789992+00:00
+    modification_date: 2025-08-04 14:51:40.087992+00:00
+    siccrf_id: 15
+    name: Pastille
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Pellet
+    is_liquid: false
+- model: data.galenicformulation
+  pk: 16
+  fields:
+    creation_date: 2024-04-22 14:47:36.808488+00:00
+    modification_date: 2025-08-04 14:51:40.089447+00:00
+    siccrf_id: 16
+    name: Pilule
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Pill
+    is_liquid: false
+- model: data.galenicformulation
+  pk: 17
+  fields:
+    creation_date: 2024-04-22 14:47:36.828016+00:00
+    modification_date: 2025-08-04 14:51:40.090930+00:00
+    siccrf_id: 17
+    name: Poudre
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Powder
+    is_liquid: false
+- model: data.galenicformulation
+  pk: 18
+  fields:
+    creation_date: 2024-04-22 14:47:36.849318+00:00
+    modification_date: 2025-08-04 14:51:40.092477+00:00
+    siccrf_id: 18
+    name: Sachet
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Packet
+    is_liquid: false
+- model: data.galenicformulation
+  pk: 19
+  fields:
+    creation_date: 2024-04-22 14:47:36.867215+00:00
+    modification_date: 2025-08-04 14:51:40.094077+00:00
+    siccrf_id: 19
+    name: Sirop
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Syrup
+    is_liquid: true
+- model: data.galenicformulation
+  pk: 20
+  fields:
+    creation_date: 2024-04-22 14:47:36.882802+00:00
+    modification_date: 2025-08-04 14:51:40.095636+00:00
+    siccrf_id: 20
+    name: Spray
+    is_obsolete: false
+    is_risky: false
+    siccrf_name_en: Spray
+    is_liquid: true

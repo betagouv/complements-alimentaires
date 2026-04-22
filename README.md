@@ -183,7 +183,7 @@ npm run test
 
 ## Import de données initiales (fixtures)
 
-Pour pouvoir utiliser l'application et le backoffice avec des données proches de données réelles, il est nécessaire d'importer des données. Pour cela, vous pouvez (ce n'est pas obligatoire) importer les fixtures (données hors éléments) présentes dans le projet :
+Pour pouvoir utiliser l'application et le backoffice avec des données proches de données réelles, il est nécessaire d'importer des données. Pour cela, vous pouvez (ce n'est pas obligatoire) importer les fixtures présentes dans le projet :
 
 ```
 python manage.py myloaddata
