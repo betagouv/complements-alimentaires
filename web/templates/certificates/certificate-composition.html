@@ -1,30 +1,30 @@
 {% load pdf_filters %}
-{% with declared_plants=declaration.declared_plants.all declared_microorganisms=declaration.declared_microorganisms.all declared_substances=declaration.declared_substances.all declared_ingredients=declaration.declared_ingredients.all computed_substances=declaration.computed_substances.all %}
+{% with declared_plants=declaration.declared_plants.all declared_microorganisms=declaration.declared_microorganisms.all declared_substances=declaration.declared_substances.all declared_ingredients=declaration.declared_ingredients.all %}
 
 {% if declared_plants %}
 <p class="text-bold">Plantes :</p>
-<table style="width:100%; border-collapse: collapse; margin-bottom: 1em; font-size: 0.9em;">
+<table>
     <thead>
-        <tr style="background-color: #eeeeee;">
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: left;">Nom</th>
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: left;">Partie utilisée</th>
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: left;">Préparation</th>
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">Quantité par DJR</th>
+        <tr>
+            <th>Nom</th>
+            <th>Partie utilisée</th>
+            <th>Préparation</th>
+            <th class="align-right">Quantité par DJR</th>
         </tr>
     </thead>
     <tbody>
         {% for dp in declared_plants %}
         <tr>
-            <td style="border: 1px solid #aaa; padding: 4px 8px;">
+            <td>
                 {% if dp.new %}{{ dp.new_name }}{% else %}{{ dp.plant.name }}{% endif %}
             </td>
-            <td style="border: 1px solid #aaa; padding: 4px 8px;">
+            <td>
                 {% if dp.used_part %}{{ dp.used_part.name }}{% else %}—{% endif %}
             </td>
-            <td style="border: 1px solid #aaa; padding: 4px 8px;">
+            <td>
                 {% if dp.preparation %}{{ dp.preparation.name }}{% else %}—{% endif %}
             </td>
-            <td style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">
+            <td class="align-right">
                 {% if dp.quantity %}{{ dp.quantity|floatformat:"-2" }}{% if dp.unit %} {{ dp.unit.name|pdf_safe }}{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
@@ -35,24 +35,24 @@
 
 {% if declared_microorganisms %}
 <p class="text-bold">Micro-organismes :</p>
-<table style="width:100%; border-collapse: collapse; margin-bottom: 1em; font-size: 0.9em;">
+<table>
     <thead>
-        <tr style="background-color: #eeeeee;">
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: left;">Nom</th>
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: left;">Souche</th>
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">Quantité par DJR (UFC)</th>
+        <tr>
+            <th>Nom</th>
+            <th>Souche</th>
+            <th class="align-right">Quantité par DJR (UFC)</th>
         </tr>
     </thead>
     <tbody>
         {% for dm in declared_microorganisms %}
         <tr>
-            <td style="border: 1px solid #aaa; padding: 4px 8px;">
+            <td>
                 {% if dm.new %}{{ dm.new_name }}{% else %}{{ dm.microorganism.name }}{% endif %}
             </td>
-            <td style="border: 1px solid #aaa; padding: 4px 8px;">
+            <td>
                 {% if dm.strain %}{{ dm.strain }}{% else %}—{% endif %}
             </td>
-            <td style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">
+            <td class="align-right">
                 {% if dm.quantity %}{{ dm.quantity|floatformat:"-2" }}{% else %}—{% endif %}
             </td>
         </tr>
@@ -63,20 +63,20 @@
 
 {% if declared_substances %}
 <p class="text-bold">Substances :</p>
-<table style="width:100%; border-collapse: collapse; margin-bottom: 1em; font-size: 0.9em;">
+<table>
     <thead>
-        <tr style="background-color: #eeeeee;">
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: left;">Nom</th>
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">Quantité par DJR</th>
+        <tr>
+            <th>Nom</th>
+            <th class="align-right">Quantité par DJR</th>
         </tr>
     </thead>
     <tbody>
         {% for ds in declared_substances %}
         <tr>
-            <td style="border: 1px solid #aaa; padding: 4px 8px;">
+            <td>
                 {% if ds.new %}{{ ds.new_name }}{% else %}{{ ds.substance.name }}{% endif %}
             </td>
-            <td style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">
+            <td class="align-right">
                 {% if ds.quantity %}{{ ds.quantity|floatformat:"-2" }}{% if ds.unit %} {{ ds.unit.name|pdf_safe }}{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
@@ -87,20 +87,20 @@
 
 {% if declared_ingredients %}
 <p class="text-bold">Autres ingrédients :</p>
-<table style="width:100%; border-collapse: collapse; margin-bottom: 1em; font-size: 0.9em;">
+<table>
     <thead>
-        <tr style="background-color: #eeeeee;">
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: left;">Nom</th>
-            <th style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">Quantité par DJR</th>
+        <tr>
+            <th>Nom</th>
+            <th class="align-right">Quantité par DJR</th>
         </tr>
     </thead>
     <tbody>
         {% for di in declared_ingredients %}
         <tr>
-            <td style="border: 1px solid #aaa; padding: 4px 8px;">
+            <td>
                 {% if di.new %}{{ di.new_name }}{% else %}{{ di.ingredient.name }}{% endif %}
             </td>
-            <td style="border: 1px solid #aaa; padding: 4px 8px; text-align: right;">
+            <td class="align-right">
                 {% if di.quantity %}{{ di.quantity|floatformat:"-2" }}{% if di.unit %} {{ di.unit.name|pdf_safe }}{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
