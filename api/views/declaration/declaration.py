@@ -839,7 +839,38 @@ class VisaRequestFlowView(DeclarationFlowView):
         if not self.post_validation_status:
             raise Exception("VisaRequestFlowView doit être sous-classée et doit spécifier le post_validation_status")
         declaration.post_validation_status = self.post_validation_status
+
         return super().on_transition_success(request, declaration)
+
+    def should_automatically_validate_visa(self, request):
+        auto_validate = request.query_params.get("auto-validate", "").lower() == "true"
+        if not auto_validate:
+            return False
+        has_instruction_role = InstructionRole.objects.filter(user=request.user).exists()
+        has_visa_role = VisaRole.objects.filter(user=request.user).exists()
+        return has_instruction_role and has_visa_role
+
+    def post(self, request, *args, **kwargs):
+        """
+        Si la personne effectuant la demande de visa le souhaite, elle peut aussi
+        approuver le visa automatiquement.
+        """
+        response = super().post(request, *args, **kwargs)
+        if self.should_automatically_validate_visa(request):
+            # D'abord on automatise la prise du dossier pour le visa :
+            take_view = DeclarationTakeForVisaView()
+            take_view.kwargs = self.kwargs
+            take_view.request = request
+            take_view.format_kwarg = self.format_kwarg
+            take_view.post(request, *args, **kwargs)
+
+            # Puis on automatise l'approbation du visa
+            visa_view = DeclarationAcceptVisaView()
+            visa_view.kwargs = self.kwargs
+            visa_view.request = request
+            visa_view.format_kwarg = self.format_kwarg
+            response = visa_view.post(request, *args, **kwargs)
+        return response
 
 
 class DeclarationObserveWithVisa(VisaRequestFlowView):

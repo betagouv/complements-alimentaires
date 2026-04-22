@@ -626,6 +626,32 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
 
     @authenticate
+    def test_authorize_with_visa_auto_validate(self):
+        """
+        Un utilisateur ayant à la fois le rôle instructeur et viseuse peut valider
+        automatiquement le visa en passant le queryparam auto-validate=true.
+        La déclaration doit passer directement à AUTHORIZED sans rester en AWAITING_VISA.
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        VisaRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(
+            reverse("api:authorize_with_visa", kwargs={"pk": declaration.id}) + "?auto-validate=true",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
+
+        snapshot_actions = list(declaration.snapshots.order_by("creation_date").values_list("action", flat=True))
+        self.assertIn(Snapshot.SnapshotActions.REQUEST_VISA, snapshot_actions)
+        self.assertIn(Snapshot.SnapshotActions.TAKE_FOR_VISA, snapshot_actions)
+        self.assertIn(Snapshot.SnapshotActions.ACCEPT_VISA, snapshot_actions)
+
+    @authenticate
     def test_refuse_visa(self):
         """
         Passage de ONGOING_VISA à AWAITING_INSTRUCTION
