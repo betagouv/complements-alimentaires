@@ -1,8 +1,10 @@
 {% load pdf_filters %}
 {% with declared_plants=declaration.declared_plants.all declared_microorganisms=declaration.declared_microorganisms.all declared_substances=declaration.declared_substances.all declared_ingredients=declaration.declared_ingredients.all %}
-
+<div id="composition">
 {% if declared_plants %}
-<p class="text-bold">Plantes :</p>
+
+<p class="text-bold mb-0">Plantes :</p>
+
 <table>
     <thead>
         <tr>
@@ -34,7 +36,7 @@
 {% endif %}
 
 {% if declared_microorganisms %}
-<p class="text-bold">Micro-organismes :</p>
+<p class="text-bold mb-0 mt-20">Micro-organismes :</p>
 <table>
     <thead>
         <tr>
@@ -62,7 +64,7 @@
 {% endif %}
 
 {% if declared_substances %}
-<p class="text-bold">Substances :</p>
+<p class="text-bold mb-0 mt-20">Substances :</p>
 <table>
     <thead>
         <tr>
@@ -86,7 +88,7 @@
 {% endif %}
 
 {% if declared_ingredients %}
-<p class="text-bold">Autres ingrédients :</p>
+<p class="text-bold mb-0 mt-20">Autres ingrédients :</p>
 <table>
     <thead>
         <tr>
@@ -109,5 +111,5 @@
 </table>
 {% endif %}
 
-
+</div>
 {% endwith %}
