@@ -1,11 +1,9 @@
-{% load pdf_filters %}
 {% with declared_plants=declaration.declared_plants.all declared_microorganisms=declaration.declared_microorganisms.all declared_substances=declaration.declared_substances.all declared_ingredients=declaration.declared_ingredients.all %}
 <div id="composition">
 {% if declared_plants %}
 
-<p class="text-bold mb-0">Plantes :</p>
-
 <table>
+    <caption>Plantes :</caption>
     <thead>
         <tr>
             <th>Nom</th>
@@ -27,7 +25,7 @@
                 {% if dp.preparation %}{{ dp.preparation.name }}{% else %}—{% endif %}
             </td>
             <td class="align-right">
-                {% if dp.quantity %}{{ dp.quantity|floatformat:"-2" }}{% if dp.unit %} {{ dp.unit.name|pdf_safe }}{% endif %}{% else %}—{% endif %}
+                {% if dp.quantity %}{{ dp.quantity }}{% if dp.unit %} <span style="font-family: serif;"> {{ dp.unit.name }}</span>{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -36,8 +34,8 @@
 {% endif %}
 
 {% if declared_microorganisms %}
-<p class="text-bold mb-0 mt-20">Micro-organismes :</p>
 <table>
+    <caption>Micro-organismes :</caption>
     <thead>
         <tr>
             <th>Nom</th>
@@ -55,7 +53,7 @@
                 {% if dm.strain %}{{ dm.strain }}{% else %}—{% endif %}
             </td>
             <td class="align-right">
-                {% if dm.quantity %}{{ dm.quantity|floatformat:"-2" }}{% else %}—{% endif %}
+                {% if dm.quantity %}{{ dm.quantity }}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -64,8 +62,8 @@
 {% endif %}
 
 {% if declared_substances %}
-<p class="text-bold mb-0 mt-20">Substances :</p>
 <table>
+    <caption>Substances :</caption>
     <thead>
         <tr>
             <th>Nom</th>
@@ -79,7 +77,7 @@
                 {% if ds.new %}{{ ds.new_name }}{% else %}{{ ds.substance.name }}{% endif %}
             </td>
             <td class="align-right">
-                {% if ds.quantity %}{{ ds.quantity|floatformat:"-2" }}{% if ds.unit %} {{ ds.unit.name|pdf_safe }}{% endif %}{% else %}—{% endif %}
+                {% if ds.quantity %}{{ ds.quantity }}{% if ds.unit %} {{ ds.unit.name }}{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -88,8 +86,8 @@
 {% endif %}
 
 {% if declared_ingredients %}
-<p class="text-bold mb-0 mt-20">Autres ingrédients :</p>
 <table>
+    <caption>Autres ingrédients :</caption>
     <thead>
         <tr>
             <th>Nom</th>
@@ -103,7 +101,7 @@
                 {% if di.new %}{{ di.new_name }}{% else %}{{ di.ingredient.name }}{% endif %}
             </td>
             <td class="align-right">
-                {% if di.quantity %}{{ di.quantity|floatformat:"-2" }}{% if di.unit %} {{ di.unit.name|pdf_safe }}{% endif %}{% else %}—{% endif %}
+                {% if di.quantity %}{{ di.quantity }}{% if di.unit %} {{ di.unit.name }}{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}

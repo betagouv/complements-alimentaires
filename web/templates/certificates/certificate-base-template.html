@@ -62,6 +62,14 @@
                 margin-bottom: 1em;
                 font-size: 0.9em;
             }
+            #composition caption {
+                caption-side: top;
+                font-family: 'Marianne-Bold';
+                font-weight: bold;
+                text-align: left;
+                margin-top: 20px;
+                margin-bottom: 0;
+            }
             #composition tr {
                 background-color: #eeeeee;
             }
@@ -143,7 +151,7 @@
                 <img width="250" src="{% static 'images/certificate/marianne.png' %}" alt="République Française">
             </div>
             <div id="footer">
-                Page <pdf:pagenumber /> de <pdf:pagecount />
+                Page <pdf:pagenumber /> sur <pdf:pagecount />
            </div>
         </main>
     </body>
