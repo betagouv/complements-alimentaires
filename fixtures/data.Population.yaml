@@ -1,0 +1,143 @@
+- model: data.population
+  pk: 1
+  fields:
+    creation_date: 2024-01-16 14:03:40.598719+00:00
+    modification_date: 2025-05-12 15:45:46.271554+00:00
+    name: Population générale
+    is_obsolete: null
+    min_age: null
+    max_age: null
+    is_defined_by_anses: false
+    category: OTHER
+- model: data.population
+  pk: 2
+  fields:
+    creation_date: 2024-01-16 14:03:40.611964+00:00
+    modification_date: 2025-05-12 15:45:33.366297+00:00
+    name: Nourrissons de 0 à 5 mois
+    is_obsolete: null
+    min_age: 0.0
+    max_age: 0.5
+    is_defined_by_anses: true
+    category: AGE
+- model: data.population
+  pk: 3
+  fields:
+    creation_date: 2024-01-16 14:03:40.622621+00:00
+    modification_date: 2025-05-12 15:46:06.662870+00:00
+    name: Nourrissons de 6 à 11 mois
+    is_obsolete: null
+    min_age: 0.5
+    max_age: 0.95
+    is_defined_by_anses: true
+    category: AGE
+- model: data.population
+  pk: 4
+  fields:
+    creation_date: 2024-01-16 14:03:40.633103+00:00
+    modification_date: 2025-05-12 15:46:33.882514+00:00
+    name: Enfants en bas âge de 1 à 3 ans
+    is_obsolete: null
+    min_age: 1.0
+    max_age: 3.0
+    is_defined_by_anses: true
+    category: AGE
+- model: data.population
+  pk: 5
+  fields:
+    creation_date: 2024-01-16 14:03:40.644465+00:00
+    modification_date: 2025-05-12 15:47:05.170022+00:00
+    name: Enfants de 4 à 10 ans
+    is_obsolete: null
+    min_age: 4.0
+    max_age: 10.0
+    is_defined_by_anses: true
+    category: AGE
+- model: data.population
+  pk: 6
+  fields:
+    creation_date: 2024-01-16 14:03:40.656507+00:00
+    modification_date: 2025-05-12 15:47:16.788915+00:00
+    name: Adolescents de 11 à 17 ans
+    is_obsolete: null
+    min_age: 11.0
+    max_age: 17.0
+    is_defined_by_anses: true
+    category: AGE
+- model: data.population
+  pk: 7
+  fields:
+    creation_date: 2024-01-16 14:03:40.666723+00:00
+    modification_date: 2025-05-12 15:47:29.366415+00:00
+    name: Hommes et femmes de 18 ans et plus
+    is_obsolete: null
+    min_age: 18.0
+    max_age: 119.0
+    is_defined_by_anses: true
+    category: AGE
+- model: data.population
+  pk: 8
+  fields:
+    creation_date: 2024-01-16 14:03:40.677202+00:00
+    modification_date: 2025-05-12 15:47:41.979711+00:00
+    name: Femmes enceintes
+    is_obsolete: null
+    min_age: 18.0
+    max_age: null
+    is_defined_by_anses: true
+    category: PREGNANCY
+- model: data.population
+  pk: 9
+  fields:
+    creation_date: 2024-01-16 14:03:40.687713+00:00
+    modification_date: 2025-05-12 15:47:54.793923+00:00
+    name: Femmes allaitantes
+    is_obsolete: null
+    min_age: 18.0
+    max_age: null
+    is_defined_by_anses: true
+    category: PREGNANCY
+- model: data.population
+  pk: 10
+  fields:
+    creation_date: 2024-01-16 14:03:40.698554+00:00
+    modification_date: 2026-02-19 12:43:50.100225+00:00
+    name: Personnes de plus de 60 ans
+    is_obsolete: null
+    min_age: 60.0
+    max_age: 120.0
+    is_defined_by_anses: false
+    category: AGE
+- model: data.population
+  pk: 11
+  fields:
+    creation_date: 2024-01-16 14:03:40.709893+00:00
+    modification_date: 2025-05-12 15:48:27.910252+00:00
+    name: Homme
+    is_obsolete: null
+    min_age: 18.0
+    max_age: null
+    is_defined_by_anses: false
+    category: OTHER
+- model: data.population
+  pk: 12
+  fields:
+    creation_date: 2024-01-16 14:03:40.721114+00:00
+    modification_date: 2025-05-12 15:48:40.713390+00:00
+    name: Femme
+    is_obsolete: null
+    min_age: 18.0
+    max_age: null
+    is_defined_by_anses: false
+    category: OTHER
+- model: data.population
+  pk: 13
+  fields:
+    creation_date: 2025-04-11 17:57:35.426731+00:00
+    modification_date: 2025-04-11 17:57:35.426748+00:00
+    name: Femme ayant un projet de grossesse
+    is_obsolete: null
+    min_age: 18.0
+    max_age: null
+    is_defined_by_anses: false
+    category: PREGNANCY

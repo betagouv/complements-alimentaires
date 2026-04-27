@@ -1,0 +1,280 @@
+- model: data.preparation
+  pk: 1
+  fields:
+    creation_date: 2024-08-29 14:31:40.131721+00:00
+    modification_date: 2025-08-04 15:14:45.988076+00:00
+    siccrf_id: 1
+    name: Alcoolat
+    is_obsolete: false
+    siccrf_name_en: Alcoholate
+    contains_alcohol: false
+- model: data.preparation
+  pk: 2
+  fields:
+    creation_date: 2024-08-29 14:31:40.153256+00:00
+    modification_date: 2025-08-04 15:14:45.991388+00:00
+    siccrf_id: 2
+    name: Alcoolature
+    is_obsolete: false
+    siccrf_name_en: Alcoholature
+    contains_alcohol: false
+- model: data.preparation
+  pk: 3
+  fields:
+    creation_date: 2024-08-29 14:31:40.169093+00:00
+    modification_date: 2025-08-04 15:14:45.993025+00:00
+    siccrf_id: 3
+    name: Autre extrait fluide
+    is_obsolete: false
+    siccrf_name_en: Other liquid extract
+    contains_alcohol: false
+- model: data.preparation
+  pk: 4
+  fields:
+    creation_date: 2024-08-29 14:31:40.185273+00:00
+    modification_date: 2025-08-04 15:14:45.994544+00:00
+    siccrf_id: 4
+    name: Autre extrait sec
+    is_obsolete: false
+    siccrf_name_en: Other dry extract
+    contains_alcohol: false
+- model: data.preparation
+  pk: 5
+  fields:
+    creation_date: 2024-08-29 14:31:40.202224+00:00
+    modification_date: 2025-08-04 15:14:45.996041+00:00
+    siccrf_id: 5
+    name: Autre macérât
+    is_obsolete: false
+    siccrf_name_en: Other macerate
+    contains_alcohol: false
+- model: data.preparation
+  pk: 6
+  fields:
+    creation_date: 2024-08-29 14:31:40.219252+00:00
+    modification_date: 2025-08-04 15:14:45.989837+00:00
+    siccrf_id: 6
+    name: Baume
+    is_obsolete: false
+    siccrf_name_en: Balm
+    contains_alcohol: false
+- model: data.preparation
+  pk: 7
+  fields:
+    creation_date: 2024-08-29 14:31:40.234206+00:00
+    modification_date: 2025-08-04 15:14:45.997642+00:00
+    siccrf_id: 7
+    name: Extrait au CO2 supercritique
+    is_obsolete: false
+    siccrf_name_en: Supercritical CO2 extract
+    contains_alcohol: false
+- model: data.preparation
+  pk: 8
+  fields:
+    creation_date: 2024-08-29 14:31:40.249865+00:00
+    modification_date: 2025-08-04 15:14:45.999304+00:00
+    siccrf_id: 8
+    name: Extrait fluide alcoolique
+    is_obsolete: false
+    siccrf_name_en: Alcohol liquid extract
+    contains_alcohol: false
+- model: data.preparation
+  pk: 9
+  fields:
+    creation_date: 2024-08-29 14:31:40.265858+00:00
+    modification_date: 2025-08-04 15:14:46.000779+00:00
+    siccrf_id: 9
+    name: Extrait fluide aqueux
+    is_obsolete: false
+    siccrf_name_en: Water liquid extract
+    contains_alcohol: false
+- model: data.preparation
+  pk: 10
+  fields:
+    creation_date: 2024-08-29 14:31:40.280747+00:00
+    modification_date: 2025-08-04 15:14:46.002293+00:00
+    siccrf_id: 10
+    name: Extrait fluide hydroalcoolique
+    is_obsolete: false
+    siccrf_name_en: Water & alcohol liquid extract
+    contains_alcohol: false
+- model: data.preparation
+  pk: 11
+  fields:
+    creation_date: 2024-08-29 14:31:40.297048+00:00
+    modification_date: 2025-08-04 15:14:46.003844+00:00
+    siccrf_id: 11
+    name: Extrait fluide hydroglycériné
+    is_obsolete: false
+    siccrf_name_en: Water & glycerine liquid extract
+    contains_alcohol: false
+- model: data.preparation
+  pk: 12
+  fields:
+    creation_date: 2024-08-29 14:31:40.313510+00:00
+    modification_date: 2025-08-04 15:14:46.005344+00:00
+    siccrf_id: 12
+    name: Extrait mou
+    is_obsolete: false
+    siccrf_name_en: Soft extract
+    contains_alcohol: false
+- model: data.preparation
+  pk: 13
+  fields:
+    creation_date: 2024-08-29 14:31:40.331311+00:00
+    modification_date: 2025-08-04 15:14:46.008477+00:00
+    siccrf_id: 13
+    name: Extrait sec alcoolique
+    is_obsolete: false
+    siccrf_name_en: Alcohol dry extract
+    contains_alcohol: false
+- model: data.preparation
+  pk: 14
+  fields:
+    creation_date: 2024-08-29 14:31:40.348497+00:00
+    modification_date: 2025-08-04 15:14:46.010202+00:00
+    siccrf_id: 14
+    name: Extrait sec aqueux
+    is_obsolete: false
+    siccrf_name_en: Water dry extract
+    contains_alcohol: false
+- model: data.preparation
+  pk: 15
+  fields:
+    creation_date: 2024-08-29 14:31:40.367181+00:00
+    modification_date: 2025-08-04 15:14:46.011806+00:00
+    siccrf_id: 15
+    name: Extrait sec hydroalcoolique
+    is_obsolete: false
+    siccrf_name_en: Water & alcohol dry extract
+    contains_alcohol: false
+- model: data.preparation
+  pk: 16
+  fields:
+    creation_date: 2024-08-29 14:31:40.384651+00:00
+    modification_date: 2025-08-04 15:14:46.013464+00:00
+    siccrf_id: 16
+    name: Extrait sec hydroglycériné
+    is_obsolete: false
+    siccrf_name_en: Water & glycerine dry extract
+    contains_alcohol: false
+- model: data.preparation
+  pk: 18
+  fields:
+    creation_date: 2024-08-29 14:31:40.417208+00:00
+    modification_date: 2025-08-04 15:14:46.016560+00:00
+    siccrf_id: 18
+    name: Hydrolât (eau florale)
+    is_obsolete: false
+    siccrf_name_en: Hydrolat (plant water essence)
+    contains_alcohol: false
+- model: data.preparation
+  pk: 19
+  fields:
+    creation_date: 2024-08-29 14:31:40.433098+00:00
+    modification_date: 2025-08-04 15:14:46.018348+00:00
+    siccrf_id: 19
+    name: Macérât alcoolique
+    is_obsolete: false
+    siccrf_name_en: Alcohol macerate
+    contains_alcohol: false
+- model: data.preparation
+  pk: 20
+  fields:
+    creation_date: 2024-08-29 14:31:40.452431+00:00
+    modification_date: 2025-08-04 15:14:46.020052+00:00
+    siccrf_id: 20
+    name: Macérât aqueux
+    is_obsolete: false
+    siccrf_name_en: Water macerate
+    contains_alcohol: false
+- model: data.preparation
+  pk: 21
+  fields:
+    creation_date: 2024-08-29 14:31:40.468926+00:00
+    modification_date: 2025-08-04 15:14:46.021597+00:00
+    siccrf_id: 21
+    name: Macérât huileux
+    is_obsolete: false
+    siccrf_name_en: Oil macerate
+    contains_alcohol: false
+- model: data.preparation
+  pk: 22
+  fields:
+    creation_date: 2024-08-29 14:31:40.485271+00:00
+    modification_date: 2025-08-04 15:14:46.023174+00:00
+    siccrf_id: 22
+    name: Macérât hydroalcoolique
+    is_obsolete: false
+    siccrf_name_en: Water & alcohol macerate
+    contains_alcohol: false
+- model: data.preparation
+  pk: 23
+  fields:
+    creation_date: 2024-08-29 14:31:40.503290+00:00
+    modification_date: 2025-08-04 15:14:46.024819+00:00
+    siccrf_id: 23
+    name: Macérât hydroglycériné
+    is_obsolete: false
+    siccrf_name_en: Water & glycerine macerate
+    contains_alcohol: false
+- model: data.preparation
+  pk: 24
+  fields:
+    creation_date: 2024-08-29 14:31:40.520083+00:00
+    modification_date: 2025-08-04 15:14:46.026350+00:00
+    siccrf_id: 24
+    name: Oléorésine et gomme-oléorésine
+    is_obsolete: false
+    siccrf_name_en: Oleoresin and gum-oleoresin
+    contains_alcohol: false
+- model: data.preparation
+  pk: 25
+  fields:
+    creation_date: 2024-08-29 14:31:40.539166+00:00
+    modification_date: 2025-08-04 15:14:46.028045+00:00
+    siccrf_id: 25
+    name: Poudre (de plantes séchées ou broyées)
+    is_obsolete: false
+    siccrf_name_en: Powder (Communited or dried herbs)
+    contains_alcohol: false
+- model: data.preparation
+  pk: 26
+  fields:
+    creation_date: 2024-08-29 14:31:40.556199+00:00
+    modification_date: 2025-08-04 15:14:46.029526+00:00
+    siccrf_id: 26
+    name: Teinture
+    is_obsolete: false
+    siccrf_name_en: Tincture
+    contains_alcohol: false
+- model: data.preparation
+  pk: 27
+  fields:
+    creation_date: 2024-08-29 14:31:40.572280+00:00
+    modification_date: 2025-08-04 15:14:46.031003+00:00
+    siccrf_id: 27
+    name: Pression à froid
+    is_obsolete: false
+    siccrf_name_en: Cold pressing
+    contains_alcohol: false
+- model: data.preparation
+  pk: 28
+  fields:
+    creation_date: 2024-08-29 14:31:40.587150+00:00
+    modification_date: 2025-08-04 15:14:46.032393+00:00
+    siccrf_id: 28
+    name: Distillation
+    is_obsolete: false
+    siccrf_name_en: Distillation
+    contains_alcohol: false
+- model: data.preparation
+  pk: 29
+  fields:
+    creation_date: 2024-09-05 13:21:06.890604+00:00
+    modification_date: 2025-08-04 15:14:46.035148+00:00
+    siccrf_id: null
+    name: ''
+    is_obsolete: false
+    siccrf_name_en: ''
+    contains_alcohol: false

@@ -1,0 +1,30 @@
+- model: data.unit
+  pk: 1
+  fields:
+    siccrf_id: 1
+    name: µg
+    long_name: ''
+- model: data.unit
+  pk: 2
+  fields:
+    siccrf_id: 2
+    name: g
+    long_name: ''
+- model: data.unit
+  pk: 3
+  fields:
+    siccrf_id: 3
+    name: mg
+    long_name: ''
+- model: data.unit
+  pk: 4
+  fields:
+    siccrf_id: 4
+    name: ml
+    long_name: ''
+- model: data.unit
+  pk: 5
+  fields:
+    siccrf_id: 5
+    name: UFC
+    long_name: ''
