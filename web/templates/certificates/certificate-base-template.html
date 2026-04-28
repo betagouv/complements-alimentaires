@@ -45,6 +45,9 @@
             .mt-20 {
                 margin-top: 20px;
             }
+            .mb-0 {
+                margin-bottom: 0;
+            }
             .table-bold {
                 font-weight: bold;
                 font-size: 1.7em;
@@ -52,6 +55,33 @@
             }
             .align-right {
                 text-align: right;
+            }
+            #composition table {
+                width:100%;
+                border-collapse: collapse;
+                margin-bottom: 1em;
+                font-size: 0.9em;
+            }
+            #composition caption {
+                caption-side: top;
+                font-family: 'Marianne-Bold';
+                font-weight: bold;
+                text-align: left;
+                margin-top: 20px;
+                margin-bottom: 0;
+            }
+            #composition tr {
+                background-color: #eeeeee;
+            }
+            #composition th {
+                border: 1px solid #aaa;
+                padding: 4px 8px;
+                text-align: left;
+            }
+            #composition td {
+                border: 1px solid #aaa;
+                padding: 4px 8px;
+                background-color: #fff;
             }
             @page {
                 size: A4 portrait;
@@ -61,6 +91,12 @@
                     top: 20cm;
                     left: 14cm;
                     -pdf-frame-content: background_image_content
+                }
+
+                @frame page_count {
+                    top: 28.5cm;
+                    left: 18.5cm;
+                    -pdf-frame-content: footer
                 }
             }
         </style>
@@ -114,6 +150,9 @@
             <div id="background_image_content">
                 <img width="250" src="{% static 'images/certificate/marianne.png' %}" alt="République Française">
             </div>
+            <div id="footer">
+                Page <pdf:pagenumber /> sur <pdf:pagecount />
+           </div>
         </main>
     </body>
 </html>

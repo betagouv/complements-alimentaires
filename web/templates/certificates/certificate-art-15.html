@@ -30,6 +30,7 @@ Attestation de déclaration d'un complément alimentaire n° {{ declaration.id }
         <br />{{ declaration.company.social_name }}
         {% endif %}
     </p>
+    {% include 'certificates/certificate-composition.html' %}
     <p>
         Cette déclaration a été enregistrée sur l’application de télédéclaration {{ platform }}, sous le numéro
         <span class="text-bold">

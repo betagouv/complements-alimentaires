@@ -1,0 +1,113 @@
+{% with declared_plants=declaration.declared_plants.all declared_microorganisms=declaration.declared_microorganisms.all declared_substances=declaration.declared_substances.all declared_ingredients=declaration.declared_ingredients.all %}
+<div id="composition">
+{% if declared_plants %}
+
+<table>
+    <caption>Plantes :</caption>
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Partie utilisée</th>
+            <th>Préparation</th>
+            <th class="align-right">Quantité par DJR</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for dp in declared_plants %}
+        <tr>
+            <td>
+                {% if dp.new %}{{ dp.new_name }}{% else %}{{ dp.plant.name }}{% endif %}
+            </td>
+            <td>
+                {% if dp.used_part %}{{ dp.used_part.name }}{% else %}—{% endif %}
+            </td>
+            <td>
+                {% if dp.preparation %}{{ dp.preparation.name }}{% else %}—{% endif %}
+            </td>
+            <td class="align-right">
+                {% if dp.quantity %}{{ dp.quantity }}{% if dp.unit %} <span style="font-family: serif;"> {{ dp.unit.name }}</span>{% endif %}{% else %}—{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if declared_microorganisms %}
+<table>
+    <caption>Micro-organismes :</caption>
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Souche</th>
+            <th class="align-right">Quantité par DJR (UFC)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for dm in declared_microorganisms %}
+        <tr>
+            <td>
+                {% if dm.new %}{{ dm.new_name }}{% else %}{{ dm.microorganism.name }}{% endif %}
+            </td>
+            <td>
+                {% if dm.strain %}{{ dm.strain }}{% else %}—{% endif %}
+            </td>
+            <td class="align-right">
+                {% if dm.quantity %}{{ dm.quantity }}{% else %}—{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if declared_substances %}
+<table>
+    <caption>Substances :</caption>
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th class="align-right">Quantité par DJR</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ds in declared_substances %}
+        <tr>
+            <td>
+                {% if ds.new %}{{ ds.new_name }}{% else %}{{ ds.substance.name }}{% endif %}
+            </td>
+            <td class="align-right">
+                {% if ds.quantity %}{{ ds.quantity }}{% if ds.unit %} {{ ds.unit.name }}{% endif %}{% else %}—{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if declared_ingredients %}
+<table>
+    <caption>Autres ingrédients :</caption>
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th class="align-right">Quantité par DJR</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for di in declared_ingredients %}
+        <tr>
+            <td>
+                {% if di.new %}{{ di.new_name }}{% else %}{{ di.ingredient.name }}{% endif %}
+            </td>
+            <td class="align-right">
+                {% if di.quantity %}{{ di.quantity }}{% if di.unit %} {{ di.unit.name }}{% endif %}{% else %}—{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+</div>
+{% endwith %}
