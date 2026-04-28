@@ -66,6 +66,9 @@
         <DsfrInputGroup class="mb-0">
           <DsfrCheckbox label="À viser" v-model="needsVisa" :disabled="disableVisaCheckbox" />
         </DsfrInputGroup>
+        <DsfrInputGroup class="mb-0" v-if="needsVisa && isVisor">
+          <DsfrCheckbox label="Visa automatique" v-model="automaticallyApproveVisa" />
+        </DsfrInputGroup>
         <div class="border-l ml-4 pl-4">
           <DsfrButton
             label="Soumettre"
@@ -106,8 +109,12 @@ import { blockingReasons } from "@/utils/mappings"
 import { statusProps } from "@/utils/mappings"
 import { useRouter } from "vue-router"
 import { useStorage } from "@vueuse/core"
+import { storeToRefs } from "pinia"
+import { useRootStore } from "@/stores/root"
 
 const router = useRouter()
+const store = useRootStore()
+const { loggedUser } = storeToRefs(store)
 
 const rules = computed(() => {
   if (decisionCategory.value !== "modify") return {}
@@ -124,7 +131,15 @@ defineProps({ readonly: Boolean })
 const getLocalStorageKey = (key) => `instruction-${declaration.value?.id}-${key}`
 
 const clearLocalStorage = () => {
-  const keys = ["proposal", "delayDays", "comment", "reasons", "decisionCategory", "needsVisa"]
+  const keys = [
+    "proposal",
+    "delayDays",
+    "comment",
+    "reasons",
+    "decisionCategory",
+    "needsVisa",
+    "automaticallyApproveVisa",
+  ]
   for (const key of keys) localStorage.removeItem(getLocalStorageKey(key))
 }
 
@@ -134,6 +149,7 @@ const comment = useStorage(getLocalStorageKey("comment"), "")
 const reasons = useStorage(getLocalStorageKey("reasons"), [])
 const decisionCategory = useStorage(getLocalStorageKey("decisionCategory"), null)
 const needsVisa = useStorage(getLocalStorageKey("needsVisa"), false)
+const automaticallyApproveVisa = useStorage(getLocalStorageKey("automaticallyApproveVisa"), false)
 
 watch(decisionCategory, () => (proposal.value = decisionCategory.value === "approve" ? "autorisation" : null))
 
@@ -167,6 +183,7 @@ watch(proposal, (newProposal) => {
 })
 
 const needsAnsesReferal = computed(() => declaration.value?.article === "ANSES_REFERAL")
+const isVisor = computed(() => loggedUser.value?.globalRoles?.some((x) => x.name === "VisaRole"))
 
 const proposalOptions = [
   { text: "Observation", value: "observation" },
@@ -183,7 +200,9 @@ const url = computed(() => {
   }
   const visaPath = needsVisa.value ? "with-visa" : "no-visa"
   const urlPath = `${actions[proposal.value]}-${visaPath}`
-  return `/api/v1/declarations/${declaration.value?.id}/${urlPath}/`
+  const url = `/api/v1/declarations/${declaration.value?.id}/${urlPath}/`
+  if (automaticallyApproveVisa.value) return `${url}?auto-validate=true`
+  return url
 })
 
 const requestPayload = computed(() =>

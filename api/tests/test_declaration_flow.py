@@ -626,6 +626,117 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
 
     @authenticate
+    def test_authorize_with_visa_auto_validate(self):
+        """
+        Un utilisateur ayant à la fois le rôle instructeur et viseuse peut valider
+        automatiquement le visa en passant le queryparam auto-validate=true.
+        La déclaration doit passer directement à AUTHORIZED sans rester en AWAITING_VISA.
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        VisaRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(
+            reverse("api:authorize_with_visa", kwargs={"pk": declaration.id}) + "?auto-validate=true",
+            {"comment": "Tout est OK"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.AUTHORIZED)
+
+        snapshot_actions = list(declaration.snapshots.order_by("creation_date").values_list("action", flat=True))
+        self.assertIn(Snapshot.SnapshotActions.REQUEST_VISA, snapshot_actions)
+        self.assertIn(Snapshot.SnapshotActions.TAKE_FOR_VISA, snapshot_actions)
+        self.assertIn(Snapshot.SnapshotActions.ACCEPT_VISA, snapshot_actions)
+
+        request_visa_snapshot = declaration.snapshots.get(action=Snapshot.SnapshotActions.REQUEST_VISA)
+        take_visa_snapshot = declaration.snapshots.get(action=Snapshot.SnapshotActions.TAKE_FOR_VISA)
+        accept_visa_snapshot = declaration.snapshots.get(action=Snapshot.SnapshotActions.ACCEPT_VISA)
+
+        # On vérifie que le commentaire ne s'est pas propagé (dans une validation le commentaire n'est pas présent)
+        self.assertEqual(request_visa_snapshot.comment, "")
+        self.assertEqual(take_visa_snapshot.comment, "")
+        self.assertEqual(accept_visa_snapshot.comment, "")
+
+    @authenticate
+    def test_observe_with_visa_auto_validate(self):
+        """
+        En auto-validation, le commentaire, expiration_days et blocking_reasons envoyés
+        dans la requête initiale doivent être correctement accessibles sur le modèle.
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        VisaRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(
+            reverse("api:observe_with_visa", kwargs={"pk": declaration.id}) + "?auto-validate=true",
+            {"comment": "Des observations à prendre en compte", "expiration": 30, "reasons": ["raison-1", "raison-2"]},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.OBSERVATION)
+        self.assertEqual(declaration.last_administration_comment, "Des observations à prendre en compte")
+        self.assertEqual(declaration.blocking_reasons, ["raison-1", "raison-2"])
+        # expiration_days est effacé du modèle par VisaDecisionView.on_transition_success après
+        # la création du snapshot ; on le vérifie directement sur ce dernier
+        accept_visa_snapshot = declaration.snapshots.get(action=Snapshot.SnapshotActions.ACCEPT_VISA)
+        self.assertEqual(accept_visa_snapshot.expiration_days, 30)
+
+    @authenticate
+    def test_object_with_visa_auto_validate(self):
+        """
+        En auto-validation, le commentaire, expiration_days et blocking_reasons envoyés
+        dans la requête initiale doivent être correctement accessibles sur le modèle.
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        VisaRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(
+            reverse("api:object_with_visa", kwargs={"pk": declaration.id}) + "?auto-validate=true",
+            {"comment": "Des objections à prendre en compte", "expiration": 60, "reasons": ["raison-3"]},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.OBJECTION)
+        self.assertEqual(declaration.last_administration_comment, "Des objections à prendre en compte")
+        self.assertEqual(declaration.blocking_reasons, ["raison-3"])
+        accept_visa_snapshot = declaration.snapshots.get(action=Snapshot.SnapshotActions.ACCEPT_VISA)
+        self.assertEqual(accept_visa_snapshot.expiration_days, 60)
+
+    @authenticate
+    def test_reject_with_visa_auto_validate(self):
+        """
+        En auto-validation, le commentaire et blocking_reasons envoyés
+        dans la requête initiale doivent être correctement accessibles sur le modèle.
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        VisaRoleFactory(user=authenticate.user)
+        declaration = OngoingInstructionDeclarationFactory()
+
+        response = self.client.post(
+            reverse("api:reject_with_visa", kwargs={"pk": declaration.id}) + "?auto-validate=true",
+            {"comment": "Dossier non conforme", "reasons": ["raison-4", "raison-5"]},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.status, Declaration.DeclarationStatus.REJECTED)
+        self.assertEqual(declaration.last_administration_comment, "Dossier non conforme")
+        self.assertEqual(declaration.blocking_reasons, ["raison-4", "raison-5"])
+
+    @authenticate
     def test_refuse_visa(self):
         """
         Passage de ONGOING_VISA à AWAITING_INSTRUCTION
