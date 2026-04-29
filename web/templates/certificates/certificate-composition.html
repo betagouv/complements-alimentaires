@@ -25,7 +25,7 @@
                 {% if dp.preparation %}{{ dp.preparation.name }}{% else %}—{% endif %}
             </td>
             <td class="align-right">
-                {% if dp.quantity %}{{ dp.quantity }}{% if dp.unit %} <span style="font-family: serif;"> {{ dp.unit.name }}</span>{% endif %}{% else %}—{% endif %}
+                {% if dp.quantity %}{{ dp.quantity }}{% if dp.unit %}<span style="font-family: sans-serif;"> {{ dp.unit.name }}</span>{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -77,7 +77,7 @@
                 {% if ds.new %}{{ ds.new_name }}{% else %}{{ ds.substance.name }}{% endif %}
             </td>
             <td class="align-right">
-                {% if ds.quantity %}{{ ds.quantity }}{% if ds.unit %} {{ ds.unit.name }}{% endif %}{% else %}—{% endif %}
+                {% if ds.quantity %}{{ ds.quantity }}{% if ds.unit %}<span style="font-family: sans-serif;"> {{ ds.unit.name }}</span>{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -101,7 +101,7 @@
                 {% if di.new %}{{ di.new_name }}{% else %}{{ di.ingredient.name }}{% endif %}
             </td>
             <td class="align-right">
-                {% if di.quantity %}{{ di.quantity }}{% if di.unit %} {{ di.unit.name }}{% endif %}{% else %}—{% endif %}
+                {% if di.quantity %}{{ di.quantity }}{% if di.unit %}<span style="font-family: sans-serif;"> {{ di.unit.name }}</span>{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
