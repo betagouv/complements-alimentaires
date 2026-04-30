@@ -331,8 +331,9 @@ class OngoingDeclarationsExcelView(XLSXFileMixin, CommonOngoingDeclarationView):
             "No. SIRET",
             "No. TVA",
             "No. de département",
+            "Adresse mail de l'entreprise",
         ],
-        "column_width": [12, 12, 30, 20, 30, 25, 30, 15, 15, 15],
+        "column_width": [12, 12, 30, 20, 30, 25, 30, 15, 15, 15, 30],
         "height": 30,
         "style": common_excel_styles,
     }
@@ -367,7 +368,7 @@ class ControllerDeclarationsListView(CommonControlDeclarationView):
     serializer_class = ControllerDeclarationSerializer
 
 
-class ControlDeclataionExcelView(XLSXFileMixin, CommonControlDeclarationView):
+class ControlDeclarationExcelView(XLSXFileMixin, CommonControlDeclarationView):
     serializer_class = ExcelControlDeclarationSerializer
     renderer_classes = [XLSXRenderer]
     filename = "declarations-resultats.xlsx"

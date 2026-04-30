@@ -142,7 +142,7 @@ urlpatterns = {
     path("control/declarations/", views.ControllerDeclarationsListView.as_view(), name="list_control_declarations"),
     path(
         "control/declarations-export/",
-        views.ControlDeclataionExcelView.as_view(),
+        views.ControlDeclarationExcelView.as_view(),
         name="export_excel_declarations_control",
     ),
     path(
