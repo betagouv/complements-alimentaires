@@ -51,3 +51,15 @@ common_excel_styles = {
 class ControlExcelPagination(LimitOffsetPagination):
     default_limit = 2000
     max_limit = 2000
+
+
+class EmptyDataRequest:
+    """Proxy autour d'un request DRF qui expose un data vide, pour éviter les effets de bord
+    lors de la réutilisation du request dans des sous-vues (ex. le champ 'comment')."""
+
+    def __init__(self, request):
+        self._wrapped = request
+        self.data = {}
+
+    def __getattr__(self, name):
+        return getattr(self._wrapped, name)
