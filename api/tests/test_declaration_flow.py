@@ -638,7 +638,7 @@ class TestDeclarationFlow(APITestCase):
 
         response = self.client.post(
             reverse("api:authorize_with_visa", kwargs={"pk": declaration.id}) + "?auto-validate=true",
-            {"comment": "Tout est OK"},
+            {"comment": "Ne pas sauvegarder ce comment"},
             format="json",
         )
 
@@ -660,6 +660,9 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(request_visa_snapshot.comment, "")
         self.assertEqual(take_visa_snapshot.comment, "")
         self.assertEqual(accept_visa_snapshot.comment, "")
+
+        declaration.refresh_from_db()
+        self.assertEqual(declaration.post_validation_producer_message, "")
 
     @authenticate
     def test_observe_with_visa_auto_validate(self):
