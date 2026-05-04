@@ -122,6 +122,7 @@ class TestDeclarationFlowSubmit(APITestCase):
             company=company,
         )
         first_declared_plant = missing_composition_data_declaration.declared_plants.first()
+        first_declared_plant.active = True
         first_declared_plant.used_part = None
         first_declared_plant.save()
         response = self.client.post(
@@ -136,6 +137,12 @@ class TestDeclarationFlowSubmit(APITestCase):
         self.assertEqual(
             "Merci de renseigner les informations manquantes des plantes ajoutées", json_errors["nonFieldErrors"][0]
         )
+        first_declared_plant.active = False
+        first_declared_plant.save()
+        response = self.client.post(
+            reverse("api:submit_declaration", kwargs={"pk": missing_composition_data_declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @authenticate
     def test_submit_declaration_eu_mode(self):
