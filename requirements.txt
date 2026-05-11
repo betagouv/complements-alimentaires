@@ -108,7 +108,7 @@ reportlab==4.4.10
 requests==2.33.0
 requests-mock==1.12.1
 rlPyCairo==0.4.0
-ruff==0.15.10
+ruff==0.15.12
 s3transfer==0.16.0
 sentry-sdk==2.58.0
 sib-api-v3-sdk==7.6.0
