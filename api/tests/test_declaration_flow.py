@@ -28,9 +28,9 @@ from data.models import Attachment, Declaration, Snapshot
 from .utils import authenticate
 
 
-class TestDeclarationFlow(APITestCase):
+class TestDeclarationFlowSubmit(APITestCase):
     @authenticate
-    def test_submit_declaration(self):
+    def test_submit_declaration_success(self):
         """
         Passage du DRAFT -> AWAITING_INSTRUCTION
         Possible seulement si les données sont complètes
@@ -43,7 +43,14 @@ class TestDeclarationFlow(APITestCase):
         response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Si la pièce jointe pour l'étiquetage manque, on ne peut pas continuer
+    @authenticate
+    def test_submit_declaration_missing_label(self):
+        """
+        Si la pièce jointe pour l'étiquetage manque, on ne peut pas continuer
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
         missing_field_label = InstructionReadyDeclarationFactory(
             author=authenticate.user, company=company, attachments=[]
         )
@@ -55,7 +62,14 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(len(json_errors["fieldErrors"]), 1)
         self.assertIn("attachments", json_errors["fieldErrors"][0])
 
-        # Si un champ obligatoire pour l'instruction manque, on le spécifie
+    @authenticate
+    def test_submit_declaration_missing_required_field(self):
+        """
+        Si un champ obligatoire pour l'instruction manque, on le spécifie
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
         missing_field_declaration = InstructionReadyDeclarationFactory(
             author=authenticate.user, daily_recommended_dose="", company=company
         )
@@ -67,7 +81,14 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(len(json_errors["fieldErrors"]), 1)
         self.assertIn("dailyRecommendedDose", json_errors["fieldErrors"][0])
 
-        # S'il n'y a pas d'éléments dans la déclaration, on ne peut pas la soumettre pour instruction
+    @authenticate
+    def test_submit_declaration_missing_elements(self):
+        """
+        S'il n'y a pas d'éléments dans la déclaration, on ne peut pas la soumettre pour instruction
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
         missing_elements_declaration = InstructionReadyDeclarationFactory(
             author=authenticate.user,
             declared_plants=[],
@@ -87,13 +108,21 @@ class TestDeclarationFlow(APITestCase):
         # le frontend car il y a de la logique effectuée avec une comparaison de String
         self.assertEqual("Le complément doit comporter au moins un ingrédient", json_errors["nonFieldErrors"][0])
 
-        # Si un des éléments de la composition manque des informations obligatoires, on ne peut pas soumettre
-        # pour instruction
+    @authenticate
+    def test_submit_declaration_missing_element_data(self):
+        """
+        Si un des éléments de la composition manque des informations obligatoires, on ne peut pas soumettre
+        pour instruction
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
         missing_composition_data_declaration = InstructionReadyDeclarationFactory(
             author=authenticate.user,
             company=company,
         )
         first_declared_plant = missing_composition_data_declaration.declared_plants.first()
+        first_declared_plant.active = True
         first_declared_plant.used_part = None
         first_declared_plant.save()
         response = self.client.post(
@@ -108,6 +137,12 @@ class TestDeclarationFlow(APITestCase):
         self.assertEqual(
             "Merci de renseigner les informations manquantes des plantes ajoutées", json_errors["nonFieldErrors"][0]
         )
+        first_declared_plant.active = False
+        first_declared_plant.save()
+        response = self.client.post(
+            reverse("api:submit_declaration", kwargs={"pk": missing_composition_data_declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @authenticate
     def test_submit_declaration_eu_mode(self):
@@ -204,6 +239,8 @@ class TestDeclarationFlow(APITestCase):
         response = self.client.post(reverse("api:submit_declaration", kwargs={"pk": declaration.id}), format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+
+class TestDeclarationFlowRemainingActions(APITestCase):
     @authenticate
     def test_take_declaration_for_instruction(self):
         """

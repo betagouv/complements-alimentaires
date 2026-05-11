@@ -186,7 +186,7 @@ const preparations = computed(() => {
 })
 
 const showFields = computed(() => {
-  if (props.objectType === "plant") return true
+  if (props.objectType === "plant" && model.value.active) return true
   if (model.value.active && props.objectType === "microorganism") return true
   if (
     model.value.active &&
