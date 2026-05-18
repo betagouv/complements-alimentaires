@@ -136,7 +136,7 @@
       </div>
     </DsfrFieldset>
 
-    <div class="my-8 sm:mt-0">
+    <div class="my-8 sm:mt-0" v-if="type === 'plant'">
       <DsfrTable
         v-if="formForType.plantParts"
         title="Parties de plante"
