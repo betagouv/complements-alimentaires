@@ -85,7 +85,7 @@ platformdirs==4.9.6
 pluggy==1.6.0
 pre_commit==4.5.1
 prompt_toolkit==3.0.52
-psycopg2==2.9.11
+psycopg2==2.9.12
 ptyprocess==0.7.0
 pure_eval==0.2.3
 pycairo==1.29.0
