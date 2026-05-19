@@ -99,7 +99,7 @@ pytest==9.0.3
 python-bidi==0.6.7
 python-dateutil==2.9.0.post0
 python-magic==0.4.27
-pytz==2025.2
+pytz==2026.2
 PyYAML==6.0.3
 qrcode==8.2
 redis==7.4.0
