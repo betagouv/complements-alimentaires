@@ -4,8 +4,8 @@
       <p>Cette déclaration est actuellement en état « {{ statusProps[declaration.status].label }} ».</p>
     </div>
     <div v-else>
-      <div class="mb-6">
-        <div class="border p-2">
+      <div class="mb-6 grid grid-cols-2">
+        <div class="border p-2 h-full">
           <VisaInfoLine title="Instructeur·ice" :text="instructorName" icon="ri-account-circle-line" />
           <VisaInfoLine
             title="Décision"
@@ -33,9 +33,20 @@
             :strikethroughText="hasOverriddenOriginalDecision ? declarationExpirationDays : ''"
             :text="hasOverriddenOriginalDecision ? overriddenExpirationDays : declarationExpirationDays"
           />
-          <div class="px-4 py-2 border bg-gray-50">
-            <DecisionModificationModal v-model="overriddenDecision" />
-          </div>
+        </div>
+        <div class="p-4 border bg-gray-50 h-full">
+          <DsfrToggleSwitch
+            activeText="Oui"
+            inactiveText="Non"
+            label="Modifier la décision de l'instruction"
+            v-model="modificationEnabled"
+            @update:modelValue="overriddenDecision = overriddenDecisionDefaultValue()"
+          />
+          <DecisionModificationModal
+            ref="decisionModificationRef"
+            v-model="overriddenDecision"
+            v-if="modificationEnabled"
+          />
         </div>
       </div>
 
@@ -75,6 +86,9 @@ import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
 import DecisionModificationModal from "./DecisionModificationModal"
 import { useStorage } from "@vueuse/core"
 
+const modificationEnabled = ref(false)
+const decisionModificationRef = ref(null)
+
 const getLocalStorageKey = (key) => `visa-${declaration.value?.id}-${key}`
 const clearLocalStorage = () => {
   const keys = ["overriddenDecision"]
@@ -86,14 +100,21 @@ const emit = defineEmits(["decision-done"])
 const declaration = defineModel()
 defineProps({ readonly: Boolean })
 
-const overriddenDecision = useStorage(getLocalStorageKey("overriddenDecision"), null, undefined, {
-  serializer: {
-    read: (v) => (v ? JSON.parse(v) : null),
-    write: (v) => JSON.stringify(v),
-  },
-})
+const overriddenDecisionDefaultValue = () => ({ reasons: [] })
+
+const overriddenDecision = useStorage(
+  getLocalStorageKey("overriddenDecision"),
+  overriddenDecisionDefaultValue(),
+  undefined,
+  {
+    serializer: {
+      read: (v) => (v ? JSON.parse(v) : null),
+      write: (v) => JSON.stringify(v),
+    },
+  }
+)
 const hasOverriddenOriginalDecision = computed(
-  () => overriddenDecision.value && Object.keys(overriddenDecision.value).length > 0
+  () => modificationEnabled.value && overriddenDecision.value && Object.keys(overriddenDecision.value).length > 0
 )
 
 const instructorName = computed(() => {
@@ -131,6 +152,7 @@ const refuseVisa = async () => {
 }
 
 const acceptVisa = async () => {
+  if (modificationEnabled.value && decisionModificationRef.value?.validate()) return
   await acceptExecute()
   $externalResults.value = await handleError(acceptResponse)
   if (acceptResponse.value.ok) notifySuccess()
