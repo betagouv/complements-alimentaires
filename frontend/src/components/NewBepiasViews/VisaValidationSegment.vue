@@ -42,7 +42,7 @@
             v-model="modificationEnabled"
             @update:modelValue="overriddenDecision = overriddenDecisionDefaultValue()"
           />
-          <DecisionModificationModal
+          <DecisionModificationForm
             ref="decisionModificationRef"
             v-model="overriddenDecision"
             v-if="modificationEnabled"
@@ -83,7 +83,7 @@ import { handleError } from "@/utils/error-handling"
 import useToaster from "@/composables/use-toaster"
 import VisaInfoLine from "./VisaInfoLine.vue"
 import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
-import DecisionModificationModal from "./DecisionModificationModal"
+import DecisionModificationForm from "./DecisionModificationForm"
 import { useStorage } from "@vueuse/core"
 
 const modificationEnabled = ref(false)
