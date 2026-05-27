@@ -1,34 +1,34 @@
 <template>
   <div>
-    <div class="grid grid-cols-2 gap-4 mb-2">
-      <div class="col-span-2 sm:col-span-1">
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'proposal')">
-          <DsfrSelect
-            label="Nouvelle décision"
-            v-model="modelValue.proposal"
-            :options="proposalOptions"
-            class="max-w-96"
-          />
-        </DsfrInputGroup>
-      </div>
-      <div class="col-span-2 sm:col-span-1" v-if="showDelayDays">
-        <DsfrInputGroup :error-message="firstErrorMsg(v$, 'delayDays')">
-          <DsfrInput v-model="modelValue.delayDays" label="Délai de réponse (jours)" label-visible class="max-w-96" />
-        </DsfrInputGroup>
-      </div>
+    <div>
+      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'proposal')">
+        <DsfrSelect
+          label="Nouvelle décision"
+          v-model="modelValue.proposal"
+          :options="proposalOptions"
+          class="max-w-96"
+        />
+      </DsfrInputGroup>
     </div>
-    <div v-if="showAdditionalFields" class="border p-4">
+    <div v-if="showDelayDays">
+      <DsfrInputGroup :error-message="firstErrorMsg(v$, 'delayDays')">
+        <DsfrInput v-model="modelValue.delayDays" label="Délai de réponse (jours)" label-visible class="max-w-96" />
+      </DsfrInputGroup>
+    </div>
+
+    <div v-if="showAdditionalFields" class="mt-6">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'comment')">
         <DsfrInput is-textarea label="Message au déclarant·e" v-model="modelValue.comment" label-visible />
       </DsfrInputGroup>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'reasons')">
-        <div class="mb-8" v-for="reason in blockingReasons" :key="reason.title">
-          <DsfrCheckboxSet
-            v-model="modelValue.reasons"
-            :options="reason.items.map((x) => ({ label: x, value: x }))"
-            :legend="reason.title"
-          />
-        </div>
+        <DsfrMultiselect
+          label="Raisons de contestation"
+          v-model="modelValue.reasons"
+          :options="blockingReasons.flatMap((x) => x.items)"
+          :required="true"
+          :search="true"
+          :button-label="modelValue.reasons?.length ? modelValue.reasons.join(', ') : 'Sélectionner une option'"
+        />
       </DsfrInputGroup>
     </div>
   </div>

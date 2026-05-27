@@ -14,11 +14,11 @@
             :text="hasOverriddenOriginalDecision ? overriddenProposal : declarationProposal"
           />
           <VisaInfoLine
-            v-if="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
-            title="Raisons de la décision"
-            icon="ri-edit-line"
-            :strikethroughText="hasOverriddenOriginalDecision ? declarationReasons : ''"
-            :text="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
+            v-if="showExpirationDays"
+            title="Délai de réponse"
+            icon="ri-time-fill"
+            :strikethroughText="hasOverriddenOriginalDecision ? declarationExpirationDays : ''"
+            :text="hasOverriddenOriginalDecision ? overriddenExpirationDays : declarationExpirationDays"
           />
           <VisaInfoLine
             title="Message au déclarant·e"
@@ -27,11 +27,11 @@
             :text="hasOverriddenOriginalDecision ? overriddenComment : declarationComment"
           />
           <VisaInfoLine
-            v-if="showExpirationDays"
-            title="Délai de réponse"
-            icon="ri-time-fill"
-            :strikethroughText="hasOverriddenOriginalDecision ? declarationExpirationDays : ''"
-            :text="hasOverriddenOriginalDecision ? overriddenExpirationDays : declarationExpirationDays"
+            v-if="declarationReasons || hasOverriddenOriginalDecision"
+            title="Raisons de la décision"
+            icon="ri-edit-line"
+            :strikethroughText="hasOverriddenOriginalDecision ? declarationReasons : ''"
+            :text="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
           />
         </div>
         <div class="p-4 border bg-gray-50 h-full">
@@ -123,9 +123,7 @@ const instructorName = computed(() => {
 })
 const showExpirationDays = computed(() => {
   const concernedStatuses = ["OBJECTION", "OBSERVATION"]
-  const validationStatus = hasOverriddenOriginalDecision.value
-    ? overriddenDecision.value.proposal
-    : declaration.value.postValidationStatus
+  const validationStatus = declaration.value.postValidationStatus || hasOverriddenOriginalDecision.value
   return concernedStatuses.indexOf(validationStatus) > -1
 })
 const postValidationStatus = computed(() => statusProps[declaration.value.postValidationStatus].label)
