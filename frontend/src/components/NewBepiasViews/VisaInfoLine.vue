@@ -1,5 +1,5 @@
 <template>
-  <div class="sm:flex border-b last:border-0 py-3 gap-4">
+  <div class="border-b last:border-0 py-3 gap-4">
     <p class="sm:flex-[0_0_25%] font-bold mb-0">
       <v-icon class="mr-2" :name="icon" aria-hidden />
       <span>{{ title }}</span>

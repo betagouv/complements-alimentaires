@@ -4,8 +4,8 @@
       <p>Cette déclaration est actuellement en état « {{ statusProps[declaration.status].label }} ».</p>
     </div>
     <div v-else>
-      <div class="mb-6">
-        <div class="border p-2">
+      <div class="mb-6 grid grid-cols-2">
+        <div class="border p-2 h-full">
           <VisaInfoLine title="Instructeur·ice" :text="instructorName" icon="ri-account-circle-line" />
           <VisaInfoLine
             title="Décision"
@@ -14,11 +14,11 @@
             :text="hasOverriddenOriginalDecision ? overriddenProposal : declarationProposal"
           />
           <VisaInfoLine
-            v-if="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
-            title="Raisons de la décision"
-            icon="ri-edit-line"
-            :strikethroughText="hasOverriddenOriginalDecision ? declarationReasons : ''"
-            :text="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
+            v-if="showExpirationDays"
+            title="Délai de réponse"
+            icon="ri-time-fill"
+            :strikethroughText="hasOverriddenOriginalDecision ? declarationExpirationDays : ''"
+            :text="hasOverriddenOriginalDecision ? overriddenExpirationDays : declarationExpirationDays"
           />
           <VisaInfoLine
             title="Message au déclarant·e"
@@ -27,15 +27,26 @@
             :text="hasOverriddenOriginalDecision ? overriddenComment : declarationComment"
           />
           <VisaInfoLine
-            v-if="showExpirationDays"
-            title="Délai de réponse"
-            icon="ri-time-fill"
-            :strikethroughText="hasOverriddenOriginalDecision ? declarationExpirationDays : ''"
-            :text="hasOverriddenOriginalDecision ? overriddenExpirationDays : declarationExpirationDays"
+            v-if="declarationReasons || hasOverriddenOriginalDecision"
+            title="Raisons de la décision"
+            icon="ri-edit-line"
+            :strikethroughText="hasOverriddenOriginalDecision ? declarationReasons : ''"
+            :text="hasOverriddenOriginalDecision ? overriddenReasons : declarationReasons"
           />
-          <div class="px-4 py-2 border bg-gray-50">
-            <DecisionModificationModal v-model="overriddenDecision" />
-          </div>
+        </div>
+        <div class="p-4 border bg-gray-50 h-full">
+          <DsfrToggleSwitch
+            activeText="Oui"
+            inactiveText="Non"
+            label="Modifier la décision de l'instruction"
+            v-model="modificationEnabled"
+            @update:modelValue="overriddenDecision = overriddenDecisionDefaultValue()"
+          />
+          <DecisionModificationForm
+            ref="decisionModificationRef"
+            v-model="overriddenDecision"
+            v-if="modificationEnabled"
+          />
         </div>
       </div>
 
@@ -72,8 +83,11 @@ import { handleError } from "@/utils/error-handling"
 import useToaster from "@/composables/use-toaster"
 import VisaInfoLine from "./VisaInfoLine.vue"
 import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
-import DecisionModificationModal from "./DecisionModificationModal"
+import DecisionModificationForm from "./DecisionModificationForm"
 import { useStorage } from "@vueuse/core"
+
+const modificationEnabled = ref(false)
+const decisionModificationRef = ref(null)
 
 const getLocalStorageKey = (key) => `visa-${declaration.value?.id}-${key}`
 const clearLocalStorage = () => {
@@ -86,14 +100,21 @@ const emit = defineEmits(["decision-done"])
 const declaration = defineModel()
 defineProps({ readonly: Boolean })
 
-const overriddenDecision = useStorage(getLocalStorageKey("overriddenDecision"), null, undefined, {
-  serializer: {
-    read: (v) => (v ? JSON.parse(v) : null),
-    write: (v) => JSON.stringify(v),
-  },
-})
+const overriddenDecisionDefaultValue = () => ({ reasons: [] })
+
+const overriddenDecision = useStorage(
+  getLocalStorageKey("overriddenDecision"),
+  overriddenDecisionDefaultValue(),
+  undefined,
+  {
+    serializer: {
+      read: (v) => (v ? JSON.parse(v) : null),
+      write: (v) => JSON.stringify(v),
+    },
+  }
+)
 const hasOverriddenOriginalDecision = computed(
-  () => overriddenDecision.value && Object.keys(overriddenDecision.value).length > 0
+  () => modificationEnabled.value && overriddenDecision.value && Object.keys(overriddenDecision.value).length > 0
 )
 
 const instructorName = computed(() => {
@@ -102,10 +123,9 @@ const instructorName = computed(() => {
 })
 const showExpirationDays = computed(() => {
   const concernedStatuses = ["OBJECTION", "OBSERVATION"]
-  const validationStatus = hasOverriddenOriginalDecision.value
-    ? overriddenDecision.value.proposal
-    : declaration.value.postValidationStatus
-  return concernedStatuses.indexOf(validationStatus) > -1
+  const validationStatus = declaration.value.postValidationStatus
+  const overridenStatus = hasOverriddenOriginalDecision.value && overriddenDecision.value.proposal
+  return concernedStatuses.indexOf(validationStatus) > -1 || concernedStatuses.indexOf(overridenStatus) > -1
 })
 const postValidationStatus = computed(() => statusProps[declaration.value.postValidationStatus].label)
 
@@ -131,6 +151,7 @@ const refuseVisa = async () => {
 }
 
 const acceptVisa = async () => {
+  if (modificationEnabled.value && decisionModificationRef.value?.validate()) return
   await acceptExecute()
   $externalResults.value = await handleError(acceptResponse)
   if (acceptResponse.value.ok) notifySuccess()
