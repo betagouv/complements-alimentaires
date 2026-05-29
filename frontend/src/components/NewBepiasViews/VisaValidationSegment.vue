@@ -4,7 +4,7 @@
       <p>Cette déclaration est actuellement en état « {{ statusProps[declaration.status].label }} ».</p>
     </div>
     <div v-else>
-      <div class="mb-6 grid grid-cols-2">
+      <div class="mb-6 grid md:grid-cols-2">
         <div class="border p-2 h-full">
           <VisaInfoLine title="Instructeur·ice" :text="instructorName" icon="ri-account-circle-line" />
           <VisaInfoLine
@@ -50,7 +50,7 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-10">
+      <div class="grid md:grid-cols-2 gap-10">
         <div class="border p-4 flex flex-col" v-for="decision in decisionCategories" :key="decision.title">
           <h3 class="font-bold fr-h6">
             <v-icon :color="decision.iconColor" :name="decision.icon" scale="1.2" aria-hidden class="mr-1" />
