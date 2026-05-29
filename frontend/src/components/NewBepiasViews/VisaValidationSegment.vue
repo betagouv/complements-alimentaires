@@ -85,19 +85,19 @@ import VisaInfoLine from "./VisaInfoLine.vue"
 import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
 import DecisionModificationForm from "./DecisionModificationForm"
 import { useStorage } from "@vueuse/core"
-
-const modificationEnabled = ref(false)
+const declaration = defineModel()
 const decisionModificationRef = ref(null)
-
 const getLocalStorageKey = (key) => `visa-${declaration.value?.id}-${key}`
 const clearLocalStorage = () => {
   const keys = ["overriddenDecision"]
   for (const key of keys) localStorage.removeItem(getLocalStorageKey(key))
 }
 
+const modificationEnabled = useStorage(getLocalStorageKey("modificationEnabled"), false)
+
 const $externalResults = ref({})
 const emit = defineEmits(["decision-done"])
-const declaration = defineModel()
+
 defineProps({ readonly: Boolean })
 
 const overriddenDecisionDefaultValue = () => ({ reasons: [] })
