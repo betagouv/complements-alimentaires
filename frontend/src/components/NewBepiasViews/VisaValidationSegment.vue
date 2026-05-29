@@ -123,8 +123,9 @@ const instructorName = computed(() => {
 })
 const showExpirationDays = computed(() => {
   const concernedStatuses = ["OBJECTION", "OBSERVATION"]
-  const validationStatus = declaration.value.postValidationStatus || hasOverriddenOriginalDecision.value
-  return concernedStatuses.indexOf(validationStatus) > -1
+  const validationStatus = declaration.value.postValidationStatus
+  const overridenStatus = hasOverriddenOriginalDecision.value && overriddenDecision.value.proposal
+  return concernedStatuses.indexOf(validationStatus) > -1 || concernedStatuses.indexOf(overridenStatus) > -1
 })
 const postValidationStatus = computed(() => statusProps[declaration.value.postValidationStatus].label)
 
