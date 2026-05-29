@@ -85,6 +85,7 @@ import VisaInfoLine from "./VisaInfoLine.vue"
 import ArticleInfoRow from "@/components/DeclarationSummary/ArticleInfoRow"
 import DecisionModificationForm from "./DecisionModificationForm"
 import { useStorage } from "@vueuse/core"
+
 const declaration = defineModel()
 const decisionModificationRef = ref(null)
 const getLocalStorageKey = (key) => `visa-${declaration.value?.id}-${key}`
@@ -100,7 +101,12 @@ const emit = defineEmits(["decision-done"])
 
 defineProps({ readonly: Boolean })
 
-const overriddenDecisionDefaultValue = () => ({ reasons: [] })
+const overriddenDecisionDefaultValue = () => ({
+  proposal: declaration.value?.postValidationStatus,
+  delayDays: declaration.value?.postValidationExpirationDays,
+  comment: declaration.value?.postValidationProducerMessage,
+  reasons: declaration.value?.blockingReasons || [],
+})
 
 const overriddenDecision = useStorage(
   getLocalStorageKey("overriddenDecision"),
@@ -113,6 +119,7 @@ const overriddenDecision = useStorage(
     },
   }
 )
+
 const hasOverriddenOriginalDecision = computed(
   () => modificationEnabled.value && overriddenDecision.value && Object.keys(overriddenDecision.value).length > 0
 )
