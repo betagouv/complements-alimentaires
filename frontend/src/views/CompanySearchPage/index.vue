@@ -36,17 +36,17 @@
     </div>
 
     <!-- Zone des filtres actifs -->
-    <div class="mb-4">
-      <DsfrTag
-        v-for="(item, idx) in activeFilters"
-        :key="`active-filters-${idx}`"
-        :label="item.text"
-        tagName="button"
-        @click="item.callback"
-        :aria-label="`Retirer le filtre « ${item.text} »`"
-        class="mx-1 fr-tag--dismiss"
-      ></DsfrTag>
-    </div>
+    <ul class="inline-list mb-4">
+      <li v-for="(item, idx) in activeFilters" :key="`active-filters-${idx}`">
+        <DsfrTag
+          :label="item.text"
+          tagName="button"
+          @click="item.callback"
+          :aria-label="`Retirer le filtre « ${item.text} »`"
+          class="mx-1 fr-tag--dismiss"
+        ></DsfrTag>
+      </li>
+    </ul>
 
     <div class="grid grid-cols-4 gap-4 mb-6">
       <div class="col-span-4 md:col-span-2 lg:col-span-1">

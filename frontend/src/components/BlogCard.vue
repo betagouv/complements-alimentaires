@@ -5,6 +5,7 @@
     :detail="isoToPrettyDate(props.post.displayDate)"
     :description="blogDescription(props.post)"
     :link="{ name: 'BlogPostPage', params: { id: props.post.id } }"
+    titleTag="h2"
   />
 </template>
 

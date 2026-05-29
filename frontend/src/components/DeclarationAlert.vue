@@ -5,24 +5,28 @@
       <v-icon name="ri-error-warning-line"></v-icon>
       Sans retour de votre part, ce dossier expirera le {{ isoToPrettyDate(displayData.expirationDate) }}.
     </p>
-    <div v-if="displayData.canDownloadCertificate">
-      <a download="true" :href="`/declarations/${declaration.id}/certificate`" class="fr-link fr-link--download">
-        Télécharger
-        <span class="lowercase">{{ displayData.documentName || "l'attestation" }}</span>
-        <span class="fr-link__detail">&nbsp;PDF</span>
-      </a>
-      <a
-        :href="`/declarations/${declaration.id}/certificate.html`"
-        target="_blank"
-        rel="noopener external"
-        class="ml-4 relative"
-        :title="`${displayData.documentName || 'L\'attestation'} (HTML) - nouvelle fenêtre`"
-      >
-        {{ displayData.documentName || "L'attestation" }}
-        <span class="link-detail">HTML</span>
-        <span class="fr-sr-only">&nbsp;- nouvelle fenêtre</span>
-      </a>
-    </div>
+    <ul v-if="displayData.canDownloadCertificate" class="inline-list">
+      <li>
+        <a download="true" :href="`/declarations/${declaration.id}/certificate`" class="fr-link fr-link--download">
+          Télécharger
+          <span class="lowercase">{{ displayData.documentName || "l'attestation" }}</span>
+          <span class="fr-link__detail">&nbsp;PDF</span>
+        </a>
+      </li>
+      <li>
+        <a
+          :href="`/declarations/${declaration.id}/certificate.html`"
+          target="_blank"
+          rel="noopener external"
+          class="ml-4 relative"
+          :title="`${displayData.documentName || 'L\'attestation'} (HTML) - nouvelle fenêtre`"
+        >
+          {{ displayData.documentName || "L'attestation" }}
+          <span class="link-detail">HTML</span>
+          <span class="fr-sr-only">&nbsp;- nouvelle fenêtre</span>
+        </a>
+      </li>
+    </ul>
   </DsfrAlert>
 </template>
 

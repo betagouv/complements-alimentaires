@@ -232,3 +232,7 @@
 #app {
   @import 'tailwindcss/utilities' layer(utilities) important;
 }
+
+ul.inline-list {
+  @apply list-none sm:flex p-0 m-0;
+}
