@@ -124,19 +124,19 @@
                 :chooseFirstAsDefault="false"
                 :searchAll="true"
               />
-              <div class="mt-2">
-                <DsfrTag
-                  v-for="([id, name, type], idx) in ingredientsToFilter"
-                  :key="`ingredient-${id}`"
-                  class="m-1 fr-tag--dismiss"
-                  @click="removeIngredient(idx)"
-                  :aria-label="`Retirer ${name}`"
-                  tagName="button"
-                >
-                  <v-icon scale="0.85" class="mr-1" :name="getTypeIcon(type)" :aria-label="getTypeInFrench(type)" />
-                  {{ name }}
-                </DsfrTag>
-              </div>
+              <ul class="inline-list mt-2">
+                <li v-for="([id, name, type], idx) in ingredientsToFilter" :key="`ingredient-${id}`">
+                  <DsfrTag
+                    class="m-1 fr-tag--dismiss"
+                    @click="removeIngredient(idx)"
+                    :aria-label="`Retirer ${name}`"
+                    tagName="button"
+                  >
+                    <v-icon scale="0.85" class="mr-1" :name="getTypeIcon(type)" :aria-label="getTypeInFrench(type)" />
+                    {{ name }}
+                  </DsfrTag>
+                </li>
+              </ul>
               <div class="mt-4">
                 <label for="dose-filter" class="fr-label">Dose</label>
                 <DoseFilterModal :modelValue="dose" @update:modelValue="updateDose" id="dose-filter" />

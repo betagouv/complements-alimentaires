@@ -9,7 +9,13 @@
     </div>
     <div v-if="isNewIngredient && !type" class="fr-container">
       <div class="grid sm:grid-cols-2 gap-8 sm:p-8 m-8">
-        <DsfrTile v-for="(title, type) in forms" :key="type" :title="title" :to="{ query: { type: type } }" />
+        <DsfrTile
+          v-for="(title, type) in forms"
+          :key="type"
+          :title="title"
+          :to="{ query: { type: type } }"
+          titleTag="h2"
+        />
       </div>
     </div>
     <div v-else class="fr-container">

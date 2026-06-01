@@ -39,6 +39,7 @@
           :key="result.id"
           class="col-span-12 sm:col-span-6 md:col-span-4"
           :result="result"
+          titleTag="h2"
         />
       </div>
       <DsfrPagination
