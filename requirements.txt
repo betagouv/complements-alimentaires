@@ -4,12 +4,10 @@ asgiref==3.11.1
 asn1crypto==1.5.1
 async-timeout==5.0.1
 autopep8==2.3.2
-beautifulsoup4==4.14.3
 billiard==4.2.4
 bleach==6.4.0
 boto3==1.42.92
 botocore==1.42.97
-bs4==0.0.2
 celery==5.6.3
 certifi==2026.2.25
 cffi==2.0.0
@@ -102,14 +100,12 @@ s3transfer==0.16.0
 sentry-sdk==2.60.0
 sib-api-v3-sdk==7.6.0
 six==1.17.0
-soupsieve==2.8.3
 sqlfluff==4.2.1
 sqlparse==0.5.5
 svglib==1.6.0
 tblib==3.2.2
 tinycss2==1.5.1
 tqdm==4.67.3
-typing_extensions==4.15.0
 tzdata==2026.2
 tzlocal==5.3.1
 Unidecode==1.4.0
