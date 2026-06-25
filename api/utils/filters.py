@@ -9,7 +9,7 @@ from djangorestframework_camel_case.util import camel_to_underscore, camelize_re
 from rest_framework.filters import BaseFilterBackend, OrderingFilter
 
 from api.utils.simplified_status import SimplifiedStatusHelper
-from data.choices import CountryChoices
+from data.choices import EuCountryChoices
 from data.models import Declaration
 
 
@@ -78,7 +78,7 @@ class DepartmentFilterBackend(BaseFilterBackend):
         mainland_deps = [d for d in departments_list if d != "99" and len(d) == 2 and d not in ["2A", "2B"]]
         if mainland_deps:
             queries |= Q(
-                country=CountryChoices.FRANCE,
+                country=EuCountryChoices.FRANCE,
                 postal_code__regex=r"^(?!97|98|20)(" + "|".join(mainland_deps) + r")\d{3}",
             )
 
@@ -87,12 +87,12 @@ class DepartmentFilterBackend(BaseFilterBackend):
         if corse_deps:
             corsica_queries = Q()
             if "2A" in corse_deps:
-                corsica_queries |= Q(country=CountryChoices.FRANCE, postal_code__startswith="200") | Q(
-                    country=CountryChoices.FRANCE, postal_code__startswith="201"
+                corsica_queries |= Q(country=EuCountryChoices.FRANCE, postal_code__startswith="200") | Q(
+                    country=EuCountryChoices.FRANCE, postal_code__startswith="201"
                 )
             if "2B" in corse_deps:
-                corsica_queries |= Q(country=CountryChoices.FRANCE, postal_code__startswith="202") | Q(
-                    country=CountryChoices.FRANCE, postal_code__startswith="206"
+                corsica_queries |= Q(country=EuCountryChoices.FRANCE, postal_code__startswith="202") | Q(
+                    country=EuCountryChoices.FRANCE, postal_code__startswith="206"
                 )
             queries |= corsica_queries
 
@@ -101,12 +101,12 @@ class DepartmentFilterBackend(BaseFilterBackend):
         if overseas_deps:
             overseas_query = Q()
             for dep in overseas_deps:
-                overseas_query |= Q(country=CountryChoices.FRANCE, postal_code__startswith=dep)
+                overseas_query |= Q(country=EuCountryChoices.FRANCE, postal_code__startswith=dep)
             queries |= overseas_query
 
         # Étranger (99)
         if include_foreign_objects:
-            queries |= ~Q(country=CountryChoices.FRANCE)
+            queries |= ~Q(country=EuCountryChoices.FRANCE)
 
         return queryset.filter(queries).distinct()
 

@@ -24,7 +24,7 @@ from api.utils.search import UnaccentSearchFilter
 from api.utils.urls import get_base_url
 from api.views.utils import ControlExcelPagination, common_excel_styles
 from config import email
-from data.choices import CountryChoices
+from data.choices import EuCountryChoices
 from data.models import Company, DeclarantRole, SupervisorRole
 from data.models.solicitation import CompanyAccessClaim, SupervisionClaim
 from data.utils.external_utils import SiretData
@@ -48,7 +48,7 @@ logger = logging.getLogger(__name__)
 
 class CountryListView(APIView):
     def get(self, request):
-        countries = [{"value": country[0], "text": country[1]} for country in CountryChoices.choices]
+        countries = [{"value": country[0], "text": country[1]} for country in EuCountryChoices.choices]
         return Response(countries)
 
 

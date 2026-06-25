@@ -9,7 +9,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from data.choices import AuthorizationModes, CountryChoices, FrAuthorizationReasons
+from data.choices import AuthorizationModes, EuCountryChoices, FrAuthorizationReasons
 from data.factories import (
     AuthorizedDeclarationFactory,
     AwaitingInstructionDeclarationFactory,
@@ -420,7 +420,7 @@ class TestDeclarationApi(APITestCase):
         self.assertEqual(new_declared_microorganism.strain, "Nouvelle souche")
 
         self.assertEqual(new_declared_microorganism.authorization_mode, AuthorizationModes.EU)
-        self.assertEqual(new_declared_microorganism.eu_reference_country, CountryChoices.ITALY)
+        self.assertEqual(new_declared_microorganism.eu_reference_country, EuCountryChoices.ITALY)
         self.assertEqual(new_declared_microorganism.eu_legal_source, "Voici le doc")
         self.assertEqual(new_declared_microorganism.eu_details, "Voici les détails")
 
