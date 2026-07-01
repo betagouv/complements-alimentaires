@@ -28,6 +28,7 @@
         </div>
         <div class="col-span-12 sm:col-span-9 bg-grey-975!">
           <router-view
+            v-model="declaration"
             :declaration="declaration"
             :declarant="declarant"
             :company="company"

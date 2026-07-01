@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="p-6">
-      <ArticleInfoRow :modelValue="declaration" :allowChange="true" class="mb-4" />
+      <ArticleInfoRow v-model="declaration" :allowChange="true" class="mb-4" />
 
       <SectionHeader id="pieces-jointes" icon="ri-attachment-fill" text="Pièces jointes" />
       <RequiresAnalysisReportNotice :declaration="declaration" />
@@ -59,21 +59,22 @@ import RequiresAnalysisReportNotice from "@/components/RequiresAnalysisReportNot
 
 const router = useRouter()
 
-const props = defineProps({ declaration: Object, snapshots: Array, role: { type: String, default: "instruction" } })
+const declaration = defineModel()
+const props = defineProps({ snapshots: Array, role: { type: String, default: "instruction" } })
 
 const lastSnapshot = computed(() => props.snapshots?.findLast((x) => !!x.comment))
 
 const showComputedSubstances = computed(() => {
-  if (props.declaration?.computedSubstances?.length) return true
-  return props.declaration.declaredPlants
-    .concat(props.declaration.declaredMicroorganisms)
-    .concat(props.declaration.declaredSubstances)
-    .concat(props.declaration.declaredIngredients)
+  if (declaration.value?.computedSubstances?.length) return true
+  return declaration.value.declaredPlants
+    .concat(declaration.value.declaredMicroorganisms)
+    .concat(declaration.value.declaredSubstances)
+    .concat(declaration.value.declaredIngredients)
     .some((x) => x.requestStatus === "REPLACED" && x.element?.substances?.length)
 })
 
 const redirectToVisa = () => router.push({ name: "VisaDeclarations" })
 
-const canInstruct = computed(() => props.declaration?.status === "ONGOING_INSTRUCTION")
-const canVisa = computed(() => props.declaration?.status === "ONGOING_VISA")
+const canInstruct = computed(() => declaration.value?.status === "ONGOING_INSTRUCTION")
+const canVisa = computed(() => declaration.value?.status === "ONGOING_VISA")
 </script>
