@@ -701,7 +701,7 @@ class TestDeclarationFlowRemainingActions(APITestCase):
         Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur AUTHORIZE
         """
         InstructionRoleFactory(user=authenticate.user)
-        declaration_art_18 = OngoingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_16)
+        declaration_art_18 = OngoingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_18)
 
         response = self.client.post(
             reverse("api:authorize_with_visa", kwargs={"pk": declaration_art_18.id}), format="json"
