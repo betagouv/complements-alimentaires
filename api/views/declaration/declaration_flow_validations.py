@@ -115,3 +115,10 @@ def validate_number_of_elements(declaration) -> tuple[list, list]:
     if not has_elements:
         non_field_errors += ["Le complément doit comporter au moins un ingrédient"]
     return ([], non_field_errors)
+
+
+def validate_article_direct_approval(declaration) -> tuple[list, list]:
+    non_field_errors = []
+    if declaration.article in (Declaration.Article.ARTICLE_16, Declaration.Article.ARTICLE_18):
+        non_field_errors += ["Une déclaration avec article 16 ou 18 doit passer par le visa pour validation"]
+    return ([], non_field_errors)

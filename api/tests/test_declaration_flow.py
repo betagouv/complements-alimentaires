@@ -411,6 +411,42 @@ class TestDeclarationFlowRemainingActions(APITestCase):
         self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.AUTHORIZE_NO_VISA)
 
     @authenticate
+    def test_authorize_declaration_article_16(self):
+        """
+        Passage du ONGOING_INSTRUCTION -> AUTHORIZED
+        """
+        instructor = InstructionRoleFactory(user=authenticate.user)
+        declaration_art_16 = OngoingInstructionDeclarationFactory(
+            instructor=instructor, overridden_article=Declaration.Article.ARTICLE_16
+        )
+
+        response = self.client.post(
+            reverse("api:authorize_no_visa", kwargs={"pk": declaration_art_16.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        declaration_art_16.refresh_from_db()
+        self.assertEqual(declaration_art_16.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    @authenticate
+    def test_authorize_declaration_article_18(self):
+        """
+        Passage du ONGOING_INSTRUCTION -> AUTHORIZED
+        """
+        instructor = InstructionRoleFactory(user=authenticate.user)
+        declaration_art_18 = OngoingInstructionDeclarationFactory(
+            instructor=instructor, overridden_article=Declaration.Article.ARTICLE_18
+        )
+
+        response = self.client.post(
+            reverse("api:authorize_no_visa", kwargs={"pk": declaration_art_18.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        declaration_art_18.refresh_from_db()
+        self.assertEqual(declaration_art_18.status, Declaration.DeclarationStatus.ONGOING_INSTRUCTION)
+
+    @authenticate
     def test_authorize_declaration_unauthorized(self):
         """
         Passage du ONGOING_INSTRUCTION -> AUTHORIZED
@@ -637,6 +673,46 @@ class TestDeclarationFlowRemainingActions(APITestCase):
         self.assertEqual(declaration.status, Declaration.DeclarationStatus.AWAITING_VISA)
 
         latest_snapshot = declaration.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.REQUEST_VISA)
+
+    @authenticate
+    def test_authorize_with_visa_art_16(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur AUTHORIZE
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        declaration_art_16 = OngoingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_16)
+
+        response = self.client.post(
+            reverse("api:authorize_with_visa", kwargs={"pk": declaration_art_16.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration_art_16.refresh_from_db()
+        self.assertEqual(declaration_art_16.post_validation_status, Declaration.DeclarationStatus.AUTHORIZED)
+        self.assertEqual(declaration_art_16.status, Declaration.DeclarationStatus.AWAITING_VISA)
+
+        latest_snapshot = declaration_art_16.snapshots.latest("creation_date")
+        self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.REQUEST_VISA)
+
+    @authenticate
+    def test_authorize_with_visa_art_18(self):
+        """
+        Passage de ONGOING_INSTRUCTION à AWAITING_VISA en abboutissant sur AUTHORIZE
+        """
+        InstructionRoleFactory(user=authenticate.user)
+        declaration_art_18 = OngoingInstructionDeclarationFactory(overridden_article=Declaration.Article.ARTICLE_18)
+
+        response = self.client.post(
+            reverse("api:authorize_with_visa", kwargs={"pk": declaration_art_18.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        declaration_art_18.refresh_from_db()
+        self.assertEqual(declaration_art_18.post_validation_status, Declaration.DeclarationStatus.AUTHORIZED)
+        self.assertEqual(declaration_art_18.status, Declaration.DeclarationStatus.AWAITING_VISA)
+
+        latest_snapshot = declaration_art_18.snapshots.latest("creation_date")
         self.assertEqual(latest_snapshot.action, Snapshot.SnapshotActions.REQUEST_VISA)
 
     @authenticate

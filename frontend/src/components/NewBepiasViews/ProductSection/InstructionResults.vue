@@ -171,18 +171,28 @@ const decisionCategories = [
   },
 ]
 
-const mandatoryVisaProposals = ["objection", "rejection"]
-const disableVisaCheckbox = computed(() => !proposal.value || mandatoryVisaProposals.indexOf(proposal.value) > -1)
+const isMandatoryVisa = (proposal) => {
+  const articlesVisaForApproval = ["ART_16", "ART_18"]
+  const mandatoryVisaProposals = ["objection", "rejection"]
+  if (articlesVisaForApproval.indexOf(article.value) > -1) mandatoryVisaProposals.push("autorisation")
+  return mandatoryVisaProposals.indexOf(proposal) > -1
+}
+
+const disableVisaCheckbox = computed(() => !proposal.value || isMandatoryVisa(proposal.value))
 const disableDelayDays = computed(() => proposal.value === "rejection")
-watch(proposal, (newProposal) => {
-  if (mandatoryVisaProposals.indexOf(newProposal) > -1) needsVisa.value = true
-  else needsVisa.value = false
+const article = computed(() => declaration.value?.article)
+
+const setProposalDefaults = (newProposal) => {
+  needsVisa.value = isMandatoryVisa(newProposal)
   if (newProposal === "objection") delayDays.value = 30
   else if (newProposal === "observation") delayDays.value = window.OBSERVATION_DAYS
   else delayDays.value = null
-})
+}
 
-const needsAnsesReferal = computed(() => declaration.value?.article === "ANSES_REFERAL")
+watch(proposal, setProposalDefaults)
+watch(article, () => setProposalDefaults(proposal.value))
+
+const needsAnsesReferal = computed(() => article.value === "ANSES_REFERAL")
 const isVisor = computed(() => loggedUser.value?.globalRoles?.some((x) => x.name === "VisaRole"))
 
 const proposalOptions = [

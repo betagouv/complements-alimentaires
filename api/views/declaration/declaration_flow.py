@@ -3,7 +3,11 @@ from viewflow import fsm
 from api.exception_handling import ProjectAPIException
 from data.models import Declaration
 
-from .declaration_flow_validations import validate_mandatory_fields, validate_number_of_elements
+from .declaration_flow_validations import (
+    validate_article_direct_approval,
+    validate_mandatory_fields,
+    validate_number_of_elements,
+)
 
 Status = Declaration.DeclarationStatus
 
@@ -47,7 +51,7 @@ class DeclarationFlow:
 
     @status.transition(source=Status.ONGOING_INSTRUCTION, target=Status.AUTHORIZED)
     def authorize_no_visa(self):
-        pass
+        self.ensure_validators([validate_article_direct_approval])
 
     @status.transition(source=Status.ONGOING_INSTRUCTION, target=Status.AWAITING_VISA)
     def request_visa(self):
