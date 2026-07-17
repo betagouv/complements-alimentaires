@@ -24,11 +24,11 @@ class UserQuerySet(DeactivableQuerySet):
 
 class UserManager(BaseUserManager):
     @transaction.atomic()
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, username, password=None, **extra_fields):
         """Custom User Manager is required when defining a custom User class"""
 
         user = self.model(
-            email=email,
+            username=username,
             is_superuser=False,
             **extra_fields,
         )
@@ -37,16 +37,16 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, password, **extra_fields):
-        user = self.create_user(email, password, **extra_fields)
+    def create_superuser(self, username, password, **extra_fields):
+        user = self.create_user(username, password, **extra_fields)
         user.is_verified = True
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
         return user
 
-    def create_staffuser(self, email, password, **extra_fields):
-        user = self.create_user(email, password, **extra_fields)
+    def create_staffuser(self, username, password, **extra_fields):
+        user = self.create_user(username, password, **extra_fields)
         user.is_verified = True
         user.is_staff = True
         user.save(using=self._db)

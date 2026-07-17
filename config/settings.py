@@ -74,6 +74,7 @@ THIRD_PARTY_APPS = [
     "phonenumber_field",
     "hijack",
     "hijack.contrib.admin",
+    "mozilla_django_oidc",
 ]
 
 if ENABLE_SILK:
@@ -101,6 +102,7 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
     "hijack.middleware.HijackUserMiddleware",
     "config.middleware.SecureFileServingMiddleware",
+    "mozilla_django_oidc.middleware.SessionRefresh",
 ]
 
 if ENABLE_SILK:
@@ -182,6 +184,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
+    "django.contrib.auth.backends.ModelBackend",
+)
+
+OIDC_RP_CLIENT_ID = os.getenv("OIDC_RP_CLIENT_ID")
+OIDC_RP_CLIENT_SECRET = os.getenv("OIDC_RP_CLIENT_SECRET")
+OIDC_RP_SIGN_ALGO = os.getenv("OIDC_RP_SIGN_ALGO")
+OIDC_OP_JWKS_ENDPOINT = os.getenv("OIDC_OP_JWKS_ENDPOINT")
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv("OIDC_OP_AUTHORIZATION_ENDPOINT")
+OIDC_OP_TOKEN_ENDPOINT = os.getenv("OIDC_OP_TOKEN_ENDPOINT")
+OIDC_OP_USER_ENDPOINT = os.getenv("OIDC_OP_USER_ENDPOINT")
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

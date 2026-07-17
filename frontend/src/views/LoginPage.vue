@@ -1,6 +1,8 @@
 <template>
   <SingleItemWrapper>
     <h1>Se connecter</h1>
+    <!-- TODO: use proconnect button -->
+    <a href="/oidc/authenticate">Pro connect</a>
     <FormWrapper :externalResults="$externalResults">
       <SendNewSignupVerificationEmail v-if="showSendNewConfirmationMail" :userId="userIdForNewConfirmationMail" />
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'username')">

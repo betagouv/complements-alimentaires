@@ -58,6 +58,7 @@ jmespath==1.1.0
 kombu==5.6.2
 lxml==6.1.1
 MarkupSafe==3.0.3
+mozilla-django-oidc==5.0.2
 nodeenv==1.10.0
 numpy==2.4.6
 openpyxl==3.1.5

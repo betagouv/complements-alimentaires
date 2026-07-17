@@ -8,6 +8,7 @@ from web.views import VueAppDisplayView
 
 urlpatterns = [
     path(f"{settings.ADMIN_URL}/", admin.site.urls),
+    path("oidc/", include("mozilla_django_oidc.urls")),
     path("prose/", include("prose.urls")),
     path("hijack/", include("hijack.urls")),
 ]
