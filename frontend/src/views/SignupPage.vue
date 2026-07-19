@@ -1,6 +1,8 @@
 <template>
   <SingleItemWrapper>
     <h1>Se créer un compte</h1>
+    <ProConnect />
+    <hr class="mt-4" />
     <FormWrapper :externalResults="$externalResults">
       <p class="fr-hint-text">Sauf mention contraire, tous les champs sont obligatoires.</p>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'lastName')">
@@ -81,6 +83,7 @@ import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import PasswordRules from "@/components/PasswordRules"
 import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
+import ProConnect from "@/components/ProConnect"
 import { useRoute, useRouter } from "vue-router"
 
 const router = useRouter()

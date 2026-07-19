@@ -1,8 +1,8 @@
 <template>
   <SingleItemWrapper>
     <h1>Se connecter</h1>
-    <!-- TODO: use proconnect button -->
-    <a href="/oidc/authenticate">Pro connect</a>
+    <ProConnect />
+    <hr class="mt-4" />
     <FormWrapper :externalResults="$externalResults">
       <SendNewSignupVerificationEmail v-if="showSendNewConfirmationMail" :userId="userIdForNewConfirmationMail" />
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'username')">
@@ -50,6 +50,7 @@ import FormWrapper from "@/components/FormWrapper"
 import SingleItemWrapper from "@/components/SingleItemWrapper"
 import SendNewSignupVerificationEmail from "@/components/SendNewSignupVerificationEmail"
 import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
+import ProConnect from "@/components/ProConnect"
 
 const router = useRouter()
 const route = useRoute()
