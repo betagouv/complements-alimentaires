@@ -8,7 +8,7 @@ from phonenumber_field.phonenumber import PhoneNumber
 from datetime import datetime, timedelta
 from random import randrange
 
-from data.choices import CountryChoices
+from data.choices import EuCountryChoices
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 from data.models.teleicare_history.ica_declaration import (
     IcaComplementAlimentaire,
