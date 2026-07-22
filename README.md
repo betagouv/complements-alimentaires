@@ -131,6 +131,24 @@ GRIST_ANSES_CONTROL_TABLE_ID (optionnel)= L'identifiant du tableau utilisé dans
 ADMIN_URL (optionnel)= Permet de customiser l'URL de l'admin Django
 ```
 
+#### Configuration pour tester ProConnect
+
+Pour récuperer le client ID et secret, visiter [le portail ProConnect](https://partenaires.proconnect.gouv.fr/apps) et créer ou accèder à l'application.
+
+Pour apprendre plus de ProConnect, voir la documentation [Fournisseur Service](https://partenaires.proconnect.gouv.fr/docs/fournisseur-service).
+
+```
+OIDC_RP_CLIENT_ID=
+OIDC_RP_CLIENT_SECRET=
+OIDC_RP_SIGN_ALGO=RS256
+OIDC_OP_JWKS_ENDPOINT=<ProConnect URL d'integration>/api/v2/jwks
+OIDC_OP_AUTHORIZATION_ENDPOINT=<ProConnect URL d'integration>/api/v2/authorize
+OIDC_OP_TOKEN_ENDPOINT=<ProConnect URL d'integration>/api/v2/token
+OIDC_OP_USER_ENDPOINT=<ProConnect URL d'integration>/api/v2/userinfo
+HOSTNAME=127.0.0.1:8000
+ALLOWED_HOSTS=127.0.0.1
+```
+
 #### Créer les différents modèles Django dans la base de données
 
 ```
