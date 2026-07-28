@@ -68,7 +68,7 @@ pathspec==1.0.3
 phonenumbers==9.0.24
 pikepdf==10.9.1
 pillow==12.3.0
-pipdeptree==2.35.2
+pipdeptree==4.0.0
 platformdirs==4.9.6
 pluggy==1.6.0
 pre_commit==4.6.0
