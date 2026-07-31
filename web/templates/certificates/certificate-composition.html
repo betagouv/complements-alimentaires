@@ -25,7 +25,7 @@
                 {% if dp.preparation %}{{ dp.preparation.name }}{% else %}—{% endif %}
             </td>
             <td class="align-right">
-                {% if dp.quantity %}{{ dp.quantity }}{% if dp.unit %}<span style="font-family: sans-serif;"> {{ dp.unit.name }}</span>{% endif %}{% else %}—{% endif %}
+                {% if dp.quantity %}{{ dp.quantity }}{% if dp.unit %}<span class="sans-serif"> {{ dp.unit.name }}</span>{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -77,7 +77,45 @@
                 {% if ds.new %}{{ ds.new_name }}{% else %}{{ ds.substance.name }}{% endif %}
             </td>
             <td class="align-right">
-                {% if ds.quantity %}{{ ds.quantity }}{% if ds.unit %}<span style="font-family: sans-serif;"> {{ ds.unit.name }}</span>{% endif %}{% else %}—{% endif %}
+                {% if ds.quantity %}{{ ds.quantity }}{% if ds.unit %}<span class="sans-serif"> {{ ds.unit.name }}</span>{% endif %}{% else %}—{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if active_ingredient_computed_substances %}
+<table>
+    <caption>Ingrédients actifs :</caption>
+    <thead>
+        <tr>
+            <th>Substance</th>
+            <th>Ingrédients</th>
+            <th class="align-right">Quantité par DJR</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cs in active_ingredient_computed_substances %}
+        <tr>
+            <td>{{ cs.substance.name }}</td>
+            <td class="ingredient-source">
+                {% for di in declared_ingredients %}
+                    {% if di.ingredient.ingredient_type == 1 or di.ingredient.ingredient_type == 4 %}
+                        {% if cs.substance in di.ingredient.substances.all %}
+                            <span>
+                                {% if di.new %}
+                                    {{ di.new_name }}
+                                {% else %}
+                                    {{ di.ingredient.name }}
+                                {% endif %}
+                                &nbsp;
+                            </span>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}</td>
+            <td class="align-right">
+                {% if cs.quantity %}{{ cs.quantity }}{% if cs.unit %}<span class="sans-serif"> {{ cs.unit.name }}</span>{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -96,14 +134,16 @@
     </thead>
     <tbody>
         {% for di in declared_ingredients %}
+        {% if di.ingredient.ingredient_type == 1 or di.ingredient.ingredient_type == 4 %}{% else %}
         <tr>
             <td>
                 {% if di.new %}{{ di.new_name }}{% else %}{{ di.ingredient.name }}{% endif %}
             </td>
             <td class="align-right">
-                {% if di.quantity %}{{ di.quantity }}{% if di.unit %}<span style="font-family: sans-serif;"> {{ di.unit.name }}</span>{% endif %}{% else %}—{% endif %}
+                {% if di.quantity %}{{ di.quantity }}{% if di.unit %}<span class="sans-serif"> {{ di.unit.name }}</span>{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
+        {% endif %}
         {% endfor %}
     </tbody>
 </table>

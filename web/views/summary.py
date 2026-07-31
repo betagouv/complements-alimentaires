@@ -2,7 +2,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from api.permissions import CanAccessIndividualDeclaration
-from data.models import Declaration, Snapshot
+from data.models import Declaration, IngredientType, Snapshot
 
 from .pdfview import PdfView
 
@@ -55,7 +55,13 @@ class SummaryView(PdfView):
             "declared_microorganisms": declaration.declared_microorganisms.all(),
             "declared_ingredients": declaration.declared_ingredients.all(),
             "declared_substances": declaration.declared_substances.all(),
-            "computed_substances": declaration.computed_substances.all(),
+            "active_ingredient_computed_substances": declaration.computed_substances.filter(
+                substance__ingredientsubstancerelation__ingredient__ingredient_type__in=[
+                    IngredientType.FORM_OF_SUPPLY,
+                    IngredientType.ACTIVE_INGREDIENT,
+                ],
+                substance__ingredientsubstancerelation__ingredient__declaredingredient__declaration=declaration,
+            ).distinct(),
             "attachments": declaration.attachments.all(),
             "submission_date": submission_date,
             "now": timezone.now(),
