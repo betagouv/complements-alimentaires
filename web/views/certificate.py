@@ -4,7 +4,7 @@ import logging
 from rest_framework.exceptions import NotFound
 
 from api.permissions import CanAccessIndividualDeclaration
-from data.models import Declaration, IngredientType, Snapshot
+from data.models import Declaration, Snapshot
 
 from .pdfview import PdfView
 
@@ -149,16 +149,8 @@ class CertificateView(PdfView):
                     f"Declaration with ID {declaration.id} is withdrawn but has no withdrawal snapshots associated with it"
                 )
 
-        computed_substances = declaration.computed_substances.filter(
-            substance__ingredientsubstancerelation__ingredient__ingredient_type__in=[
-                IngredientType.FORM_OF_SUPPLY,
-                IngredientType.ACTIVE_INGREDIENT,
-            ],
-            substance__ingredientsubstancerelation__ingredient__declaredingredient__declaration=declaration,
-        ).distinct()
-
         return {
-            "active_ingredient_computed_substances": computed_substances,
+            "active_ingredient_computed_substances": declaration.active_ingredient_computed_substances,
             "date": date,
             "last_submission_date": last_submission_date,
             "include_recipient_address": declaration.status == Declaration.DeclarationStatus.REJECTED,
