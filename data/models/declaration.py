@@ -510,22 +510,19 @@ class Declaration(Historisable, TimeStampable):
     def active_ingredient_computed_substances(self):
         """Computed substances qui proviennent d'une source de type FORM_OF_SUPPLY ou ACTIVE_INGREDIENT."""
         return self.computed_substances.filter(
-            substance__ingredientsubstancerelation__ingredient__ingredient_type__in=[
-                IngredientType.FORM_OF_SUPPLY,
-                IngredientType.ACTIVE_INGREDIENT,
-            ],
+            substance__ingredientsubstancerelation__ingredient__ingredient_type__in=IngredientType.active_types(),
             substance__ingredientsubstancerelation__ingredient__declaredingredient__declaration=self,
         ).distinct()
 
     @property
+    def active_declared_ingredients(self):
+        """Ingrédients déclarés de type FORM_OF_SUPPLY ou ACTIVE_INGREDIENT."""
+        return self.declared_ingredients.filter(ingredient__ingredient_type__in=IngredientType.active_types())
+
+    @property
     def inactive_declared_ingredients(self):
         """Ingrédients déclarés qui ne sont pas de type FORM_OF_SUPPLY ou ACTIVE_INGREDIENT."""
-        return self.declared_ingredients.exclude(
-            ingredient__ingredient_type__in=[
-                IngredientType.FORM_OF_SUPPLY,
-                IngredientType.ACTIVE_INGREDIENT,
-            ]
-        )
+        return self.declared_ingredients.exclude(ingredient__ingredient_type__in=IngredientType.active_types())
 
     @property
     def has_risky_ingredients(self):

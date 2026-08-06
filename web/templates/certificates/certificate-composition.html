@@ -1,4 +1,4 @@
-{% with declared_plants=declaration.declared_plants.all declared_microorganisms=declaration.declared_microorganisms.all declared_substances=declaration.declared_substances.all declared_ingredients=declaration.declared_ingredients.all inactive_declared_ingredients=declaration.inactive_declared_ingredients %}
+{% with declared_plants=declaration.declared_plants.all declared_microorganisms=declaration.declared_microorganisms.all declared_substances=declaration.declared_substances.all declared_ingredients=declaration.declared_ingredients.all active_declared_ingredients=declaration.active_declared_ingredients inactive_declared_ingredients=declaration.inactive_declared_ingredients %}
 <div id="composition">
 {% if declared_plants %}
 
@@ -101,11 +101,9 @@
             <td>{{ cs.substance.name }}</td>
             <td class="ingredient-source">
                 <ul>
-                {% for di in declared_ingredients %}
-                    {% if di.ingredient.ingredient_type == 1 or di.ingredient.ingredient_type == 4 %}
-                        {% if cs.substance in di.ingredient.substances.all %}
-                            <li>{{ di.ingredient.name }}</li>
-                        {% endif %}
+                {% for di in active_declared_ingredients %}
+                    {% if cs.substance in di.ingredient.substances.all %}
+                        <li>{{ di.ingredient.name }}</li>
                     {% endif %}
                 {% endfor %}
                 </ul>
