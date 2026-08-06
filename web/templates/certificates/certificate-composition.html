@@ -1,4 +1,4 @@
-{% with declared_plants=declaration.declared_plants.all declared_microorganisms=declaration.declared_microorganisms.all declared_substances=declaration.declared_substances.all declared_ingredients=declaration.declared_ingredients.all %}
+{% with declared_plants=declaration.declared_plants.all declared_microorganisms=declaration.declared_microorganisms.all declared_substances=declaration.declared_substances.all declared_ingredients=declaration.declared_ingredients.all inactive_declared_ingredients=declaration.inactive_declared_ingredients %}
 <div id="composition">
 {% if declared_plants %}
 
@@ -119,7 +119,7 @@
 </table>
 {% endif %}
 
-{% if declared_ingredients %}
+{% if inactive_declared_ingredients %}
 <table>
     <caption>Autres ingrédients :</caption>
     <thead>
@@ -129,8 +129,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for di in declared_ingredients %}
-        {% if di.ingredient.ingredient_type == 1 or di.ingredient.ingredient_type == 4 %}{% else %}
+        {% for di in inactive_declared_ingredients %}
         <tr>
             <td>
                 {% if di.new %}{{ di.new_name }}{% else %}{{ di.ingredient.name }}{% endif %}
@@ -139,7 +138,6 @@
                 {% if di.quantity %}{{ di.quantity }}{% if di.unit %}<span class="sans-serif"> {{ di.unit.name }}</span>{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
-        {% endif %}
         {% endfor %}
     </tbody>
 </table>

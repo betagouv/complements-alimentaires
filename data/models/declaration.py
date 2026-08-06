@@ -518,6 +518,16 @@ class Declaration(Historisable, TimeStampable):
         ).distinct()
 
     @property
+    def inactive_declared_ingredients(self):
+        """Ingrédients déclarés qui ne sont pas de type FORM_OF_SUPPLY ou ACTIVE_INGREDIENT."""
+        return self.declared_ingredients.exclude(
+            ingredient__ingredient_type__in=[
+                IngredientType.FORM_OF_SUPPLY,
+                IngredientType.ACTIVE_INGREDIENT,
+            ]
+        )
+
+    @property
     def has_risky_ingredients(self):
         return (
             self.risky_ingredients.exists()
