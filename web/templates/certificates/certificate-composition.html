@@ -100,20 +100,16 @@
         <tr>
             <td>{{ cs.substance.name }}</td>
             <td class="ingredient-source">
+                <ul>
                 {% for di in declared_ingredients %}
                     {% if di.ingredient.ingredient_type == 1 or di.ingredient.ingredient_type == 4 %}
                         {% if cs.substance in di.ingredient.substances.all %}
-                            <span>
-                                {% if di.new %}
-                                    {{ di.new_name }}
-                                {% else %}
-                                    {{ di.ingredient.name }}
-                                {% endif %}
-                                &nbsp;
-                            </span>
+                            <li>{{ di.ingredient.name }}</li>
                         {% endif %}
                     {% endif %}
-                {% endfor %}</td>
+                {% endfor %}
+                </ul>
+            </td>
             <td class="align-right">
                 {% if cs.quantity %}{{ cs.quantity }}{% if cs.unit %}<span class="sans-serif"> {{ cs.unit.name }}</span>{% endif %}{% else %}—{% endif %}
             </td>
