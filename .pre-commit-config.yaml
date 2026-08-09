@@ -96,35 +96,12 @@ repos:
           - eslint@latest
           - vue-eslint-parser@latest
           - eslint-plugin-vue@latest
-          - eslint-plugin-jquery@latest
-          - eslint-plugin-eslint-plugin@latest
           - prettier@latest
           - eslint-config-prettier@latest
           - eslint-plugin-prettier@latest
-          - babel-eslint
         args:
-          - -c=frontend/.eslintrc.js
           - --fix
         types:
           - vue
-    repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.55.0
-  - hooks:
-      - additional_dependencies:
-          - eslint@8.55.0
-          - vue-eslint-parser@latest
-          - eslint-plugin-vue@latest
-          - eslint-plugin-jquery@latest
-          - eslint-plugin-eslint-plugin@latest
-          - prettier@latest
-          - eslint-config-prettier@latest
-          - eslint-plugin-prettier@latest
-          - babel-eslint
-        args:
-          - -c=frontend/.eslintrc.js
-          - --fix
-        files: ^
-        id: eslint
-        name: js-eslint
     repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.55.0
