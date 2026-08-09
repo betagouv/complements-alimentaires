@@ -20,10 +20,10 @@
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import BlogCard from "@/components/BlogCard"
 import { handleError } from "@/utils/error-handling"
 
-const { data: blogPosts, response } = await useFetch("/api/v1/blog-post/?limit=3&offset=0").json()
+const { data: blogPosts, response } = await useFetch(`blog-post/?limit=3&offset=0`).json()
 await handleError(response)
 </script>

@@ -8,6 +8,7 @@ billiard==4.2.4
 bleach==6.4.0
 boto3==1.42.92
 botocore==1.42.97
+build==1.5.0
 celery==5.6.3
 certifi==2026.2.25
 cffi==2.0.0
@@ -23,8 +24,9 @@ cryptography==50.0.0
 cssselect2==0.9.0
 diff_cover==10.3.0
 distlib==0.4.0
-Django==6.0.6
+Django==6.0.7
 django-anymail==15.0
+django-cors-headers==4.9.0
 django-environ==0.13.0
 django-filter==26.1
 django-hijack==3.7.8
@@ -37,7 +39,6 @@ django-silk==5.4.3
 django-simple-history==3.11.0
 django-storages==1.14.6
 django-viewflow==2.3.2
-django-webpack-loader==3.2.4
 djangorestframework==3.17.1
 djangorestframework-camel-case==1.4.2
 drf-excel==2.5.3
@@ -52,11 +53,15 @@ html5lib==1.1
 identify==2.6.19
 idna==3.15
 iniconfig==2.3.0
+installer==1.0.1
 Jinja2==3.1.6
 jmespath==1.1.0
 kombu==5.6.2
 lxml==6.1.1
 MarkupSafe==3.0.3
+nab-index==0.0.12
+nab-python==0.0.12
+nab-resolver==0.0.12
 nodeenv==1.10.0
 numpy==2.4.6
 openpyxl==3.1.5
@@ -79,7 +84,8 @@ pycparser==3.0
 Pygments==2.20.0
 pyHanko==0.35.2
 pyhanko-certvalidator==0.31.1
-pypdf==6.14.2
+pypdf==6.15.0
+pyproject_hooks==1.2.0
 pytest==9.0.3
 python-bidi==0.6.7
 python-dateutil==2.9.0.post0
@@ -104,7 +110,11 @@ sqlparse==0.5.5
 svglib==1.6.0
 tblib==3.2.2
 tinycss2==1.5.1
+tomli==2.4.1
+tomli_w==1.2.0
 tqdm==4.70.0
+truststore==0.10.4
+typing_extensions==4.16.0
 tzdata==2026.2
 tzlocal==5.4.4
 Unidecode==1.4.0

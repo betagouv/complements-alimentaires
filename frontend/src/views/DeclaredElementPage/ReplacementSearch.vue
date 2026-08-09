@@ -15,7 +15,7 @@
 
 <script setup>
 import { ref } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { getApiType } from "@/utils/mappings"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
@@ -37,7 +37,7 @@ const selectOption = (option) => {
 
 // TODO: turn into service ? It was taken from another file
 const fetchElement = async (apiType, type, id) => {
-  const { data, response } = await useFetch(`/api/v1/${apiType}s/${id}`).get().json()
+  const { data, response } = await useFetch(`/${apiType}s/${id}`).get().json()
   await handleError(response)
   if (!response.value.ok) return null
   return { ...data.value, ...{ objectType: type } }

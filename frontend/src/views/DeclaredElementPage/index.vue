@@ -38,7 +38,7 @@
 
 <script setup>
 import { computed, watch, ref } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { useRootStore } from "@/stores/root"
 import { useRouter } from "vue-router"
 import { getApiType } from "@/utils/mappings"
@@ -77,7 +77,7 @@ const breadcrumbLinks = computed(() => {
 })
 
 // Init
-const url = computed(() => `/api/v1/declared-elements/${getApiType(props.type)}/${props.id}`)
+const url = computed(() => `/declared-elements/${getApiType(props.type)}/${props.id}`)
 const onFetchError = ({ error, data }) => {
   addErrorMessage("Une erreur est survenu. Merci de réessayer ultérieurement.")
   return { error, data }

@@ -18,4 +18,4 @@ class TestAdminUrlOverride(TestCase):
         L'URL de l'admin doit être pris de la variable d'environnement
         """
         self.reload_urlconf()
-        self.assertEqual(reverse("admin:index"), "/test-admin/")
+        self.assertEqual(reverse("admin:index"), "/platform/test-admin/")

@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { headers } from "@/utils/data-fetching"
 import { ref, onMounted } from "vue"
 import { articleOptions, articleOptionsWith15Subtypes } from "@/utils/mappings"
@@ -52,7 +52,7 @@ const changeArticle = async () => {
     articleModalOpened.value = false
     return
   }
-  const url = `/api/v1/declarations/${payload.value.id}/update-article/`
+  const url = `/declarations/${payload.value.id}/update-article/`
   const body = { article: newArticle.value }
   const { response, data } = await useFetch(url, { headers: headers() }).post(body).json()
   if (response.value.status >= 300 || response.value.status < 200) {

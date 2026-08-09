@@ -27,7 +27,7 @@ import FormWrapper from "@/components/FormWrapper"
 import { firstErrorMsg, errorRequiredField } from "@/utils/forms"
 import { useVuelidate } from "@vuelidate/core"
 import { headers } from "@/utils/data-fetching"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import ExternalLink from "@/components/ExternalLink.vue"
 
@@ -46,7 +46,7 @@ const v$ = useVuelidate(rules, { identifier: identifier }, { $externalResults })
 
 // Request definition
 const url = computed(
-  () => `/api/v1/companies/${identifier.value}/check-identifier/?identifierType=${company.value.identifierType}`
+  () => `/companies/${identifier.value}/check-identifier/?identifierType=${company.value.identifierType}`
 )
 const { data, response, execute, isFetching } = useFetch(
   url,

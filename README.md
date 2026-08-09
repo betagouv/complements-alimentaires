@@ -129,6 +129,19 @@ GRIST_SD_CONTROL_TABLE_ID (optionnel)= L'identifiant du tableau utilisé dans GR
 GRIST_ANSES_CONTROL_DOC_ID (optionnel)= L'identifiant du document utilisé pour recuperer les mails du role contrôle. Retrouvable depuis settings -> API console de grist
 GRIST_ANSES_CONTROL_TABLE_ID (optionnel)= L'identifiant du tableau utilisé dans GRIST_ANSES_CONTROL_DOC_ID. Retrouvable depuis settings -> API console de grist
 ADMIN_URL (optionnel)= Permet de customiser l'URL de l'admin Django
+DEV_FRONTEND_ORIGINS= Une liste de hosts pour le développement en local, normalement `localhost:5173`
+```
+
+Un second fichier .env doit être également présent dans /frontend/.env et contenir les variables d'environnement suivantes :
+
+```
+VITE_BACKEND_ROOT= L'URL du backend, normalement `http://localhost:8000/platform` pour le développement
+VITE_API_ROOT= L'URL de l'API, normalement `http://localhost:8000/platform/api/v1` pour le développement
+VITE_CREDENTIALS= Utiliser `include` pour le développement afin que Vue authentifie les requêtes même dans un port différent
+VITE_ENVIRONMENT= Optionnel - si cette variable est remplie un badge sera visible dans l'application et l'admin changera. Les options sont : `dev` | `staging` | `demo` | `prod`
+VITE_MATOMO_ID (optionnel)= L'ID pour le suivi avec Matomo. Compl-alim utilise l'ID 95 pour la prod, en local c'est mieux de le laisser vide
+VITE_OBSERVATION_DAYS (optionnel)= Le nombre de jours proposé pour une période d'observation. Par défaut c'est 15.
+VITE_CONTACT_EMAIL= par ex. 'contact@example.com'
 ```
 
 #### Créer les différents modèles Django dans la base de données
@@ -155,10 +168,10 @@ Pour faire l'équivalent côté frontend, allez sur `./frontend` et lancez le se
 
 ```
 cd frontend
-npm run serve
+npm run dev
 ```
 
-Une fois la compilation finie des deux côtés, l'application se trouvera sous [127.0.0.1:8000](127.0.0.1:8000) (le port Django, non pas celui de npm).
+Une fois la compilation finie des deux côtés, l'application se trouvera sous [127.0.0.1:5173](127.0.0.1:5173).
 
 ## Lancement des tests
 
@@ -171,15 +184,6 @@ python manage.py test
 ```
 
 Sur VSCode, ces tests peuvent être debuggés avec la configuration "Python: Tests", présente sur le menu "Run".
-
-### Lancer les tests VueJS
-
-Il faut d'abord se placer sur "/frontend", ensuite la commande pour lancer les tests VueJS est :
-
-```
-cd frontend
-npm run test
-```
 
 ## Import de données initiales (fixtures)
 

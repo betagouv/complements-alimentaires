@@ -22,7 +22,7 @@
 <script setup>
 import { ref } from "vue"
 import SectionTitle from "@/components/SectionTitle"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 import { logOut } from "@/utils/auth"
@@ -34,7 +34,7 @@ const close = () => (opened.value = false)
 
 // Main request definition
 const { response, execute } = useFetch(
-  `/api/v1/users/${store.loggedUser.id}`,
+  `/users/${store.loggedUser.id}`,
   { headers: headers() },
   {
     immediate: false,

@@ -68,7 +68,7 @@
 import { onMounted, computed } from "vue"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import SectionTitle from "@/components/SectionTitle"
 import RoleTag from "@/components/RoleTag"
@@ -86,7 +86,7 @@ const { loggedUser, companies } = storeToRefs(store)
 const company = computed(() => companies.value?.find((c) => +c.id === +route.params.id))
 const canRoleBeAddedTo = (roleName, user) => !user.roles.some((role) => role.name === roleName)
 
-const rootUrl = computed(() => `/api/v1/companies/${company.value.id}`)
+const rootUrl = computed(() => `/companies/${company.value.id}`)
 const params = { immediate: false }
 
 // Requête initiale pour récupérer les collaborateurs de l'entreprise
@@ -128,7 +128,7 @@ onMounted(async () => {
 
 // Requête pour modifier les rôles d'un utilisateur pour une entreprise donnée
 const changeRole = async (roleName, user, action) => {
-  const url = `/api/v1/users/${user.id}/${action}-role/`
+  const url = `/users/${user.id}/${action}-role/`
   const payload = { companyPk: company.value.id, roleName: roleName }
   const { response, data: collaboratorUpdatedLine } = await useFetch(url, { headers: headers() }).post(payload).json()
   await handleError(response)

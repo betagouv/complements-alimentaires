@@ -41,7 +41,7 @@
 import { useRoute, useRouter } from "vue-router"
 import { articleOptionsWith15Subtypes } from "@/utils/mappings"
 import { computed, onMounted, watch } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import CaBreadcrumb from "@/components/CaBreadcrumb"
@@ -90,14 +90,14 @@ const {
   data: declaration,
   execute: executeDeclarationFetch,
   isFetching: isFetchingDeclaration,
-} = makeRequest(`/api/v1/control/declarations/${props.declarationId}`).get().json()
+} = makeRequest(`/control/declarations/${props.declarationId}`).get().json()
 
 const {
   response: declarantResponse,
   data: declarant,
   execute: executeDeclarantFetch,
   isFetching: isFetchingDeclarant,
-} = makeRequest(() => `/api/v1/control/users/${declaration.value?.author}`)
+} = makeRequest(() => `/control/users/${declaration.value?.author}`)
   .get()
   .json()
 const {
@@ -105,7 +105,7 @@ const {
   data: company,
   execute: executeCompanyFetch,
   isFetching: isFetchingCompany,
-} = makeRequest(() => `/api/v1/control/companies/${declaration.value?.company}`)
+} = makeRequest(() => `/control/companies/${declaration.value?.company}`)
   .get()
   .json()
 
@@ -114,7 +114,7 @@ const {
   data: mandatedCompany,
   execute: executeMandatedCompanyFetch,
   isFetching: isFetchingMandatedCompany,
-} = makeRequest(() => `/api/v1/control/companies/${declaration.value?.mandatedCompany}`)
+} = makeRequest(() => `/control/companies/${declaration.value?.mandatedCompany}`)
   .get()
   .json()
 
@@ -123,7 +123,7 @@ const {
   data: snapshots,
   execute: executeSnapshotsFetch,
   isFetching: isFetchingSnapshots,
-} = makeRequest(() => `/api/v1/declarations/${props.declarationId}/snapshots/`)
+} = makeRequest(() => `/declarations/${props.declarationId}/snapshots/`)
   .get()
   .json()
 

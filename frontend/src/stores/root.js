@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { ref, computed } from "vue"
 import { pushOtherChoiceFieldAtTheEnd } from "@/utils/forms"
 
@@ -25,7 +25,8 @@ export const useRootStore = defineStore("root", () => {
   }
 
   const fetchLoggedUser = async () => {
-    const { data } = await useFetch("/api/v1/get-logged-user/").json()
+    const { data } = await useFetch(`get-logged-user/`).json()
+    if (data.value?.csrfToken) localStorage.setItem("csrfToken", data.value.csrfToken)
     setLoggedUser(data.value)
     // TODO: add error handling here, but weird bug with await and response
   }
@@ -39,40 +40,40 @@ export const useRootStore = defineStore("root", () => {
 
   // TODO : Management d'erreur pour tous ces appels
   const fetchPopulations = async () => {
-    const { data } = await useFetch("/api/v1/populations/").json()
+    const { data } = await useFetch(`populations/`).json()
     populations.value = data.value
   }
   const fetchConditions = async () => {
-    const { data } = await useFetch("/api/v1/conditions/").json()
+    const { data } = await useFetch(`conditions/`).json()
     conditions.value = pushOtherChoiceFieldAtTheEnd(data.value)
   }
   const fetchEffects = async () => {
-    const { data } = await useFetch("/api/v1/effects/").json()
+    const { data } = await useFetch(`effects/`).json()
     effects.value = pushOtherChoiceFieldAtTheEnd(data.value)
   }
   const fetchGalenicFormulations = async () => {
-    const { data } = await useFetch("/api/v1/galenic-formulations/").json()
+    const { data } = await useFetch(`galenic-formulations/`).json()
     galenicFormulations.value = pushOtherChoiceFieldAtTheEnd(data.value)
   }
   const fetchPreparations = async () => {
-    const { data } = await useFetch("/api/v1/preparations/").json()
+    const { data } = await useFetch(`preparations/`).json()
     preparations.value = data.value
   }
   const fetchPlantParts = async () => {
-    const { data } = await useFetch("/api/v1/plant-parts/").json()
+    const { data } = await useFetch(`plant-parts/`).json()
     plantParts.value = data.value
   }
   const fetchPlantFamilies = async () => {
-    const { data } = await useFetch("/api/v1/plant-families/").json()
+    const { data } = await useFetch(`plant-families/`).json()
     plantFamilies.value = data.value
   }
   const fetchUnits = async () => {
-    const { data } = await useFetch("/api/v1/units/").json()
+    const { data } = await useFetch(`units/`).json()
     units.value = data.value
   }
   // Appel groupé des fieldDdata
   const fetchDeclarationFieldsData = async () => {
-    const { data } = await useFetch("/api/v1/declarationFieldData/").json()
+    const { data } = await useFetch(`declarationFieldData/`).json()
     populations.value = data.value.populations
     conditions.value = pushOtherChoiceFieldAtTheEnd(data.value.conditions)
     effects.value = pushOtherChoiceFieldAtTheEnd(data.value.effects)

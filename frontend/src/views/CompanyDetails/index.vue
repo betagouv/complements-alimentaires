@@ -33,7 +33,7 @@
 
 <script setup>
 import { useRouter } from "vue-router"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { onMounted, computed } from "vue"
 import { handleError } from "@/utils/error-handling"
 import { getCompanyActivitiesString } from "@/utils/mappings"
@@ -58,7 +58,7 @@ const {
   data: company,
   execute: executeCompanyFetch,
   isFetching,
-} = useFetch(() => `/api/v1/control/companies/${props.companyId}`, { immediate: false })
+} = useFetch(() => `/control/companies/${props.companyId}`, { immediate: false })
   .get()
   .json()
 

@@ -147,7 +147,7 @@
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { computed, watch } from "vue"
 import { getPagesForPagination } from "@/utils/components"
 import { useRoute, useRouter } from "vue-router"
@@ -221,7 +221,7 @@ const commonApiParams = computed(() => {
   return apiParams
 })
 const url = computed(
-  () => `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&${commonApiParams.value}`
+  () => `/control/declarations/?limit=${limit.value}&offset=${offset.value}&${commonApiParams.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 
@@ -368,7 +368,7 @@ const updateDoseStrings = (index, newValue) => {
 
 // Export Excel
 
-const excelUrl = computed(() => `/api/v1/control/declarations-export.xlsx?${commonApiParams.value}`)
+const excelUrl = computed(() => `/control/declarations-export.xlsx?${commonApiParams.value}`)
 </script>
 
 <style scoped>

@@ -71,7 +71,7 @@
 
 <script setup>
 import { computed } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { getApiType, getActivityByType } from "@/utils/mappings"
 import { getObjectSubTypeList } from "@/utils/elements"
 import ElementAutocomplete from "@/components/ElementAutocomplete.vue"
@@ -140,7 +140,7 @@ const addElement = (item, objectType, newlyAdded = false) => {
 }
 
 const fetchElement = async (apiType, type, id) => {
-  const { data, response } = await useFetch(`/api/v1/${apiType}s/${id}`).get().json()
+  const { data, response } = await useFetch(`/${apiType}s/${id}`).get().json()
   await handleError(response)
   if (!response.value.ok) return null
   return { ...data.value, ...{ objectType: type } }

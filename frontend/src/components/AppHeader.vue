@@ -3,7 +3,7 @@
     <template #operator>
       <div class="flex items-center">
         <router-link :to="{ name: 'LandingPage' }" title="Accueil - Compl'Alim">
-          <img :src="require('@/assets/logo.svg')" alt="Compl'Alim" class="h-20" />
+          <img :src="logoSvg" alt="Compl'Alim" class="h-20" />
         </router-link>
 
         <div class="hidden sm:inline">
@@ -21,12 +21,13 @@
 
 <script setup>
 import { computed } from "vue"
+import logoSvg from "@/assets/logo.svg"
 import { useRootStore } from "@/stores/root"
 import { logOut } from "@/utils/auth"
 
 defineProps({ logoText: Array })
 
-const environment = window.ENVIRONMENT
+const environment = import.meta.env.VITE_ENVIRONMENT
 const store = useRootStore()
 const navItems = computed(() => {
   const links = [
