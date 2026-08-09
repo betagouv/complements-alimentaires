@@ -21,7 +21,7 @@
           </template>
         </DsfrInput>
         <div class="mt-2">
-          <a class="fr-link" href="/reinitialisation-mot-de-passe">Mot de passe oublié ?</a>
+          <a class="fr-link" href="/platform/reinitialisation-mot-de-passe">Mot de passe oublié ?</a>
         </div>
       </DsfrInputGroup>
       <DsfrButton class="block! w-full!" :disabled="isFetching" label="Se connecter" @click="submit" />

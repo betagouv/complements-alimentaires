@@ -7,7 +7,11 @@
     </p>
     <ul v-if="displayData.canDownloadCertificate" class="inline-list">
       <li>
-        <a download="true" :href="`/declarations/${declaration.id}/certificate`" class="fr-link fr-link--download">
+        <a
+          download="true"
+          :href="`/platform/declarations/${declaration.id}/certificate`"
+          class="fr-link fr-link--download"
+        >
           Télécharger
           <span class="lowercase">{{ displayData.documentName || "l'attestation" }}</span>
           <span class="fr-link__detail">&nbsp;PDF</span>
@@ -15,7 +19,7 @@
       </li>
       <li>
         <a
-          :href="`/declarations/${declaration.id}/certificate.html`"
+          :href="`/platform/declarations/${declaration.id}/certificate.html`"
           target="_blank"
           rel="noopener external"
           class="ml-4 relative"

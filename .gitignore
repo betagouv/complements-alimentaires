@@ -177,7 +177,3 @@ shell.nix
 
 # Database
 .postgres
-
-# Temporary for vite migration
-/frontend (Copy)
-/vite-test

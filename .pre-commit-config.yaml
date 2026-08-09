@@ -93,7 +93,7 @@ repos:
       - id: eslint
         name: vue-eslint
         additional_dependencies:
-          - eslint@latest
+          - eslint@^8.57.1
           - vue-eslint-parser@latest
           - eslint-plugin-vue@latest
           - prettier@latest

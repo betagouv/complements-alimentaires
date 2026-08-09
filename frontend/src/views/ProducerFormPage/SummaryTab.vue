@@ -5,7 +5,7 @@
         <SectionTitle title="Votre démarche" sizeTag="h6" icon="ri-file-text-line" class="mb-0" />
       </div>
       <div>
-        <a :href="`/declarations/${payload.id}/summary`" download class="fr-link fr-link--download">
+        <a :href="`/platform/declarations/${payload.id}/summary`" download class="fr-link fr-link--download">
           Télécharger
           <span class="fr-link__detail">PDF</span>
           <span class="sr-only">votre démarche {{ payload.name }}</span>
