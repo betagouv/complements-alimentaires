@@ -48,7 +48,7 @@
 <script setup>
 import { ref, computed } from "vue"
 import { useRootStore } from "@/stores/root"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { useVuelidate } from "@vuelidate/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
@@ -72,7 +72,7 @@ const hasDeclarationRole = computed(() =>
 )
 
 // Request definition
-const url = computed(() => `/api/v1/companies/${company.value.id}/claim-company-access/`)
+const url = computed(() => `/companies/${company.value.id}/claim-company-access/`)
 const { response, execute, isFetching } = useFetch(
   url,
   {

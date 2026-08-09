@@ -55,6 +55,7 @@ ENABLE_SILK = env("ENABLE_SILK", cast=bool, default=False)
 # Application definition
 
 DJANGO_APPS = [
+    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -67,7 +68,6 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "rest_framework",
-    "webpack_loader",
     "prose",
     "anymail",
     "simple_history",
@@ -90,6 +90,7 @@ PROJECT_APPS = [
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -128,17 +129,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# Webpack
-FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "frontend/dist/")]
-WEBPACK_LOADER = {
-    "DEFAULT": {
-        "CACHE": not DEBUG,
-        "BUNDLE_DIR_NAME": "/bundles/",
-        "STATS_FILE": os.path.join(FRONTEND_DIR, "dist/webpack-stats.json"),
-        "IGNORE": [r".+\.hot-update.js", r".+\.map"],
-    }
-}
 
 ADMIN_URL = os.environ.get("ADMIN_URL", "admin")
 
@@ -417,3 +407,12 @@ SECURE_CSP = {
     ]
     + (["ws:", "http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
 }
+
+# CORS
+
+# Pour le développement on autorise Vue à accéder au backend
+CORS_ALLOWED_ORIGINS = [f"http://{x}" for x in env("DEV_FRONTEND_ORIGINS", default="").split(",") if x]
+
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+CORS_ALLOW_CREDENTIALS = True
+SESSION_COOKIE_SAMESITE = "Lax"

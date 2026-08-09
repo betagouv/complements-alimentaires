@@ -32,7 +32,7 @@ import { ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { headers } from "@/utils/data-fetching"
 import { errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { handleError } from "@/utils/error-handling"
 import { useRootStore } from "@/stores/root"
@@ -53,7 +53,7 @@ const v$ = useVuelidate(rules, state)
 
 // Request definition
 const { response, execute, isFetching } = useFetch(
-  "/api/v1/subscribe-newsletter/",
+  `subscribe-newsletter/`,
   {
     headers: headers(),
   },

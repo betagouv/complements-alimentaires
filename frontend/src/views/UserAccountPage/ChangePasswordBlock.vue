@@ -50,7 +50,7 @@ import { useVuelidate } from "@vuelidate/core"
 import SectionTitle from "@/components/SectionTitle"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import FormWrapper from "@/components/FormWrapper"
 import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
 import PasswordRules from "@/components/PasswordRules"
@@ -79,7 +79,7 @@ const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Request definition
 const { response, execute, isFetching } = useFetch(
-  "/api/v1/change-password/",
+  `change-password/`,
   {
     headers: headers(),
   },

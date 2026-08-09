@@ -103,7 +103,7 @@ import NewElementTab from "./NewElementTab"
 import DeletionModal from "./DeletionModal"
 import HistoryTab from "@/components/HistoryTab"
 import WithdrawalTab from "@/components/WithdrawalTab"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { useRoute, useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
 import FormWrapper from "@/components/FormWrapper"
@@ -169,7 +169,7 @@ const payload = ref({
   computedSubstances: [],
   attachments: [],
 })
-const { response, data, isFetching, execute } = useFetch(`/api/v1/declarations/${props.id || route.query.duplicate}`, {
+const { response, data, isFetching, execute } = useFetch(`/declarations/${props.id || route.query.duplicate}`, {
   immediate: false,
 })
   .get()
@@ -179,7 +179,7 @@ const {
   response: snapshotsResponse,
   data: snapshots,
   execute: executeSnapshotsFetch,
-} = useFetch(() => `/api/v1/declarations/${props.id}/snapshots/`, { immediate: false })
+} = useFetch(() => `/declarations/${props.id}/snapshots/`, { immediate: false })
   .get()
   .json()
 
@@ -228,8 +228,8 @@ const savePayload = async ({
 } = {}) => {
   const isNewDeclaration = !payload.value.id
   const url = isNewDeclaration
-    ? `/api/v1/users/${loggedUser.value.id}/declarations/${forceArticleCalculation ? "?force-article-calculation=true" : ""}`
-    : `/api/v1/declarations/${payload.value.id}${forceArticleCalculation ? "?force-article-calculation=true" : ""}`
+    ? `/users/${loggedUser.value.id}/declarations/${forceArticleCalculation ? "?force-article-calculation=true" : ""}`
+    : `/declarations/${payload.value.id}${forceArticleCalculation ? "?force-article-calculation=true" : ""}`
   const httpMethod = isNewDeclaration ? "post" : "put"
   requestInProgress.value = true
   const { response, data } = await useFetch(url, { headers: headers() })[httpMethod](payload).json()
@@ -272,7 +272,7 @@ const isDraft = computed(() => payload.value?.status === "DRAFT")
 const submitPayload = async (comment) => {
   if (requestInProgress.value) return
   const path = isDraft.value ? "submit" : "resubmit"
-  const url = `/api/v1/declarations/${payload.value.id}/${path}/`
+  const url = `/declarations/${payload.value.id}/${path}/`
 
   requestInProgress.value = true
   const { response } = await useFetch(url, { headers: headers() }).post({ comment }).json()
@@ -303,9 +303,7 @@ const showDeletionModal = computed(() => {
 
 const deleteDeclaration = async () => {
   if (requestInProgress.value) return
-  const url = isDraft.value
-    ? `/api/v1/declarations/${payload.value.id}`
-    : `/api/v1/declarations/${payload.value.id}/abandon/`
+  const url = isDraft.value ? `/declarations/${payload.value.id}` : `/declarations/${payload.value.id}/abandon/`
 
   const requestFunction = isDraft.value
     ? useFetch(url, { headers: headers() }).delete
@@ -326,7 +324,7 @@ const deleteDeclaration = async () => {
 }
 
 const takeDeclaration = async () => {
-  const url = `/api/v1/declarations/${payload.value.id}/take-authorship/`
+  const url = `/declarations/${payload.value.id}/take-authorship/`
   await useFetch(url, { headers: headers() }).post()
   execute()
 }

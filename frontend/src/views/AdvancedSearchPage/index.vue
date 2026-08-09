@@ -209,7 +209,7 @@
 import { computed, ref, watch } from "vue"
 import { storeToRefs } from "pinia"
 import { useRoute, useRouter } from "vue-router"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import { articleOptionsWith15Subtypes } from "@/utils/mappings"
 import { handleError } from "@/utils/error-handling"
@@ -365,8 +365,8 @@ const apiQueryParams = computed(() => {
   // Enlève les `&` consecutifs
   return queryParams.replace(/&+/g, "&").replace(/&$/, "")
 })
-const apiUrl = computed(() => `/api/v1/declarations${apiQueryParams.value}`)
-const excelUrl = computed(() => `/api/v1/declarations-export.xlsx${apiQueryParams.value}`)
+const apiUrl = computed(() => `/declarations${apiQueryParams.value}`)
+const excelUrl = computed(() => `/declarations-export.xlsx${apiQueryParams.value}`)
 
 const { response, data, isFetching, execute } = useFetch(apiUrl, { headers: { Accept: "application/json" } })
   .get()

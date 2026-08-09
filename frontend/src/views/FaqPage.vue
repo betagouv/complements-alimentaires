@@ -437,7 +437,7 @@
 <script setup>
 import { ref } from "vue"
 const activeAccordion = ref()
-const contactEmail = window.CONTACT_EMAIL
+const contactEmail = import.meta.env.VITE_CONTACT_EMAIL
 </script>
 
 <style scoped>

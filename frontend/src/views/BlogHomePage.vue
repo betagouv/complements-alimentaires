@@ -38,7 +38,7 @@ import { computed, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import ProgressSpinner from "@/components/ProgressSpinner"
 import BlogCard from "@/components/BlogCard"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { getPagesForPagination } from "@/utils/components"
 import { setDocumentTitle } from "@/utils/document"
@@ -61,7 +61,7 @@ const updateRoute = () => {
 watch(page, updateRoute)
 
 // Blog posts
-const url = computed(() => `/api/v1/blog-post/?limit=${limit}&offset=${offset.value}`)
+const url = computed(() => `/blog-post/?limit=${limit}&offset=${offset.value}`)
 const { data, response, execute, isFetching } = useFetch(url, { immediate: false }).json()
 
 const fetchCurrentPage = async () => {

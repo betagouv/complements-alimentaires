@@ -71,7 +71,7 @@
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { computed, watch, ref } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
@@ -107,7 +107,7 @@ const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 // Obtention de la donnée via API
 const url = computed(() => {
   return (
-    `/api/v1/new-declared-elements/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}` +
+    `/new-declared-elements/?limit=${limit.value}&offset=${offset.value}&ordering=${ordering.value}` +
     `&requestStatus=${statusFilter.value}&declarationStatus=${declarationStatusFilter.value}&type=${typeFilter.value}`
   )
 })

@@ -98,7 +98,7 @@ import ProgressSpinner from "@/components/ProgressSpinner"
 import { handleError } from "@/utils/error-handling"
 import DeclarationsTable from "./DeclarationsTable"
 import { useRouter, useRoute } from "vue-router"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { getPagesForPagination } from "@/utils/components"
@@ -157,7 +157,7 @@ const url = computed(() => {
   let statusQuery = filteredStatus.value
   if (filteredStatus.value?.indexOf("INSTRUCTION") > -1)
     statusQuery += `${statusQuery.length ? "," : ""}AWAITING_INSTRUCTION,ONGOING_INSTRUCTION,AWAITING_VISA,ONGOING_VISA`
-  return `/api/v1/users/${loggedUser.value.id}/declarations/?limit=${limit.value}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate&company=${company.value}&author=${author.value}&search=${searchTerm.value}&ordering=${ordering.value}`
+  return `/users/${loggedUser.value.id}/declarations/?limit=${limit.value}&offset=${offset.value}&status=${statusQuery || ""}&ordering=-modificationDate&company=${company.value}&author=${author.value}&search=${searchTerm.value}&ordering=${ordering.value}`
 })
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {

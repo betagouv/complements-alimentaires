@@ -89,7 +89,7 @@
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { computed, watch, ref } from "vue"
 import { getPagesForPagination } from "@/utils/components"
 import { useRoute, useRouter } from "vue-router"
@@ -138,9 +138,7 @@ const commonApiParams = computed(() => {
     apiParams += `&activities=${roles.value.map((x) => allActivities.find((y) => y.label === x).value).join(",")}`
   return apiParams
 })
-const url = computed(
-  () => `/api/v1/control/companies/?limit=${limit.value}&offset=${offset.value}&${commonApiParams.value}`
-)
+const url = computed(() => `/control/companies/?limit=${limit.value}&offset=${offset.value}&${commonApiParams.value}`)
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 
 const fetchSearchResults = async () => {
@@ -155,7 +153,7 @@ const fetchSearchResults = async () => {
 
 // Export Excel
 
-const excelUrl = computed(() => `/api/v1/control/companies-export.xlsx?${commonApiParams.value}`)
+const excelUrl = computed(() => `/control/companies-export.xlsx?${commonApiParams.value}`)
 
 // Mise à jour des paramètres
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } })

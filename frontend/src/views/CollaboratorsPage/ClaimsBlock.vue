@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
@@ -24,7 +24,7 @@ const emit = defineEmits(["process"])
 defineProps({ solicitations: Array })
 
 const process = async (solicitationId, actionName) => {
-  const url = `/api/v1/company-access-claims/${solicitationId}/process/`
+  const url = `/company-access-claims/${solicitationId}/process/`
   const { response } = await useFetch(url, { headers: headers() }).post({ actionName: actionName }).json()
   await handleError(response)
   if (response.value.ok) {
