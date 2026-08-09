@@ -52,7 +52,7 @@ class LoggedUserView(APIView):
 
         user = request.user
         if user.is_active:
-            return Response(UserSerializer(user).data)
+            return Response({**UserSerializer(user).data, "csrf_token": get_token(request)})
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 

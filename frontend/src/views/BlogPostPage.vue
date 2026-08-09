@@ -11,7 +11,7 @@
 
 <script setup>
 import { computed, watch } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { setDocumentTitle } from "@/utils/document"
 
@@ -20,7 +20,7 @@ const props = defineProps({
 })
 const emit = defineEmits(["page-title"])
 
-const { data: blogPost, response, execute } = useFetch(`/api/v1/blog-post/${props.id}`, { immediate: false }).json()
+const { data: blogPost, response, execute } = useFetch(`/blog-post/${props.id}`, { immediate: false }).json()
 const fetchBlogPost = async () => {
   await execute()
   await handleError(response)

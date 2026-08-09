@@ -129,6 +129,7 @@ GRIST_SD_CONTROL_TABLE_ID (optionnel)= L'identifiant du tableau utilisé dans GR
 GRIST_ANSES_CONTROL_DOC_ID (optionnel)= L'identifiant du document utilisé pour recuperer les mails du role contrôle. Retrouvable depuis settings -> API console de grist
 GRIST_ANSES_CONTROL_TABLE_ID (optionnel)= L'identifiant du tableau utilisé dans GRIST_ANSES_CONTROL_DOC_ID. Retrouvable depuis settings -> API console de grist
 ADMIN_URL (optionnel)= Permet de customiser l'URL de l'admin Django
+DEV_FRONTEND_ORIGINS= Une liste de hosts pour le développement en local, normalement `localhost:5173`
 ```
 
 #### Créer les différents modèles Django dans la base de données

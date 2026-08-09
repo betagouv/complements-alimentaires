@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { onMounted, computed } from "vue"
 import { useRouter } from "vue-router"
 import { storeToRefs } from "pinia"
@@ -75,7 +75,7 @@ const {
   data: declaration,
   isFetching,
   execute: executeDeclarationFetch,
-} = useFetch(`/api/v1/declarations/${props.declarationId}`, { immediate: false }).get().json()
+} = useFetch(`/declarations/${props.declarationId}`, { immediate: false }).get().json()
 
 onMounted(async () => {
   await executeDeclarationFetch()

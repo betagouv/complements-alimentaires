@@ -31,7 +31,7 @@
 import { ref, computed } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { required, email, helpers } from "@vuelidate/validators"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { headers } from "@/utils/data-fetching"
 import { firstErrorMsg } from "@/utils/forms"
 import useToaster from "@/composables/use-toaster"
@@ -64,7 +64,7 @@ const v$ = useVuelidate(rules, state)
 
 // Request definition
 const { response, execute, isFetching } = useFetch(
-  `${import.meta.env.VITE_API_ROOT}/report-issue/`,
+  `report-issue/`,
   {
     headers: headers(),
   },

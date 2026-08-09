@@ -37,7 +37,7 @@
 <script setup>
 import { ref } from "vue"
 import { useVuelidate } from "@vuelidate/core"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { headers } from "@/utils/data-fetching"
 import { errorRequiredField, firstErrorMsg } from "@/utils/forms"
 import useToaster from "@/composables/use-toaster"
@@ -71,7 +71,7 @@ const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Request definition
 const { data, response, execute, isFetching } = useFetch(
-  `${import.meta.env.VITE_API_ROOT}/login/`,
+  `login/`,
   {
     headers: headers(),
   },
@@ -102,7 +102,7 @@ const submit = async () => {
   if (response.value.ok) {
     {
       await rootStore.fetchInitialData()
-      window.CSRF_TOKEN = data.value.csrfToken
+      localStorage.setItem("csrfToken", data.value.csrfToken)
       useToaster().addSuccessMessage("Vous êtes connecté à la plateforme Compl'Alim.")
       router.push(route.query.next || { name: "DashboardPage" })
     }

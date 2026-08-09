@@ -48,7 +48,7 @@ const initialState = ref({
   website: "",
 })
 const emit = defineEmits(["changeStep"])
-const createCompanyUrl = `${import.meta.env.VITE_API_ROOT}/companies/`
+const createCompanyUrl = `companies/`
 
 // Gère la réponse du component enfant
 const handleResponse = (data) => {

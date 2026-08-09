@@ -48,7 +48,7 @@
 
 <script setup>
 import { computed, onMounted, watch } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
@@ -85,14 +85,14 @@ const {
   data: declaration,
   execute: executeDeclarationFetch,
   isFetching: isFetchingDeclaration,
-} = makeRequest(`/api/v1/declarations/${props.declarationId}`)
+} = makeRequest(`/declarations/${props.declarationId}`)
 
 const {
   response: declarantResponse,
   data: declarant,
   execute: executeDeclarantFetch,
   isFetching: isFetchingDeclarant,
-} = makeRequest(() => `/api/v1/users/${declaration.value?.author}`)
+} = makeRequest(() => `/users/${declaration.value?.author}`)
   .get()
   .json()
 const {
@@ -100,7 +100,7 @@ const {
   data: company,
   execute: executeCompanyFetch,
   isFetching: isFetchingCompany,
-} = makeRequest(() => `/api/v1/companies/${declaration.value?.company}`)
+} = makeRequest(() => `/companies/${declaration.value?.company}`)
   .get()
   .json()
 const {
@@ -108,7 +108,7 @@ const {
   data: mandatedCompany,
   execute: executeMandatedCompanyFetch,
   isFetching: isFetchingMandatedCompany,
-} = makeRequest(() => `/api/v1/companies/${declaration.value?.mandatedCompany}`)
+} = makeRequest(() => `/companies/${declaration.value?.mandatedCompany}`)
   .get()
   .json()
 const {
@@ -116,7 +116,7 @@ const {
   data: snapshots,
   execute: executeSnapshotsFetch,
   isFetching: isFetchingSnapshots,
-} = makeRequest(() => `/api/v1/declarations/${props.declarationId}/snapshots/`)
+} = makeRequest(() => `/declarations/${props.declarationId}/snapshots/`)
   .get()
   .json()
 
@@ -125,7 +125,7 @@ const {
   execute: executeTakeForVisa,
   isFetching: isFetchingVisa,
 } = useFetch(
-  `/api/v1/declarations/${props.declarationId}/take-for-visa/`,
+  `/declarations/${props.declarationId}/take-for-visa/`,
   {
     headers: headers(),
   },

@@ -1,4 +1,4 @@
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { handleError } from "@/utils/error-handling"
@@ -10,7 +10,7 @@ export const logOut = async (
   redirectRouteName = "LandingPage",
   routeQueryParams = {}
 ) => {
-  const { response } = await useFetch(`${import.meta.env.VITE_API_ROOT}/logout/`, { headers: headers() }).post()
+  const { response } = await useFetch(`logout/`, { headers: headers() }).post()
   await handleError(response)
   if (response.value.ok) {
     await router.replace({ name: redirectRouteName, query: routeQueryParams })

@@ -26,7 +26,7 @@
 
 <script setup>
 import { ref } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { useVuelidate } from "@vuelidate/core"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
@@ -44,7 +44,7 @@ const v$ = useVuelidate({}, { message: message }, { $externalResults })
 // Request definition
 
 const { response, execute, isFetching } = useFetch(
-  `/api/v1/companies/${company.value.identifier}/claim-supervision/?identifierType=${company.value.identifierType}`,
+  `/companies/${company.value.identifier}/claim-supervision/?identifierType=${company.value.identifierType}`,
   {
     headers: headers(),
   },

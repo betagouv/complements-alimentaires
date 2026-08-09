@@ -1,5 +1,5 @@
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { onMounted } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { handleError } from "@/utils/error-handling"
@@ -13,11 +13,7 @@ const { addSuccessMessage } = useToaster()
 const rootStore = useRootStore()
 
 // Request definition
-const { data, response, execute } = useFetch(
-  `${import.meta.env.VITE_API_ROOT}/verify-email/`,
-  { headers: headers() },
-  { immediate: false }
-)
+const { data, response, execute } = useFetch(`verify-email/`, { headers: headers() }, { immediate: false })
   .post(route.query)
   .json()
 
@@ -30,7 +26,7 @@ onMounted(async () => {
   await handleError(response)
   if (response.value.ok) {
     await rootStore.fetchInitialData()
-    window.CSRF_TOKEN = data.value.csrfToken
+    localStorage.setItem("csrfToken", data.value.csrfToken)
     addSuccessMessage("Votre compte a bien été validé. Vous êtes connecté à la plate-forme Compl'Alim.")
     router.push({ name: "DashboardPage" })
   }

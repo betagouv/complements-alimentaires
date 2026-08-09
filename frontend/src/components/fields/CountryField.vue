@@ -10,10 +10,10 @@
 
 <script setup>
 import { onMounted, computed } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 
-const { data, response, execute } = useFetch(`${import.meta.env.VITE_API_ROOT}/countries/`, { immediate: false }).json()
+const { data, response, execute } = useFetch(`countries/`, { immediate: false }).json()
 const props = defineProps({
   exclude: { default: Array() },
   required: { default: false },

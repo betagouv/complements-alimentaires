@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { isoToPrettyDate, isoToPrettyTime } from "@/utils/date"
 import { handleError } from "@/utils/error-handling"
 
@@ -41,6 +41,6 @@ const dateOptions = {
   day: "numeric",
 }
 
-const { data: webinars, response } = await useFetch(`${import.meta.env.VITE_API_ROOT}/webinars`).json()
+const { data: webinars, response } = await useFetch(`webinars/`).json()
 await handleError(response)
 </script>

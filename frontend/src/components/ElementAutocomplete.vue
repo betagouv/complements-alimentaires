@@ -110,7 +110,8 @@
 import { computed, nextTick, ref, watch } from "vue"
 import { headers } from "@/utils/data-fetching"
 import { getTypeIcon, getTypeInFrench } from "@/utils/mappings"
-import { useFetch, useDebounceFn } from "@vueuse/core"
+import { useDebounceFn } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 
 const searchTerm = defineModel({
@@ -265,7 +266,7 @@ const fetchAutocompleteResults = useDebounceFn(async () => {
   }
 
   const body = { term: searchTerm.value, type: props.type, all: props.searchAll || "" }
-  const { error, data } = await useFetch(`${import.meta.env.VITE_API_ROOT}/elements/autocomplete/`, {
+  const { error, data } = await useFetch(`elements/autocomplete/`, {
     headers: headers(),
   })
     .post(body)

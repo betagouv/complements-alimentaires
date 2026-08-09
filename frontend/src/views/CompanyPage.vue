@@ -26,7 +26,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { useRoute } from "vue-router"
 import { headers } from "@/utils/data-fetching"
@@ -81,7 +81,7 @@ const contactLines = computed(() => {
 
 // Edition
 const isEditing = ref(false)
-const singleCompanyUrl = `/api/v1/companies/${route.params.id}`
+const singleCompanyUrl = `/companies/${route.params.id}`
 
 // Requête initiale
 const {

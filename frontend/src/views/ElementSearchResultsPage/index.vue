@@ -57,7 +57,7 @@
 <script setup>
 import { ref, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { headers } from "@/utils/data-fetching"
 import ResultCard from "./ResultCard"
 import ProgressSpinner from "@/components/ProgressSpinner"
@@ -90,11 +90,7 @@ const updatePage = (newPage) => (page.value = newPage + 1)
 
 // Search request
 const body = computed(() => ({ search: currentSearch.value, limit: limit, offset: offset.value }))
-const { data, response, isFetching, execute } = useFetch(
-  `${import.meta.env.VITE_API_ROOT}/search/`,
-  { headers: headers() },
-  { immediate: false }
-)
+const { data, response, isFetching, execute } = useFetch(`search/`, { headers: headers() }, { immediate: false })
   .post(body)
   .json()
 

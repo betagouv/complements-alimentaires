@@ -26,7 +26,7 @@
 
 <script setup>
 import { computed, ref } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import useToaster from "@/composables/use-toaster"
 
@@ -36,7 +36,7 @@ const opened = ref(false)
 const close = () => (opened.value = false)
 
 // Main request definition
-const url = computed(() => `/api/v1/send-new-signup-verification-email/${props.userId}`)
+const url = computed(() => `/send-new-signup-verification-email/${props.userId}`)
 const { response, execute } = useFetch(url, {
   immediate: false,
 }).json()

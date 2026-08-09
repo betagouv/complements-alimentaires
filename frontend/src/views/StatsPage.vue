@@ -142,12 +142,12 @@
 </template>
 <script setup>
 import { ref, onMounted } from "vue"
-// import { useFetch } from "@vueuse/core"
+// import { useFetch } from "@/utils/data-fetching"
 // import { handleError } from "@/utils/error-handling"
 // import ExternalLink from "@/components/ExternalLink"
 
 const activeAccordion = ref()
-// const { response, data } = useFetch(`${import.meta.env.VITE_API_ROOT}/stats/`).json()
+// const { response, data } = useFetch(`stats/`).json()
 
 // watch(response, async () => response && handleError(response))
 
