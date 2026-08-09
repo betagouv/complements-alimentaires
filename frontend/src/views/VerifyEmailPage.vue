@@ -13,7 +13,11 @@ const { addSuccessMessage } = useToaster()
 const rootStore = useRootStore()
 
 // Request definition
-const { data, response, execute } = useFetch("/api/v1/verify-email/", { headers: headers() }, { immediate: false })
+const { data, response, execute } = useFetch(
+  `${import.meta.env.VITE_API_ROOT}/verify-email/`,
+  { headers: headers() },
+  { immediate: false }
+)
   .post(route.query)
   .json()
 

@@ -5,16 +5,16 @@ from django.contrib import admin
 from django.urls import path, re_path
 
 urlpatterns = [
-    path(f"{settings.ADMIN_URL}/", admin.site.urls),
-    path("prose/", include("prose.urls")),
-    path("hijack/", include("hijack.urls")),
+    path(f"platform/{settings.ADMIN_URL}/", admin.site.urls),
+    path("platform/prose/", include("prose.urls")),
+    path("platform/hijack/", include("hijack.urls")),
 ]
-urlpatterns.append(re_path(r"", include(("web.urls", "web"), namespace="web")))
-urlpatterns.append(re_path(r"", include("web.auth-urls")))
-urlpatterns.append(re_path(r"^api/v1/", include(("api.urls", "api"), namespace="api")))
+urlpatterns.append(re_path(r"^platform/", include(("web.urls", "web"), namespace="web")))
+urlpatterns.append(re_path(r"^platform/", include("web.auth-urls")))
+urlpatterns.append(re_path(r"^platform/api/v1/", include(("api.urls", "api"), namespace="api")))
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.ENABLE_SILK:
-    urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
+    urlpatterns += [path("platform/silk/", include("silk.urls", namespace="silk"))]

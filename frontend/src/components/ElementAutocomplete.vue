@@ -265,7 +265,11 @@ const fetchAutocompleteResults = useDebounceFn(async () => {
   }
 
   const body = { term: searchTerm.value, type: props.type, all: props.searchAll || "" }
-  const { error, data } = await useFetch("/api/v1/elements/autocomplete/", { headers: headers() }).post(body).json()
+  const { error, data } = await useFetch(`${import.meta.env.VITE_API_ROOT}/elements/autocomplete/`, {
+    headers: headers(),
+  })
+    .post(body)
+    .json()
 
   if (error.value) {
     useToaster().addMessage({

@@ -27,7 +27,7 @@ import { logOut } from "@/utils/auth"
 
 defineProps({ logoText: Array })
 
-const environment = window.ENVIRONMENT
+const environment = import.meta.env.VITE_ENVIRONMENT
 const store = useRootStore()
 const navItems = computed(() => {
   const links = [

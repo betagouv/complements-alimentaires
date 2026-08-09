@@ -147,7 +147,7 @@ import { ref, onMounted } from "vue"
 // import ExternalLink from "@/components/ExternalLink"
 
 const activeAccordion = ref()
-// const { response, data } = useFetch("/api/v1/stats/").json()
+// const { response, data } = useFetch(`${import.meta.env.VITE_API_ROOT}/stats/`).json()
 
 // watch(response, async () => response && handleError(response))
 

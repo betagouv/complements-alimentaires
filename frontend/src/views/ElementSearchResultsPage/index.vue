@@ -91,7 +91,7 @@ const updatePage = (newPage) => (page.value = newPage + 1)
 // Search request
 const body = computed(() => ({ search: currentSearch.value, limit: limit, offset: offset.value }))
 const { data, response, isFetching, execute } = useFetch(
-  "/api/v1/search/",
+  `${import.meta.env.VITE_API_ROOT}/search/`,
   { headers: headers() },
   { immediate: false }
 )

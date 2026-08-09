@@ -108,7 +108,7 @@ const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Main request definition
 const { data, response, execute, isFetching } = useFetch(
-  "/api/v1/users/",
+  `${import.meta.env.VITE_API_ROOT}/users/`,
   {
     headers: headers(),
   },

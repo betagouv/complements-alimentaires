@@ -71,7 +71,7 @@ const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Request definition
 const { data, response, execute, isFetching } = useFetch(
-  "/api/v1/login/",
+  `${import.meta.env.VITE_API_ROOT}/login/`,
   {
     headers: headers(),
   },

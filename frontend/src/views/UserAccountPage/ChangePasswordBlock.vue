@@ -79,7 +79,7 @@ const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Request definition
 const { response, execute, isFetching } = useFetch(
-  "/api/v1/change-password/",
+  `${import.meta.env.VITE_API_ROOT}/change-password/`,
   {
     headers: headers(),
   },

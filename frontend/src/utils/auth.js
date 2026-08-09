@@ -10,7 +10,7 @@ export const logOut = async (
   redirectRouteName = "LandingPage",
   routeQueryParams = {}
 ) => {
-  const { response } = await useFetch("/api/v1/logout/", { headers: headers() }).post()
+  const { response } = await useFetch(`${import.meta.env.VITE_API_ROOT}/logout/`, { headers: headers() }).post()
   await handleError(response)
   if (response.value.ok) {
     await router.replace({ name: redirectRouteName, query: routeQueryParams })

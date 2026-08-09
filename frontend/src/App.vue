@@ -65,7 +65,7 @@ watch(route, (to) => {
 })
 
 const lowContrastMode = computed(() => ["IdentitySection", "HistorySection"].includes(route.name))
-const environment = window.ENVIRONMENT
+const environment = import.meta.env.VITE_ENVIRONMENT
 
 const breadcrumbLinks = computed(() => {
   if (route.meta?.breadcrumbLinks) {

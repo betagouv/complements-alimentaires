@@ -79,7 +79,9 @@ const sendEmail = async () => {
   if (v$.value.$error) {
     return
   }
-  const { response } = await useFetch("/api/v1/contact/", { headers: headers() }).post(state.value).json()
+  const { response } = await useFetch(`${import.meta.env.VITE_API_ROOT}/contact/`, { headers: headers() })
+    .post(state.value)
+    .json()
   $externalResults.value = await handleError(response)
 
   if (response.value.ok) {

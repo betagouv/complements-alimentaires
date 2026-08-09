@@ -185,7 +185,7 @@ const article = computed(() => declaration.value?.article)
 const setProposalDefaults = (newProposal) => {
   needsVisa.value = isMandatoryVisa(newProposal)
   if (newProposal === "objection") delayDays.value = 30
-  else if (newProposal === "observation") delayDays.value = window.OBSERVATION_DAYS
+  else if (newProposal === "observation") delayDays.value = Number(import.meta.env.VITE_OBSERVATION_DAYS)
   else delayDays.value = null
 }
 

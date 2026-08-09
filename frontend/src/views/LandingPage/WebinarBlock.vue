@@ -41,6 +41,6 @@ const dateOptions = {
   day: "numeric",
 }
 
-const { data: webinars, response } = await useFetch("/api/v1/webinars").json()
+const { data: webinars, response } = await useFetch(`${import.meta.env.VITE_API_ROOT}/webinars`).json()
 await handleError(response)
 </script>

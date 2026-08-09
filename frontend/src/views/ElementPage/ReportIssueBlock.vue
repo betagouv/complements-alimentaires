@@ -64,7 +64,7 @@ const v$ = useVuelidate(rules, state)
 
 // Request definition
 const { response, execute, isFetching } = useFetch(
-  "/api/v1/report-issue/",
+  `${import.meta.env.VITE_API_ROOT}/report-issue/`,
   {
     headers: headers(),
   },

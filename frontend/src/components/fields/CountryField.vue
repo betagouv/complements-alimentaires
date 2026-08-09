@@ -13,7 +13,7 @@ import { onMounted, computed } from "vue"
 import { useFetch } from "@vueuse/core"
 import { handleError } from "@/utils/error-handling"
 
-const { data, response, execute } = useFetch("/api/v1/countries/", { immediate: false }).json()
+const { data, response, execute } = useFetch(`${import.meta.env.VITE_API_ROOT}/countries/`, { immediate: false }).json()
 const props = defineProps({
   exclude: { default: Array() },
   required: { default: false },

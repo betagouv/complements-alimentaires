@@ -12,10 +12,10 @@ import { createPinia } from "pinia"
 const pinia = createPinia()
 const app = createApp(App).use(router).use(pinia).use(VueDsfr)
 
-if (window.MATOMO_ID)
+if (import.meta.env.VITE_MATOMO_ID)
   app.use(VueMatomo, {
     host: "https://stats.beta.gouv.fr",
-    siteId: window.MATOMO_ID,
+    siteId: import.meta.env.VITE_MATOMO_ID,
     trackerFileName: "matomo",
     router: router,
     requireConsent: false,
