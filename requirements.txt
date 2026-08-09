@@ -23,7 +23,7 @@ cryptography==50.0.0
 cssselect2==0.9.0
 diff_cover==10.3.0
 distlib==0.4.0
-Django==6.0.6
+Django==6.0.7
 django-anymail==15.0
 django-cors-headers==4.9.0
 django-environ==0.13.0
