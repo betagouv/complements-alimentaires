@@ -67,7 +67,6 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "rest_framework",
-    "webpack_loader",
     "prose",
     "anymail",
     "simple_history",
@@ -128,17 +127,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# Webpack
-FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "frontend/dist/")]
-WEBPACK_LOADER = {
-    "DEFAULT": {
-        "CACHE": not DEBUG,
-        "BUNDLE_DIR_NAME": "/bundles/",
-        "STATS_FILE": os.path.join(FRONTEND_DIR, "dist/webpack-stats.json"),
-        "IGNORE": [r".+\.hot-update.js", r".+\.map"],
-    }
-}
 
 ADMIN_URL = os.environ.get("ADMIN_URL", "admin")
 

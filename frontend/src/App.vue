@@ -33,7 +33,7 @@
       id="footer"
       :homeLink="{ name: 'LandingPage' }"
       homeTitle="Accueil - Compl'Alim"
-      :operatorImgSrc="require('@/assets/logo.svg')"
+      :operatorImgSrc="logoSvg"
     >
       <template v-slot:description>
         <p>Compl'Alim</p>
@@ -49,6 +49,7 @@ import { useRoute } from "vue-router"
 import AppToaster from "@/components/AppToaster.vue"
 import useToaster from "@/composables/use-toaster"
 import AppHeader from "@/components/AppHeader.vue"
+import logoSvg from "@/assets/logo.svg"
 import CaBreadcrumb from "@/components/CaBreadcrumb.vue"
 
 const route = useRoute()

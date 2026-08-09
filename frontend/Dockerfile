@@ -17,4 +17,4 @@ RUN npm ci --ignore-scripts
 
 COPY . .
 
-CMD ["npm", "run", "serve"]
+CMD ["npm", "run", "dev"]
