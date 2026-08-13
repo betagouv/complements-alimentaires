@@ -15,8 +15,18 @@ NB: the input and output of this pipeline to be API'd
 NB: maybe want to be able to return outputs for intermediary steps for debugging purposes
 """
 
+from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 import json
 from .mistral_pipeline import extract_lists, get_french_list, clean_ingredient_list, match_ingredients
+
+
+# from api.views.autocomplete
+def serialize_ingredients(ingredients):
+    from api.serializers import AutocompleteItemSerializer
+
+    serialized_results = AutocompleteItemSerializer(ingredients, many=True).data
+    camelized = CamelCaseJSONRenderer().render(serialized_results)
+    return json.loads(camelized.decode("utf-8"))
 
 
 # for now won't subclass this, since I am not sure. In the future a refacto could make it abstract and move
@@ -55,24 +65,15 @@ class ProductLabelOCRPipeline:
 
     def match_to_db(self, urls):
         cleaned_list = self.clean_list(urls)
-        # TODO: attempt match to db directly before resorting to AI tools?
         matched_list = match_ingredients(cleaned_list)
-        self.__log("match_to_db", f"Matched: {json.dumps(matched_list)}")
-        # TODO output: a dict of ingredient names as written in label with suggestions of ing objects
-        """
-        ingredient_options = {}
-        for names, label_text in matched_list:
-            ingredient_options[label_text] = []
-            for ing_name in names:
-                ing = db_search(ing_name)
-                if ing:
-                    ingredient_options[label_text].append(ing)
-                else:
-                    print(f"Proposed ingredient '{ing_name}' doesn't exist in db")
-                # if multiple matches also print/throw error
-        return ingredient_options
-        """
+        self.__log("match_to_db", f"Matched: {json.dumps(self.__serialize_results(matched_list), ensure_ascii=False)}")
         return matched_list
+
+    def __serialize_results(self, results_dict):
+        serialized = {}
+        for key, value in results_dict.items():
+            serialized[key] = serialize_ingredients(value)
+        return serialized
 
     def __reset_debugger(self):
         self.debugger = []
@@ -89,6 +90,7 @@ class ProductLabelOCRPipeline:
     # more generic, more expandable, still aligned with current work
     def extract_ingredients(self, urls):
         self.__reset_debugger()
+        # TODO: output time taken as well?
         return self.__match_to_db(self.clean_list(self.extract_french_list(urls)))
 
     def __str__(self):

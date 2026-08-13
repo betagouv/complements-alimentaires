@@ -35,7 +35,6 @@ def extract_lists(url):
     response_dict = json.loads(response.model_dump_json())
     # of interest: response[pages][0][confidence_scores][average_page_confidence_score/minimum_page_confidence_score]
     # response[usage_info]
-    # TODO: fix encodings of accents
     return json.loads(response_dict["document_annotation"])  # ["ingredients_lists"]
 
 
