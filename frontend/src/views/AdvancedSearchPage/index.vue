@@ -366,7 +366,7 @@ const apiQueryParams = computed(() => {
   return queryParams.replace(/&+/g, "&").replace(/&$/, "")
 })
 const apiUrl = computed(() => `/declarations${apiQueryParams.value}`)
-const excelUrl = computed(() => `/declarations-export.xlsx${apiQueryParams.value}`)
+const excelUrl = computed(() => `${import.meta.env.VITE_API_ROOT}/declarations-export.xlsx${apiQueryParams.value}`)
 
 const { response, data, isFetching, execute } = useFetch(apiUrl, { headers: { Accept: "application/json" } })
   .get()

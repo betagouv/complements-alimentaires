@@ -368,7 +368,9 @@ const updateDoseStrings = (index, newValue) => {
 
 // Export Excel
 
-const excelUrl = computed(() => `/control/declarations-export.xlsx?${commonApiParams.value}`)
+const excelUrl = computed(
+  () => `${import.meta.env.VITE_API_ROOT}/control/declarations-export.xlsx?${commonApiParams.value}`
+)
 </script>
 
 <style scoped>

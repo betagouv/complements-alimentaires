@@ -153,7 +153,9 @@ const fetchSearchResults = async () => {
 
 // Export Excel
 
-const excelUrl = computed(() => `/control/companies-export.xlsx?${commonApiParams.value}`)
+const excelUrl = computed(
+  () => `${import.meta.env.VITE_API_ROOT}/control/companies-export.xlsx?${commonApiParams.value}`
+)
 
 // Mise à jour des paramètres
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } })
