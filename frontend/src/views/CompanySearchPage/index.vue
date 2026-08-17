@@ -72,8 +72,8 @@
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
-    <div v-else-if="data?.results?.length">
-      <ControlCompanyTable :data="data" @sort="updateOrdering" />
+    <div>
+      <ControlCompanyTable :key="renderKey" :data="data" @sort="updateOrdering" />
       <DsfrPagination
         v-if="showPagination"
         @update:currentPage="updatePage"
@@ -82,8 +82,9 @@
         :truncLimit="5"
       />
     </div>
-    <div v-else class="border p-4 rounded mb-4 bg-gray-50">
+    <div v-if="!data?.results?.length" class="border p-4 rounded mb-4 bg-gray-50">
       <p class="mb-0">Aucune entreprise trouvée avec les paramètres spécifiés</p>
+      <DsfrButton @click="resetFilters" label="Réinitialiser les filtres" tertiary size="sm" />
     </div>
   </div>
 </template>
@@ -164,6 +165,18 @@ const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 const updateOrdering = (sortValue) => updateQuery({ triage: sortValue || "-creationDate" })
 
 const search = () => updateQuery({ recherche: searchTerm.value })
+
+// Ceci est un fix temporaire pour débloquer un problème concernant les filtres dans les entêtes
+// du tableau - similaire à celui fait dans DeclarationsTableSection. Les filtres doivent être
+// remis à vide à la main car il ne réagissent pas encore au changement d'URL
+const renderKey = ref(0)
+const resetFilters = async () => {
+  departments.value = []
+  roles.value = []
+  searchTerm.value = ""
+  await router.push({ query: { page: 1 } })
+  renderKey.value++
+}
 
 watch(route, fetchSearchResults)
 watch(departments, () => updateQuery({ departments: departments.value.join(",") }))

@@ -131,7 +131,7 @@
       <ProgressSpinner />
     </div>
     <div>
-      <ControlDeclarationsTable :key="tableKey" :data="data" @sort="updateOrdering" @filter="updateFiltering" />
+      <ControlDeclarationsTable :key="renderKey" :data="data" @sort="updateOrdering" @filter="updateFiltering" />
       <DsfrPagination
         v-if="showPagination"
         @update:currentPage="updatePage"
@@ -258,11 +258,11 @@ const clearSearch = () => (searchTerm.value = "")
 // Ceci est un fix temporaire pour débloquer un problème concernant les filtres dans les entêtes
 // du tableau. Vu que ControlDeclarationsTable emit les events "sort" et "filter", il n'y a pas
 // moyen aujourd'hui de le forcer à enlever des filtres depuis l'extérieur, autre que faire
-// un re-render. Le tableKey permet de forcer ce rendu à nouveau.
-const tableKey = ref(0)
+// un re-render. Le renderKey permet de forcer ce rendu à nouveau.
+const renderKey = ref(0)
 const resetFilters = async () => {
   await router.push({ query: { page: 1 } })
-  tableKey.value++
+  renderKey.value++
 }
 
 watch(
