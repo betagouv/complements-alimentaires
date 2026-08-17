@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "host": "vite --host",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -47,16 +48,25 @@
     ],
     "parser": "vue-eslint-parser",
     "parserOptions": {},
-    "plugins": ["prettier"],
+    "plugins": [
+      "prettier"
+    ],
     "rules": {
       "vue/no-mutating-props": "off",
       "vue/multi-word-component-names": "off",
       "vue/no-v-text-v-html-on-component": "off",
       "vue/no-multiple-template-root": "off",
       "no-unused-vars": 1,
-      "prettier/prettier": ["error", { "semi": false }]
+      "prettier/prettier": [
+        "error",
+        {
+          "semi": false
+        }
+      ]
     },
-    "ignorePatterns": ["**/web/static/js/**.*"]
+    "ignorePatterns": [
+      "**/web/static/js/**.*"
+    ]
   },
   "browserslist": [
     ">0.2%",
