@@ -142,7 +142,12 @@ onMounted(async () => {
   const fetchSnapshots = showHistory ? executeSnapshotsFetch : () => Promise.resolve
   const handleSnapshotsError = showHistory ? () => handleError(snapshotsResponse) : () => Promise.resolve
 
-  await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), fetchMandatedCompany(), fetchSnapshots()])
+  const promises = [executeCompanyFetch(), fetchMandatedCompany(), fetchSnapshots()]
+
+  // Certaines déclarations peuvent ne pas avoir un déclarant·e (par exemple suite aux suppressions de compte)
+  if (declaration.value?.author) promises.push(executeDeclarantFetch())
+
+  await Promise.all(promises)
   await Promise.all([
     handleError(declarantResponse),
     handleError(companyResponse),
