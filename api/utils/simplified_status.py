@@ -74,11 +74,11 @@ class SimplifiedStatusHelper:
             elif status_value == cls.ONGOING:
                 conditions |= Q(**{status_in_key: ongoing_instruction}) & ~Q(**{article_in_key: passthrough_articles})
             elif status_value == cls.REFUSED:
-                conditions |= Q(**{status_in_key: Declaration.DeclarationStatus.REJECTED})
+                conditions |= Q(**{status_key: Declaration.DeclarationStatus.REJECTED})
             elif status_value == cls.WITHDRAWN:
-                conditions |= Q(**{status_in_key: Declaration.DeclarationStatus.WITHDRAWN})
+                conditions |= Q(**{status_key: Declaration.DeclarationStatus.WITHDRAWN})
             elif status_value == cls.INTERRUPTED:
-                conditions |= Q(**{status_in_key: Declaration.DeclarationStatus.ABANDONED})
+                conditions |= Q(**{status_key: Declaration.DeclarationStatus.ABANDONED})
 
         return conditions
 
