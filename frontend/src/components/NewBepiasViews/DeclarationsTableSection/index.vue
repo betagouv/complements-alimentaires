@@ -130,8 +130,8 @@
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
-    <div v-else-if="data?.results?.length">
-      <ControlDeclarationsTable :data="data" @sort="updateOrdering" @filter="updateFiltering" />
+    <div>
+      <ControlDeclarationsTable :key="renderKey" :data="data" @sort="updateOrdering" @filter="updateFiltering" />
       <DsfrPagination
         v-if="showPagination"
         @update:currentPage="updatePage"
@@ -140,8 +140,9 @@
         :truncLimit="5"
       />
     </div>
-    <div v-else class="border p-4 rounded mb-4 bg-gray-50">
-      <p class="mb-0">Aucune déclaration trouvée avec les paramètres spécifiés</p>
+    <div v-if="!data?.results?.length" class="border p-4 rounded mb-4 bg-gray-50">
+      <p>Aucune déclaration trouvée avec les paramètres spécifiés.</p>
+      <DsfrButton @click="resetFilters" label="Réinitialiser les filtres" tertiary size="sm" />
     </div>
   </div>
 </template>
@@ -253,6 +254,16 @@ const updateDoses = (newValue) => updateQuery({ doses: encodeURIComponent(JSON.s
 const updateSubmissionDateAfter = (newDate) => updateQuery({ aPartirDe: newDate })
 
 const clearSearch = () => (searchTerm.value = "")
+
+// Ceci est un fix temporaire pour débloquer un problème concernant les filtres dans les entêtes
+// du tableau. Vu que ControlDeclarationsTable emit les events "sort" et "filter", il n'y a pas
+// moyen aujourd'hui de le forcer à enlever des filtres depuis l'extérieur, autre que faire
+// un re-render. Le renderKey permet de forcer ce rendu à nouveau.
+const renderKey = ref(0)
+const resetFilters = async () => {
+  await router.push({ query: { page: 1 } })
+  renderKey.value++
+}
 
 watch(
   [
