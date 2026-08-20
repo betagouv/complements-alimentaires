@@ -1,5 +1,6 @@
 from django.views.generic import FormView
 from django.http import HttpResponseRedirect
+from django.utils import timezone
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 from ..forms import RegisterUserForm
 
@@ -29,11 +30,15 @@ class ProConnectBackend(OIDCAuthenticationBackend):
     def create_user(self, claims):
         user = super().create_user(claims)
 
-        print(user.__class__)
-        print(claims)
         user.first_name = claims.get("given_name", "")
         user.last_name = claims.get("usual_name", "")
-        # TODO: uid/sub, siret, roles ?
+        user.last_login_proconnect = timezone.now()
+        user.save()
+
+        return user
+
+    def update_user(self, user, claims):
+        user.last_login_proconnect = timezone.now()
         user.save()
 
         return user

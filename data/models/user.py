@@ -82,6 +82,8 @@ class User(PermissionsMixin, AutoValidable, Verifiable, Deactivable, AbstractBas
     )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
+    last_login_proconnect = models.DateTimeField("Dernière connexion avec ProConnect", blank=True, null=True)
+
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["email"]
