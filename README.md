@@ -153,7 +153,6 @@ Pour apprendre plus de ProConnect, voir la documentation [Fournisseur Service](h
 ```
 OIDC_RP_CLIENT_ID=
 OIDC_RP_CLIENT_SECRET=
-OIDC_RP_SIGN_ALGO=RS256
 OIDC_OP_JWKS_ENDPOINT=<ProConnect URL d'integration>/api/v2/jwks
 OIDC_OP_AUTHORIZATION_ENDPOINT=<ProConnect URL d'integration>/api/v2/authorize
 OIDC_OP_TOKEN_ENDPOINT=<ProConnect URL d'integration>/api/v2/token
