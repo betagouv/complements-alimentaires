@@ -1,28 +1,32 @@
 <template>
-  <form :action="`${backendRoot}/oidc/authenticate`" class="fr-connect-group flex flex-col items-center" method="get">
-    <p>
-      ProConnect vous permet d’accéder à de nombreux services en ligne en utilisant l’un de vos comptes professionnels
-      existants.
-    </p>
-    <button class="fr-connect" type="submit">
-      <span class="fr-connect__login">S’identifier avec</span>
-      <span class="fr-connect__brand">ProConnect</span>
-    </button>
-    <p>
-      <a
-        href="https://www.proconnect.gouv.fr/"
-        rel="noopener noreferrer"
-        target="_blank"
-        title="Qu’est-ce que ProConnect ? - nouvelle fenêtre"
-      >
-        Qu’est-ce que ProConnect ?
-      </a>
-    </p>
-  </form>
+  <div v-if="displayProConnect">
+    <form :action="`${backendRoot}/oidc/authenticate`" class="fr-connect-group flex flex-col items-center" method="get">
+      <p>
+        ProConnect vous permet d’accéder à de nombreux services en ligne en utilisant l’un de vos comptes professionnels
+        existants.
+      </p>
+      <button class="fr-connect" type="submit">
+        <span class="fr-connect__login">S’identifier avec</span>
+        <span class="fr-connect__brand">ProConnect</span>
+      </button>
+      <p>
+        <a
+          href="https://www.proconnect.gouv.fr/"
+          rel="noopener noreferrer"
+          target="_blank"
+          title="Qu’est-ce que ProConnect ? - nouvelle fenêtre"
+        >
+          Qu’est-ce que ProConnect ?
+        </a>
+      </p>
+    </form>
+    <hr class="mt-4" />
+  </div>
 </template>
 
 <script setup>
 const backendRoot = import.meta.env.VITE_BACKEND_ROOT
+const displayProConnect = import.meta.env.VITE_ENABLE_PROCONNECT === "True"
 </script>
 
 <style scoped>

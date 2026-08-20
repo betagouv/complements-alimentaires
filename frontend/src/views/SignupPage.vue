@@ -2,7 +2,6 @@
   <SingleItemWrapper>
     <h1>Se créer un compte</h1>
     <ProConnect />
-    <hr class="mt-4" />
     <FormWrapper :externalResults="$externalResults">
       <p class="fr-hint-text">Sauf mention contraire, tous les champs sont obligatoires.</p>
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'lastName')">

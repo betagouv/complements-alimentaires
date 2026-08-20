@@ -2,7 +2,6 @@
   <SingleItemWrapper>
     <h1>Se connecter</h1>
     <ProConnect />
-    <hr class="mt-4" />
     <FormWrapper :externalResults="$externalResults">
       <SendNewSignupVerificationEmail v-if="showSendNewConfirmationMail" :userId="userIdForNewConfirmationMail" />
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'username')">
