@@ -162,6 +162,8 @@ ALLOWED_HOSTS=127.0.0.1
 LOGIN_REDIRECT_URL=http://127.0.0.1:<port du front>/
 ```
 
+`LOGIN_REDIRECT_URL` est que nécessaire en locale pour gérer les ports entre le front et le back.
+
 #### Créer les différents modèles Django dans la base de données
 
 ```
