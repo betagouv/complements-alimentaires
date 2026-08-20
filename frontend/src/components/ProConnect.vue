@@ -1,5 +1,5 @@
 <template>
-  <form action="/oidc/authenticate" class="fr-connect-group flex flex-col items-center" method="get">
+  <form :action="`${backendRoot}/oidc/authenticate`" class="fr-connect-group flex flex-col items-center" method="get">
     <p>
       ProConnect vous permet d’accéder à de nombreux services en ligne en utilisant l’un de vos comptes professionnels
       existants.
@@ -21,7 +21,9 @@
   </form>
 </template>
 
-<script setup></script>
+<script setup>
+const backendRoot = import.meta.env.VITE_BACKEND_ROOT
+</script>
 
 <style scoped>
 .fr-connect {

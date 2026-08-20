@@ -160,6 +160,7 @@ OIDC_OP_TOKEN_ENDPOINT=<ProConnect URL d'integration>/api/v2/token
 OIDC_OP_USER_ENDPOINT=<ProConnect URL d'integration>/api/v2/userinfo
 HOSTNAME=127.0.0.1:8000
 ALLOWED_HOSTS=127.0.0.1
+LOGIN_REDIRECT_URL=http://127.0.0.1:<port du front>/
 ```
 
 #### Créer les différents modèles Django dans la base de données
