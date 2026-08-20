@@ -1,3 +1,4 @@
+from .celery import app
 import enum
 from django.conf import settings
 
@@ -31,6 +32,7 @@ class EmailTemplateID(enum.Enum):
     DECLARATION_EXPIRED = 9
 
 
+@app.task
 def send_sib_template(template_id, parameters, to_email, to_name):
     """
     Permet d'envoyer un email transactionnel précédemment défini dans Brevo.
