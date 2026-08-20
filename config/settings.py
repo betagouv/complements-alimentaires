@@ -379,33 +379,28 @@ SECURE_CSP = {
         "*.gouv.fr",
         "*.services.clever-cloud.com",
         "compl-alim-metabase.cleverapps.io",
-    ]
-    + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    ],
     "script-src": [
         CSP.SELF,
         CSP.NONCE,
         "*.gouv.fr",
-    ]
-    + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    ],
     "style-src": [
         CSP.SELF,
         CSP.NONCE,
-    ]
-    + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    ],
     "img-src": [
         CSP.SELF,
         "*.services.clever-cloud.com",
         "data:",
-    ]
-    + (["http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    ],
     "connect-src": [
         CSP.SELF,
         "*.gouv.fr",
         "https://api.iconify.design",
         "https://api.unisvg.com",
         "https://api.simplesvg.com",
-    ]
-    + (["ws:", "http://127.0.0.1:8080", "http://localhost:8080"] if DEBUG else []),
+    ],
 }
 
 # CORS
