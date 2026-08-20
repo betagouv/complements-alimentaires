@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from data.choices import CountryChoices
+from data.choices import EuCountryChoices
 from data.factories import CompanyFactory, ControlRoleFactory
 from data.models import ActivityChoices
 
@@ -96,12 +96,12 @@ class TestCompanyControllers(APITestCase):
         Il est possible de filtrer par département
         """
         ControlRoleFactory(user=authenticate.user)
-        acme = CompanyFactory(social_name="Acme", postal_code="69003", country=CountryChoices.FRANCE)
+        acme = CompanyFactory(social_name="Acme", postal_code="69003", country=EuCountryChoices.FRANCE)
         dunder_mifflin = CompanyFactory(
-            social_name="Dunder Mifflin", postal_code="69003", country=CountryChoices.AUSTRIA
+            social_name="Dunder Mifflin", postal_code="69003", country=EuCountryChoices.AUSTRIA
         )
-        wonka = CompanyFactory(social_name="Wonka", postal_code="98733", country=CountryChoices.FRANCE)
-        monsters = CompanyFactory(social_name="Monsters Inc.", postal_code="20200", country=CountryChoices.FRANCE)
+        wonka = CompanyFactory(social_name="Wonka", postal_code="98733", country=EuCountryChoices.FRANCE)
+        monsters = CompanyFactory(social_name="Monsters Inc.", postal_code="20200", country=EuCountryChoices.FRANCE)
 
         # Entreprises étrangères
         response = self.client.get(reverse("api:list_control_companies") + "?departments=99", format="json")

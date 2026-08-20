@@ -50,7 +50,7 @@
 <script setup>
 import { computed, ref } from "vue"
 import useToaster from "@/composables/use-toaster"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { useRoute } from "vue-router"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
@@ -67,7 +67,7 @@ const {
   data: company,
   execute,
   response,
-} = useFetch(`/api/v1/companies/${route.params.id}`, { headers: headers() }, { immediate: false }).json()
+} = useFetch(`/companies/${route.params.id}`, { headers: headers() }, { immediate: false }).json()
 
 onMounted(async () => {
   await execute()
@@ -76,14 +76,14 @@ onMounted(async () => {
 
 const addMandate = (siret, vat) => {
   const payload = { siret, vat }
-  const url = `/api/v1/companies/${route.params.id}/add-mandated-company/`
+  const url = `/companies/${route.params.id}/add-mandated-company/`
   const successMessage = "L'entreprise mandatée a bien été ajoutée"
   editMandate(payload, url, successMessage)
 }
 
 const removeMandate = (id) => {
   const payload = { id }
-  const url = `/api/v1/companies/${route.params.id}/remove-mandated-company/`
+  const url = `/companies/${route.params.id}/remove-mandated-company/`
   const successMessage = `L'entreprise mandatée a bien été supprimée. Elle ne pourra plus déclarer au nom de ${company.value.socialName}.`
   editMandate(payload, url, successMessage)
 }

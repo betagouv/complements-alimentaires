@@ -100,7 +100,7 @@ import { ref, computed, watch } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { helpers, required } from "@vuelidate/validators"
 import { errorRequiredField, errorInteger, firstErrorMsg } from "@/utils/forms"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { headers } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { handleError } from "@/utils/error-handling"
@@ -185,7 +185,7 @@ const article = computed(() => declaration.value?.article)
 const setProposalDefaults = (newProposal) => {
   needsVisa.value = isMandatoryVisa(newProposal)
   if (newProposal === "objection") delayDays.value = 30
-  else if (newProposal === "observation") delayDays.value = window.OBSERVATION_DAYS
+  else if (newProposal === "observation") delayDays.value = Number(import.meta.env.VITE_OBSERVATION_DAYS)
   else delayDays.value = null
 }
 
@@ -210,7 +210,7 @@ const url = computed(() => {
   }
   const visaPath = needsVisa.value ? "with-visa" : "no-visa"
   const urlPath = `${actions[proposal.value]}-${visaPath}`
-  const url = `/api/v1/declarations/${declaration.value?.id}/${urlPath}/`
+  const url = `/declarations/${declaration.value?.id}/${urlPath}/`
   if (automaticallyApproveVisa.value) return `${url}?auto-validate=true`
   return url
 })

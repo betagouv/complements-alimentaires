@@ -25,7 +25,8 @@
 
 <script setup>
 import { ref } from "vue"
-import { useFetch, useDebounceFn } from "@vueuse/core"
+import { useDebounceFn } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 
@@ -39,7 +40,7 @@ const saveInstructionComment = async () => saveComment({ privateNotesInstruction
 const saveVisaComment = async () => saveComment({ privateNotesVisa: privateNotesVisa.value })
 
 const saveComment = useDebounceFn(async (payload) => {
-  const url = `/api/v1/declarations/${declaration.value?.id}`
+  const url = `/declarations/${declaration.value?.id}`
   const { response, data } = await useFetch(() => url, { headers: headers() })
     .patch(payload)
     .json()

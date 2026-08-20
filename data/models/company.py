@@ -7,7 +7,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 from data.behaviours import AutoValidable, Deactivable, Historisable, TimeStampable
-from data.choices import CountryChoices
+from data.choices import EuCountryChoices, CountryChoices
 from data.fields import MultipleChoiceField
 from data.models.teleicare_history.ica_etablissement import IcaEtablissement
 from data.validators import validate_siret, validate_vat
@@ -43,7 +43,7 @@ class Address(models.Model):
 
     @property
     def department(self):
-        if self.country != CountryChoices.FRANCE:
+        if self.country != EuCountryChoices.FRANCE:
             return None
 
         if self.postal_code[:2] == "97" or self.postal_code[:2] == "98":

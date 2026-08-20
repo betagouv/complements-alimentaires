@@ -38,7 +38,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
@@ -79,7 +79,7 @@ const sendEmail = async () => {
   if (v$.value.$error) {
     return
   }
-  const { response } = await useFetch("/api/v1/contact/", { headers: headers() }).post(state.value).json()
+  const { response } = await useFetch(`contact/`, { headers: headers() }).post(state.value).json()
   $externalResults.value = await handleError(response)
 
   if (response.value.ok) {

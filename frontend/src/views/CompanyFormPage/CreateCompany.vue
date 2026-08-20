@@ -48,7 +48,7 @@ const initialState = ref({
   website: "",
 })
 const emit = defineEmits(["changeStep"])
-const createCompanyUrl = "/api/v1/companies/"
+const createCompanyUrl = `companies/`
 
 // Gère la réponse du component enfant
 const handleResponse = (data) => {

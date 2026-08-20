@@ -38,7 +38,7 @@
 <script setup>
 import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { getApiType } from "@/utils/mappings"
 import { getElementUrlComponent } from "@/utils/elements"
 import ElementLink from "./ElementLink"
@@ -53,9 +53,7 @@ const recentAction = computed(() => {
 })
 
 const url = computed(
-  () =>
-    recentAction.value.type &&
-    `/api/v1/declared-elements/${getApiType(recentAction.value.type)}/${recentAction.value.id}`
+  () => recentAction.value.type && `/declared-elements/${getApiType(recentAction.value.type)}/${recentAction.value.id}`
 )
 const { data, execute } = useFetch(url, { immediate: false }).get().json()
 

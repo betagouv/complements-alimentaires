@@ -17,3 +17,7 @@ class IngredientType(models.IntegerChoices):
     AROMA = 3, "Arôme"  # TODO les arômes devraient peut-être disparaître à terme car tous non actifs
     ACTIVE_INGREDIENT = 4, "Autre ingrédient actif"
     NON_ACTIVE_INGREDIENT = 5, "Autre ingrédient"
+
+    @classmethod
+    def active_types(cls):
+        return [cls.FORM_OF_SUPPLY, cls.ACTIVE_INGREDIENT]

@@ -5,7 +5,7 @@ import factory
 import faker
 from phonenumber_field.phonenumber import PhoneNumber
 
-from data.choices import CountryChoices
+from data.choices import EuCountryChoices
 from data.models.company import ActivityChoices, Company, DeclarantRole, EtablissementToCompanyRelation, SupervisorRole
 from data.utils.string_utils import make_random_str
 
@@ -17,11 +17,11 @@ def _make_siret() -> str:
 
 
 def _make_vat() -> str:
-    return random.choice(CountryChoices.values) + make_random_str(size=12, chars=string.digits)
+    return random.choice(EuCountryChoices.values) + make_random_str(size=12, chars=string.digits)
 
 
 def _make_country_code() -> str:
-    return random.choice(list(CountryChoices))
+    return random.choice(list(EuCountryChoices))
 
 
 def _make_activities() -> list[str]:

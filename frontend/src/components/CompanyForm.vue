@@ -96,7 +96,7 @@ import { allActivities } from "@/utils/mappings"
 import { errorRequiredField, errorRequiredEmail, errorRequiredPhoneNumber } from "@/utils/forms"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 
 // Props & emits
 const props = defineProps({ initialState: Object, url: String, method: String, showCancelButton: Boolean })

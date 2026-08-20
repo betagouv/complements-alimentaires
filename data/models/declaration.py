@@ -15,7 +15,7 @@ from dateutil.relativedelta import relativedelta
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 
 from data.behaviours import Historisable, TimeStampable
-from data.choices import AuthorizationModes, CountryChoices, FrAuthorizationReasons
+from data.choices import AuthorizationModes, EuCountryChoices, FrAuthorizationReasons
 from data.models import (
     Company,
     Condition,
@@ -34,6 +34,7 @@ from data.models import (
     VisaRole,
 )
 from data.models.ingredient_status import IngredientStatus
+from data.models.ingredient_type import IngredientType
 from data.models.substance import SubstanceMaxQuantityPerPopulationRelation
 
 logger = logging.getLogger(__name__)
@@ -144,7 +145,7 @@ class Declaration(Historisable, TimeStampable):
     postal_code = models.CharField("code postal", blank=True, max_length=10)
     city = models.TextField("ville ou commune", blank=True)
     cedex = models.TextField("CEDEX", blank=True)
-    country = models.TextField("pays", blank=True, choices=CountryChoices)
+    country = models.TextField("pays", blank=True, choices=EuCountryChoices)
 
     name = models.TextField(blank=True, verbose_name="nom du produit")
     brand = models.TextField(blank=True, verbose_name="marque")
@@ -506,6 +507,24 @@ class Declaration(Historisable, TimeStampable):
         return self.computed_substances.filter(substance__is_risky=True)
 
     @property
+    def active_ingredient_computed_substances(self):
+        """Computed substances qui proviennent d'une source de type FORM_OF_SUPPLY ou ACTIVE_INGREDIENT."""
+        return self.computed_substances.filter(
+            substance__ingredientsubstancerelation__ingredient__ingredient_type__in=IngredientType.active_types(),
+            substance__ingredientsubstancerelation__ingredient__declaredingredient__declaration=self,
+        ).distinct()
+
+    @property
+    def active_declared_ingredients(self):
+        """Ingrédients déclarés de type FORM_OF_SUPPLY ou ACTIVE_INGREDIENT."""
+        return self.declared_ingredients.filter(ingredient__ingredient_type__in=IngredientType.active_types())
+
+    @property
+    def inactive_declared_ingredients(self):
+        """Ingrédients déclarés qui ne sont pas de type FORM_OF_SUPPLY ou ACTIVE_INGREDIENT."""
+        return self.declared_ingredients.exclude(ingredient__ingredient_type__in=IngredientType.active_types())
+
+    @property
     def has_risky_ingredients(self):
         return (
             self.risky_ingredients.exists()
@@ -708,7 +727,7 @@ class Addable(models.Model):
     )
     fr_details = models.CharField("information additionnelle sur l'autorisation en France", blank=True)
     eu_reference_country = models.CharField(
-        "pays de source réglementaire", blank=True, choices=CountryChoices, default=CountryChoices.FRANCE
+        "pays de source réglementaire", blank=True, choices=EuCountryChoices, default=EuCountryChoices.FRANCE
     )
     eu_legal_source = models.TextField("référence du texte réglementaire d'un autre pays européen", blank=True)
     eu_details = models.TextField(

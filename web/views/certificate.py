@@ -150,6 +150,7 @@ class CertificateView(PdfView):
                 )
 
         return {
+            "active_ingredient_computed_substances": declaration.active_ingredient_computed_substances,
             "date": date,
             "last_submission_date": last_submission_date,
             "include_recipient_address": declaration.status == Declaration.DeclarationStatus.REJECTED,

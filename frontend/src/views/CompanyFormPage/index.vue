@@ -48,8 +48,9 @@ const mapping = ref([
 
 // Helpers -----------------------------------------------------------------------------------------------------------
 
-// Récupère un component à partir de son nom
-const stepComponentFromName = (name) => defineAsyncComponent(() => import(`./${name}`))
+// Vite nécessite des chemins d'import analysables statiquement ; le glob pré-enregistre tous les modules pour permettre la résolution par nom à l'exécution
+const stepModules = import.meta.glob("./*.vue")
+const stepComponentFromName = (name) => defineAsyncComponent(stepModules[`./${name}.vue`])
 
 // Passe à la prochaine étape, en changeant (ou pas) son contenu (nom de l'étape et/ou composant affiché dynamiquement)
 const handleChangeStepEvent = (event) => {

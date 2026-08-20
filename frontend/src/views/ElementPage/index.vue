@@ -196,7 +196,7 @@ import {
   ingredientStatuses,
 } from "@/utils/mappings"
 import { useRoute, useRouter } from "vue-router"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { useRootStore } from "@/stores/root"
 import ElementColumn from "./ElementColumn.vue"
@@ -282,7 +282,7 @@ const historyDataDedup = computed(() => Array.from(new Set(historyData.value.map
 const historyHeaders = ["Date de changement", "Champs modifiés", "Détail"]
 
 // TODO: remove background
-const url = computed(() => `/api/v1/${getApiType(type.value)}s/${elementId.value}?history=true`)
+const url = computed(() => `/${getApiType(type.value)}s/${elementId.value}?history=true`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
 const getElementFromApi = async () => {

@@ -435,7 +435,7 @@ import { getApiType, ingredientStatuses } from "@/utils/mappings"
 import { useRootStore } from "@/stores/root"
 import { storeToRefs } from "pinia"
 import { useRouter } from "vue-router"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import { firstErrorMsg, errorRequiredField, errorMaxStringLength } from "@/utils/forms"
@@ -497,7 +497,7 @@ const saveElement = async () => {
     return
   }
 
-  const url = `/api/v1/${apiType.value}s/`
+  const url = `/${apiType.value}s/`
   const payload = JSON.parse(JSON.stringify(state.value))
   if (payload.substances?.length) {
     payload.substances = payload.substances.map((substance) => substance.id)
@@ -729,7 +729,7 @@ const deleteActions = [
   {
     label: "Supprimer l'ingrédient",
     onClick: async () => {
-      const url = `/api/v1/${apiType.value}s/`
+      const url = `/${apiType.value}s/`
       const { response } = await useFetch(url + elementId.value, { headers: headers() })
         .patch({ isObsolete: true })
         .json()
