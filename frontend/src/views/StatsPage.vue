@@ -94,7 +94,7 @@
           ></iframe>
         </DsfrAccordion>
         <!-- Les 2 graphes suivants ne sont plus affichés en attendant la résolution de cette issue https://github.com/GouvernementFR/dsfr-chart/issues/65 -->
-        <!-- <DsfrAccordion id="accordion-5" title="Utilisation de la base de données ingrédient">
+        <DsfrAccordion id="accordion-5" title="Utilisation de la base de données ingrédient">
           <p>
             Nous mettons à disposition une base de données ingrédients avec leur réglementation d'usage mis à jour
             régulièrement. Notre hypothèse est qu'une consultation élevée de cette base de donnée aura pour conséquence
@@ -105,12 +105,12 @@
             v-if="elementVisitChartInfo"
             :x="elementVisitChartInfo.x"
             :y="elementVisitChartInfo.y"
-            name='[" "]'
+            name='["Nombre de visites"]'
             unit-tooltip="visites"
             selected-palette="default"
           ></bar-chart>
-        </DsfrAccordion> -->
-        <!-- <DsfrAccordion
+        </DsfrAccordion>
+        <DsfrAccordion
           id="accordion-6"
           title="Utilisation de la base de données des déclarations de compléments alimentaires"
         >
@@ -125,55 +125,55 @@
             v-if="declarationVisitChartInfo"
             :x="declarationVisitChartInfo.x"
             :y="declarationVisitChartInfo.y"
-            name='[" "]'
+            name='["Nombre de téléchargements"]'
             selected-palette="default"
             unit-tooltip="téléchargements"
           ></bar-chart>
-          <p>
+          <p class="mt-4">
             <ExternalLink
               href="https://www.data.gouv.fr/fr/datasets/declarations-de-complements-alimentaires"
               text="Le jeu de données data.gouv.fr publié par Compl'Alim"
             />
           </p>
-        </DsfrAccordion> -->
+        </DsfrAccordion>
       </DsfrAccordionsGroup>
     </div>
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from "vue"
-// import { useFetch } from "@/utils/data-fetching"
-// import { handleError } from "@/utils/error-handling"
-// import ExternalLink from "@/components/ExternalLink"
+import { ref, onMounted, watch, computed } from "vue"
+import { useFetch } from "@/utils/data-fetching"
+import { handleError } from "@/utils/error-handling"
+import ExternalLink from "@/components/ExternalLink"
 
 const activeAccordion = ref()
-// const { response, data } = useFetch(`stats/`).json()
+const { response, data } = useFetch(`stats/`).json()
 
-// watch(response, async () => response && handleError(response))
+watch(response, async () => response && handleError(response))
 
-// const formatReportData = (reportData, xKey) => {
-//   const keys = (Object.keys(reportData) || []).map(formatMonthLabel)
-//   const values = Object.values(reportData).map((x) => x[xKey])
-//   const x = JSON.stringify([keys])
-//   const y = JSON.stringify([values])
-//   return { x, y }
-// }
+const formatReportData = (reportData, xKey) => {
+  const keys = (Object.keys(reportData) || []).map(formatMonthLabel)
+  const values = Object.values(reportData).map((x) => x[xKey])
+  const x = JSON.stringify([keys])
+  const y = JSON.stringify([values])
+  return { x, y }
+}
 
-// const elementVisitChartInfo = computed(() => {
-//   if (!data?.value?.elementVisitStats?.reportData) return null
-//   return formatReportData(data.value.elementVisitStats.reportData, "nbVisits")
-// })
+const elementVisitChartInfo = computed(() => {
+  if (!data?.value?.elementVisitStats?.reportData) return null
+  return formatReportData(data.value.elementVisitStats.reportData, "nbVisits")
+})
 
-// const declarationVisitChartInfo = computed(() => {
-//   if (!data?.value?.declarationVisitStats?.reportData) return null
-//   return formatReportData(data.value.declarationVisitStats.reportData, "downloads")
-// })
+const declarationVisitChartInfo = computed(() => {
+  if (!data?.value?.declarationVisitStats?.reportData) return null
+  return formatReportData(data.value.declarationVisitStats.reportData, "downloads")
+})
 
-// const formatMonthLabel = (apiLabel) => {
-//   const [year, month] = apiLabel.split("-").map(Number)
-//   const date = new Date(year, month - 1)
-//   return new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(date)
-// }
+const formatMonthLabel = (apiLabel) => {
+  const [year, month] = apiLabel.split("-").map(Number)
+  const date = new Date(year, month - 1)
+  return new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(date)
+}
 
 onMounted(async () => {
   const script = document.createElement("script")
