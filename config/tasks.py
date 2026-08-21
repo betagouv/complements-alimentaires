@@ -41,7 +41,7 @@ def send_expiration_reminder():
             delta = end_of_expiration_day - today
             if delta.days >= send_days_before and delta.days < send_days_before + 1:
                 parameters = {**declaration.brevo_parameters, **{"REMAINING_DAYS": send_days_before}}
-                email.send_sib_template(
+                email.send_sib_template.delay(
                     email.EmailTemplateID.DECLARATION_EXPIRATION_REMINDER.value,
                     parameters,
                     declaration.author.email,
@@ -49,7 +49,7 @@ def send_expiration_reminder():
                 )
 
         except Exception as _:
-            logger.exception(f"Could not send reminder email for declaration f{declaration.id}")
+            logger.exception(f"Error calling email task for reminder email for declaration f{declaration.id}")
 
 
 class EarlyExpirationError(Exception):
@@ -111,7 +111,7 @@ def expire_declarations():
         try:
             flow.abandon()
             if declaration.author:
-                email.send_sib_template(
+                email.send_sib_template.delay(
                     email.EmailTemplateID.DECLARATION_EXPIRED.value,
                     declaration.brevo_parameters,
                     declaration.author.email,
@@ -135,7 +135,7 @@ def send_automatic_validation_email(declaration):
         logger.log(f"Email not sent on automatic validation of declaration {declaration.id}: no author")
         return
     try:
-        email.send_sib_template(
+        email.send_sib_template.delay(
             email.EmailTemplateID.DECLARATION_AUTHORIZED.value,
             declaration.brevo_parameters,
             declaration.author.email,
@@ -348,7 +348,7 @@ def revoke_authorisation_from_declarations(declarations, ingredient):
         try:
             flow.revoke_authorization(ingredient)
             if declaration.author:
-                email.send_sib_template(
+                email.send_sib_template.delay(
                     email.EmailTemplateID.DECLARATION_AUTHORIZATION_REVOKED.value,
                     {
                         "PRODUCT_NAME": declaration.brevo_parameters["PRODUCT_NAME"],

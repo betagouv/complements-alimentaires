@@ -102,7 +102,7 @@ class AddNewCollaboratorView(APIView):
                     role_class.objects.get_or_create(company=company, user=recipient)
 
                 try:
-                    email.send_sib_template(
+                    email.send_sib_template.delay(
                         email.EmailTemplateID.USER_ADDED_TO_COMPANY.value,
                         {
                             "SENDER_NAME": sender.get_full_name(),
@@ -113,7 +113,7 @@ class AddNewCollaboratorView(APIView):
                         recipient.get_full_name(),
                     )
                 except Exception as e:
-                    logger.error(f"Email not sent on AddNewCollaboratorView for recipient {recipient.id}")
+                    logger.error(f"Error calling email task on AddNewCollaboratorView for recipient {recipient.id}")
                     logger.exception(e)
 
                 return Response({"message": f"{recipient.name} a été ajouté à vos collaborateurs."})
