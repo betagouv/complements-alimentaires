@@ -256,7 +256,7 @@ class TestCreateUser(ProjectAPITestCase):
     @override_settings(CONTACT_EMAIL="contact@example.com")
     @override_settings(SECURE=True)
     @override_settings(HOSTNAME="hostname")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_create_user_ok(self, mocked_brevo):
         response = self.post(self.url(), self.user_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

@@ -19,7 +19,7 @@ from .utils import ProjectAPITestCase
 class TestListCollaborationInvitations(ProjectAPITestCase):
     viewname = "list_collaboration_invitation"
 
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def setUp(self, _):
         self.user = UserFactory()
         self.company_1 = CompanyFactory()
@@ -62,7 +62,7 @@ class TestCollaborationInvitationEmail(APITestCase):
     @override_settings(CONTACT_EMAIL="contact@example.com")
     @override_settings(SECURE=True)
     @override_settings(HOSTNAME="hostname")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_account_created_sends_email(self, mocked_brevo):
         email = "test@example.com"
         company = CompanyFactory()
@@ -137,7 +137,7 @@ class TestProcessCompanyAccessClaim(ProjectAPITestCase):
     @override_settings(CONTACT_EMAIL="contact@example.com")
     @override_settings(SECURE=True)
     @override_settings(HOSTNAME="hostname")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_process_company_access_claim_ok_with_accept(self, mocked_brevo):
         template_number = 13
         self.login(self.recipent)
@@ -166,7 +166,7 @@ class TestProcessCompanyAccessClaim(ProjectAPITestCase):
     @override_settings(CONTACT_EMAIL="contact@example.com")
     @override_settings(SECURE=True)
     @override_settings(HOSTNAME="hostname")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_process_company_access_claim_ok_with_refuse(self, mocked_brevo):
         template_number = 14
         self.login(self.recipent)

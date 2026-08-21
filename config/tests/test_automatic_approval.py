@@ -19,7 +19,7 @@ from data.models import Declaration, Snapshot
 
 @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
 @override_settings(CONTACT_EMAIL="contact@example.com")
-@mock.patch("config.email.send_sib_template")
+@mock.patch("config.email.send_sib_template.delay")
 @override_settings(ENABLE_AUTO_VALIDATION=True)
 class TestAutomaticApproval(TestCase):
     @staticmethod
