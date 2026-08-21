@@ -45,6 +45,21 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+  celery:
+    build: .
+    user: appuser
+    command: ["celery", "-A", "config", "worker", "--loglevel=info"]
+    volumes:
+      - .:/app
+    depends_on:
+      redis:
+        condition: service_started
+    env_file:
+      - ".env.local"
 volumes:
   # it's normal that this is empty, it simply defines the existance of persistent storage
   db-data:
