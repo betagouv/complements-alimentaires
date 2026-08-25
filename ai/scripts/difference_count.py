@@ -16,8 +16,9 @@ CONFIGURATION = {
         "article": Declaration.Article.ARTICLE_15,
         "status": Declaration.DeclarationStatus.AUTHORIZED,
         "teleicare_declaration_number__isnull": True,
+        "modification_date__year": 2026,
     },
-    "declarations_count": 2,
+    "declarations_count": 10,
     "extract_ingredients": {
         # "dummy": [
         #     [{"language": "fr", "ingredients": ["essaye"]}, {"language": "es", "ingredients": "prueba"}],
