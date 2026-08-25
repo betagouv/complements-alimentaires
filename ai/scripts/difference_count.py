@@ -1,3 +1,4 @@
+import os
 import json
 import math
 import copy
@@ -18,11 +19,10 @@ CONFIGURATION = {
     },
     "declarations_count": 2,
     "extract_ingredients": {
-        "dummy": [
-            {"en": ["test", "sample", "etc"], "fr": ["essaye", "sample"]},
-            {"es": ["test", "essaye"], "fr": ["de nuevo"]},
-        ],
-        # NB: in local, cannot test sending file to mistral because the URL isn't public
+        # "dummy": [
+        #     [{"language": "fr", "ingredients": ["essaye"]}, {"language": "es", "ingredients": "prueba"}],
+        #     [{"language": "en", "ingredients": ["test"]}, {"language": "fr", "ingredients": ["encore"]}]
+        # ],
         "model": "mistral-ocr-4-0",
         "ingredients_prompt": "a list of ingredients present in the file. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
     },
@@ -43,10 +43,14 @@ def load_json(filename):
 
 # this function merges a list of dicts into one dict,
 # ensuring ingredients are not lost if there are shared keys
+# this also restructures the langauge lists so that the language is a key and the list a value
 def merge_lists(ingredients_lists):
     merged_lists = {}
-    for d in ingredients_lists:
-        for lang, value in d.items():
+    for extraction in ingredients_lists:
+        for language_result in extraction:
+            # TODO: handle potentially malformatted responses?
+            lang = language_result["language"]
+            value = language_result["ingredients"]
             if lang not in merged_lists:
                 merged_lists[lang] = copy.deepcopy(value)
             else:
@@ -76,9 +80,9 @@ def extract_ingredients(declaration):
     ingredients_lists = []
     for label in labels:
         # TODO: handle possibility of l.file is None
-        url = label.file
+        url = f"{os.getenv('MEDIA_ROOT_URL')}{label.file.url}"
         try:
-            ingredients_lists.append(extract_lists(url))
+            ingredients_lists.append(extract_lists(url)["ingredients_lists"])
         except Exception as e:
             print("Error extracting list for label", url)
             print(e)
@@ -152,6 +156,7 @@ def generate_data():
     }
     declarations = get_declarations()
     for d in declarations:
+        print("Declaration", d.id)
         declaration_results = {}
         save_declaration_details(declaration_results, d)
         ingredients_lists = extract_ingredients(d)
@@ -209,6 +214,9 @@ def summarise(results):
 
 # ------- main
 # To run these methods:
+# - ensure MEDIA_ROOT_URL is set in local env vars
+# - get details of or create read only database user for db in question
+# - update env vars to the remote database and read only user details
 # - ensure the directory ai/scripts/results exists
 # - open a shell
 # - import ai.scripts.difference_count as s

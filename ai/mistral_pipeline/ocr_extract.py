@@ -35,7 +35,7 @@ def extract_lists(url):
     response_dict = json.loads(response.model_dump_json())
     # of interest: response[pages][0][confidence_scores][average_page_confidence_score/minimum_page_confidence_score]
     # response[usage_info]
-    return json.loads(response_dict["document_annotation"])  # ["ingredients_lists"]
+    return json.loads(response_dict["document_annotation"])
 
 
 def get_french_list(ingredients_lists):
