@@ -1,9 +1,12 @@
 import json
 import math
+import copy
 from random import randrange
+
 from django.utils import timezone
 
-from data.models import Declaration
+from data.models import Declaration, Attachment
+from ai.mistral_pipeline.ocr_extract import extract_lists
 
 # ------- Misc helpers
 
@@ -11,10 +14,18 @@ CONFIGURATION = {
     "declarations_filter": {
         "article": Declaration.Article.ARTICLE_15,
         "status": Declaration.DeclarationStatus.AUTHORIZED,
+        "teleicare_declaration_number__isnull": True,
     },
-    "declarations_count": 5,
-    # TODO: add details about the model
-    "extract_ingredients": {"dummy": {"en": ["test", "sample", "etc"], "es": ["essaye", "sample"]}},
+    "declarations_count": 2,
+    "extract_ingredients": {
+        "dummy": [
+            {"en": ["test", "sample", "etc"], "fr": ["essaye", "sample"]},
+            {"es": ["test", "essaye"], "fr": ["de nuevo"]},
+        ],
+        # NB: in local, cannot test sending file to mistral because the URL isn't public
+        "model": "mistral-ocr-4-0",
+        "ingredients_prompt": "a list of ingredients present in the file. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
+    },
 }
 
 
@@ -30,6 +41,22 @@ def load_json(filename):
     return data
 
 
+# this function merges a list of dicts into one dict,
+# ensuring ingredients are not lost if there are shared keys
+def merge_lists(ingredients_lists):
+    merged_lists = {}
+    for d in ingredients_lists:
+        for lang, value in d.items():
+            if lang not in merged_lists:
+                merged_lists[lang] = copy.deepcopy(value)
+            else:
+                merged_lists[lang] += value
+    # deduplicate
+    for lang, value in merged_lists.items():
+        merged_lists[lang] = list(set(merged_lists[lang]))
+    return merged_lists
+
+
 # ------- Extract data
 
 
@@ -39,12 +66,23 @@ def get_declarations():
     return Declaration.objects.filter(**configuration["declarations_filter"])[:count]
 
 
+# return a list of extracted ingredients from all associated LABEL files
+# NB: we do not handle conflicting dict keys here
 def extract_ingredients(declaration):
-    dummy_config = CONFIGURATION["extract_ingredients"]["dummy"]
-    if dummy_config:
-        return dummy_config
-    # TODO: call mistral, maybe pass in configuration or reuse the same convo?
-    return []
+    if "dummy" in CONFIGURATION["extract_ingredients"]:
+        return CONFIGURATION["extract_ingredients"]["dummy"]
+    # TODO: how to make prompts and model configurable?
+    labels = declaration.attachments.filter(type=Attachment.AttachmentType.LABEL)
+    ingredients_lists = []
+    for label in labels:
+        # TODO: handle possibility of l.file is None
+        url = label.file
+        try:
+            ingredients_lists.append(extract_lists(url))
+        except Exception as e:
+            print("Error extracting list for label", url)
+            print(e)
+    return ingredients_lists
 
 
 # d for declaration
@@ -118,8 +156,9 @@ def generate_data():
         save_declaration_details(declaration_results, d)
         ingredients_lists = extract_ingredients(d)
         declaration_results["extracted_ingredients"] = ingredients_lists
-        save_extracted_lists_stats(declaration_results, ingredients_lists)
-        save_list_stats(declaration_results, ingredients_lists)
+        merged_ingredients_lists = merge_lists(ingredients_lists)
+        save_extracted_lists_stats(declaration_results, merged_ingredients_lists)
+        save_list_stats(declaration_results, merged_ingredients_lists)
         save_differential(declaration_results)
         # finally, save the results
         data["declarations"][d.id] = declaration_results
