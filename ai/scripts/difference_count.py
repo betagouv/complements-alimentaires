@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from data.models import Declaration, Attachment
 from ai.mistral_pipeline.ocr_extract import extract_lists
+from ai.mistral_pipeline.clean_ingredients import clean_ingredient_list
 
 # ------- Misc helpers
 
@@ -20,12 +21,15 @@ CONFIGURATION = {
     },
     "declarations_count": 10,
     "extract_ingredients": {
-        # "dummy": [
+        # "dummy_extract": [
         #     [{"language": "fr", "ingredients": ["essaye"]}, {"language": "es", "ingredients": "prueba"}],
         #     [{"language": "en", "ingredients": ["test"]}, {"language": "fr", "ingredients": ["encore"]}]
         # ],
-        "model": "mistral-ocr-4-0",
-        "ingredients_prompt": "a list of ingredients present in the file. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
+        # "dummy_clean": ["test", "clean"],
+        "extract_model": "mistral-ocr-4-0",
+        "extract_prompt": "a list of ingredients present in the file. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
+        "clean_model": "mistral-medium-latest",
+        "clean_prompt": "Given a series of strings by the user, return an object with a key 'ingredients' with an array of the ingredient names.\nWhere a scientific name is given, return only the scientific name.",
     },
 }
 
@@ -68,22 +72,24 @@ def merge_lists(ingredients_lists):
 def get_declarations():
     configuration = CONFIGURATION
     count = configuration["declarations_count"] or 10
-    return Declaration.objects.filter(**configuration["declarations_filter"])[:count]
+    return Declaration.objects.filter(**configuration["declarations_filter"]).order_by("?")[:count]
 
 
 # return a list of extracted ingredients from all associated LABEL files
 # NB: we do not handle conflicting dict keys here
-def extract_ingredients(declaration):
-    if "dummy" in CONFIGURATION["extract_ingredients"]:
-        return CONFIGURATION["extract_ingredients"]["dummy"]
+def extract_ingredients(results, declaration):
+    if "dummy_extract" in CONFIGURATION["extract_ingredients"]:
+        return CONFIGURATION["extract_ingredients"]["dummy_extract"]
     # TODO: how to make prompts and model configurable?
     labels = declaration.attachments.filter(type=Attachment.AttachmentType.LABEL)
     ingredients_lists = []
+    results["attachments"] = []
     for label in labels:
         # TODO: handle possibility of l.file is None
         url = f"{os.getenv('MEDIA_ROOT_URL')}{label.file.url}"
         try:
             ingredients_lists.append(extract_lists(url)["ingredients_lists"])
+            results["attachments"].append(url)
         except Exception as e:
             print("Error extracting list for label", url)
             print(e)
@@ -103,6 +109,7 @@ def save_declaration_details(results, d):
     results["declared_ingredients"] = declared_ingredients
     results["computed_substances"] = list(d.computed_substances.values_list("substance__name", flat=True))
     results["total_ingredients_count"] = results["declared_ingredients_count"] + len(results["computed_substances"])
+    # TODO: save declaration URL for ease of checking?
 
 
 def save_extracted_lists_stats(results, ingredients_lists):
@@ -130,7 +137,7 @@ def save_extracted_lists_stats(results, ingredients_lists):
         }
 
 
-def save_list_stats(results, ingredients_lists):
+def pick_list(results, ingredients_lists):
     # pick the ingredients list for comparison
     ingredients_list = None
     if "fr" in ingredients_lists:
@@ -142,7 +149,20 @@ def save_list_stats(results, ingredients_lists):
         random_language = keys[randrange(len(keys))]
         ingredients_list = ingredients_lists[random_language]
         results["list_lang"] = random_language
-    results["list_count"] = len(ingredients_list)
+    return ingredients_list
+
+
+def clean_list(results, ingredients_list):
+    if "dummy_clean" in CONFIGURATION["extract_ingredients"]:
+        return CONFIGURATION["extract_ingredients"]["dummy_clean"]
+    cleaned_list = ingredients_list
+    try:
+        cleaned_list = clean_ingredient_list(ingredients_list)
+    except Exception as e:
+        print("Error cleaning list")
+        print(e)
+    results["cleaned_list"] = cleaned_list
+    return cleaned_list
 
 
 def save_differential(results):
@@ -160,11 +180,13 @@ def generate_data():
         print("Declaration", d.id)
         declaration_results = {}
         save_declaration_details(declaration_results, d)
-        ingredients_lists = extract_ingredients(d)
+        ingredients_lists = extract_ingredients(declaration_results, d)
         declaration_results["extracted_ingredients"] = ingredients_lists
         merged_ingredients_lists = merge_lists(ingredients_lists)
         save_extracted_lists_stats(declaration_results, merged_ingredients_lists)
-        save_list_stats(declaration_results, merged_ingredients_lists)
+        chosen_list = pick_list(declaration_results, merged_ingredients_lists)
+        cleaned_list = clean_list(declaration_results, chosen_list)
+        declaration_results["list_count"] = len(cleaned_list)
         save_differential(declaration_results)
         # finally, save the results
         data["declarations"][d.id] = declaration_results
