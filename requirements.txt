@@ -82,7 +82,7 @@ pycairo==1.29.0
 pycodestyle==2.14.0
 pycparser==3.0
 Pygments==2.20.0
-pyHanko==0.35.2
+pyHanko==0.36.2
 pyhanko-certvalidator==0.31.1
 pypdf==6.15.0
 pyproject_hooks==1.2.0
