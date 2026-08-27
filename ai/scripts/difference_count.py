@@ -144,12 +144,10 @@ def save_extracted_lists_stats(results, ingredients_lists):
         if min_count is None or list_count < min_count:
             min_count = list_count
             min_lang = lang
-    # TODO: debug why this even happens
-    try:
+    # if there are no ingredients lists, then min count never gets set
+    if min_count is not None:
         extracted_differential = max_count - min_count
         results["max_difference_extracted_counts"] = extracted_differential
-    except TypeError:
-        print(f"Error getting extracted_differential, max_count {max_count}, min_count {min_count}")
     if extracted_differential:
         results["extracted_count_extremes"] = {
             "min": min_count,
@@ -245,16 +243,20 @@ def summarise(results):
     total_differences = []
     # could build other lists by grouping
     ids_lang_differences = []
+    ids_non_french = []
     for id, d in declarations.items():
         declared_differences.append(d["declared_ingredient_count_difference"])
         total_differences.append(d["total_ingredient_count_difference"])
-        if d["max_difference_extracted_counts"]:
+        if "max_difference_extracted_counts" in d and d["max_difference_extracted_counts"]:
             ids_lang_differences.append(id)
+        if "list_lang" in d and d["list_lang"] != "fr":
+            ids_non_french.append(id)
     summary = {
         "configuration": results["configuration"],
         "declared": difference(declared_differences),
         "total": difference(total_differences),
         "lang_differences": ids_lang_differences,
+        "non_french_declarations": ids_non_french,
         # later could add per-article, language or other groupings
     }
     return summary
