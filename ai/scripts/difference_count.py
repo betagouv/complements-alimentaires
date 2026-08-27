@@ -7,7 +7,7 @@ from random import randrange
 from django.utils import timezone
 
 from data.models import Declaration, Attachment
-from ai.mistral_pipeline.ocr_extract import extract_lists
+from ai.mistral_pipeline.ocr_extract import extract_lists, extract_lists_from_pdf
 from ai.mistral_pipeline.clean_ingredients import clean_ingredient_list
 
 # ------- Misc helpers
@@ -56,6 +56,9 @@ def merge_lists(ingredients_lists):
             # TODO: handle potentially malformatted responses?
             lang = language_result["language"]
             value = language_result["ingredients"]
+            list_type = language_result["list_type"]
+            if list_type == "composition":
+                continue
             if lang not in merged_lists:
                 merged_lists[lang] = copy.deepcopy(value)
             else:
@@ -84,15 +87,29 @@ def extract_ingredients(results, declaration):
     labels = declaration.attachments.filter(type=Attachment.AttachmentType.LABEL)
     ingredients_lists = []
     results["attachments"] = []
+    results["readable_pdfs"] = []
     for label in labels:
         # TODO: handle possibility of l.file is None
         url = f"{os.getenv('MEDIA_ROOT_URL')}{label.file.url}"
-        try:
-            ingredients_lists.append(extract_lists(url)["ingredients_lists"])
-            results["attachments"].append(url)
-        except Exception as e:
-            print("Error extracting list for label", url)
-            print(e)
+        if url.endswith(".pdf"):
+            # PDFs that are searchable are better parsed via text
+            # rather than Mistral's Document AI
+            try:
+                extraction = extract_lists_from_pdf(url)
+                if extraction and "ingredients_lists" in extraction:
+                    pdf_lists = extraction["ingredients_lists"]
+                    ingredients_lists.append(pdf_lists)
+                    results["readable_pdfs"].append(url)
+            except Exception as e:
+                print("Error extracting list for pdf label", url)
+                print(e)
+        if not ingredients_lists:
+            try:
+                ingredients_lists.append(extract_lists(url)["ingredients_lists"])
+                results["attachments"].append(url)
+            except Exception as e:
+                print("Error extracting list for label", url)
+                print(e)
     return ingredients_lists
 
 
@@ -118,6 +135,7 @@ def save_extracted_lists_stats(results, ingredients_lists):
     max_lang = ""
     min_count = None
     min_lang = ""
+    extracted_differential = None
     for lang, list in ingredients_lists.items():
         list_count = len(list)
         if list_count > max_count:
@@ -126,8 +144,12 @@ def save_extracted_lists_stats(results, ingredients_lists):
         if min_count is None or list_count < min_count:
             min_count = list_count
             min_lang = lang
-    extracted_differential = max_count - min_count
-    results["max_difference_extracted_counts"] = extracted_differential
+    # TODO: debug why this even happens
+    try:
+        extracted_differential = max_count - min_count
+        results["max_difference_extracted_counts"] = extracted_differential
+    except TypeError:
+        print(f"Error getting extracted_differential, max_count {max_count}, min_count {min_count}")
     if extracted_differential:
         results["extracted_count_extremes"] = {
             "min": min_count,
@@ -146,6 +168,9 @@ def pick_list(results, ingredients_lists):
     else:
         # if there isn't a list in French, return any other list language randomly
         keys = list(ingredients_lists.keys())
+        if not keys:
+            print("No keys!", ingredients_lists)
+            return []
         random_language = keys[randrange(len(keys))]
         ingredients_list = ingredients_lists[random_language]
         results["list_lang"] = random_language
