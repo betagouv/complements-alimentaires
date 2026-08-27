@@ -38,7 +38,7 @@ django-redis==6.0.0
 django-silk==5.4.3
 django-simple-history==3.11.0
 django-storages==1.14.6
-django-viewflow==2.3.2
+django-viewflow==2.4.0
 djangorestframework==3.17.1
 djangorestframework-camel-case==1.4.2
 drf-excel==2.5.3
