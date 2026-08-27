@@ -20,16 +20,25 @@ CONFIGURATION = {
         "modification_date__year": 2026,
     },
     "declarations_count": 10,
-    "extract_ingredients": {
-        # "dummy_extract": [
-        #     [{"language": "fr", "ingredients": ["essaye"]}, {"language": "es", "ingredients": "prueba"}],
-        #     [{"language": "en", "ingredients": ["test"]}, {"language": "fr", "ingredients": ["encore"]}]
-        # ],
-        # "dummy_clean": ["test", "clean"],
-        "extract_model": "mistral-ocr-4-0",
-        "extract_prompt": "a list of ingredients present in the file. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
-        "clean_model": "mistral-medium-latest",
-        "clean_prompt": "Given a series of strings by the user, return an object with a key 'ingredients' with an array of the ingredient names.\nWhere a scientific name is given, return only the scientific name.",
+    # "dummy_extract": [
+    #     [{"language": "fr", "ingredients": ["essaye"]}, {"language": "es", "ingredients": "prueba"}],
+    #     [{"language": "en", "ingredients": ["test"]}, {"language": "fr", "ingredients": ["encore"]}]
+    # ],
+    # "dummy_clean": ["test", "clean"],
+    "ocr": {
+        "model": "mistral-ocr-4-0",
+        "ingredients_description": "a list of ingredients present in the file. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
+        "list_type_description": "'list' or 'composition'",
+    },
+    "pdf_text": {
+        "model": "mistral-medium-latest",
+        "instructions": "The user will send you text extracted from a PDF file. Please respond with a list of ingredients present in the text.",
+        "ingredients_description": "a list of ingredients present in the text. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
+        "list_type_description": "'list' or 'composition'",
+    },
+    "clean": {
+        "model": "mistral-medium-latest",
+        "instructions": "Given a series of strings by the user, return an object with a key 'ingredients' with an array of the ingredient names.\nWhere a scientific name is given, return only the scientific name.",
     },
 }
 
@@ -80,10 +89,10 @@ def get_declarations():
 
 # return a list of extracted ingredients from all associated LABEL files
 # NB: we do not handle conflicting dict keys here
-def extract_ingredients(results, declaration):
-    if "dummy_extract" in CONFIGURATION["extract_ingredients"]:
-        return CONFIGURATION["extract_ingredients"]["dummy_extract"]
-    # TODO: how to make prompts and model configurable?
+def extract_ingredients(configuration, results, declaration):
+    if "dummy_extract" in configuration:
+        return configuration["dummy_extract"]
+
     labels = declaration.attachments.filter(type=Attachment.AttachmentType.LABEL)
     ingredients_lists = []
     results["attachments"] = []
@@ -91,11 +100,13 @@ def extract_ingredients(results, declaration):
     for label in labels:
         # TODO: handle possibility of l.file is None
         url = f"{os.getenv('MEDIA_ROOT_URL')}{label.file.url}"
+
+        # PDFs that are searchable are better parsed via text
+        # rather than Mistral's Document AI
         if url.endswith(".pdf"):
-            # PDFs that are searchable are better parsed via text
-            # rather than Mistral's Document AI
             try:
-                extraction = extract_lists_from_pdf(url)
+                config = configuration["pdf_text"] if "pdf_text" in configuration else {}
+                extraction = extract_lists_from_pdf(url, **config)
                 if extraction and "ingredients_lists" in extraction:
                     pdf_lists = extraction["ingredients_lists"]
                     ingredients_lists.append(pdf_lists)
@@ -103,9 +114,12 @@ def extract_ingredients(results, declaration):
             except Exception as e:
                 print("Error extracting list for pdf label", url)
                 print(e)
+
+        # fallback to OCR for images or non searchable PDFs
         if not ingredients_lists:
             try:
-                ingredients_lists.append(extract_lists(url)["ingredients_lists"])
+                config = configuration["ocr"] if "ocr" in configuration else {}
+                ingredients_lists.append(extract_lists(url, **config)["ingredients_lists"])
                 results["attachments"].append(url)
             except Exception as e:
                 print("Error extracting list for label", url)
@@ -175,12 +189,13 @@ def pick_list(results, ingredients_lists):
     return ingredients_list
 
 
-def clean_list(results, ingredients_list):
-    if "dummy_clean" in CONFIGURATION["extract_ingredients"]:
-        return CONFIGURATION["extract_ingredients"]["dummy_clean"]
+def clean_list(configuration, results, ingredients_list):
+    if "dummy_clean" in configuration:
+        return configuration["dummy_clean"]
     cleaned_list = ingredients_list
     try:
-        cleaned_list = clean_ingredient_list(ingredients_list)
+        config = configuration["clean"] if "clean" in configuration else {}
+        cleaned_list = clean_ingredient_list(ingredients_list, **config)
     except Exception as e:
         print("Error cleaning list")
         print(e)
@@ -193,9 +208,9 @@ def save_differential(results):
     results["total_ingredient_count_difference"] = results["list_count"] - results["total_ingredients_count"]
 
 
-def generate_data():
+def generate_data(configuration):
     data = {
-        "configuration": CONFIGURATION,
+        "configuration": configuration,
         "declarations": {},
     }
     declarations = get_declarations()
@@ -203,14 +218,19 @@ def generate_data():
         print("Declaration", d.id)
         declaration_results = {}
         save_declaration_details(declaration_results, d)
-        ingredients_lists = extract_ingredients(declaration_results, d)
+
+        # get all ingredients present in the attachments
+        ingredients_lists = extract_ingredients(configuration, declaration_results, d)
         declaration_results["extracted_ingredients"] = ingredients_lists
         merged_ingredients_lists = merge_lists(ingredients_lists)
         save_extracted_lists_stats(declaration_results, merged_ingredients_lists)
+
+        # choose the ingredients list we will use for comparison with the declared
         chosen_list = pick_list(declaration_results, merged_ingredients_lists)
-        cleaned_list = clean_list(declaration_results, chosen_list)
+        cleaned_list = clean_list(configuration, declaration_results, chosen_list)
         declaration_results["list_count"] = len(cleaned_list)
         save_differential(declaration_results)
+
         # finally, save the results
         data["declarations"][d.id] = declaration_results
     return data
@@ -273,11 +293,12 @@ def summarise(results):
 # - s.run_complete() or s.summarise(<filename without extension>)
 
 
-def run_complete():
+def run_complete(**kwargs):
     folder = "ai/scripts/results"
     datetime = str(timezone.now())
     filename = f"{folder}/{datetime}"
-    data = generate_data()
+    config = {**CONFIGURATION, **kwargs}
+    data = generate_data(config)
     save_json(filename, data)
     # in theory, could add extra step to parse a json file to feed to this
     results = summarise(data)

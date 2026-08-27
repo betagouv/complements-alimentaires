@@ -2,8 +2,6 @@
 # https://colab.research.google.com/github/mistralai/cookbook/blob/main/mistral/ocr/data_extraction.ipynb#scrollTo=FZdL0ZXYkO0n
 from .client import client
 import json
-from mistralai.extra import response_format_from_pydantic_model
-from pydantic import BaseModel, Field
 import requests
 from pypdf import PdfReader
 from io import BytesIO
@@ -22,80 +20,106 @@ def extract_pdf_text(url):
     return text
 
 
-def extract_lists_from_text(text):
+def add_format_boilerplate(schema):
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "response_schema",
+            "schema": schema,
+        },
+    }
+
+
+def extract_lists_from_text(
+    text,
+    model="mistral-medium-latest",
+    instructions="The user will send you text extracted from a PDF file. Please respond with a list of ingredients present in the text.",
+    ingredients_description="a list of ingredients present in the text. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
+    list_type_description="'list' or 'composition'",
+):
+    schema = {
+        "properties": {
+            "ingredients_lists": {
+                "items": {
+                    "properties": {
+                        "ingredients": {
+                            "description": ingredients_description,
+                            "type": "array",
+                        },
+                        "language": {
+                            "description": "the language the list is written in, in ISO 639-1 format",
+                            "type": "string",
+                        },
+                        "list_type": {"description": list_type_description, "type": "string"},
+                    },
+                    "required": ["language", "ingredients", "list_type"],
+                    "type": "object",
+                },
+                "type": "array",
+            }
+        },
+        "required": ["ingredients_lists"],
+        "type": "object",
+    }
     completion_args = {
         "temperature": 0.7,
         "max_tokens": 2048,
         "top_p": 1,
-        "response_format": {
-            "type": "json_schema",
-            "json_schema": {
-                "name": "response_schema",
-                "schema": {
-                    "properties": {
-                        "ingredients_lists": {
-                            "items": {
-                                "properties": {
-                                    "ingredients": {
-                                        "description": "a list of ingredients present in the text. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
-                                        "type": "array",
-                                    },
-                                    "language": {
-                                        "description": "the language the list is written in, in ISO 639-1 format",
-                                        "type": "string",
-                                    },
-                                    "list_type": {"description": "'list' or 'composition'", "type": "string"},
-                                },
-                                "required": ["language", "ingredients", "list_type"],
-                                "type": "object",
-                            },
-                            "type": "array",
-                        }
-                    },
-                    "required": ["ingredients"],
-                    "type": "object",
-                },
-            },
-        },
+        "response_format": add_format_boilerplate(schema),
     }
-
     response = client.beta.conversations.start(
         inputs=[{"role": "user", "content": text}],
-        model="mistral-medium-latest",
-        instructions="The user will send you text extracted from a PDF file. Please respond with a list of ingredients present in the text.",
+        model=model,
+        instructions=instructions,
         completion_args=completion_args,
         tools=[],
     )
     return json.loads(response.outputs[0].content)
 
 
-def extract_lists_from_pdf(url):
+def extract_lists_from_pdf(url, **kwargs):
     text = extract_pdf_text(url)
     if not text:
         return
-    return extract_lists_from_text(text)
+    return extract_lists_from_text(text, **kwargs)
 
 
-class IngredientsList(BaseModel):
-    language: str = Field(..., description="the language the list is written in, in ISO 639-1 format")
-    # TODO: make ingredients description configurable for prompt tweaking
-    ingredients: list[str] = Field(
-        ...,
-        description="a list of ingredients present in the file. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
-    )
-    list_type: str = Field(..., description="'list' or 'composition'")
-
-
-class Document(BaseModel):
-    ingredients_lists: list[IngredientsList]
-
-
-def extract_lists(url):
+def extract_lists(
+    url,
+    model="mistral-ocr-4-0",
+    ingredients_description="a list of ingredients present in the file. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
+    list_type_description="'list' or 'composition'",
+):
+    schema = {
+        "properties": {
+            "ingredients_lists": {
+                "items": {
+                    "properties": {
+                        "ingredients": {
+                            "description": ingredients_description,
+                            "type": "array",
+                        },
+                        "language": {
+                            "description": "the language the list is written in, in ISO 639-1 format",
+                            "type": "string",
+                        },
+                        "list_type": {"description": list_type_description, "type": "string"},
+                    },
+                    "required": ["language", "ingredients", "list_type"],
+                    "type": "object",
+                },
+                "type": "array",
+            }
+        },
+        "required": ["ingredients_lists"],
+        "type": "object",
+    }
+    response_format = add_format_boilerplate(schema)
     # accepts image (inc gif), and pdf
     response = client.ocr.process(
-        model="mistral-ocr-4-0",  # TODO: is this configurable?
+        model=model,
         document={"type": "document_url", "document_url": url},
-        document_annotation_format=response_format_from_pydantic_model(Document),
+        document_annotation_format=response_format,
         include_image_base64=False,
         extract_header=False,
         extract_footer=False,
