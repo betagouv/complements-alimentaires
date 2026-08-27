@@ -4,7 +4,14 @@ from django.utils.http import urlencode
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from data.factories import AwaitingInstructionDeclarationFactory, CompanyFactory, ControlRoleFactory, SnapshotFactory
+from data.factories import (
+    AwaitingInstructionDeclarationFactory,
+    CompanyFactory,
+    ControlRoleFactory,
+    RejectedDeclarationFactory,
+    SnapshotFactory,
+    WithdrawnDeclarationFactory,
+)
 from data.models import Declaration, Snapshot
 
 from .utils import authenticate
@@ -182,13 +189,45 @@ class TestDeclarationControllers(APITestCase):
         # Requête pour tous les deux
         response = self.client.get(
             reverse("api:list_control_declarations")
-            + "?simplified_status=Commercialisation+possible,En+cours+d'instruction",
+            + "?simplifiedStatus=Commercialisation+possible,En+cours+d'instruction",
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         results = response.json()["results"]
         self.assertEqual(len(results), 3)
+
+        # Requête pour Commercialisation refusée
+        rejected = RejectedDeclarationFactory()
+        response = self.client.get(
+            reverse("api:list_control_declarations") + "?simplifiedStatus=Commercialisation+refus%C3%A9e",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], rejected.id)
+
+        # Requête pour Retiré du marché
+        withdrawn = WithdrawnDeclarationFactory()
+        response = self.client.get(
+            reverse("api:list_control_declarations") + "?simplifiedStatus=Retir%C3%A9+du+march%C3%A9",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], withdrawn.id)
+
+        abandoned = AwaitingInstructionDeclarationFactory(status=Declaration.DeclarationStatus.ABANDONED)
+        response = self.client.get(
+            reverse("api:list_control_declarations") + "?simplifiedStatus=Instruction+interrompue",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], abandoned.id)
 
     @authenticate
     def test_filter_by_surveillance_only(self):

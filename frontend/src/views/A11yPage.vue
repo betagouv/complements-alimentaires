@@ -217,5 +217,5 @@
 </template>
 
 <script setup>
-const contactEmail = window.CONTACT_EMAIL
+const contactEmail = import.meta.env.VITE_CONTACT_EMAIL
 </script>

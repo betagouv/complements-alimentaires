@@ -55,7 +55,7 @@ class SummaryView(PdfView):
             "declared_microorganisms": declaration.declared_microorganisms.all(),
             "declared_ingredients": declaration.declared_ingredients.all(),
             "declared_substances": declaration.declared_substances.all(),
-            "computed_substances": declaration.computed_substances.all(),
+            "active_ingredient_computed_substances": declaration.active_ingredient_computed_substances,
             "attachments": declaration.attachments.all(),
             "submission_date": submission_date,
             "now": timezone.now(),

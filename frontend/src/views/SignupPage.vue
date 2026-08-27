@@ -76,7 +76,7 @@ import { useVuelidate } from "@vuelidate/core"
 import SingleItemWrapper from "@/components/SingleItemWrapper"
 import FormWrapper from "@/components/FormWrapper"
 import { errorRequiredField, errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import PasswordRules from "@/components/PasswordRules"
@@ -108,7 +108,7 @@ const v$ = useVuelidate(rules, state, { $externalResults })
 
 // Main request definition
 const { data, response, execute, isFetching } = useFetch(
-  "/api/v1/users/",
+  `users/`,
   {
     headers: headers(),
   },
@@ -136,7 +136,7 @@ const submit = async () => {
 const usernameInput = ref(null)
 const urlPF = computed(
   () =>
-    `/api/v1/generate-username?first_name=${encodeURIComponent(state.value.firstName)}&last_name=${encodeURIComponent(state.value.lastName)}`
+    `/generate-username?first_name=${encodeURIComponent(state.value.firstName)}&last_name=${encodeURIComponent(state.value.lastName)}`
 )
 const { data: dataPF, execute: executePF, isFetching: isFetchingPF } = useFetch(urlPF, {}, { immediate: false }).json()
 

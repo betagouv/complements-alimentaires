@@ -48,7 +48,7 @@
 import { computed, ref } from "vue"
 import { getTypeIcon, getTypeInFrench, unSlugifyType, getApiType } from "@/utils/mappings"
 import { useRoute } from "vue-router"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import FormFields from "./FormFields"
 import CaBreadcrumb from "@/components/CaBreadcrumb"
@@ -67,7 +67,7 @@ const apiType = computed(() => type.value && getApiType(type.value))
 const icon = computed(() => getTypeIcon(type.value))
 const typeName = computed(() => getTypeInFrench(type.value))
 
-const url = computed(() => `/api/v1/${apiType.value}s/${elementId.value}?history=true`)
+const url = computed(() => `/${apiType.value}s/${elementId.value}?history=true`)
 const { data: element, response, execute } = useFetch(url, { immediate: false }).get().json()
 
 const pageTitle = computed(() => (isNewIngredient.value ? "Nouvel ingrédient" : "Modification ingrédient"))

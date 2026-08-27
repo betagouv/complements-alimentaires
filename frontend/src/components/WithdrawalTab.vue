@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { ref, computed } from "vue"
 import { handleError } from "@/utils/error-handling"
 import { headers } from "@/utils/data-fetching"
@@ -100,7 +100,7 @@ const payload = computed(() => ({
 }))
 
 const { response, execute, isFetching } = useFetch(
-  `/api/v1/declarations/${declaration.value.id}/withdraw/`,
+  `/declarations/${declaration.value.id}/withdraw/`,
   {
     headers: headers(),
   },

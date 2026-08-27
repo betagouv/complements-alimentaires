@@ -130,8 +130,8 @@
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
-    <div v-else-if="data?.results?.length">
-      <ControlDeclarationsTable :data="data" @sort="updateOrdering" @filter="updateFiltering" />
+    <div>
+      <ControlDeclarationsTable :key="renderKey" :data="data" @sort="updateOrdering" @filter="updateFiltering" />
       <DsfrPagination
         v-if="showPagination"
         @update:currentPage="updatePage"
@@ -140,14 +140,15 @@
         :truncLimit="5"
       />
     </div>
-    <div v-else class="border p-4 rounded mb-4 bg-gray-50">
-      <p class="mb-0">Aucune déclaration trouvée avec les paramètres spécifiés</p>
+    <div v-if="!data?.results?.length" class="border p-4 rounded mb-4 bg-gray-50">
+      <p>Aucune déclaration trouvée avec les paramètres spécifiés.</p>
+      <DsfrButton @click="resetFilters" label="Réinitialiser les filtres" tertiary size="sm" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { computed, watch } from "vue"
 import { getPagesForPagination } from "@/utils/components"
 import { useRoute, useRouter } from "vue-router"
@@ -221,7 +222,7 @@ const commonApiParams = computed(() => {
   return apiParams
 })
 const url = computed(
-  () => `/api/v1/control/declarations/?limit=${limit.value}&offset=${offset.value}&${commonApiParams.value}`
+  () => `/control/declarations/?limit=${limit.value}&offset=${offset.value}&${commonApiParams.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 
@@ -253,6 +254,16 @@ const updateDoses = (newValue) => updateQuery({ doses: encodeURIComponent(JSON.s
 const updateSubmissionDateAfter = (newDate) => updateQuery({ aPartirDe: newDate })
 
 const clearSearch = () => (searchTerm.value = "")
+
+// Ceci est un fix temporaire pour débloquer un problème concernant les filtres dans les entêtes
+// du tableau. Vu que ControlDeclarationsTable emit les events "sort" et "filter", il n'y a pas
+// moyen aujourd'hui de le forcer à enlever des filtres depuis l'extérieur, autre que faire
+// un re-render. Le renderKey permet de forcer ce rendu à nouveau.
+const renderKey = ref(0)
+const resetFilters = async () => {
+  await router.push({ query: { page: 1 } })
+  renderKey.value++
+}
 
 watch(
   [
@@ -368,7 +379,9 @@ const updateDoseStrings = (index, newValue) => {
 
 // Export Excel
 
-const excelUrl = computed(() => `/api/v1/control/declarations-export.xlsx?${commonApiParams.value}`)
+const excelUrl = computed(
+  () => `${import.meta.env.VITE_API_ROOT}/control/declarations-export.xlsx?${commonApiParams.value}`
+)
 </script>
 
 <style scoped>

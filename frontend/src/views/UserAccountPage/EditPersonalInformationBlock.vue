@@ -70,7 +70,7 @@ import { useVuelidate } from "@vuelidate/core"
 import { useRootStore } from "@/stores/root"
 import { headers } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import FormWrapper from "@/components/FormWrapper"
 import { errorRequiredField, errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
 import { storeToRefs } from "pinia"
@@ -105,7 +105,7 @@ const {
   execute,
   isFetching,
 } = useFetch(
-  `/api/v1/users/${loggedUser.value.id}`,
+  `/users/${loggedUser.value.id}`,
   { headers: headers() },
   {
     immediate: false,

@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { computed, watch } from "vue"
 import { handleError } from "@/utils/error-handling"
 import ProgressSpinner from "@/components/ProgressSpinner"
@@ -95,7 +95,7 @@ const updateLimit = (newValue) => updateQuery({ limit: newValue, page: 1 })
 // Obtention de la donnée via API
 const url = computed(
   () =>
-    `/api/v1/declarations/?limit=${limit.value}&offset=${offset.value}&status=${filteredStatus.value || ""}&ordering=${ordering.value}&article=${article.value}`
+    `/declarations/?limit=${limit.value}&offset=${offset.value}&status=${filteredStatus.value || ""}&ordering=${ordering.value}&article=${article.value}`
 )
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 const fetchSearchResults = async () => {

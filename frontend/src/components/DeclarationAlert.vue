@@ -7,7 +7,11 @@
     </p>
     <ul v-if="displayData.canDownloadCertificate" class="inline-list">
       <li>
-        <a download="true" :href="`/declarations/${declaration.id}/certificate`" class="fr-link fr-link--download">
+        <a
+          download="true"
+          :href="`${backendRoot}/declarations/${declaration.id}/certificate`"
+          class="fr-link fr-link--download"
+        >
           Télécharger
           <span class="lowercase">{{ displayData.documentName || "l'attestation" }}</span>
           <span class="fr-link__detail">&nbsp;PDF</span>
@@ -15,7 +19,7 @@
       </li>
       <li>
         <a
-          :href="`/declarations/${declaration.id}/certificate.html`"
+          :href="`${backendRoot}/declarations/${declaration.id}/certificate.html`"
           target="_blank"
           rel="noopener external"
           class="ml-4 relative"
@@ -34,6 +38,8 @@
 import { computed } from "vue"
 import { isoToPrettyDate } from "@/utils/date"
 const props = defineProps({ declaration: Object, role: { type: String, default: "declarant" }, snapshots: Array })
+
+const backendRoot = import.meta.env.VITE_BACKEND_ROOT
 
 const displayData = computed(() => {
   switch (props.role) {

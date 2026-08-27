@@ -149,7 +149,7 @@ import { getTypeIcon, getTypeInFrench, typesMapping, getApiType } from "@/utils/
 import { useVuelidate } from "@vuelidate/core"
 import { required, helpers } from "@vuelidate/validators"
 import { firstErrorMsg, errorNumeric } from "@/utils/forms"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { OPERATION, operationOptions } from "@/utils/mappings.js"
 
 const { units, plantParts } = storeToRefs(useRootStore())
@@ -177,7 +177,7 @@ const addIngredient = async (ingredient) => {
     selectedIngredient.value?.objectType === "form_of_supply" ||
     selectedIngredient.value?.objectType === "active_ingredient"
   ) {
-    const url = `/api/v1/${getApiType(selectedIngredient.value?.objectType)}s/${selectedIngredient.value.id}`
+    const url = `/${getApiType(selectedIngredient.value?.objectType)}s/${selectedIngredient.value.id}`
     const { data } = await useFetch(url, { immediate: true }).get().json()
     selectedIngredient.value.substances = data.value?.substances
   }

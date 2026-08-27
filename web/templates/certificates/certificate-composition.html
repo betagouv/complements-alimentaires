@@ -1,4 +1,4 @@
-{% with declared_plants=declaration.declared_plants.all declared_microorganisms=declaration.declared_microorganisms.all declared_substances=declaration.declared_substances.all declared_ingredients=declaration.declared_ingredients.all %}
+{% with declared_plants=declaration.declared_plants.all declared_microorganisms=declaration.declared_microorganisms.all declared_substances=declaration.declared_substances.all declared_ingredients=declaration.declared_ingredients.all active_declared_ingredients=declaration.active_declared_ingredients inactive_declared_ingredients=declaration.inactive_declared_ingredients %}
 <div id="composition">
 {% if declared_plants %}
 
@@ -25,7 +25,7 @@
                 {% if dp.preparation %}{{ dp.preparation.name }}{% else %}—{% endif %}
             </td>
             <td class="align-right">
-                {% if dp.quantity %}{{ dp.quantity }}{% if dp.unit %}<span style="font-family: sans-serif;"> {{ dp.unit.name }}</span>{% endif %}{% else %}—{% endif %}
+                {% if dp.quantity %}{{ dp.quantity }}{% if dp.unit %}<span class="sans-serif"> {{ dp.unit.name }}</span>{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -77,7 +77,7 @@
                 {% if ds.new %}{{ ds.new_name }}{% else %}{{ ds.substance.name }}{% endif %}
             </td>
             <td class="align-right">
-                {% if ds.quantity %}{{ ds.quantity }}{% if ds.unit %}<span style="font-family: sans-serif;"> {{ ds.unit.name }}</span>{% endif %}{% else %}—{% endif %}
+                {% if ds.quantity %}{{ ds.quantity }}{% if ds.unit %}<span class="sans-serif"> {{ ds.unit.name }}</span>{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -85,7 +85,39 @@
 </table>
 {% endif %}
 
-{% if declared_ingredients %}
+{% if active_ingredient_computed_substances %}
+<table>
+    <caption>Substances provenant des formes d'apport et autres ingrédients actifs :</caption>
+    <thead>
+        <tr>
+            <th>Substance</th>
+            <th>Ingrédients</th>
+            <th class="align-right">Quantité par DJR</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cs in active_ingredient_computed_substances %}
+        <tr>
+            <td>{{ cs.substance.name }}</td>
+            <td class="ingredient-source">
+                <ul>
+                {% for di in active_declared_ingredients %}
+                    {% if cs.substance in di.ingredient.substances.all %}
+                        <li>{{ di.ingredient.name }}</li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </td>
+            <td class="align-right">
+                {% if cs.quantity %}{{ cs.quantity }}{% if cs.unit %}<span class="sans-serif"> {{ cs.unit.name }}</span>{% endif %}{% else %}—{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if inactive_declared_ingredients %}
 <table>
     <caption>Autres ingrédients :</caption>
     <thead>
@@ -95,13 +127,13 @@
         </tr>
     </thead>
     <tbody>
-        {% for di in declared_ingredients %}
+        {% for di in inactive_declared_ingredients %}
         <tr>
             <td>
                 {% if di.new %}{{ di.new_name }}{% else %}{{ di.ingredient.name }}{% endif %}
             </td>
             <td class="align-right">
-                {% if di.quantity %}{{ di.quantity }}{% if di.unit %}<span style="font-family: sans-serif;"> {{ di.unit.name }}</span>{% endif %}{% else %}—{% endif %}
+                {% if di.quantity %}{{ di.quantity }}{% if di.unit %}<span class="sans-serif"> {{ di.unit.name }}</span>{% endif %}{% else %}—{% endif %}
             </td>
         </tr>
         {% endfor %}

@@ -33,7 +33,7 @@
 <script setup>
 import { ref, computed } from "vue"
 import useVuelidate from "@vuelidate/core"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import useToaster from "@/composables/use-toaster"
 import { errorRequiredField, errorRequiredEmail, firstErrorMsg } from "@/utils/forms"
 import { roleNameDisplayNameMapping } from "@/utils/mappings"
@@ -82,7 +82,7 @@ const close = () => {
 }
 
 const { response, data, isFetching, execute } = useFetch(
-  `/api/v1/companies/${props.companyId}/add-new-collaborator/`,
+  `/companies/${props.companyId}/add-new-collaborator/`,
   { headers: headers() },
   { immediate: false }
 )

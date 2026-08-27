@@ -72,8 +72,8 @@
     <div v-if="isFetching && !data" class="flex justify-center my-10">
       <ProgressSpinner />
     </div>
-    <div v-else-if="data?.results?.length">
-      <ControlCompanyTable :data="data" @sort="updateOrdering" />
+    <div>
+      <ControlCompanyTable :key="renderKey" :data="data" @sort="updateOrdering" />
       <DsfrPagination
         v-if="showPagination"
         @update:currentPage="updatePage"
@@ -82,14 +82,15 @@
         :truncLimit="5"
       />
     </div>
-    <div v-else class="border p-4 rounded mb-4 bg-gray-50">
+    <div v-if="!data?.results?.length" class="border p-4 rounded mb-4 bg-gray-50">
       <p class="mb-0">Aucune entreprise trouvée avec les paramètres spécifiés</p>
+      <DsfrButton @click="resetFilters" label="Réinitialiser les filtres" tertiary size="sm" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { computed, watch, ref } from "vue"
 import { getPagesForPagination } from "@/utils/components"
 import { useRoute, useRouter } from "vue-router"
@@ -138,9 +139,7 @@ const commonApiParams = computed(() => {
     apiParams += `&activities=${roles.value.map((x) => allActivities.find((y) => y.label === x).value).join(",")}`
   return apiParams
 })
-const url = computed(
-  () => `/api/v1/control/companies/?limit=${limit.value}&offset=${offset.value}&${commonApiParams.value}`
-)
+const url = computed(() => `/control/companies/?limit=${limit.value}&offset=${offset.value}&${commonApiParams.value}`)
 const { response, data, isFetching, execute } = useFetch(url).get().json()
 
 const fetchSearchResults = async () => {
@@ -155,7 +154,9 @@ const fetchSearchResults = async () => {
 
 // Export Excel
 
-const excelUrl = computed(() => `/api/v1/control/companies-export.xlsx?${commonApiParams.value}`)
+const excelUrl = computed(
+  () => `${import.meta.env.VITE_API_ROOT}/control/companies-export.xlsx?${commonApiParams.value}`
+)
 
 // Mise à jour des paramètres
 const updateQuery = (newQuery) => router.push({ query: { ...route.query, ...{ page: 1 }, ...newQuery } })
@@ -164,6 +165,18 @@ const updatePage = (newPage) => updateQuery({ page: newPage + 1 })
 const updateOrdering = (sortValue) => updateQuery({ triage: sortValue || "-creationDate" })
 
 const search = () => updateQuery({ recherche: searchTerm.value })
+
+// Ceci est un fix temporaire pour débloquer un problème concernant les filtres dans les entêtes
+// du tableau - similaire à celui fait dans DeclarationsTableSection. Les filtres doivent être
+// remis à vide à la main car il ne réagissent pas encore au changement d'URL
+const renderKey = ref(0)
+const resetFilters = async () => {
+  departments.value = []
+  roles.value = []
+  searchTerm.value = ""
+  await router.push({ query: { page: 1 } })
+  renderKey.value++
+}
 
 watch(route, fetchSearchResults)
 watch(departments, () => updateQuery({ departments: departments.value.join(",") }))

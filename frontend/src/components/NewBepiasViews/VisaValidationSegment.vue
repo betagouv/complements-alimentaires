@@ -78,7 +78,7 @@
 import { ref, computed } from "vue"
 import { statusProps } from "@/utils/mappings"
 import { headers } from "@/utils/data-fetching"
-import { useFetch } from "@vueuse/core"
+import { useFetch } from "@/utils/data-fetching"
 import { handleError } from "@/utils/error-handling"
 import useToaster from "@/composables/use-toaster"
 import VisaInfoLine from "./VisaInfoLine.vue"
@@ -136,8 +136,8 @@ const showExpirationDays = computed(() => {
 })
 const postValidationStatus = computed(() => statusProps[declaration.value.postValidationStatus].label)
 
-const refusalUrl = computed(() => `/api/v1/declarations/${declaration.value.id}/refuse-visa/`)
-const acceptanceUrl = computed(() => `/api/v1/declarations/${declaration.value.id}/accept-visa/`)
+const refusalUrl = computed(() => `/declarations/${declaration.value.id}/refuse-visa/`)
+const acceptanceUrl = computed(() => `/declarations/${declaration.value.id}/accept-visa/`)
 const postData = computed(() => overriddenDecision.value || {})
 
 const {
