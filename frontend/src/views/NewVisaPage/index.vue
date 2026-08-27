@@ -160,7 +160,12 @@ onMounted(async () => {
   const fetchMandatedCompany = mandatedCompany ? executeMandatedCompanyFetch : () => Promise.resolve
   const handleMandatedError = mandatedCompany ? () => handleError(mandatedCompanyResponse) : () => Promise.resolve
 
-  await Promise.all([executeDeclarantFetch(), executeCompanyFetch(), fetchMandatedCompany(), executeSnapshotsFetch()])
+  const promises = [executeCompanyFetch(), fetchMandatedCompany(), executeSnapshotsFetch()]
+
+  // Certaines déclarations peuvent ne pas avoir un déclarant·e (par exemple suite aux suppressions de compte)
+  if (declaration.value?.author) promises.push(executeDeclarantFetch())
+
+  await Promise.all(promises)
   await Promise.all([
     handleError(declarantResponse),
     handleError(companyResponse),
