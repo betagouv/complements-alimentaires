@@ -79,6 +79,10 @@ def extract_lists_from_text(
 
 def extract_lists_from_pdf(url, **kwargs):
     text = extract_pdf_text(url)
+    # sometimes have only whitespace in the string,
+    # so make sure to remove that before checking if we have output
+    if text:
+        text = text.strip()
     if not text:
         return
     return extract_lists_from_text(text, **kwargs)
