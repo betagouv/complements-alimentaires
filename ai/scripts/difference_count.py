@@ -78,11 +78,16 @@ def merge_lists(ingredients_lists):
     return merged_lists
 
 
+def save_error(results, error):
+    if "errors" not in results:
+        results["errors"] = []
+    results["errors"].append(error)
+
+
 # ------- Extract data
 
 
-def get_declarations():
-    configuration = CONFIGURATION
+def get_declarations(configuration):
     count = configuration["declarations_count"] or 10
     return Declaration.objects.filter(**configuration["declarations_filter"]).order_by("?")[:count]
 
@@ -112,8 +117,9 @@ def extract_ingredients(configuration, results, declaration):
                     ingredients_lists.append(pdf_lists)
                     results["readable_pdfs"].append(url)
             except Exception as e:
-                print("Error extracting list for pdf label", url)
-                print(e)
+                message = f"Error extracting list for pdf label {url}"
+                print(message)
+                save_error(results, {"message": message, "error": str(e)})
 
         # fallback to OCR for images or non searchable PDFs
         if not ingredients_lists:
@@ -122,8 +128,9 @@ def extract_ingredients(configuration, results, declaration):
                 ingredients_lists.append(extract_lists(url, **config)["ingredients_lists"])
                 results["attachments"].append(url)
             except Exception as e:
-                print("Error extracting list for label", url)
-                print(e)
+                message = f"Error extracting list for label {url}"
+                print(message)
+                save_error(results, {"message": message, "error": str(e)})
     return ingredients_lists
 
 
@@ -182,6 +189,7 @@ def pick_list(results, ingredients_lists):
         keys = list(ingredients_lists.keys())
         if not keys:
             print("No keys!", ingredients_lists)
+            save_error(results, {"message": "No list found"})
             return []
         random_language = keys[randrange(len(keys))]
         ingredients_list = ingredients_lists[random_language]
@@ -197,8 +205,9 @@ def clean_list(configuration, results, ingredients_list):
         config = configuration["clean"] if "clean" in configuration else {}
         cleaned_list = clean_ingredient_list(ingredients_list, **config)
     except Exception as e:
-        print("Error cleaning list")
-        print(e)
+        message = "Error cleaning list"
+        print(message)
+        save_error(results, {"message": message, "error": str(e)})
     results["cleaned_list"] = cleaned_list
     return cleaned_list
 
@@ -213,7 +222,7 @@ def generate_data(configuration):
         "configuration": configuration,
         "declarations": {},
     }
-    declarations = get_declarations()
+    declarations = get_declarations(configuration)
     for d in declarations:
         print("Declaration", d.id)
         declaration_results = {}
