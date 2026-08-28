@@ -59,23 +59,22 @@ def load_json(filename):
 # ensuring ingredients are not lost if there are shared keys
 # this also restructures the langauge lists so that the language is a key and the list a value
 def merge_lists(ingredients_lists):
-    merged_lists = {}
+    merged = {"list": {}, "composition": {}}
     for extraction in ingredients_lists:
         for language_result in extraction:
             # TODO: handle potentially malformatted responses?
             lang = language_result["language"]
             value = language_result["ingredients"]
             list_type = language_result["list_type"]
-            if list_type == "composition":
-                continue
-            if lang not in merged_lists:
-                merged_lists[lang] = copy.deepcopy(value)
+            if lang not in merged[list_type]:
+                merged[list_type][lang] = copy.deepcopy(value)
             else:
-                merged_lists[lang] += value
+                merged[list_type][lang] += value
     # deduplicate
-    for lang, value in merged_lists.items():
-        merged_lists[lang] = list(set(merged_lists[lang]))
-    return merged_lists
+    for list_type, merged_lists in merged.items():
+        for lang, value in merged_lists.items():
+            merged_lists[lang] = list(set(merged_lists[lang]))
+    return merged["list"] if merged["list"] else merged["composition"]
 
 
 def save_error(results, error):
