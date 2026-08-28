@@ -105,6 +105,7 @@ def extract_ingredients(configuration, results, declaration):
     for label in labels:
         # TODO: handle possibility of l.file is None
         url = f"{os.getenv('MEDIA_ROOT_URL')}{label.file.url}"
+        new_lists = []
 
         # PDFs that are searchable are better parsed via text
         # rather than Mistral's Document AI
@@ -114,7 +115,7 @@ def extract_ingredients(configuration, results, declaration):
                 extraction = extract_lists_from_pdf(url, **config)
                 if extraction and "ingredients_lists" in extraction:
                     pdf_lists = extraction["ingredients_lists"]
-                    ingredients_lists.append(pdf_lists)
+                    new_lists.append(pdf_lists)
                     results["readable_pdfs"].append(url)
             except Exception as e:
                 message = f"Error extracting list for pdf label {url}"
@@ -122,15 +123,17 @@ def extract_ingredients(configuration, results, declaration):
                 save_error(results, {"message": message, "error": str(e)})
 
         # fallback to OCR for images or non searchable PDFs
-        if not ingredients_lists:
+        if not new_lists:
             try:
                 config = configuration["ocr"] if "ocr" in configuration else {}
-                ingredients_lists.append(extract_lists(url, **config)["ingredients_lists"])
+                new_lists.append(extract_lists(url, **config)["ingredients_lists"])
                 results["attachments"].append(url)
             except Exception as e:
                 message = f"Error extracting list for label {url}"
                 print(message)
                 save_error(results, {"message": message, "error": str(e)})
+        if new_lists:
+            ingredients_lists += new_lists
     return ingredients_lists
 
 
