@@ -1,18 +1,22 @@
 from .client import client
+from .throttle import throttled
 import json
 
 
+@throttled
 def clean_ingredient_list(
     ing_list,
     model="mistral-medium-latest",
     instructions="Given a series of strings by the user, return an object with a key 'ingredients' with an array of the ingredient names.\nWhere a scientific name is given, return only the scientific name.",
+    # cleaning a list is a deterministic task, a creative model invents ingredients
+    temperature=0.1,
 ):
     response = client.beta.conversations.start(
         inputs=[{"role": "user", "content": json.dumps(ing_list)}],
         model=model,
         instructions=instructions,
         completion_args={
-            "temperature": 0.7,
+            "temperature": temperature,
             "max_tokens": 2048,
             "top_p": 1,
             "response_format": {"type": "json_object"},

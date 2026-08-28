@@ -1,4 +1,5 @@
 from .client import client
+from .throttle import throttled
 import json
 
 
@@ -41,6 +42,7 @@ def match_ingredients(ing_list):
     return matches
 
 
+@throttled
 def match_ingredients_with_ai(ing_list):
     instructions = """You are given a predefined list of ingredient names from a database at the end of these instructions. The user will send a list of ingredients.
     Your role is to search for ingredients from our list that could correspond to the ingredients the user sends.
