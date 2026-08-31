@@ -38,7 +38,7 @@ django-redis==6.0.0
 django-silk==5.4.3
 django-simple-history==3.11.0
 django-storages==1.14.6
-django-viewflow==2.3.2
+django-viewflow==2.4.0
 djangorestframework==3.17.1
 djangorestframework-camel-case==1.4.2
 drf-excel==2.5.3
@@ -86,7 +86,7 @@ pyHanko==0.35.2
 pyhanko-certvalidator==0.31.1
 pypdf==6.15.0
 pyproject_hooks==1.2.0
-pytest==9.0.3
+pytest==9.1.1
 python-bidi==0.6.7
 python-dateutil==2.9.0.post0
 python-discovery==1.5.0
@@ -102,7 +102,7 @@ requests-mock==1.12.1
 rlPyCairo==0.4.0
 ruff==0.15.12
 s3transfer==0.16.0
-sentry-sdk==2.63.0
+sentry-sdk==2.68.0
 sib-api-v3-sdk==7.6.0
 six==1.17.0
 sqlfluff==4.2.2
