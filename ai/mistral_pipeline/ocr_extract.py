@@ -30,6 +30,45 @@ def add_format_boilerplate(schema):
     }
 
 
+OBLIGATORY_MENTIONS = {
+    "obligatory_mentions": {
+        "properties": {
+            "has_product_title": {"description": "A product title is present", "type": "boolean"},
+            "has_best_before_placeholder": {
+                "description": "There is a space to put the best before date, usually preceded by 'A consommer de préférence avant fin:' or similar",
+                "type": "boolean",
+            },
+            "has_address": {"description": "An address is present", "type": "boolean"},
+            "has_dietary_supplement_mention": {
+                "description": "The words 'complément alimentaire' are present",
+                "type": "boolean",
+            },
+            "has_recommended_daily_dose": {"description": "The recommended daily dose is present", "type": "boolean"},
+            "has_warning_exceeding_dose": {
+                "description": "There is a warning to not take more than the daily recommended dose",
+                "type": "boolean",
+            },
+            "has_warning_not_a_substitute": {
+                "description": "Il y a une déclaration visant à éviter que les compléments alimentaires ne soient utilisés comme substituts d'un régime alimentaire varié",
+                "type": "boolean",
+            },
+            "has_warning_keep_away_from_young_children": {
+                "description": "Il y a un avertissement indiquant que les produits doivent être tenus hors de la portée des jeunes enfants",
+                "type": "boolean",
+            },
+        },
+        "type": "object",
+        "required": [
+            "has_product_title",
+            "has_best_before_placeholder",
+            "has_address",
+            "has_dietary_supplement_mention",
+            "has_recommended_daily_dose",
+        ],
+    }
+}
+
+
 def extract_lists_from_text(
     text,
     model="mistral-medium-latest",
@@ -56,9 +95,10 @@ def extract_lists_from_text(
                     "type": "object",
                 },
                 "type": "array",
-            }
+            },
+            **OBLIGATORY_MENTIONS,
         },
-        "required": ["ingredients_lists"],
+        "required": ["ingredients_lists", "obligatory_mentions"],
         "type": "object",
     }
     completion_args = {
@@ -113,9 +153,10 @@ def extract_lists(
                     "type": "object",
                 },
                 "type": "array",
-            }
+            },
+            **OBLIGATORY_MENTIONS,
         },
-        "required": ["ingredients_lists"],
+        "required": ["ingredients_lists", "obligatory_mentions"],
         "type": "object",
     }
     response_format = add_format_boilerplate(schema)
