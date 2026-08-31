@@ -1,0 +1,186 @@
+# ingredients list extraction from mistral
+# https://colab.research.google.com/github/mistralai/cookbook/blob/main/mistral/ocr/data_extraction.ipynb#scrollTo=FZdL0ZXYkO0n
+from .client import client
+import json
+import requests
+from pypdf import PdfReader
+from io import BytesIO
+
+
+# TODO: consider security measures like limiting the size of pdf read or number of pages processed
+# TODO: consider calling the mistral per-page rather than per-file and stopping once a french list is found
+def extract_pdf_text(url):
+    response = requests.get(url)
+    my_raw_data = response.content
+    text = ""
+    with BytesIO(my_raw_data) as data:
+        read_pdf = PdfReader(data)
+        for page in read_pdf.pages:
+            text += page.extract_text()
+    return text
+
+
+def add_format_boilerplate(schema):
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "response_schema",
+            "schema": schema,
+        },
+    }
+
+
+OBLIGATORY_MENTIONS = {
+    "obligatory_mentions": {
+        "properties": {
+            "has_product_title": {"description": "A product title is present", "type": "boolean"},
+            "has_best_before_placeholder": {
+                "description": "There is a space to put the best before date, usually preceded by 'A consommer de préférence avant fin:' or similar",
+                "type": "boolean",
+            },
+            "has_address": {"description": "An address is present", "type": "boolean"},
+            "has_dietary_supplement_mention": {
+                "description": "The words 'complément alimentaire' are present",
+                "type": "boolean",
+            },
+            "has_recommended_daily_dose": {"description": "The recommended daily dose is present", "type": "boolean"},
+            "has_warning_exceeding_dose": {
+                "description": "There is a warning to not take more than the daily recommended dose",
+                "type": "boolean",
+            },
+            "has_warning_not_a_substitute": {
+                "description": "Il y a une déclaration visant à éviter que les compléments alimentaires ne soient utilisés comme substituts d'un régime alimentaire varié",
+                "type": "boolean",
+            },
+            "has_warning_keep_away_from_young_children": {
+                "description": "Il y a un avertissement indiquant que les produits doivent être tenus hors de la portée des jeunes enfants",
+                "type": "boolean",
+            },
+        },
+        "type": "object",
+        "required": [
+            "has_product_title",
+            "has_best_before_placeholder",
+            "has_address",
+            "has_dietary_supplement_mention",
+            "has_recommended_daily_dose",
+        ],
+    }
+}
+
+
+def extract_lists_from_text(
+    text,
+    model="mistral-medium-latest",
+    instructions="The user will send you text extracted from a PDF file. Please respond with a list of ingredients present in the text.",
+    ingredients_description="a list of ingredients present in the text. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
+    list_type_description="'list' or 'composition'",
+):
+    schema = {
+        "properties": {
+            "ingredients_lists": {
+                "items": {
+                    "properties": {
+                        "ingredients": {
+                            "description": ingredients_description,
+                            "type": "array",
+                        },
+                        "language": {
+                            "description": "the language the list is written in, in ISO 639-1 format",
+                            "type": "string",
+                        },
+                        "list_type": {"description": list_type_description, "type": "string"},
+                    },
+                    "required": ["language", "ingredients", "list_type"],
+                    "type": "object",
+                },
+                "type": "array",
+            },
+            **OBLIGATORY_MENTIONS,
+        },
+        "required": ["ingredients_lists", "obligatory_mentions"],
+        "type": "object",
+    }
+    completion_args = {
+        "temperature": 0.7,
+        "max_tokens": 2048,
+        "top_p": 1,
+        "response_format": add_format_boilerplate(schema),
+    }
+    response = client.beta.conversations.start(
+        inputs=[{"role": "user", "content": text}],
+        model=model,
+        instructions=instructions,
+        completion_args=completion_args,
+        tools=[],
+    )
+    return json.loads(response.outputs[0].content)
+
+
+def extract_lists_from_pdf(url, **kwargs):
+    text = extract_pdf_text(url)
+    # sometimes have only whitespace in the string,
+    # so make sure to remove that before checking if we have output
+    if text:
+        text = text.strip()
+    if not text:
+        return
+    return extract_lists_from_text(text, **kwargs)
+
+
+def extract_lists(
+    url,
+    model="mistral-ocr-4-0",
+    ingredients_description="a list of ingredients present in the file. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
+    list_type_description="'list' or 'composition'",
+):
+    schema = {
+        "properties": {
+            "ingredients_lists": {
+                "items": {
+                    "properties": {
+                        "ingredients": {
+                            "description": ingredients_description,
+                            "type": "array",
+                        },
+                        "language": {
+                            "description": "the language the list is written in, in ISO 639-1 format",
+                            "type": "string",
+                        },
+                        "list_type": {"description": list_type_description, "type": "string"},
+                    },
+                    "required": ["language", "ingredients", "list_type"],
+                    "type": "object",
+                },
+                "type": "array",
+            },
+            **OBLIGATORY_MENTIONS,
+        },
+        "required": ["ingredients_lists", "obligatory_mentions"],
+        "type": "object",
+    }
+    response_format = add_format_boilerplate(schema)
+    # accepts image (inc gif), and pdf
+    response = client.ocr.process(
+        model=model,
+        document={"type": "document_url", "document_url": url},
+        document_annotation_format=response_format,
+        include_image_base64=False,
+        extract_header=False,
+        extract_footer=False,
+        confidence_scores_granularity="page",
+    )
+
+    # Convert response to JSON format
+    response_dict = json.loads(response.model_dump_json())
+    # of interest: response[pages][0][confidence_scores][average_page_confidence_score/minimum_page_confidence_score]
+    # response[usage_info]
+    return json.loads(response_dict["document_annotation"])
+
+
+def get_french_list(ingredients_lists):
+    for ing_list in ingredients_lists:
+        if ing_list["language"] == "fr":
+            return ing_list["ingredients"]
+    print("No french list detected!")
+    return []

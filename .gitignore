@@ -181,3 +181,5 @@ shell.nix
 
 # Database
 .postgres
+
+ai/scripts/results/
