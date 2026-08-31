@@ -2,6 +2,8 @@ import { createApp } from "vue"
 import "./styles/index.css"
 import VueMatomo from "vue-matomo"
 import "@gouvfr/dsfr/dist/dsfr.min.css" // Import des styles du DSFR
+import "@gouvfr/dsfr-chart/BarChart"
+import "@gouvfr/dsfr-chart/BarChart.css"
 import "@gouvminint/vue-dsfr/styles" // Import des styles globaux propre à VueDSFR
 import VueDsfr from "@gouvminint/vue-dsfr" // Import (par défaut) de la bibliothèque
 
