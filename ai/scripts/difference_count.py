@@ -114,7 +114,7 @@ def extract_ingredients(configuration, results, declaration):
             try:
                 config = configuration["pdf_text"] if "pdf_text" in configuration else {}
                 extraction = extract_lists_from_pdf(url, **config)
-                if extraction and "ingredients_lists" in extraction:
+                if extraction and "ingredients_lists" in extraction and extraction["ingredients_lists"]:
                     pdf_lists = extraction["ingredients_lists"]
                     new_lists.append(pdf_lists)
                     results["readable_pdfs"].append(url)
