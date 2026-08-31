@@ -21,7 +21,7 @@ class TestCompanyClaims(APITestCase):
     @override_settings(CONTACT_EMAIL="contact@example.com")
     @override_settings(SECURE=True)
     @override_settings(HOSTNAME="hostname")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     @authenticate
     def test_company_access_claim_declarant(self, mocked_brevo):
         """

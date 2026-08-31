@@ -271,7 +271,7 @@ class TestAddNewCollaborator(ProjectAPITestCase):
     @override_settings(CONTACT_EMAIL="contact@example.com")
     @override_settings(SECURE=True)
     @override_settings(HOSTNAME="hostname")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_add_collaborator_without_account_but_invitation_already_sent_ko(self, mocked_brevo):
         self.login(self.adder)
         CollaborationInvitationFactory(recipient_email=self.recipient_email, company=self.company)
@@ -293,7 +293,7 @@ class TestAddNewCollaborator(ProjectAPITestCase):
     @override_settings(CONTACT_EMAIL="contact@example.com")
     @override_settings(SECURE=True)
     @override_settings(HOSTNAME="hostname")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_add_collaborator_without_account_ok(self, mocked_brevo):
         # L'invité n'existe pas en base, et aucune invitation n'a été envoyée
         self.login(self.adder)
@@ -317,7 +317,7 @@ class TestAddNewCollaborator(ProjectAPITestCase):
     @override_settings(CONTACT_EMAIL="contact@example.com")
     @override_settings(SECURE=True)
     @override_settings(HOSTNAME="hostname")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_add_collaborator_already_a_collaborator_ko(self, mocked_brevo):
         # L'invité existe en base et fait déjà partie des collaborateurs de l'entreprise.
         self.login(self.adder)
@@ -331,7 +331,7 @@ class TestAddNewCollaborator(ProjectAPITestCase):
     @override_settings(CONTACT_EMAIL="contact@example.com")
     @override_settings(SECURE=True)
     @override_settings(HOSTNAME="hostname")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_add_collaborator_with_account_ok(self, mocked_brevo):
         # L'invité existe en base mais n'est pas encore collaborateur de l'entreprise.
         self.login(self.adder)
@@ -384,7 +384,7 @@ class TestAddNewCollaborator(ProjectAPITestCase):
 
 class TestMandatedCompanies(APITestCase):
     @authenticate
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_add_mandated_company(self, mock):
         """
         Le gestionnaire d'une entreprise peut ajouter une autre entreprise en tant
@@ -440,7 +440,7 @@ class TestMandatedCompanies(APITestCase):
         mock.reset_mock()
 
     @authenticate
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_add_mandated_company_not_found(self, mock):
         """
         Si l'entreprise mandatée ne se trove pas dans notre base de données l'API
@@ -456,7 +456,7 @@ class TestMandatedCompanies(APITestCase):
         mock.assert_not_called()
 
     @authenticate
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_add_mandated_company_forbidden(self, mock):
         """
         L'utilisateur·ice doit avoir les droits de supervision pour l'entreprise
@@ -471,7 +471,7 @@ class TestMandatedCompanies(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_add_mandated_company_declarant(self, mock):
         """
         Le rôle de déclarant·e ne permet pas d'ajouter une entreprise mandatée
@@ -485,7 +485,7 @@ class TestMandatedCompanies(APITestCase):
 
         mock.assert_not_called()
 
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_add_mandated_company_unauthenticated(self, mock):
         """
         L'endpoint API n'est pas accessible sans authentifications
@@ -499,7 +499,7 @@ class TestMandatedCompanies(APITestCase):
         mock.assert_not_called()
 
     @authenticate
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_remove_mandated_company(self, mock):
         """
         Le gestionnaire d'une entreprise peut enlever une entreprise mandataire.
@@ -521,7 +521,7 @@ class TestMandatedCompanies(APITestCase):
         mock.assert_not_called()
 
     @authenticate
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_remove_unexistent_company(self, mock):
         """
         Lors qu'on spécifie une entreprise non-mandatée la réponse est 200 et aucun
@@ -542,7 +542,7 @@ class TestMandatedCompanies(APITestCase):
         mock.assert_not_called()
 
     @authenticate
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_remove_mandated_company_forbidden(self, mock):
         """
         L'utilisateur·ice doit avoir les droits de supervision pour l'entreprise
@@ -559,7 +559,7 @@ class TestMandatedCompanies(APITestCase):
         mock.assert_not_called()
 
     @authenticate
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_remove_mandated_company_declarant(self, mock):
         """
         Le rôle déclarant·e ne suffit pas pour enlever une entreprise mandatée
@@ -573,7 +573,7 @@ class TestMandatedCompanies(APITestCase):
 
         mock.assert_not_called()
 
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_remove_mandated_company_unauthenticated(self, mock):
         """
         L'endpoint API n'est pas accessible sans authentifications

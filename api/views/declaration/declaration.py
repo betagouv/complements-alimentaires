@@ -559,14 +559,14 @@ class DeclarationFlowView(GenericAPIView):
         self.on_transition_success(request, declaration)
         if brevo_template_id and declaration.author:
             try:
-                email.send_sib_template(
+                email.send_sib_template.delay(
                     brevo_template_id,
                     self.get_brevo_parameters(request, declaration),
                     declaration.author.email,
                     declaration.author.get_full_name(),
                 )
             except Exception as e:
-                logger.error(f"Email not sent on transition {self.get_transition(request, declaration)}")
+                logger.error(f"Error calling email task on transition {self.get_transition(request, declaration)}")
                 logger.exception(e)
         declaration.save()
         serializer = self.get_serializer(declaration)

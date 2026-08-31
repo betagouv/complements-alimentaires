@@ -1,5 +1,8 @@
+from .celery import app
+from celery import Task
 import enum
 from django.conf import settings
+import logging
 
 import sib_api_v3_sdk
 
@@ -7,6 +10,19 @@ configuration = sib_api_v3_sdk.Configuration()
 configuration.api_key["api-key"] = settings.ANYMAIL.get("SENDINBLUE_API_KEY")
 api_client = sib_api_v3_sdk.ApiClient(configuration)
 email_api_instance = sib_api_v3_sdk.TransactionalEmailsApi(api_client)
+
+HALF_DAY = 60 * 60 * 12
+logger = logging.getLogger(__name__)
+
+
+class EmailTaskWithRetry(Task):
+    autoretry_for = (sib_api_v3_sdk.rest.ApiException,)
+    max_retries = 5
+    # reessayer : demie journée, un jour, deux jours, quatre jours, huit jours.
+    # alors on a 15 jours pour resoudre le problème.
+    retry_backoff = HALF_DAY
+    retry_backoff_max = HALF_DAY * 32
+    retry_jitter = False
 
 
 class EmailTemplateID(enum.Enum):
@@ -31,15 +47,20 @@ class EmailTemplateID(enum.Enum):
     DECLARATION_EXPIRED = 9
 
 
+@app.task(base=EmailTaskWithRetry)
 def send_sib_template(template_id, parameters, to_email, to_name):
     """
     Permet d'envoyer un email transactionnel précédemment défini dans Brevo.
     """
-    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-        to=[{"email": to_email, "name": to_name}],
-        params=parameters,
-        sender={"email": settings.CONTACT_EMAIL, "name": "Compl'Alim"},
-        reply_to={"email": settings.CONTACT_EMAIL, "name": "Compl'Alim"},
-        template_id=template_id,
-    )
-    email_api_instance.send_transac_email(send_smtp_email)
+    try:
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{"email": to_email, "name": to_name}],
+            params=parameters,
+            sender={"email": settings.CONTACT_EMAIL, "name": "Compl'Alim"},
+            reply_to={"email": settings.CONTACT_EMAIL, "name": "Compl'Alim"},
+            template_id=template_id,
+        )
+        email_api_instance.send_transac_email(send_smtp_email)
+    except Exception as exc:
+        logger.exception(exc)
+        raise exc  # let autoretry handle it

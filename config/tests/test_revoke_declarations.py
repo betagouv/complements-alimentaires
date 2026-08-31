@@ -12,7 +12,7 @@ from data.models import Declaration, IngredientStatus
 
 
 class TestRevokeDeclarations(TestCase):
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_revoke_authorisation_from_declarations(self, mocked_brevo):
         """
         Déclarations autorisées peuvent être retirées du marché par l'administration
@@ -42,7 +42,7 @@ class TestRevokeDeclarations(TestCase):
             declaration.author.get_full_name(),
         )
 
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_cannot_revoke_unauthorized_declarations(self, mocked_brevo):
         """
         Les déclarations qui ne sont pas autorisées ne peuvent pas basculer au statut
@@ -59,7 +59,7 @@ class TestRevokeDeclarations(TestCase):
         self.assertEqual(declaration.revoked_ingredient, {})
         mocked_brevo.assert_not_called()
 
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_cannot_revoke_declarations_for_non_revoked_ingredient(self, mocked_brevo):
         ingredient = IngredientFactory(status=IngredientStatus.AUTHORIZED)
         declaration = AuthorizedDeclarationFactory()

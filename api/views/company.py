@@ -273,7 +273,7 @@ class AddMandatedCompanyView(GenericAPIView):
 
         for supervisor in mandated_company.supervisor_roles.all():
             try:
-                email.send_sib_template(
+                email.send_sib_template.delay(
                     email.EmailTemplateID.COMPANY_GIVEN_MANDATE.value,
                     {
                         "COMPANY_NAME": company.social_name,
@@ -284,7 +284,9 @@ class AddMandatedCompanyView(GenericAPIView):
                     supervisor.user.get_full_name(),
                 )
             except Exception as _:
-                logger.exception(f"Email not sent on AddMandatedCompanyView for recipient {supervisor.user.id}")
+                logger.exception(
+                    f"Error calling email task on AddMandatedCompanyView for recipient {supervisor.user.id}"
+                )
 
         serializer = self.get_serializer(company)
         return Response(serializer.data)

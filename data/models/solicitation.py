@@ -106,7 +106,7 @@ class SupervisionClaim(BaseSolicitation, models.Model):
         self.recipients.set(recipients)  # TODO: Je ne pense pas que le self.recipients sert à quelque chose
         for recipient in recipients:
             try:
-                email.send_sib_template(
+                email.send_sib_template.delay(
                     email.EmailTemplateID.REQUEST_TO_JOIN_EMPTY_COMPANY.value,
                     {
                         "REQUESTER_NAME": self.sender.get_full_name(),
@@ -119,7 +119,7 @@ class SupervisionClaim(BaseSolicitation, models.Model):
                     recipient.get_full_name(),
                 )
             except Exception as e:
-                logger.error(f"Email not sent on SupervisionClaim creation with id {self.id}")
+                logger.error(f"Error calling email task on SupervisionClaim creation with id {self.id}")
                 logger.exception(e)
 
     @processable_action
@@ -175,7 +175,7 @@ class CompanyAccessClaim(BaseSolicitation, models.Model):
         self.recipients.set(recipients)
         for recipient in self.recipients.all():
             try:
-                email.send_sib_template(
+                email.send_sib_template.delay(
                     email.EmailTemplateID.REQUEST_TO_JOIN_COMPANY.value,
                     {
                         "REQUESTER_NAME": self.sender.get_full_name(),
@@ -187,7 +187,7 @@ class CompanyAccessClaim(BaseSolicitation, models.Model):
                     recipient.get_full_name(),
                 )
             except Exception as e:
-                logger.error(f"Email not sent on CompanyAccessClaim creation with id {self.id}")
+                logger.error(f"Error calling email task on CompanyAccessClaim creation with id {self.id}")
                 logger.exception(e)
 
     @processable_action
@@ -198,7 +198,7 @@ class CompanyAccessClaim(BaseSolicitation, models.Model):
             self.company.declarants.add(self.sender)
 
         try:
-            email.send_sib_template(
+            email.send_sib_template.delay(
                 email.EmailTemplateID.ACCEPT_REQUEST_TO_JOIN_COMPANY.value,
                 {
                     "REQUESTER_NAME": self.sender.get_full_name(),
@@ -209,13 +209,13 @@ class CompanyAccessClaim(BaseSolicitation, models.Model):
                 self.sender.get_full_name(),
             )
         except Exception as e:
-            logger.error(f"Email not sent on CompanyAccessClaim accept action with id {self.id}")
+            logger.error(f"Error calling email task on CompanyAccessClaim accept action with id {self.id}")
             logger.exception(e)
 
     @processable_action
     def refuse(self, processor):
         try:
-            email.send_sib_template(
+            email.send_sib_template.delay(
                 email.EmailTemplateID.REFUSE_REQUEST_TO_JOIN_COMPANY.value,
                 {
                     "COMPANY_NAME": self.company.social_name,
@@ -224,7 +224,7 @@ class CompanyAccessClaim(BaseSolicitation, models.Model):
                 self.sender.get_full_name(),
             )
         except Exception as e:
-            logger.error(f"Email not sent on CompanyAccessClaim refuse action with id {self.id}")
+            logger.error(f"Error calling email task on CompanyAccessClaim refuse action with id {self.id}")
             logger.exception(e)
 
 
@@ -254,7 +254,7 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
 
     def create_hook(self):
         try:
-            email.send_sib_template(
+            email.send_sib_template.delay(
                 email.EmailTemplateID.INVITE_TO_JOIN_COMPANY.value,
                 {
                     "COMPANY_NAME": self.company.social_name,
@@ -265,7 +265,7 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
                 self.recipient_email,
             )
         except Exception as e:
-            logger.error(f"Email not sent on CollaborationInvitation creation with id {self.id}")
+            logger.error(f"Error calling email task on CollaborationInvitation creation with id {self.id}")
             logger.exception(e)
 
     @processable_action
@@ -276,7 +276,7 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
             role_class.objects.get_or_create(company=self.company, user=processor)
 
         try:
-            email.send_sib_template(
+            email.send_sib_template.delay(
                 email.EmailTemplateID.COMPANY_INVITATION_ACCEPTED.value,
                 {
                     "COMPANY_NAME": self.company.social_name,
@@ -287,5 +287,5 @@ class CollaborationInvitation(BaseSolicitation, models.Model):
                 self.sender.get_full_name(),
             )
         except Exception as e:
-            logger.error(f"Email not sent on CollaborationInvitation account_created with id {self.id}")
+            logger.error(f"Error calling email task on CollaborationInvitation account_created with id {self.id}")
             logger.exception(e)

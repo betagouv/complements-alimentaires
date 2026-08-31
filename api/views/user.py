@@ -35,14 +35,14 @@ def _send_verification_mail(user):
     new_token = MagicLinkToken.objects.create(user=user, usage=MagicLinkUsage.VERIFY_EMAIL_ADDRESS)
     verification_url = urljoin(get_base_url(), new_token.as_url(key=new_token.key))
     try:
-        email.send_sib_template(
+        email.send_sib_template.delay(
             email.EmailTemplateID.CONFIRM_EMAIL.value,
             {"CONFIRMATION_LINK": verification_url},
             user.email,
             user.get_full_name(),
         )
     except Exception as e:
-        logger.error(f"Email verification email not sent on _send_verification_mail for recipient {user.email}")
+        logger.error(f"Error calling email task on _send_verification_mail for recipient {user.email}")
         logger.exception(e)
 
 

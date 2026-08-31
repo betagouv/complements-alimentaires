@@ -13,7 +13,7 @@ from data.models import Declaration
 class TestExpirationReminder(TestCase):
     @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
     @override_settings(CONTACT_EMAIL="contact@example.com")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_send_reminders_before_expiration(self, mocked_brevo):
         """
         Un rappel doit être envoyé à l'auteur·ice d'une déclaration avant son expiration
@@ -42,7 +42,7 @@ class TestExpirationReminder(TestCase):
 
     @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
     @override_settings(CONTACT_EMAIL="contact@example.com")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_multiple_snapshots(self, mocked_brevo):
         """
         Seulement le dernier snapshot « observation » ou « objection » sera pris en compte
@@ -79,7 +79,7 @@ class TestExpirationReminder(TestCase):
 
     @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
     @override_settings(CONTACT_EMAIL="contact@example.com")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_do_not_send_early_reminders(self, mocked_brevo):
         """
         Un rappel ne doit pas être envoyé trop tôt
@@ -101,7 +101,7 @@ class TestExpirationReminder(TestCase):
 
     @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
     @override_settings(CONTACT_EMAIL="contact@example.com")
-    @mock.patch("config.email.send_sib_template")
+    @mock.patch("config.email.send_sib_template.delay")
     def test_do_not_send_late_reminders(self, mocked_brevo):
         """
         Un rappel ne doit pas être envoyé trop tard

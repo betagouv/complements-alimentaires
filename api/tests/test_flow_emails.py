@@ -28,7 +28,7 @@ from .utils import authenticate
 
 @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
 @override_settings(CONTACT_EMAIL="contact@example.com")
-@mock.patch("config.email.send_sib_template")
+@mock.patch("config.email.send_sib_template.delay")
 class TestDeclarationFlow(APITestCase):
     @authenticate
     def test_submit_declaration(self, mocked_brevo):
