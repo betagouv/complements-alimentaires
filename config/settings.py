@@ -74,6 +74,7 @@ THIRD_PARTY_APPS = [
     "phonenumber_field",
     "hijack",
     "hijack.contrib.admin",
+    "mozilla_django_oidc",
 ]
 
 if ENABLE_SILK:
@@ -102,6 +103,7 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
     "hijack.middleware.HijackUserMiddleware",
     "config.middleware.SecureFileServingMiddleware",
+    "mozilla_django_oidc.middleware.SessionRefresh",
 ]
 
 if ENABLE_SILK:
@@ -172,6 +174,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "web.views.ProConnectBackend",
+)
+
+OIDC_RP_CLIENT_ID = env("OIDC_RP_CLIENT_ID", default="")
+OIDC_RP_CLIENT_SECRET = env("OIDC_RP_CLIENT_SECRET", default="")
+OIDC_RP_SIGN_ALGO = "RS256"
+OIDC_OP_JWKS_ENDPOINT = env("OIDC_OP_JWKS_ENDPOINT", default="")
+OIDC_OP_AUTHORIZATION_ENDPOINT = env("OIDC_OP_AUTHORIZATION_ENDPOINT", default="")
+OIDC_OP_TOKEN_ENDPOINT = env("OIDC_OP_TOKEN_ENDPOINT", default="")
+OIDC_OP_USER_ENDPOINT = env("OIDC_OP_USER_ENDPOINT", default="")
+OIDC_RP_SCOPES = "openid email given_name usual_name siret"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -230,8 +245,9 @@ SESSION_COOKIE_AGE = 31536000
 SESSION_COOKIE_SECURE = env("SECURE", cast=bool)
 SESSION_COOKIE_HTTPONLY = True
 
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = os.getenv("LOGIN_REDIRECT_URL", "/")
+# oui, l'URL de deconnexion est le même que pour connexion
+LOGOUT_REDIRECT_URL = os.getenv("LOGIN_REDIRECT_URL", "/")
 LOGIN_URL = "/s-identifier"
 
 HOSTNAME = env("HOSTNAME")

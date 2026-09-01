@@ -142,7 +142,28 @@ VITE_ENVIRONMENT= Optionnel - si cette variable est remplie un badge sera visibl
 VITE_MATOMO_ID (optionnel)= L'ID pour le suivi avec Matomo. Compl-alim utilise l'ID 95 pour la prod, en local c'est mieux de le laisser vide
 VITE_OBSERVATION_DAYS (optionnel)= Le nombre de jours proposé pour une période d'observation. Par défaut c'est 15.
 VITE_CONTACT_EMAIL= par ex. 'contact@example.com'
+VITE_ENABLE_PROCONNECT (optionnel)= True/False pour permettre la connexion avec ProConnect. Voir en dessous pour les autres variables nécessaire pour faire tourner ProConnect
 ```
+
+#### Configuration pour tester ProConnect
+
+Pour récuperer le client ID et secret, visiter [le portail ProConnect](https://partenaires.proconnect.gouv.fr/apps) et créer ou accèder à l'application.
+
+Pour apprendre plus de ProConnect, voir la documentation [Fournisseur Service](https://partenaires.proconnect.gouv.fr/docs/fournisseur-service).
+
+```
+OIDC_RP_CLIENT_ID=
+OIDC_RP_CLIENT_SECRET=
+OIDC_OP_JWKS_ENDPOINT=<ProConnect URL d'integration>/api/v2/jwks
+OIDC_OP_AUTHORIZATION_ENDPOINT=<ProConnect URL d'integration>/api/v2/authorize
+OIDC_OP_TOKEN_ENDPOINT=<ProConnect URL d'integration>/api/v2/token
+OIDC_OP_USER_ENDPOINT=<ProConnect URL d'integration>/api/v2/userinfo
+HOSTNAME=127.0.0.1:8000
+ALLOWED_HOSTS=127.0.0.1
+LOGIN_REDIRECT_URL=http://127.0.0.1:<port du front>/
+```
+
+`LOGIN_REDIRECT_URL` est que nécessaire en locale pour gérer les ports entre le front et le back.
 
 #### Créer les différents modèles Django dans la base de données
 

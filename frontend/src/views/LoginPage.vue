@@ -1,6 +1,7 @@
 <template>
   <SingleItemWrapper>
     <h1>Se connecter</h1>
+    <ProConnect />
     <FormWrapper :externalResults="$externalResults">
       <SendNewSignupVerificationEmail v-if="showSendNewConfirmationMail" :userId="userIdForNewConfirmationMail" />
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'username')">
@@ -49,6 +50,7 @@ import FormWrapper from "@/components/FormWrapper"
 import SingleItemWrapper from "@/components/SingleItemWrapper"
 import SendNewSignupVerificationEmail from "@/components/SendNewSignupVerificationEmail"
 import PasswordDisplayToggle from "@/components/PasswordDisplayToggle"
+import ProConnect from "@/components/ProConnect"
 
 const router = useRouter()
 const route = useRoute()

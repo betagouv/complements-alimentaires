@@ -59,6 +59,7 @@ jmespath==1.1.0
 kombu==5.6.2
 lxml==6.1.1
 MarkupSafe==3.0.3
+mozilla-django-oidc==5.0.2
 nab-index==0.0.12
 nab-python==0.0.12
 nab-resolver==0.0.12

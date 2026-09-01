@@ -6,6 +6,7 @@ from django.urls import path, re_path
 
 urlpatterns = [
     path(f"platform/{settings.ADMIN_URL}/", admin.site.urls),
+    path("platform/oidc/", include("mozilla_django_oidc.urls")),
     path("platform/prose/", include("prose.urls")),
     path("platform/hijack/", include("hijack.urls")),
 ]
