@@ -142,6 +142,7 @@ VITE_ENVIRONMENT= Optionnel - si cette variable est remplie un badge sera visibl
 VITE_MATOMO_ID (optionnel)= L'ID pour le suivi avec Matomo. Compl-alim utilise l'ID 95 pour la prod, en local c'est mieux de le laisser vide
 VITE_OBSERVATION_DAYS (optionnel)= Le nombre de jours proposé pour une période d'observation. Par défaut c'est 15.
 VITE_CONTACT_EMAIL= par ex. 'contact@example.com'
+VITE_ENABLE_PROCONNECT (optionnel)= True/False pour permettre la connexion avec ProConnect. Voir en dessous pour les autres variables nécessaire pour faire tourner ProConnect
 ```
 
 #### Configuration pour tester ProConnect
