@@ -89,7 +89,7 @@ pyproject_hooks==1.2.0
 pytest==9.1.1
 python-bidi==0.6.7
 python-dateutil==2.9.0.post0
-python-discovery==1.5.0
+python-discovery==1.5.3
 python-magic==0.4.27
 pytz==2026.2
 PyYAML==6.0.3
