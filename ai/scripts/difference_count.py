@@ -238,10 +238,12 @@ def extract_ingredients(configuration, results, declaration):
     ingredients_lists = []
     results["attachments"] = []
     results["readable_pdfs"] = []
+    results["obligatory_mentions"] = []
     for label in labels:
         # TODO: handle possibility of l.file is None
         url = f"{os.getenv('MEDIA_ROOT_URL')}{label.file.url}"
         new_lists = []
+        extraction = None
 
         # PDFs that are searchable are better parsed via text
         # rather than Mistral's Document AI
@@ -249,7 +251,7 @@ def extract_ingredients(configuration, results, declaration):
             try:
                 config = configuration["pdf_text"] if "pdf_text" in configuration else {}
                 extraction = extract_lists_from_pdf(url, **config)
-                if extraction and "ingredients_lists" in extraction:
+                if extraction and "ingredients_lists" in extraction and extraction["ingredients_lists"]:
                     pdf_lists = extraction["ingredients_lists"]
                     new_lists.append(pdf_lists)
                     results["readable_pdfs"].append(url)
@@ -262,7 +264,8 @@ def extract_ingredients(configuration, results, declaration):
         if not new_lists:
             try:
                 config = configuration["ocr"] if "ocr" in configuration else {}
-                new_lists.append(extract_lists(url, **config)["ingredients_lists"])
+                extraction = extract_lists(url, **config)
+                new_lists.append(extraction["ingredients_lists"])
                 results["attachments"].append(url)
             except Exception as e:
                 message = f"Error extracting list for label {url}"
@@ -270,6 +273,8 @@ def extract_ingredients(configuration, results, declaration):
                 save_error(results, {"message": message, "error": str(e)})
         if new_lists:
             ingredients_lists += new_lists
+        if extraction and "obligatory_mentions" in extraction:
+            results["obligatory_mentions"].append(extraction["obligatory_mentions"])
     return ingredients_lists
 
 
@@ -439,6 +444,32 @@ def save_differential(results):
     results["total_ingredient_count_difference"] = results["list_count"] - results["total_ingredients_count"]
 
 
+def calculate_trust_score(results):
+    trust = 1
+    # does the declaration only have one declared ingredient?
+    declared_count = results["declared_ingredients_count"]
+    declared_difference_count = results["declared_ingredient_count_difference"]
+    if declared_difference_count > 0:
+        # declarations with one ingredient are suspicious,
+        # expontentially worse with every missed ingredient
+        exponent = 2 if declared_count == 1 else 1
+        trust -= (declared_difference_count ^ exponent) * 0.1
+    # how is it on obligatory mentions?
+    obligatory_mentions = {}
+    for page in results["obligatory_mentions"]:
+        for key, value in page.items():
+            obligatory_mentions[key] = value or obligatory_mentions.get(key, False)
+    mention_score = 0
+    for mention, value in obligatory_mentions.items():
+        mention_score += 1 if value else 0
+    max_score = len(obligatory_mentions.keys())
+    if not max_score:
+        print("No obligatory mentions detected!")
+    else:
+        trust -= (max_score - mention_score) / max_score
+    results["trust"] = max(trust, 0)
+
+
 def generate_data(configuration):
     data = {
         "configuration": configuration,
@@ -467,6 +498,7 @@ def generate_data(configuration):
         cleaned_list = rescue_composition_names(configuration, declaration_results, cleaned_list)
         declaration_results["list_count"] = len(cleaned_list)
         save_differential(declaration_results)
+        calculate_trust_score(declaration_results)
 
         # finally, save the results
         data["declarations"][d.id] = declaration_results
@@ -504,6 +536,8 @@ def summarise(results):
     ids_lang_differences = []
     ids_non_french = []
     ids_no_list_found = []
+    trust_threshold = 0.5
+    low_trust = []
     for id, d in declarations.items():
         # when no list could be read from the labels at all, the difference is
         # the whole declared count: that is an extraction failure rather than a
@@ -517,6 +551,8 @@ def summarise(results):
             ids_lang_differences.append(id)
         if "list_lang" in d and d["list_lang"] != "fr":
             ids_non_french.append(id)
+        if d.get("trust", 1) < trust_threshold:
+            low_trust.append(id)
     summary = {
         "configuration": results["configuration"],
         "declarations_count": len(declarations),
@@ -525,6 +561,7 @@ def summarise(results):
         "lang_differences": ids_lang_differences,
         "non_french_declarations": ids_non_french,
         "no_list_found": ids_no_list_found,
+        "low_trust": low_trust,
         # later could add per-article, language or other groupings
     }
     return summary
