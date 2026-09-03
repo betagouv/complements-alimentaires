@@ -146,7 +146,7 @@ class VerifyEmailView(APIView):
         user = MagicLinkToken.run_email_verification(key)
         if user:
             # we log the user in to avoid an unnecessary login step
-            login(request, user)  # will create the user session
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             return Response({"csrf_token": get_token(request)})
         else:
             raise ProjectAPIException(
