@@ -613,8 +613,34 @@ def format_declared_ingredient(name, synonyms_cache):
     return label
 
 
-# keys are ordered for reading: the counts and their difference first, then
-# both ingredient lists one after the other, and finally the links to check
+# extracted (a) vs declared (b). The five labels overlap if taken literally
+# (a=b is also within 30%, a=0 is also a<b), so they are assigned in this
+# order, each declaration counted once:
+#   nothing extracted → a = 0
+#   perfect           → a = b
+#   slight difference → b is within ±30% of a
+#   over              → a > b
+#   under             → a < b
+SLIGHT_DIFFERENCE_RATIO = 0.30
+COUNT_OUTCOMES = ("perfect", "slight difference", "over", "nothing extracted", "under")
+
+
+def classify_count_outcome(extracted, declared):
+    a = extracted or 0
+    b = declared or 0
+    if a == 0:
+        return "nothing extracted"
+    if a == b:
+        return "perfect"
+    if abs(b - a) <= SLIGHT_DIFFERENCE_RATIO * a:
+        return "slight difference"
+    if a > b:
+        return "over"
+    return "under"
+
+
+# keys are ordered for reading: the outcome and the counts first, then both
+# ingredient lists one after the other, and finally the links to check
 def build_declaration_comparison(results, synonyms_cache):
     declared_ingredients = sorted(results.get("declared_ingredients", []), key=normalise)
     cleaned_list = results.get("cleaned_list", [])
@@ -628,10 +654,13 @@ def build_declaration_comparison(results, synonyms_cache):
     # only worth reading when the composition was mistaken for the ingredients,
     # or when dropping it left the declaration without a list
     ignored_compositions = get_composition_candidates(results, cleaned_list)
+    extracted = results.get("list_count")
+    declared = results.get("declared_ingredients_count")
 
     return {
-        "declared": results.get("declared_ingredients_count"),
-        "extracted": results.get("list_count"),
+        "outcome": classify_count_outcome(extracted, declared),
+        "declared": declared,
+        "extracted": extracted,
         "difference": results.get("declared_ingredient_count_difference"),
         "declared_ingredients": [format_declared_ingredient(name, synonyms_cache) for name in declared_ingredients],
         "extracted_ingredients": extracted_ingredients,
@@ -649,10 +678,18 @@ def build_declaration_comparison(results, synonyms_cache):
 def compare(data):
     # synonyms are the same for every declaration, so they are looked up once
     synonyms_cache = {}
-    comparison = {"generated_at": timezone.now().isoformat(), "declarations": {}}
+    counts = {label: 0 for label in COUNT_OUTCOMES}
+    declarations = {}
     for declaration_id, results in data["declarations"].items():
-        comparison["declarations"][declaration_id] = build_declaration_comparison(results, synonyms_cache)
-    return comparison
+        entry = build_declaration_comparison(results, synonyms_cache)
+        counts[entry["outcome"]] += 1
+        declarations[declaration_id] = entry
+    # counts first, so they are what you see on opening the file
+    return {
+        "generated_at": timezone.now().isoformat(),
+        "counts": counts,
+        "declarations": declarations,
+    }
 
 
 # ------- main
@@ -668,8 +705,9 @@ def compare(data):
 # run_complete writes three files, all prefixed with the run timestamp:
 # - <timestamp>.json              the raw data for every declaration
 # - <timestamp>_summary.json      the aggregated count differences
-# - <timestamp>_comparaison.json  per declaration, the count differences then
-#                                 both ingredient lists one after the other,
+# - <timestamp>_comparaison.json  counts by outcome first (perfect / slight
+#                                 difference / over / nothing extracted / under),
+#                                 then per declaration the lists side by side
 #                                 for manual checking
 # Both derived files can be regenerated from the raw json without calling the
 # AI again, with s.summarise_from_file(...) and s.compare_from_file(...)
