@@ -16,6 +16,7 @@ from data.factories import (
     VisaRoleFactory,
 )
 from data.factories.user import UserFactory
+from tokens.models import MagicLinkToken, MagicLinkUsage
 
 from .utils import ProjectAPITestCase, authenticate
 
@@ -489,3 +490,33 @@ class TestGenerateUsername(ProjectAPITestCase):
         response = self.get(self.url() + "?first_name=S.L.&last_name=UNIK%20HEALTH&NUTRITION")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {"username": "sl.unik-health"})
+
+
+@override_settings(
+    AUTHENTICATION_BACKENDS=(
+        "django.contrib.auth.backends.ModelBackend",
+        "web.views.ProConnectBackend",
+    )
+)
+class TestVerifyEmail(APITestCase):
+    """
+    Vérifie que la vérification d'email fonctionne correctement même lorsque
+    plusieurs backends d'authentification sont configurés (e.g. ModelBackend +
+    ProConnect).
+    """
+
+    def setUp(self):
+        self.url = reverse("api:verify_email")
+        self.user = UserFactory(is_verified=False)
+        self.token = MagicLinkToken.objects.create(user=self.user, usage=MagicLinkUsage.VERIFY_EMAIL_ADDRESS)
+
+    def test_verify_email_with_multiple_backends(self):
+        response = self.client.post(self.url, {"key": self.token.key}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("csrf_token", response.data)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.is_verified)
+
+    def test_verify_email_invalid_key(self):
+        response = self.client.post(self.url, {"key": "invalid-key"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
