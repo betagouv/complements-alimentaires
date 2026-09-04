@@ -537,7 +537,7 @@ def summarise(results):
     ids_non_french = []
     ids_no_list_found = []
     trust_threshold = 0.5
-    low_trust = []
+    low_trust = {"over": [], "exact": [], "under": []}
     for id, d in declarations.items():
         # when no list could be read from the labels at all, the difference is
         # the whole declared count: that is an extraction failure rather than a
@@ -552,7 +552,15 @@ def summarise(results):
         if "list_lang" in d and d["list_lang"] != "fr":
             ids_non_french.append(id)
         if d.get("trust", 1) < trust_threshold:
-            low_trust.append(id)
+            bucket = None
+            diff = d["declared_ingredient_count_difference"]
+            if diff < 0:
+                bucket = "under"
+            elif diff > 0:
+                bucket = "over"
+            else:
+                bucket = "exact"
+            low_trust[bucket].append(id)
     summary = {
         "configuration": results["configuration"],
         "declarations_count": len(declarations),
@@ -705,7 +713,7 @@ def compare(data):
 # run_complete writes three files, all prefixed with the run timestamp:
 # - <timestamp>.json              the raw data for every declaration
 # - <timestamp>_summary.json      the aggregated count differences
-# - <timestamp>_comparaison.json  counts by outcome first (perfect / slight
+# - <timestamp>_comparison.json  counts by outcome first (perfect / slight
 #                                 difference / over / nothing extracted / under),
 #                                 then per declaration the lists side by side
 #                                 for manual checking
@@ -728,7 +736,7 @@ def run_complete(**kwargs):
     # in theory, could add extra step to parse a json file to feed to this
     results = summarise(data)
     save_json(f"{filename}_summary", results)
-    save_json(f"{filename}_comparaison", compare(data))
+    save_json(f"{filename}_comparison", compare(data))
 
 
 def summarise_from_file(filename):
@@ -739,4 +747,4 @@ def summarise_from_file(filename):
 
 def compare_from_file(filename):
     data = load_json(f"{filename}.json")
-    save_json(f"{filename}_comparaison", compare(data))
+    save_json(f"{filename}_comparison", compare(data))
