@@ -470,19 +470,18 @@ def calculate_trust_score(results):
     results["trust"] = max(trust, 0)
 
 
-def generate_data(configuration):
-    data = {
-        "configuration": configuration,
-        "declarations": {},
-    }
+def generate_data(configuration, data):
+    data["configuration"] = configuration
+    data["declarations"] = {}
     # reset first, so that a partial override given for this run does not
     # inherit the pauses of the previous one in the same shell
     throttle.reset()
     throttle.configure(**configuration.get("throttle", {}))
     configuration["throttle"] = dict(throttle.THROTTLE)
     declarations = get_declarations(configuration)
+    count = 1
     for d in declarations:
-        print("Declaration", d.id)
+        print("Declaration", d.id, f"(#{count})")
         declaration_results = {}
         save_declaration_details(declaration_results, d)
 
@@ -502,7 +501,7 @@ def generate_data(configuration):
 
         # finally, save the results
         data["declarations"][d.id] = declaration_results
-    return data
+        count += 1
 
 
 # ------- Summarise data
@@ -731,7 +730,13 @@ def run_complete(**kwargs):
     timestamp = timezone.now().strftime("%Y-%m-%dT%H-%M-%S")
     filename = f"{folder}/{timestamp}"
     config = {**CONFIGURATION, **kwargs}
-    data = generate_data(config)
+    data = {}
+    try:
+        generate_data(config, data)
+    except Exception as e:
+        # attempt to at least dump the data so far collected
+        save_json(filename, data)
+        raise e
     save_json(filename, data)
     # in theory, could add extra step to parse a json file to feed to this
     results = summarise(data)
