@@ -55,6 +55,9 @@ OBLIGATORY_MENTIONS = {
             "has_address",
             "has_dietary_supplement_mention",
             "has_recommended_daily_dose",
+            "has_warning_exceeding_dose",
+            "has_warning_not_a_substitute",
+            "has_warning_keep_away_from_young_children",
         ],
     }
 }
