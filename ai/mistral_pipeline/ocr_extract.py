@@ -1,6 +1,7 @@
 # ingredients list extraction from mistral
 # https://colab.research.google.com/github/mistralai/cookbook/blob/main/mistral/ocr/data_extraction.ipynb#scrollTo=FZdL0ZXYkO0n
-from .client import client
+from .client import client, add_format_boilerplate
+from .throttle import throttled
 import json
 import requests
 from pypdf import PdfReader
@@ -18,16 +19,6 @@ def extract_pdf_text(url):
         for page in read_pdf.pages:
             text += page.extract_text()
     return text
-
-
-def add_format_boilerplate(schema):
-    return {
-        "type": "json_schema",
-        "json_schema": {
-            "name": "response_schema",
-            "schema": schema,
-        },
-    }
 
 
 OBLIGATORY_MENTIONS = {
@@ -69,12 +60,15 @@ OBLIGATORY_MENTIONS = {
 }
 
 
+@throttled
 def extract_lists_from_text(
     text,
     model="mistral-medium-latest",
     instructions="The user will send you text extracted from a PDF file. Please respond with a list of ingredients present in the text.",
     ingredients_description="a list of ingredients present in the text. Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that.",
     list_type_description="'list' or 'composition'",
+    # extracting a list is a deterministic task, a creative model invents ingredients
+    temperature=0.1,
 ):
     schema = {
         "properties": {
@@ -102,7 +96,7 @@ def extract_lists_from_text(
         "type": "object",
     }
     completion_args = {
-        "temperature": 0.7,
+        "temperature": temperature,
         "max_tokens": 2048,
         "top_p": 1,
         "response_format": add_format_boilerplate(schema),
@@ -128,6 +122,7 @@ def extract_lists_from_pdf(url, **kwargs):
     return extract_lists_from_text(text, **kwargs)
 
 
+@throttled
 def extract_lists(
     url,
     model="mistral-ocr-4-0",
