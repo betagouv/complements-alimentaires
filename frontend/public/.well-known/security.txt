@@ -1,0 +1,28 @@
+Contact: mailto:securite@compl-alim.beta.gouv.fr
+Expires: 2027-09-10T12:28:00.000Z
+Encryption: https://compl-alim.beta.gouv.fr/.well-known/pgp-publickey.txt
+Preferred-Languages: FR, EN
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Contact: mailto:securite@compl-alim.beta.gouv.fr
+Expires: 2027-09-10T12:28:00.000Z
+Encryption: https://compl-alim.beta.gouv.fr/.well-known/pgp-publickey.txt
+Preferred-Languages: FR, EN
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEE4fXAUSAqBHwwe2RrAgx8vUPwfqQFAmqkHtwACgkQAgx8vUPw
+fqROoQ//czz9FYaE2GgRtUnrdqa5k694+/L5w4RL6uRHl+OduJpOiWUv06/KBtnC
+QYbHx99jmjaECvktn3xXFldksNkJ7uBuHTXlJPCPvVMbnw0fBux2Mr1CsPIi7kp3
+trkfG3dwYc9Jj6VtlF3A3w2U3hLT+oSXJuIAKhbFwgWMjrsp5sEmp3jsU0+2PO9b
+TM+UyXQkQD0RK67MzUGtprNe8KiE3va5vKSU72I36JceexOMn+DRNNontWX/B89f
+g5VKXKclGSs2Q1V1KeGB+yTBfgXluIWtSSA3tHFpywFZkdw5KWXtBNkc/CTVyyZL
+BvKqui6cJt2FsRE7TgOlVRD/dErat/lmP5HmON6EF6pipdVZSBhaadGMwPTrZfRt
+PiquHmT1EM2wjmYV2Jogocc2GxsSL+i8K48kYKPhV94zA9rjAKloWR2egcejWmOE
+vtDQs/Z64ir9/7cGfFsDqkSHDh/8eJYI2cPFYZvkahUkBtWMRJMus0nrGrmzn6DM
+Q83a/IAByaBfW5J5j8hRrcPgjD15+yx2T2aQq7rJAOFQWuQcNUqg1UVdf+tXmfy4
+LKS5obbaCVICpwBhRaE/raD7cy3iPfjFF6+JsCyAbrpeuV7vAS3CTY3DxGNl4Zg7
+d8O6a42LWq5zu8c5VJAizPnRJw/XxlgC+d/naqcvPrwFMR29rzw=
+=lKDy
+-----END PGP SIGNATURE-----
