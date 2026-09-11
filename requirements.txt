@@ -34,7 +34,7 @@ django-js-asset==3.1.2
 django-jsonform==2.23.2
 django-phonenumber-field==8.5.0
 django-prose==2.1.0
-django-redis==6.0.0
+django-redis==7.0.0
 django-silk==5.5.2
 django-simple-history==3.13.0
 django-storages==1.14.6
