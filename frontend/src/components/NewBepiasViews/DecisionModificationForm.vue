@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+import { ref, computed, watch } from "vue"
 import { blockingReasons } from "@/utils/mappings"
 import { errorRequiredField, errorInteger, firstErrorMsg } from "@/utils/forms"
 import { helpers, required } from "@vuelidate/validators"
@@ -63,6 +63,15 @@ const proposalOptions = [
   { text: "Objection", value: "OBJECTION" },
   { text: "Refus", value: "REJECTED" },
 ]
+
+watch(
+  () => modelValue.value.proposal,
+  (newProposal) => {
+    if (newProposal === "OBJECTION") modelValue.value.delayDays = 30
+    else if (newProposal === "OBSERVATION") modelValue.value.delayDays = Number(import.meta.env.VITE_OBSERVATION_DAYS)
+    else modelValue.value.delayDays = null
+  }
+)
 
 const showAdditionalFields = computed(() => modelValue.value.proposal && modelValue.value.proposal !== "AUTHORIZED")
 
