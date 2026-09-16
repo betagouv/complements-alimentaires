@@ -11,6 +11,7 @@ Only return a pair you are certain of, leave out every candidate you cannot pair
 
 # returns the pairs as read from the model, so that the caller can check them
 # against the lists it sent
+# TODO: before merging this PR delete this method if it is still unused
 @throttled
 def match_declared_names(
     candidates,

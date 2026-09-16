@@ -13,7 +13,6 @@ from unidecode import unidecode
 from data.models import Declaration, Attachment, Ingredient, IngredientSynonym, IngredientType
 from ai.mistral_pipeline.ocr_extract import extract_lists, extract_lists_from_pdf
 from ai.mistral_pipeline.clean_ingredients import clean_ingredient_list
-from ai.mistral_pipeline.match_declared import match_declared_names
 from ai.mistral_pipeline import throttle
 
 # ------- Prompts
@@ -192,28 +191,23 @@ def deduplicate(names):
 # this function merges a list of dicts into one dict,
 # ensuring ingredients are not lost if there are shared keys
 # this also restructures the langauge lists so that the language is a key and the list a value
-# the blocks read as a composition are dropped, but kept in the results, both
-# to explain a declaration ending up with no list at all and to feed
-# rescue_composition_names
+# the blocks read as a composition are only used as a fallback if no list is detected
 def merge_lists(ingredients_lists, results=None):
-    merged_lists = {}
+    merged = {"list": {}, "composition": {}}
     for extraction in ingredients_lists:
         for language_result in extraction:
             # TODO: handle potentially malformatted responses?
             lang = language_result["language"]
             value = language_result["ingredients"]
             list_type = language_result["list_type"]
-            if list_type == "composition":
-                if results is not None:
-                    results.setdefault("ignored_compositions", []).append(language_result)
-                continue
-            if lang not in merged_lists:
-                merged_lists[lang] = copy.deepcopy(value)
+            if lang not in merged[list_type]:
+                merged[list_type][lang] = copy.deepcopy(value)
             else:
-                merged_lists[lang] += value
-    for lang, value in merged_lists.items():
-        merged_lists[lang] = deduplicate(value)
-    return merged_lists
+                merged[list_type][lang] += value
+    for list_type, merged_lists in merged.items():
+        for lang, value in merged_lists.items():
+            merged_lists[lang] = list(set(merged_lists[lang]))
+    return merged["list"] if merged["list"] else merged["composition"]
 
 
 def save_error(results, error):
@@ -377,68 +371,57 @@ def clean_list(configuration, results, ingredients_list):
     return cleaned_list
 
 
-# ------- Rescue the names dropped with a composition
-
-
-# the names read from the blocks dropped as a composition, minus those the
-# ingredients list already holds: only the rest is worth a call
-def get_composition_candidates(results, cleaned_list):
-    names = [name for composition in results.get("ignored_compositions", []) for name in composition["ingredients"]]
-    already_extracted = {normalise(name) for name in cleaned_list}
-    return [name for name in deduplicate(names) if normalise(name) not in already_extracted]
-
-
 # the model is asked for certain pairs only, but nothing stops it from answering
 # with a name neither list holds, or from spending one declared ingredient on
 # two candidates, which would count that ingredient twice
-def keep_certain_matches(pairs, candidates, declared):
-    candidates_by_name = {normalise(name): name for name in candidates}
-    declared_by_name = {normalise(name): name for name in declared}
-    matches = {}
-    matched_declared = set()
-    for pair in pairs:
-        if not isinstance(pair, dict):
-            continue
-        candidate = candidates_by_name.get(normalise(pair.get("candidate")))
-        reference = declared_by_name.get(normalise(pair.get("declared")))
-        if not candidate or not reference:
-            continue
-        if candidate in matches or reference in matched_declared:
-            continue
-        matches[candidate] = reference
-        matched_declared.add(reference)
-    return matches
+# def keep_certain_matches(pairs, candidates, declared):
+#     candidates_by_name = {normalise(name): name for name in candidates}
+#     declared_by_name = {normalise(name): name for name in declared}
+#     matches = {}
+#     matched_declared = set()
+#     for pair in pairs:
+#         if not isinstance(pair, dict):
+#             continue
+#         candidate = candidates_by_name.get(normalise(pair.get("candidate")))
+#         reference = declared_by_name.get(normalise(pair.get("declared")))
+#         if not candidate or not reference:
+#             continue
+#         if candidate in matches or reference in matched_declared:
+#             continue
+#         matches[candidate] = reference
+#         matched_declared.add(reference)
+#     return matches
 
 
 # a block read as a composition is dropped whole, and with it the whole
 # comparison when the label held nothing else. The names it held were
 # ingredients after all when the producer declared them, so those that certainly
 # match a declared ingredient are put back in the extracted list.
-def rescue_composition_names(configuration, results, cleaned_list):
-    candidates = get_composition_candidates(results, cleaned_list)
-    declared = results.get("declared_ingredients", [])
-    if not candidates or not declared:
-        return cleaned_list
+# def rescue_composition_names(configuration, results, cleaned_list):
+#     candidates = get_composition_candidates(results, cleaned_list)
+#     declared = results.get("declared_ingredients", [])
+#     if not candidates or not declared:
+#         return cleaned_list
 
-    matches = {}
-    try:
-        config = configuration["match"] if "match" in configuration else {}
-        pairs = match_declared_names(candidates, declared, **config)
-        matches = keep_certain_matches(pairs, candidates, declared)
-    except Exception as e:
-        message = "Error matching the composition names against the declared ingredients"
-        print(message)
-        save_error(results, {"message": message, "error": str(e)})
+#     matches = {}
+#     try:
+#         config = configuration["match"] if "match" in configuration else {}
+#         pairs = match_declared_names(candidates, declared, **config)
+#         matches = keep_certain_matches(pairs, candidates, declared)
+#     except Exception as e:
+#         message = "Error matching the composition names against the declared ingredients"
+#         print(message)
+#         save_error(results, {"message": message, "error": str(e)})
 
-    if not matches:
-        return cleaned_list
-    print(f"Rescued {len(matches)} name(s) from a composition")
-    results["rescued_from_composition"] = matches
-    # the rescued names keep the spelling read from the label, as the rest of
-    # the extracted list does
-    cleaned_list = deduplicate(cleaned_list + list(matches.keys()))
-    results["cleaned_list"] = cleaned_list
-    return cleaned_list
+#     if not matches:
+#         return cleaned_list
+#     print(f"Rescued {len(matches)} name(s) from a composition")
+#     results["rescued_from_composition"] = matches
+#     # the rescued names keep the spelling read from the label, as the rest of
+#     # the extracted list does
+#     cleaned_list = deduplicate(cleaned_list + list(matches.keys()))
+#     results["cleaned_list"] = cleaned_list
+#     return cleaned_list
 
 
 def save_differential(results):
@@ -496,7 +479,6 @@ def generate_data(configuration, data):
         # choose the ingredients list we will use for comparison with the declared
         chosen_list = pick_list(declaration_results, merged_ingredients_lists)
         cleaned_list = clean_list(configuration, declaration_results, chosen_list)
-        cleaned_list = rescue_composition_names(configuration, declaration_results, cleaned_list)
         declaration_results["list_count"] = len(cleaned_list)
         save_differential(declaration_results)
         calculate_trust_score(declaration_results)
@@ -646,6 +628,14 @@ def classify_count_outcome(extracted, declared):
     if a > b:
         return "over"
     return "under"
+
+
+# the names read from the blocks dropped as a composition, minus those the
+# ingredients list already holds: only the rest is worth a call
+def get_composition_candidates(results, cleaned_list):
+    names = [name for composition in results.get("ignored_compositions", []) for name in composition["ingredients"]]
+    already_extracted = {normalise(name) for name in cleaned_list}
+    return [name for name in deduplicate(names) if normalise(name) not in already_extracted]
 
 
 # keys are ordered for reading: the outcome and the counts first, then both
