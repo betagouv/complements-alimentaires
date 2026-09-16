@@ -51,9 +51,9 @@ Do not return allergen warnings ("contient : lait"), nutritional values, quantit
 Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that."""
 
 # "'list' or 'composition'" alone left the model guessing, and a list wrongly
-# labelled "composition" is dropped by merge_lists
 LIST_TYPE_DESCRIPTION = """'list' when the names you return come from the ingredients of the product: running text, names separated by commas, in decreasing order of weight, usually introduced by "Ingrédients :", "Ingredients:" or an equivalent, and holding the additives and the excipients.
 'composition' when they come from a table of nutritional values or of active substances per daily dose, where each line carries a quantity, a unit or a percentage of reference intake.
+'highlight' when ingredient names are listed near the product title, often in bullet point and larger font, not introduced by a term such as 'Ingrédients :'.
 Decide on the shape of the block and not on its heading: running text separated by commas under a heading reading "composition" is still a 'list', and a quantified table under a heading reading "ingrédients" is still a 'composition'.
 When a block holds both, answer 'list' and return only the names from its ingredients part.
 Only when neither shape can be recognised, answer 'list'."""
@@ -193,7 +193,7 @@ def deduplicate(names):
 # this also restructures the langauge lists so that the language is a key and the list a value
 # the blocks read as a composition are only used as a fallback if no list is detected
 def merge_lists(ingredients_lists, results=None):
-    merged = {"list": {}, "composition": {}}
+    merged = {"list": {}, "composition": {}, "highlight": {}}
     for extraction in ingredients_lists:
         for language_result in extraction:
             # TODO: handle potentially malformatted responses?
@@ -207,7 +207,7 @@ def merge_lists(ingredients_lists, results=None):
     for list_type, merged_lists in merged.items():
         for lang, value in merged_lists.items():
             merged_lists[lang] = list(set(merged_lists[lang]))
-    return merged["list"] if merged["list"] else merged["composition"]
+    return merged["list"] or merged["composition"] or merged["highlight"]
 
 
 def save_error(results, error):
@@ -256,8 +256,15 @@ def extract_ingredients(configuration, results, declaration):
                 print(message)
                 save_error(results, {"message": message, "error": str(e)})
 
+        # if couldn't find list in readable pdf, it's possible there is additional
+        # non-readable text in the file, so we want to trigger OCR in this case to be sure
+        found_list = False
+        for list in new_lists:
+            if "list_type" in list and list["list_type"] == "list":
+                found_list = True
+                break
         # fallback to OCR for images or non searchable PDFs
-        if not new_lists:
+        if not found_list:
             try:
                 config = configuration["ocr"] if "ocr" in configuration else {}
                 extraction = extract_lists(url, **config)
