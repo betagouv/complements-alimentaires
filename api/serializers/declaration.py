@@ -616,7 +616,7 @@ class OpenDataDeclarationSerializer(serializers.ModelSerializer):
         return queryset
 
     def get_decision(self, obj):
-        return obj.get_status_display()
+        return SimplifiedStatusHelper.get_simplified_status(obj)
 
     def get_adresse_responsable_mise_sur_marche(self, obj):
         return {

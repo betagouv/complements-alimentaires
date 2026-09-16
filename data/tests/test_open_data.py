@@ -26,6 +26,7 @@ from data.factories import (
     PlantPartFactory,
     SubstanceFactory,
     UnitFactory,
+    WithdrawnDeclarationFactory,
 )
 from data.models import Declaration
 
@@ -143,6 +144,26 @@ class OpenDataTestCase(TestCase):
         substance_loaded = json.loads(next(x for x in open_data_jdd["substances"] if is_vitamin_c(x)))
         self.assertEqual(substance_loaded[0]["quantité_par_djr"], 10)
         self.assertEqual(substance_loaded[0]["unite"], "mg")
+
+    @override_settings(DECLARATIONS_EXPORT_BATCH_SIZE=2)
+    def test_decision_column_uses_simplified_status_labels(self):
+        """
+        La colonne "decision" du JDD Open Data doit utiliser les libellés du statut simplifié
+        ("Commercialisation possible", "Retiré du marché"), pas les libellés internes du modèle
+        ("Autorisée", "Retiré du marché").
+        """
+        AuthorizedDeclarationFactory()
+        WithdrawnDeclarationFactory()
+
+        self.etl_test.export()
+
+        open_data_jdd = pd.read_csv(os.path.join(settings.MEDIA_ROOT, self.etl_test.filename), delimiter=";")
+        self.assertEqual(len(open_data_jdd), 2)
+
+        decisions = set(open_data_jdd["decision"].tolist())
+        self.assertIn("Commercialisation possible", decisions)
+        self.assertIn("Retiré du marché", decisions)
+        self.assertNotIn("Autorisée", decisions)
 
     @override_settings(DECLARATIONS_EXPORT_BATCH_SIZE=1)
     def test_ingredients_without_database_ingredient_ignored(self):
