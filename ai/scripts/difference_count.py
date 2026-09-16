@@ -42,9 +42,11 @@ The nutrient name is itself the ingredient when the ingredients give no other fo
 Split anything holding several ingredients into separate items:
 - functional categories, dropping the category name: "acidifiants : acide citrique, citrate de sodium" gives "acide citrique" then "citrate de sodium"; "agents d'enrobage : huile de coco, cire de carnauba" gives "huile de coco" then "cire de carnauba". Never return the category on its own, as in "agent de charge", "anti-agglomérant" or "agent d'enrobage".
 - premixes and parentheses listing several ingredients: "prémélange d'ingrédients actifs (acétate de rétinyle, iodure de potassium)" gives "acétate de rétinyle" then "iodure de potassium".
-Keep the following intact:
-- for an additive, keep its E number in the same item as its name when both are written, as in "acide citrique (E330)". Return the E number alone when the name is not given.
-- for a plant, return the botanical binomial name when it appears anywhere in the item, dropping the preparation and the part used: "extrait de racine de maca (Lepidium meyenii)" gives "Lepidium meyenii". Without a binomial name, drop the part used only: "matricaire capitule" gives "matricaire".
+
+For an additive, keep its E number in the same item as its name when both are written, as in "acide citrique (E330)". Return the E number alone when the name is not given.
+
+Where the botanical binomial name of a plant appears anywhere in the item return only this name, dropping the preparation and the part used: "extrait de racine de maca (Lepidium meyenii)" gives "Lepidium meyenii" and "huile de tournesol (Helianthus annuus)" gives "Helianthus annuus". Without a binomial name, drop the part used only: "matricaire capitule" gives "matricaire".
+
 Never return an ingredient that is not literally written in the {source}, never complete a list from your own knowledge, and never return the same ingredient twice.
 Do not return allergen warnings ("contient : lait"), nutritional values, quantities, percentages, claims or usage advice.
 Some products only contain one ingredient, where a list of ingredients is not present, check whether the title contains the name of the ingredient and return that."""
