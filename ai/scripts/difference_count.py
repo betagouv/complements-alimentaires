@@ -13,6 +13,7 @@ from unidecode import unidecode
 from data.models import Declaration, Attachment, Ingredient, IngredientSynonym, IngredientType
 from ai.mistral_pipeline.ocr_extract import extract_lists, extract_lists_from_pdf
 from ai.mistral_pipeline.clean_ingredients import clean_ingredient_list
+from ai.mistral_pipeline.match_ingredients import match_ingredients
 from ai.mistral_pipeline import throttle
 
 # ------- Prompts
@@ -462,6 +463,54 @@ def calculate_trust_score(results):
     results["trust"] = max(trust, 0)
 
 
+# ------- match and diff ingredients
+
+
+def name_with_type(obj):
+    return f"{obj.name} [{obj.object_type_fr}]"
+
+
+def diff_ingredients(results, d):
+    declared_ingredients = []
+    ing_types = ["ingredient", "plant", "microorganism", "substance"]
+    for type in ing_types:
+        qs = getattr(d, f"declared_{type}s")
+        for declared_ing in qs.all():
+            declared_ingredients.append(getattr(declared_ing, type))
+
+    extracted_ingredients = results.get("cleaned_list", [])
+    matches = match_ingredients(extracted_ingredients)
+    serialized_matches = {}
+    for name, suggestions in matches.items():
+        serialized_matches[name] = [name_with_type(i) for i in suggestions]
+    results["matches"] = serialized_matches
+    only_declared = []
+    matched_ingredients = []
+    matched_extracted_ingredients = []
+    # TODO: how will this logic work with plant parts and preparations in account?
+    for d_ing in declared_ingredients:
+        has_match = False
+        for extracted_ingredient, suggestions in matches.items():
+            # avoid accidentally matching one declared ingredient to two or more extracted
+            # TODO: what about ingredients declared more than once?
+            if extracted_ingredient not in matched_extracted_ingredients:
+                if d_ing in suggestions:
+                    # we have a declared ingredient that is also extracted
+                    matched_ingredients.append((d_ing, extracted_ingredient))
+                    has_match = True
+                    matched_extracted_ingredients.append(extracted_ingredient)
+                    break
+        if not has_match:
+            only_declared.append(d_ing)
+    all_extracted = matches.keys()
+    only_extracted = set(all_extracted) - set(matched_extracted_ingredients)
+
+    # TODO: analyse only_extracted to classify this declaration
+
+    results["only_extracted"] = list(only_extracted) if only_extracted else []
+    results["only_declared"] = [name_with_type(i) for i in only_declared]
+
+
 def generate_data(configuration, data):
     data["configuration"] = configuration
     data["declarations"] = {}
@@ -489,6 +538,9 @@ def generate_data(configuration, data):
         declaration_results["list_count"] = len(cleaned_list)
         save_differential(declaration_results)
         calculate_trust_score(declaration_results)
+
+        # identify the difference between declared and extracted ingredients
+        diff_ingredients(declaration_results, d)
 
         # finally, save the results
         data["declarations"][d.id] = declaration_results
@@ -752,3 +804,15 @@ def summarise_from_file(filename):
 def compare_from_file(filename):
     data = load_json(f"{filename}.json")
     save_json(f"{filename}_comparison", compare(data))
+
+
+def diff_from_file(filename):
+    data = load_json(f"{filename}.json")
+    if "declarations" not in data:
+        print("No declarations in data")
+        return
+    for id, results in data["declarations"].items():
+        d = Declaration.objects.get(id=id)
+        diff_ingredients(results, d)
+        print("only extracted", results["only_extracted"])
+        print("only declared", results["only_declared"])
