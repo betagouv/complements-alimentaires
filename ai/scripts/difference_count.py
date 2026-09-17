@@ -11,6 +11,8 @@ from django.utils import timezone
 from unidecode import unidecode
 
 from data.models import Declaration, Attachment, Ingredient, IngredientSynonym, IngredientType
+from data.choices import IngredientActivity
+from data.models.ingredient_status import IngredientStatus
 from ai.mistral_pipeline.ocr_extract import extract_lists, extract_lists_from_pdf
 from ai.mistral_pipeline.clean_ingredients import clean_ingredient_list
 from ai.mistral_pipeline.match_ingredients import match_ingredients
@@ -466,6 +468,53 @@ def calculate_trust_score(results):
 # ------- match and diff ingredients
 
 
+def check_article(results, ingredient_names, matches):
+    possible_missing_ingredients = []
+    new = []
+    for name in ingredient_names:
+        possible_missing_ingredients += matches[name]
+        if not matches[name]:
+            new.append(name)
+    unauthorised = []
+    active = []
+    inactive = []
+    has_max_dose = []
+    computed_substances_with_max_dose = []
+
+    for ingredient in possible_missing_ingredients:
+        # TODO: add authorization revoked? not currently in use though
+        if ingredient.status == IngredientStatus.NOT_AUTHORIZED:
+            unauthorised.append(ingredient)
+        if ingredient.activity == IngredientActivity.ACTIVE:
+            active.append(ingredient)
+        else:
+            inactive.append(ingredient)
+        if ingredient.max_quantities.exists():
+            has_max_dose.append(ingredient)
+        if ingredient.object_type != "substance" and ingredient.substances.exists():
+            computed_substances_with_max_dose += ingredient.substances.exclude(max_quantities=None)[::1]
+
+    classification = None
+    if new:
+        classification = "missing new"
+    elif unauthorised:
+        classification = "missing unauthorised"
+    elif has_max_dose or computed_substances_with_max_dose:
+        classification = "max dose risk"
+    elif active:
+        classification = "missing active"
+    elif inactive:
+        classification = "missing inactive"
+
+    results["classification"] = classification
+    results["new"] = [name_with_type(i) for i in new]
+    results["unauthorised"] = [name_with_type(i) for i in unauthorised]
+    results["active"] = [name_with_type(i) for i in active]
+    results["inactive"] = [name_with_type(i) for i in inactive]
+    results["has_max_dose"] = [name_with_type(i) for i in has_max_dose]
+    results["computed_substances_with_max_dose"] = [name_with_type(i) for i in computed_substances_with_max_dose]
+
+
 def name_with_type(obj):
     return f"{obj.name} [{obj.object_type_fr}]"
 
@@ -505,9 +554,11 @@ def diff_ingredients(results, d):
     all_extracted = matches.keys()
     only_extracted = set(all_extracted) - set(matched_extracted_ingredients)
 
-    # TODO: analyse only_extracted to classify this declaration
+    only_extracted = list(only_extracted) if only_extracted else []
+    if only_extracted:
+        check_article(results, only_extracted, matches)
 
-    results["only_extracted"] = list(only_extracted) if only_extracted else []
+    results["only_extracted"] = only_extracted
     results["only_declared"] = [name_with_type(i) for i in only_declared]
 
 
@@ -816,3 +867,13 @@ def diff_from_file(filename):
         diff_ingredients(results, d)
         print("only extracted", results["only_extracted"])
         print("only declared", results["only_declared"])
+        print("classification", results["classification"] if "classification" in results else None)
+        print("new", results["new"] if "new" in results else None)
+        print("unauthorised", results["unauthorised"] if "unauthorised" in results else None)
+        print("active", results["active"] if "active" in results else None)
+        print("inactive", results["inactive"] if "inactive" in results else None)
+        print("has_max_dose", results["has_max_dose"] if "has_max_dose" in results else None)
+        print(
+            "computed_substances_with_max_dose",
+            results["computed_substances_with_max_dose"] if "computed_substances_with_max_dose" in results else None,
+        )
