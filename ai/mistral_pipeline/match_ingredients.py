@@ -18,7 +18,7 @@ def match_ingredients(ing_list):
 
     # match against our db first before trying with AI
     for ingredient in ing_list:
-        search_results = search_elements({"term": ingredient})
+        search_results = search_elements({"term": ingredient}, deduplicate=True)
         if not search_results:
             list_for_ai.append(ingredient)
         else:
@@ -33,9 +33,11 @@ def match_ingredients(ing_list):
         for ing, suggestions in foo.items():
             matches[ing] = []
             for ingredient in suggestions:
-                search_results = search_elements({"term": ingredient})
+                search_results = search_elements({"term": ingredient}, deduplicate=True)
                 if search_results:
-                    matches[ing] += search_results
+                    # the ingredient name from ai should be the exact name, so only use first result
+                    first_result = search_results[0]
+                    matches[ing].append(first_result)
                 else:
                     print("no match for suggestion: ", ingredient)
 
