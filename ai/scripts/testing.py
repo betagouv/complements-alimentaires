@@ -317,7 +317,7 @@ def load_json(filename):
     return data
 
 
-def run_complete(**kwargs):
+def run_complete(return_data=False, **kwargs):
     folder = "ai/scripts/results"
     # ":" and "+" from an ISO timestamp are not valid in Windows filenames
     timestamp = timezone.now().strftime("%Y-%m-%dT%H-%M-%S")
@@ -335,6 +335,8 @@ def run_complete(**kwargs):
     results = summarise(data)
     save_json(f"{filename}_summary", results)
     save_json(f"{filename}_comparison", compare(data))
+    if return_data:
+        return data
 
 
 def summarise_from_file(filename):
@@ -375,17 +377,19 @@ def confusion_matrix():
 
 
 def calculate_accuracy(tp, tn, fp, fn):
+    if not tp + tn + fp + fn:
+        return None
     return math.floor((tp + tn) / (tp + tn + fp + fn) * 100)
 
 
 def calculate_precision(tp, tn, fp, fn):
+    if not tp + fp:
+        return None
     return math.floor(tp / (tp + fp) * 100)
 
 
-# this method can be used to test the pipeline against a reference file
-def test_against_file(reference_filename, data_filename):
-    reference_data = load_json(f"ai/scripts/test/{reference_filename}.json")
-    data = load_json(f"ai/scripts/results/{data_filename}.json")
+# this method compares results against reference data
+def test_data(reference_data, data):
     declaration_results = data["declarations"]
     test_results = {
         "matrices": {},
@@ -397,11 +401,14 @@ def test_against_file(reference_filename, data_filename):
     reference_data_iterable = reference_data.items()
     declaration_count = len(reference_data_iterable)
     for id, reference in reference_data_iterable:
-        result = declaration_results[id]
-        classification = reference["classification"] if "classification" in reference else None
-        if not classification:
+        if id not in declaration_results and int(id) not in declaration_results:
+            print("no result for", id)
+            continue
+        if "classification" not in reference:
             print("no reference classification for", id)
             continue
+        result = declaration_results[id] if id in declaration_results else declaration_results[int(id)]
+        classification = reference["classification"]
         if classification not in test_results["matrices"]:
             test_results["matrices"][classification] = confusion_matrix()
         default_class = "no issue detected"
@@ -443,7 +450,8 @@ def test_against_file(reference_filename, data_filename):
     bad = len(test_results["overall"]["bad"])
     total = good + bad
     print("Total count : ", total)
-    print("Classification success % : ", math.floor(good / total * 100))
+    if total:
+        print("Classification success % : ", math.floor(good / total * 100))
 
     tp = len(test_results["general_matrix"]["tp"])
     fp = len(test_results["general_matrix"]["fp"])
@@ -451,3 +459,17 @@ def test_against_file(reference_filename, data_filename):
     tn = len(test_results["general_matrix"]["tn"])
     print("General flag accuracy % : ", calculate_accuracy(tp, tn, fp, fn))
     print("General flag precision % : ", calculate_precision(tp, tn, fp, fn))
+
+
+def test_against_file(reference_filename, data_filename):
+    reference_data = load_json(f"ai/scripts/test/{reference_filename}.json")
+    data = load_json(f"ai/scripts/results/{data_filename}.json")
+    test_data(reference_data, data)
+
+
+def run_and_test(reference_filename, **kwargs):
+    reference_data = load_json(f"ai/scripts/test/{reference_filename}.json")
+    ids = reference_data.keys()
+    # using list here to make it serialisable when config is saved to JSON
+    data = run_complete(return_data=True, declarations_filter={"id__in": list(ids)}, **kwargs)
+    test_data(reference_data, data)
