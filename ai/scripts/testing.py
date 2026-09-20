@@ -370,6 +370,18 @@ def diff_from_file(filename):
         )
 
 
+def confusion_matrix():
+    return {"tp": [], "fp": [], "fn": [], "tn": []}
+
+
+def calculate_accuracy(tp, tn, fp, fn):
+    return math.floor((tp + tn) / (tp + tn + fp + fn) * 100)
+
+
+def calculate_precision(tp, tn, fp, fn):
+    return math.floor(tp / (tp + fp) * 100)
+
+
 # this method can be used to test the pipeline against a reference file
 def test_against_file(reference_filename, data_filename):
     reference_data = load_json(f"ai/scripts/test/{reference_filename}.json")
@@ -377,6 +389,8 @@ def test_against_file(reference_filename, data_filename):
     declaration_results = data["declarations"]
     test_results = {
         "matrices": {},
+        "overall": {"good": [], "bad": []},
+        "general_matrix": confusion_matrix(),
         # "declarations": {}
     }
 
@@ -389,23 +403,51 @@ def test_against_file(reference_filename, data_filename):
             print("no reference classification for", id)
             continue
         if classification not in test_results["matrices"]:
-            test_results["matrices"][classification] = {"tp": [], "fp": [], "fn": []}
-        result_class = result["classification"] if "classification" in result else "no issue detected"
+            test_results["matrices"][classification] = confusion_matrix()
+        default_class = "no issue detected"
+        result_class = result["classification"] if "classification" in result else default_class
         if result_class not in test_results["matrices"]:
-            test_results["matrices"][result_class] = {"tp": [], "fp": [], "fn": []}
+            test_results["matrices"][result_class] = confusion_matrix()
+
         if classification == result_class:
             test_results["matrices"][classification]["tp"].append(id)
+            test_results["overall"]["good"].append(id)
+            if classification == default_class:
+                test_results["general_matrix"]["tn"].append(id)
         else:
             test_results["matrices"][classification]["fn"].append(id)
             test_results["matrices"][result_class]["fp"].append(id)
+            test_results["overall"]["bad"].append(id)
+            if classification == default_class:
+                # declaration isn't being flagged as anything when it is problematic
+                test_results["general_matrix"]["fn"].append(id)
+            elif result_class == default_class:
+                # a good declaration is being flagged as problematic
+                test_results["general_matrix"]["fp"].append(id)
+            else:
+                # a bad declaration is being flagged for the wrong reasons
+                test_results["general_matrix"]["tp"].append(id)
 
     for classification in test_results["matrices"]:
         tp = len(test_results["matrices"][classification]["tp"])
         fp = len(test_results["matrices"][classification]["fp"])
         fn = len(test_results["matrices"][classification]["fn"])
         tn = declaration_count - tp - tp - fn
-        test_results["matrices"][classification]["accuracy"] = math.floor((tp + tn) / declaration_count * 100)
-        test_results["matrices"][classification]["precision"] = math.floor(tp / (tp + fp) * 100)
+        test_results["matrices"][classification]["accuracy"] = calculate_accuracy(tp, tn, fp, fn)
+        test_results["matrices"][classification]["precision"] = calculate_precision(tp, tn, fp, fn)
 
     for classification, matrix in test_results["matrices"].items():
         print(classification, matrix)
+
+    good = len(test_results["overall"]["good"])
+    bad = len(test_results["overall"]["bad"])
+    total = good + bad
+    print("Total count : ", total)
+    print("Classification success % : ", math.floor(good / total * 100))
+
+    tp = len(test_results["general_matrix"]["tp"])
+    fp = len(test_results["general_matrix"]["fp"])
+    fn = len(test_results["general_matrix"]["fn"])
+    tn = len(test_results["general_matrix"]["tn"])
+    print("General flag accuracy % : ", calculate_accuracy(tp, tn, fp, fn))
+    print("General flag precision % : ", calculate_precision(tp, tn, fp, fn))
