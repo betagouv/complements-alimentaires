@@ -9,25 +9,32 @@ from data.models.substance import Substance, SubstanceType
 
 
 def search_elements(query, deduplicate=False, exclude_not_authorized=False, keep_only_standalone_usable=False):
-    term = query["term"]
+    term = query["term"].lstrip()
     query_type = query.get("type")
+
+    term_lookup = "icontains"
+    if term.lower() == "eau":
+        term_lookup = "istartswith"
+
     # Les plantes non autorisées peuvent être ajoutées en infimes quantités dans les elixirs
     # elles sont donc systématiquement renvoyées
     plants = (
-        _get_plants(term, deduplicate, exclude_not_authorized=False) if not query_type or query_type == "plant" else []
+        _get_plants(term, term_lookup, deduplicate, exclude_not_authorized=False)
+        if not query_type or query_type == "plant"
+        else []
     )
     microorganisms = (
-        _get_microorganisms(term, deduplicate, exclude_not_authorized)
+        _get_microorganisms(term, term_lookup, deduplicate, exclude_not_authorized)
         if not query_type or query_type == "microorganism"
         else []
     )
     ingredients = (
-        _get_ingredients(term, deduplicate, exclude_not_authorized)
+        _get_ingredients(term, term_lookup, deduplicate, exclude_not_authorized)
         if not query_type or query_type == "other-ingredient"
         else []
     )
     substances = (
-        _get_substances(term, deduplicate, exclude_not_authorized, keep_only_standalone_usable)
+        _get_substances(term, term_lookup, deduplicate, exclude_not_authorized, keep_only_standalone_usable)
         if not query_type or query_type == "substance"
         else []
     )
@@ -38,56 +45,56 @@ def search_elements(query, deduplicate=False, exclude_not_authorized=False, keep
     return results
 
 
-def _get_plants(query, deduplicate, exclude_not_authorized):
+def _get_plants(query, lookup, deduplicate, exclude_not_authorized):
     plant_qs = (
-        Plant.up_to_date_objects.filter(name__unaccent__icontains=query)
+        Plant.up_to_date_objects.filter(**{f"name__unaccent__{lookup}": query})
         .distinct()
         .annotate(autocomplete_match=F("name"))
     )
     plant_synonym_qs = (
-        Plant.up_to_date_objects.filter(plantsynonym__name__unaccent__icontains=query)
+        Plant.up_to_date_objects.filter(**{f"plantsynonym__name__unaccent__{lookup}": query})
         .distinct()
         .annotate(autocomplete_match=F("plantsynonym__name"))
     )
     return _get_element_list(plant_qs, plant_synonym_qs, deduplicate, exclude_not_authorized)
 
 
-def _get_microorganisms(query, deduplicate, exclude_not_authorized):
+def _get_microorganisms(query, lookup, deduplicate, exclude_not_authorized):
     microorganism_qs = (
-        Microorganism.up_to_date_objects.filter(name__unaccent__icontains=query)
+        Microorganism.up_to_date_objects.filter(**{f"name__unaccent__{lookup}": query})
         .distinct()
         .annotate(autocomplete_match=F("name"))
     )
     microorganism_synonym_qs = (
-        Microorganism.up_to_date_objects.filter(microorganismsynonym__name__unaccent__icontains=query)
+        Microorganism.up_to_date_objects.filter(**{f"microorganismsynonym__name__unaccent__{lookup}": query})
         .distinct()
         .annotate(autocomplete_match=F("microorganismsynonym__name"))
     )
     return _get_element_list(microorganism_qs, microorganism_synonym_qs, deduplicate, exclude_not_authorized)
 
 
-def _get_ingredients(query, deduplicate, exclude_not_authorized):
+def _get_ingredients(query, lookup, deduplicate, exclude_not_authorized):
     ingredient_qs = (
-        Ingredient.up_to_date_objects.filter(name__unaccent__icontains=query)
+        Ingredient.up_to_date_objects.filter(**{f"name__unaccent__{lookup}": query})
         .distinct()
         .annotate(autocomplete_match=F("name"))
     )
     ingredient_synonym_qs = (
-        Ingredient.up_to_date_objects.filter(ingredientsynonym__name__unaccent__icontains=query)
+        Ingredient.up_to_date_objects.filter(**{f"ingredientsynonym__name__unaccent__{lookup}": query})
         .distinct()
         .annotate(autocomplete_match=F("ingredientsynonym__name"))
     )
     return _get_element_list(ingredient_qs, ingredient_synonym_qs, deduplicate, exclude_not_authorized)
 
 
-def _get_substances(query, deduplicate, exclude_not_authorized, keep_only_standalone_usable=False):
+def _get_substances(query, lookup, deduplicate, exclude_not_authorized, keep_only_standalone_usable=False):
     substance_qs = (
-        Substance.up_to_date_objects.filter(name__unaccent__icontains=query)
+        Substance.up_to_date_objects.filter(**{f"name__unaccent__{lookup}": query})
         .distinct()
         .annotate(autocomplete_match=F("name"))
     )
     substance_synonym_qs = (
-        Substance.up_to_date_objects.filter(substancesynonym__name__unaccent__icontains=query)
+        Substance.up_to_date_objects.filter(**{f"substancesynonym__name__unaccent__{lookup}": query})
         .distinct()
         .annotate(autocomplete_match=F("substancesynonym__name"))
     )
