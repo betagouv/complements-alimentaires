@@ -183,3 +183,4 @@ shell.nix
 .postgres
 
 ai/scripts/results/
+ai/scripts/test/

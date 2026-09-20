@@ -348,19 +348,17 @@ def check_article(results, ingredient_names, matches):
         if ingredient.object_type != "substance" and ingredient.substances.exists():
             computed_substances_with_max_dose += ingredient.substances.exclude(max_quantities=None)[::1]
 
-    classification = None
     if new:
-        classification = "missing new"
+        results["classification"] = "missing new"
     elif unauthorised:
-        classification = "missing unauthorised"
+        results["classification"] = "missing unauthorised"
     elif has_max_dose or computed_substances_with_max_dose:
-        classification = "max dose risk"
+        results["classification"] = "max dose risk"
     elif active:
-        classification = "missing active"
+        results["classification"] = "missing active"
     elif inactive:
-        classification = "missing inactive"
+        results["classification"] = "missing inactive"
 
-    results["classification"] = classification
     results["new"] = new
     results["unauthorised"] = [name_with_type(i) for i in unauthorised]
     results["active"] = [name_with_type(i) for i in active]
@@ -408,11 +406,13 @@ def diff_ingredients(results, d):
     all_extracted = matches.keys()
     only_extracted = set(all_extracted) - set(matched_extracted_ingredients)
 
+    results["classification"] = "no issue detected"
     only_extracted = list(only_extracted) if only_extracted else []
     if only_extracted:
         check_article(results, only_extracted, matches)
 
     results["only_extracted"] = only_extracted
+    # TODO: is there another classification to be given when there are additional ingredients?
     results["only_declared"] = [name_with_type(i) for i in only_declared]
 
 

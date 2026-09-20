@@ -368,3 +368,44 @@ def diff_from_file(filename):
             "computed_substances_with_max_dose",
             results["computed_substances_with_max_dose"] if "computed_substances_with_max_dose" in results else None,
         )
+
+
+# this method can be used to test the pipeline against a reference file
+def test_against_file(reference_filename, data_filename):
+    reference_data = load_json(f"ai/scripts/test/{reference_filename}.json")
+    data = load_json(f"ai/scripts/results/{data_filename}.json")
+    declaration_results = data["declarations"]
+    test_results = {
+        "matrices": {},
+        # "declarations": {}
+    }
+
+    reference_data_iterable = reference_data.items()
+    declaration_count = len(reference_data_iterable)
+    for id, reference in reference_data_iterable:
+        result = declaration_results[id]
+        classification = reference["classification"] if "classification" in reference else None
+        if not classification:
+            print("no reference classification for", id)
+            continue
+        if classification not in test_results["matrices"]:
+            test_results["matrices"][classification] = {"tp": [], "fp": [], "fn": []}
+        result_class = result["classification"] if "classification" in result else "no issue detected"
+        if result_class not in test_results["matrices"]:
+            test_results["matrices"][result_class] = {"tp": [], "fp": [], "fn": []}
+        if classification == result_class:
+            test_results["matrices"][classification]["tp"].append(id)
+        else:
+            test_results["matrices"][classification]["fn"].append(id)
+            test_results["matrices"][result_class]["fp"].append(id)
+
+    for classification in test_results["matrices"]:
+        tp = len(test_results["matrices"][classification]["tp"])
+        fp = len(test_results["matrices"][classification]["fp"])
+        fn = len(test_results["matrices"][classification]["fn"])
+        tn = declaration_count - tp - tp - fn
+        test_results["matrices"][classification]["accuracy"] = math.floor((tp + tn) / declaration_count * 100)
+        test_results["matrices"][classification]["precision"] = math.floor(tp / (tp + fp) * 100)
+
+    for classification, matrix in test_results["matrices"].items():
+        print(classification, matrix)
