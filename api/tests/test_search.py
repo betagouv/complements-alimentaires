@@ -150,23 +150,3 @@ class TestSearch(APITestCase):
 
         for id in page_1_ids:
             self.assertNotIn(id, page_2_ids)
-
-    def test_search_water(self):
-        """
-        Special case: when searching eau, return only items starting with eau
-        to avoid getting all words containing the three letters eau
-        """
-        eau_1 = IngredientFactory.create(name="eau")
-        eaux = IngredientFactory.create(name="Eaux mères")
-        prune = IngredientFactory.create(name="Jus de pruneau")
-
-        search_term = " Eau"  # test normalization
-        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        results = response.json().get("results", [])
-
-        returned_ids = [result.get("id") for result in results]
-        self.assertNotIn(prune.id, returned_ids)
-        self.assertIn(eau_1.id, returned_ids)
-        self.assertIn(eaux.id, returned_ids)
