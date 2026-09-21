@@ -439,7 +439,7 @@ def test_data(reference_data, data):
         tp = len(test_results["matrices"][classification]["tp"])
         fp = len(test_results["matrices"][classification]["fp"])
         fn = len(test_results["matrices"][classification]["fn"])
-        tn = declaration_count - tp - tp - fn
+        tn = declaration_count - tp - fp - fn
         test_results["matrices"][classification]["accuracy"] = calculate_accuracy(tp, tn, fp, fn)
         test_results["matrices"][classification]["precision"] = calculate_precision(tp, tn, fp, fn)
 
