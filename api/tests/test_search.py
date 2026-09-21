@@ -153,8 +153,8 @@ class TestSearch(APITestCase):
 
     def test_search_water(self):
         """
-        Special case: when searching eau, return only items starting with eau
-        to avoid getting all words containing the three letters eau
+        Searches for short words shouldn't return all ingredients which contain
+        those letters in another word, for example "eau", but should return plurals
         """
         eau_1 = IngredientFactory.create(name="eau")
         eaux = IngredientFactory.create(name="Eaux mères")
@@ -171,7 +171,11 @@ class TestSearch(APITestCase):
         self.assertIn(eau_1.id, returned_ids)
         self.assertIn(eaux.id, returned_ids)
 
-    def test_drop_hyphens(self):
+    def test_ignore_hyphens(self):
+        """
+        Search should be flexible enough to work around the formatting
+        of an ingredient name, such as the presence or not of hyphens
+        """
         arome_1 = IngredientFactory.create(name="Arôme - Café")
         arome_2 = IngredientFactory.create(name="Arôme Cerise")
         arome_3 = IngredientFactory.create(name="Arôme - Mocca")
