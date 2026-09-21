@@ -5,7 +5,7 @@ import django.contrib.postgres.operations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("data", "0206_alter_company_country_and_more"),
+        ("data", "0207_user_last_login_proconnect"),
     ]
 
     operations = [
