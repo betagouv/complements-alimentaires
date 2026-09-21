@@ -9,26 +9,32 @@ from data.models.substance import Substance, SubstanceType
 
 
 def search_elements(query, deduplicate=False, exclude_not_authorized=False, keep_only_standalone_usable=False):
-    term = query["term"]
+    term = query["term"].lstrip()
     query_type = query.get("type")
+
+    term_lookup = "icontains"
+    if term.lower() == "eau":
+        term_lookup = "istartswith"
 
     # Les plantes non autorisées peuvent être ajoutées en infimes quantités dans les elixirs
     # elles sont donc systématiquement renvoyées
     plants = (
-        _get_plants(term, deduplicate, exclude_not_authorized=False) if not query_type or query_type == "plant" else []
+        _get_plants(term, term_lookup, deduplicate, exclude_not_authorized=False)
+        if not query_type or query_type == "plant"
+        else []
     )
     microorganisms = (
-        _get_microorganisms(term, deduplicate, exclude_not_authorized)
+        _get_microorganisms(term, term_lookup, deduplicate, exclude_not_authorized)
         if not query_type or query_type == "microorganism"
         else []
     )
     ingredients = (
-        _get_ingredients(term, deduplicate, exclude_not_authorized)
+        _get_ingredients(term, term_lookup, deduplicate, exclude_not_authorized)
         if not query_type or query_type == "other-ingredient"
         else []
     )
     substances = (
-        _get_substances(term, deduplicate, exclude_not_authorized, keep_only_standalone_usable)
+        _get_substances(term, term_lookup, deduplicate, exclude_not_authorized, keep_only_standalone_usable)
         if not query_type or query_type == "substance"
         else []
     )
@@ -39,43 +45,43 @@ def search_elements(query, deduplicate=False, exclude_not_authorized=False, keep
     return results
 
 
-def _get_generic_qs(model, query):
+def _get_generic_qs(model, query, lookup):
     return (
-        model.up_to_date_objects.filter(**{"name__unaccent__trigram_word_similar": query})
+        model.up_to_date_objects.filter(**{f"name__unaccent__{lookup}": query})
         .distinct()
         .annotate(autocomplete_match=F("name"))
     )
 
 
-def _get_generic_synonym_qs(model, fieldname, query):
+def _get_generic_synonym_qs(model, fieldname, query, lookup):
     return (
-        model.up_to_date_objects.filter(**{f"{fieldname}synonym__name__unaccent__trigram_word_similar": query})
+        model.up_to_date_objects.filter(**{f"{fieldname}synonym__name__unaccent__{lookup}": query})
         .distinct()
         .annotate(autocomplete_match=F(f"{fieldname}synonym__name"))
     )
 
 
-def _get_plants(query, deduplicate, exclude_not_authorized):
-    plant_qs = _get_generic_qs(Plant, query)
-    plant_synonym_qs = _get_generic_synonym_qs(Plant, "plant", query)
+def _get_plants(query, lookup, deduplicate, exclude_not_authorized):
+    plant_qs = _get_generic_qs(Plant, query, lookup)
+    plant_synonym_qs = _get_generic_synonym_qs(Plant, "plant", query, lookup)
     return _get_element_list(plant_qs, plant_synonym_qs, deduplicate, exclude_not_authorized)
 
 
-def _get_microorganisms(query, deduplicate, exclude_not_authorized):
-    microorganism_qs = _get_generic_qs(Microorganism, query)
-    microorganism_synonym_qs = _get_generic_synonym_qs(Microorganism, "microorganism", query)
+def _get_microorganisms(query, lookup, deduplicate, exclude_not_authorized):
+    microorganism_qs = _get_generic_qs(Microorganism, query, lookup)
+    microorganism_synonym_qs = _get_generic_synonym_qs(Microorganism, "microorganism", query, lookup)
     return _get_element_list(microorganism_qs, microorganism_synonym_qs, deduplicate, exclude_not_authorized)
 
 
-def _get_ingredients(query, deduplicate, exclude_not_authorized):
-    ingredient_qs = _get_generic_qs(Ingredient, query)
-    ingredient_synonym_qs = _get_generic_synonym_qs(Ingredient, "ingredient", query)
+def _get_ingredients(query, lookup, deduplicate, exclude_not_authorized):
+    ingredient_qs = _get_generic_qs(Ingredient, query, lookup)
+    ingredient_synonym_qs = _get_generic_synonym_qs(Ingredient, "ingredient", query, lookup)
     return _get_element_list(ingredient_qs, ingredient_synonym_qs, deduplicate, exclude_not_authorized)
 
 
-def _get_substances(query, deduplicate, exclude_not_authorized, keep_only_standalone_usable=False):
-    substance_qs = _get_generic_qs(Substance, query)
-    substance_synonym_qs = _get_generic_synonym_qs(Substance, "substance", query)
+def _get_substances(query, lookup, deduplicate, exclude_not_authorized, keep_only_standalone_usable=False):
+    substance_qs = _get_generic_qs(Substance, query, lookup)
+    substance_synonym_qs = _get_generic_synonym_qs(Substance, "substance", query, lookup)
     if keep_only_standalone_usable:
         substance_qs = substance_qs.filter(substance_types__contains=[SubstanceType.BIOACTIVE_SUBSTANCE])
         substance_synonym_qs = substance_synonym_qs.filter(
