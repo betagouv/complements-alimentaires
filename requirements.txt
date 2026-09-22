@@ -78,7 +78,7 @@ platformdirs==4.9.6
 pluggy==1.6.0
 pre_commit==4.6.0
 prompt_toolkit==3.0.52
-psycopg2==2.9.12
+psycopg2==2.9.13
 pycairo==1.29.0
 pycodestyle==2.14.0
 pycparser==3.0
