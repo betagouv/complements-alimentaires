@@ -45,7 +45,7 @@ drf-excel==2.5.3
 drf_base64==2.0
 et_xmlfile==2.0.0
 factory_boy==3.3.3
-Faker==40.13.0
+Faker==40.39.0
 filelock==3.32.5
 freetype-py==2.5.1
 gprof2dot==2025.4.14
