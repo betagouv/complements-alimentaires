@@ -113,7 +113,7 @@ tblib==3.2.2
 tinycss2==1.5.1
 tomli==2.4.1
 tomli_w==1.2.0
-tqdm==4.70.0
+tqdm==4.70.1
 truststore==0.10.4
 typing_extensions==4.16.0
 tzdata==2026.3
