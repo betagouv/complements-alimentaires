@@ -61,6 +61,8 @@ def merge_lists(ingredients_lists, results=None):
             # TODO: handle potentially malformatted responses?
             lang = language_result["language"]
             value = language_result["ingredients"]
+            if not value:
+                continue
             list_type = language_result["list_type"]
             if lang not in merged[list_type]:
                 merged[list_type][lang] = copy.deepcopy(value)
@@ -117,7 +119,7 @@ def extract_ingredients(configuration, results, declaration):
         # non-readable text in the file, so we want to trigger OCR in this case to be sure
         found_list = False
         for list in new_lists:
-            if "list_type" in list and list["list_type"] == "list":
+            if "list_type" in list and list["list_type"] == "list" and list["ingredients"]:
                 found_list = True
                 break
         # fallback to OCR for images or non searchable PDFs
@@ -325,10 +327,28 @@ def calculate_trust_score(results):
 def check_article(results, ingredient_names, matches):
     possible_missing_ingredients = []
     new = []
+    results["exact_matches"] = []
     for name in ingredient_names:
-        possible_missing_ingredients += matches[name]
         if not matches[name]:
             new.append(name)
+            continue
+        exact_matches = []
+        if len(matches[name]) > 1:
+            # if there are exact matches, only use those when checking article
+            # to avoid over matching items for short terms like "fer", "eau", "cellulose"
+            for i in matches[name]:
+                if normalise(name) == normalise(i.name):
+                    exact_matches.append(i)
+                synonym_field_name = {
+                    "plant": "plantsynonym",
+                    "microorganism": "microorganismsynonym",
+                    "substance": "substancesynonym",
+                }.get(i.object_type, "ingredientsynonym")
+                if getattr(i, f"{synonym_field_name}_set").filter(name__unaccent__iexact=name).exists():
+                    exact_matches.append(i)
+            if exact_matches:
+                results["exact_matches"].append(name)
+        possible_missing_ingredients += exact_matches or matches[name]
     unauthorised = []
     active = []
     inactive = []
@@ -360,11 +380,11 @@ def check_article(results, ingredient_names, matches):
         results["classification"] = "missing inactive"
 
     results["new"] = new
-    results["unauthorised"] = [name_with_type(i) for i in unauthorised]
-    results["active"] = [name_with_type(i) for i in active]
-    results["inactive"] = [name_with_type(i) for i in inactive]
-    results["has_max_dose"] = [name_with_type(i) for i in has_max_dose]
-    results["computed_substances_with_max_dose"] = [name_with_type(i) for i in computed_substances_with_max_dose]
+    results["unauthorised"] = list({name_with_type(i) for i in unauthorised})
+    results["active"] = list({name_with_type(i) for i in active})
+    results["inactive"] = list({name_with_type(i) for i in inactive})
+    results["has_max_dose"] = list({name_with_type(i) for i in has_max_dose})
+    results["computed_substances_with_max_dose"] = list({name_with_type(i) for i in computed_substances_with_max_dose})
 
 
 def name_with_type(obj):

@@ -471,5 +471,6 @@ def run_and_test(reference_filename, **kwargs):
     reference_data = load_json(f"ai/scripts/test/{reference_filename}.json")
     ids = reference_data.keys()
     # using list here to make it serialisable when config is saved to JSON
-    data = run_complete(return_data=True, declarations_filter={"id__in": list(ids)}, **kwargs)
+    declarations_filter = kwargs.pop("declarations_filter", {"id__in": list(ids)})
+    data = run_complete(return_data=True, declarations_filter=declarations_filter, **kwargs)
     test_data(reference_data, data)
