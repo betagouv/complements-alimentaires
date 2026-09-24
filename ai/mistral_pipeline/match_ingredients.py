@@ -1,10 +1,71 @@
 from .client import client
 from .throttle import throttled
 import json
+import re
+from unidecode import unidecode
 
 
 def get_plain_text_names(ing_model):
     return "\n".join(ing_model.objects.values_list("name", flat=True).order_by("name"))
+
+
+def normalise(name):
+    without_accents = unidecode(name or "").lower()
+    return " ".join(re.sub(r"[^a-z0-9]+", " ", without_accents).split())
+
+
+def match_extracted_against_declared(extracted, declared):
+    inputs = [
+        {
+            "role": "user",
+            "content": json.dumps(
+                {"declared_ingredients": declared, "extracted_ingredients": extracted}, ensure_ascii=False
+            ),
+        }
+    ]
+
+    completion_args = {
+        "temperature": 0.7,
+        "max_tokens": 2048,
+        "top_p": 1,
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "response_schema",
+                "schema": {
+                    "properties": {
+                        "matches": {
+                            "description": 'the key is the ingredient in the "extracted_ingredients" list and the value is the matching ingredient in the "declared_ingredients" list',
+                            "type": "object",
+                        },
+                        "only_declared": {
+                            "description": "a list of ingredients only present in the declared_ingredients list, where a match with the extracted_ingredients list could not be made",
+                            "type": "array",
+                        },
+                        "only_extracted": {
+                            "description": "a list of ingredients only present in the extracted_ingredients list, where a match with the declared_ingredients list could not be made",
+                            "type": "array",
+                        },
+                    },
+                    "required": [],
+                    "type": "object",
+                },
+            },
+        },
+    }
+
+    tools = []
+
+    response = client.beta.conversations.start(
+        inputs=inputs,
+        model="mistral-medium-latest",
+        instructions='Given two lists of ingredients, "extracted_ingredients" and "declared_ingredients", identify which ingredients match between the two lists. The ingredients may be spelled differently, may use synoymes, may have additional text that doesn\'t change the type of ingredient it is.\nThe "declared_ingredients" list may contain ingredients as E numbers, and the "extracted_ingredients" list may contain the same ingredient without the E number but written in colloquial terms. For example, "E464" and "hydroxypropylméthylcellulose" match.\nNever match an ingredient in the "extracted_ingredients" list to more than one ingredient in the "declared_ingredients" list.\nWhere there is uncertainty, do not make the match.',
+        completion_args=completion_args,
+        tools=tools,
+    )
+
+    print("Total tokens, match_extracted_against_declared", response.usage.total_tokens)
+    return json.loads(response.outputs[0].content)
 
 
 # input: list of ingredient names as strings
@@ -19,6 +80,9 @@ def match_ingredients(ing_list):
     # match against our db first before trying with AI
     for ingredient in ing_list:
         search_results = search_elements({"term": ingredient}, deduplicate=True)
+        # try another time this time normalising the search term
+        if not search_results:
+            search_results = search_elements({"term": normalise(ingredient)}, deduplicate=True)
         if not search_results:
             list_for_ai.append(ingredient)
         else:

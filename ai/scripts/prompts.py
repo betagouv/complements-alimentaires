@@ -9,16 +9,16 @@
 # main source of overcounting the composition being read as ingredients.
 INGREDIENTS_DESCRIPTION = """a list of the ingredient names of the food supplement, with exactly one ingredient per array item.
 
-Return the ingredients the product is made of, and not its composition. A label most often prints both, and their headings are unreliable, so tell them apart by their shape rather than by the words they use:
+Return the ingredients the product is made of and its composition in separate fields.
+A label most often prints both, and their headings are unreliable, so tell them apart by their shape rather than by the words they use:
 - the ingredients are given as running text, names separated by commas, in decreasing order of weight, holding the excipients and the additives next to the active ingredients.
-- the composition is a table, or a series of lines, giving what a daily dose provides, where every name carries a quantity, a unit or a percentage of reference intake ("VNR", "AR", "%").
+- the composition is a table, or a series of lines, giving what a daily dose provides, where every name carries a quantity, a unit or a percentage of reference intake ("VNR", "AR", "%")
+- where the ingredients list is prefixed by "other ingredients", case insensitive, or similar, combine the ingredients in the composition table into the list of ingredients.
 A name is therefore not an ingredient because of what it is, but because of where it is written: read a name as an ingredient when it appears among the ingredients, and ignore the same name when it only appears in the composition.
-When one block holds both, an ingredients text followed or interrupted by quantified lines, return only the names belonging to its ingredients part.
 
-An ingredient and what it provides are frequently written together, in which case return the ingredient alone:
-- "vitamine C (acide L-ascorbique)" and "acide L-ascorbique (vitamine C)" both give "acide L-ascorbique", the form the product is made with.
-- "zinc (citrate de zinc)" gives "citrate de zinc"; "magnésium (oxyde de magnésium)" gives "oxyde de magnésium".
-- "huile de poisson (EPA, DHA)" gives "huile de poisson": EPA and DHA are what the oil provides, not other ingredients.
+An ingredient and what it provides are frequently written together, in which case return it as one ingredient:
+- "vitamine C (acide L-ascorbique)" returns "vitamine C (acide L-ascorbique)" and "acide L-ascorbique (vitamine C)" returns "acide L-ascorbique (vitamine C)".
+- "huile de poisson (EPA, DHA)" gives "huile de poisson (EPA, DHA)".
 The nutrient name is itself the ingredient when the ingredients give no other form for it: "Ingrédients : vitamine C, zinc, gomme d'acacia" gives "vitamine C", "zinc" then "gomme d'acacia".
 
 Split anything holding several ingredients into separate items:
@@ -26,8 +26,6 @@ Split anything holding several ingredients into separate items:
 - premixes and parentheses listing several ingredients: "prémélange d'ingrédients actifs (acétate de rétinyle, iodure de potassium)" gives "acétate de rétinyle" then "iodure de potassium".
 
 For an additive, keep its E number in the same item as its name when both are written, as in "acide citrique (E330)". Return the E number alone when the name is not given.
-
-Where the botanical binomial name of a plant appears anywhere in the item return only this name, dropping the preparation and the part used: "extrait de racine de maca (Lepidium meyenii)" gives "Lepidium meyenii" and "huile de tournesol (Helianthus annuus)" gives "Helianthus annuus". Without a binomial name, drop the part used only: "matricaire capitule" gives "matricaire".
 
 Never return an ingredient that is not literally written in the {source}, never complete a list from your own knowledge, and never return the same ingredient twice.
 Do not return allergen warnings ("contient : lait"), nutritional values, quantities, percentages, claims or usage advice.
@@ -71,14 +69,27 @@ Pair each candidate with at most one declared name and each declared name with a
 
 # The additives table read from the database is appended to these instructions,
 # see get_additives_context
-CLEAN_INSTRUCTIONS = """You are given a list of raw ingredient strings read from the label of a food supplement. Return an object with a key 'ingredients' holding an array of ingredient names, with exactly one ingredient per item and no duplicates.
-- split any item still holding several ingredients, dropping the functional category: "acidifiants : acide citrique, citrate de sodium" gives "acide citrique" then "citrate de sodium".
-- replace an additive by its E number using the table below, whether the input gives the name, the E number, or both. Leave alone an item the label uses as a vitamin or mineral source rather than as an additive, such as "acide L-ascorbique", "carbonate de calcium" or "lactate de calcium", even when the table holds an E number for it.
-- for a plant, return only the botanical binomial name where one is given, dropping the preparation and the part used.
-- remove quantities, percentages, allergen mentions and claims.
-- drop an item naming only what another item of the input provides, keeping the form the product is made with: "vitamine C" next to "acide L-ascorbique" gives "acide L-ascorbique" alone, "vitamine B12" next to "cyanocobalamine" gives "cyanocobalamine" alone, and "EPA" and "DHA" next to "huile de poisson" give "huile de poisson" alone. Keep a nutrient name that no other item accounts for.
-- drop an item that names a functional category only, as in "agent de charge", "anti-agglomérant" or "agent d'enrobage".
-- never add an ingredient absent from the input, and never drop one for any other reason than the two rules above.
+CLEAN_INSTRUCTIONS = """You are given a list of raw ingredient strings read from the label of a food supplement.
 
-# Additives, as "E number = usual names"
+Return an object with a key 'ingredients' holding an array of ingredient names, with exactly one ingredient per item and no duplicates.
+
+Remove quantities, percentages, allergen mentions and claims.
+
+If the ingrédient contains the term "gélule" or "gélules" return the name unchanged.
+
+Split any item holding several ingredients, dropping the functional category: "acidifiants : acide citrique, citrate de sodium" gives "acide citrique" then "citrate de sodium".
+
+For a plant:
+- If a plant name is present in an inactive additive, return the ingredient name as is. For example, "huile de tournesol" is "huile de tournesol".
+- Where the ingredient using a plant is an active ingredient, drop the preparation and the part used if present and follow one of the following two instructions:
+- If no botanical binomial name is given, return the name as listed. "Extrait de pépins de raisin" becomes "raisin".
+- If the botanical binomial name is given, return only botanical binomial name, otherwise return the name as given. Sometimes a trademarked name is given instead of a botanical name, as evidenced by the presence of the character ™ or ®. In this case drop the brand name and keep the colloquial name. So "Extrait de bouillon blanc (Verbascum thapsus)" becomes "Verbascum thapsus" and "extrait d'artichaut sauvage (BrandName®)" becomes "artichaut sauvage".
+
+An ingredient and what it provides are frequently written together, in which case return the ingredient alone:
+- "vitamine C (acide L-ascorbique)" and "acide L-ascorbique (vitamine C)" both give "acide L-ascorbique", the form the product is made with.
+- "zinc (citrate de zinc)" gives "citrate de zinc"; "magnésium (oxyde de magnésium)" gives "oxyde de magnésium".
+- "huile de poisson (EPA, DHA)" gives "huile de poisson": EPA and DHA are what the oil provides, not other ingredients.
+
+Drop an item that names a functional category only, as in "agent de charge", "anti-agglomérant" or "agent d'enrobage".
+Never add an ingredient absent from the input, and never drop one for any other reason than the two rules above.
 """

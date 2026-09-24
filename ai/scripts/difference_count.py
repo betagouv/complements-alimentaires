@@ -10,7 +10,7 @@ from data.choices import IngredientActivity
 from data.models.ingredient_status import IngredientStatus
 from ai.mistral_pipeline.ocr_extract import extract_lists, extract_lists_from_pdf
 from ai.mistral_pipeline.clean_ingredients import clean_ingredient_list
-from ai.mistral_pipeline.match_ingredients import match_ingredients
+from ai.mistral_pipeline.match_ingredients import match_ingredients, match_extracted_against_declared
 
 # ------- Misc helpers
 
@@ -221,10 +221,10 @@ def clean_list(configuration, results, ingredients_list):
     cleaned_list = ingredients_list
     try:
         config = configuration["clean"] if "clean" in configuration else {}
-        if "instructions" in config:
-            # the additives are read from the database at call time, so that
-            # importing this module does not query it
-            config = {**config, "instructions": f"{config['instructions']}{get_additives_context()}"}
+        # if "instructions" in config:
+        #     # the additives are read from the database at call time, so that
+        #     # importing this module does not query it
+        #     config = {**config, "instructions": f"{config['instructions']}{get_additives_context()}"}
         cleaned_list = clean_ingredient_list(ingredients_list, **config)
     except Exception as e:
         message = "Error cleaning list"
@@ -392,48 +392,56 @@ def name_with_type(obj):
 
 
 def diff_ingredients(results, d):
-    declared_ingredients = []
-    ing_types = ["ingredient", "plant", "microorganism", "substance"]
-    for type in ing_types:
-        qs = getattr(d, f"declared_{type}s")
-        for declared_ing in qs.all():
-            declared_ingredients.append(getattr(declared_ing, type))
-
     extracted_ingredients = results.get("cleaned_list", [])
-    matches = match_ingredients(extracted_ingredients)
-    serialized_matches = {}
-    for name, suggestions in matches.items():
-        serialized_matches[name] = [name_with_type(i) for i in suggestions]
-    results["matches"] = serialized_matches
-    only_declared = []
-    matched_ingredients = []
-    matched_extracted_ingredients = []
-    # TODO: how will this logic work with plant parts and preparations in account?
-    for d_ing in declared_ingredients:
-        has_match = False
-        for extracted_ingredient, suggestions in matches.items():
-            # avoid accidentally matching one declared ingredient to two or more extracted
-            # TODO: what about ingredients declared more than once?
-            if extracted_ingredient not in matched_extracted_ingredients:
-                if d_ing in suggestions:
-                    # we have a declared ingredient that is also extracted
-                    matched_ingredients.append((d_ing, extracted_ingredient))
-                    has_match = True
-                    matched_extracted_ingredients.append(extracted_ingredient)
-                    break
-        if not has_match:
-            only_declared.append(d_ing)
-    all_extracted = matches.keys()
-    only_extracted = set(all_extracted) - set(matched_extracted_ingredients)
+    serialized_declared_ingredients = results.get("declared_ingredients", [])
+    diff = match_extracted_against_declared(extracted_ingredients, serialized_declared_ingredients)
+    results["diff"] = diff
 
+    # declared_ingredients = []
+    # ing_types = ["ingredient", "plant", "microorganism", "substance"]
+    # for type in ing_types:
+    #     qs = getattr(d, f"declared_{type}s")
+    #     for declared_ing in qs.all():
+    #         declared_ingredients.append(getattr(declared_ing, type))
     results["classification"] = "no issue detected"
-    only_extracted = list(only_extracted) if only_extracted else []
-    if only_extracted:
-        check_article(results, only_extracted, matches)
+    # if there are ingredients that are in the label but not the declaration
+    # proceed to attempting to match them to our db to then check the article
+    if diff.get("only_extracted", []):
+        extracted_to_match = diff["only_extracted"]
+        matches = match_ingredients(extracted_to_match)
+        serialized_matches = {}
+        for name, suggestions in matches.items():
+            serialized_matches[name] = [name_with_type(i) for i in suggestions]
+        results["missing_extracted_matches"] = serialized_matches
+        # only_declared = []
+        # matched_ingredients = []
+        # matched_extracted_ingredients = []
+        # # TODO: how will this logic work with plant parts and preparations in account?
+        # for d_ing in declared_ingredients:
+        #     has_match = False
+        #     for extracted_ingredient, suggestions in matches.items():
+        #         # avoid accidentally matching one declared ingredient to two or more extracted
+        #         # TODO: what about ingredients declared more than once?
+        #         if extracted_ingredient not in matched_extracted_ingredients:
+        #             if d_ing in suggestions:
+        #                 # we have a declared ingredient that is also extracted
+        #                 matched_ingredients.append((d_ing, extracted_ingredient))
+        #                 has_match = True
+        #                 matched_extracted_ingredients.append(extracted_ingredient)
+        #                 break
+        #     if not has_match:
+        #         only_declared.append(d_ing)
+        # all_extracted = matches.keys()
+        # only_extracted = set(all_extracted) - set(matched_extracted_ingredients)
+        # only_extracted = list(only_extracted) if only_extracted else []
+        # if only_extracted:
+        check_article(results, extracted_to_match, matches)
 
-    results["only_extracted"] = only_extracted
-    # TODO: is there another classification to be given when there are additional ingredients?
-    results["only_declared"] = [name_with_type(i) for i in only_declared]
+    # results["only_extracted"] = only_extracted
+    # # TODO: is there another classification to be given when there are additional ingredients?
+    # results["only_declared"] = [name_with_type(i) for i in only_declared]
+    if results["classification"] == "no issue detected" and diff.get("only_declared", []):
+        results["classification"] = "extra ingredient(s) detected"
 
 
 def verify_declaration_congruence(configuration, declaration):
