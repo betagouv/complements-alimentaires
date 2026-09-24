@@ -150,3 +150,47 @@ class TestSearch(APITestCase):
 
         for id in page_1_ids:
             self.assertNotIn(id, page_2_ids)
+
+    def test_search_water(self):
+        """
+        Searches for short words shouldn't return all ingredients which contain
+        those letters in another word, for example "eau", but should return plurals
+        """
+        eau_1 = IngredientFactory.create(name="eau")
+        eaux = IngredientFactory.create(name="Eaux mères")
+        prune = IngredientFactory.create(name="Jus de pruneau")
+
+        search_term = " Eau"  # test normalization
+        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+
+        returned_ids = [result.get("id") for result in results]
+        self.assertNotIn(prune.id, returned_ids)
+        self.assertIn(eau_1.id, returned_ids)
+        self.assertIn(eaux.id, returned_ids)
+
+    def test_ignore_hyphens(self):
+        """
+        Search should be flexible enough to work around the formatting
+        of an ingredient name, such as the presence or not of hyphens
+        """
+        arome_1 = IngredientFactory.create(name="Arôme - Café")
+        arome_2 = IngredientFactory.create(name="Arôme Cerise")
+        arome_3 = IngredientFactory.create(name="Arôme - Mocca")
+        arome_4 = IngredientFactory.create(name="Arômes")
+        plant = PlantFactory.create(name="matcha")
+
+        search_term = "arome c"
+        response = self.client.post(f"{reverse('api:search')}", {"search": search_term})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+
+        returned_ids = [result.get("id") for result in results]
+        self.assertIn(arome_1.id, returned_ids)
+        self.assertIn(arome_2.id, returned_ids)
+        self.assertIn(arome_3.id, returned_ids)
+        self.assertIn(arome_4.id, returned_ids)
+        self.assertNotIn(plant.id, returned_ids)
