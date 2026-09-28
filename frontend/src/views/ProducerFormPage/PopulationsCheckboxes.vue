@@ -1,6 +1,6 @@
 <template>
   <div class="mb-6">
-    <h3 class="fr-label mb-4">Population cible</h3>
+    <h3 class="fr-label mb-4">Population cible *</h3>
     <DsfrFieldset
       v-for="(section, index) in populationsSections"
       class="mb-2"

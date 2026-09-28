@@ -160,7 +160,7 @@
 
     <DsfrFieldset>
       <template #legend>
-        <SectionTitle title="Objectifs / effets" class="mt-4! mb-2" sizeTag="h6" icon="ri-focus-2-fill" />
+        <SectionTitle title="Objectifs / effets *" class="mt-4! mb-2" sizeTag="h6" icon="ri-focus-2-fill" />
       </template>
       <div class="fr-checkbox-group input md:columns-2 lg:columns-3">
         <div v-for="effect in effects" :key="`effect-${effect.id}`" class="flex mb-4 last:mb-0">
