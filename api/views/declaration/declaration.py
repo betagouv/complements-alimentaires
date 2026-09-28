@@ -382,7 +382,7 @@ class ControlDeclarationExcelView(XLSXFileMixin, CommonControlDeclarationView):
             "Entreprise",
             "Marque",
             "Statut",
-            "Date d'application du statut",
+            "Date de création",
             "SIRET de l'entreprise",
             "No. TVA de l'entreprise",
             "No. de département",

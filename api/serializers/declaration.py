@@ -351,7 +351,6 @@ class AttachmentSerializer(IdPassthrough, serializers.ModelSerializer):
 class ControllerDeclarationSerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(read_only=True, source="company.social_name")
     simplified_status = serializers.SerializerMethodField(read_only=True)
-    simplified_status_date = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Declaration
@@ -364,7 +363,7 @@ class ControllerDeclarationSerializer(serializers.ModelSerializer):
             "brand",
             "company_name",
             "simplified_status",
-            "simplified_status_date",
+            "creation_date",
         )
 
     def get_simplified_status(self, instance):
@@ -373,12 +372,6 @@ class ControllerDeclarationSerializer(serializers.ModelSerializer):
         retourne le label à mettre directement dans le frontend
         """
         return SimplifiedStatusHelper.get_simplified_status(instance)
-
-    def get_simplified_status_date(self, instance):
-        """
-        La date qui nous intéresse peut concerner des snapshots différents
-        """
-        return SimplifiedStatusHelper.get_simplified_status_date(instance)
 
 
 class SimpleDeclarationSerializer(serializers.ModelSerializer):
@@ -478,7 +471,6 @@ class ExcelControlDeclarationSerializer(serializers.ModelSerializer):
     vat = serializers.CharField(read_only=True, source="company.vat")
     department = serializers.CharField(read_only=True, source="company.department")
     simplified_status = serializers.SerializerMethodField(read_only=True)
-    simplified_status_date = serializers.SerializerMethodField(read_only=True)
 
     # Champ spécial utilisé par drf-excel documenté ici : https://github.com/django-commons/drf-excel
     row_color = serializers.SerializerMethodField()
@@ -491,7 +483,7 @@ class ExcelControlDeclarationSerializer(serializers.ModelSerializer):
             "company_name",
             "brand",
             "simplified_status",
-            "simplified_status_date",
+            "creation_date",
             "siret",
             "vat",
             "department",
@@ -501,9 +493,6 @@ class ExcelControlDeclarationSerializer(serializers.ModelSerializer):
 
     def get_simplified_status(self, instance):
         return SimplifiedStatusHelper.get_simplified_status(instance)
-
-    def get_simplified_status_date(self, instance):
-        return SimplifiedStatusHelper.get_simplified_status_date(instance)
 
     def get_row_color(self, instance):
         """
@@ -748,7 +737,6 @@ class DeclarationSerializer(serializers.ModelSerializer):
         is_controller = IsController().has_permission(request, view)
         if not is_controller:
             self.fields.pop("simplified_status")
-            self.fields.pop("simplified_status_date")
 
         if not is_instructor and not is_visor:
             self.fields.pop("private_notes_instruction")
@@ -788,7 +776,6 @@ class DeclarationSerializer(serializers.ModelSerializer):
     private_notes_visa = serializers.CharField(allow_blank=True, required=False)
     blocking_reasons = serializers.ListField(read_only=True)
     simplified_status = serializers.SerializerMethodField(read_only=True)
-    simplified_status_date = serializers.SerializerMethodField(read_only=True)
     revoked_ingredient = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -847,7 +834,7 @@ class DeclarationSerializer(serializers.ModelSerializer):
             "expiration_date",
             "last_administration_comment",
             "simplified_status",
-            "simplified_status_date",
+            "creation_date",
             "revoked_ingredient",
         )
         read_only_fields = (
@@ -958,9 +945,6 @@ class DeclarationSerializer(serializers.ModelSerializer):
 
     def get_simplified_status(self, instance):
         return SimplifiedStatusHelper.get_simplified_status(instance)
-
-    def get_simplified_status_date(self, instance):
-        return SimplifiedStatusHelper.get_simplified_status_date(instance)
 
     def get_revoked_ingredient(self, instance):
         # aujourd'hui on donne que le nom, mais utiliser le format d'objet
