@@ -127,7 +127,7 @@ class TestDeclarationControllers(APITestCase):
 
         for result in results:
             self.assertEqual(result["simplifiedStatus"], "Commercialisation possible")
-            self.assertIsNotNone(result["simplifiedStatusDate"])
+            self.assertIsNotNone(result["creationDate"])
 
     @authenticate
     def test_simplified_status_other_articles(self):

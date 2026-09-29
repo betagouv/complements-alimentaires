@@ -48,8 +48,8 @@ const summaryItems = computed(() => {
     { title: "No. de déclaration", body: [d.id || d.siccrfId || d.teleicareDeclarationNumber] },
     { title: "Statut du produit", body: [d.simplifiedStatus] },
     {
-      title: "Date d'application du statut",
-      body: [d.simplifiedStatusDate ? isoToPrettyDate(d.simplifiedStatusDate) : ""],
+      title: "Date de création",
+      body: [isoToPrettyDate(d.creationDate)],
     },
   ]
 })

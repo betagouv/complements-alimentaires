@@ -51,7 +51,7 @@ const headers = computed(() => [
     icon: "ri-filter-line",
     ariaLabel: "Filtrer par statut du produit",
   },
-  { text: "Date d'application du statut" },
+  { text: "Date de création" },
   { text: "Article" },
 ])
 
@@ -70,7 +70,7 @@ const rows = computed(() =>
       x.companyName,
       x.brand,
       getStatusTagForCell(x.simplifiedStatus),
-      x.simplifiedStatusDate ? isoToPrettyDate(x.simplifiedStatusDate) : "",
+      isoToPrettyDate(x.creationDate),
       x.article ? articleOptions.find((y) => y.value === x.article)?.shortText : "",
     ],
   }))
