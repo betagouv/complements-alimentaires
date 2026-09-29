@@ -82,6 +82,25 @@ class TestDeclarationFlowSubmit(APITestCase):
         self.assertIn("dailyRecommendedDose", json_errors["fieldErrors"][0])
 
     @authenticate
+    def test_submit_declaration_missing_required_multivalue_field(self):
+        """
+        Si un champ multivaleur obligatoire pour l'instruction manque, on le spécifie
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        missing_field_declaration = InstructionReadyDeclarationFactory(
+            author=authenticate.user, populations=[], company=company
+        )
+        response = self.client.post(
+            reverse("api:submit_declaration", kwargs={"pk": missing_field_declaration.id}), format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        json_errors = response.json()
+        self.assertEqual(len(json_errors["fieldErrors"]), 1)
+        self.assertIn("populations", json_errors["fieldErrors"][0])
+
+    @authenticate
     def test_submit_declaration_missing_elements(self):
         """
         S'il n'y a pas d'éléments dans la déclaration, on ne peut pas la soumettre pour instruction

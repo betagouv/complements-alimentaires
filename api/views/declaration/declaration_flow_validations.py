@@ -14,11 +14,8 @@ def validate_mandatory_fields(declaration) -> tuple[list, list]:
         "company",
         "name",
         "galenic_formulation",
-        "populations",
-        "effects",
         "daily_recommended_dose",
         "minimum_duration",
-        "conditions_not_recommended",
         "address",
         "postal_code",
         "city",
@@ -30,6 +27,17 @@ def validate_mandatory_fields(declaration) -> tuple[list, list]:
     field_errors += [
         {field: f"« {Declaration._meta.get_field(field).verbose_name} » ne peut pas être vide"}
         for field in missing_product_fields
+    ]
+    mandatory_manytomany_fields = [
+        "populations",
+        "effects",
+    ]
+    missing_manytomany_fields = [
+        field for field in mandatory_manytomany_fields if not getattr(declaration, field).exists()
+    ]
+    field_errors += [
+        {field: f"« {Declaration._meta.get_field(field).verbose_name} » ne peut pas être vide"}
+        for field in missing_manytomany_fields
     ]
     has_label = declaration.attachments.filter(type=Attachment.AttachmentType.LABEL).exists()
     if not has_label:
