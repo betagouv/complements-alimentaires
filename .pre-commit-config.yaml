@@ -94,6 +94,7 @@ repos:
         name: vue-eslint
         additional_dependencies:
           - eslint@^10.10.0
+          - "@eslint/js@latest"
           - globals@latest
           - vue-eslint-parser@latest
           - eslint-plugin-vue@latest
