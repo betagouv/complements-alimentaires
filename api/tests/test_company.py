@@ -34,9 +34,48 @@ class TestCheckCompanyIdentifier(ProjectAPITestCase):
         self.vat = "FR986745237856"
         self.company2 = CompanyFactory(vat=self.vat, social_name="Grosoft")
 
-    def test_check_company_siret_ok_unregistered_company(self):
+    @mock.patch("data.utils.external_utils.SiretData.fetch")
+    def test_check_company_siret_ok_unregistered_company(self, mock_siret):
         self.login()
         unexisting_siret = "53786462100207"  # SIRET luhn-valide
+        mock_siret.return_value = {"status": 200, "nom_commercial": "TEST COMPANY", "end_date": None}
+        response = self.get(self.url(identifier=unexisting_siret) + "?identifierType=siret")
+        self.assertEqual(response.data["company_status"], CompanyStatusChoices.UNREGISTERED_COMPANY)
+        self.assertIsNone(response.data["company"])
+
+    @mock.patch("data.utils.external_utils.SiretData.fetch")
+    def test_check_company_siret_ok_closed(self, mock_siret):
+        """
+        Quand l'API indique que l'entreprise est fermée
+        """
+        self.login()
+        unexisting_siret = "53786462100207"  # SIRET luhn-valide
+        mock_siret.return_value = {"status": 200, "end_date": "2000-01-01"}
+        response = self.get(self.url(identifier=unexisting_siret) + "?identifierType=siret")
+        self.assertEqual(response.data["company_status"], CompanyStatusChoices.UNREGISTERABLE_COMPANY)
+        self.assertIsNone(response.data["company"])
+
+    @mock.patch("data.utils.external_utils.SiretData.fetch")
+    def test_check_company_siret_unknown(self, mock_siret):
+        """
+        Quand l'API indique qu'il n'y a pas d'entreprise avec ce SIRET
+        """
+        self.login()
+        unexisting_siret = "53786462100207"  # SIRET luhn-valide
+        mock_siret.return_value = {"status": 404}
+        response = self.get(self.url(identifier=unexisting_siret) + "?identifierType=siret")
+        self.assertEqual(response.data["company_status"], CompanyStatusChoices.UNREGISTERABLE_COMPANY)
+        self.assertIsNone(response.data["company"])
+
+    @mock.patch("data.utils.external_utils.SiretData.fetch")
+    def test_check_company_siret_down_unregistered_company(self, mock_siret):
+        """
+        Quand l'API ne fonctionne pas, permettre l'utilisateur à créer l'entreprise
+        Des checks sera effectués plus tard au moment de la soumission de la décla
+        """
+        self.login()
+        unexisting_siret = "53786462100207"  # SIRET luhn-valide
+        mock_siret.return_value = {"status": 500}
         response = self.get(self.url(identifier=unexisting_siret) + "?identifierType=siret")
         self.assertEqual(response.data["company_status"], CompanyStatusChoices.UNREGISTERED_COMPANY)
         self.assertIsNone(response.data["company"])

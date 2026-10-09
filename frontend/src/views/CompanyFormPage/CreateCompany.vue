@@ -31,9 +31,9 @@ const rootStore = useRootStore()
 const company = defineModel()
 const initialState = ref({
   socialName: company.value.siretData?.socialName || "",
-  commercialName: "",
+  commercialName: company.value.siretData?.commercialName || "",
   address: company.value.siretData?.address || "",
-  additionalDetails: "",
+  additionalDetails: company.value.siretData?.additionalDetails || "",
   postalCode: company.value.siretData?.postalCode || "",
   city: company.value.siretData?.city || "",
   cedex: company.value.siretData?.cedex || "",
