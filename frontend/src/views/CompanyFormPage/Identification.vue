@@ -19,6 +19,22 @@
         pour avoir de l'aide avec la création de votre entreprise sur Compl'Alim.
       </p>
     </DsfrAlert>
+    <DsfrAlert v-else-if="companyClosed" type="warning" :title="`Attention : entreprise fermée`">
+      <p>
+        L'entreprise avec le n° {{ company.identifierType.toUpperCase() + " " }}
+        <strong>{{ company.identifier }}</strong>
+        a été fermée le
+        <b>{{ companyClosed }}</b>
+        et ce n'est pas possible de la créer sur Compl'Alim.
+      </p>
+      <p>
+        Si vous pensez qu'il y a une erreur, contactez-nous à l'adresse suivante :
+        <a :href="`mailto:${contactEmail}`">
+          {{ contactEmail }}
+        </a>
+        pour avoir de l'aide avec la création de votre entreprise sur Compl'Alim.
+      </p>
+    </DsfrAlert>
     <FormWrapper class="max-w-xl mx-auto">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'identifier')">
         <DsfrInput
@@ -76,6 +92,7 @@ const { data, response, execute, isFetching } = useFetch(
 ).json()
 
 const companyNotFound = ref(false)
+const companyClosed = ref("")
 
 const submitIdentifier = async () => {
   companyNotFound.value = false
@@ -124,7 +141,9 @@ const submitIdentifier = async () => {
         })
         break
       case "unregisterable_company":
-        companyNotFound.value = true
+        if (company.value.siretData && company.value.siretData.endDate) {
+          companyClosed.value = company.value.siretData.endDate
+        } else companyNotFound.value = true
     }
   }
 }
