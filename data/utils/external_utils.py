@@ -21,13 +21,9 @@ class SiretData:
         response = requests.get(url)
         if not response.ok:
             logger.warn(f"SIRET API call has failed, code {response.status_code} : {response}")
-            return None
+            return {"status": 500}
 
-        try:
-            formatted_company_data = SiretData.get_formatted_company_data(response.json())
-        except KeyError as e:
-            logger.warn(f"unexpected siret response format : {response}. Unknown key : {e}")
-            return None
+        formatted_company_data = SiretData.get_formatted_company_data(response.json())
 
         return formatted_company_data
 
@@ -44,23 +40,32 @@ class SiretData:
         'postal_code': '75018',
         'cedex': null}
         """
-        etablissement = raw_siret_data["results"][0]
-        adresse = etablissement["siege"]
-        cedex_items = ["cedex", "libelle_cedex"]
-        address_items = [
-            "numero_voie",
-            "indice_repetition",
-            "dernier_numero_voie",
-            "type_voie",
-            "libelle_voie",
-        ]
+        try:
+            results = raw_siret_data["results"]
+            if not results:
+                return {"status": 404}
+            etablissement = results[0]
+            adresse = etablissement["siege"]
+            cedex_items = ["cedex", "libelle_cedex"]
+            address_items = [
+                "numero_voie",
+                "indice_repetition",
+                "dernier_numero_voie",
+                "type_voie",
+                "libelle_voie",
+            ]
 
-        return {
-            "social_name": etablissement["nom_raison_sociale"] or etablissement["nom_complet"],
-            "commercial_name": adresse["nom_commercial"],
-            "address": " ".join(filter(None, [adresse[item] for item in address_items])),
-            "additional_details": adresse["complement_adresse"],
-            "city": adresse["libelle_commune"],
-            "postal_code": adresse["code_postal"],
-            "cedex": " ".join(filter(None, [adresse[item] for item in cedex_items])),
-        }
+            return {
+                "status": 200,
+                "social_name": etablissement["nom_raison_sociale"] or etablissement["nom_complet"],
+                "commercial_name": adresse["nom_commercial"],
+                "address": " ".join(filter(None, [adresse[item] for item in address_items])),
+                "additional_details": adresse["complement_adresse"],
+                "city": adresse["libelle_commune"],
+                "postal_code": adresse["code_postal"],
+                "cedex": " ".join(filter(None, [adresse[item] for item in cedex_items])),
+                "end_date": etablissement["date_fermeture"],
+            }
+        except KeyError as e:
+            logger.error(f"unexpected siret response format : {raw_siret_data}. Unknown key : {e}")
+            return {"status": 500}

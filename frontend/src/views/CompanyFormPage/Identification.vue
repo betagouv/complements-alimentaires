@@ -1,5 +1,24 @@
 <template>
   <div>
+    <DsfrAlert
+      v-if="companyNotFound"
+      type="warning"
+      :title="`Attention : ${company.identifierType.toUpperCase()} introuvable`"
+    >
+      <p>
+        Nous n’avons pas retrouvé le n° {{ company.identifierType.toUpperCase() + " " }}
+        <strong>{{ company.identifier }}</strong>
+        dans les registres officiels.
+      </p>
+      <p>Veuillez vérifier l'identifiant.</p>
+      <p>
+        Si l'identifiant est bien remplit, contactez-nous à l'adresse suivante :
+        <a :href="`mailto:${contactEmail}`">
+          {{ contactEmail }}
+        </a>
+        pour avoir de l'aide avec la création de votre entreprise sur Compl'Alim.
+      </p>
+    </DsfrAlert>
     <FormWrapper class="max-w-xl mx-auto">
       <DsfrInputGroup :error-message="firstErrorMsg(v$, 'identifier')">
         <DsfrInput
@@ -56,7 +75,10 @@ const { data, response, execute, isFetching } = useFetch(
   { immediate: false }
 ).json()
 
+const companyNotFound = ref(false)
+
 const submitIdentifier = async () => {
+  companyNotFound.value = false
   v$.value.$clearExternalResults()
   v$.value.$validate()
   if (v$.value.$error) {
@@ -100,10 +122,15 @@ const submitIdentifier = async () => {
           name: "Demande de gestion d'une entreprise existante",
           component: "ClaimSupervision",
         })
+        break
+      case "unregisterable_company":
+        companyNotFound.value = true
     }
   }
 }
 
 // Outil pour permettre un copier coller sans erreur d'un numéro d'identification
 const removeSpaces = (event) => (event.target.value = event.target.value.replace(/\s/g, ""))
+
+const contactEmail = import.meta.env.VITE_CONTACT_EMAIL
 </script>
