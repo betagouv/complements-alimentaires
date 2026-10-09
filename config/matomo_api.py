@@ -44,7 +44,12 @@ class MatomoAPI:
         if data and data["reportData"]:
             reformatted_report_data = {}
             for month, value in data["reportData"].items():
-                reformatted_report_data[month] = value[0]
+                if value:
+                    reformatted_report_data[month] = value[0]
+                else:
+                    logger.error(
+                        f"Matomo : reportData array empty for month '{month}', label '{label}', metric '{metric}', period '{period}', date '{date}'"
+                    )
             data["reportData"] = reformatted_report_data
 
         return data
