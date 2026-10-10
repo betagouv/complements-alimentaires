@@ -539,7 +539,8 @@ def analyse_declaration(configuration, d, data):
 def fetch_and_analyse_data(configuration, data):
     # batch here
     declarations = get_declarations(configuration)
-    d_count = configuration.get("declarations_count", declarations.count())
+    d_count = configuration.get("declarations_count", None) or declarations.count()
+    print("Number of declarations: ", d_count)
     batch_start = 0
     batch_end = None
     batch_size = configuration.get("batch_size", None)
