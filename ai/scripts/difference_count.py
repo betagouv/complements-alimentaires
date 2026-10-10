@@ -375,13 +375,13 @@ def clean_list(configuration, results, ingredients_list):
             # importing this module does not query it
             config = {**config, "instructions": f"{config['instructions']}{get_additives_context()}"}
         cleaned_list = clean_ingredient_list(ingredients_list, **config)
+        # the cleaning step can split one item into several and reintroduce
+        # duplicates that merge_lists had removed, which would inflate list_count
+        cleaned_list = deduplicate(tidy(name) for name in cleaned_list)
     except Exception as e:
         message = "Error cleaning list"
         print(message)
         save_error(results, {"message": message, "error": str(e)})
-    # the cleaning step can split one item into several and reintroduce
-    # duplicates that merge_lists had removed, which would inflate list_count
-    cleaned_list = deduplicate(tidy(name) for name in cleaned_list)
     results["cleaned_list"] = cleaned_list
     return cleaned_list
 
@@ -516,22 +516,26 @@ def serialize_declaration_data(d_id, d, data):
 
 def analyse_declaration(configuration, d, data):
     declaration_results = {}
-    save_declaration_details(declaration_results, d)
+    try:
+        save_declaration_details(declaration_results, d)
 
-    # get all ingredients present in the attachments
-    ingredients_lists = extract_ingredients(configuration, declaration_results, d)
-    declaration_results["extracted_ingredients"] = ingredients_lists
-    merged_ingredients_lists = merge_lists(ingredients_lists, declaration_results)
-    save_extracted_lists_stats(declaration_results, merged_ingredients_lists)
+        # get all ingredients present in the attachments
+        ingredients_lists = extract_ingredients(configuration, declaration_results, d)
+        declaration_results["extracted_ingredients"] = ingredients_lists
+        merged_ingredients_lists = merge_lists(ingredients_lists, declaration_results)
+        save_extracted_lists_stats(declaration_results, merged_ingredients_lists)
 
-    # choose the ingredients list we will use for comparison with the declared
-    chosen_list = pick_list(declaration_results, merged_ingredients_lists)
-    cleaned_list = clean_list(configuration, declaration_results, chosen_list)
-    cleaned_list = rescue_composition_names(configuration, declaration_results, cleaned_list)
-    declaration_results["list_count"] = len(cleaned_list)
-    save_differential(declaration_results)
-    calculate_trust_score(declaration_results)
-
+        # choose the ingredients list we will use for comparison with the declared
+        chosen_list = pick_list(declaration_results, merged_ingredients_lists)
+        cleaned_list = clean_list(configuration, declaration_results, chosen_list)
+        cleaned_list = rescue_composition_names(configuration, declaration_results, cleaned_list)
+        declaration_results["list_count"] = len(cleaned_list)
+        save_differential(declaration_results)
+        calculate_trust_score(declaration_results)
+    except Exception as e:
+        print("Error for declaration")
+        print(e)
+        save_error(declaration_results, {"message": "Uncaught exception", "error": str(e)})
     # finally, save the results
     serialize_declaration_data(d.id, declaration_results, data)
 
