@@ -1,8 +1,10 @@
 import os
 import json
+import csv
 import math
 import copy
 import re
+import time
 from functools import lru_cache
 from random import randrange
 
@@ -167,6 +169,14 @@ def save_json(filename, data):
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 
+def save_csv(filename, data):
+    if not isinstance(data, list):
+        raise Exception("Cannot write data of non-list type to csv")
+    with open(f"{filename}.csv", "a", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(data)
+
+
 def load_json(filename):
     data = None
     with open(f"{filename}", encoding="utf-8") as f:
@@ -224,8 +234,8 @@ def save_error(results, error):
 
 
 def get_declarations(configuration):
-    count = configuration["declarations_count"] or 10
-    return Declaration.objects.filter(**configuration["declarations_filter"]).order_by("?")[:count]
+    order_by = configuration.get("order_by", "?")
+    return Declaration.objects.filter(**configuration["declarations_filter"]).order_by(order_by)
 
 
 # return a list of extracted ingredients from all associated LABEL files
@@ -280,6 +290,7 @@ def extract_ingredients(configuration, results, declaration):
 
 # d for declaration
 def save_declaration_details(results, d):
+    results["company"] = d.company.id if d.company else None
     results["article"] = d.article
     results["status"] = d.status
     # NB: this URL is built from settings.HOSTNAME, so it points to the local
@@ -470,38 +481,94 @@ def calculate_trust_score(results):
     results["trust"] = max(trust, 0)
 
 
-def generate_data(configuration, data):
-    data["configuration"] = configuration
-    data["declarations"] = {}
-    # reset first, so that a partial override given for this run does not
-    # inherit the pauses of the previous one in the same shell
-    throttle.reset()
-    throttle.configure(**configuration.get("throttle", {}))
-    configuration["throttle"] = dict(throttle.THROTTLE)
+def serialize_declaration_data(d_id, d, data):
+    if isinstance(data, list):
+        # save results in array to later be written into csv
+        trust_score = d.get("trust", None)
+        trust_threshold = 0.5
+        diff = d.get("declared_ingredient_count_difference", None)
+        flag = "OK"
+        if trust_score is None or diff is None:
+            flag = "UNKNOWN"
+        elif diff >= 0 and trust_score < trust_threshold:
+            flag = "SUSPICIOUS"
+        error = ""
+        errors = d.get("errors", None)
+        if errors and len(errors) > 0:
+            error = errors[0].get("message", "Error without message")
+        data.append(
+            [
+                d_id,
+                d.get("company"),
+                d.get("article"),
+                flag,
+                trust_score or "",
+                d.get("list_lang", ""),
+                diff,
+                # missing obligatory mention count
+                error,
+            ]
+        )
+    elif isinstance(data, dict):
+        # default to json
+        data[d_id] = d
+
+
+def analyse_declaration(configuration, d, data):
+    declaration_results = {}
+    save_declaration_details(declaration_results, d)
+
+    # get all ingredients present in the attachments
+    ingredients_lists = extract_ingredients(configuration, declaration_results, d)
+    declaration_results["extracted_ingredients"] = ingredients_lists
+    merged_ingredients_lists = merge_lists(ingredients_lists, declaration_results)
+    save_extracted_lists_stats(declaration_results, merged_ingredients_lists)
+
+    # choose the ingredients list we will use for comparison with the declared
+    chosen_list = pick_list(declaration_results, merged_ingredients_lists)
+    cleaned_list = clean_list(configuration, declaration_results, chosen_list)
+    cleaned_list = rescue_composition_names(configuration, declaration_results, cleaned_list)
+    declaration_results["list_count"] = len(cleaned_list)
+    save_differential(declaration_results)
+    calculate_trust_score(declaration_results)
+
+    # finally, save the results
+    serialize_declaration_data(d.id, declaration_results, data)
+
+
+def fetch_and_analyse_data(configuration, data):
+    # batch here
     declarations = get_declarations(configuration)
-    count = 1
-    for d in declarations:
-        print("Declaration", d.id, f"(#{count})")
-        declaration_results = {}
-        save_declaration_details(declaration_results, d)
+    d_count = configuration.get("declarations_count", declarations.count())
+    batch_start = 0
+    batch_end = None
+    batch_size = configuration.get("batch_size", None)
+    batches = 1
+    if batch_size:
+        batches = math.ceil(d_count / batch_size)
+    else:
+        batch_size = d_count
 
-        # get all ingredients present in the attachments
-        ingredients_lists = extract_ingredients(configuration, declaration_results, d)
-        declaration_results["extracted_ingredients"] = ingredients_lists
-        merged_ingredients_lists = merge_lists(ingredients_lists, declaration_results)
-        save_extracted_lists_stats(declaration_results, merged_ingredients_lists)
-
-        # choose the ingredients list we will use for comparison with the declared
-        chosen_list = pick_list(declaration_results, merged_ingredients_lists)
-        cleaned_list = clean_list(configuration, declaration_results, chosen_list)
-        cleaned_list = rescue_composition_names(configuration, declaration_results, cleaned_list)
-        declaration_results["list_count"] = len(cleaned_list)
-        save_differential(declaration_results)
-        calculate_trust_score(declaration_results)
-
-        # finally, save the results
-        data["declarations"][d.id] = declaration_results
-        count += 1
+    start_time = time.time()
+    print("Number of batches: ", batches)
+    count = 1  # for terminal tracking purposes
+    for batch in range(0, batches):
+        batch_start = batch * batch_size
+        batch_end = batch_start + batch_size
+        batch_end = batch_end if batch_end < d_count else d_count
+        declarations_batch = declarations[batch_start:batch_end]
+        for d in declarations_batch:
+            print("Declaration", d.id, f"(#{count}, batch #{batch})")
+            analyse_declaration(configuration, d, data)
+            count += 1
+        if isinstance(data, list):
+            save_csv(configuration["filename"], data)
+            data = []
+        batch_time = math.ceil((time.time() - start_time) / 60)
+        batches_remaining = batches - batch
+        print("Time for batch (mins): ", batch_time)
+        print("Batches remaining: ", batches_remaining)
+        print("Estimated time remaining (mins): ", batch_time * batches_remaining)
 
 
 # ------- Summarise data
@@ -526,8 +593,7 @@ def difference(values):
 
 # here, results is the higher level dict unlike methods above
 # which are per-declaration
-def summarise(results):
-    declarations = results["declarations"]
+def summarise(declarations):
     # ids = [] # ids may be necessary for debugging groupings
     declared_differences = []
     total_differences = []
@@ -561,7 +627,6 @@ def summarise(results):
                 bucket = "exact"
             low_trust[bucket].append(id)
     summary = {
-        "configuration": results["configuration"],
         "declarations_count": len(declarations),
         "declared": difference(declared_differences),
         "total": difference(total_differences),
@@ -681,13 +746,13 @@ def build_declaration_comparison(results, synonyms_cache):
     }
 
 
-# here, data is the higher level dict returned by generate_data
+# here, data is the higher level dict returned by fetch_and_analyse_data
 def compare(data):
     # synonyms are the same for every declaration, so they are looked up once
     synonyms_cache = {}
     counts = {label: 0 for label in COUNT_OUTCOMES}
     declarations = {}
-    for declaration_id, results in data["declarations"].items():
+    for declaration_id, results in data.items():
         entry = build_declaration_comparison(results, synonyms_cache)
         counts[entry["outcome"]] += 1
         declarations[declaration_id] = entry
@@ -710,12 +775,13 @@ def compare(data):
 # - s.run_complete() or s.summarise(<filename without extension>)
 #
 # run_complete writes three files, all prefixed with the run timestamp:
-# - <timestamp>.json              the raw data for every declaration
-# - <timestamp>_summary.json      the aggregated count differences
-# - <timestamp>_comparison.json  counts by outcome first (perfect / slight
-#                                 difference / over / nothing extracted / under),
-#                                 then per declaration the lists side by side
-#                                 for manual checking
+# - <timestamp>.json               the raw data for every declaration
+# - <timestamp>_configuration.json the config options for this run
+# - <timestamp>_summary.json       the aggregated count differences
+# - <timestamp>_comparison.json    counts by outcome first (perfect / slight
+#                                   difference / over / nothing extracted / under),
+#                                   then per declaration the lists side by side
+#                                   for manual checking
 # Both derived files can be regenerated from the raw json without calling the
 # AI again, with s.summarise_from_file(...) and s.compare_from_file(...)
 #
@@ -730,26 +796,38 @@ def run_complete(**kwargs):
     timestamp = timezone.now().strftime("%Y-%m-%dT%H-%M-%S")
     filename = f"{folder}/{timestamp}"
     config = {**CONFIGURATION, **kwargs}
-    data = {}
-    try:
-        generate_data(config, data)
-    except Exception as e:
-        # attempt to at least dump the data so far collected
+    config["filename"] = filename
+
+    # if we are batching, then we are saving to csv, else json
+    batch_size = config.get("batch_size", None)
+    data = [] if batch_size else {}
+
+    # reset first, so that a partial override given for this run does not
+    # inherit the pauses of the previous one in the same shell
+    throttle.reset()
+    throttle.configure(**config.get("throttle", {}))
+    config["throttle"] = dict(throttle.THROTTLE)
+
+    save_json(f"{filename}_configuration", config)
+
+    fetch_and_analyse_data(config, data)
+
+    if isinstance(data, dict):
         save_json(filename, data)
-        raise e
-    save_json(filename, data)
-    # in theory, could add extra step to parse a json file to feed to this
-    results = summarise(data)
-    save_json(f"{filename}_summary", results)
-    save_json(f"{filename}_comparison", compare(data))
+        # in theory, could add extra step to parse a json file to feed to this
+        results = summarise(data)
+        save_json(f"{filename}_summary", results)
+        save_json(f"{filename}_comparison", compare(data))
 
 
+# only works for json files
 def summarise_from_file(filename):
     data = load_json(f"{filename}.json")
     results = summarise(data)
     save_json(f"{filename}_summary", results)
 
 
+# only works for json files
 def compare_from_file(filename):
     data = load_json(f"{filename}.json")
     save_json(f"{filename}_comparison", compare(data))
