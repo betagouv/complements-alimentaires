@@ -1,6 +1,7 @@
 import logging
 
 import requests
+from urllib.parse import urlencode
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,7 @@ class SiretData:
     def fetch(siret: str) -> dict | None:
         """Interroge l'API SIRET, et retourne un dict contenant les attributs de l'entreprise à notre format, ou None en cas d'échec."""
 
+        siret = urlencode(siret)
         url = f"https://recherche-entreprises.api.gouv.fr/search?q={siret}"
         response = requests.get(url)
         if not response.ok:
@@ -67,5 +69,5 @@ class SiretData:
                 "end_date": etablissement["date_fermeture"],
             }
         except KeyError as e:
-            logger.error(f"unexpected siret response format : {raw_siret_data}. Unknown key : {e}")
+            logger.error(f"unexpected siret response format : {str(raw_siret_data)}. Unknown key : {e}")
             return {"status": 500}
