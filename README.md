@@ -157,6 +157,7 @@ OIDC_OP_JWKS_ENDPOINT=<ProConnect URL d'integration>/api/v2/jwks
 OIDC_OP_AUTHORIZATION_ENDPOINT=<ProConnect URL d'integration>/api/v2/authorize
 OIDC_OP_TOKEN_ENDPOINT=<ProConnect URL d'integration>/api/v2/token
 OIDC_OP_USER_ENDPOINT=<ProConnect URL d'integration>/api/v2/userinfo
+OIDC_OP_LOGOUT_ENDPOINT=<ProConnect URL d'integration>/api/v2/session/end
 HOSTNAME=127.0.0.1:8000
 ALLOWED_HOSTS=127.0.0.1
 LOGIN_REDIRECT_URL=http://127.0.0.1:<port du front>/

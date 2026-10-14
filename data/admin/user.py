@@ -36,6 +36,8 @@ class UserAdmin(UserAdmin):
     )
     show_facets = admin.ShowFacets.NEVER
 
+    readonly_fields = ("last_login_proconnect",)
+
     inlines = (
         DeclarantRoleInline,
         SupervisorRoleInline,
@@ -49,6 +51,7 @@ class UserAdmin(UserAdmin):
                     "username",
                     "password",
                     "is_verified",
+                    "last_login_proconnect",
                 )
             },
         ),
