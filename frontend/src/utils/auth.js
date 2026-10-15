@@ -10,9 +10,15 @@ export const logOut = async (
   redirectRouteName = "LandingPage",
   routeQueryParams = {}
 ) => {
-  const { response } = await useFetch(`logout/`, { headers: headers() }).post()
+  const { data, response } = await useFetch(`logout/`, { headers: headers() }).post().json()
   await handleError(response)
   if (response.value.ok) {
+    if (data.value?.logoutUrl) {
+      // Déconnexion OIDC : on navigue vers le fournisseur pour qu'il termine la session SSO.
+      // Il redirige ensuite vers /api/logout-callback/ qui effectue la déconnexion Django.
+      window.location.href = data.value.logoutUrl
+      return
+    }
     await router.replace({ name: redirectRouteName, query: routeQueryParams })
     await useRootStore().resetInitialData()
     useToaster().addSuccessMessage(message)
