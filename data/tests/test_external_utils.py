@@ -5,118 +5,66 @@ from data.utils.external_utils import SiretData
 
 class SiretDataTestCase(TestCase):
     def test_get_formatted_company_data(self):
-        # https://api.insee.fr/entreprises/sirene/V3.11/siret/82073111500037
+        # https://recherche-entreprises.api.gouv.fr/search?q=...
         raw_siret_data = {
             "header": {"statut": 200, "message": "ok"},
-            "etablissement": {
-                "siren": "820731115",
-                "nic": "00037",
-                "siret": "82073111500037",
-                "statutDiffusionEtablissement": "O",
-                "dateCreationEtablissement": "2020-02-28",
-                "trancheEffectifsEtablissement": "22",
-                "anneeEffectifsEtablissement": "2021",
-                "activitePrincipaleRegistreMetiersEtablissement": None,
-                "dateDernierTraitementEtablissement": "2024-03-30T02:59:09.849",
-                "etablissementSiege": True,
-                "nombrePeriodesEtablissement": 1,
-                "uniteLegale": {
-                    "etatAdministratifUniteLegale": "A",
-                    "statutDiffusionUniteLegale": "O",
-                    "dateCreationUniteLegale": "2016-05-27",
-                    "categorieJuridiqueUniteLegale": "5710",
-                    "denominationUniteLegale": "TOO GOOD TO GO FRANCE",
-                    "sigleUniteLegale": None,
-                    "denominationUsuelle1UniteLegale": None,
-                    "denominationUsuelle2UniteLegale": None,
-                    "denominationUsuelle3UniteLegale": None,
-                    "sexeUniteLegale": None,
-                    "nomUniteLegale": None,
-                    "nomUsageUniteLegale": None,
-                    "prenom1UniteLegale": None,
-                    "prenom2UniteLegale": None,
-                    "prenom3UniteLegale": None,
-                    "prenom4UniteLegale": None,
-                    "prenomUsuelUniteLegale": None,
-                    "pseudonymeUniteLegale": None,
-                    "activitePrincipaleUniteLegale": "82.99Z",
-                    "nomenclatureActivitePrincipaleUniteLegale": "NAFRev2",
-                    "identifiantAssociationUniteLegale": None,
-                    "economieSocialeSolidaireUniteLegale": "N",
-                    "societeMissionUniteLegale": None,
-                    "caractereEmployeurUniteLegale": None,
-                    "trancheEffectifsUniteLegale": "22",
-                    "anneeEffectifsUniteLegale": "2021",
-                    "nicSiegeUniteLegale": "00037",
-                    "dateDernierTraitementUniteLegale": "2024-03-22T09:28:19.000",
-                    "categorieEntreprise": "PME",
-                    "anneeCategorieEntreprise": "2021",
-                },
-                "adresseEtablissement": {
-                    "complementAdresseEtablissement": None,
-                    "numeroVoieEtablissement": "12",
-                    "indiceRepetitionEtablissement": None,
-                    "dernierNumeroVoieEtablissement": None,
-                    "indiceRepetitionDernierNumeroVoieEtablissement": None,
-                    "typeVoieEtablissement": "RUE",
-                    "libelleVoieEtablissement": "DUHESME",
-                    "codePostalEtablissement": "75018",
-                    "libelleCommuneEtablissement": "PARIS",
-                    "libelleCommuneEtrangerEtablissement": None,
-                    "distributionSpecialeEtablissement": None,
-                    "codeCommuneEtablissement": "75118",
-                    "codeCedexEtablissement": None,
-                    "libelleCedexEtablissement": None,
-                    "codePaysEtrangerEtablissement": None,
-                    "libellePaysEtrangerEtablissement": None,
-                    "identifiantAdresseEtablissement": "751182974_B",
-                    "coordonneeLambertAbscisseEtablissement": "48.890627",
-                    "coordonneeLambertOrdonneeEtablissement": "2.338061",
-                },
-                "adresse2Etablissement": {
-                    "complementAdresse2Etablissement": None,
-                    "numeroVoie2Etablissement": None,
-                    "indiceRepetition2Etablissement": None,
-                    "typeVoie2Etablissement": None,
-                    "libelleVoie2Etablissement": None,
-                    "codePostal2Etablissement": None,
-                    "libelleCommune2Etablissement": None,
-                    "libelleCommuneEtranger2Etablissement": None,
-                    "distributionSpeciale2Etablissement": None,
-                    "codeCommune2Etablissement": None,
-                    "codeCedex2Etablissement": None,
-                    "libelleCedex2Etablissement": None,
-                    "codePaysEtranger2Etablissement": None,
-                    "libellePaysEtranger2Etablissement": None,
-                },
-                "periodesEtablissement": [
-                    {
-                        "dateFin": None,
-                        "dateDebut": "2020-02-28",
-                        "etatAdministratifEtablissement": "A",
-                        "changementEtatAdministratifEtablissement": False,
-                        "enseigne1Etablissement": None,
-                        "enseigne2Etablissement": None,
-                        "enseigne3Etablissement": None,
-                        "changementEnseigneEtablissement": False,
-                        "denominationUsuelleEtablissement": None,
-                        "changementDenominationUsuelleEtablissement": False,
-                        "activitePrincipaleEtablissement": "82.99Z",
-                        "nomenclatureActivitePrincipaleEtablissement": "NAFRev2",
-                        "changementActivitePrincipaleEtablissement": False,
-                        "caractereEmployeurEtablissement": "N",
-                        "changementCaractereEmployeurEtablissement": False,
-                    }
-                ],
-            },
+            "results": [
+                {
+                    "nom_raison_sociale": "COMPANY NAME SL",
+                    "date_fermeture": "2020-01-01",
+                    "siege": {
+                        "numero_voie": "12",
+                        "type_voie": "RUE",
+                        "libelle_voie": "ABEILLES",
+                        "complement_adresse": "Étage 3",
+                        "dernier_numero_voie": "1",
+                        "indice_repetition": "B",
+                        "code_postal": "75001",
+                        "libelle_commune": "PARIS",
+                        "cedex": "75000",
+                        "libelle_cedex": "PARIS CEDEX",
+                        "nom_commercial": "Company name",
+                    },
+                }
+            ],
+            "total_results": 1,
         }
 
         expected_result = {
-            "social_name": "TOO GOOD TO GO FRANCE",
-            "address": "12 RUE DUHESME",
+            "status": 200,
+            "social_name": "COMPANY NAME SL",
+            "commercial_name": "Company name",
+            "address": "12 B 1 RUE ABEILLES",
+            "additional_details": "Étage 3",
             "city": "PARIS",
-            "postal_code": "75018",
-            "cedex": "",
+            "postal_code": "75001",
+            "cedex": "75000 PARIS CEDEX",
+            "end_date": "2020-01-01",
         }
+
+        self.assertEqual(SiretData.get_formatted_company_data(raw_siret_data), expected_result)
+
+    def test_no_results(self):
+        raw_siret_data = {
+            "header": {"statut": 200, "message": "ok"},
+            "results": [],
+            "total_results": 0,
+        }
+
+        expected_result = {"status": 404}
+
+        self.assertEqual(SiretData.get_formatted_company_data(raw_siret_data), expected_result)
+        # TODO: handle case where multiple results returned?
+        # TODO: handle foreign addresses?
+        # TODO: handle [NON-DIFFUSABLE] particularly in concatenated strings
+
+    def test_unexpected_missing_keys(self):
+        raw_siret_data = {
+            "header": {"statut": 200, "message": "ok"},
+            "results": [{"surprise": "the data you expected is missing"}],
+            "total_results": 0,
+        }
+
+        expected_result = {"status": 500}
 
         self.assertEqual(SiretData.get_formatted_company_data(raw_siret_data), expected_result)

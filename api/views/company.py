@@ -63,6 +63,8 @@ class CompanyStatusChoices(StrEnum):
     REGISTERED_AND_SUPERVISED_BY_OTHER = auto()
     # Entreprise enregistrée mais non supervisée, sans gestionnaire (ex: suite à un import)
     REGISTERED_AND_UNSUPERVISED = auto()
+    # SIRET ou TVA non valide/non active
+    UNREGISTERABLE_COMPANY = auto()
 
 
 def _get_identifier_type(request) -> str:
@@ -98,6 +100,8 @@ class CheckCompanyIdentifierView(APIView):
             # Essaie de récupérer les données entreprise depuis l'API SIRET pour faciliser la saisie
             if identifier_type == "siret":
                 company_siret_data = SiretData.fetch(identifier)  # None en cas d'échec du fetch
+                if company_siret_data["status"] == 404 or company_siret_data.get("end_date", None) is not None:
+                    company_status = CompanyStatusChoices.UNREGISTERABLE_COMPANY
         else:
             if company.supervisors.exists():
                 if company.supervisors.filter(id=request.user.id).exists():

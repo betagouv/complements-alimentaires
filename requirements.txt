@@ -1,4 +1,4 @@
-amqp==5.3.1
+amqp==5.4.1
 arabic-reshaper==3.0.1
 asgiref==3.12.1
 asn1crypto==1.5.1
@@ -74,7 +74,7 @@ phonenumbers==9.0.24
 pikepdf==10.9.1
 pillow==12.3.0
 pipdeptree==4.0.0
-platformdirs==4.9.6
+platformdirs==4.12.3
 pluggy==1.6.0
 pre_commit==4.6.0
 prompt_toolkit==3.0.52
