@@ -1,7 +1,9 @@
 import logging
+from urllib.parse import urlencode
 
 import requests
-from urllib.parse import urlencode
+
+from data.validators import validate_siret
 
 logger = logging.getLogger(__name__)
 
@@ -18,9 +20,10 @@ class SiretData:
     def fetch(siret: str) -> dict | None:
         """Interroge l'API SIRET, et retourne un dict contenant les attributs de l'entreprise à notre format, ou None en cas d'échec."""
 
+        validate_siret(siret)
         siret = urlencode(siret)
-        url = f"https://recherche-entreprises.api.gouv.fr/search?q={siret}"
-        response = requests.get(url)
+
+        response = requests.get("https://recherche-entreprises.api.gouv.fr/search", params={"q": siret})
         if not response.ok:
             logger.warn(f"SIRET API call has failed, code {response.status_code} : {response}")
             return {"status": 500}
