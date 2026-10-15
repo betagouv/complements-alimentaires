@@ -341,10 +341,6 @@ if SENTRY_DSN:
         send_client_reports=False,
     )
 
-# API INSEE
-INSEE_API_KEY = env("INSEE_API_KEY", default=None)
-INSEE_URL = "https://api.insee.fr/api-sirene/3.11/"
-
 # Models to be used with myloaddata/mydumpdata commands
 FIXTURE_FOLDER = BASE_DIR / "fixtures"
 FIXTURE_MODELS = [
