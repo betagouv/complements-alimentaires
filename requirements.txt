@@ -74,7 +74,7 @@ phonenumbers==9.0.24
 pikepdf==10.9.1
 pillow==12.3.0
 pipdeptree==4.0.0
-platformdirs==4.9.6
+platformdirs==4.12.3
 pluggy==1.6.0
 pre_commit==4.6.0
 prompt_toolkit==3.0.52
