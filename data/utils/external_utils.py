@@ -69,5 +69,7 @@ class SiretData:
                 "end_date": etablissement["date_fermeture"],
             }
         except KeyError as e:
-            logger.error(f"unexpected siret response format : {str(raw_siret_data)}. Unknown key : {e}")
+            safe_raw_siret_data = str(raw_siret_data).replace("\r", "").replace("\n", "")
+            safe_key_error = str(e).replace("\r", "").replace("\n", "")
+            logger.error(f"unexpected siret response format : {safe_raw_siret_data}. Unknown key : {safe_key_error}")
             return {"status": 500}
