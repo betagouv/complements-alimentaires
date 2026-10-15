@@ -96,6 +96,7 @@ const companyClosed = ref("")
 
 const submitIdentifier = async () => {
   companyNotFound.value = false
+  companyClosed.value = ""
   v$.value.$clearExternalResults()
   v$.value.$validate()
   if (v$.value.$error) {

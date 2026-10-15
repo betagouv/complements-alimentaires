@@ -1,5 +1,4 @@
 import logging
-from urllib.parse import urlencode
 
 import requests
 
@@ -21,7 +20,6 @@ class SiretData:
         """Interroge l'API SIRET, et retourne un dict contenant les attributs de l'entreprise à notre format, ou None en cas d'échec."""
 
         validate_siret(siret)
-        siret = urlencode(siret)
 
         response = requests.get("https://recherche-entreprises.api.gouv.fr/search", params={"q": siret})
         if not response.ok:
