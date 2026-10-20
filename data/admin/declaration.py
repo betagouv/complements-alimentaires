@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib import admin
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 
 from simple_history.admin import SimpleHistoryAdmin
 
@@ -17,11 +19,43 @@ from data.models import (
 from .abstract_admin import ChangeReasonAdminMixin, ChangeReasonFormMixin
 
 
+class ReadOnlyDateDisplay(forms.Widget):
+    """
+    Affiche une date en texte brut, sans sélecteur interactif.
+    Utilisé pour les dates de retrait effectif, même si pour les
+    snapshots qui ne sont pas de type WITHDRAWN ces dates ne devraient
+    pas être remplie.
+    """
+
+    def render(self, name, value, attrs=None, renderer=None):
+        if hasattr(value, "strftime"):
+            return format_html("<span>{}</span>", value.strftime("%d/%m/%Y"))
+        return SafeString("<span>—</span>")
+
+    def value_from_datadict(self, data, files, name):
+        return None  # ignoré car le champ est aussi `disabled`
+
+
+class SnapshotInlineForm(forms.ModelForm):
+    class Meta:
+        model = Snapshot
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # La date de retrait n'est modifiable que pour les snapshots WITHDRAWN
+        if not self.instance or self.instance.status != Declaration.DeclarationStatus.WITHDRAWN:
+            field = self.fields["effective_withdrawal_date"]
+            field.disabled = True
+            field.widget = ReadOnlyDateDisplay()
+
+
 class SnapshotInline(admin.TabularInline):
     model = Snapshot
+    form = SnapshotInlineForm
     can_delete = False
-    fields = ("user", "creation_date", "action", "status", "comment")
-    readonly_fields = fields
+    fields = ("user", "creation_date", "action", "status", "comment", "effective_withdrawal_date")
+    readonly_fields = ("user", "creation_date", "action", "status", "comment")
     extra = 0
     ordering = ("creation_date",)
 
