@@ -184,7 +184,10 @@ OIDC_OP_JWKS_ENDPOINT = env("OIDC_OP_JWKS_ENDPOINT", default="")
 OIDC_OP_AUTHORIZATION_ENDPOINT = env("OIDC_OP_AUTHORIZATION_ENDPOINT", default="")
 OIDC_OP_TOKEN_ENDPOINT = env("OIDC_OP_TOKEN_ENDPOINT", default="")
 OIDC_OP_USER_ENDPOINT = env("OIDC_OP_USER_ENDPOINT", default="")
+# OIDC_OP_LOGOUT_URL_METHOD = "api.views.oidc_logout"
+OIDC_OP_LOGOUT_ENDPOINT = env("OIDC_OP_LOGOUT_ENDPOINT", default="")
 OIDC_RP_SCOPES = "openid email given_name usual_name siret"
+OIDC_STORE_ID_TOKEN = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

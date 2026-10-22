@@ -1,4 +1,4 @@
-from .authentication import LoginView, LogoutView
+from .authentication import LoginView, LogoutView, OIDCLogoutCallbackView
 from .autocomplete import AutocompleteView
 from .blog import BlogPostsView, BlogPostView
 from .condition import ConditionListView
