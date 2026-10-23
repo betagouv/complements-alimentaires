@@ -314,6 +314,17 @@
             conforme aux dispositions réglementaires.
           </p>
         </DsfrAccordion>
+        <DsfrAccordion title="Que dois-je faire lorsque j'arrête de commercialiser un produit ?">
+          <p>
+            Vous pouvez signaler l'arrêt de commercialisation à l'administration. Cette démarche est directement
+            réalisable sur Compl'Alim : ouvrez l'interface « Les déclarations de mon entreprise », cliquez sur le
+            produit concerné, puis allez dans l'onglet « Retirer du marché ».
+          </p>
+          <p>
+            Indiquez bien la date effective du retrait du produit. Si certains de vos produits sont encore sur le
+            marché, tenez compte de leur date limite d'utilisation optimale (DLUO).
+          </p>
+        </DsfrAccordion>
         <h2 class="fr-h4">Suivi de l’instruction</h2>
         <DsfrAccordion title="Comment suivre l’état d’avancement de l’instruction de mes dossiers ?">
           <p>
