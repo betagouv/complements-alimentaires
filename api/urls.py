@@ -58,6 +58,11 @@ urlpatterns = {
     # Authentication
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
+    path(
+        "logout-callback/",
+        views.OIDCLogoutCallbackView.as_view(),
+        name="oidc_logout_callback",
+    ),
     # User
     path("get-logged-user/", views.LoggedUserView.as_view(), name="get_logged_user"),
     path("users/", views.UserCreateView.as_view(), name="user_create"),

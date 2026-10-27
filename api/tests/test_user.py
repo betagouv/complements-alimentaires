@@ -1,4 +1,5 @@
 from unittest import mock
+from urllib.parse import parse_qs, urlparse
 
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
@@ -490,6 +491,100 @@ class TestGenerateUsername(ProjectAPITestCase):
         response = self.get(self.url() + "?first_name=S.L.&last_name=UNIK%20HEALTH&NUTRITION")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {"username": "sl.unik-health"})
+
+
+@override_settings(LOGOUT_REDIRECT_URL="/")
+class TestLogout(APITestCase):
+    def setUp(self):
+        self.url = reverse("api:logout")
+
+    @authenticate
+    def test_regular_logout(self):
+        """Un utilisateur sans token OIDC est déconnecté directement."""
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), {})
+
+        # On utilise response.wsgi_request.user car authenticate.user est l'utilisateur en mémoire
+        # au début du test, non pas forcément l'utilisateur lié à la requête après le retour
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+    @authenticate
+    @override_settings(OIDC_OP_LOGOUT_ENDPOINT="")
+    def test_oidc_logout_no_endpoint_falls_back_to_regular(self):
+        """Sans endpoint de déconnexion OIDC configuré, on retombe sur la déconnexion classique."""
+        session = self.client.session
+        session["oidc_id_token"] = "fake-id-token"
+        session.save()
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), {})
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+    @authenticate
+    @override_settings(OIDC_OP_LOGOUT_ENDPOINT="https://sso.example.com/logout")
+    @override_settings(OIDC_RP_CLIENT_ID="test-client-id")
+    def test_oidc_logout_returns_url_with_required_params(self):
+        """Avec token OIDC et endpoint configuré, renvoie une logoutUrl avec id_token_hint, client_id, state et post_logout_redirect_uri."""
+        session = self.client.session
+        session["oidc_id_token"] = "fake-id-token"
+        session.save()
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("logoutUrl", response.json())
+        params = parse_qs(urlparse(response.json()["logoutUrl"]).query)
+        self.assertEqual(params["id_token_hint"], ["fake-id-token"])
+        self.assertEqual(params["client_id"], ["test-client-id"])
+        self.assertIn("state", params)
+        self.assertIn("logout-callback", params["post_logout_redirect_uri"][0])
+        # L'utilisateur ne doit pas encore être déconnecté — le logout Django aura lieu dans le callback
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+
+    @authenticate
+    @override_settings(OIDC_OP_LOGOUT_ENDPOINT="https://sso.example.com/logout")
+    @override_settings(OIDC_RP_CLIENT_ID="test-client-id")
+    def test_oidc_logout_state_persisted_in_session(self):
+        """Le state généré est bien persisté en session pour être vérifié lors du callback."""
+        session = self.client.session
+        session["oidc_id_token"] = "fake-id-token"
+        session.save()
+        response = self.client.post(self.url)
+        state = parse_qs(urlparse(response.json()["logoutUrl"]).query)["state"][0]
+        self.assertIn(state, self.client.session.get("oidc_states", {}))
+
+
+@override_settings(LOGOUT_REDIRECT_URL="/")
+class TestOIDCLogoutCallback(APITestCase):
+    def setUp(self):
+        self.url = reverse("api:oidc_logout_callback")
+        self.user = UserFactory(is_verified=True)
+
+    def test_unauthenticated_redirects(self):
+        """Un utilisateur non authentifié est redirigé sans erreur."""
+        response = self.client.get(self.url)
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+
+    def test_no_state_redirects_gracefully(self):
+        """Une requête sans paramètre state est redirigée sans erreur."""
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+
+    def test_invalid_state_raises_suspicious_operation(self):
+        """Un state inconnu de la session lève une SuspiciousOperation (400)."""
+        self.client.force_login(self.user)
+        response = self.client.get(self.url, {"state": "unknown-state"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_valid_state_completes_logout(self):
+        """Un state valide entraîne la déconnexion Django et la redirection."""
+        self.client.force_login(self.user)
+        session = self.client.session
+        session["oidc_states"] = {"valid-state": {}}
+        session.save()
+        response = self.client.get(self.url, {"state": "valid-state"})
+        self.assertRedirects(response, "/", fetch_redirect_response=False)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
 
 
 @override_settings(
