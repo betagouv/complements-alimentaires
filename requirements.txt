@@ -80,7 +80,7 @@ prompt_toolkit==3.0.52
 psycopg2==2.9.13
 pycairo==1.29.0
 pycodestyle==2.14.0
-pycparser==3.0
+pycparser==3.11
 Pygments==2.20.0
 pyHanko==0.37.0
 pyhanko-certvalidator==0.32.1
