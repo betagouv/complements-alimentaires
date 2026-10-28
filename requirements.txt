@@ -15,7 +15,7 @@ cffi==2.1.1
 cfgv==3.5.0
 chardet==7.6.0
 charset-normalizer==3.4.9
-click==8.3.2
+click==8.5.0
 click-didyoumean==0.3.1
 click-plugins==1.1.1.2
 click-repl==0.4.0
@@ -105,7 +105,6 @@ s3transfer==0.16.0
 sentry-sdk==2.68.0
 sib-api-v3-sdk==7.6.0
 six==1.17.0
-sqlfluff==4.3.0
 sqlparse==0.6.0
 svglib==1.6.0
 tblib==3.2.2
