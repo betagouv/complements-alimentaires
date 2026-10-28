@@ -28,7 +28,7 @@ Django==6.1.1
 django-anymail==15.1
 django-cors-headers==4.9.0
 django-environ==0.14.0
-django-filter==26.1
+django-filter==26.2
 django-hijack==3.7.8
 django-js-asset==3.1.2
 django-jsonform==2.23.2
