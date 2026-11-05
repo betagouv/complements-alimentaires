@@ -125,7 +125,7 @@ class UserDeclarationsListCreateApiView(ListCreateAPIView):
             company_siret_data = SiretData.fetch(company.siret)
             if not SiretData.is_valid_company(company_siret_data):
                 raise ProjectAPIException(
-                    global_error="Le SIRET de l'entreprise ne corresponde pas à une entreprise ouverte sur l'Annuaire Entreprises"
+                    field_errors={"company": "Veuillez renseigner une entreprise enregistrée et en activité"}
                 )
 
         companies = [company] + list(company.mandated_companies.all())
