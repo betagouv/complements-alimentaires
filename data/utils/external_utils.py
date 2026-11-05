@@ -59,6 +59,13 @@ class SiretData:
                 "libelle_voie",
             ]
 
+            end_date = etablissement["date_fermeture"]
+            # on verifie matching_etablissements parce que ça donne vraiment l'etablissement qui corresponde au SIRET donné
+            # les autres infos comme siege peuvent être associées au même SIREN
+            siret_matches = etablissement["matching_etablissements"]
+            if not end_date and siret_matches and len(siret_matches) > 0:
+                end_date = siret_matches[0]["date_fermeture"]
+
             return {
                 "status": 200,
                 "social_name": etablissement["nom_raison_sociale"] or etablissement["nom_complet"],
@@ -68,7 +75,7 @@ class SiretData:
                 "city": adresse["libelle_commune"],
                 "postal_code": adresse["code_postal"],
                 "cedex": " ".join(filter(None, [adresse[item] for item in cedex_items])),
-                "end_date": etablissement["date_fermeture"],
+                "end_date": end_date,
             }
         except KeyError as e:
             safe_raw_siret_data = str(raw_siret_data).replace("\r", "").replace("\n", "")
