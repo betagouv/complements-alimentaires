@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Si on a une seule entreprise, pas besoin d'afficher ce champ -->
-    <template v-if="!companies || companies.length !== 1">
+    <div v-if="!companies || companies.length !== 1" class="mb-10">
       <SectionTitle title="Entreprise" sizeTag="h6" icon="ri-home-2-fill" />
       <DsfrAlert type="warning" v-if="!companies || companies.length === 0">
         <p>
@@ -18,9 +18,9 @@
           :required="true"
         />
       </DsfrInputGroup>
-    </template>
+    </div>
 
-    <SectionTitle title="Dénomination commerciale" class="mt-10!" sizeTag="h6" icon="ri-price-tag-2-fill" />
+    <SectionTitle title="Dénomination commerciale" sizeTag="h6" icon="ri-price-tag-2-fill" />
     <div class="grid grid-cols-2 gap-4">
       <div class="col-span-2 md:col-span-1 max-w-md">
         <DsfrInputGroup :error-message="firstErrorMsg(v$, 'name')">
