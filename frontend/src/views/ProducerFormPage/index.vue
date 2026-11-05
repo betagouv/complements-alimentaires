@@ -93,6 +93,7 @@
         @back="selectTab(selectedTabIndex - 1)"
         @forward="selectTab(selectedTabIndex + 1)"
         :removeSaveLabel="readonly"
+        :requestInProgress="requestInProgress"
       />
       <hr class="mt-6" />
       <DeletionModal
