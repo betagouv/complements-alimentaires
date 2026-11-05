@@ -424,3 +424,8 @@ CORS_ALLOWED_ORIGINS = [f"http://{x}" for x in env("DEV_FRONTEND_ORIGINS", defau
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_SAMESITE = "Lax"
+
+# À ajuster via l'envvar DATA_UPLOAD_MAX_MEMORY_SIZE_MB pour laisser passer
+# des requêtes plus larges. Notre valeur par défaut est de 3Mo si l'env var
+# absente (la valeur Django par défault is 2.5 Mo).
+DATA_UPLOAD_MAX_MEMORY_SIZE = env("DATA_UPLOAD_MAX_MEMORY_SIZE_MB", cast=int, default=3) * 1024 * 1024

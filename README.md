@@ -128,6 +128,7 @@ GRIST_ANSES_CONTROL_DOC_ID (optionnel)= L'identifiant du document utilisé pour 
 GRIST_ANSES_CONTROL_TABLE_ID (optionnel)= L'identifiant du tableau utilisé dans GRIST_ANSES_CONTROL_DOC_ID. Retrouvable depuis settings -> API console de grist
 ADMIN_URL (optionnel)= Permet de customiser l'URL de l'admin Django
 DEV_FRONTEND_ORIGINS= Une liste de hosts pour le développement en local, normalement `localhost:5173`
+DATA_UPLOAD_MAX_MEMORY_SIZE_MB=La taille maximale en mégaoctets acceptée par Django (si absent, la valeur est de 3Mo).
 ```
 
 Un second fichier .env doit être également présent dans /frontend/.env et contenir les variables d'environnement suivantes :
