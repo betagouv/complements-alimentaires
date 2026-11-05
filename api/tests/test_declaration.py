@@ -56,10 +56,28 @@ from data.models import (
 )
 
 from .utils import authenticate
+from data.utils.external_utils import SiretData
+
+
+def fetch_open_company(self):
+    return {"status": 200, "end_date": None}
+
+
+def fetch_closed_company(self):
+    return {"status": 200, "end_date": "2000-01-01"}
+
+
+def fetch_unfound_company(self):
+    return {"status": 404}
+
+
+def fetch_company_api_down(self):
+    return {"status": 500}
 
 
 class TestCreateDeclarationApi(APITestCase):
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_not_allowed_without_role(self):
         """
         La création des déclaration est possible seulement pour les users avec
@@ -75,6 +93,7 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_wrong_company_declaration(self):
         DeclarantRoleFactory(user=authenticate.user)
         wrong_company = CompanyFactory()
@@ -88,8 +107,8 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @authenticate
-    @patch("data.utils.external_utils.SiretData.fetch")
-    def test_create_declaration_closed_company(self, mock_siret):
+    @patch.object(SiretData, "fetch", fetch_closed_company)
+    def test_create_declaration_closed_company(self):
         """
         Si l'entreprise est associée à un SIRET et l'entreprise est fermée,
         bloque la création de la déclaration
@@ -98,7 +117,6 @@ class TestCreateDeclarationApi(APITestCase):
         company = declarant_role.company
 
         self.assertIsNotNone(company.siret)  # assuming the factory assigns siret
-        mock_siret.return_value = {"status": 200, "end_date": "2000-01-01"}
 
         payload = {
             "company": company.id,
@@ -110,6 +128,49 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_unfound_company)
+    def test_create_declaration_unfound_company(self):
+        """
+        Si l'entreprise est associée à un SIRET et l'entreprise est introuvable,
+        bloque la création de la déclaration
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        self.assertIsNotNone(company.siret)  # assuming the factory assigns siret
+
+        payload = {
+            "company": company.id,
+            "name": "name",
+        }
+        response = self.client.post(
+            reverse("api:list_create_declaration", kwargs={"user_pk": authenticate.user.id}), payload, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @authenticate
+    @patch.object(SiretData, "fetch", fetch_company_api_down)
+    def test_create_declaration_company_api_down(self):
+        """
+        Si l'entreprise est associée à un SIRET et l'API de vérification SIRET échoue,
+        permets la création de la déclaration
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        self.assertIsNotNone(company.siret)  # assuming the factory assigns siret
+
+        payload = {
+            "company": company.id,
+            "name": "name",
+        }
+        response = self.client.post(
+            reverse("api:list_create_declaration", kwargs={"user_pk": authenticate.user.id}), payload, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_mandated_company_declaration(self):
         """
         Un·e déclarant·e doit pouvoir créer des déclarations pour une compagnie representée
@@ -131,6 +192,7 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_declaration_product_data(self):
         """
         Création de l'objet « déclaration » avec les données du produit
@@ -221,6 +283,7 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertEqual(declaration.author, authenticate.user)
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_declaration_declared_plants(self):
         """
         Création de l'objet « déclaration » avec les données de la composition,
@@ -293,6 +356,7 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertEqual(new_declared_plant.preparation.name, "Autre macérât")
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_declaration_calculate_article(self):
         """
         Il est possible d'ajouter un query_param pour forcer le calcul de l'article
@@ -344,6 +408,7 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertEqual(declaration.article, Declaration.Article.ARTICLE_16)
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_declaration_unknown_plant(self):
         """
         Si la plante spécifié n'existe pas, on doit lever une erreur
@@ -376,6 +441,7 @@ class TestCreateDeclarationApi(APITestCase):
         )
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_declaration_declared_microorganisms(self):
         """
         Création de l'objet « déclaration » avec les données de la composition,
@@ -447,6 +513,7 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertEqual(new_declared_microorganism.eu_details, "Voici les détails")
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_declaration_unknown_microorganism(self):
         """
         Si le micro-organisme spécifié n'existe pas, on doit lever une erreur
@@ -475,6 +542,7 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertIn("declaredMicroorganisms", body.get("fieldErrors"))
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_declaration_declared_ingredients(self):
         """
         Création de l'objet « déclaration » avec les données de la composition,
@@ -531,6 +599,7 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertEqual(new_declared_ingredient.fr_details, "Je le veux")
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_declaration_unknown_ingredient(self):
         """
         Si l'ingrédient spécifié n'existe pas, on doit lever une erreur
@@ -559,6 +628,7 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertIn("declaredIngredients", body.get("fieldErrors"))
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_declaration_declared_substances(self):
         """
         Création de l'objet « déclaration » avec les données de la composition,
@@ -615,6 +685,7 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertEqual(new_declared_substance.fr_details, "Je le veux")
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_declaration_unknown_substance(self):
         """
         Si la substance spécifiée n'existe pas, on doit lever une erreur
@@ -643,6 +714,7 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertIn("declaredSubstances", body.get("fieldErrors"))
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_declaration_computed_substances(self):
         """
         Création de l'objet « déclaration » avec les données de la composition,
@@ -684,6 +756,7 @@ class TestCreateDeclarationApi(APITestCase):
         self.assertEqual(existing_declared_substance.unit, unit)
 
     @authenticate
+    @patch.object(SiretData, "fetch", fetch_open_company)
     def test_create_declaration_attachments(self):
         """
         Création de l'objet « déclaration » avec les données de la composition,

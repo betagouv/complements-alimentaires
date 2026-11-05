@@ -1,5 +1,6 @@
 import logging
 
+import datetime as dt
 import requests
 
 from data.validators import validate_siret
@@ -74,3 +75,15 @@ class SiretData:
             safe_key_error = str(e).replace("\r", "").replace("\n", "")
             logger.error(f"unexpected siret response format : {safe_raw_siret_data}. Unknown key : {safe_key_error}")
             return {"status": 500}
+
+    @staticmethod
+    def is_valid_company(company_data):
+        if company_data["status"] == 404:
+            return False
+
+        end_date = company_data.get("end_date", None)
+        if not end_date:
+            return True
+
+        end_date = dt.datetime.strptime(end_date, "%Y-%m-%d")
+        return end_date > dt.datetime.today()
