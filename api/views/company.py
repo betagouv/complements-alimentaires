@@ -100,6 +100,7 @@ class CheckCompanyIdentifierView(APIView):
             # Essaie de récupérer les données entreprise depuis l'API SIRET pour faciliser la saisie
             if identifier_type == "siret":
                 company_siret_data = SiretData.fetch(identifier)  # None en cas d'échec du fetch
+                # TODO: check that end date is in the past, not just existing
                 if company_siret_data["status"] == 404 or company_siret_data.get("end_date", None) is not None:
                     company_status = CompanyStatusChoices.UNREGISTERABLE_COMPANY
         else:

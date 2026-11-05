@@ -58,7 +58,7 @@ from data.models import (
 from .utils import authenticate
 
 
-class TestDeclarationApi(APITestCase):
+class TestCreateDeclarationApi(APITestCase):
     @authenticate
     def test_create_not_allowed_without_role(self):
         """
@@ -86,6 +86,28 @@ class TestDeclarationApi(APITestCase):
             reverse("api:list_create_declaration", kwargs={"user_pk": authenticate.user.id}), payload, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @authenticate
+    @patch("data.utils.external_utils.SiretData.fetch")
+    def test_create_declaration_closed_company(self, mock_siret):
+        """
+        Si l'entreprise est associée à un SIRET et l'entreprise est fermée,
+        bloque la création de la déclaration
+        """
+        declarant_role = DeclarantRoleFactory(user=authenticate.user)
+        company = declarant_role.company
+
+        self.assertIsNotNone(company.siret)  # assuming the factory assigns siret
+        mock_siret.return_value = {"status": 200, "end_date": "2000-01-01"}
+
+        payload = {
+            "company": company.id,
+            "name": "name",
+        }
+        response = self.client.post(
+            reverse("api:list_create_declaration", kwargs={"user_pk": authenticate.user.id}), payload, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     @authenticate
     def test_create_mandated_company_declaration(self):
@@ -715,6 +737,8 @@ class TestDeclarationApi(APITestCase):
         )
         self.assertEqual(saved_certificate_authority_image, green_image_base_64)
 
+
+class TestDeclarationApi(APITestCase):
     @authenticate
     def test_retrieve_update_destroy_declaration_list(self):
         """

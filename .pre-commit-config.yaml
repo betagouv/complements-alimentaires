@@ -15,7 +15,7 @@ repos:
       - id: check-vcs-permalinks
       - id: detect-private-key
       - id: end-of-file-fixer
-        exclude: '.csv$'
+        exclude: ".csv$"
       - id: trailing-whitespace
     repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
@@ -107,3 +107,5 @@ repos:
           - vue
     repo: https://github.com/pre-commit/mirrors-eslint
     rev: v10.13.0
+default_language_version:
+  node: system
