@@ -28,6 +28,7 @@ class SimpleCompanySerializer(serializers.ModelSerializer):
             "city",
             "cedex",
             "country",
+            "siret",
         )
 
 

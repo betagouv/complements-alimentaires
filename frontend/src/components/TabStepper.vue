@@ -3,7 +3,7 @@
     <slot name="content"></slot>
     <ul class="list-none pl-0 my-0" role="list">
       <li v-if="selectedTabIndex > 0" class="inline">
-        <DsfrButton secondary @click="emit('back')">
+        <DsfrButton secondary @click="emit('back')" :disabled="props.requestInProgress">
           <span v-if="props.removeSaveLabel">Revenir</span>
           <span v-else>
             Sauvegarder
@@ -14,7 +14,7 @@
         </DsfrButton>
       </li>
       <li v-if="selectedTabIndex < titles.length - 1" class="ml-4 inline">
-        <DsfrButton @click="emit('forward')">
+        <DsfrButton @click="emit('forward')" :disabled="props.requestInProgress">
           <span v-if="props.removeSaveLabel">Passer</span>
           <span v-else>
             Sauvegarder
@@ -31,7 +31,7 @@
 <script setup>
 import { computed } from "vue"
 
-const props = defineProps(["titles", "selectedTabIndex", "removeSaveLabel"])
+const props = defineProps(["titles", "selectedTabIndex", "removeSaveLabel", "requestInProgress"])
 const emit = defineEmits(["back", "forward"])
 
 const previousTabTitle = computed(() => props.titles[props.selectedTabIndex - 1].title)
