@@ -207,3 +207,65 @@ class TestProcessCompanyAccessClaim(ProjectAPITestCase):
         self.recipent.supervisable_companies.get(pk=self.company.pk).delete()
         response = self.post(self.url(pk=self.solicitation.pk), {"action_name": "accept"})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class TestClaimCompanySupervision(ProjectAPITestCase):
+    viewname = "claim_company_supervision"
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.staff_user = UserFactory(is_staff=True)
+        self.unsupervised_company = CompanyFactory()
+        self.supervised_company = CompanyFactory()
+        SupervisorRoleFactory(company=self.supervised_company)
+
+    @override_settings(ANYMAIL={"SENDINBLUE_API_KEY": "fake-api-key"})
+    @override_settings(CONTACT_EMAIL="contact@example.com")
+    @override_settings(SECURE=True)
+    @override_settings(HOSTNAME="hostname")
+    @override_settings(ADMIN_URL="admin")
+    @mock.patch("config.email.send_sib_template.delay")
+    def test_request_claim_supervision(self, mocked_brevo):
+        mocked_brevo.reset_mock()
+
+        self.login(self.user)
+        response = self.post(
+            f"{self.url(identifier=self.unsupervised_company.siret)}?identifierType=siret", {"message": "testing"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        template_number = 15
+        mocked_brevo.assert_called_once_with(
+            template_number,
+            {
+                "COMPANY_NAME": self.unsupervised_company.social_name,
+                "COMPANY_ID": self.unsupervised_company.id,
+                "ADMIN_LINK": "https://hostname/platform/admin/",
+                "PERSONAL_MESSAGE": "testing",
+                "REQUESTER_NAME": self.user.get_full_name(),
+            },
+            self.staff_user.email,
+            self.staff_user.get_full_name(),
+        )
+
+    @mock.patch("config.email.send_sib_template.delay")
+    def test_request_claim_supervision_identifier_type_missing(self, mocked_brevo):
+        mocked_brevo.reset_mock()
+
+        self.login(self.user)
+        response = self.post(f"{self.url(identifier=self.unsupervised_company.siret)}", {"message": "testing"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        mocked_brevo.assert_not_called()
+
+    @mock.patch("config.email.send_sib_template.delay")
+    def test_request_claim_supervision_supervised_company_ko(self, mocked_brevo):
+        mocked_brevo.reset_mock()
+
+        self.login(self.user)
+        response = self.post(
+            f"{self.url(identifier=self.supervised_company.siret)}?identifierType=siret", {"message": "testing"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        mocked_brevo.assert_not_called()
