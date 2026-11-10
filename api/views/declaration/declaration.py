@@ -56,6 +56,7 @@ from api.views.declaration.declaration_flow import DeclarationFlow
 from api.views.utils import ControlExcelPagination, EmptyDataRequest, common_excel_styles
 from config import email
 from data.models import Company, Declaration, InstructionRole, Snapshot, User, VisaRole
+from data.utils.external_utils import SiretData
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +120,13 @@ class UserDeclarationsListCreateApiView(ListCreateAPIView):
             company = Company.objects.get(pk=company_id)
         except Company.DoesNotExist as _:
             raise NotFound("Company not found")
+
+        if company.siret:
+            company_siret_data = SiretData.fetch(company.siret)
+            if not SiretData.is_valid_company(company_siret_data):
+                raise ProjectAPIException(
+                    field_errors={"company": "Veuillez renseigner une entreprise enregistrée et en activité"}
+                )
 
         companies = [company] + list(company.mandated_companies.all())
         if not any(x for x in companies if x.declarant_roles.filter(user=self.request.user).exists()):

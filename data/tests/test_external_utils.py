@@ -11,7 +11,7 @@ class SiretDataTestCase(TestCase):
             "results": [
                 {
                     "nom_raison_sociale": "COMPANY NAME SL",
-                    "date_fermeture": "2020-01-01",
+                    "date_fermeture": None,
                     "siege": {
                         "numero_voie": "12",
                         "type_voie": "RUE",
@@ -25,6 +25,11 @@ class SiretDataTestCase(TestCase):
                         "libelle_cedex": "PARIS CEDEX",
                         "nom_commercial": "Company name",
                     },
+                    "matching_etablissements": [
+                        {
+                            "date_fermeture": "2020-01-01",
+                        }
+                    ],
                 }
             ],
             "total_results": 1,

@@ -99,8 +99,8 @@ class CheckCompanyIdentifierView(APIView):
             company_status = CompanyStatusChoices.UNREGISTERED_COMPANY
             # Essaie de récupérer les données entreprise depuis l'API SIRET pour faciliser la saisie
             if identifier_type == "siret":
-                company_siret_data = SiretData.fetch(identifier)  # None en cas d'échec du fetch
-                if company_siret_data["status"] == 404 or company_siret_data.get("end_date", None) is not None:
+                company_siret_data = SiretData.fetch(identifier)
+                if not SiretData.is_valid_company(company_siret_data):
                     company_status = CompanyStatusChoices.UNREGISTERABLE_COMPANY
         else:
             if company.supervisors.exists():

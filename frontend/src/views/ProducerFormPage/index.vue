@@ -28,6 +28,31 @@
         <DsfrButton class="mt-2" label="Prendre cette déclaration" tertiary @click="takeDeclaration" />
       </DsfrAlert>
 
+      <DsfrAlert
+        class="mb-8"
+        type="error"
+        v-if="companyError"
+        title="Erreur : entreprise fermée ou introuvable"
+        titleTag="h2"
+      >
+        <p>
+          L'entreprise {{ company.socialName }} avec n° SIRET
+          <strong>{{ company.siret }}</strong>
+          est fermée ou introuvable selon
+          <ExternalLink
+            :href="`https://annuaire-entreprises.data.gouv.fr/etablissement/${company.siret}`"
+            text="l'Annuaire des entreprises"
+          />
+        </p>
+        <p>L'entreprise doit être ouverte et enregistrée pour soumettre une déclaration.</p>
+        <p>
+          Si vous pensez qu'il y a une erreur, contactez-nous à l'adresse suivante :
+          <a :href="`mailto:${contactEmail}`">
+            {{ contactEmail }}
+          </a>
+          pour avoir de l'aide avec la création de votre entreprise sur Compl'Alim.
+        </p>
+      </DsfrAlert>
       <StatusChangeErrorDisplay class="mb-8" :errors="statusChangeErrors" :tabTitles="titles" />
       <DsfrTabs
         v-if="payload"
@@ -68,6 +93,7 @@
         @back="selectTab(selectedTabIndex - 1)"
         @forward="selectTab(selectedTabIndex + 1)"
         :removeSaveLabel="readonly"
+        :requestInProgress="requestInProgress"
       />
       <hr class="mt-6" />
       <DeletionModal
@@ -112,6 +138,9 @@ import useToaster from "@/composables/use-toaster"
 import { tabTitles } from "@/utils/mappings"
 import { setDocumentTitle } from "@/utils/document"
 import { hasNewElements } from "@/utils/elements"
+import ExternalLink from "@/components/ExternalLink"
+
+const contactEmail = import.meta.env.VITE_CONTACT_EMAIL
 
 // Il y a deux refs qui stockent des erreurs. $externalResults sert
 // lors qu'on sauvegarde la déclaration (POST ou PUT) mais qu'on ne change
@@ -222,6 +251,12 @@ const components = computed(() => {
 
 const titles = computed(() => tabTitles(components.value, !readonly.value))
 
+const company = computed(() => {
+  if (!payload.value.company) return {}
+  return loggedUser.value.companies.find((company) => company.id === payload.value.company)
+})
+const companyError = ref(false)
+
 const savePayload = async ({
   successMessage = "Votre démarche a été sauvegardée",
   forceArticleCalculation = false,
@@ -239,6 +274,9 @@ const savePayload = async ({
   if (hasError) {
     const fieldErrors = $externalResults.value.fieldErrors
     if (fieldErrors && Object.keys(fieldErrors).length > 0) {
+      if (fieldErrors["company"]) {
+        companyError.value = true
+      }
       useToaster().addErrorMessage(
         "Merci de vérifier que les champs obligatoires, signalés par une astérix *, ont bien été remplis pour pouvoir changer d'onglet"
       )
@@ -352,6 +390,11 @@ watch(
     selectedTabIndex.value = parseInt(tab)
     setDocumentTitleForTab(selectedTabIndex.value, payload)
   }
+)
+
+watch(
+  () => payload.value.company,
+  () => (companyError.value = false)
 )
 
 onMounted(() => setDocumentTitleForTab(selectedTabIndex.value, payload))
