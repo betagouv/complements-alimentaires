@@ -71,7 +71,7 @@ packaging==26.2
 pandas==3.0.3
 pathspec==1.1.1
 phonenumbers==9.0.24
-pikepdf==10.9.1
+pikepdf==10.17.0
 pillow==13.0.0
 pipdeptree==4.0.0
 platformdirs==4.12.3
