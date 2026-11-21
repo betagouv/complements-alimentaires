@@ -11,7 +11,7 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.utils import timezone
 
-from api.utils.urls import get_base_url
+from api.utils.urls import get_base_url, get_admin_url
 from config import email
 from data.utils.type_utils import all_true_or_all_false
 
@@ -112,7 +112,7 @@ class SupervisionClaim(BaseSolicitation, models.Model):
                         "REQUESTER_NAME": self.sender.get_full_name(),
                         "COMPANY_NAME": self.company.social_name,
                         "COMPANY_ID": self.company.id,
-                        "ADMIN_LINK": f"{get_base_url()}admin/",
+                        "ADMIN_LINK": get_admin_url(),
                         "PERSONAL_MESSAGE": self.personal_msg,
                     },
                     recipient.email,
