@@ -75,7 +75,7 @@ pikepdf==10.17.0
 pillow==13.0.0
 pipdeptree==4.0.0
 platformdirs==4.12.3
-pluggy==1.6.0
+pluggy==1.7.0
 prompt_toolkit==3.0.52
 psycopg2==2.9.13
 pycairo==1.29.0
