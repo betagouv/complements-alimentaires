@@ -84,7 +84,7 @@ python -m ai_v2.cli runs                       # run history
 python -m pytest ai_v2/tests                   # offline tests (no network, no database)
 ```
 
-The tests are pytest tests. `ai_v2/tests/__init__.py` stops Django's test runner (`manage.py test`, used by the CI) from importing them, because the app does not install this package's requirements.
+The tests are pytest tests. A `load_tests` hook in `ai_v2/__init__.py` keeps the whole package out of Django's test runner (`manage.py test`, used by the CI), because the app does not install this package's requirements.
 
 ## Where the results are
 

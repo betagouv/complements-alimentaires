@@ -8,3 +8,13 @@ production database in read-only mode; see README.md for the integration plan in
 """
 
 __version__ = "2.0.0"
+
+
+def load_tests(loader, standard_tests, pattern):
+    """Keep this whole package out of Django's test runner (`manage.py test`, run by the CI).
+
+    Its modules need packages the app does not install (httpx, pydantic, rapidfuzz...), so letting
+    unittest discovery import them would fail. The package's own tests are pytest tests, run with
+    `python -m pytest ai_v2/tests`. Returning the (empty) suite as is tells unittest not to look inside.
+    """
+    return standard_tests
