@@ -117,7 +117,7 @@ typing_extensions==4.16.0
 tzdata==2026.5
 tzlocal==5.4.4
 Unidecode==1.4.0
-uritools==6.1.3
+uritools==7.0.0
 urllib3==2.8.0
 vine==5.1.0
 wcwidth==0.7.0
