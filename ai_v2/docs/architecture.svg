@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 1000" width="820" height="1000" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-label="ai_v2 architecture: models read and match, code judges, an agent checks before anything is blocked">
+<rect x="0.5" y="0.5" width="819" height="999" rx="12" fill="#ffffff" stroke="#d0d7de"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8c959f"/></marker></defs>
+<text x="24" y="34" font-size="15" fill="#1f2328" font-weight="600">Models read and match; code judges; an agent checks before anything is blocked</text>
+<text x="24" y="54" font-size="11.5" fill="#59636e">ai_v2, one declaration end to end: inputs on the left, stores on the right, module names in grey</text>
+<g fill="none" stroke="#8c959f" stroke-width="1.25">
+<path d="M398 156V180" marker-end="url(#a)"/>
+<path d="M398 252V276" marker-end="url(#a)"/>
+<path d="M398 348V372" marker-end="url(#a)"/>
+<path d="M398 444V468" marker-end="url(#a)"/>
+<path d="M398 540V564" marker-end="url(#a)"/>
+<path d="M398 636V660" marker-end="url(#a)"/>
+<path d="M398 732V756" marker-end="url(#a)"/>
+<path d="M204 120H228" marker-end="url(#a)"/>
+<path d="M204 216H228" marker-end="url(#a)"/>
+<path d="M40 172V468" marker-end="url(#a)"/>
+<path d="M204 504H228" marker-end="url(#a)"/>
+<path d="M114 556V600H228" marker-end="url(#a)"/>
+<path d="M592 408H568" marker-start="url(#a)" marker-end="url(#a)"/>
+<path d="M592 600H568" marker-start="url(#a)" marker-end="url(#a)"/>
+<path d="M568 792H592" marker-end="url(#a)"/>
+<path d="M694 844V868" marker-end="url(#a)"/>
+<path d="M592 912H398V828" marker-end="url(#a)"/>
+</g>
+<text x="48" y="392" font-size="11.5" fill="#59636e">frozen per run</text>
+<text x="495" y="904" font-size="11.5" fill="#59636e" text-anchor="middle">sets the blocking policy</text>
+<rect x="24" y="84" width="180" height="88" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="36" y="108" font-size="13" fill="#1f2328" font-weight="600">Production DB</text>
+<text x="36" y="124" font-size="11.5" fill="#59636e">read-only session;</text>
+<text x="36" y="140" font-size="11.5" fill="#59636e">declaration or snapshot,</text>
+<text x="36" y="156" font-size="11.5" fill="#59636e">instructor history</text>
+<text x="192" y="108" font-size="10.5" fill="#59636e" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">db.py</text>
+<rect x="56" y="184" width="148" height="64" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="68" y="208" font-size="13" fill="#1f2328" font-weight="600">Label files</text>
+<text x="68" y="224" font-size="11.5" fill="#59636e">public storage,</text>
+<text x="68" y="240" font-size="11.5" fill="#59636e">fetched by URL</text>
+<rect x="24" y="468" width="180" height="88" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="36" y="492" font-size="13" fill="#1f2328" font-weight="600">Reference snapshot</text>
+<text x="36" y="508" font-size="11.5" fill="#59636e">elements, max doses per</text>
+<text x="36" y="524" font-size="11.5" fill="#59636e">population, warnings</text>
+<text x="36" y="542" font-size="10.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">refdata.py</text>
+<rect x="228" y="84" width="340" height="72" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="240" y="108" font-size="13" fill="#1f2328" font-weight="600">0 · Triage (SQL, free)</text>
+<text x="556" y="108" font-size="10.5" fill="#59636e" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">triage.py</text>
+<text x="240" y="124" font-size="11.5" fill="#59636e">Dose at the maximum, single-item capsule,</text>
+<text x="240" y="140" font-size="11.5" fill="#59636e">company history: a prior, never a block</text>
+<rect x="228" y="180" width="340" height="72" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="240" y="204" font-size="13" fill="#1f2328" font-weight="600">1 · Ingestion</text>
+<text x="556" y="204" font-size="10.5" fill="#59636e" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">documents.py</text>
+<text x="240" y="220" font-size="11.5" fill="#59636e">Download once (sha256), check type and size,</text>
+<text x="240" y="236" font-size="11.5" fill="#59636e">render pages, perceptual hash (dHash)</text>
+<rect x="228" y="276" width="340" height="72" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="240" y="300" font-size="13" fill="#1f2328" font-weight="600">1 · OCR · Mistral OCR</text>
+<text x="556" y="300" font-size="10.5" fill="#59636e" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">extract.py</text>
+<text x="240" y="316" font-size="11.5" fill="#59636e">PDF text layer + OCR; high-res tiles when</text>
+<text x="240" y="332" font-size="11.5" fill="#59636e">text is thin; rotated pages if needed</text>
+<rect x="228" y="372" width="340" height="72" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="240" y="396" font-size="13" fill="#1f2328" font-weight="600">2 · Blind extraction · Medium</text>
+<text x="556" y="396" font-size="10.5" fill="#59636e" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">extract.py</text>
+<text x="240" y="412" font-size="11.5" fill="#59636e">Vision + OCR text to a strict schema; never</text>
+<text x="240" y="428" font-size="11.5" fill="#59636e">sees the declaration; every quote grounded</text>
+<rect x="228" y="468" width="340" height="72" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="240" y="492" font-size="13" fill="#1f2328" font-weight="600">3 · Entity resolution</text>
+<text x="556" y="492" font-size="10.5" fill="#59636e" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">resolve.py</text>
+<text x="240" y="508" font-size="11.5" fill="#59636e">Aliases, E-number, binomial, exact, then fuzzy</text>
+<text x="240" y="524" font-size="11.5" fill="#59636e">+ embeddings (RRF); Small picks an ID</text>
+<rect x="228" y="564" width="340" height="72" rx="8" fill="#0969da" fill-opacity="0.10" stroke="#0969da" stroke-width="2"/>
+<text x="240" y="588" font-size="13" fill="#1f2328" font-weight="600">4 · Rules engine (code judges)</text>
+<text x="556" y="588" font-size="10.5" fill="#59636e" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">rules.py</text>
+<text x="240" y="604" font-size="11.5" fill="#1f2328">Counterfactual article, doses, missing</text>
+<text x="240" y="620" font-size="11.5" fill="#1f2328">ingredients, statements, warnings, reuse</text>
+<rect x="228" y="660" width="340" height="72" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="240" y="684" font-size="13" fill="#1f2328" font-weight="600">5 · Agent check · Medium</text>
+<text x="556" y="684" font-size="10.5" fill="#59636e" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">agent.py</text>
+<text x="240" y="700" font-size="11.5" fill="#59636e">Read-only tools: zoom, rotate, reference,</text>
+<text x="240" y="716" font-size="11.5" fill="#59636e">article, maths; must confirm with proof</text>
+<rect x="228" y="756" width="340" height="72" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="240" y="780" font-size="13" fill="#1f2328" font-weight="600">6 · Decision</text>
+<text x="556" y="780" font-size="10.5" fill="#59636e" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">decision.py</text>
+<text x="240" y="796" font-size="11.5" fill="#59636e">BLOCK only on proven findings, else PASS;</text>
+<text x="240" y="812" font-size="11.5" fill="#59636e">the message to the declarant cites the label</text>
+<rect x="592" y="372" width="204" height="88" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="604" y="396" font-size="13" fill="#1f2328" font-weight="600">Cache (SQLite)</text>
+<text x="604" y="412" font-size="11.5" fill="#59636e">key = input + model + prompt;</text>
+<text x="604" y="428" font-size="11.5" fill="#59636e">OCR, extraction, resolution</text>
+<text x="604" y="446" font-size="10.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">cache.py</text>
+<rect x="592" y="564" width="204" height="88" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="604" y="588" font-size="13" fill="#1f2328" font-weight="600">Aliases · label index</text>
+<text x="604" y="604" font-size="11.5" fill="#59636e">learned label-to-ID matches;</text>
+<text x="604" y="620" font-size="11.5" fill="#59636e">image + text hashes (reuse)</text>
+<text x="604" y="638" font-size="10.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">label_index.py</text>
+<rect x="592" y="756" width="204" height="88" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="604" y="780" font-size="13" fill="#1f2328" font-weight="600">Run store</text>
+<text x="604" y="796" font-size="11.5" fill="#59636e">traces, metrics, reports</text>
+<text x="604" y="812" font-size="11.5" fill="#59636e">for every run, all kept</text>
+<text x="604" y="830" font-size="10.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">runs.py</text>
+<rect x="592" y="868" width="204" height="88" rx="8" fill="none" stroke="#8c959f" stroke-width="1.25"/>
+<text x="604" y="892" font-size="13" fill="#1f2328" font-weight="600">Evaluation</text>
+<text x="604" y="908" font-size="11.5" fill="#59636e">gold sets v1 + v2, metrics,</text>
+<text x="604" y="924" font-size="11.5" fill="#59636e">policy simulation</text>
+<text x="604" y="942" font-size="10.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">eval/</text>
+</svg>

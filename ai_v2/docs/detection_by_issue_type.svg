@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 444" width="760" height="444" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-label="Detected vs blocked share per issue type, gold set v1, run v5">
+<rect x="0.5" y="0.5" width="759" height="443" rx="12" fill="#ffffff" stroke="#d0d7de"/>
+<text x="24" y="34" font-size="16" fill="#1f2328" font-weight="600">Blocking trails detection most for missing quantities: 69% vs 15%</text>
+<text x="24" y="56" font-size="12" fill="#59636e">Share of instructor-flagged files in each issue type, gold set v1 (50 blocked files), run v5</text>
+<circle cx="30" cy="80" r="6" fill="#afb8c1"/>
+<text x="42" y="84" font-size="12" fill="#59636e">Detected (a finding of the right family)</text>
+<circle cx="290" cy="80" r="6" fill="#0969da"/>
+<text x="302" y="84" font-size="12" fill="#59636e">Blocked</text>
+<line x1="300.0" x2="300.0" y1="96" y2="382" stroke="#d8dee4"/>
+<text x="300.0" y="398" font-size="11" fill="#59636e" text-anchor="middle">0%</text>
+<line x1="500.0" x2="500.0" y1="96" y2="382" stroke="#d8dee4"/>
+<text x="500.0" y="398" font-size="11" fill="#59636e" text-anchor="middle">50%</text>
+<line x1="700.0" x2="700.0" y1="96" y2="382" stroke="#d8dee4"/>
+<text x="700.0" y="398" font-size="11" fill="#59636e" text-anchor="middle">100%</text>
+<text x="24" y="116" font-size="12" fill="#1f2328">Label of another product</text>
+<text x="284" y="116" font-size="12" fill="#59636e" text-anchor="end">n=7</text>
+<line x1="700.0" x2="700.0" y1="112" y2="112" stroke="#afb8c1" stroke-width="3"/>
+<circle cx="700.0" cy="112" r="7" fill="#afb8c1"><title>Label of another product: 100% detected</title></circle>
+<circle cx="700.0" cy="112" r="7" fill="#0969da"><title>Label of another product: 100% blocked</title></circle>
+<text x="712.0" y="116" font-size="12" fill="#0969da">100%</text>
+<text x="24" y="152" font-size="12" fill="#1f2328">Other label issue</text>
+<text x="284" y="152" font-size="12" fill="#59636e" text-anchor="end">n=14</text>
+<line x1="556.0" x2="700.0" y1="148" y2="148" stroke="#afb8c1" stroke-width="3"/>
+<circle cx="700.0" cy="148" r="7" fill="#afb8c1"><title>Other label issue: 100% detected</title></circle>
+<circle cx="556.0" cy="148" r="7" fill="#0969da"><title>Other label issue: 64% blocked</title></circle>
+<text x="712.0" y="152" font-size="12" fill="#59636e">100%</text>
+<text x="544.0" y="152" font-size="12" fill="#0969da" text-anchor="end">64%</text>
+<text x="24" y="188" font-size="12" fill="#1f2328">Undeclared ingredient</text>
+<text x="284" y="188" font-size="12" fill="#59636e" text-anchor="end">n=14</text>
+<line x1="472.0" x2="616.0" y1="184" y2="184" stroke="#afb8c1" stroke-width="3"/>
+<circle cx="616.0" cy="184" r="7" fill="#afb8c1"><title>Undeclared ingredient: 79% detected</title></circle>
+<circle cx="472.0" cy="184" r="7" fill="#0969da"><title>Undeclared ingredient: 43% blocked</title></circle>
+<text x="628.0" y="188" font-size="12" fill="#59636e">79%</text>
+<text x="460.0" y="188" font-size="12" fill="#0969da" text-anchor="end">43%</text>
+<text x="24" y="224" font-size="12" fill="#1f2328">Missing mandatory statement</text>
+<text x="284" y="224" font-size="12" fill="#59636e" text-anchor="end">n=22</text>
+<line x1="464.0" x2="608.0" y1="220" y2="220" stroke="#afb8c1" stroke-width="3"/>
+<circle cx="608.0" cy="220" r="7" fill="#afb8c1"><title>Missing mandatory statement: 77% detected</title></circle>
+<circle cx="464.0" cy="220" r="7" fill="#0969da"><title>Missing mandatory statement: 41% blocked</title></circle>
+<text x="620.0" y="224" font-size="12" fill="#59636e">77%</text>
+<text x="452.0" y="224" font-size="12" fill="#0969da" text-anchor="end">41%</text>
+<text x="24" y="260" font-size="12" fill="#1f2328">Missing ingredient warning</text>
+<text x="284" y="260" font-size="12" fill="#59636e" text-anchor="end">n=20</text>
+<line x1="460.0" x2="460.0" y1="256" y2="256" stroke="#afb8c1" stroke-width="3"/>
+<circle cx="460.0" cy="256" r="7" fill="#afb8c1"><title>Missing ingredient warning: 40% detected</title></circle>
+<circle cx="460.0" cy="256" r="7" fill="#0969da"><title>Missing ingredient warning: 40% blocked</title></circle>
+<text x="472.0" y="260" font-size="12" fill="#0969da">40%</text>
+<text x="24" y="296" font-size="12" fill="#1f2328">Dose differs from declaration</text>
+<text x="284" y="296" font-size="12" fill="#59636e" text-anchor="end">n=10</text>
+<line x1="380.0" x2="500.0" y1="292" y2="292" stroke="#afb8c1" stroke-width="3"/>
+<circle cx="500.0" cy="292" r="7" fill="#afb8c1"><title>Dose differs from declaration: 50% detected</title></circle>
+<circle cx="380.0" cy="292" r="7" fill="#0969da"><title>Dose differs from declaration: 20% blocked</title></circle>
+<text x="512.0" y="296" font-size="12" fill="#59636e">50%</text>
+<text x="368.0" y="296" font-size="12" fill="#0969da" text-anchor="end">20%</text>
+<text x="24" y="332" font-size="12" fill="#1f2328">No quantity per daily dose</text>
+<text x="284" y="332" font-size="12" fill="#59636e" text-anchor="end">n=13</text>
+<line x1="360.0" x2="576.0" y1="328" y2="328" stroke="#afb8c1" stroke-width="3"/>
+<circle cx="576.0" cy="328" r="7" fill="#afb8c1"><title>No quantity per daily dose: 69% detected</title></circle>
+<circle cx="360.0" cy="328" r="7" fill="#0969da"><title>No quantity per daily dose: 15% blocked</title></circle>
+<text x="588.0" y="332" font-size="12" fill="#59636e">69%</text>
+<text x="348.0" y="332" font-size="12" fill="#0969da" text-anchor="end">15%</text>
+<text x="24" y="368" font-size="12" fill="#1f2328">Daily dose or form mismatch</text>
+<text x="284" y="368" font-size="12" fill="#59636e" text-anchor="end">n=11</text>
+<line x1="336.0" x2="520.0" y1="364" y2="364" stroke="#afb8c1" stroke-width="3"/>
+<circle cx="520.0" cy="364" r="7" fill="#afb8c1"><title>Daily dose or form mismatch: 55% detected</title></circle>
+<circle cx="336.0" cy="364" r="7" fill="#0969da"><title>Daily dose or form mismatch: 9% blocked</title></circle>
+<text x="532.0" y="368" font-size="12" fill="#59636e">55%</text>
+<text x="324.0" y="368" font-size="12" fill="#0969da" text-anchor="end">9%</text>
+<text x="24" y="428" font-size="11" fill="#59636e">A file can carry several issue types. 7 files refused for a dose above the maximum are left out: the dose was declared openly (ART_18).</text>
+</svg>
